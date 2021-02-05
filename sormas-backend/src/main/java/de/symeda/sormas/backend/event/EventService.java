@@ -150,7 +150,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Map<String, User> getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(Case caze, Date date) {
+	public Map<String, User> getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(Case caze, Date date) {
 		if (caze == null || date == null) {
 			return Collections.emptyMap();
 		}
@@ -168,15 +168,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.START_DATE), timestamp),
 			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.END_DATE), timestamp));
 
-		Predicate surveillanceOfficerFilter = cb.and(
-			cb.isNotNull(eventJoin.get(Event.SURVEILLANCE_OFFICER)),
-			cb.not(cb.equal(eventJoin.get(Event.SURVEILLANCE_OFFICER), caze.getReportingUser())));
+		Predicate responsibleUserFilter = cb.and(
+			cb.isNotNull(eventJoin.get(Event.RESPONSIBLE_USER)),
+			cb.not(cb.equal(eventJoin.get(Event.RESPONSIBLE_USER), caze.getReportingUser())));
 
 		Predicate activeEventsFilter = createActiveEventsFilter(cb, eventJoin);
 
-		cq.where(cb.and(diseaseFilter, personFilter, dateFilter, surveillanceOfficerFilter, activeEventsFilter));
+		cq.where(cb.and(diseaseFilter, personFilter, dateFilter, responsibleUserFilter, activeEventsFilter));
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
-		cq.multiselect(Arrays.asList(eventJoin.get(Event.UUID), eventJoin.get(Event.SURVEILLANCE_OFFICER)));
+		cq.multiselect(Arrays.asList(eventJoin.get(Event.UUID), eventJoin.get(Event.RESPONSIBLE_USER)));
 
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
@@ -209,7 +209,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				eventLocation.get(Location.LATITUDE),
 				eventLocation.get(Location.LONGITUDE),
 				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-				event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID),
+				event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID),
 				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
@@ -389,7 +389,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
+		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.RESPONSIBLE_USER, JoinType.LEFT), currentUser));
 
 		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseFilter()) {
 			filter = CriteriaBuilderHelper.or(cb, filter, createCaseFilter(cb, cq, eventPath));
@@ -572,11 +572,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
 		}
-		if (eventCriteria.getSurveillanceOfficer() != null) {
+		if (eventCriteria.getResponsibleUser() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), eventCriteria.getSurveillanceOfficer().getUuid()));
+				cb.equal(from.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
 		}
 		if (eventCriteria.getFreeText() != null) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");

@@ -72,7 +72,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -123,7 +123,7 @@ public class EventDto extends PseudonymizableDto {
 	private Disease disease;
 	private String diseaseDetails;
 	@SensitiveData
-	private UserReferenceDto surveillanceOfficer;
+	private UserReferenceDto responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
 	private Double reportLon;
@@ -423,12 +423,12 @@ public class EventDto extends PseudonymizableDto {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public String getTypeOfPlaceText() {

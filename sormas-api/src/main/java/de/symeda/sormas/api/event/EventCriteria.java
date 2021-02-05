@@ -42,7 +42,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 2194071020732246594L;
 
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
@@ -68,7 +68,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date eventEvolutionDateFrom;
 	private Date eventEvolutionDateTo;
 	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
-	private UserReferenceDto surveillanceOfficer;
+	private UserReferenceDto responsibleUser;
 	private String freeText;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
@@ -320,17 +320,17 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return evolutionDateFilterOption;
 	}
 
-	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public EventCriteria responsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 		return this;
 	}
 
-	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
 	}
 
 	public EventCriteria freeText(String freeText) {

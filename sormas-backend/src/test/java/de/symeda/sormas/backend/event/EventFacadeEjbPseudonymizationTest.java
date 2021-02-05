@@ -78,13 +78,13 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateOutsideJurisdiction() {
 		EventDto event = createEvent(user1, rdcf1);
 
-		event.setSurveillanceOfficer(null);
+		event.setResponsibleUser(null);
 
 		getEventFacade().saveEvent(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
-		assertThat(savedEvent.getSurveillanceOfficer().getUuid(), is(user1.getUuid()));
+		assertThat(savedEvent.getResponsibleUser().getUuid(), is(user1.getUuid()));
 	}
 
 	@Test
@@ -92,12 +92,12 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		EventDto event = createEvent(user2, rdcf2);
 
 		event.setPseudonymized(true);
-		event.setSurveillanceOfficer(null);
+		event.setResponsibleUser(null);
 		getEventFacade().saveEvent(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
-		assertThat(savedEvent.getSurveillanceOfficer().getUuid(), is(user2.getUuid()));
+		assertThat(savedEvent.getResponsibleUser().getUuid(), is(user2.getUuid()));
 	}
 
 	@Test
@@ -113,15 +113,15 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
 		return creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), e -> {
-			e.setSurveillanceOfficer(user.toReference());
+			e.setResponsibleUser(user.toReference());
 		});
 	}
 
 	private void assertNotPseudonymized(EventDto event) {
-		assertThat(event.getSurveillanceOfficer(), is(user2));
+		assertThat(event.getResponsibleUser(), is(user2));
 	}
 
 	private void assertPseudonymized(EventDto event) {
-		assertThat(event.getSurveillanceOfficer(), is(nullValue()));
+		assertThat(event.getResponsibleUser(), is(nullValue()));
 	}
 }

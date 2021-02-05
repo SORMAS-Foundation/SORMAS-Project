@@ -6362,4 +6362,10 @@ ALTER TABLE pathogentest_history ADD COLUMN typingId text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (317, 'Add typing ID to pathogen tests #3957');
 
+-- 2021-01-07 Change event's surveillanceOfficer to responsibleUser allow more roles to be it #3827
+ALTER TABLE events RENAME surveillanceofficer_id to responsibleuser_id;
+ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (318, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
+
 -- *** Insert new sql commands BEFORE this line ***

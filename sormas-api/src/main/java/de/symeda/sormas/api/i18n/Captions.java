@@ -836,6 +836,7 @@ public interface Captions {
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
+	String Event_responsibleUser = "Event.responsibleUser";
 	String Event_riskLevel = "Event.riskLevel";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
@@ -848,7 +849,6 @@ public interface Captions {
 	String Event_srcTelNo = "Event.srcTelNo";
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
-	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
 	String Event_transregionalOutbreak = "Event.transregionalOutbreak";
 	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
@@ -863,6 +863,8 @@ public interface Captions {
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
+	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
+	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
 	String EventAction_eventRiskLevel = "EventAction.eventRiskLevel";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";

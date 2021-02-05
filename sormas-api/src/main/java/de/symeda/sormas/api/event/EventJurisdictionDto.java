@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class EventJurisdictionDto implements Serializable {
 
 	private String reportingUserUuid;
-	private String surveillanceOfficerUuid;
+	private String responsibleUserUuid;
 	private String regionUuid;
 	private String districtUuid;
 	private String communityUuid;
@@ -15,12 +15,12 @@ public class EventJurisdictionDto implements Serializable {
 
 	public EventJurisdictionDto(
 		String reportingUserUuid,
-		String surveillanceOfficerUuid,
+		String responsibleUserUuid,
 		String regionUuid,
 		String districtUuid,
 		String communityUuid) {
 		this.reportingUserUuid = reportingUserUuid;
-		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
+		this.responsibleUserUuid = responsibleUserUuid;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.communityUuid = communityUuid;
@@ -34,12 +34,12 @@ public class EventJurisdictionDto implements Serializable {
 		this.reportingUserUuid = reportingUserUuid;
 	}
 
-	public String getSurveillanceOfficerUuid() {
-		return surveillanceOfficerUuid;
+	public String getResponsibleUserUuid() {
+		return responsibleUserUuid;
 	}
 
-	public void setSurveillanceOfficerUuid(String surveillanceOfficerUuid) {
-		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
+	public void setResponsibleUserUuid(String responsibleUserUuid) {
+		this.responsibleUserUuid = responsibleUserUuid;
 	}
 
 	public String getRegionUuid() {
