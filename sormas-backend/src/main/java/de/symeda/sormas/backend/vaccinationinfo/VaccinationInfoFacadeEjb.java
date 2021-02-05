@@ -31,7 +31,7 @@ public class VaccinationInfoFacadeEjb implements VaccinationInfoFacade {
 
 	public static VaccinationInfoDto toDto(VaccinationInfo source) {
 		if (source == null) {
-			return VaccinationInfoDto.build();
+			return null;
 		}
 
 		VaccinationInfoDto target = new VaccinationInfoDto();

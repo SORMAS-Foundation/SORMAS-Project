@@ -112,6 +112,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -1180,7 +1181,15 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 
-		target.setVaccinationInfo(vaccinationInfoFacade.fromDto(source.getVaccinationInfo(), checkChangeDate));
+		// create new vaccination info in case it is created in the mobile app
+		// TODO [vaccination info] no VaccinationInfoDto.build() will be needed after integrating vaccination info into the app
+		VaccinationInfoDto vaccinationInfo = source.getVaccinationInfo();
+		if (vaccinationInfo == null && target.getVaccinationInfo() == null) {
+			vaccinationInfo = VaccinationInfoDto.build();
+		}
+		if (vaccinationInfo != null) {
+			target.setVaccinationInfo(vaccinationInfoFacade.fromDto(vaccinationInfo, checkChangeDate));
+		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));

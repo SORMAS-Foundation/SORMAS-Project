@@ -6364,6 +6364,24 @@ ALTER TABLE eventparticipant
 
 ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
 
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_vaccination_info_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE contact.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE contact SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+
+        FOR rec IN SELECT id FROM public.eventparticipant WHERE eventparticipant.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE eventparticipant SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
 INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add vaccination for contacts and event participant #4137');
 
 

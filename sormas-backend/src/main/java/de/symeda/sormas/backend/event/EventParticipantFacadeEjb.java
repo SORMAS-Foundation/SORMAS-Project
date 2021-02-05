@@ -66,6 +66,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -687,7 +688,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		target.setVaccinationInfo(vaccinationInfoFacade.fromDto(source.getVaccinationInfo(), checkChangeDate));
+
+		// create new vaccination info in case it is created in the mobile app
+		// TODO [vaccination info] no VaccinationInfoDto.build() will be needed after integrating vaccination info into the app
+		VaccinationInfoDto vaccinationInfo = source.getVaccinationInfo();
+		if (vaccinationInfo == null && target.getVaccinationInfo() == null) {
+			vaccinationInfo = VaccinationInfoDto.build();
+		}
+		if (vaccinationInfo != null) {
+			target.setVaccinationInfo(vaccinationInfoFacade.fromDto(vaccinationInfo, checkChangeDate));
+		}
 
 		return target;
 	}

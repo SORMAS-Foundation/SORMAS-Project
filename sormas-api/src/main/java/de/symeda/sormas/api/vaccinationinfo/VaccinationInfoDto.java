@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 
@@ -193,7 +194,10 @@ public class VaccinationInfoDto extends EntityDto {
 	private String vaccineAtcCode;
 
 	public static VaccinationInfoDto build() {
-		return new VaccinationInfoDto();
+		VaccinationInfoDto vaccinationInfo = new VaccinationInfoDto();
+		vaccinationInfo.setUuid(DataHelper.createUuid());
+
+		return vaccinationInfo;
 	}
 
 	public Vaccination getVaccination() {
