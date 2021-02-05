@@ -35,6 +35,9 @@
         div.actions {
           margin-top: 35px;
         }
+        .red {
+          color: #f00;
+        }
     </style>
 </header>
 <body>
@@ -44,18 +47,18 @@
 <p>...where people meet</p>
 
 <table>
-    <tr><th>Disease</th><th>Status</th><th>Event Date</th><th>Report Date</th><th>User</th></tr>
+    <tbody><tr><th>Disease</th><th>Status</th><th>Event Date</th><th>Report Date</th><th>User</th></tr>
     <tr><td>COVID-19</td><td>Signal</td><td>11/12/2020</td><td>11/13/2020</td><td>Surv Sup</td></tr>
-</table>
+</tbody></table>
 
 <h2>Event Participants</h2>
 
 <table>
-    <tr><th>First Name</th><th>Last Name</th><th>Phone</th><th>Contacted</th></tr>
+    <tbody><tr><th>First Name</th><th>Last Name</th><th>Phone</th><th>Contacted</th></tr>
         <tr><td>Georges</td><td>Bataille</td><td>+49 681 8901</td><td>[ ]</td></tr>
         <tr><td>Guy</td><td>Debord</td><td>+49 681 4567</td><td>[ ]</td></tr>
         <tr><td>Isidore</td><td>Isou</td><td>+49 681 1234</td><td>[ ]</td></tr>
-    </table>
+    </tbody></table>
 
 
 <div class="actions">
@@ -68,7 +71,7 @@
     <h2>Another action</h2>
     <p>11/15/2020</p>
     <div> This action hast no reply </div>
-    <div> <span style="color:#f00">*</span> </div>
+    <div> <span class="red">*</span> </div>
 </div>
 
 </body>

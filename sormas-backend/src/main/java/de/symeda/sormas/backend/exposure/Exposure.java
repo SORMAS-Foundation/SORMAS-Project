@@ -36,11 +36,11 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.PatientExpositionRole;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -71,7 +71,7 @@ public class Exposure extends AbstractDomainObject {
 	private ExposureType exposureType;
 	private String exposureTypeDetails;
 	private Location location;
-	private PatientExpositionRole patientExpositionRole;
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -206,12 +206,12 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public PatientExpositionRole getPatientExpositionRole() {
-		return patientExpositionRole;
+	public ExposureRole getExposureRole() {
+		return exposureRole;
 	}
 
-	public void setPatientExpositionRole(PatientExpositionRole patientExpositionRole) {
-		this.patientExpositionRole = patientExpositionRole;
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	@Enumerated(EnumType.STRING)

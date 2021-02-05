@@ -448,7 +448,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return Arrays.asList(
 			joins.getEventReportingUser().get(User.UUID),
-			joins.getEventSurveillanceOfficer().get(User.UUID),
+			joins.getEventResponsibleUser().get(User.UUID),
 			joins.getEventRegion().get(Region.UUID),
 			joins.getEventDistrict().get(District.UUID),
 			joins.getEventCommunity().get(User.UUID));

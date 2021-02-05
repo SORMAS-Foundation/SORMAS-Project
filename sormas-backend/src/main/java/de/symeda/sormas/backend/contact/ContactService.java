@@ -92,6 +92,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
@@ -120,6 +121,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private ExposureService exposureService;
+	@EJB
+	private VaccinationInfoService vaccinationInfoService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -181,6 +184,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate dateFilter = changeDateFilter(cb, date, from);
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(Contact.VACCINATION_INFO, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;

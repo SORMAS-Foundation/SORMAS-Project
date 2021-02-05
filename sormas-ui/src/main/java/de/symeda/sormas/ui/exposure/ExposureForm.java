@@ -90,7 +90,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					))
 			) +
 			loc(LOC_EXPOSURE_DETAILS_HEADING) +
-			loc(ExposureDto.PATIENT_EXPOSITION_ROLE) +
+			loc(ExposureDto.EXPOSURE_ROLE) +
 			loc(ExposureDto.RISK_AREA) +
 			loc(ExposureDto.INDOORS) +
 			loc(ExposureDto.OUTDOORS) +
@@ -120,7 +120,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
 					fluidColumn(6, 0, locs(
 							ExposureDto.TYPE_OF_PLACE_DETAILS,
-							ExposureDto.MEANS_OF_TRANSPORT, 
+							ExposureDto.MEANS_OF_TRANSPORT,
 							ExposureDto.COMMERCE,
 							ExposureDto.WORK_ENVIRONMENT
 					))
@@ -231,6 +231,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.MEANS_OF_TRANSPORT,
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
 			ExposureDto.SEAT_NUMBER,
+			ExposureDto.EXPOSURE_ROLE);
 			ExposureDto.COMMERCE,
 			ExposureDto.WORK_ENVIRONMENT,
 			ExposureDto.PATIENT_EXPOSITION_ROLE);

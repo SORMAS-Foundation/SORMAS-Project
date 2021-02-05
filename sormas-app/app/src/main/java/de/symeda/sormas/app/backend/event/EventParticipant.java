@@ -56,6 +56,10 @@ public class EventParticipant extends PseudonymizableAdo {
 	@DatabaseField
 	private String resultingCaseUuid;
 
+	// TODO [vaccination info] integrate vaccination info
+//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+//	private VaccinationInfo vaccinationInfo;
+
 	public User getReportingUser() {
 		return reportingUser;
 	}
@@ -117,4 +121,13 @@ public class EventParticipant extends PseudonymizableAdo {
 	public void setResultingCaseUuid(String resultingCaseUuid) {
 		this.resultingCaseUuid = resultingCaseUuid;
 	}
+
+	// TODO [vaccination info] integrate vaccination info
+//	public VaccinationInfo getVaccinationInfo() {
+//		return vaccinationInfo;
+//	}
+//
+//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+//		this.vaccinationInfo = vaccinationInfo;
+//	}
 }

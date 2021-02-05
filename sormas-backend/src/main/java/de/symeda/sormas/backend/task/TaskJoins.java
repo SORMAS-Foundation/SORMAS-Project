@@ -40,7 +40,7 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Case, Person> casePerson;
 	private Join<Task, Event> event;
 	private Join<Event, User> eventReportingUser;
-	private Join<Event, User> eventSurveillanceOfficer;
+	private Join<Event, User> eventResponsibleUser;
 	private Join<Event, Location> eventLocation;
 	private Join<Location, Region> eventRegion;
 	private Join<Location, District> eventDistrict;
@@ -104,12 +104,12 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 		this.eventReportingUser = eventReportingUser;
 	}
 
-	public Join<Event, User> getEventSurveillanceOfficer() {
-		return getOrCreate(eventSurveillanceOfficer, Event.SURVEILLANCE_OFFICER, JoinType.LEFT, getEvent(), this::setEventSurveillanceOfficer);
+	public Join<Event, User> getEventResponsibleUser() {
+		return getOrCreate(eventResponsibleUser, Event.RESPONSIBLE_USER, JoinType.LEFT, getEvent(), this::setEventResponsibleUser);
 	}
 
-	private void setEventSurveillanceOfficer(Join<Event, User> eventSurveillanceOfficer) {
-		this.eventSurveillanceOfficer = eventSurveillanceOfficer;
+	private void setEventResponsibleUser(Join<Event, User> eventResponsibleUser) {
+		this.eventResponsibleUser = eventResponsibleUser;
 	}
 
 	public Join<Event, Location> getEventLocation() {
