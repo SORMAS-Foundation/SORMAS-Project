@@ -153,7 +153,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 268;
+	public static final int DATABASE_VERSION = 269;
 
 	private static DatabaseHelper instance = null;
 
@@ -1896,23 +1896,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 266:
 				currentVersion = 266;
 				getDao(DiseaseVariant.class).executeRaw(
-					"CREATE TABLE diseaseVariant(" +
-					"  id integer not null primary key autoincrement," +
-					"  uuid varchar(36) not null unique," +
-					"  changeDate TIMESTAMP not null," +
-					"  creationDate TIMESTAMP not null," +
-					"  disease varchar(255) not null," +
-					"  name VARCHAR(512) not null," +
-					"  lastOpenedDate BIGINT," +
-					"  localChangeDate BIGINT NOT NULL," +
-					"  modified SMALLINT," +
-					"  snapshot SMALLINT);");
-				getDao(Case.class).executeRaw(
-					"ALTER TABLE cases ADD COLUMN diseaseVariant_id bigint REFERENCES diseaseVariant(id);");
+					"CREATE TABLE diseaseVariant(" + "  id integer not null primary key autoincrement," + "  uuid varchar(36) not null unique,"
+						+ "  changeDate TIMESTAMP not null," + "  creationDate TIMESTAMP not null," + "  disease varchar(255) not null,"
+						+ "  name VARCHAR(512) not null," + "  lastOpenedDate BIGINT," + "  localChangeDate BIGINT NOT NULL," + "  modified SMALLINT,"
+						+ "  snapshot SMALLINT);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariant_id bigint REFERENCES diseaseVariant(id);");
 
-		      case 267:
-			  	currentVersion = 267;
-			  	getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN typingId text;");
+			case 267:
+				currentVersion = 267;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN typingId text;");
+
+			case 268:
+				currentVersion = 268;
+				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN commerce varchar(255);");
+				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN workEnvironment varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN commerce varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN workEnvironment varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;

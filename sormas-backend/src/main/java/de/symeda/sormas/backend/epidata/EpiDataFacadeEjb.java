@@ -133,6 +133,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setCommerce(source.getCommerce());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
@@ -224,6 +226,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setCommerce(source.getCommerce());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());

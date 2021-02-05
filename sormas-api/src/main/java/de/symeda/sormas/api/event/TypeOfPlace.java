@@ -29,6 +29,7 @@ public enum TypeOfPlace {
 	HOME(true),
 	MEANS_OF_TRANSPORT(false),
 	PUBLIC_PLACE(false),
+	COMMERCE(false),
 	SCATTERED(false),
 	UNKNOWN(false),
 	OTHER(false);

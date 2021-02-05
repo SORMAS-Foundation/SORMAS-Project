@@ -14,11 +14,13 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -109,6 +111,8 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureAnimalContactType.initializeSpinner(DataUtils.getEnumItems(AnimalContactType.class, true));
 		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
 		contentBinding.exposureMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
+		contentBinding.exposureCommerce.initializeSpinner(DataUtils.getEnumItems(Commerce.class, true));
+		contentBinding.exposureWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));
 
 		setUpHeadingVisibilities(data.getExposureType());
 		contentBinding.exposureExposureType.addValueChangedListener(e -> {

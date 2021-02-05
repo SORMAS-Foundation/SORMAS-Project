@@ -47,6 +47,8 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.Commerce;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
@@ -84,6 +86,8 @@ public class Event extends CoreAdo {
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String TRAVEL_DATE = "travelDate";
+	public static final String COMMERCE = "commerce";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -133,6 +137,8 @@ public class Event extends CoreAdo {
 	private String meansOfTransportDetails;
 	private String connectionNumber;
 	private Date travelDate;
+	private Commerce commerce;
+	private WorkEnvironment workEnvironment;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -366,6 +372,24 @@ public class Event extends CoreAdo {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Commerce getCommerce() {
+		return commerce;
+	}
+
+	public void setCommerce(Commerce commerce) {
+		this.commerce = commerce;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Enumerated(EnumType.STRING)

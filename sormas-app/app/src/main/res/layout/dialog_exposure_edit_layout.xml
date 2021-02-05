@@ -353,6 +353,18 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_commerce"
+                app:value="@={data.commerce}"
+                app:dependencyParentField="@{exposureTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.COMMERCE}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_workEnvironment"
+                app:value="@={data.workEnvironment}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/exposure_meansOfTransport"
                 app:value="@={data.meansOfTransport}"
                 app:dependencyParentField="@{exposureTypeOfPlace}"

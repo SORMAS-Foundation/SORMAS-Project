@@ -6362,4 +6362,16 @@ ALTER TABLE pathogentest_history ADD COLUMN typingId text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (317, 'Add typing ID to pathogen tests #3957');
 
+-- 2020-02-04
+ALTER TABLE exposures ADD COLUMN commerce varchar(255);
+ALTER TABLE exposures_history ADD COLUMN commerce varchar(255);
+ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
+ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events ADD COLUMN commerce varchar(255);
+ALTER TABLE events_history ADD COLUMN commerce varchar(255);
+ALTER TABLE events ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (318, '[SurvNet Interface] Add fields next to type of place #4038');
+
 -- *** Insert new sql commands BEFORE this line ***
