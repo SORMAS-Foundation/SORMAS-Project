@@ -112,6 +112,7 @@ BEGIN
     PERFORM pg_temp.trunc_register('task', 'contact_id', 'contact');
     PERFORM pg_temp.trunc_register('sormastosormasshareinfo', 'contact_id', 'contact');
     EXECUTE 'INSERT INTO delete_cleanup (SELECT ''contacts_visits'', contact_id FROM contacts_visits WHERE contact_id IN (SELECT id FROM delete_cleanup WHERE table_name = ''contact''))';
+    EXECUTE 'INSERT INTO delete_cleanup (SELECT ''visit'', visit_id FROM contacts_visits WHERE visit_id IN (SELECT id FROM delete_cleanup WHERE table_name = ''contacts_visits''))';
     EXECUTE 'INSERT INTO delete_cleanup (SELECT ''person'', mC.person_id FROM contact mC WHERE mC.id IN (SELECT id FROM delete_cleanup WHERE table_name = ''contact'')
       and not exists (select 1 from cases c where c.person_id = mC.person_id)
       and not exists (select 1 from contact ct where ct.person_id = mC.person_id and ct.id <> mC.id)
@@ -120,6 +121,7 @@ BEGIN
     --### visit child entities
     PERFORM pg_temp.trunc_register('symptoms', 'symptoms_id', 'id', 'visit');
     EXECUTE 'INSERT INTO delete_cleanup (SELECT ''contacts_visits'', visit_id FROM contacts_visits WHERE visit_id IN (SELECT id FROM delete_cleanup WHERE table_name = ''visit''))';
+    EXECUTE 'INSERT INTO delete_cleanup (SELECT ''contact'', cv.contact_id FROM contacts_visits cv WHERE cv.contact_id IN (SELECT id FROM delete_cleanup WHERE table_name = ''contacts_visits'') AND not exists(SELECT id FROM delete_cleanup WHERE table_name = ''contact'' AND id = cv.contact_id))';
 
     --### samples child entities
     PERFORM pg_temp.trunc_register('pathogentest', 'sample_id', 'samples');
