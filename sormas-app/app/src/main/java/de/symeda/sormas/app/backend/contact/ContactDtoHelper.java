@@ -38,7 +38,6 @@ import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
-import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -48,7 +47,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
-	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
+	// TODO [vaccination info] integrate vaccination info
+	//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -167,7 +167,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
 
-		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
+		// TODO [vaccination info] integrate vaccination info
+//		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
 	}
 
 	@Override
@@ -312,11 +313,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setReportingDistrict(null);
 		}
 
-		if (source.getVaccinationInfo() != null) {
-			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
-		} else {
-			target.setVaccinationInfo(null);
-		}
+		// TODO [vaccination info] integrate vaccination info
+//		if (source.getVaccinationInfo() != null) {
+//			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
+//		} else {
+//			target.setVaccinationInfo(null);
+//		}
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

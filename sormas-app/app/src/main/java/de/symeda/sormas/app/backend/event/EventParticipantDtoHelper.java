@@ -33,6 +33,8 @@ import retrofit2.Call;
 public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
+	// TODO [vaccination info] integrate vaccination info
+//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	@Override
 	protected Class<EventParticipant> getAdoClass() {
@@ -82,6 +84,9 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
 
+		// TODO [vaccination info] integrate vaccination info
+//		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
@@ -116,6 +121,13 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		}
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
+
+		// TODO [vaccination info] integrate vaccination info
+//		if (source.getVaccinationInfo() != null) {
+//			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
+//		} else {
+//			target.setVaccinationInfo(null);
+//		}
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

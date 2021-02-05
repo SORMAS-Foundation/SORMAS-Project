@@ -7,7 +7,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.app.databinding.FragmentVaccinationInfoReadLayoutBinding;
 
-public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinationInfoReadLayoutBinding, VaccinationInfo, VaccinationInfo> {
+public class VaccinationInfoReadFragment extends BaseReadFragment<FragmentVaccinationInfoReadLayoutBinding, VaccinationInfo, VaccinationInfo> {
 
 	private VaccinationInfo record;
 

@@ -95,7 +95,7 @@ public class BaseFragment extends Fragment {
 		FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(dtoClass, viewGroup, fieldVisibilityCheckers, fieldAccessCheckers);
 	}
 
-	protected boolean isVisibleAllowed(Class<?> dtoClass, ControlPropertyField field) {
+	public boolean isVisibleAllowed(Class<?> dtoClass, ControlPropertyField field) {
 		String propertyId = field.getSubPropertyId();
 		return FieldVisibilityAndAccessHelper.isVisibleAllowed(dtoClass, propertyId, fieldVisibilityCheckers);
 	}
@@ -106,7 +106,7 @@ public class BaseFragment extends Fragment {
 		return FieldVisibilityAndAccessHelper.isFieldAccessible(dtoClass, propertyId, fieldAccessCheckers);
 	}
 
-	protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
+	public void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
 		if (sourceField.getValue() != null && sourceField.getValue().equals(sourceValue)) {
 			targetField.setVisibility(VISIBLE);
 		} else {

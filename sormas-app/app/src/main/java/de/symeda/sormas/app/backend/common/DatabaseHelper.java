@@ -38,6 +38,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
+
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -135,8 +136,6 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.backend.user.UserRoleConfig;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDao;
-import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo;
-import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfoDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 
@@ -219,7 +218,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
-			TableUtils.clearTable(connectionSource, VaccinationInfo.class);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.clearTable(connectionSource, VaccinationInfo.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -301,7 +301,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Campaign.class);
 			TableUtils.createTable(connectionSource, CampaignFormData.class);
 			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
-			TableUtils.createTable(connectionSource, VaccinationInfo.class);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.createTable(connectionSource, VaccinationInfo.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -1894,17 +1895,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineUniiCode text;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineAtcCode text;");
 
-			case 266:
-
-				currentVersion = 266;
-
-				getDao(VaccinationInfo.class).executeRaw(
-						"CREATE TABLE vaccinationInfo(vaccination	VARCHAR(255), vaccinationDoses TEXT, vaccinationInfoSource VARCHAR(255), firstVaccinationDate TIMESTAMP, lastVaccinationDate TIMESTAMP, vaccineName VARCHAR(255), otherVaccineName TEXT, "
-								+ "vaccineManufacturer VARCHAR(255), otherVaccineManufacturer TEXT, vaccineInn TEXT, vaccineBatchNumber TEXT, vaccineUniiCode TEXT, vaccineAtcCode TEXT, "
-								+ "changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id	INTEGER, lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, PRIMARY KEY(id AUTOINCREMENT), UNIQUE(snapshot, uuid));");
-
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
-				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
+				// TODO [vaccination info] integrate vaccination info
+//			case 266:
+//
+//				currentVersion = 266;
+//
+//				getDao(VaccinationInfo.class).executeRaw(
+//					"CREATE TABLE vaccinationInfo(vaccination	VARCHAR(255), vaccinationDoses TEXT, vaccinationInfoSource VARCHAR(255), firstVaccinationDate TIMESTAMP, lastVaccinationDate TIMESTAMP, vaccineName VARCHAR(255), otherVaccineName TEXT, "
+//						+ "vaccineManufacturer VARCHAR(255), otherVaccineManufacturer TEXT, vaccineInn TEXT, vaccineBatchNumber TEXT, vaccineUniiCode TEXT, vaccineAtcCode TEXT, "
+//						+ "changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id	INTEGER, lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, PRIMARY KEY(id AUTOINCREMENT), UNIQUE(snapshot, uuid));");
+//
+//				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
+//				getDao(EventParticipant.class)
+//					.executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -2240,7 +2243,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Campaign.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
-			TableUtils.dropTable(connectionSource, VaccinationInfo.class, true);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.dropTable(connectionSource, VaccinationInfo.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -2350,9 +2354,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new CampaignFormMetaDao((Dao<CampaignFormMeta, Long>) innerDao);
 				} else if (type.equals(CampaignFormData.class)) {
 					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
-				} else if (type.equals(VaccinationInfo.class)) {
-					dao = (AbstractAdoDao<ADO>) new VaccinationInfoDao((Dao<VaccinationInfo, Long>) innerDao);
-				} else {
+				}
+				// TODO [vaccination info] integrate vaccination info
+//				else if (type.equals(VaccinationInfo.class)) {
+//					dao = (AbstractAdoDao<ADO>) new VaccinationInfoDao((Dao<VaccinationInfo, Long>) innerDao);
+//				}
+				else {
 					throw new UnsupportedOperationException(type.toString());
 				}
 
@@ -2577,9 +2584,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (CampaignFormDataDao) getAdoDao(CampaignFormData.class);
 	}
 
-	public static VaccinationInfoDao getVaccinationInfoDao() {
-		return (VaccinationInfoDao) getAdoDao(VaccinationInfo.class);
-	}
+	// TODO [vaccination info] integrate vaccination info
+//	public static VaccinationInfoDao getVaccinationInfoDao() {
+//		return (VaccinationInfoDao) getAdoDao(VaccinationInfo.class);
+//	}
 
 	/**
 	 * Close the database connections and clear any cached DAOs.
