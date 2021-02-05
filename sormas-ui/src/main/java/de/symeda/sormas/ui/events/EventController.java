@@ -635,7 +635,7 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							if (!deleteEvent(eventDto)) {
-								countNotDeletedEventsFromSurvnet = countNotDeletedEventsWithParticipants + 1;
+								countNotDeletedEventsFromSurvnet = countNotDeletedEventsFromSurvnet + 1;
 								nonDeletableEventsFromSurvnet.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}
 						}
