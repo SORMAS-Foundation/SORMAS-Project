@@ -58,7 +58,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +95,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -112,6 +112,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -163,6 +164,9 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -214,6 +218,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EventService eventService;
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	@EJB
+	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -511,6 +517,19 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.ID),
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION_DOSES),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION_INFO_SOURCE),
+					joins.getVaccinationInfo().get(VaccinationInfo.FIRST_VACCINATION_DATE),
+					joins.getVaccinationInfo().get(VaccinationInfo.LAST_VACCINATION_DATE),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_NAME),
+					joins.getVaccinationInfo().get(VaccinationInfo.OTHER_VACCINE_NAME),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_MANUFACTURER),
+					joins.getVaccinationInfo().get(VaccinationInfo.OTHER_VACCINE_MANUFACTURER),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_INN),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_BATCH_NUMBER),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_UNII_CODE),
+					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_ATC_CODE),
 					contact.get(Contact.EXTERNAL_ID),
 					contact.get(Contact.EXTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
@@ -1162,6 +1181,16 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 
+		// create new vaccination info in case it is created in the mobile app
+		// TODO [vaccination info] no VaccinationInfoDto.build() will be needed after integrating vaccination info into the app
+		VaccinationInfoDto vaccinationInfo = source.getVaccinationInfo();
+		if (vaccinationInfo == null && target.getVaccinationInfo() == null) {
+			vaccinationInfo = VaccinationInfoDto.build();
+		}
+		if (vaccinationInfo != null) {
+			target.setVaccinationInfo(vaccinationInfoFacade.fromDto(vaccinationInfo, checkChangeDate));
+		}
+
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
@@ -1409,6 +1438,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+
+		target.setVaccinationInfo(VaccinationInfoFacadeEjb.toDto(source.getVaccinationInfo()));
 
 		return target;
 	}

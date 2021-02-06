@@ -47,6 +47,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
+	// TODO [vaccination info] integrate vaccination info
+	//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -164,6 +166,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
+
+		// TODO [vaccination info] integrate vaccination info
+//		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
 	}
 
 	@Override
@@ -307,6 +312,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setReportingDistrict(null);
 		}
+
+		// TODO [vaccination info] integrate vaccination info
+//		if (source.getVaccinationInfo() != null) {
+//			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
+//		} else {
+//			target.setVaccinationInfo(null);
+//		}
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

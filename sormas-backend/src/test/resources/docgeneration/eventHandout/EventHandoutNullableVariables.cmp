@@ -35,6 +35,9 @@
         div.actions {
           margin-top: 35px;
         }
+        .red {
+          color: #f00;
+        }
     </style>
 </header>
 <body>

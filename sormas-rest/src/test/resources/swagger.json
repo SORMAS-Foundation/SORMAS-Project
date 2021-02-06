@@ -7651,7 +7651,7 @@
           "diseaseDetails" : {
             "type" : "string"
           },
-          "surveillanceOfficer" : {
+          "responsibleUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
           "typeOfPlaceText" : {

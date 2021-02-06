@@ -26,7 +26,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
-import androidx.databinding.Bindable;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
@@ -102,6 +101,8 @@ public class LocationDialog extends FormDialog {
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
 		List<Item> facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+		List<Item> facilityTypeList =
+			data.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(data.getFacilityType().getFacilityTypeGroup())) : null;
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
 
@@ -121,7 +122,7 @@ public class LocationDialog extends FormDialog {
 			this.contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
 			this.contentBinding.locationFacilityType,
-			null,
+			facilityTypeList,
 			this.contentBinding.locationFacility,
 			initialFacilities,
 			data.getFacility(),
@@ -174,20 +175,20 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationDistrict.setRequired(required);
 	}
 
-    public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
-        final int visibility = visible ? VISIBLE : GONE;
-        contentBinding.facilityTypeGroup.setVisibility(visibility);
-        contentBinding.locationFacility.setVisibility(visibility);
-        contentBinding.locationFacilityDetails.setVisibility(visibility);
-        contentBinding.locationFacilityType.setVisibility(visibility);
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		final int visibility = visible ? VISIBLE : GONE;
+		contentBinding.facilityTypeGroup.setVisibility(visibility);
+		contentBinding.locationFacility.setVisibility(visibility);
+		contentBinding.locationFacilityDetails.setVisibility(visibility);
+		contentBinding.locationFacilityType.setVisibility(visibility);
 
-        if (!visible && clearOnHidden) {
+		if (!visible && clearOnHidden) {
 			contentBinding.facilityTypeGroup.setValue(null);
-            contentBinding.locationFacility.setValue(null);
-            contentBinding.locationFacilityDetails.setValue(null);
-            contentBinding.locationFacilityType.setValue(null);
-        }
-    }
+			contentBinding.locationFacility.setValue(null);
+			contentBinding.locationFacilityDetails.setValue(null);
+			contentBinding.locationFacilityType.setValue(null);
+		}
+	}
 
 	public DialogLocationLayoutBinding getContentBinding() {
 		return contentBinding;

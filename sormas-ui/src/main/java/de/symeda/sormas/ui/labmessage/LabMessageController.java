@@ -312,6 +312,7 @@ public class LabMessageController {
 		pathogenTestDto.setTestType(labMessageDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
+		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
