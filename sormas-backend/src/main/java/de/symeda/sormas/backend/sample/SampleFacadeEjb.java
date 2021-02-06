@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -209,6 +208,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SampleDto> getByContactUuids(List<String> contactUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -443,7 +448,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return Arrays.asList(
 			joins.getEventReportingUser().get(User.UUID),
-			joins.getEventSurveillanceOfficer().get(User.UUID),
+			joins.getEventResponsibleUser().get(User.UUID),
 			joins.getEventRegion().get(Region.UUID),
 			joins.getEventDistrict().get(District.UUID),
 			joins.getEventCommunity().get(User.UUID));
@@ -746,15 +751,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
 
-		Sample target = sampleService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Sample();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));

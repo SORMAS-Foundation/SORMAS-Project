@@ -46,6 +46,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -89,7 +90,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					))
 			) +
 			loc(LOC_EXPOSURE_DETAILS_HEADING) +
-			loc(ExposureDto.PATIENT_EXPOSITION_ROLE) +
+			loc(ExposureDto.EXPOSURE_ROLE) +
 			loc(ExposureDto.RISK_AREA) +
 			loc(ExposureDto.INDOORS) +
 			loc(ExposureDto.OUTDOORS) +
@@ -116,10 +117,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			fluidRowLocs(ExposureDto.DECEASED_PERSON_NAME, ExposureDto.DECEASED_PERSON_RELATION) +
 			loc(LOC_LOCATION_HEADING) +
 			fluidRow(
-					fluidColumnLoc(6, 0, ExposureDto.TYPE_OF_PLACE),
+					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
 					fluidColumn(6, 0, locs(
 							ExposureDto.TYPE_OF_PLACE_DETAILS,
-							ExposureDto.MEANS_OF_TRANSPORT
+							ExposureDto.MEANS_OF_TRANSPORT,
+							ExposureDto.WORK_ENVIRONMENT
 					))
 			) +
 			loc(ExposureDto.MEANS_OF_TRANSPORT_DETAILS) +
@@ -228,7 +230,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.MEANS_OF_TRANSPORT,
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
 			ExposureDto.SEAT_NUMBER,
-			ExposureDto.PATIENT_EXPOSITION_ROLE);
+			ExposureDto.EXPOSURE_ROLE,
+			ExposureDto.WORK_ENVIRONMENT);
 
 		addFieldsWithCss(
 			NullableOptionGroup.class,
@@ -296,6 +299,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Arrays.asList(MeansOfTransport.PLANE, MeansOfTransport.TRAIN, MeansOfTransport.OTHER),
 			true);
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.WORK_ENVIRONMENT,
+			locationForm.getFacilityTypeGroup(),
+			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
+			true);
+
 		getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(false);
 		getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(false);
 		getField(ExposureDto.EXPOSURE_TYPE).addValueChangeListener(e -> {
@@ -324,7 +334,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			cbContactToCase.addItems(sourceContacts);
+			if (sourceContacts != null) {
+				cbContactToCase.addItems(sourceContacts);
+			}
 			cbContactToCase.getItemIds().forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
 		}
 	}

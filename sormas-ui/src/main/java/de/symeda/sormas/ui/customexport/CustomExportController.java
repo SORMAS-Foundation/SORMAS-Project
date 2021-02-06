@@ -68,10 +68,10 @@ public class CustomExportController {
 				newExportWindow.close();
 				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
 					.show(Page.getCurrent());
-				grid.reload();
+				grid.reload(false);
 			}, () -> {
 				newExportWindow.close();
-				grid.reload();
+				grid.reload(false);
 			});
 		newExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));

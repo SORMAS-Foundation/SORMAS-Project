@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants"
+    tools:ignore="contentDescription">
+
+    <data>
+        <import type="de.symeda.sormas.api.caze.Vaccination" />
+        <import type="de.symeda.sormas.api.caze.VaccinationInfoSource" />
+        <import type="de.symeda.sormas.api.caze.Vaccine" />
+        <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo"/>
+        <variable name="vaccinationClass" type="Class" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/main_content"
+            style="@style/LayoutContentStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/vaccinationInfo_vaccination"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{vaccinationClass}"
+                app:value="@={data.vaccination}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/vaccinationInfo_vaccinationDoses"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{vaccinationInfoVaccination}"
+                app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                app:value="@={data.vaccinationDoses}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/vaccinationInfo_firstVaccinationDate"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.firstVaccinationDate}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/vaccinationInfo_lastVaccinationDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.lastVaccinationDate}" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/vaccinationInfo_vaccinationInfoSource"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{vaccinationInfoVaccination}"
+                app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                app:value="@={data.vaccinationInfoSource}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/vaccinationInfo_vaccineName"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.vaccineName}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_otherVaccineName"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccineName}"
+                    app:dependencyParentValue="@{Vaccine.OTHER}"
+                    app:value="@={data.otherVaccineName}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/vaccinationInfo_vaccineManufacturer"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.vaccineManufacturer}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_otherVaccineManufacturer"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccineManufacturer}"
+                    app:dependencyParentValue="@{VaccineManufacturer.OTHER}"
+                    app:value="@={data.otherVaccineManufacturer}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_vaccineInn"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.vaccineInn}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_vaccineBatchNumber"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.vaccineBatchNumber}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_vaccineUniiCode"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.vaccineUniiCode}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/vaccinationInfo_vaccineAtcCode"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{vaccinationInfoVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    app:value="@={data.vaccineAtcCode}" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

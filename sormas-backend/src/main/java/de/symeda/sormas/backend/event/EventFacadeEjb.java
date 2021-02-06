@@ -225,15 +225,19 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
+		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
 			event.get(Event.EVENT_TITLE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
@@ -252,8 +256,12 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_WEBSITE),
 			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.REPORT_DATE_TIME),
-			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
+			reportingUser.get(User.UUID),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME));
 
 		Predicate filter = null;
 
@@ -275,10 +283,12 @@ public class EventFacadeEjb implements EventFacade {
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
 				case EventIndexDto.EVENT_STATUS:
+				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
+				case EventIndexDto.EVOLUTION_DATE:
 				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
@@ -330,50 +340,65 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> caseCounts = new HashMap<>();
 		Map<String, Long> deathCounts = new HashMap<>();
+		Map<String, Long> contactCounts = new HashMap<>();
+		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		if (indexList != null) {
 			List<Object[]> objectQueryList = null;
 
-			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = objectCQ.from(Event.class);
+			// Participant, Case and Death Count
+			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
+			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
+			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			participantCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
+			participantCQ.where(notDeleted);
+			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-			// number of Participants
-			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
-			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			participantCount.select(cb.count(eventParticipantRoot));
-			participantCount.where(assignedToEvent, notDeleted);
+			objectQueryList = em.createQuery(participantCQ).getResultList();
 
-			// number of cases among event participants
-			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = caseCount.from(EventParticipant.class);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			caseCount.select(cb.count(eventParticipantRoot));
-			caseCount.where(assignedToEvent, notDeleted, isCase);
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					participantCounts.put((String) r[0], (Long) r[1]);
+					caseCounts.put((String) r[0], (Long) r[2]);
+					deathCounts.put((String) r[0], (Long) r[3]);
+				});
+			}
 
-			// number of fatalities among event participant cases
-			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = deathsCount.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
-			deathsCount.select(cb.count(eventParticipantRoot));
-			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+			// Contact Count (with and without sourcecase in event) using theta join
+			CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
+			epRoot = contactCQ.from(EventParticipant.class);
+			Root<Contact> contactRoot = contactCQ.from(Contact.class);
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
 
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
-			objectQueryList = em.createQuery(objectCQ).getResultList();
-			objectQueryList.forEach(r -> {
-				participantCounts.put((String) r[0], (Long) r[1]);
-				caseCounts.put((String) r[0], (Long) r[2]);
-				deathCounts.put((String) r[0], (Long) r[3]);
-			});
+			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
+			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+			sourceCaseSubquery.select(epr2);
+			sourceCaseSubquery.where(
+				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
 
+			contactCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted);
+			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
+			objectQueryList = em.createQuery(contactCQ).getResultList();
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					contactCounts.put((String) r[0], ((Long) r[1]));
+					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
+				});
+			}
 		}
 
 		if (indexList != null) {
@@ -381,6 +406,8 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(participantCounts.get(eventDto.getUuid())).ifPresent(eventDto::setParticipantCount);
 				Optional.ofNullable(caseCounts.get(eventDto.getUuid())).ifPresent(eventDto::setCaseCount);
 				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
+				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
+				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
 			}
 		}
 
@@ -397,6 +424,8 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
+		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -409,6 +438,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
+			event.get(Event.EVOLUTION_COMMENT),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.DISEASE_TRANSMISSION_MODE),
@@ -437,8 +468,12 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.SRC_MEDIA_DETAILS),
 			event.get(Event.REPORT_DATE_TIME),
-			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
+			reportingUser.get(User.UUID),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -459,50 +494,65 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> caseCounts = new HashMap<>();
 		Map<String, Long> deathCounts = new HashMap<>();
+		Map<String, Long> contactCounts = new HashMap<>();
+		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		if (exportList != null) {
 			List<Object[]> objectQueryList = null;
 
-			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = objectCQ.from(Event.class);
+			// Participant, Case and Death Count
+			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
+			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
+			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			participantCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
+			participantCQ.where(notDeleted);
+			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-			// number of Participants
-			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
-			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			participantCount.select(cb.count(eventParticipantRoot));
-			participantCount.where(assignedToEvent, notDeleted);
+			objectQueryList = em.createQuery(participantCQ).getResultList();
 
-			// number of cases among event participants
-			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = caseCount.from(EventParticipant.class);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			caseCount.select(cb.count(eventParticipantRoot));
-			caseCount.where(assignedToEvent, notDeleted, isCase);
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					participantCounts.put((String) r[0], (Long) r[1]);
+					caseCounts.put((String) r[0], (Long) r[2]);
+					deathCounts.put((String) r[0], (Long) r[3]);
+				});
+			}
 
-			// number of fatalities among event participant cases
-			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = deathsCount.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
-			deathsCount.select(cb.count(eventParticipantRoot));
-			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+			// Contact Count (with and without sourcecase in event) using theta join
+			CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
+			epRoot = contactCQ.from(EventParticipant.class);
+			Root<Contact> contactRoot = contactCQ.from(Contact.class);
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
 
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
-			objectQueryList = em.createQuery(objectCQ).getResultList();
-			objectQueryList.forEach(r -> {
-				participantCounts.put((String) r[0], (Long) r[1]);
-				caseCounts.put((String) r[0], (Long) r[2]);
-				deathCounts.put((String) r[0], (Long) r[3]);
-			});
+			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
+			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+			sourceCaseSubquery.select(epr2);
+			sourceCaseSubquery.where(
+				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
 
+			contactCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted);
+			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
+			objectQueryList = em.createQuery(contactCQ).getResultList();
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					contactCounts.put((String) r[0], ((Long) r[1]));
+					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
+				});
+			}
 		}
 
 		if (exportList != null) {
@@ -510,6 +560,8 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(participantCounts.get(exportDto.getUuid())).ifPresent(exportDto::setParticipantCount);
 				Optional.ofNullable(caseCounts.get(exportDto.getUuid())).ifPresent(exportDto::setCaseCount);
 				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
+				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
+				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
 			}
 		}
 
@@ -599,15 +651,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = eventService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Event();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -623,12 +667,15 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -641,7 +688,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
@@ -711,12 +758,15 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -729,7 +779,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -32,9 +33,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("serial")
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
+
+	private static final Logger LOG = LoggerFactory.getLogger(CampaignDashboardDiagramComponent.class);
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -43,6 +47,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
+	private boolean showAsColumnChart;
 	private boolean showDataLabels = false;
 	private final HighChart campaignColumnChart;
 
@@ -60,6 +65,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			totalValuesWithoutStacks = true;
 		}
 
+		showAsColumnChart = DiagramType.COLUMN == diagramDefinition.getDiagramType();
 		campaignColumnChart = new HighChart();
 
 		setSizeFull();
@@ -104,6 +110,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 				});
 
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramChartType_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowAsColumnChart(!isShowAsColumnChart());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
+
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
@@ -113,7 +125,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		//@formatter:off
 		hcjs.append("var options = {"
 				+ "chart:{ "
-				+ " type: 'column', "
+				+ " type: '" + (showAsColumnChart ? "column" : "bar") + "', "
 				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
@@ -140,6 +152,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
 					+ "' } ");
 		}
+
+		hcjs.append(
+				", toggleChartType: { onclick: function() { window.changeDiagramChartType_" + diagramDefinition.getDiagramId()
+						+ "(); }, text: '"
+						+ (showAsColumnChart
+						   ? I18nProperties.getCaption(Captions.dashboardViewAsBarChart)
+						   : I18nProperties.getCaption(Captions.dashboardViewAsColumnChart))
+						+ "' } ");
+
 		hcjs.append(" }, ");
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
@@ -151,12 +172,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append(", 'togglePercentages'");
 		}
 
+		hcjs.append(", 'toggleChartType'");
 		hcjs.append("]");
 
 		final Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
 			.stream()
-			.filter(campaignDiagramSeries -> campaignDiagramSeries.getStack() != null)
 			.map(CampaignDiagramSeries::getStack)
+			.filter(Objects::nonNull)
 			.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
 		//@formatter:off
@@ -231,8 +253,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
-			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			String fieldName = (iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey);
+			String fieldName = assembleFieldname(values, series, seriesKey);
 			if (showPercentages) {
 				if (campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY) {
 					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
@@ -241,13 +262,31 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			appendData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData);
-			if (series.getStack() != null) {
-				hcjs.append("],stack:'").append(StringEscapeUtils.escapeEcmaScript(series.getStack())).append("'},");
+			final String stack = series.getStack();
+			final String color = series.getColor();
+			if (color != null || stack != null) {
+				hcjs.append("],");
+				if (stack != null) {
+					hcjs.append("stack:'").append(StringEscapeUtils.escapeEcmaScript(stack)).append("'");
+					hcjs.append(color != null ? "," : "");
+				}
+				if (color != null) {
+					hcjs.append("color:'").append(StringEscapeUtils.escapeEcmaScript(color)).append("'");
+				}
+				hcjs.append("},");
 			} else {
 				hcjs.append("]},");
 			}
 		}
 		hcjs.append("]");
+	}
+
+	private String assembleFieldname(final Collection<CampaignDiagramDataDto> values, final CampaignDiagramSeries series, final String defaultValue) {
+		if (series.getCaption() != null && !series.getCaption().isEmpty()) {
+			return series.getCaption();
+		}
+		Iterator<CampaignDiagramDataDto> iterator = values.iterator();
+		return iterator.hasNext() ? iterator.next().getFieldCaption() : defaultValue;
 	}
 
 	private void appendData(
@@ -325,5 +364,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowDataLabels(boolean showDataLabels) {
 		this.showDataLabels = showDataLabels;
+	}
+
+	public boolean isShowAsColumnChart() {
+		return showAsColumnChart;
+	}
+
+	public void setShowAsColumnChart(boolean showAsColumnChart) {
+		this.showAsColumnChart = showAsColumnChart;
 	}
 }

@@ -21,6 +21,8 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -84,6 +87,19 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		EventParticipantDto eventParticipant = new EventParticipantDto();
+		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
+		eventParticipant.setPerson(creator.createPerson());
+
+		EventParticipantDto savedEventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
+
+		MatcherAssert.assertThat(savedEventParticipant.getUuid(), not(isEmptyOrNullString()));
 	}
 
 	@Test

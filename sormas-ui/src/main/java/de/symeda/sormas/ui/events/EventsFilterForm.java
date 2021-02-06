@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +56,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private static final long serialVersionUID = -1166745065032487009L;
 
 	private static final String EVENT_WEEK_AND_DATE_FILTER = "eventWeekDateFilter";
+	private static final String EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER = "eventSignalEvolutionWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
 	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
 
@@ -67,7 +69,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		FACILITY_TYPE_GROUP_FILTER,
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
-		EventDto.EVENT_INVESTIGATION_STATUS) + loc(EVENT_WEEK_AND_DATE_FILTER) + loc(ACTION_WEEK_AND_DATE_FILTER);
+		EventDto.EVENT_INVESTIGATION_STATUS)
+		+ loc(EVENT_WEEK_AND_DATE_FILTER)
+		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
+		+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
 	private final boolean hideActionFilters;
@@ -82,7 +87,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private void updateFields() {
 		if (hideActionFilters) {
-			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).setVisible(false);
+			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getParent().setVisible(false);
 		}
 		if (hideEventStatusFilter) {
 			getField(EventCriteria.EVENT_STATUS).setVisible(false);
@@ -94,9 +99,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		return new String[] {
 			EventCriteria.EVENT_STATUS,
+			EventCriteria.RISK_LEVEL,
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
-			EventCriteria.SURVEILLANCE_OFFICER,
+			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT };
 	}
 
@@ -104,10 +110,11 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	protected void addFields() {
 
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
+		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		ComboBox officerField = addField(FieldConfiguration.pixelSized(EventCriteria.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
+		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
+
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -142,6 +149,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		communityField.setDescription(I18nProperties.getDescription(Descriptions.descCommunityFilter));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer
+			.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION), EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = new ComboBox();
@@ -169,38 +178,19 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		facilityField.setEnabled(false);
 		facilityField.setVisible(false);
 
-		ComboBox typeOfPlaceField = getField(EventDto.TYPE_OF_PLACE);
-
-		Arrays.asList(districtField, communityField, typeOfPlaceField).forEach(field -> field.addValueChangeListener(e -> {
-			final UserDto user = UserProvider.getCurrent().getUser();
-			final CommunityReferenceDto community =
-				user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
-			final DistrictReferenceDto district = user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
-			boolean visible = (community != null || district != null) && typeOfPlaceField.getValue() == TypeOfPlace.FACILITY;
-			if (!visible) {
-				facilityField.clear();
-				facilityTypeField.clear();
-				facilityTypeGroupField.clear();
-			}
-			facilityField.setVisible(visible);
-			facilityTypeField.setVisible(visible);
-			facilityTypeGroupField.setVisible(visible);
-		}));
-
-		facilityTypeGroupField.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(
+		facilityTypeGroupField.addValueChangeListener(
+			e -> FieldHelper.updateEnumData(
 				facilityTypeField,
 				facilityTypeGroupField.getValue() != null
 					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupField.getValue())
-					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
-		});
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
 
 		facilityTypeField.addValueChangeListener(e -> {
-			if (facilityTypeField.getValue() != null) {
+			final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
+			if (facilityType != null) {
 				final UserDto user = UserProvider.getCurrent().getUser();
 				final CommunityReferenceDto community =
 					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
-				final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
 
 				facilityField.setEnabled(true);
 				if (community != null) {
@@ -234,6 +224,12 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateFrom));
 			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateTo));
+			break;
+		case EVENT_SIGNAL_EVOLUTION:
+			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventSignalEvolutionEpiWeekFrom));
+			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventSignalEvolutionEpiWeekTo));
+			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateFrom));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateTo));
 			break;
 		case ACTION:
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionEpiWeekFrom));
@@ -302,6 +298,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
 		Set<Component> dateFilterOptionComponents = Sets.newHashSet(
 			getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
+			getEpiWeekAndDateComponent(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter());
 
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> !dateFilterOptionComponents.contains(f));
@@ -318,7 +315,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
-			populateSurveillanceOfficersForRegion(region);
+			applyFacilityFieldsDependencies();
+			updateResponsibleUserFieldItems();
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -327,7 +325,11 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
-			populateSurveillanceOfficersForDistrict(district);
+			applyFacilityFieldsDependencies();
+			updateResponsibleUserFieldItems();
+			break;
+		case EventDto.TYPE_OF_PLACE:
+			applyFacilityFieldsDependencies();
 			break;
 		}
 	}
@@ -364,6 +366,12 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getEventDateTo());
 
 		applyDateDependencyOnNewValue(
+			EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER,
+			criteria.getEvolutionDateFilterOption(),
+			criteria.getEventEvolutionDateFrom(),
+			criteria.getEventEvolutionDateTo());
+
+		applyDateDependencyOnNewValue(
 			ACTION_WEEK_AND_DATE_FILTER,
 			criteria.getActionChangeDateFilterOption(),
 			criteria.getActionChangeDateFrom(),
@@ -372,6 +380,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();
 		applyRegionAndDistrictFilterDependency(region, LocationDto.DISTRICT, district, LocationDto.COMMUNITY);
+
+		applyFacilityFieldsDependencies(criteria.getTypeOfPlace(), criteria.getDistrict(), criteria.getCommunity());
+
+		updateResponsibleUserFieldItems(criteria.getDistrict(), criteria.getRegion());
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {
@@ -390,31 +402,50 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		}
 	}
 
-	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
-		List<UserReferenceDto> items =
-			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
-		populateSurveillanceOfficers(items);
+	private void applyFacilityFieldsDependencies() {
+		applyFacilityFieldsDependencies(
+			(TypeOfPlace) getField(EventDto.TYPE_OF_PLACE).getValue(),
+			(DistrictReferenceDto) getField(LocationDto.DISTRICT).getValue(),
+			(CommunityReferenceDto) getField(LocationDto.COMMUNITY).getValue());
 	}
 
-	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
-		if (districtReferenceDto != null) {
-			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
-			populateSurveillanceOfficers(items);
-		} else {
-			final ComboBox regionField = getField(EventCriteria.REGION);
-			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+	private void applyFacilityFieldsDependencies(
+		TypeOfPlace typeOfPlace,
+		DistrictReferenceDto districtReferenceDto,
+		CommunityReferenceDto communityReferenceDto) {
+
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final boolean visible = typeOfPlace == TypeOfPlace.FACILITY
+			&& ((user.getCommunity() != null || communityReferenceDto != null) || (user.getDistrict() != null || districtReferenceDto != null));
+		final ComboBox facilityField = getField(LocationDto.FACILITY);
+		final ComboBox facilityTypeField = getField(LocationDto.FACILITY_TYPE);
+		final ComboBox facilityTypeGroupField = (ComboBox) getMoreFiltersContainer().getComponent(FACILITY_TYPE_GROUP_FILTER);
+		if (!visible) {
+			facilityField.clear();
+			facilityTypeField.clear();
+			facilityTypeGroupField.clear();
 		}
+		facilityField.setVisible(visible);
+		facilityTypeField.setVisible(visible);
+		facilityTypeGroupField.setVisible(visible);
 	}
 
-	private void populateSurveillanceOfficers(List<UserReferenceDto> items) {
-		final ComboBox officerField = getField(EventCriteria.SURVEILLANCE_OFFICER);
-		officerField.removeAllItems();
-		officerField.addItems(items);
+	private void updateResponsibleUserFieldItems() {
+		updateResponsibleUserFieldItems(
+			(DistrictReferenceDto) getField(EventCriteria.DISTRICT).getValue(),
+			(RegionReferenceDto) getField(EventCriteria.REGION).getValue());
 	}
 
-	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
+	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {
+		final List<UserReferenceDto> items = new ArrayList<>();
+		if (district != null) {
+			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER));
+			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR));
+		} else {
+			items.addAll(
+				FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.SURVEILLANCE_OFFICER));
+		}
+		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}
 
 	@Override

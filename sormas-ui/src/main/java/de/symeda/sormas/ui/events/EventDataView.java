@@ -19,6 +19,7 @@ import java.util.Collections;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -26,16 +27,20 @@ import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
+import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
@@ -81,6 +86,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
@@ -97,15 +103,15 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		survNetLayout = SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
-		setSurvNetLayoutVisibility(event.getEventStatus());
-
 		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EVENT_LOC);
+
+		survNetLayout = SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
+		setSurvNetLayoutVisibility(event.getEventStatus());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
@@ -124,6 +130,10 @@ public class EventDataView extends AbstractEventView {
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
+
 		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
 		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
@@ -132,7 +142,7 @@ public class EventDataView extends AbstractEventView {
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 
-		HorizontalLayout shortcutLinksLayout = new HorizontalLayout();
+		VerticalLayout shortcutLinksLayout = new VerticalLayout();
 		shortcutLinksLayout.setMargin(false);
 		shortcutLinksLayout.setSpacing(true);
 
@@ -152,6 +162,23 @@ public class EventDataView extends AbstractEventView {
 				thisEvent -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
 				ValoTheme.BUTTON_PRIMARY);
 			shortcutLinksLayout.addComponent(seeEventContactsBtn);
+		}
+
+		LocationDto eventLocationDto = ((EventDataForm) editComponent.getWrappedComponent()).getValue().getEventLocation();
+		if (eventLocationDto.getFacility() != null) {
+			Button seeEventsWithinTheSameFacility = ButtonHelper.createButtonWithCaption(
+				"eventLinkToEventsWithinTheSameFacility",
+				I18nProperties.getCaption(Captions.eventLinkToEventsWithinTheSameFacility),
+				thisEvent -> ControllerProvider.getEventController()
+					.navigateTo(
+						new EventCriteria().region(eventLocationDto.getRegion())
+							.district(eventLocationDto.getDistrict())
+							.eventCommunity(eventLocationDto.getCommunity())
+							.typeOfPlace(TypeOfPlace.FACILITY)
+							.facilityType(eventLocationDto.getFacilityType())
+							.facility(eventLocationDto.getFacility())),
+				ValoTheme.BUTTON_PRIMARY);
+			shortcutLinksLayout.addComponent(seeEventsWithinTheSameFacility);
 		}
 
 		layout.addComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);

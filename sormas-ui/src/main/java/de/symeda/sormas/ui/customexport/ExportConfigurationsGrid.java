@@ -44,22 +44,29 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	public static final String COLUMN_ACTIONS = "actions";
+	public static final String COLUMN_ACTIONS_PUBLIC = "actionsPublic";
 
 	private Consumer<ExportConfigurationDto> exportCallback;
+
+	private long nbOfSharedExportsToPublic;
 
 	private final ExportType exportType;
 
 	public ExportConfigurationsGrid(
 		ExportType exportType,
 		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider) {
+		Function<String, String> propertyCaptionProvider,
+		Boolean isPublicExport) {
 		this.exportType = exportType;
 
-		buildGrid(availableProperties, propertyCaptionProvider);
-		reload();
+		buildGrid(availableProperties, propertyCaptionProvider, isPublicExport);
+		reload(isPublicExport);
 	}
 
-	private void buildGrid(List<DataHelper.Pair<String, ExportGroupType>> availableProperties, Function<String, String> propertyCaptionProvider) {
+	private void buildGrid(
+		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
+		Function<String, String> propertyCaptionProvider,
+		Boolean isPublicExport) {
 
 		setSelectionMode(SelectionMode.NONE);
 		setHeightMode(HeightMode.ROW);
@@ -68,26 +75,32 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			.setCaption(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, ExportConfigurationDto.NAME))
 			.setExpandRatio(1);
 
-		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider)).setId(COLUMN_ACTIONS)
+		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider, !isPublicExport))
+			.setId(isPublicExport ? COLUMN_ACTIONS_PUBLIC : COLUMN_ACTIONS)
 			.setCaption("");
 	}
 
-	public void reload() {
+	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
-			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType));
+			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
 		setItems(configs);
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
+		if(isPublic){
+			setNbOfSharedExportsToPublic(configs.size());
+		}
 	}
 
 	private HorizontalLayout buildButtonLayout(
 		ExportConfigurationDto config,
 		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider) {
+		Function<String, String> propertyCaptionProvider,
+		boolean canEditOrDelete) {
 
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 
-		Button btnExport = ButtonHelper.createIconButtonWithCaption(
+		Button btnExport;
+		btnExport = ButtonHelper.createIconButtonWithCaption(
 			config.getUuid() + "-download",
 			null,
 			VaadinIcons.DOWNLOAD,
@@ -99,14 +112,16 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			ControllerProvider.getCustomExportController()
 				.openEditExportConfigurationWindow(this, config, availableProperties, propertyCaptionProvider);
 		});
+		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);
 
 		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
 			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
 			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
 				.show(Page.getCurrent());
-			reload();
+			reload(false);
 		});
+		btnDelete.setEnabled(canEditOrDelete);
 		layout.addComponent(btnDelete);
 
 		return layout;
@@ -114,5 +129,13 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		this.exportCallback = exportCallback;
+	}
+
+	public long getNbOfSharedExportsToPublic() {
+		return nbOfSharedExportsToPublic;
+	}
+
+	public void setNbOfSharedExportsToPublic(int nbOfSharedExportsToPublic) {
+		this.nbOfSharedExportsToPublic = nbOfSharedExportsToPublic;
 	}
 }

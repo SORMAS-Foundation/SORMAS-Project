@@ -42,14 +42,16 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 2194071020732246594L;
 
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private UserRole reportingUserRole;
@@ -63,7 +65,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date eventDateFrom;
 	private Date eventDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
-	private UserReferenceDto surveillanceOfficer;
+	private Date eventEvolutionDateFrom;
+	private Date eventEvolutionDateTo;
+	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
+	private UserReferenceDto responsibleUser;
 	private String freeText;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
@@ -93,6 +98,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public EventCriteria riskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
+		return this;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -268,17 +286,51 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
-	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public EventCriteria eventEvolutionDateBetween(Date eventEvolutionDateFrom, Date eventEvolutionDateTo, DateFilterOption evolutionDateFilterOption) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
 		return this;
 	}
 
-	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public EventCriteria eventEvolutionDateFrom(Date eventEvolutionDateFrom) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		return this;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public Date getEventEvolutionDateFrom() {
+		return eventEvolutionDateFrom;
+	}
+
+	public EventCriteria eventEvolutionDateTo(Date eventEvolutionDateTo) {
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		return this;
+	}
+
+	public Date getEventEvolutionDateTo() {
+		return eventEvolutionDateTo;
+	}
+
+	public EventCriteria evolutionDateFilterOption(DateFilterOption evolutionDateFilterOption) {
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getEvolutionDateFilterOption() {
+		return evolutionDateFilterOption;
+	}
+
+	public EventCriteria responsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+		return this;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+	}
+
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
 	}
 
 	public EventCriteria freeText(String freeText) {
@@ -311,6 +363,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	public EventCriteria typeOfPlace(TypeOfPlace typeOfPlace) {
+		setTypeOfPlace(typeOfPlace);
+		return this;
+	}
+
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
@@ -335,6 +392,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		switch (dateType) {
 		case EVENT:
 			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		case EVENT_SIGNAL_EVOLUTION:
+			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
 			break;
 		case ACTION:
 			actionChangeDateBetween(dateFrom, dateTo, dateFilterOption);
@@ -384,6 +444,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public enum DateType {
 		EVENT,
+		EVENT_SIGNAL_EVOLUTION,
 		ACTION,
 	}
 

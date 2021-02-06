@@ -36,8 +36,13 @@ public class EventActionExportDto implements Serializable {
 	private String eventTitle;
 	private String eventDesc;
 	private String eventDate;
+	private Date eventEvolutionDate;
+	private String eventEvolutionComment;
 	private EventStatus eventStatus;
+	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private UserReferenceDto eventReportingUser;
+	private UserReferenceDto eventResponsibleUser;
 	private ActionMeasure actionMeasure;
 	private String actionTitle;
 	private Date actionCreationDate;
@@ -52,8 +57,17 @@ public class EventActionExportDto implements Serializable {
 		String eventDesc,
 		Date eventStartDate,
 		Date eventEndDate,
+		Date eventEvolutionDate,
+		String eventEvolutionComment,
 		EventStatus eventStatus,
+		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
+		String eventReportingUserUuid,
+		String eventReportingUserFirstName,
+		String eventReportingUserLastName,
+		String eventResponsibleUserUuid,
+		String eventResponsibleUserFirstName,
+		String eventResponsibleUserLastName,
 		ActionMeasure actionMeasure,
 		String actionTitle,
 		Date actionCreationDate,
@@ -71,8 +85,13 @@ public class EventActionExportDto implements Serializable {
 		this.eventTitle = eventTitle;
 		this.eventDesc = eventDesc;
 		this.eventDate = EventHelper.buildEventDateString(eventStartDate, eventEndDate);
+		this.eventEvolutionDate = eventEvolutionDate;
+		this.eventEvolutionComment = eventEvolutionComment;
 		this.eventStatus = eventStatus;
+		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
+		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
 		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
@@ -105,46 +124,71 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(4)
+	public Date getEventEvolutionDate() {
+		return eventEvolutionDate;
+	}
+
+	@Order(5)
+	public String getEventEvolutionComment() {
+		return eventEvolutionComment;
+	}
+
+	@Order(6)
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
 
-	@Order(5)
+	@Order(7)
+	public RiskLevel getEventRiskLevel() {
+		return eventRiskLevel;
+	}
+
+	@Order(8)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
-	@Order(6)
+	@Order(9)
+	public UserReferenceDto getEventReportingUser() {
+		return eventReportingUser;
+	}
+
+	@Order(10)
+	public UserReferenceDto getEventResponsibleUser() {
+		return eventResponsibleUser;
+	}
+
+	@Order(11)
 	public ActionMeasure getActionMeasure() {
 		return actionMeasure;
 	}
 
-	@Order(7)
+	@Order(12)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(8)
+	@Order(13)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(9)
+	@Order(14)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(10)
+	@Order(15)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(11)
+	@Order(16)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(12)
+	@Order(17)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}

@@ -21,7 +21,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -209,6 +208,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@Override
 	public ADO getByUuid(@NotNull String uuid) {
 
+		if (uuid == null) {
+			return null;
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
@@ -345,28 +348,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 //		return JpaHelper.simpleSingleQuery(em, elementClass, propertyName, propertyValue);
 		return null;
-	}
-
-	public static <T> StringBuilder appendInFilterValues(
-		StringBuilder filterBuilder,
-		List<Object> filterBuilderParameters,
-		List<T> values,
-		Function<T, ?> valueMapper) {
-
-		filterBuilder.append("(");
-		boolean first = true;
-		for (T value : values) {
-			if (first) {
-				filterBuilder.append("?");
-				first = false;
-			} else {
-				filterBuilder.append(",?");
-			}
-			filterBuilder.append(filterBuilderParameters.size() + 1);
-			filterBuilderParameters.add(valueMapper.apply(value));
-		}
-		filterBuilder.append(")");
-		return filterBuilder;
 	}
 
 	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {

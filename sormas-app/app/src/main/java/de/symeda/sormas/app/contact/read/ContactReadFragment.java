@@ -55,6 +55,8 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 
 	private void setUpFieldVisibilities(FragmentContactReadLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(ContactDto.class, contentBinding.mainContent);
+		// TODO [vaccination info] integrate vaccination info
+//		setFieldVisibilitiesAndAccesses(VaccinationInfoDto.class, contentBinding.vaccinationInfoLayout.mainContent);
 
 		if (record.getResultingCaseUuid() == null || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
 			contentBinding.openResultingCase.setVisibility(GONE);
@@ -87,6 +89,11 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 
 		contentBinding.contactQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.contactQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
+
+		// TODO [vaccination info] integrate vaccination info
+//		if (!isVisibleAllowed(VaccinationInfoDto.class, contentBinding.vaccinationInfoLayout.vaccinationInfoVaccination)) {
+//			contentBinding.medicalInformationHeader.setVisibility(GONE);
+//		}
 	}
 
 	// Overrides

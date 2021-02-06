@@ -75,6 +75,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		((Column<LabMessageIndexDto, Boolean>) getColumn(LabMessageIndexDto.PROCESSED)).setRenderer(new LabMessageStatusRenderer());
 
+		getColumn(COLUMN_PROCESS).setSortable(false);
+
 		for (Grid.Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(LabMessageIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}

@@ -70,9 +70,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_riskLevel"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.riskLevel}"
-                    app:dependencyParentField="@{eventEventStatus}"
-                    app:dependencyParentValue="@{EventStatus.CLUSTER}" />
+                    app:value="@{data.riskLevel}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -91,6 +89,17 @@
                     app:value="@{data.endDate}" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.evolutionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionComment"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="@{data.evolutionDate != null ? View.VISIBLE : View.GONE}"
+                app:value="@{data.evolutionComment}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_eventInvestigationStatus"
@@ -185,9 +194,9 @@
                     app:valueFormat="@string/two_strings_with_hyphen_format" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_surveillanceOfficer"
+                    android:id="@+id/event_responsibleUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@{data.surveillanceOfficer}" />
+                    app:value="@{data.responsibleUser}" />
 
             </LinearLayout>
 
@@ -233,6 +242,11 @@
                 style="@style/ControlSingleColumnStyle"
                 app:maxLines="5"
                 app:value="@{data.eventLocation}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/exposure_workEnvironment"
+                app:value="@{data.workEnvironment}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransport"

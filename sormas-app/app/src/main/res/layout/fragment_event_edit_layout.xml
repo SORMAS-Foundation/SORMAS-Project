@@ -25,6 +25,7 @@
     tools:ignore="contentDescription">
 
     <data>
+        <import type="android.view.View" />
         <import type="de.symeda.sormas.api.event.EventStatus" />
         <import type="de.symeda.sormas.api.event.MeansOfTransport" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
@@ -62,9 +63,9 @@
                     app:shortUuidValue="@{data.uuid}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_surveillanceOfficer"
+                    android:id="@+id/event_responsibleUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@{data.surveillanceOfficer}" />
+                    app:value="@{data.responsibleUser}" />
 
             </LinearLayout>
 
@@ -97,8 +98,6 @@
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/event_riskLevel"
                 style="@style/ControlSingleColumnStyle"
-                app:dependencyParentField="@{eventEventStatus}"
-                app:dependencyParentValue="@{EventStatus.CLUSTER}"
                 app:enumClass="@{riskLevelClass}"
                 app:value="@={data.riskLevel}"/>
 
@@ -125,6 +124,19 @@
                 app:softRequired="true"
                 app:value="@={data.endDate}" />
         </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/event_evolutionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.evolutionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_evolutionComment"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.evolutionComment}"
+                app:dependencyParentField="@{eventEvolutionDate}"
+                app:dependencyParentValue="@{null}"
+                app:dependencyParentVisibility="@{false}" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/event_eventInvestigationStatus"
@@ -240,7 +252,10 @@
 
             </LinearLayout>
 
-
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_workEnvironment"
+                app:value="@={data.workEnvironment}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/event_eventLocation"

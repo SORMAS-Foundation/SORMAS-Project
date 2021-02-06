@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +26,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.server.Sizeable;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -159,11 +162,30 @@ public class CaseController {
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		if (event.getDisease() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
+		if (disease == null) {
+			new Notification(
+					I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+					I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
@@ -839,8 +861,14 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
-				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+				if (deleteCase(caze)) {
+					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+				} else {
+					Notification.show(
+							String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caze.getUuid())),
+							"",
+							Type.ERROR_MESSAGE);
+				}
 			}, I18nProperties.getString(Strings.entityCase));
 		}
 
@@ -866,6 +894,19 @@ public class CaseController {
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
 		}
+	}
+
+	private boolean deleteCase(CaseDataDto caze) {
+		boolean deletable = true;
+		if (FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
+			deletable = SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
+		}
+		if (deletable) {
+			FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+			return true;
+		}
+		return false;
+
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
@@ -1167,15 +1208,37 @@ public class CaseController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
+					int countNotDeletedCases = 0;
+					StringBuilder nonDeletableCases = new StringBuilder();
 					for (CaseIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
+						if (!deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedRow.getUuid()))) {
+							countNotDeletedCases++;
+							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
+						}
+					}
+					if (nonDeletableCases.length() > 0) {
+						nonDeletableCases = new StringBuilder(" " + nonDeletableCases.substring(0, nonDeletableCases.length() - 2) + ". ");
 					}
 					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingCasesDeleted),
-						I18nProperties.getString(Strings.messageCasesDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					if (countNotDeletedCases == 0) {
+						new Notification(
+								I18nProperties.getString(Strings.headingCasesDeleted),
+								I18nProperties.getString(Strings.messageCasesDeleted),
+								Type.HUMANIZED_MESSAGE,
+								false).show(Page.getCurrent());
+					} else {
+						Window response = VaadinUiUtil.showSimplePopupWindow(
+								I18nProperties.getString(Strings.headingSomeCasesNotDeleted),
+								String.format(
+										"%1s <br/> <br/> %2s",
+										String.format(
+												I18nProperties.getString(Strings.messageCountCasesNotDeleted),
+												String.format("<b>%s</b>", countNotDeletedCases),
+												String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
+										I18nProperties.getString(Strings.messageCasesNotDeletedReasonSurvnet)),
+								ContentMode.HTML);
+						response.setWidth(600, Sizeable.Unit.PIXELS);
+					}
 				});
 		}
 	}

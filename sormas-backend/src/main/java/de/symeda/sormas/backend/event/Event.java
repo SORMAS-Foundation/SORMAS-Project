@@ -47,6 +47,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
@@ -76,12 +77,16 @@ public class Event extends CoreAdo {
 	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String TRAVEL_DATE = "travelDate";
+	public static final String COMMERCE = "commerce";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -94,7 +99,7 @@ public class Event extends CoreAdo {
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
@@ -123,12 +128,15 @@ public class Event extends CoreAdo {
 	private Date endDate;
 	private Date reportDateTime;
 	private User reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
 	private String connectionNumber;
 	private Date travelDate;
+	private WorkEnvironment workEnvironment;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -141,7 +149,7 @@ public class Event extends CoreAdo {
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
-	private User surveillanceOfficer;
+	private User responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
 	private Double reportLon;
@@ -291,6 +299,23 @@ public class Event extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getEventLocation() {
 		if (eventLocation == null) {
@@ -345,6 +370,15 @@ public class Event extends CoreAdo {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -456,12 +490,12 @@ public class Event extends CoreAdo {
 	}
 
 	@ManyToOne
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public User getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

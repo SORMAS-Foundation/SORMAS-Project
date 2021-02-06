@@ -247,6 +247,10 @@ public class Contact extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
 
+	// TODO [vaccination info] integrate vaccination info
+//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+//	private VaccinationInfo vaccinationInfo;
+
 	public Person getPerson() {
 		return person;
 	}
@@ -501,7 +505,9 @@ public class Contact extends PseudonymizableAdo {
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
@@ -771,8 +777,8 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
-  
+	}
+
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -836,4 +842,13 @@ public class Contact extends PseudonymizableAdo {
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
 	}
+
+	// TODO [vaccination info] integrate vaccination info
+//	public VaccinationInfo getVaccinationInfo() {
+//		return vaccinationInfo;
+//	}
+//
+//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+//		this.vaccinationInfo = vaccinationInfo;
+//	}
 }

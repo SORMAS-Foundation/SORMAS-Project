@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -142,15 +141,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		Task target = taskService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Task();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Task target = DtoHelper.fillOrBuildEntity(source, taskService.getByUuid(source.getUuid()), Task::new, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -208,18 +199,15 @@ public class TaskFacadeEjb implements TaskFacade {
 		return target;
 	}
 
-	public TaskDto toDto(Task task, Pseudonymizer pseudonymizer) {
+	public TaskDto toDto(Task source, Pseudonymizer pseudonymizer) {
 
-		if (task == null) {
+		if (source == null) {
 			return null;
 		}
 
 		TaskDto target = new TaskDto();
-		Task source = task;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAssigneeUser(UserFacadeEjb.toReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -241,7 +229,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(task), t -> {
+		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(source), t -> {
 			if (source.getCaze() != null) {
 				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
 				pseudonymizer.pseudonymizeDto(
@@ -403,7 +391,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), 
 				joins.getContactCommunity().get(Community.UUID), joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), 
 				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
-				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventSurveillanceOfficer().get(User.UUID), 
+				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
 				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
 				region, district
 		);
