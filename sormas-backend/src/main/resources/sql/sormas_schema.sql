@@ -6449,6 +6449,11 @@ ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
 
+-- 2020-02-08 Add UNIQUE constraint to documents uuid #3661
+ALTER TABLE ONLY documents ADD CONSTRAINT documents_uuid_key UNIQUE (uuid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (322, 'Add UNIQUE contraint to documents uuid field #3661');
+
 -- 2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414
 ALTER TABLE cases ADD COLUMN bloodorganortissuedonated varchar(255);
 ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
