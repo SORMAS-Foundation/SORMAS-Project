@@ -399,6 +399,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
+		config.setRegion(regions.get(0));
 		eventGeneratorConfigBinder.setBean(config);
 
 		return eventGeneratorLayout;
