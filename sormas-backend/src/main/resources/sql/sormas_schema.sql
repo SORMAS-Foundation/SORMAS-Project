@@ -6449,4 +6449,9 @@ ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
 
+-- 2020-02-08 Add UNIQUE constraint to documents uuid #3661
+ALTER TABLE ONLY documents ADD CONSTRAINT documents_uuid_key UNIQUE (uuid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (322, 'Add UNIQUE contraint to documents uuid field #3661');
+
 -- *** Insert new sql commands BEFORE this line ***
