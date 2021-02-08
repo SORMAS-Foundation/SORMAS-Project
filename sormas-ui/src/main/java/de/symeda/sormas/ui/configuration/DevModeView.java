@@ -400,6 +400,7 @@ public class DevModeView extends AbstractConfigurationView {
 		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
 		config.setRegion(regions.get(0));
+		config.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(config.getRegion().getUuid()).get(0));
 		eventGeneratorConfigBinder.setBean(config);
 
 		return eventGeneratorLayout;
@@ -646,6 +647,11 @@ public class DevModeView extends AbstractConfigurationView {
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
 		List<Disease> diseases = config.getDisease() == null ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true) : null;
+		Disease disease = config.getDisease();
+		if (disease == null) {
+			disease = random(diseases);
+			Notification.show("", "Automatically chosen disease: " + disease.getName(), Notification.Type.TRAY_NOTIFICATION);
+		}
 		List<String> personUuids = new ArrayList<>();
 		List<CaseReferenceDto> cases = null;
 		List<DistrictIndexDto> districts = config.getDistrict() == null
@@ -659,7 +665,7 @@ public class DevModeView extends AbstractConfigurationView {
 		if (!config.isCreateWithoutSourceCases()) {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
-					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
 					config.getContactCount() * 2);
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
@@ -670,12 +676,9 @@ public class DevModeView extends AbstractConfigurationView {
 		float baseOffset = random().nextFloat();
 		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
 
-		for (int i = 0; i < config.getContactCount(); i++) {
-			Disease disease = config.getDisease();
-			if (disease == null) {
-				disease = random(diseases);
-			}
+		long dt = System.nanoTime();
 
+		for (int i = 0; i < config.getContactCount(); i++) {
 			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
 
@@ -708,7 +711,7 @@ public class DevModeView extends AbstractConfigurationView {
 			if (contactCase != null) {
 				contact.setCaze(contactCase);
 			}
-			contact.setDisease(config.getDisease());
+			contact.setDisease(disease);
 			if (contact.getDisease() == Disease.OTHER) {
 				contact.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
 			}
@@ -775,6 +778,13 @@ public class DevModeView extends AbstractConfigurationView {
 				}
 			}
 		}
+
+		dt = System.nanoTime() - dt;
+		long perContact = dt / config.getContactCount();
+		String msg = String
+			.format("Generating %,d contacts took %,d  ms (%,d ms per contact)", config.getContactCount(), dt / 1_000_000, perContact / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
 	private void generateEvents() {
