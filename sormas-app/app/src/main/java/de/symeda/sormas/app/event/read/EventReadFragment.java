@@ -16,9 +16,12 @@
 package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
+import android.view.View;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -85,10 +88,14 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 			statusCaption = I18nProperties.getEnumCaption(eventStatus);
 		}
 
-		contentBinding.eventEvolutionDate.setCaption(String.format(
-			I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
-		contentBinding.eventEvolutionComment.setCaption(String.format(
-			I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+		contentBinding.eventEvolutionDate.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+		contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+
+		FacilityType facilityType = record.getEventLocation().getFacilityType();
+
+		contentBinding.exposureWorkEnvironment
+			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+
 	}
 
 	@Override

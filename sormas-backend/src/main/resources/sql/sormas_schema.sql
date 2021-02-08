@@ -6179,20 +6179,11 @@ ALTER TABLE action_history ALTER COLUMN reply TYPE text;
 INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
 
 -- 2020-12-03 Remove hospital from event's type of place #3617
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-    FROM location AS l
-INNER JOIN events ON events.eventlocation_id = l.id
-WHERE events.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM events WHERE eventlocation_id = location.id) = 'HOSPITAL';
+UPDATE events SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;
 
-UPDATE events
-SET typeofplace = 'FACILITY'
-    FROM events as e
-INNER JOIN location ON location.id = e.eventlocation_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617, #4120');
 
 -- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
 ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
@@ -6265,20 +6256,11 @@ CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash
 INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
 
 -- 2020-12-03 Remove hospital from exposure type of places #3680
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-FROM location AS l
-         INNER JOIN exposures ON exposures.location_id = l.id
-WHERE exposures.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM exposures WHERE location_id = location.id) = 'HOSPITAL';
+UPDATE exposures SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = exposures.location_id) IS NOT NULL;
 
-UPDATE exposures
-SET typeofplace = 'FACILITY'
-FROM exposures as e
-         INNER JOIN location ON location.id = e.location_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680, #4120');
 
 -- 2020-12-21 Fix labmessage table #3486
 ALTER TABLE labmessage OWNER TO sormas_user;
@@ -6297,5 +6279,174 @@ ALTER TABLE events ADD COLUMN evolutionComment text;
 ALTER TABLE events_history ADD COLUMN evolutionComment text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
+-- 2020-01-13 Add indexes to optimize event directory performance #3276
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant USING hash (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant USING hash (event_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (312, 'Add indexes to optimize event directory performance #3276');
+
+-- 2020-01-27
+ALTER TABLE exportconfiguration
+    ADD COLUMN sharedToPublic boolean default false;
+
+ALTER TABLE exportconfiguration_history
+    ADD COLUMN sharedToPublic boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
+
+-- 2021-01-11 Add testresulttext to labmessage #3820
+ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
+ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add testresulttext to labmessage #3820');
+
+-- 2021-02-03 Activate vaccination status for COVID-19 cases, contacts and event participant #4137
+ALTER TABLE cases
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+ALTER TABLE cases_history
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases_history
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (315, 'Activate vaccination status for COVID-19 cases, contacts and event participant #4137');
+
+-- 2021-01-19 Add DiseaseVariant entity #4042
+CREATE TABLE diseasevariant(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255) not null,
+	name varchar(512) not null,
+	sys_period tstzrange not null,
+	primary key(id));
+
+ALTER TABLE diseasevariant OWNER TO sormas_user;
+
+CREATE TABLE diseasevariant_history (LIKE diseasevariant);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON diseasevariant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseasevariant_history', true);
+ALTER TABLE diseasevariant_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN diseasevariant_id bigint;
+ALTER TABLE cases_history ADD COLUMN diseasevariant_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (diseasevariant_id) REFERENCES diseasevariant(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
+
+ -- 2020-02-03
+ALTER TABLE pathogentest ADD COLUMN typingId text;
+ALTER TABLE pathogentest_history ADD COLUMN typingId text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (317, 'Add typing ID to pathogen tests #3957');
+
+-- 2021-01-07 Change event's surveillanceOfficer to responsibleUser allow more roles to be it #3827
+ALTER TABLE events RENAME surveillanceofficer_id to responsibleuser_id;
+ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (318, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
+
+--2020-02-02
+ALTER TABLE exposures RENAME patientexpositionrole TO exposureRole;
+ALTER TABLE exposures_history RENAME patientexpositionrole TO exposureRole;
+
+UPDATE exposures SET exposureRole = NULL WHERE exposureRole = 'NOT_COLLECTED';
+UPDATE exposures SET exposureRole = 'STAFF' WHERE exposureRole = 'WORKING_AT';
+UPDATE exposures SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_IN';
+UPDATE exposures SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (319, '[SurvNet Interface] Change title of role field in exposures and add new field #4036');
+-- 2021-02-04 Add vaccination for contacts and event participant #4137
+
+CREATE TABLE vaccinationinfo (
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uuid character varying(36) NOT NULL,
+    vaccination varchar(255),
+    vaccinationdoses varchar(512),
+    vaccinationinfosource varchar(255),
+    firstvaccinationdate timestamp,
+    lastvaccinationdate timestamp,
+    vaccinename varchar(255),
+    othervaccinename text,
+    vaccinemanufacturer varchar(255),
+    othervaccinemanufacturer text,
+    vaccineinn text,
+    vaccinebatchnumber text,
+    vaccineuniicode text,
+    vaccineatccode text,
+    sys_period tstzrange not null,
+    primary key (id)
+);
+
+ALTER TABLE vaccinationinfo OWNER TO sormas_user;
+
+CREATE TABLE vaccinationinfo_history (LIKE vaccinationinfo);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON vaccinationinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccinationinfo_history', true);
+ALTER TABLE vaccinationinfo_history OWNER TO sormas_user;
+
+ALTER TABLE contact
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+ALTER TABLE eventparticipant
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_vaccination_info_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE contact.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE contact SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+
+        FOR rec IN SELECT id FROM public.eventparticipant WHERE eventparticipant.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE eventparticipant SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
+
+
+-- 2020-02-04
+ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
+ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
 
 -- *** Insert new sql commands BEFORE this line ***

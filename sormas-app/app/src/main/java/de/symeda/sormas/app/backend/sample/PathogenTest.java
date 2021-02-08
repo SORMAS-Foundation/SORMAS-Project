@@ -64,6 +64,9 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String testedDiseaseDetails;
 
+	@Column
+	private String typingId;
+
 	@Enumerated(EnumType.STRING)
 	@Column
 	private PathogenTestResultType testResult;
@@ -125,6 +128,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 
 	public PathogenTestResultType getTestResult() {

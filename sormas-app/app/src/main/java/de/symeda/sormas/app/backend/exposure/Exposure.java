@@ -18,10 +18,12 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -70,6 +72,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String exposureTypeDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location location;
+	@Enumerated(EnumType.STRING)
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	@Enumerated(EnumType.STRING)
@@ -84,6 +88,9 @@ public class Exposure extends PseudonymizableAdo {
 	private String connectionNumber;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String seatNumber;
+
+	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	@Enumerated(EnumType.STRING)
@@ -230,6 +237,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public ExposureRole getExposureRole() {
+		return exposureRole;
+	}
+
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	public YesNoUnknown getIndoors() {
@@ -542,6 +557,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	public YesNoUnknown getProphylaxis() {

@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
+import javax.ejb.EJB;
+
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.task.TaskJurisdictionDto;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
@@ -27,6 +30,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.Sample;
@@ -34,6 +38,9 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 public class JurisdictionHelper {
+
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 
 	public static UserJurisdiction createUserJurisdiction(User user) {
 
@@ -137,8 +144,8 @@ public class JurisdictionHelper {
 			eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
 		}
 
-		if (event.getSurveillanceOfficer() != null) {
-			eventJurisdiction.setSurveillanceOfficerUuid(event.getSurveillanceOfficer().getUuid());
+		if (event.getResponsibleUser() != null) {
+			eventJurisdiction.setResponsibleUserUuid(event.getResponsibleUser().getUuid());
 		}
 
 		if (eventLocation.getRegion() != null) {
@@ -215,7 +222,8 @@ public class JurisdictionHelper {
 
 		EventParticipant eventParticipant = sample.getAssociatedEventParticipant();
 		if (eventParticipant != null) {
-			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(eventParticipant.getEvent()));
+//			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(eventParticipant.getEvent()));
+			jurisdiction.setEventParticipantJurisdiction(createEventParticipantJurisdictionDto(eventParticipant));
 		}
 
 		Facility labFacility = sample.getLab();
@@ -224,5 +232,34 @@ public class JurisdictionHelper {
 		}
 
 		return jurisdiction;
+	}
+
+	public static EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
+
+		if (eventParticipant == null) {
+			return null;
+		}
+
+		EventParticipantJurisdictionDto eventParticipantJurisdiction = new EventParticipantJurisdictionDto();
+
+		eventParticipantJurisdiction.setEventParticipantUuid(eventParticipant.getUuid());
+
+		if (eventParticipant.getReportingUser() != null) {
+			eventParticipantJurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
+		}
+
+		if (eventParticipant.getRegion() != null) {
+			eventParticipantJurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
+		}
+
+		if (eventParticipant.getDistrict() != null) {
+			eventParticipantJurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+		}
+
+		if (eventParticipant.getEvent() != null) {
+			eventParticipantJurisdiction.setEventUuid(eventParticipant.getEvent().getUuid());
+		}
+
+		return eventParticipantJurisdiction;
 	}
 }

@@ -1,12 +1,13 @@
 package de.symeda.sormas.app.component.validation;
 
-import org.joda.time.DateTimeComparator;
+import org.apache.commons.lang3.StringUtils;
 
 import android.view.View;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.component.controls.ControlDateField;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public class ValidationHelper {
@@ -42,5 +43,27 @@ public class ValidationHelper {
 
 		dateFromControl.setValidationCallback(dateFromCallback);
 		dateUntilContol.setValidationCallback(dateUntilCallback);
+	}
+
+	public static void initIntegerValidator(ControlTextEditField textEditField, String errorMessage, int min, int max) {
+		textEditField.setValidationCallback(() -> {
+			String vaccinationDosesValue = textEditField.getValue();
+			if (!StringUtils.isEmpty(vaccinationDosesValue)) {
+				try {
+					int intValue = Integer.parseInt(vaccinationDosesValue);
+					if (intValue < min || intValue > max) {
+						textEditField.enableErrorState(errorMessage);
+
+						return true;
+					}
+				} catch (NumberFormatException e) {
+					textEditField.enableErrorState(errorMessage);
+
+					return true;
+				}
+			}
+
+			return false;
+		});
 	}
 }

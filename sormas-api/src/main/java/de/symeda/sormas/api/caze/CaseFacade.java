@@ -205,5 +205,7 @@ public interface CaseFacade {
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer);
 
+	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
+
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 }

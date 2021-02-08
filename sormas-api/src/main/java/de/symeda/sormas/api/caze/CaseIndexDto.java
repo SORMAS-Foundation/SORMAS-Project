@@ -22,11 +22,13 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -45,6 +47,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
@@ -65,6 +68,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
 	private long id;
 	private String uuid;
@@ -78,6 +82,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	@SensitiveData
 	private String personLastName;
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	private String diseaseDetails;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -99,37 +104,38 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private Date quarantineTo;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
+	private SymptomJournalStatus symptomJournalStatus;
 	private Integer visitCount;
 
 	private CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
-						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+						String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId) {
 		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
-				diseaseDetails, caseClassification, investigationStatus,
+				diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
-				completeness, followUpStatus, followUpUntil, changeDate, facilityId, null
+				completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, null
 		);
 	}
 	//@formatter:on
 
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
-						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+						String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
 						Integer visitCount) {
 		//@formatter:on
@@ -142,6 +148,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
+		this.diseaseVariant = new DiseaseVariantReferenceDto(diseaseVariantUuid, diseaseVariantName);
 		this.diseaseDetails = diseaseDetails;
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
@@ -160,6 +167,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
+		this.symptomJournalStatus = symptomJournalStatus;
 
 		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -202,6 +210,14 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getDiseaseDetails() {
@@ -384,6 +400,14 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
 	public Integer getVisitCount() {

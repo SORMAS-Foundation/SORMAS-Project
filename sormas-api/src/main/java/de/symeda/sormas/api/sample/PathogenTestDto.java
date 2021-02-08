@@ -25,6 +25,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -38,6 +39,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SAMPLE = "sample";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_DETAILS = "testedDiseaseDetails";
+	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
@@ -56,6 +58,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Required
 	private Disease testedDisease;
 	private String testedDiseaseDetails;
+	private String typingId;
 	@Required
 	private PathogenTestType testType;
 	@SensitiveData
@@ -130,6 +133,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 
 	public PathogenTestType getTestType() {
@@ -230,5 +241,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
+	}
+
+	public String toString() {
+		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
 	}
 }

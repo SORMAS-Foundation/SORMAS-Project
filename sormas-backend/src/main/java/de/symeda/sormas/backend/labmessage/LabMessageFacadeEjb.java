@@ -91,6 +91,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
 		target.setTestType(source.getTestType());
+		target.setTestResultText(source.getTestResultText());
 
 		return target;
 	}
@@ -138,6 +139,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
 		target.setTestType(source.getTestType());
+		target.setTestResultText(source.getTestResultText());
 
 		return target;
 	}

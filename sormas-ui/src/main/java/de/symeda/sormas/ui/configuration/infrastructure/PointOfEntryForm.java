@@ -12,6 +12,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
@@ -47,8 +48,8 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		addField(PointOfEntryDto.NAME, TextField.class);
 		addField(PointOfEntryDto.POINT_OF_ENTRY_TYPE, ComboBox.class);
 		addField(PointOfEntryDto.ACTIVE, CheckBox.class);
-		TextField tfLatitude = addField(PointOfEntryDto.LATITUDE, TextField.class);
-		TextField tfLongitude = addField(PointOfEntryDto.LONGITUDE, TextField.class);
+		AccessibleTextField tfLatitude = addField(PointOfEntryDto.LATITUDE, AccessibleTextField.class);
+		AccessibleTextField tfLongitude = addField(PointOfEntryDto.LONGITUDE, AccessibleTextField.class);
 		ComboBox cbRegion = addInfrastructureField(PointOfEntryDto.REGION);
 		ComboBox cbDistrict = addInfrastructureField(PointOfEntryDto.DISTRICT);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);

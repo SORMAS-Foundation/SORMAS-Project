@@ -66,5 +66,7 @@ public interface SampleFacade {
 
 	Boolean isSampleEditAllowed(String sampleUuid);
 
+	List<SampleDto> getByContactUuids(List<String> contactUuids);
+
 	boolean exists(String uuid);
 }
