@@ -719,7 +719,6 @@ public class CaseExportDto implements Serializable {
 			CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.OUTCOME_DATE)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	public Date getOutcomeDate() {
 		return outcomeDate;
 	}
