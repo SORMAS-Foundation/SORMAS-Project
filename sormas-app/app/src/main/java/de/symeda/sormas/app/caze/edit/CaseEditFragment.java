@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -89,8 +90,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private List<Item> caseClassificationList;
 	private List<Item> caseOutcomeList;
-	// TODO [vaccination info] integrate vaccination info
-//	private List<Item> vaccinationInfoSourceList;
+	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
 	private List<Item> diseaseVariantList;
 	private List<Item> plagueTypeList;
@@ -274,8 +274,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
-		// TODO [vaccination info] integrate vaccination info
-//		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
+		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 		humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
@@ -514,8 +513,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 		contentBinding.caseDataRabiesType.initializeSpinner(humanRabiesTypeList);
 		contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
-		// TODO [vaccination info] integrate vaccination info
-//		contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
+		contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 		contentBinding.caseDataQuarantine.initializeSpinner(quarantineList);
 		contentBinding.caseDataReportingDistrict.initializeSpinner(allDistricts);
 
