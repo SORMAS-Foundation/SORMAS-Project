@@ -122,6 +122,10 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contentLayout.addComponent(
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptions), ContentMode.HTML));
+		contentLayout.addComponent(
+			new Label(
+				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsContactGeneration),
+				ContentMode.HTML));
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 		contentLayout.addComponent(createEventsGeneratorLayout());
@@ -298,46 +302,46 @@ public class DevModeView extends AbstractConfigurationView {
 		eventGeneratorLayout.setMargin(false);
 		eventGeneratorLayout.setSpacing(false);
 
-		Label heading = new Label("Event Generation");
+		Label heading = new Label(I18nProperties.getCaption(Captions.devModeGenerateEvents));
 		CssStyles.style(heading, CssStyles.H2);
 		eventGeneratorLayout.addComponent(heading);
 
 		HorizontalLayout eventOptionsFirstLineLayout = new HorizontalLayout();
 
 		TextField eventCountField = new TextField();
-		eventCountField.setCaption(I18nProperties.getCaption(Captions.devModeContactCount));
+		eventCountField.setCaption(I18nProperties.getCaption(Captions.devModeEventCount));
 		eventGeneratorConfigBinder.forField(eventCountField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getEventCount, EventGenerationConfig::setEventCount);
 		eventOptionsFirstLineLayout.addComponent(eventCountField);
 
 		DateField startDateField = new DateField();
-		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactStartDate));
+		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeEventStartDate));
 		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		startDateField.setLenient(true);
 		eventGeneratorConfigBinder.bind(startDateField, EventGenerationConfig::getStartDate, EventGenerationConfig::setStartDate);
 		eventOptionsFirstLineLayout.addComponent(startDateField);
 
 		DateField endDateField = new DateField();
-		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactEndDate));
+		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeEventEndDate));
 		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		endDateField.setLenient(true);
 		eventGeneratorConfigBinder.bind(endDateField, EventGenerationConfig::getEndDate, EventGenerationConfig::setEndDate);
 		eventOptionsFirstLineLayout.addComponent(endDateField);
 
 		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeContactDisease));
+		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeEventDisease));
 		eventGeneratorConfigBinder.bind(diseaseField, EventGenerationConfig::getDisease, EventGenerationConfig::setDisease);
 		eventOptionsFirstLineLayout.addComponent(diseaseField);
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
-		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
+		regionField.setCaption(I18nProperties.getCaption(Captions.devModeEventRegion));
 		eventGeneratorConfigBinder.bind(regionField, EventGenerationConfig::getRegion, EventGenerationConfig::setRegion);
 		eventOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
-		districtField.setCaption(I18nProperties.getCaption(Captions.devModeContactDistrict));
+		districtField.setCaption(I18nProperties.getCaption(Captions.devModeEventDistrict));
 		eventGeneratorConfigBinder.bind(districtField, EventGenerationConfig::getDistrict, EventGenerationConfig::setDistrict);
 		eventOptionsFirstLineLayout.addComponent(districtField);
 
@@ -350,7 +354,8 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		});
 
-		Button generateButton = ButtonHelper.createButton("Generate Events", e -> generateEvents(), CssStyles.FORCE_CAPTION);
+		Button generateButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeGenerateEvents), e -> generateEvents(), CssStyles.FORCE_CAPTION);
 		eventOptionsFirstLineLayout.addComponent(generateButton);
 
 		eventGeneratorLayout.addComponent(eventOptionsFirstLineLayout);
@@ -358,35 +363,35 @@ public class DevModeView extends AbstractConfigurationView {
 		HorizontalLayout eventOptionsSecondLineLayout = new HorizontalLayout();
 
 		TextField minParticipantsPerEventField = new TextField();
-		minParticipantsPerEventField.setCaption("Min participants per event");
+		minParticipantsPerEventField.setCaption(I18nProperties.getCaption(Captions.devModeEventMinParticipants));
 		eventGeneratorConfigBinder.forField(minParticipantsPerEventField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getMinParticipantsPerEvent, EventGenerationConfig::setMinParticipantsPerEvent);
 		eventOptionsSecondLineLayout.addComponent(minParticipantsPerEventField);
 
 		TextField maxParticipantsPerEventField = new TextField();
-		maxParticipantsPerEventField.setCaption("Max participants per event");
+		maxParticipantsPerEventField.setCaption(I18nProperties.getCaption(Captions.devModeEventMaxParticipants));
 		eventGeneratorConfigBinder.forField(maxParticipantsPerEventField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getMaxParticipantsPerEvent, EventGenerationConfig::setMaxParticipantsPerEvent);
 		eventOptionsSecondLineLayout.addComponent(maxParticipantsPerEventField);
 
 		TextField minContactsPerParticipantField = new TextField();
-		minContactsPerParticipantField.setCaption("Min contacts per participant");
+		minContactsPerParticipantField.setCaption(I18nProperties.getCaption(Captions.devModeEventMinContacts));
 		eventGeneratorConfigBinder.forField(minContactsPerParticipantField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getMinContactsPerParticipant, EventGenerationConfig::setMinContactsPerParticipant);
 		eventOptionsSecondLineLayout.addComponent(minContactsPerParticipantField);
 
 		TextField maxContactsPerParticipantField = new TextField();
-		maxContactsPerParticipantField.setCaption("Max contacts per participant");
+		maxContactsPerParticipantField.setCaption(I18nProperties.getCaption(Captions.devModeEventMaxContacts));
 		eventGeneratorConfigBinder.forField(maxContactsPerParticipantField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getMaxContactsPerParticipant, EventGenerationConfig::setMaxContactsPerParticipant);
 		eventOptionsSecondLineLayout.addComponent(maxContactsPerParticipantField);
 
 		TextField percentageOfCasesField = new TextField();
-		percentageOfCasesField.setCaption("Percentage of cases among participants");
+		percentageOfCasesField.setCaption(I18nProperties.getCaption(Captions.devModeEventCasePercentate));
 		eventGeneratorConfigBinder.forField(percentageOfCasesField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
