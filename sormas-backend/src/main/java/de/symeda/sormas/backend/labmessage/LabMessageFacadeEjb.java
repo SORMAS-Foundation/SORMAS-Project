@@ -161,16 +161,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private <T> void criteriaHandler(
-		LabMessageCriteria criteria,
-		CriteriaBuilder cb,
-		CriteriaQuery<T> cq,
-		Root<LabMessage> labMessage) {
-		Optional.ofNullable(criteria).ifPresent(labMessageCriteria -> {
-			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, labMessageCriteria);
-			Predicate filter = CriteriaBuilderHelper.and(cb, null, statusFilter);
+	private <T> void criteriaHandler(LabMessageCriteria criteria, CriteriaBuilder cb, CriteriaQuery<T> cq, Root<LabMessage> labMessage) {
+		Predicate filter = null;
+		if (criteria != null) {
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			filter = CriteriaBuilderHelper.and(cb, null, statusFilter);
+		}
+		if (filter != null) {
 			cq.where(filter);
-		});
+		}
 	}
 
 	@Override
