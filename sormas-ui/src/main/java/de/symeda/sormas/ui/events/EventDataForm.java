@@ -18,13 +18,18 @@
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
-import com.vaadin.v7.ui.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -32,6 +37,7 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -44,6 +50,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -51,6 +58,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -106,15 +114,21 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
-			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
-			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
+			fluidRow(
+				fluidColumn(6,0,locs(EventDto.TYPE_OF_PLACE)),
+				fluidColumn(6,0, locs(
+						EventDto.TYPE_OF_PLACE_TEXT,
+						EventDto.MEANS_OF_TRANSPORT,
+						EventDto.WORK_ENVIRONMENT))) +
+			loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
-			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
+			fluidRowLocs("", EventDto.RESPONSIBLE_USER);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
+	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(isPseudonymized, true));
@@ -214,22 +228,18 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				statusCaption = I18nProperties.getEnumCaption(eventStatus);
 			}
 
-			evolutionDateField.setCaption(String.format(
-				I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
-			evolutionCommentField.setCaption(String.format(
-				I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+			evolutionDateField.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+			evolutionCommentField.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
 		});
 
-		FieldHelper.setVisibleWhenSourceNotNull(
-			getFieldGroup(),
-			Collections.singletonList(EventDto.EVOLUTION_COMMENT),
-			EventDto.EVOLUTION_DATE,
-			true);
+		FieldHelper
+			.setVisibleWhenSourceNotNull(getFieldGroup(), Collections.singletonList(EventDto.EVOLUTION_COMMENT), EventDto.EVOLUTION_DATE, true);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 
+		addField(EventDto.WORK_ENVIRONMENT);
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
 		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
 		DateField travelDate = addField(EventDto.TRAVEL_DATE);
@@ -303,13 +313,21 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();
 		}
+		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
-		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		surveillanceOfficerField.setNullSelectionAllowed(true);
+		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
+		responsibleUserField.setNullSelectionAllowed(true);
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		initializeAccessAndAllowedAccesses();
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EventDto.WORK_ENVIRONMENT,
+			locationForm.getFacilityTypeGroup(),
+			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
+			true);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -358,10 +376,30 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
+		regionField.addValueChangeListener(e -> {
+			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
+			if (region != null) {
+				responsibleUserSurveillanceSupervisors =
+					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR);
+			} else {
+				responsibleUserSurveillanceSupervisors.clear();
+			}
+		});
+
 		districtField.addValueChangeListener(e -> {
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-				.getUserRefsByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
-			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
+			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
+			if (district != null) {
+				List<UserReferenceDto> currentDistrictSurveillanceOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
+
+				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
+				responsibleUsers.addAll(currentDistrictSurveillanceOfficers);
+				responsibleUsers.addAll(responsibleUserSurveillanceSupervisors);
+
+				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
+			} else {
+				responsibleUserField.removeAllItems();
+			}
 		});
 
 		FieldHelper.addSoftRequiredStyle(
@@ -372,7 +410,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			meansOfTransportDetails,
 			connectionNumber,
 			travelDate,
-			surveillanceOfficerField,
+			responsibleUserField,
 			srcType,
 			srcInstitutionalPartnerType,
 			srcInstitutionalPartnerTypeDetails,
@@ -381,6 +419,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			srcTelNo,
 			srcMediaWebsite,
 			srcMediaName);
+
+		// Make external ID field read-only when SORMAS is connected to a SurvNet instance
+		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+			setEnabled(false, EventDto.EXTERNAL_ID);
+			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
+		}
 	}
 
 	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {

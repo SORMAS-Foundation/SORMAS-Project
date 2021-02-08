@@ -26,6 +26,10 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -50,6 +54,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 
 public class ContactExportDto implements Serializable {
 
@@ -166,7 +171,19 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineOfficialOrderSentDate;
 	private YesNoUnknown returningTraveler;
 
-	private ContactJurisdictionDto jurisdiction;
+	private Vaccination vaccination;
+	private String vaccinationDoses;
+	private VaccinationInfoSource vaccinationInfoSource;
+	private Date firstVaccinationDate;
+	private Date lastVaccinationDate;
+	private Vaccine vaccineName;
+	private String otherVaccineName;
+	private VaccineManufacturer vaccineManufacturer;
+	private String otherVaccineManufacturer;
+	private String vaccineInn;
+	private String vaccineBatchNumber;
+	private String vaccineUniiCode;
+	private String vaccineAtcCode;
 
 	private Long eventCount;
 	private String latestEventId;
@@ -181,6 +198,8 @@ public class ContactExportDto implements Serializable {
 	private String citizenship;
 
 	private String reportingDistrict;
+
+	private ContactJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -199,7 +218,13 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID, String externalToken,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
+							// vaccination info
+							Vaccination vaccination, String vaccinationDoses, VaccinationInfoSource vaccinationInfoSource, Date firstVaccinationDate, Date lastVaccinationDate,
+							Vaccine vaccineName, String otherVaccineName, VaccineManufacturer vaccineManufacturer, String otherVaccineManufacturer,
+							String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
+
+							String externalID, String externalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
@@ -267,6 +292,21 @@ public class ContactExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
+
+		this.vaccination = vaccination;
+		this.vaccinationDoses = vaccinationDoses;
+		this.vaccinationInfoSource = vaccinationInfoSource;
+		this.firstVaccinationDate = firstVaccinationDate;
+		this.lastVaccinationDate = lastVaccinationDate;
+		this.vaccineName = vaccineName;
+		this.otherVaccineName = otherVaccineName;
+		this.vaccineManufacturer = vaccineManufacturer;
+		this.otherVaccineManufacturer = otherVaccineManufacturer;
+		this.vaccineInn = vaccineInn;
+		this.vaccineBatchNumber = vaccineBatchNumber;
+		this.vaccineUniiCode = vaccineUniiCode;
+		this.vaccineAtcCode = vaccineAtcCode;
+
 		this.externalID = externalID;
 		this.externalToken = externalToken;
 		this.birthName = birthName;
@@ -793,7 +833,98 @@ public class ContactExportDto implements Serializable {
 		this.returningTraveler = returningTraveler;
 	}
 
-	@Order(71)
+	@Order(80)
+	@ExportProperty(VaccinationInfoDto.VACCINATION)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	@Order(81)
+	@ExportProperty(VaccinationInfoDto.VACCINATION_DOSES)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
+	}
+
+	@Order(82)
+	@ExportProperty(VaccinationInfoDto.VACCINATION_INFO_SOURCE)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	@Order(83)
+	@ExportProperty(VaccinationInfoDto.FIRST_VACCINATION_DATE)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public Date getFirstVaccinationDate() {
+		return firstVaccinationDate;
+	}
+
+	@Order(84)
+	@ExportProperty(VaccinationInfoDto.LAST_VACCINATION_DATE)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public Date getLastVaccinationDate() {
+		return lastVaccinationDate;
+	}
+
+	@Order(85)
+	@ExportProperty(VaccinationInfoDto.VACCINE_NAME)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public Vaccine getVaccineName() {
+		return vaccineName;
+	}
+
+	@Order(86)
+	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_NAME)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getOtherVaccineName() {
+		return otherVaccineName;
+	}
+
+	@Order(87)
+	@ExportProperty(VaccinationInfoDto.VACCINE_MANUFACTURER)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public VaccineManufacturer getVaccineManufacturer() {
+		return vaccineManufacturer;
+	}
+
+	@Order(88)
+	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getOtherVaccineManufacturer() {
+		return otherVaccineManufacturer;
+	}
+
+	@Order(89)
+	@ExportProperty(VaccinationInfoDto.VACCINE_INN)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getVaccineInn() {
+		return vaccineInn;
+	}
+
+	@Order(90)
+	@ExportProperty(VaccinationInfoDto.VACCINE_BATCH_NUMBER)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getVaccineBatchNumber() {
+		return vaccineBatchNumber;
+	}
+
+	@Order(91)
+	@ExportProperty(VaccinationInfoDto.VACCINE_UNII_CODE)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getVaccineUniiCode() {
+		return vaccineUniiCode;
+	}
+
+	@Order(92)
+	@ExportProperty(VaccinationInfoDto.VACCINE_ATC_CODE)
+	@ExportGroup(ExportGroupType.VACCINATION)
+	public String getVaccineAtcCode() {
+		return vaccineAtcCode;
+	}
+
+	@Order(100)
 	@ExportProperty(LATEST_EVENT_ID)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventId() {
@@ -804,7 +935,7 @@ public class ContactExportDto implements Serializable {
 		this.latestEventId = latestEventId;
 	}
 
-	@Order(72)
+	@Order(101)
 	@ExportProperty(LATEST_EVENT_TITLE)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventTitle() {
@@ -815,14 +946,14 @@ public class ContactExportDto implements Serializable {
 		this.latestEventTitle = latestEventTitle;
 	}
 
-	@Order(73)
+	@Order(102)
 	@ExportProperty(EVENT_COUNT)
 	@ExportGroup(ExportGroupType.EVENT)
 	public Long getEventCount() {
 		return eventCount;
 	}
 
-	@Order(80)
+	@Order(103)
 	@ExportProperty(PersonDto.BIRTH_NAME)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
@@ -830,7 +961,7 @@ public class ContactExportDto implements Serializable {
 		return birthName;
 	}
 
-	@Order(81)
+	@Order(104)
 	@ExportProperty(PersonDto.BIRTH_COUNTRY)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
@@ -838,7 +969,7 @@ public class ContactExportDto implements Serializable {
 		return birthCountry;
 	}
 
-	@Order(82)
+	@Order(105)
 	@ExportProperty(PersonDto.CITIZENSHIP)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
@@ -846,7 +977,7 @@ public class ContactExportDto implements Serializable {
 		return citizenship;
 	}
 
-	@Order(83)
+	@Order(106)
 	@ExportProperty(ContactDto.REPORTING_DISTRICT)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept
@@ -854,7 +985,7 @@ public class ContactExportDto implements Serializable {
 		return reportingDistrict;
 	}
 
-	@Order(84)
+	@Order(107)
 	@ExportProperty(ContactDto.EXTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {

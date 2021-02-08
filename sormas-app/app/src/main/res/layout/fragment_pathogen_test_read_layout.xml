@@ -73,6 +73,16 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/pathogenTest_typingId"
+                        app:value="@{data.typingId}"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.DNA_MICROARRAY}"
+                        app:dependencyParentValue2="@{PathogenTestType.PCR_RT_PCR}"
+                        app:dependencyParentValue3="@{PathogenTestType.SEQUENCING}"
+                        app:valueFormat="@string/two_strings_with_hyphen_format"
+                        style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

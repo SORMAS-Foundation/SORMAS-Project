@@ -51,7 +51,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
+	private boolean visibilitiesInitialized;
 	private List<Field<?>> editableAllowedFields = new ArrayList<>();
+	private boolean fieldAccessesInitialized;
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
@@ -410,6 +412,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				field.setVisible(false);
 			}
 		}
+
+		visibilitiesInitialized = true;
 	}
 
 	/**
@@ -417,7 +421,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * the given field. This needs to be called before EVERY setVisible or setVisibleWhen call.
 	 */
 	protected boolean isVisibleAllowed(Field<?> field) {
-		return visibleAllowedFields.isEmpty() || visibleAllowedFields.contains(field);
+		return !visibilitiesInitialized || visibleAllowedFields.contains(field);
 	}
 
 	protected boolean isVisibleAllowed(String propertyId) {
@@ -453,6 +457,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				}
 			}
 		}
+
+		fieldAccessesInitialized = true;
 	}
 
 	/**
@@ -460,7 +466,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * the given field. This needs to be called before EVERY setEnabled or setEnabledWhen call.
 	 */
 	protected boolean isEditableAllowed(Field<?> field) {
-		return editableAllowedFields.isEmpty() || editableAllowedFields.contains(field);
+		return !fieldAccessesInitialized || editableAllowedFields.contains(field);
 	}
 
 	protected boolean isEditableAllowed(String propertyId) {

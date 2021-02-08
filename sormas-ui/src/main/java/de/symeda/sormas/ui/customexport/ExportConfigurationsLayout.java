@@ -37,6 +37,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+
 @SuppressWarnings("serial")
 public class ExportConfigurationsLayout extends VerticalLayout {
 
@@ -44,6 +46,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 	private Button btnNewExportConfiguration;
 	private Button btnExport;
 	private ExportConfigurationsGrid grid;
+	private ExportConfigurationsGrid gridSharedExportsToPublic;
 
 	public ExportConfigurationsLayout(
 		ExportType exportType,
@@ -63,9 +66,24 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		addComponent(btnNewExportConfiguration);
 		setComponentAlignment(btnNewExportConfiguration, Alignment.MIDDLE_RIGHT);
 
-		grid = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider);
+		Label myExportsLabel = new Label(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_myExports));
+		myExportsLabel.addStyleName(H3);
+		addComponent(myExportsLabel);
+
+		grid = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, false);
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
+
+		Label sharedExportsLabel =
+			new Label(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedExports));
+		sharedExportsLabel.addStyleName(H3);
+		addComponent(sharedExportsLabel);
+
+		gridSharedExportsToPublic = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, true);
+		if (gridSharedExportsToPublic.getNbOfSharedExportsToPublic() > 0) {
+			gridSharedExportsToPublic.setWidth(100, Unit.PERCENTAGE);
+			addComponent(gridSharedExportsToPublic);
+		}
 
 		Button btnClose = ButtonHelper.createButton(Captions.actionClose, e -> closeCallback.run());
 		addComponent(btnClose);
@@ -78,5 +96,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		grid.setExportCallback(exportCallback);
+		gridSharedExportsToPublic.setExportCallback(exportCallback);
 	}
+
 }

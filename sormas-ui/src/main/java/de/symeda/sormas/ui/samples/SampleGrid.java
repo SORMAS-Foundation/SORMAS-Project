@@ -25,6 +25,8 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -115,7 +117,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS)).setSortable(false);
 
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.UUID)).setRenderer(new UuidRenderer());
-		addItemClickListener(new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
+		addItemClickListener(
+			new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
@@ -147,6 +150,11 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 			}
 		}
+
+		if (!shouldShowEpidNumber()) {
+			removeColumn(SampleIndexDto.EPID_NUMBER);
+		}
+
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
 
@@ -173,6 +181,12 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
 		}
+	}
+
+	private boolean shouldShowEpidNumber() {
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		return !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}
 
 	public void reload() {

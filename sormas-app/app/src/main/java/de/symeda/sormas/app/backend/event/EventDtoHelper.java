@@ -82,7 +82,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 		target.setEvolutionDate(source.getEvolutionDate());
 		target.setEvolutionComment(source.getEvolutionComment());
-		target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getResponsibleUser()));
 
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
@@ -91,6 +91,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -162,6 +163,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -177,11 +179,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
-		if (source.getSurveillanceOfficer() != null) {
-			User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
-			target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+		if (source.getResponsibleUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getResponsibleUser().getId());
+			target.setResponsibleUser(UserDtoHelper.toReferenceDto(user));
 		} else {
-			target.setSurveillanceOfficer(null);
+			target.setResponsibleUser(null);
 		}
 
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());

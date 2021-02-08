@@ -111,6 +111,7 @@ public interface Validations {
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
+	String vaccineDosesFormat = "vaccineDosesFormat";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
 	String validDateRange = "validDateRange";

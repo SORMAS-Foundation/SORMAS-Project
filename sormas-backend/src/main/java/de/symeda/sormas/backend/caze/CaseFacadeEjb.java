@@ -40,6 +40,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,6 +72,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +114,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -133,6 +138,7 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -195,6 +201,9 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -204,6 +213,7 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.event.EventSummaryDetails;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -264,7 +274,6 @@ import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLoc
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -370,8 +379,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private PortHealthInfoFacadeEjbLocal portHealthInfoFacade;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
@@ -383,6 +390,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
 	private AdditionalTestFacadeEjbLocal additionalTestFacade;
+	@EJB
+	private ExternalJournalService externalJournalService;
+	@EJB
+	private DiseaseVariantService diseaseVariantService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -550,7 +561,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonAddress().get(Location.ID),
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
 				joins.getDistrict().get(District.ID), joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
-				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
+				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), joins.getDiseaseVariant().get(DiseaseVariant.UUID),
+				joins.getDiseaseVariant().get(DiseaseVariant.NAME), caseRoot.get(Case.DISEASE_DETAILS),
 				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
 				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
@@ -591,9 +603,16 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EMAIL_ADDRESS),
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
-				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
-				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
-				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
+				// vaccination
+				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
+				caseRoot.get(Case.FIRST_VACCINATION_DATE), caseRoot.get(Case.LAST_VACCINATION_DATE),
+				caseRoot.get(Case.VACCINE_NAME), caseRoot.get(Case.OTHER_VACCINE_NAME),
+				caseRoot.get(Case.VACCINE_MANUFACTURER), caseRoot.get(Case.OTHER_VACCINE_MANUFACTURER),
+				caseRoot.get(Case.VACCINE_INN), caseRoot.get(Case.VACCINE_BATCH_NUMBER),
+				caseRoot.get(Case.VACCINE_UNII_CODE), caseRoot.get(Case.VACCINE_ATC_CODE),
+				// postpartum
+				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
@@ -1381,7 +1400,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filter = cb.and(filter, reportDateFilter);
-		filter = cb.and(filter, cb.or(sexFilter, birthDateFilter));
+		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
 		filter = cb.and(filter, onsetDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
@@ -1568,6 +1587,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (diseaseChange) {
 			existingCase.setDisease(updatedCaseBulkEditData.getDisease());
+			existingCase.setDiseaseVariant(diseaseVariantService.getByReferenceDto(updatedCaseBulkEditData.getDiseaseVariant()));
 			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
 			existingCase.setPlagueType(updatedCaseBulkEditData.getPlagueType());
 			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
@@ -1608,6 +1628,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
+		if (caze != null) {
+			handleExternalJournalPerson(dto);
+		}
+
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 
 		// Set version number on a new case
@@ -1628,6 +1652,18 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			onCaseChanged(existingCaseDto, caze);
 		}
+	}
+
+	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
+	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 */
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedCase.getPerson().getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
+		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
@@ -1948,9 +1984,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid =
-			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
-		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
+		Map<String, User> responsibleUserByEventByEventUuid =
+			eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+		for (Map.Entry<String, User> entry : responsibleUserByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
 					entry.getValue(),
@@ -1967,7 +2003,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
 					String.format(
-						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 						entry.getValue().getUuid()));
 			}
@@ -2187,6 +2223,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}, checkChangeDate);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(diseaseVariantService.getByReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -2249,7 +2286,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -2453,6 +2499,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -2508,7 +2555,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -3206,6 +3262,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.get(Case.REPORT_DATE),
 			joins.getSymptoms().get(Symptoms.ONSET_DATE),
 			caze.get(Case.FOLLOW_UP_UNTIL),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			caze.get(Case.DISEASE));
 		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
@@ -3230,6 +3287,9 @@ public class CaseFacadeEjb implements CaseFacade {
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
+				case ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS:
+					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
+					break;
 				case FollowUpDto.LAST_NAME:
 					expression = joins.getPerson().get(Person.LAST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
@@ -3248,7 +3308,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (!resultList.isEmpty()) {
 
-			List<String> caseUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
+			List<String> caseUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());
 
 			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
 			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
@@ -3356,7 +3416,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, SormasToSormasShareInfo> sormasToSormasJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
 		cq.select(caseRoot.get(Case.UUID));
-		cq.where(cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
+		cq.where(cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
 		try {
@@ -3373,12 +3433,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * * same externalToken
 	 * * same first name, last name, date of birth, sex (null is considered equal to any sex), disease, reportDate (ignore time), district
 	 *
+	 * The reportDateThreshold allows to return duplicates where
+	 * -reportDateThreshold <= match.reportDate <= reportDateThreshold
+	 *
 	 * @param casePerson
 	 *            - case and person
+	 * @param reportDateThreshold
+	 * 			  - the range bounds on match.reportDate
 	 * @return list of duplicate cases
 	 */
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold) {
+
 		CaseDataDto searchCaze = casePerson.getCaze();
 		PersonDto searchPerson = casePerson.getPerson();
 
@@ -3443,13 +3509,32 @@ public class CaseFacadeEjb implements CaseFacade {
 					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
+			Predicate reportDatePredicate;
+
+			if (reportDateThreshold == 0){
+				// threshold is zero: we want to get exact matches
+				reportDatePredicate = cb.equal(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))
+				);
+			} else{
+				// threshold is nonzero: apply time range of threshold to the reportDate
+				Date reportDate = casePerson.getCaze().getReportDate();
+				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
+				Date dateAfter= new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+
+				reportDatePredicate = cb.between(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(dateBefore)),
+						cb.function("date", Date.class, cb.literal(dateAfter))
+				);
+			}
+
 			combinedPredicate = and(
 				cb,
 				personPredicate,
 				cb.equal(caseRoot.get(Case.DISEASE), searchCaze.getDisease()),
-				cb.equal(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))),
+				reportDatePredicate,
 				cb.equal(caseCaseJoins.getDistrict().get(District.UUID), searchCaze.getDistrict().getUuid()));
 		}
 
@@ -3468,6 +3553,11 @@ public class CaseFacadeEjb implements CaseFacade {
 					getCaseDataByUuid((String) casePersonUuids[0]),
 					personFacade.getPersonByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+		return getDuplicates(casePerson, 0);
 	}
 
 	@LocalBean

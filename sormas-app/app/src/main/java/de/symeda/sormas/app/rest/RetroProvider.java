@@ -108,6 +108,7 @@ public final class RetroProvider {
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
+	private DiseaseVariantFacadeRetro diseaseVariantFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
 	private CampaignFacadeRetro campaignFacadeRetro;
 	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
@@ -757,6 +758,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.diseaseConfigurationFacadeRetro;
+	}
+
+	public static DiseaseVariantFacadeRetro getDiseaseVariantFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.diseaseVariantFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.diseaseVariantFacadeRetro == null) {
+					instance.diseaseVariantFacadeRetro = instance.retrofit.create(DiseaseVariantFacadeRetro.class);
+				}
+			}
+		}
+		return instance.diseaseVariantFacadeRetro;
 	}
 
 	public static FeatureConfigurationFacadeRetro getFeatureConfigurationFacade() throws NoConnectionException {

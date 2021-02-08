@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.55.0-SNAPSHOT</version>
+		<version>1.56.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -131,6 +131,7 @@
 					<!-- Swagger Generation Config -->
 					<resourcePackages>
 						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
+						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
 						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
 					</resourcePackages>
 					<outputDirectory>${basedir}/target/</outputDirectory>
