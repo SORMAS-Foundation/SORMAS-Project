@@ -754,14 +754,14 @@ public interface Captions {
 	String devModeContactEndDate = "devModeContactEndDate";
 	String devModeContactRegion = "devModeContactRegion";
 	String devModeContactStartDate = "devModeContactStartDate";
-	String devModeEventCasePercentate = "devModeEventCasePercentage";
+	String devModeEventCasePercentage = "devModeEventCasePercentage";
 	String devModeEventCount = "devModeEventCount";
 	String devModeEventDisease = "devModeEventDisease";
 	String devModeEventDistrict = "devModeEventDistrict";
 	String devModeEventEndDate = "devModeEventEndDate";
 	String devModeEventMaxContacts = "devModeEventMaxContacts";
-	String devModeEventMinContacts = "devModeEventMinContacts";
 	String devModeEventMaxParticipants = "devModeEventMaxParticipants";
+	String devModeEventMinContacts = "devModeEventMinContacts";
 	String devModeEventMinParticipants = "devModeEventMinParticipants";
 	String devModeEventRegion = "devModeEventRegion";
 	String devModeEventStartDate = "devModeEventStartDate";

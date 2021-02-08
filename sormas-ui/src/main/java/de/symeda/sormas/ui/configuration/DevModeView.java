@@ -391,7 +391,7 @@ public class DevModeView extends AbstractConfigurationView {
 		eventOptionsSecondLineLayout.addComponent(maxContactsPerParticipantField);
 
 		TextField percentageOfCasesField = new TextField();
-		percentageOfCasesField.setCaption(I18nProperties.getCaption(Captions.devModeEventCasePercentate));
+		percentageOfCasesField.setCaption(I18nProperties.getCaption(Captions.devModeEventCasePercentage));
 		eventGeneratorConfigBinder.forField(percentageOfCasesField)
 			.withConverter(new StringToIntegerConverter("Must be a number"))
 			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
