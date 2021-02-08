@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 
 @Stateless
 @LocalBean
@@ -51,6 +53,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private EventService eventService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private VaccinationInfoService vaccinationInfoService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -325,4 +329,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
+		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
+		dateFilter =
+			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
+
+		return dateFilter;
+	}
 }

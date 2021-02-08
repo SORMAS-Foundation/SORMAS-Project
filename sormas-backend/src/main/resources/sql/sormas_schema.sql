@@ -6356,7 +6356,7 @@ ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (disease
 
 INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
               
- -- 2021-02-03
+ -- 2020-02-03
 ALTER TABLE pathogentest ADD COLUMN typingId text;
 ALTER TABLE pathogentest_history ADD COLUMN typingId text;
 
@@ -6378,11 +6378,82 @@ UPDATE exposures SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_I
 UPDATE exposures SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
 
 INSERT INTO schema_version (version_number, comment) VALUES (319, '[SurvNet Interface] Change title of role field in exposures and add new field #4036');
+-- 2021-02-04 Add vaccination for contacts and event participant #4137
+
+CREATE TABLE vaccinationinfo (
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uuid character varying(36) NOT NULL,
+    vaccination varchar(255),
+    vaccinationdoses varchar(512),
+    vaccinationinfosource varchar(255),
+    firstvaccinationdate timestamp,
+    lastvaccinationdate timestamp,
+    vaccinename varchar(255),
+    othervaccinename text,
+    vaccinemanufacturer varchar(255),
+    othervaccinemanufacturer text,
+    vaccineinn text,
+    vaccinebatchnumber text,
+    vaccineuniicode text,
+    vaccineatccode text,
+    sys_period tstzrange not null,
+    primary key (id)
+);
+
+ALTER TABLE vaccinationinfo OWNER TO sormas_user;
+
+CREATE TABLE vaccinationinfo_history (LIKE vaccinationinfo);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON vaccinationinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccinationinfo_history', true);
+ALTER TABLE vaccinationinfo_history OWNER TO sormas_user;
+
+ALTER TABLE contact
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+ALTER TABLE eventparticipant
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_vaccination_info_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE contact.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE contact SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+
+        FOR rec IN SELECT id FROM public.eventparticipant WHERE eventparticipant.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE eventparticipant SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
+
+
+-- 2020-02-04
+ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
+ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
+
 
 -- 2021-02-05 Case identification source #3420
 ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
 ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (320, 'Case identification source #3420');
+INSERT INTO schema_version (version_number, comment) VALUES (322, 'Case identification source #3420');
 
 -- *** Insert new sql commands BEFORE this line ***

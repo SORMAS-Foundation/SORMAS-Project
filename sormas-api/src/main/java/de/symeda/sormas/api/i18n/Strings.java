@@ -886,6 +886,7 @@ public interface Strings {
 	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
 	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
+	String promptExternalIdSurvNet = "promptExternalIdSurvNet";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";

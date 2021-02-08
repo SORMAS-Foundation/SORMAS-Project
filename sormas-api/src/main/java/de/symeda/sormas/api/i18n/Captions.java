@@ -855,6 +855,7 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
@@ -1002,6 +1003,7 @@ public interface Captions {
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
 	String Exposure_wearingPpe = "Exposure.wearingPpe";
+	String Exposure_workEnvironment = "Exposure.workEnvironment";
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
@@ -1821,6 +1823,19 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
+	String VaccinationInfo_firstVaccinationDate = "VaccinationInfo.firstVaccinationDate";
+	String VaccinationInfo_lastVaccinationDate = "VaccinationInfo.lastVaccinationDate";
+	String VaccinationInfo_otherVaccineManufacturer = "VaccinationInfo.otherVaccineManufacturer";
+	String VaccinationInfo_otherVaccineName = "VaccinationInfo.otherVaccineName";
+	String VaccinationInfo_vaccination = "VaccinationInfo.vaccination";
+	String VaccinationInfo_vaccinationDoses = "VaccinationInfo.vaccinationDoses";
+	String VaccinationInfo_vaccinationInfoSource = "VaccinationInfo.vaccinationInfoSource";
+	String VaccinationInfo_vaccineAtcCode = "VaccinationInfo.vaccineAtcCode";
+	String VaccinationInfo_vaccineBatchNumber = "VaccinationInfo.vaccineBatchNumber";
+	String VaccinationInfo_vaccineInn = "VaccinationInfo.vaccineInn";
+	String VaccinationInfo_vaccineManufacturer = "VaccinationInfo.vaccineManufacturer";
+	String VaccinationInfo_vaccineName = "VaccinationInfo.vaccineName";
+	String VaccinationInfo_vaccineUniiCode = "VaccinationInfo.vaccineUniiCode";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";

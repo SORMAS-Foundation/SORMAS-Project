@@ -53,6 +53,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String SEAT_NUMBER = "seatNumber";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String INDOORS = "indoors";
 	public static final String OUTDOORS = "outdoors";
 	public static final String WEARING_MASK = "wearingMask";
@@ -116,6 +117,8 @@ public class ExposureDto extends PseudonymizableDto {
 	private String connectionNumber;
 	@SensitiveData
 	private String seatNumber;
+
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	private YesNoUnknown indoors;
@@ -624,6 +627,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	public YesNoUnknown getProphylaxis() {

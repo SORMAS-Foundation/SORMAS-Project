@@ -106,6 +106,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 	}
 
+	public ComboBox getFacilityTypeGroup() {
+		return facilityTypeGroup;
+	}
+
 	private void setConvertedValue(String propertyId, Object value) {
 		((AbstractField<?>) getField(propertyId)).setConvertedValue(value);
 	}

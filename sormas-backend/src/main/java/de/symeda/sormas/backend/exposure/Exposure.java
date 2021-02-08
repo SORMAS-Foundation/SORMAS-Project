@@ -41,6 +41,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -78,6 +79,8 @@ public class Exposure extends AbstractDomainObject {
 	private String meansOfTransportDetails;
 	private String connectionNumber;
 	private String seatNumber;
+
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	private YesNoUnknown indoors;
@@ -555,6 +558,15 @@ public class Exposure extends AbstractDomainObject {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSeatNumber() {
 		return seatNumber;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	public void setSeatNumber(String seatNumber) {
