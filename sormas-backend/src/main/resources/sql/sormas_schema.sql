@@ -6458,6 +6458,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (322, 'Add UNIQUE co
 ALTER TABLE cases ADD COLUMN bloodorganortissuedonated varchar(255);
 ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (322, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
+INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
 
 -- *** Insert new sql commands BEFORE this line ***
