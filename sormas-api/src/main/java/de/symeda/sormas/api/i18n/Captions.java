@@ -190,6 +190,7 @@ public interface Captions {
 	String caseCreateNew = "caseCreateNew";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
+	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";

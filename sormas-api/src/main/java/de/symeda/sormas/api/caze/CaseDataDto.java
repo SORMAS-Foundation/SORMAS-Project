@@ -31,7 +31,6 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.disease.DiseaseVariantDto;
 import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -186,6 +185,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
+	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -568,6 +569,9 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
+
+	@HideForCountriesExcept
+	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1561,6 +1565,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	public YesNoUnknown getBloodOrganOrTissueDonated() {
+		return bloodOrganOrTissueDonated;
+	}
+
+	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
+		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
 	public boolean isOwnershipHandedOver() {
