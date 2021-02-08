@@ -452,7 +452,7 @@ public class DevModeView extends AbstractConfigurationView {
 		"Football Match",
 		"Tournament",
 		"Festival",
-		"Carinval" };
+		"Carnival" };
 
 	private static Random random() {
 		return ThreadLocalRandom.current();
@@ -463,8 +463,9 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private static int randomInt(int min, int max) {
-		if (max <= min)
+		if (max <= min) {
 			return min;
+		}
 		return min + random().nextInt(max - min);
 	}
 
@@ -646,8 +647,9 @@ public class DevModeView extends AbstractConfigurationView {
 
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
-		List<Disease> diseases = config.getDisease() == null ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true) : null;
 		Disease disease = config.getDisease();
+		List<Disease> diseases = disease == null ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true) : null;
+
 		if (disease == null) {
 			disease = random(diseases);
 			Notification.show("", "Automatically chosen disease: " + disease.getName(), Notification.Type.TRAY_NOTIFICATION);
@@ -853,7 +855,6 @@ public class DevModeView extends AbstractConfigurationView {
 				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), UserProvider.getCurrent().getUserReference());
 				// person
 				// instead of creating new persons everytime, it would be nice if some persons came of the original database
-				// also, some participants should get cases and contacts created for them
 				PersonDto person = PersonDto.build();
 				fillEntity(person, referenceDateTime);
 				person.setSymptomJournalStatus(null);
@@ -883,7 +884,7 @@ public class DevModeView extends AbstractConfigurationView {
 				// generate contacts for some participants
 				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 					.getRandomCaseReferences(
-						new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+						new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
 						numParticipants * 2);
 				int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
 				for (int k = 0; (k < numContacts && (cases != null)); k++) {
@@ -1188,10 +1189,11 @@ public class DevModeView extends AbstractConfigurationView {
 
 		public void setPercentageOfCases(int percentageOfCases) {
 			this.percentageOfCases = percentageOfCases;
-			if (this.percentageOfCases >= 100)
+			if (this.percentageOfCases >= 100) {
 				this.percentageOfCases = 100;
-			if (this.percentageOfCases <= 0)
+			} else if (this.percentageOfCases <= 0) {
 				this.percentageOfCases = 0;
+			}
 		}
 
 	}
