@@ -4,7 +4,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum CaseIdentificationSource {
 
-	DATA_NOT_COLLECTED,
 	UNKNOWN,
 	CONTACT_TRACKING_APP,
 	SUSPICION_REPORT,
