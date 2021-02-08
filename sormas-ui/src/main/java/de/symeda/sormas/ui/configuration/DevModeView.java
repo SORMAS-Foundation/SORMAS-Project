@@ -797,7 +797,8 @@ public class DevModeView extends AbstractConfigurationView {
 		int generatedCases = 0;
 		int generatedContacts = 0;
 
-		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		Disease disease = config.getDisease();
+
 		float baseOffset = random().nextFloat();
 		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
 
@@ -810,23 +811,23 @@ public class DevModeView extends AbstractConfigurationView {
 		long dt = System.nanoTime();
 
 		for (int i = 0; i < config.getEventCount(); i++) {
-			Disease disease = config.getDisease();
-			if (disease == null) {
-				disease = random(diseases);
-			}
-
-			LocalDateTime referenceDateTime =
-				getReferenceDateTime(i, config.getEventCount(), baseOffset, disease, config.getStartDate(), daysBetween);
-
-			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
+			LocalDateTime referenceDateTime;
 
 			EventDto event = EventDto.build();
 
 			// disease
-			event.setDisease(disease); // reset
-			if (event.getDisease() == Disease.OTHER) {
-				event.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
+			if (disease != null) {
+				event.setDisease(disease); // reset
+				if (event.getDisease() == Disease.OTHER) {
+					event.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
+				}
+				referenceDateTime = getReferenceDateTime(i, config.getEventCount(), baseOffset, disease, config.getStartDate(), daysBetween);
+				fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
+			} else {
+				referenceDateTime = getReferenceDateTime(i, config.getEventCount(), baseOffset, Disease.OTHER, config.getStartDate(), daysBetween);
+				fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(Disease.OTHER))
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
 			}
 
 			// title
@@ -863,39 +864,41 @@ public class DevModeView extends AbstractConfigurationView {
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
 
-				// generate cases for some participants
-				if (randomPercent(config.getPercentageOfCases()) && !healthFacilities.isEmpty()) {
-					CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
-					fillEntity(caze, referenceDateTime);
-					caze.setReportingUser(UserProvider.getCurrent().getUserReference());
-					caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
-					caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-					caze.setRegion(config.getRegion());
-					caze.setDistrict(config.getDistrict());
-					FacilityDto facility = random(healthFacilities);
-					caze.setHealthFacility(facility.toReference());
-					caze.setFacilityType(facility.getType());
-					caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
-					FacadeProvider.getCaseFacade().saveCase(caze);
-					eventParticipant.setResultingCase(caze.toReference());
-					generatedCases++;
-				}
+				if (disease != null) {
+					// generate cases for some participants
+					if (randomPercent(config.getPercentageOfCases()) && !healthFacilities.isEmpty()) {
+						CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
+						fillEntity(caze, referenceDateTime);
+						caze.setReportingUser(UserProvider.getCurrent().getUserReference());
+						caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+						caze.setRegion(config.getRegion());
+						caze.setDistrict(config.getDistrict());
+						FacilityDto facility = random(healthFacilities);
+						caze.setHealthFacility(facility.toReference());
+						caze.setFacilityType(facility.getType());
+						caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
+						FacadeProvider.getCaseFacade().saveCase(caze);
+						eventParticipant.setResultingCase(caze.toReference());
+						generatedCases++;
+					}
 
-				// generate contacts for some participants
-				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
-					.getRandomCaseReferences(
-						new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
-						numParticipants * 2);
-				int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
-				for (int k = 0; (k < numContacts && (cases != null)); k++) {
-					ContactDto contact = ContactDto.build(eventParticipant);
-					contact.setDisease(event.getDisease());
-					contact.setCaze(random(cases));
-					contact.setReportingUser(UserProvider.getCurrent().getUserReference());
-					contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
-					contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
-					FacadeProvider.getContactFacade().saveContact(contact);
-					generatedContacts++;
+					// generate contacts for some participants
+					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
+						.getRandomCaseReferences(
+							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
+							numParticipants * 2);
+					int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
+					for (int k = 0; (k < numContacts && (cases != null)); k++) {
+						ContactDto contact = ContactDto.build(eventParticipant);
+						contact.setDisease(event.getDisease());
+						contact.setCaze(random(cases));
+						contact.setReportingUser(UserProvider.getCurrent().getUserReference());
+						contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+						contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
+						FacadeProvider.getContactFacade().saveContact(contact);
+						generatedContacts++;
+					}
 				}
 
 				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
