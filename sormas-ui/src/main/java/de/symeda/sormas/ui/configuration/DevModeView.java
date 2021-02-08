@@ -443,7 +443,9 @@ public class DevModeView extends AbstractConfigurationView {
 		"Rallye",
 		"Demonstration",
 		"Football Match",
-		"Tournament" };
+		"Tournament",
+		"Festival",
+		"Carinval" };
 
 	private static Random random() {
 		return ThreadLocalRandom.current();
@@ -653,6 +655,10 @@ public class DevModeView extends AbstractConfigurationView {
 				.getRandomCaseReferences(
 					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
 					config.getContactCount() * 2);
+			if (cases == null) {
+				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
 		}
 
 		float baseOffset = random().nextFloat();
@@ -864,7 +870,7 @@ public class DevModeView extends AbstractConfigurationView {
 						new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
 						numParticipants * 2);
 				int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
-				for (int k = 0; (k < numContacts && !cases.isEmpty()); k++) {
+				for (int k = 0; (k < numContacts && (cases != null)); k++) {
 					ContactDto contact = ContactDto.build(eventParticipant);
 					contact.setDisease(event.getDisease());
 					contact.setCaze(random(cases));

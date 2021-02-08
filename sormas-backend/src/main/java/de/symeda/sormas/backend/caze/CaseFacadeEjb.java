@@ -1222,6 +1222,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(caze.get(Case.UUID));
 
 		List<String> uuids = em.createQuery(cq).getResultList();
+		if (uuids.isEmpty()) {
+			return null;
+		}
 
 		return new Random().ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
@@ -3439,7 +3442,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * @param casePerson
 	 *            - case and person
 	 * @param reportDateThreshold
-	 * 			  - the range bounds on match.reportDate
+	 *            - the range bounds on match.reportDate
 	 * @return list of duplicate cases
 	 */
 	@Override
@@ -3511,23 +3514,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Predicate reportDatePredicate;
 
-			if (reportDateThreshold == 0){
+			if (reportDateThreshold == 0) {
 				// threshold is zero: we want to get exact matches
 				reportDatePredicate = cb.equal(
-						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-						cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))
-				);
-			} else{
+					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate())));
+			} else {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
 				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter= new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
 
 				reportDatePredicate = cb.between(
-						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-						cb.function("date", Date.class, cb.literal(dateBefore)),
-						cb.function("date", Date.class, cb.literal(dateAfter))
-				);
+					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function("date", Date.class, cb.literal(dateBefore)),
+					cb.function("date", Date.class, cb.literal(dateAfter)));
 			}
 
 			combinedPredicate = and(
