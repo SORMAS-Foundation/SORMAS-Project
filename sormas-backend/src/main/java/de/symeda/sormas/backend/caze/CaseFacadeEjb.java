@@ -2054,13 +2054,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
 			completeness += 0.2f;
 		}
-		if (sampleService.exists((cb, root) -> cb.equal(root.get(Sample.ASSOCIATED_CASE), caze))) {
+		if (sampleService.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
 			completeness += 0.15f;
 		}
 		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
 			completeness += 0.15f;
 		}
-		if (contactService.exists((cb, root) -> cb.equal(root.get(Contact.CAZE), caze))) {
+		if (contactService.exists((cb, root) -> cb.and(contactService.createDefaultFilter(cb, root), cb.equal(root.get(Contact.CAZE), caze)))) {
 			completeness += 0.10f;
 		}
 		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
