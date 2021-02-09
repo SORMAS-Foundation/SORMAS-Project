@@ -739,6 +739,17 @@ public class CaseExportDto implements Serializable {
 
 	@Order(34)
 	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept()
+	public YesNoUnknown getBloodOrganOrTissueDonated() {
+		return bloodOrganOrTissueDonated;
+	}
+
+	@Order(35)
+	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = CaseDataDto.NOSOCOMIAL_OUTBREAK, combined = true)
