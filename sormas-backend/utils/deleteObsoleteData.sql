@@ -7,7 +7,6 @@
 
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS delete_cleanup;
 CREATE TEMPORARY TABLE delete_cleanup
 (
     table_name VARCHAR(255),
@@ -15,7 +14,6 @@ CREATE TEMPORARY TABLE delete_cleanup
     CONSTRAINT delete_cleanup_pkey PRIMARY KEY (table_name, id)
 );
 
-DROP FUNCTION IF EXISTS pg_temp.trunc_register(varchar, varchar, varchar);
 CREATE FUNCTION pg_temp.trunc_register(table_name varchar, fk_id varchar, fk_table varchar) RETURNS void AS
 $func$
 BEGIN
@@ -25,7 +23,6 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS pg_temp.trunc_register(varchar, varchar, varchar, varchar);
 CREATE FUNCTION pg_temp.trunc_register(table_name varchar, id_column varchar, fk_id varchar,
                                        fk_table varchar) RETURNS void AS
 $func$
@@ -36,7 +33,6 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS pg_temp.trunc_delete(varchar, varchar, varchar);
 CREATE FUNCTION pg_temp.trunc_delete(table_name varchar, id_column varchar, id_table varchar) RETURNS void AS
 $func$
 BEGIN
@@ -45,7 +41,6 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS pg_temp.trunc_delete(varchar, varchar);
 CREATE FUNCTION pg_temp.trunc_delete(table_name varchar, id_table varchar) RETURNS void AS
 $func$
 DECLARE
@@ -55,7 +50,6 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS pg_temp.trunc_delete(varchar);
 CREATE FUNCTION pg_temp.trunc_delete(table_name varchar) RETURNS void AS
 $func$
 BEGIN
@@ -63,7 +57,6 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS pg_temp.truncate_rows();
 CREATE FUNCTION pg_temp.truncate_rows() RETURNS void AS
 $func$
 BEGIN
