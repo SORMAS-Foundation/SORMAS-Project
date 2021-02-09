@@ -49,6 +49,11 @@ public interface Validations {
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
+	String externalMessageConversionError = "externalMessageConversionError";
+	String externalMessageDecryptError = "externalMessageDecryptError";
+	String externalMessageDisplayError = "externalMessageDisplayError";
+	String externalMessageFetchError = "externalMessageFetchError";
+	String externalMessageInitError = "externalMessageInitError";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
