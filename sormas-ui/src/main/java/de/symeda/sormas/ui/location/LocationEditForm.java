@@ -54,6 +54,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -206,6 +207,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
 			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
+
+		country.addValueChangeListener(e -> {
+			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
+			if (!isConfiguredServer(countryDto.getIsoCode())) {
+				setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
+			} else {
+				setEnabled(true, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
+			}
+		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
