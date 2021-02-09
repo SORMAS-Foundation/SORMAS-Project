@@ -578,6 +578,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
 				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
 				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				// quarantine
@@ -2372,6 +2374,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
 		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
@@ -2640,6 +2643,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
 		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());

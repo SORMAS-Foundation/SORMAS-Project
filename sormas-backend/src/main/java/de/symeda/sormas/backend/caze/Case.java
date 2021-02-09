@@ -207,6 +207,7 @@ public class Case extends CoreAdo {
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
 	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
 	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
@@ -366,6 +367,11 @@ public class Case extends CoreAdo {
 	private Date prohibitionToWorkUntil;
 
 	private District reportingDistrict;
+
+	/**
+	 * Blood/organ/tissue donation in the last 6 months
+	 */
+	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	private boolean notACaseReasonNegativeTest;
 	private boolean notACaseReasonPhysicianInformation;
@@ -1547,6 +1553,15 @@ public class Case extends CoreAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getBloodOrganOrTissueDonated() {
+		return bloodOrganOrTissueDonated;
+	}
+
+	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
+		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
 	@Column

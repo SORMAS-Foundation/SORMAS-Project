@@ -384,6 +384,9 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown bloodOrganOrTissueDonated;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
@@ -1299,6 +1302,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	public YesNoUnknown getBloodOrganOrTissueDonated() {
+		return bloodOrganOrTissueDonated;
+	}
+
+	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
+		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
