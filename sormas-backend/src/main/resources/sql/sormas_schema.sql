@@ -6460,4 +6460,15 @@ ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
 
+-- 2020-02-09 #3831 SurvNet Adaptations - Create new field “Reinfection” for cases
+ALTER TABLE cases
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (324, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
+
 -- *** Insert new sql commands BEFORE this line ***

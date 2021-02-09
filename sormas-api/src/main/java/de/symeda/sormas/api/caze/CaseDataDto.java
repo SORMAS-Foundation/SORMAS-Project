@@ -184,6 +184,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
+	public static final String RE_INFECTION = "reInfection";
+	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
@@ -566,6 +569,15 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date prohibitionToWorkFrom;
 	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
+
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private YesNoUnknown reInfection;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Date previousInfectionDate;
 
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
@@ -1557,6 +1569,22 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
 	}
 
 	public DistrictReferenceDto getReportingDistrict() {
