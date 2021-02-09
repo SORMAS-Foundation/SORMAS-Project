@@ -178,6 +178,7 @@ public class SampleController {
 			if (cqValue != null) {
 				pathogenTest.setCqValue(Float.parseFloat(cqValue));
 			}
+			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
