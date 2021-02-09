@@ -697,7 +697,6 @@
                         app:dependencyParentField="@{caseDataVaccination}"
                         app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
-
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

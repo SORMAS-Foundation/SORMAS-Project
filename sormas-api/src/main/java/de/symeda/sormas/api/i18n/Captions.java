@@ -316,6 +316,7 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccination = "CaseData.vaccination";
+	String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
