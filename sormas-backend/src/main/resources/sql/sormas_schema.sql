@@ -6355,7 +6355,7 @@ ALTER TABLE cases_history ADD COLUMN diseasevariant_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (diseasevariant_id) REFERENCES diseasevariant(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
-              
+
  -- 2020-02-03
 ALTER TABLE pathogentest ADD COLUMN typingId text;
 ALTER TABLE pathogentest_history ADD COLUMN typingId text;
@@ -6449,11 +6449,22 @@ ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
 
+-- 2020-02-08 Add UNIQUE constraint to documents uuid #3661
+ALTER TABLE ONLY documents ADD CONSTRAINT documents_uuid_key UNIQUE (uuid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (322, 'Add UNIQUE contraint to documents uuid field #3661');
+
+-- 2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414
+ALTER TABLE cases ADD COLUMN bloodorganortissuedonated varchar(255);
+ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
+
 
 -- 2021-02-05 Case identification source #3420
 ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
 ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (322, 'Case identification source #3420');
+INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
 -- *** Insert new sql commands BEFORE this line ***

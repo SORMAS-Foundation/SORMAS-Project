@@ -247,7 +247,7 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventTypeOfPlace}"
                     app:dependencyParentValue="@{TypeOfPlace.OTHER}"
-                    app:softRequired="true"
+                    app:required="true"
                     app:value="@={data.typeOfPlaceText}" />
 
             </LinearLayout>

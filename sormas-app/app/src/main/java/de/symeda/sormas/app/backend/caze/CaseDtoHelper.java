@@ -218,6 +218,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
 
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
+
 		target.setSormasToSormasOriginInfo(
 			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
@@ -445,6 +447,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		} else {
 			target.setReportingDistrict(null);
 		}
+
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));

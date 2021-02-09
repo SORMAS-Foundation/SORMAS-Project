@@ -206,6 +206,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_bloodOrganOrTissueDonated"
+                    app:value="@{data.bloodOrganOrTissueDonated}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_sequelae"
                     app:value="@{data.sequelae}"
                     app:appendValue="@{data.sequelaeDetails}"
