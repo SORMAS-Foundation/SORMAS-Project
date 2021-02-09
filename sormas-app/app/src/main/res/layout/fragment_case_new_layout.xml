@@ -97,6 +97,11 @@
                 app:dependencyParentValue="@{Disease.RABIES}"
                 app:value="@={data.rabiesType}"/>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_diseaseVariant"
+                app:value="@={data.diseaseVariant}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

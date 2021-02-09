@@ -23,6 +23,8 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -70,6 +72,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	private UserRole reportingUserRole;
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	private CaseOutcome outcome;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -160,6 +163,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public Disease getDisease() {
 		return disease;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public CaseCriteria diseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		setDiseaseVariant(diseaseVariant);
+		return this;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
 	}
 
 	public void setRegion(RegionReferenceDto region) {

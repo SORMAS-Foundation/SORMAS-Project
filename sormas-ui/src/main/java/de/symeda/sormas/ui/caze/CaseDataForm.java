@@ -76,10 +76,13 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -114,6 +117,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -163,7 +167,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.DENGUE_FEVER_TYPE,
-									CaseDataDto.RABIES_TYPE))) +
+									CaseDataDto.RABIES_TYPE)),
+							fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORTING_TYPE, CaseDataDto.REPORTING_DISTRICT) +
@@ -196,6 +201,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
 					fluidRowLocs(CaseDataDto.VACCINE, "") +
 					fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
+					fluidRowLocs(CaseDataDto.FIRST_VACCINATION_DATE, CaseDataDto.LAST_VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
+					fluidRowLocs(CaseDataDto.VACCINE_NAME, CaseDataDto.OTHER_VACCINE_NAME) +
+					fluidRowLocs(CaseDataDto.VACCINE_MANUFACTURER, CaseDataDto.OTHER_VACCINE_MANUFACTURER) +
+					fluidRowLocs(CaseDataDto.VACCINE_INN, CaseDataDto.VACCINE_BATCH_NUMBER) +
+					fluidRowLocs(CaseDataDto.VACCINE_UNII_CODE, CaseDataDto.VACCINE_ATC_CODE) +
 					fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
 					fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
 					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
@@ -332,7 +342,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			/*final*/ ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
@@ -340,7 +350,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
 
-			//if(cbCaseClassification.getCaption())
 			addField(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CheckBox.class);
 			addField(CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION, CheckBox.class);
 			addField(CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CheckBox.class);
@@ -639,7 +648,25 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.VACCINE,
 			CaseDataDto.SMALLPOX_VACCINATION_SCAR,
 			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
-			CaseDataDto.VACCINATION_DATE);
+			CaseDataDto.FIRST_VACCINATION_DATE,
+			CaseDataDto.LAST_VACCINATION_DATE);
+
+		ComboBox vaccineName = addField(CaseDataDto.VACCINE_NAME);
+		ComboBox vaccineManufacturer = addField(CaseDataDto.VACCINE_MANUFACTURER);
+		vaccineName.addValueChangeListener(e -> {
+			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
+			if (vaccine != null) {
+				vaccineManufacturer.setValue(vaccine.getManufacturer());
+			}
+		});
+
+		addFields(
+			CaseDataDto.OTHER_VACCINE_NAME,
+			CaseDataDto.OTHER_VACCINE_MANUFACTURER,
+			CaseDataDto.VACCINE_INN,
+			CaseDataDto.VACCINE_BATCH_NUMBER,
+			CaseDataDto.VACCINE_UNII_CODE,
+			CaseDataDto.VACCINE_ATC_CODE);
 
 		// Swiss fields
 		TextField caseIdIsmField = addField(CaseDataDto.CASE_ID_ISM);
@@ -753,6 +780,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(Vaccination.VACCINATED),
 				true);
 		}
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			List<DiseaseVariantReferenceDto> variants;
+			if (disease != null && disease.isVariantAllowed()) {
+				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			} else {
+				variants = Collections.emptyList();
+			}
+			FieldHelper.updateItems(diseaseVariantField, variants);
+			diseaseVariantField.setVisible(isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && !variants.isEmpty());
+		});
 		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
@@ -783,19 +821,110 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(YesNoUnknown.YES),
 				true);
 		}
-		if (isVisibleAllowed(CaseDataDto.VACCINATION_DATE)) {
+
+		if (isVisibleAllowed(CaseDataDto.FIRST_VACCINATION_DATE)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				CaseDataDto.VACCINATION_DATE,
-				CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
-				Arrays.asList(YesNoUnknown.YES),
+				CaseDataDto.FIRST_VACCINATION_DATE,
+				CaseDataDto.VACCINATION,
+				Arrays.asList(Vaccination.VACCINATED),
 				true);
-			FieldHelper
-				.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
 		}
+
+		if (isVisibleAllowed(CaseDataDto.LAST_VACCINATION_DATE)) {
+
+			if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED)) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					CaseDataDto.LAST_VACCINATION_DATE,
+					CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
+					Collections.singletonList(YesNoUnknown.YES),
+					true);
+			} else {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					CaseDataDto.LAST_VACCINATION_DATE,
+					CaseDataDto.VACCINATION,
+					Collections.singletonList(Vaccination.VACCINATED),
+					true);
+			}
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_NAME)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_NAME,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.OTHER_VACCINE_NAME,
+				CaseDataDto.VACCINE_NAME,
+				Collections.singletonList(Vaccine.OTHER),
+				true);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_MANUFACTURER)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_MANUFACTURER,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.OTHER_VACCINE_MANUFACTURER,
+				CaseDataDto.VACCINE_MANUFACTURER,
+				Collections.singletonList(VaccineManufacturer.OTHER),
+				true);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_INN)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_INN,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_BATCH_NUMBER)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_BATCH_NUMBER,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_UNII_CODE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_UNII_CODE,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.VACCINE_ATC_CODE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE_ATC_CODE,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
+		}
+
 		if (isVisibleAllowed(CaseDataDto.VACCINE)) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINE, CaseDataDto.VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINE,
+				CaseDataDto.VACCINATION,
+				Collections.singletonList(Vaccination.VACCINATED),
+				true);
 		}
+
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -1013,6 +1142,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
 					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT,
 					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE);
+			}
+
+			// Make external ID field read-only when SORMAS is connected to a SurvNet instance
+			if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+				setEnabled(false, CaseDataDto.EXTERNAL_ID);
+				((TextField) getField(CaseDataDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
 			}
 		});
 	}

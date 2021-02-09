@@ -42,6 +42,8 @@
         <import type="de.symeda.sormas.api.caze.QuarantineReason" />
         <import type="de.symeda.sormas.api.caze.CovidTestReason" />
         <import type="de.symeda.sormas.api.caze.EndOfIsolationReason" />
+        <import type="de.symeda.sormas.api.caze.Vaccine" />
+        <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -254,6 +256,11 @@
                     app:value="@={data.rabiesType}"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.RABIES}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_diseaseVariant"
+                    app:value="@={data.diseaseVariant}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
@@ -680,6 +687,11 @@
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_vaccine"
                     app:value="@={data.vaccine}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_vaccinationDoses"
+                    app:value="@={data.vaccinationDoses}"
                     app:dependencyParentField="@{caseDataVaccination}"
                     app:dependencyParentValue="@{Vaccination.VACCINATED}"
                     style="@style/ControlSingleColumnStyle" />
@@ -690,13 +702,15 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/caseData_vaccinationDate"
-                        app:value="@={data.vaccinationDate}"
+                        android:id="@+id/caseData_firstVaccinationDate"
+                        app:value="@={data.firstVaccinationDate}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/caseData_vaccinationDoses"
-                        app:value="@={data.vaccinationDoses}"
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseData_lastVaccinationDate"
+                        app:value="@={data.lastVaccinationDate}"
                         app:dependencyParentField="@{caseDataVaccination}"
                         app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -727,6 +741,79 @@
                     android:text="@string/caption_smallpox_vaccination_scar_img"
                     android:id="@+id/smallpox_vaccination_scar_img"
                     style="@style/ImageCaptionStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/caseData_vaccineName"
+                        app:value="@={data.vaccineName}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_otherVaccineName"
+                        app:value="@={data.otherVaccineName}"
+                        app:dependencyParentField="@{caseDataVaccineName}"
+                        app:dependencyParentValue="@{Vaccine.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/caseData_vaccineManufacturer"
+                        app:value="@={data.vaccineManufacturer}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_otherVaccineManufacturer"
+                        app:value="@={data.otherVaccineManufacturer}"
+                        app:dependencyParentField="@{caseDataVaccineManufacturer}"
+                        app:dependencyParentValue="@{VaccineManufacturer.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_vaccineInn"
+                        app:value="@={data.vaccineInn}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_vaccineBatchNumber"
+                        app:value="@={data.vaccineBatchNumber}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_vaccineUniiCode"
+                        app:value="@={data.vaccineUniiCode}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_vaccineAtcCode"
+                        app:value="@={data.vaccineAtcCode}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

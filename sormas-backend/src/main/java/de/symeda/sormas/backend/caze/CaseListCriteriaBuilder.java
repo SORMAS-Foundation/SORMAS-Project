@@ -33,6 +33,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -174,6 +175,8 @@ public class CaseListCriteriaBuilder {
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
+			joins.getDiseaseVariant().get(DiseaseVariant.UUID),
+			joins.getDiseaseVariant().get(DiseaseVariant.NAME),
 			root.get(Case.DISEASE_DETAILS),
 			root.get(Case.CASE_CLASSIFICATION),
 			root.get(Case.INVESTIGATION_STATUS),
@@ -252,6 +255,8 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPointOfEntry().get(PointOfEntry.NAME));
 		case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 			return Collections.singletonList(joins.getSurveillanceOfficer().get(User.UUID));
+		case CaseIndexDto.DISEASE_VARIANT:
+			return Collections.singletonList(joins.getDiseaseVariant().get(DiseaseVariant.NAME));
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}

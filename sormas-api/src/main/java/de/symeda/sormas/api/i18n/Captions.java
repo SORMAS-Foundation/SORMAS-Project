@@ -212,6 +212,7 @@ public interface Captions {
 	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
@@ -224,6 +225,7 @@ public interface Captions {
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
+	String CaseData_firstVaccinationDate = "CaseData.firstVaccinationDate";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
@@ -236,6 +238,7 @@ public interface Captions {
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
+	String CaseData_lastVaccinationDate = "CaseData.lastVaccinationDate";
 	String CaseData_latestEventId = "CaseData.latestEventId";
 	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
 	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
@@ -252,6 +255,8 @@ public interface Captions {
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
+	String CaseData_otherVaccineManufacturer = "CaseData.otherVaccineManufacturer";
+	String CaseData_otherVaccineName = "CaseData.otherVaccineName";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
@@ -310,10 +315,15 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccination = "CaseData.vaccination";
-	String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
+	String CaseData_vaccineAtcCode = "CaseData.vaccineAtcCode";
+	String CaseData_vaccineBatchNumber = "CaseData.vaccineBatchNumber";
+	String CaseData_vaccineInn = "CaseData.vaccineInn";
+	String CaseData_vaccineManufacturer = "CaseData.vaccineManufacturer";
+	String CaseData_vaccineName = "CaseData.vaccineName";
+	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
@@ -831,6 +841,7 @@ public interface Captions {
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
+	String Event_responsibleUser = "Event.responsibleUser";
 	String Event_riskLevel = "Event.riskLevel";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
@@ -843,12 +854,12 @@ public interface Captions {
 	String Event_srcTelNo = "Event.srcTelNo";
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
-	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
 	String Event_transregionalOutbreak = "Event.transregionalOutbreak";
 	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
@@ -858,6 +869,8 @@ public interface Captions {
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
+	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
+	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
 	String EventAction_eventRiskLevel = "EventAction.eventRiskLevel";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
@@ -960,6 +973,7 @@ public interface Captions {
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureDate = "Exposure.exposureDate";
+	String Exposure_exposureRole = "Exposure.exposureRole";
 	String Exposure_exposureType = "Exposure.exposureType";
 	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
@@ -975,7 +989,6 @@ public interface Captions {
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
-	String Exposure_patientExpositionRole = "Exposure.patientExpositionRole";
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
@@ -994,6 +1007,7 @@ public interface Captions {
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
 	String Exposure_wearingPpe = "Exposure.wearingPpe";
+	String Exposure_workEnvironment = "Exposure.workEnvironment";
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
@@ -1215,6 +1229,7 @@ public interface Captions {
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	String PathogenTest_typingId = "PathogenTest.typingId";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
@@ -1812,6 +1827,19 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
+	String VaccinationInfo_firstVaccinationDate = "VaccinationInfo.firstVaccinationDate";
+	String VaccinationInfo_lastVaccinationDate = "VaccinationInfo.lastVaccinationDate";
+	String VaccinationInfo_otherVaccineManufacturer = "VaccinationInfo.otherVaccineManufacturer";
+	String VaccinationInfo_otherVaccineName = "VaccinationInfo.otherVaccineName";
+	String VaccinationInfo_vaccination = "VaccinationInfo.vaccination";
+	String VaccinationInfo_vaccinationDoses = "VaccinationInfo.vaccinationDoses";
+	String VaccinationInfo_vaccinationInfoSource = "VaccinationInfo.vaccinationInfoSource";
+	String VaccinationInfo_vaccineAtcCode = "VaccinationInfo.vaccineAtcCode";
+	String VaccinationInfo_vaccineBatchNumber = "VaccinationInfo.vaccineBatchNumber";
+	String VaccinationInfo_vaccineInn = "VaccinationInfo.vaccineInn";
+	String VaccinationInfo_vaccineManufacturer = "VaccinationInfo.vaccineManufacturer";
+	String VaccinationInfo_vaccineName = "VaccinationInfo.vaccineName";
+	String VaccinationInfo_vaccineUniiCode = "VaccinationInfo.vaccineUniiCode";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";

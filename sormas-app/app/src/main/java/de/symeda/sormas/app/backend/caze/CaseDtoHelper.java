@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.disease.DiseaseVariantDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -100,6 +101,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DatabaseHelper.getDiseaseVariantDao().getByReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -138,7 +140,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 		target.setEpidNumber(source.getEpidNumber());
 		target.setCaseOrigin(source.getCaseOrigin());
 
@@ -233,6 +244,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DiseaseVariantDtoHelper.toReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -356,7 +368,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 		target.setEpidNumber(source.getEpidNumber());
 		target.setCaseOrigin(source.getCaseOrigin());
 

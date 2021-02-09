@@ -29,6 +29,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -44,6 +48,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 
 public class EventParticipantExportDto implements Serializable {
 
@@ -148,6 +153,20 @@ public class EventParticipantExportDto implements Serializable {
 	private String birthCountry;
 	private String citizenship;
 
+	private Vaccination vaccination;
+	private String vaccinationDoses;
+	private VaccinationInfoSource vaccinationInfoSource;
+	private Date firstVaccinationDate;
+	private Date lastVaccinationDate;
+	private Vaccine vaccineName;
+	private String otherVaccineName;
+	private VaccineManufacturer vaccineManufacturer;
+	private String otherVaccineManufacturer;
+	private String vaccineInn;
+	private String vaccineBatchNumber;
+	private String vaccineUniiCode;
+	private String vaccineAtcCode;
+
 	private String caseUuid;
 
 	private List<EmbeddedSampleExportDto> eventParticipantSamples = new ArrayList<>();
@@ -165,7 +184,12 @@ public class EventParticipantExportDto implements Serializable {
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
 									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid,
-									 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName) {
+									 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+									 // vaccination info
+									 Vaccination vaccination, String vaccinationDoses, VaccinationInfoSource vaccinationInfoSource, Date firstVaccinationDate, Date lastVaccinationDate,
+									 Vaccine vaccineName, String otherVaccineName, VaccineManufacturer vaccineManufacturer, String otherVaccineManufacturer,
+									 String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode
+									 ) {
     	//@formatter:on
 
 		this.id = id;
@@ -216,6 +240,20 @@ public class EventParticipantExportDto implements Serializable {
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
+
+		this.vaccination = vaccination;
+		this.vaccinationDoses = vaccinationDoses;
+		this.vaccinationInfoSource = vaccinationInfoSource;
+		this.firstVaccinationDate = firstVaccinationDate;
+		this.lastVaccinationDate = lastVaccinationDate;
+		this.vaccineName = vaccineName;
+		this.otherVaccineName = otherVaccineName;
+		this.vaccineManufacturer = vaccineManufacturer;
+		this.otherVaccineManufacturer = otherVaccineManufacturer;
+		this.vaccineInn = vaccineInn;
+		this.vaccineBatchNumber = vaccineBatchNumber;
+		this.vaccineUniiCode = vaccineUniiCode;
+		this.vaccineAtcCode = vaccineAtcCode;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
@@ -379,6 +417,84 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(45)
+	@ExportProperty(VaccinationInfoDto.VACCINATION)
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	@Order(46)
+	@ExportProperty(VaccinationInfoDto.VACCINATION_DOSES)
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
+	}
+
+	@Order(45)
+	@ExportProperty(VaccinationInfoDto.VACCINATION_INFO_SOURCE)
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	@Order(46)
+	@ExportProperty(VaccinationInfoDto.FIRST_VACCINATION_DATE)
+	public Date getFirstVaccinationDate() {
+		return firstVaccinationDate;
+	}
+
+	@Order(47)
+	@ExportProperty(VaccinationInfoDto.LAST_VACCINATION_DATE)
+	public Date getLastVaccinationDate() {
+		return lastVaccinationDate;
+	}
+
+	@Order(48)
+	@ExportProperty(VaccinationInfoDto.VACCINE_NAME)
+	public Vaccine getVaccineName() {
+		return vaccineName;
+	}
+
+	@Order(49)
+	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_NAME)
+	public String getOtherVaccineName() {
+		return otherVaccineName;
+	}
+
+	@Order(50)
+	@ExportProperty(VaccinationInfoDto.VACCINE_MANUFACTURER)
+	public VaccineManufacturer getVaccineManufacturer() {
+		return vaccineManufacturer;
+	}
+
+	@Order(51)
+	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER)
+	public String getOtherVaccineManufacturer() {
+		return otherVaccineManufacturer;
+	}
+
+	@Order(52)
+	@ExportProperty(VaccinationInfoDto.VACCINE_INN)
+	public String getVaccineInn() {
+		return vaccineInn;
+	}
+
+	@Order(53)
+	@ExportProperty(VaccinationInfoDto.VACCINE_BATCH_NUMBER)
+	public String getVaccineBatchNumber() {
+		return vaccineBatchNumber;
+	}
+
+	@Order(54)
+	@ExportProperty(VaccinationInfoDto.VACCINE_UNII_CODE)
+	public String getVaccineUniiCode() {
+		return vaccineUniiCode;
+	}
+
+	@Order(55)
+	@ExportProperty(VaccinationInfoDto.VACCINE_ATC_CODE)
+	public String getVaccineAtcCode() {
+		return vaccineAtcCode;
+	}
+
+	@Order(60)
 	@ExportProperty(EventParticipantExportDto.SAMPLE_INFORMATION)
 	public String getOtherSamplesString() {
 		StringBuilder samples = new StringBuilder();
@@ -391,103 +507,103 @@ public class EventParticipantExportDto implements Serializable {
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
 	}
 
-	@Order(46)
+	@Order(61)
 	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
 	public String getInvolvmentDescription() {
 		return involvmentDescription;
 	}
 
-	@Order(50)
+	@Order(62)
 	@ExportProperty(EventDto.UUID)
 	public String getEventUuid() {
 		return eventUuid;
 	}
 
-	@Order(51)
+	@Order(63)
 	@ExportProperty(EventDto.EVENT_STATUS)
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
 
-	@Order(52)
+	@Order(64)
 	@ExportProperty(EventDto.EVENT_INVESTIGATION_STATUS)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
-	@Order(53)
+	@Order(65)
 	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
 	public Disease getEventDisease() {
 		return eventDisease;
 	}
 
-	@Order(54)
+	@Order(66)
 	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
 
-	@Order(55)
+	@Order(67)
 	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
 	public Date getEventStartDate() {
 		return eventStartDate;
 	}
 
-	@Order(56)
+	@Order(68)
 	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
 	public Date getEventEndDate() {
 		return eventEndDate;
 	}
 
-	@Order(57)
+	@Order(69)
 	@ExportProperty(EventParticipantExportDto.EVENT_TITLE)
 	public String getEventTitle() {
 		return eventTitle;
 	}
 
-	@Order(58)
+	@Order(70)
 	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
 	public String getEventDesc() {
 		return eventDesc;
 	}
 
-	@Order(59)
+	@Order(71)
 	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
 	public String getEventRegion() {
 		return eventRegion;
 	}
 
-	@Order(60)
+	@Order(72)
 	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
 	public String getEventDistrict() {
 		return eventDistrict;
 	}
 
-	@Order(61)
+	@Order(73)
 	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
 	public String getEventCommunity() {
 		return eventCommunity;
 	}
 
-	@Order(62)
+	@Order(74)
 	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
 	public String getEventCity() {
 		return eventCity;
 	}
 
-	@Order(63)
+	@Order(75)
 	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
 	public String getEventStreet() {
 		return eventStreet;
 	}
 
-	@Order(64)
+	@Order(76)
 	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
 	public String getEventHouseNumber() {
 		return eventHouseNumber;
 	}
 
-	@Order(65)
+	@Order(77)
 	@ExportProperty(EventParticipantExportDto.CONTACT_COUNT)
 	public Long getContactCount() {
 		return contactCount;

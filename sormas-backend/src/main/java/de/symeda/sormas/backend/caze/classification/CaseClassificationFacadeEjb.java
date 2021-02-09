@@ -208,7 +208,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY))));
 		confirmed = allOf(
 			suspect,
-			notInStartDateRange(CaseDataDto.VACCINATION_DATE, 30),
+			notInStartDateRange(CaseDataDto.LAST_VACCINATION_DATE, 30),
 			xOf(
 				1,
 				allOf(

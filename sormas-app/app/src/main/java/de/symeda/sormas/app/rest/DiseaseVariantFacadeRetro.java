@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,20 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.exposure;
+package de.symeda.sormas.app.rest;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.List;
 
-public enum PatientExpositionRole {
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-	NOT_COLLECTED,
-	UNKNOWN,
-	WORKING_AT,
-	ACCOMMODATED_IN,
-	CARED_FOR,
-	OTHER;
+public interface DiseaseVariantFacadeRetro {
 
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+	@GET("diseasevariants/all/{since}")
+	Call<List<DiseaseVariantDto>> pullAllSince(@Path("since") long since);
+
+	@POST("diseasevariants/query")
+	Call<List<DiseaseVariantDto>> pullByUuids(@Body List<String> uuids);
+
+	@GET("diseasevariants/uuids")
+	Call<List<String>> pullUuids();
+
 }

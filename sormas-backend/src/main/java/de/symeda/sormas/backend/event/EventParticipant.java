@@ -19,14 +19,17 @@ package de.symeda.sormas.backend.event;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
@@ -34,6 +37,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity
 @Audited
@@ -48,6 +52,7 @@ public class EventParticipant extends CoreAdo {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String VACCINATION_INFO = "vaccinationInfo";
 
 	private User reportingUser;
 	private Event event;
@@ -57,6 +62,7 @@ public class EventParticipant extends CoreAdo {
 	private Set<Sample> samples;
 	private Region region;
 	private District district;
+	private VaccinationInfo vaccinationInfo;
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -135,5 +141,15 @@ public class EventParticipant extends CoreAdo {
 
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public VaccinationInfo getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }

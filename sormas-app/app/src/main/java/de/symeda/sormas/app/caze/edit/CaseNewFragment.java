@@ -40,8 +40,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
@@ -59,6 +61,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	private List<Item> sexList;
 	private List<Item> presentConditionList;
 	private List<Item> diseaseList;
+	private List<Item> diseaseVariantList;
 	private List<Item> plagueTypeList;
 	private List<Item> dengueFeverTypeList;
 	private List<Item> rabiesTypeList;
@@ -101,6 +104,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 		rabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
@@ -159,7 +164,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDisease.addValueChangedListener(e -> {
 			contentBinding.rapidCaseEntryCheckBox.setVisibility(
 				e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
+			updateDiseaseVariantsField(contentBinding);
 		});
+		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -299,6 +306,15 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		}
 	}
 
+	private void updateDiseaseVariantsField(FragmentCaseNewLayoutBinding contentBinding) {
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList.clear();
+		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
+		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
+		contentBinding.caseDataDiseaseVariant.setValue(null);
+		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+	}
+
 	@Override
 	public int getEditLayout() {
 		return R.layout.fragment_case_new_layout;
@@ -318,6 +334,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		record.setPointOfEntryDetails(lastCase.getPointOfEntryDetails());
 		record.setReportDate(lastCase.getReportDate());
 		record.setDisease(lastCase.getDisease());
+		record.setDiseaseVariant(lastCase.getDiseaseVariant());
 		record.setDiseaseDetails(lastCase.getDiseaseDetails());
 		record.setCaseOrigin(lastCase.getCaseOrigin());
 

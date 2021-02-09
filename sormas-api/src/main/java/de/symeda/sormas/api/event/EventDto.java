@@ -20,6 +20,7 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -60,6 +61,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String TRAVEL_DATE = "travelDate";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -72,7 +74,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -110,6 +112,8 @@ public class EventDto extends PseudonymizableDto {
 	private String connectionNumber;
 	private Date travelDate;
 
+	private WorkEnvironment workEnvironment;
+
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -123,7 +127,7 @@ public class EventDto extends PseudonymizableDto {
 	private Disease disease;
 	private String diseaseDetails;
 	@SensitiveData
-	private UserReferenceDto surveillanceOfficer;
+	private UserReferenceDto responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
 	private Double reportLon;
@@ -319,6 +323,14 @@ public class EventDto extends PseudonymizableDto {
 		this.travelDate = travelDate;
 	}
 
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
+	}
+
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
@@ -423,12 +435,12 @@ public class EventDto extends PseudonymizableDto {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public String getTypeOfPlaceText() {
