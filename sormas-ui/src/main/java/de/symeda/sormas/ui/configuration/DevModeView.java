@@ -869,6 +869,7 @@ public class DevModeView extends AbstractConfigurationView {
 					if (randomPercent(config.getPercentageOfCases()) && !healthFacilities.isEmpty()) {
 						CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
 						fillEntity(caze, referenceDateTime);
+						caze.setDisease(event.getDisease());
 						caze.setReportingUser(UserProvider.getCurrent().getUserReference());
 						caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
