@@ -78,6 +78,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+			fluidRowLocs(LocationDto.COUNTRY, "", ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
@@ -194,6 +195,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		tfLongitude.setConverter(stringToAngularLocationConverter);
 		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
+		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
@@ -202,7 +204,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
 		region.addValueChangeListener(e -> {
@@ -292,6 +294,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				facilityDetails.clear();
 			}
 		});
+		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
