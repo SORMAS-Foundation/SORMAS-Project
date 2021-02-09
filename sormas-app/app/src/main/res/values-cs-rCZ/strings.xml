@@ -116,10 +116,10 @@
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Attended by</string>
     <string name="caption_case_clinical_visits">Clinical Assessments</string>
-    <string name="caption_case_contacts">Case Contacts</string>
-    <string name="caption_case_epidemiological_data">Epidemiological Info</string>
-    <string name="caption_case_fatality_rate">Case Fatality Rate</string>
-    <string name="caption_case_health_conditions">Pre-Existing Conditions</string>
+    <string name="caption_case_contacts">Kontakty případu</string>
+    <string name="caption_case_epidemiological_data">Epidemiologické údaje</string>
+    <string name="caption_case_fatality_rate">Míra úmrtnosti případů</string>
+    <string name="caption_case_health_conditions">Předchozí existující podmínky</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_maternal_history">Maternal History</string>
