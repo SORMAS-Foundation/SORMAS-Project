@@ -646,6 +646,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
+		addField(CaseDataDto.VACCINATION);
+		addField(CaseDataDto.VACCINATION_DOSES)
+				.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
+
 		addFields(
 			CaseDataDto.VACCINATION,
 			CaseDataDto.VACCINATION_DOSES,
