@@ -30,7 +30,6 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,8 +39,6 @@ public class LabMessageFacadeEjbTest {
 	private EntityManager em;
 	@Mock
 	private LabMessageService labMessageService;
-	@Mock
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
