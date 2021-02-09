@@ -222,6 +222,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<SampleDto> getByEventParticipantUuids(List<String> eventParticipantUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return sampleService.getByEventParticipantUuids(eventParticipantUuids)
+			.stream()
+			.map(s -> convertToDto(s, pseudonymizer))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();

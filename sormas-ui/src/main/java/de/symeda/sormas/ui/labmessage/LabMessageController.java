@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -107,15 +108,12 @@ public class LabMessageController {
 					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
 					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 
-//					TODO: Add picking of event participants
-//					EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria = new EventParticipantSimilarityCriteria();
-//					eventParticipantSimilarityCriteria.setPerson(selectedPerson);
-//					eventParticipantSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-//					List<SimilarEventParticipantDto> similarEventParticipants =
-//						FacadeProvider.getEventParticipantFacade().getSimilarEventParticipants(eventParticipantSimilarityCriteria);
-//
-//					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants);
-					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, null, selectedPersonDto);
+					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+					eventParticipantCriteria.person(selectedPerson);
+					List<SimilarEventParticipantDto> similarEventParticipants =
+						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+
+					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
 			}, false);
 	}
@@ -161,6 +159,20 @@ public class LabMessageController {
 				} else {
 					pickOrCreateSample(contactDto, labMessageDto, samples);
 				}
+			} else if (similarEntriesDto.getEventParticipant() != null) {
+				EventParticipantDto eventParticipantDto =
+					FacadeProvider.getEventParticipantFacade().getByUuid(similarEntriesDto.getEventParticipant().getUuid());
+				SampleCriteria criteria = new SampleCriteria();
+				criteria.eventParticipant(eventParticipantDto.toReference());
+				criteria.setDisease(labMessageDto.getTestedDisease());
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByEventParticipantUuids(Arrays.asList(eventParticipantDto.getUuid()));
+				if (samples.isEmpty()) {
+					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantDto.toReference()), labMessageDto);
+				} else {
+					pickOrCreateSample(eventParticipantDto, labMessageDto, samples);
+				}
+			} else {
+				throw new UnsupportedOperationException();
 			}
 		});
 
@@ -288,6 +300,8 @@ public class LabMessageController {
 				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((CaseDataDto) dto).toReference()), labMessageDto);
 			} else if (ContactDto.class.equals(dto.getClass())) {
 				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((ContactDto) dto).toReference()), labMessageDto);
+			} else if (EventParticipantDto.class.equals(dto.getClass())) {
+				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((EventParticipantDto) dto).toReference()), labMessageDto);
 			}
 			window.close();
 		});

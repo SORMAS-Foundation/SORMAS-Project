@@ -248,6 +248,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Sample> getByEventParticipantUuids(List<String> eventParticipantUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, EventParticipant> eventParticipantJoin = sampleRoot.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+
+		Predicate filter = cb.and(createDefaultFilter(cb, sampleRoot), eventParticipantJoin.get(AbstractDomainObject.UUID).in(eventParticipantUuids));
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 
 		if (CollectionUtils.isEmpty(caseIds)) {
