@@ -256,7 +256,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	protected Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+	public Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
