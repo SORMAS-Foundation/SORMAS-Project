@@ -576,6 +576,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
 				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				// quarantine
@@ -2054,13 +2055,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
 			completeness += 0.2f;
 		}
-		if (sampleService.getSampleCountByCase(caze) > 0) {
+		if (sampleService.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
 			completeness += 0.15f;
 		}
 		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
 			completeness += 0.15f;
 		}
-		if (contactService.getContactCountByCase(caze) > 0) {
+		if (contactService.exists((cb, root) -> cb.and(contactService.createDefaultFilter(cb, root), cb.equal(root.get(Contact.CAZE), caze)))) {
 			completeness += 0.10f;
 		}
 		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
@@ -2370,6 +2371,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		return target;
 	}
@@ -2632,6 +2634,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
@@ -3220,21 +3223,13 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean hasPositiveLabResult(String caseUuid) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-
-		final CriteriaQuery<Sample> query = cb.createQuery(Sample.class);
+		final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> query = criteriaBuilder.createQuery(Sample.class);
 		final Root<Sample> sampleRoot = query.from(Sample.class);
-
 		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
-
-		query.select(sampleRoot);
-		final Predicate casePredicate = cb.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
-		final Predicate testPositivityPredicate = cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
-		query.where(cb.and(casePredicate, testPositivityPredicate));
-
-		final TypedQuery<Sample> typedQuery = em.createQuery(query);
-
-		return typedQuery.getResultList().size() > 0;
+		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
+		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
+		return sampleService.exists((cb, root) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
 	@Override
@@ -3511,23 +3506,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Predicate reportDatePredicate;
 
-			if (reportDateThreshold == 0){
+			if (reportDateThreshold == 0) {
 				// threshold is zero: we want to get exact matches
 				reportDatePredicate = cb.equal(
-						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-						cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))
-				);
-			} else{
+					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate())));
+			} else {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
 				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter= new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
 
 				reportDatePredicate = cb.between(
-						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-						cb.function("date", Date.class, cb.literal(dateBefore)),
-						cb.function("date", Date.class, cb.literal(dateAfter))
-				);
+					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function("date", Date.class, cb.literal(dateBefore)),
+					cb.function("date", Date.class, cb.literal(dateAfter)));
 			}
 
 			combinedPredicate = and(

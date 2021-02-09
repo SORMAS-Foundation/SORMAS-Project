@@ -12,6 +12,7 @@ public interface Validations {
 
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
+	String afterDateWithDate = "afterDateWithDate";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
@@ -48,6 +49,11 @@ public interface Validations {
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
+	String externalMessageConversionError = "externalMessageConversionError";
+	String externalMessageDecryptError = "externalMessageDecryptError";
+	String externalMessageDisplayError = "externalMessageDisplayError";
+	String externalMessageFetchError = "externalMessageFetchError";
+	String externalMessageInitError = "externalMessageInitError";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";

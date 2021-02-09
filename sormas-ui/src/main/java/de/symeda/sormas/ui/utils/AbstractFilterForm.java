@@ -20,7 +20,6 @@ import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -148,10 +147,6 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 		String caption = I18nProperties.getPrefixCaption(propertyI18nPrefix, propertyId, field.getCaption());
 		setFieldCaption(field, caption);
-
-		if (TextField.class.isAssignableFrom(field.getClass())) {
-			((TextField) field).addTextChangeListener(e -> field.setValue(e.getText()));
-		}
 
 		field.addValueChangeListener(e -> {
 			onFieldValueChange(propertyId, e);

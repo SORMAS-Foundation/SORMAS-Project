@@ -190,6 +190,7 @@ public interface Captions {
 	String caseCreateNew = "caseCreateNew";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
+	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
@@ -1225,9 +1226,11 @@ public interface Captions {
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	String PathogenTest_typingId = "PathogenTest.typingId";
+	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
+	String pathogenTestSelect = "pathogenTestSelect";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String Person = "Person";
