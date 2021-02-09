@@ -168,6 +168,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.RABIES_TYPE)),
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
+					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORTING_TYPE, CaseDataDto.REPORTING_DISTRICT) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
@@ -318,6 +319,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(CaseDataDto.OUTCOME, NullableOptionGroup.class);
+		addField(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED, NullableOptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, NullableOptionGroup.class);
 
 		addField(CaseDataDto.REPORTING_TYPE);
