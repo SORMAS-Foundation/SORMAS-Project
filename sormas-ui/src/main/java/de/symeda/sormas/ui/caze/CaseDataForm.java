@@ -76,6 +76,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -144,6 +145,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC) +
+					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
+							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
+					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_DETAILS) +
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
 							fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
@@ -328,13 +332,30 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			/*final*/ ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
 			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
+
+			//if(cbCaseClassification.getCaption())
+			addField(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CheckBox.class);
+			addField(CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION, CheckBox.class);
+			addField(CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CheckBox.class);
+			addField(CaseDataDto.NOT_A_CASE_REASON_OTHER, CheckBox.class);
+			addField(CaseDataDto.NOT_A_CASE_REASON_DETAILS, TextField.class);
+
+			FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					Arrays.asList(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
+							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER),
+					CaseDataDto.CASE_CLASSIFICATION,
+					CaseClassification.NO_CASE,
+					true);
+
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.NOT_A_CASE_REASON_DETAILS, CaseDataDto.NOT_A_CASE_REASON_OTHER, true, true);
 		} else {
 			final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);

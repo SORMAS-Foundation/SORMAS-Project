@@ -572,8 +572,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
-				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
-				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
+				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
+				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
+				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				// quarantine
@@ -2351,6 +2353,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
+
 		return target;
 	}
 
@@ -2602,6 +2610,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));

@@ -6296,4 +6296,24 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-02-10 SurvNet Adaptations - Create new field “Suspicious case” to cases
+
+ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonNegativeTest boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonPhysicianInformation boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonDifferentPathogen boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonOther boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'SurvNet Adaptations - Create new field “Suspicious case” to cases #3419');
+
+
 -- *** Insert new sql commands BEFORE this line ***
