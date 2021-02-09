@@ -648,11 +648,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.VACCINATION);
 		addField(CaseDataDto.VACCINATION_DOSES)
-				.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
-
+			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
 		addFields(
-			CaseDataDto.VACCINATION,
-			CaseDataDto.VACCINATION_DOSES,
 			CaseDataDto.VACCINATION_INFO_SOURCE,
 			CaseDataDto.VACCINE,
 			CaseDataDto.SMALLPOX_VACCINATION_SCAR,
