@@ -37,7 +37,7 @@ import de.symeda.sormas.ui.highcharts.HighChart;
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_LOWER_BOUND = 70.0;
-	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND = 101.0;
+	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND = 100.0;
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -232,7 +232,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]},");
 
 		//@formatter:off
-		final String restrictMaxValueProperty = scaledValueExceedsThreshold() ? "max: 100, " : "";
+		final String restrictMaxValueProperty = totalsNeedClampTo100() ? "max: 100, " : "";
 		hcjs.append("yAxis: {" + restrictMaxValueProperty + "min: 0, title: { text: '"+ (showPercentages
 				? I18nProperties.getCaption(Captions.dashboardProportion)
 				: I18nProperties.getCaption(Captions.dashboardAggregatedNumber)) +"'}");
@@ -289,11 +289,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		return iterator.hasNext() ? iterator.next().getFieldCaption() : defaultValue;
 	}
 
-	private boolean scaledValueExceedsThreshold() {
+	private boolean totalsNeedClampTo100() {
 		if (!showPercentages || totalValuesMap == null) {
 			return false;
 		}
-		boolean result;
+		boolean result = false;
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
@@ -309,15 +309,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
 						final double scaledValue =
 								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
-						result = scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_LOWER_BOUND && scaledValue < MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND;
-						if (result) {
-							return true;
+						if (scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND) {
+							return false;
 						}
+						result |= scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_LOWER_BOUND;
 					}
 				}
 			}
 		}
-		return false;
+		return result;
 	}
 
 	private void appendData(
