@@ -1809,7 +1809,13 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// Generate epid number if missing or incomplete
 		if (!CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
-			newCase.setEpidNumber(generateEpidNumber(newCase));
+			newCase.setEpidNumber(
+				generateEpidNumber(
+					newCase.getEpidNumber(),
+					newCase.getUuid(),
+					newCase.getDisease(),
+					newCase.getReportDate(),
+					newCase.getDistrict().getUuid()));
 		}
 
 		// update the plague type based on symptoms
@@ -2081,24 +2087,22 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String generateEpidNumber(CaseReferenceDto caze) {
-		return generateEpidNumber(caseService.getByReferenceDto(caze));
+	public String generateEpidNumber(CaseDataDto caze) {
+		return generateEpidNumber(caze.getEpidNumber(), caze.getUuid(), caze.getDisease(), caze.getReportDate(), caze.getDistrict().getUuid());
 	}
 
-	public String generateEpidNumber(Case caze) {
+	private String generateEpidNumber(String newEpidNumber, String caseUUID, Disease disease, Date reportDate, String districtUUID) {
 
-		String newEpidNumber = caze.getEpidNumber();
-
-		if (!CaseLogic.isEpidNumberPrefix(caze.getEpidNumber())) {
+		if (!CaseLogic.isEpidNumberPrefix(newEpidNumber)) {
 			// Generate a completely new epid number if the prefix is not complete or doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(caze.getReportDate());
+			calendar.setTime(reportDate);
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict()) + "-" + year + "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(districtUUID) + "-" + year + "-";
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getUuid(), caze.getDisease());
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caseUUID, disease);
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the database, use 001
 			newEpidNumber = newEpidNumber + "001";

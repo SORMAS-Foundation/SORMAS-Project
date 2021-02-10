@@ -306,7 +306,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = ButtonHelper.createButton(
 			Captions.actionAssignNewEpidNumber,
-			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference())),
+			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue())),
 			ValoTheme.BUTTON_DANGER,
 			FORCE_CAPTION);
 

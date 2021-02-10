@@ -131,7 +131,7 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
-	String generateEpidNumber(CaseReferenceDto caze);
+	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 
