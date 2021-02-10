@@ -8,6 +8,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,11 +40,11 @@ public class EventParticipantListEntry extends HorizontalLayout {
 
 		HorizontalLayout idLayout = new HorizontalLayout();
 		Label eventParticipantUuidLabel = new Label(
-			I18nProperties.getCaption(Captions.EventParticipant_uuid) + SEPARATOR
+			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.UUID) + SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getUuid())));
 		eventParticipantUuidLabel.setDescription(eventParticipantListEntryDto.getUuid());
 		Label eventUuidLabel = new Label(
-			I18nProperties.getCaption(Captions.Event_uuid) + SEPARATOR
+			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.UUID) + SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getEventUuid())));
 		eventUuidLabel.setDescription(eventParticipantListEntryDto.getEventUuid());
 

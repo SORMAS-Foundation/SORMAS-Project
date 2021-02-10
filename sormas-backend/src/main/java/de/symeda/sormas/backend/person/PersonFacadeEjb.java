@@ -492,7 +492,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonIndexDto> getIndexList(PersonCriteria personCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
@@ -522,8 +522,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
-		if (personCriteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cq, cb, person);
+		if (criteria != null) {
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -584,16 +584,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public long count(PersonCriteria personCriteria) {
+	public long count(PersonCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Person> person = cq.from(Person.class);
 
 		Predicate filter = null;
 
-		if (personCriteria != null) {
-			personService.createUserFilter(cb, cq, person);
-			Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cq, cb, person);
+		personService.createUserFilter(cb, cq, person);
+		if (criteria != null) {
+			Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 

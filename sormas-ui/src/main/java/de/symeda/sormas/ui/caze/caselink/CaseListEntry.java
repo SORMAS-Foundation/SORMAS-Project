@@ -8,6 +8,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -44,7 +45,7 @@ public class CaseListEntry extends HorizontalLayout {
 		uuidReportDateLayout.addComponent(caseUuidLabel);
 
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)
+			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseIndexDto.REPORT_DATE)
 				+ SEPARATOR
 				+ DateFormatHelper.formatDate(caseIndexDto.getReportDate()));
 		uuidReportDateLayout.addComponent(reportDateLabel);

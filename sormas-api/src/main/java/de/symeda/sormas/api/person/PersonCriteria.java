@@ -17,7 +17,7 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
-	public static final String PERSONASSOCIATION = "personAssociation";
+	public static final String PERSON_ASSOCIATION = "personAssociation";
 
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;

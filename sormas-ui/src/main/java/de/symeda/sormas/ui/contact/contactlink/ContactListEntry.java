@@ -9,10 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -60,13 +57,11 @@ public class ContactListEntry extends HorizontalLayout {
 		diseaseClassificationLayout.setMargin(false);
 		diseaseClassificationLayout.setSpacing(true);
 
-		Label diseaseLabel =
-			new Label( contactIndexDto.getDisease().toString());
+		Label diseaseLabel = new Label(contactIndexDto.getDisease().toString());
 		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		diseaseLabel.setDescription(contactIndexDto.getDisease().toString());
 
-		Label classificationLabel = new Label(
-			contactIndexDto.getContactClassification().toString());
+		Label classificationLabel = new Label(contactIndexDto.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		classificationLabel.setDescription(contactIndexDto.getContactClassification().toString());
 

@@ -37,9 +37,9 @@ public class ContactListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		Label eventLabel = new Label(heading);
-		eventLabel.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(eventLabel);
+		Label label = new Label(heading);
+		label.addStyleName(CssStyles.H3);
+		componentHeader.addComponent(label);
 
 		list = contactList;
 		addComponent(list);

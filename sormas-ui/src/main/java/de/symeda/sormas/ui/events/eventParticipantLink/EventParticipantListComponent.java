@@ -38,9 +38,9 @@ public class EventParticipantListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		Label eventLabel = new Label(heading);
-		eventLabel.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(eventLabel);
+		Label label = new Label(heading);
+		label.addStyleName(CssStyles.H3);
+		componentHeader.addComponent(label);
 
 		list = eventParticipantList;
 		addComponent(list);

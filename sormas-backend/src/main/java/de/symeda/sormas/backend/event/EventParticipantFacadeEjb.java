@@ -70,6 +70,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
@@ -246,7 +247,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		if ((eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) && eventParticipantCriteria.getPerson() == null) {
+		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 
@@ -353,7 +354,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
+			cb.isTrue(event.get(Event.DELETED)));
+
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
 
