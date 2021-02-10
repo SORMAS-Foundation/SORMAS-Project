@@ -159,5 +159,9 @@ FROM delete_cleanup
 GROUP BY table_name
 ORDER BY table_name;
 
-COMMIT;
+-- Use rollback for a dry run to see how long the operation takes, if errors occur and what amount of data will be deleted.
+ROLLBACK;
+
+-- Use commit to really delete the data (cannot be undone).
+-- COMMIT;
 
