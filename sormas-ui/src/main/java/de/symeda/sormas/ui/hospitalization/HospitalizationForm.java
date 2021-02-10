@@ -28,10 +28,7 @@ import java.util.Objects;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.*;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -44,7 +41,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -242,16 +238,21 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private void updateOtherReasonForHospitalizationField(final Property.ValueChangeEvent event) {
 		if (null == event.getProperty().getValue()) {
+			otherReasonForHospitalization.setValue(null);
 			otherReasonForHospitalization.setEnabled(false);
 			return;
 		}
 		if (event.getProperty().getValue() instanceof HospitalizationReasonType) {
 			final HospitalizationReasonType selectedHospitalizationReasonType = (HospitalizationReasonType) event.getProperty().getValue();
 			otherReasonForHospitalization.setEnabled(HospitalizationReasonType.OTHER == selectedHospitalizationReasonType);
+			if (!otherReasonForHospitalization.isEnabled()) {
+				otherReasonForHospitalization.setValue(null);
+			}
 			return;
 		}
 		LOG.warn("Value is not of type HospitalizationReasonType: {}", event.getProperty().getValue());
 		otherReasonForHospitalization.setEnabled(false);
+		otherReasonForHospitalization.setValue(null);
 	}
 
 	private void setDateFieldVisibilties() {

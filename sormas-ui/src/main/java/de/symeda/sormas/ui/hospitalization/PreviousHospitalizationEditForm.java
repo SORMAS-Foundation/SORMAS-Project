@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,14 +44,21 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(PreviousHospitalizationEditForm.class);
+
+	private TextField otherReasonForHospitalization;
 
 	private static final String HTML_LAYOUT = fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)
 		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
+		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
+		+ fluidRowLocs(PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION, PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION)
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
@@ -79,6 +89,10 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		ComboBox healthFacility = addInfrastructureField(PreviousHospitalizationDto.HEALTH_FACILITY);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
+
+		ComboBox reasonForHospitalization = addField(PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION);
+		otherReasonForHospitalization = addField(PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION, TextField.class);
+		otherReasonForHospitalization.setEnabled(false);
 
 		healthFacility.setImmediate(true);
 
@@ -164,10 +178,30 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		} else {
 			setReadOnly(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT);
 		}
+		reasonForHospitalization.addValueChangeListener(this::updateOtherReasonForHospitalizationField);
 	}
 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	private void updateOtherReasonForHospitalizationField(final Property.ValueChangeEvent event) {
+		if (null == event.getProperty().getValue()) {
+			otherReasonForHospitalization.setValue(null);
+			otherReasonForHospitalization.setEnabled(false);
+			return;
+		}
+		if (event.getProperty().getValue() instanceof HospitalizationReasonType) {
+			final HospitalizationReasonType selectedHospitalizationReasonType = (HospitalizationReasonType) event.getProperty().getValue();
+			otherReasonForHospitalization.setEnabled(HospitalizationReasonType.OTHER == selectedHospitalizationReasonType);
+			if (!otherReasonForHospitalization.isEnabled()) {
+				otherReasonForHospitalization.setValue(null);
+			}
+			return;
+		}
+		LOG.warn("Value is not of type HospitalizationReasonType: {}", event.getProperty().getValue());
+		otherReasonForHospitalization.setEnabled(false);
+		otherReasonForHospitalization.setValue(null);
 	}
 }

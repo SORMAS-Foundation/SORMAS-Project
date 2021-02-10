@@ -112,6 +112,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
+		target.setReasonForHospitalization(source.getReasonForHospitalization());
+		target.setOtherReasonForHospitalization(source.getOtherReasonForHospitalization());
 
 		return target;
 	}
@@ -169,6 +171,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
+		target.setReasonForHospitalization(source.getReasonForHospitalization());
+		target.setOtherReasonForHospitalization(source.getOtherReasonForHospitalization());
 
 		return target;
 	}

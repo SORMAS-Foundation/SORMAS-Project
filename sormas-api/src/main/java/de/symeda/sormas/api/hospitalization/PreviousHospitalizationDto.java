@@ -44,6 +44,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
+	public static final String REASON_FOR_HOSPITALIZATION = "reasonForHospitalization";
+	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherReasonForHospitalization";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -58,6 +60,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	private YesNoUnknown isolated;
 	@SensitiveData
 	private String description;
+
+	private HospitalizationReasonType reasonForHospitalization;
+	private String otherReasonForHospitalization;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -156,5 +161,21 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public HospitalizationReasonType getReasonForHospitalization() {
+		return reasonForHospitalization;
+	}
+
+	public void setReasonForHospitalization(HospitalizationReasonType reasonForHospitalization) {
+		this.reasonForHospitalization = reasonForHospitalization;
+	}
+
+	public String getOtherReasonForHospitalization() {
+		return otherReasonForHospitalization;
+	}
+
+	public void setOtherReasonForHospitalization(String otherReasonForHospitalization) {
+		this.otherReasonForHospitalization = otherReasonForHospitalization;
 	}
 }

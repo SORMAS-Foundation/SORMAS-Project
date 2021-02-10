@@ -6467,7 +6467,10 @@ ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
+-- 2021-02-05 Add reason hospitalization #4187
 ALTER TABLE hospitalization ADD COLUMN reasonforhospitalization varchar(255);
 ALTER TABLE hospitalization ADD COLUMN otherreasonforhospitalization varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN reasonforhospitalization varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN otherreasonforhospitalization varchar(255);
 
 -- *** Insert new sql commands BEFORE this line ***
