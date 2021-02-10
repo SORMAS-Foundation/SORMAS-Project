@@ -36,6 +36,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
@@ -155,6 +156,78 @@ public final class InfrastructureHelper {
 		if (communityField != null) {
 			communityField.initializeSpinner(initialCommunities);
 		}
+	}
+
+	public static void initializeFacilityFields(
+			AbstractDomainObject entity,
+			final ControlSpinnerField countryField,
+			List<Item> countries,
+			Country initialCountry,
+			final ControlSpinnerField regionField,
+			List<Item> regions,
+			Region initialRegion,
+			final ControlSpinnerField districtField,
+			List<Item> districts,
+			District initialDistrict,
+			final ControlSpinnerField communityField,
+			List<Item> communities,
+			Community initialCommunity,
+			final ControlSpinnerField facilityOrHomeField,
+			List<Item> facilityOrHomeList,
+			final ControlSpinnerField typeGroupField,
+			List<Item> typeGroups,
+			final ControlSpinnerField typeField,
+			List<Item> types,
+			final ControlSpinnerField facilityField,
+			List<Item> facilities,
+			Facility initialFacility,
+			final ControlTextEditField facilityDetailsField,
+			boolean withLaboratory) {
+		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
+		if (countryItem != null && !countries.contains(countryItem)) {
+			countries.add(countryItem);
+		}
+		countryField.initializeSpinner(countries, field -> {
+			Country selectedCountry = (Country) field.getValue();
+			if (selectedCountry != null && ConfigProvider.isConfiguredServer(selectedCountry.getIsoCode())) {
+				regionField.setEnabled(true);
+				districtField.setEnabled(true);
+				communityField.setEnabled(true);
+			} else {
+				regionField.setEnabled(false);
+				regionField.setValue(null);
+				districtField.setEnabled(false);
+				districtField.setValue(null);
+				communityField.setEnabled(false);
+				communityField.setValue(null);
+			}
+		});
+		countryField.setValue(initialCountry);
+		initializeFacilityFields(
+				entity,
+				regionField,
+				regions,
+				initialRegion,
+				districtField,
+				districts,
+				initialDistrict,
+				communityField,
+				communities,
+				initialCommunity,
+				facilityOrHomeField,
+				facilityOrHomeList,
+				typeGroupField,
+				typeGroups,
+				typeField,
+				types,
+				facilityField,
+				facilities,
+				initialFacility,
+				facilityDetailsField,
+				null,
+				null,
+				null,
+				withLaboratory);
 	}
 
 	public static void initializeFacilityFields(

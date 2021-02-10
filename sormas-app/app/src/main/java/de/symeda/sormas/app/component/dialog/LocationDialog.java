@@ -42,6 +42,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -96,6 +97,7 @@ public class LocationDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+		List<Item> initialCountries = InfrastructureHelper.loadCountries();
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
@@ -106,8 +108,21 @@ public class LocationDialog extends FormDialog {
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
 
+		if (data.getCountry() == null) {
+			for (Item countryItem : initialCountries) {
+				Country country = (Country) countryItem.getValue();
+				if (country != null && ConfigProvider.isConfiguredServer(country.getIsoCode())) {
+					data.setCountry(country);
+					break;
+				}
+			}
+		}
+
 		InfrastructureHelper.initializeFacilityFields(
 			data,
+			this.contentBinding.locationCountry,
+			initialCountries,
+			data.getCountry(),
 			this.contentBinding.locationRegion,
 			initialRegions,
 			data.getRegion(),
