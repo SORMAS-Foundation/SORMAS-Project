@@ -1695,6 +1695,7 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.CORE)
 	public String getNotACaseReasonDetails() {
 		return notACaseReasonDetails;
+	}
 
 	@Order(159)
 	@ExportTarget(caseExportTypes = {
