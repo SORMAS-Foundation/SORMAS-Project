@@ -174,6 +174,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -1808,7 +1809,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Generate epid number if missing or incomplete
-		if (!CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
+		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale());
+		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.EPID_NUMBER)
+			&& !CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
 			newCase.setEpidNumber(
 				generateEpidNumber(
 					newCase.getEpidNumber(),
