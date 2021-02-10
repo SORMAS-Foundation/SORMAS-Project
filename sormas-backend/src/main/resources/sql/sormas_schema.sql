@@ -6473,5 +6473,7 @@ CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (repo
 CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_reporting_user_id ON contact USING btree (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_diseaseconfig_changedate on diseaseconfiguration (changedate DESC);
+CREATE INDEX IF NOT EXISTS idx_person_uuid ON person USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
 
 -- *** Insert new sql commands BEFORE this line ***
