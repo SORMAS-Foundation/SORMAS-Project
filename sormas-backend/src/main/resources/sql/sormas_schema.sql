@@ -6467,4 +6467,11 @@ ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_reporting_user_id ON contact USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfig_changedate on diseaseconfiguration (changedate DESC);
+
 -- *** Insert new sql commands BEFORE this line ***
