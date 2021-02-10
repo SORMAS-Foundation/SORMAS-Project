@@ -604,7 +604,7 @@ public class TestDataCreator {
 		Date eventDate,
 		Date reportDateTime,
 		UserReferenceDto reportingUser,
-		UserReferenceDto surveillanceOfficer,
+		UserReferenceDto responsibleUser,
 		Disease disease,
 		DistrictReferenceDto district) {
 
@@ -616,7 +616,7 @@ public class TestDataCreator {
 			event.setStartDate(eventDate);
 			event.setReportDateTime(reportDateTime);
 			event.setReportingUser(reportingUser);
-			event.setSurveillanceOfficer(surveillanceOfficer);
+			event.setResponsibleUser(responsibleUser);
 			event.setDisease(disease);
 			event.getEventLocation().setDistrict(district);
 		});

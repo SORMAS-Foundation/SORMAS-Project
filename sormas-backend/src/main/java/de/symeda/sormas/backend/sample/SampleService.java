@@ -159,18 +159,6 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public int getSampleCountByCase(Case caze) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> from = cq.from(getElementClass());
-
-		cq.select(cb.count(from));
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Sample.ASSOCIATED_CASE), caze)));
-
-		return em.createQuery(cq).getSingleResult().intValue();
-	}
-
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 *
@@ -230,6 +218,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		Predicate filter = cb.and(createDefaultFilter(cb, sampleRoot), caseJoin.get(AbstractDomainObject.UUID).in(caseUuids));
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Sample> getByContactUuids(List<String> contactUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, Contact> contactJoin = sampleRoot.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+
+		Predicate filter = cb.and(createDefaultFilter(cb, sampleRoot), contactJoin.get(AbstractDomainObject.UUID).in(contactUuids));
 
 		cq.where(filter);
 		return em.createQuery(cq).getResultList();

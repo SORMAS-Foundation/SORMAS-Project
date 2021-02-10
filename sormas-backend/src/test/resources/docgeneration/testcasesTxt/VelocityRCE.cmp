@@ -1,0 +1,8 @@
+The following should be rendered verbatim without the set-statements. No classloader or reflection related statements should be executed.
+
+$classLoaderMethod.setAccessible(true)
+
+$runtimedMethodExecuted.getClass().getDeclaredMethod("exec", $stringClass).invoke($runtimedMethodExecuted, "echo 'UR pwnd!'")
+
+Includes are disabled, the following should render to empty:
+

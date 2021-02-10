@@ -57,24 +57,24 @@ import javax.servlet.http.HttpServletResponse;
  * @see KeycloakHttpAuthenticationMechanism
  */
 @OpenAPIDefinition(security = {
-	@SecurityRequirement(name = "http-basic"),
-	@SecurityRequirement(name = "http-bearer")
+	@SecurityRequirement(name = "basicAuth"),
+	@SecurityRequirement(name = "bearerAuth")
 })
 @SecurityScheme(
-	name = "http-basic",
+	name = "basicAuth",
 	type = SecuritySchemeType.HTTP,
-	scheme = "Basic"
+	scheme = "basic"
 )
 @SecurityScheme(
-	name = "http-bearer",
+	name = "bearerAuth",
 	type = SecuritySchemeType.HTTP,
-	scheme = "Bearer",
+	scheme = "bearer",
 	bearerFormat = "JWT"
 )
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
 
-	private HttpAuthenticationMechanism authenticationMechanism;
+	private final HttpAuthenticationMechanism authenticationMechanism;
 
 	@Inject
 	public MultiAuthenticationMechanism(KeycloakHttpAuthenticationMechanism keycloakHttpAuthenticationMechanism) {

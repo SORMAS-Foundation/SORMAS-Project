@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.labmessage;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -9,6 +10,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -16,6 +18,7 @@ import de.symeda.sormas.ui.samples.SamplesViewType;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class LabMessagesView extends AbstractView {
 
@@ -51,8 +54,12 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-			FacadeProvider.getLabMessageFacade().fetchExternalLabMessages();
-			listComponent.getGrid().reload();
+				LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
+				if (!fetchResult.isSuccess()) {
+					VaadinUiUtil.showWarningPopup(fetchResult.getError());
+				} else {
+					listComponent.getGrid().reload();
+				}
 		}, ValoTheme.BUTTON_PRIMARY));
 	}
 

@@ -194,9 +194,9 @@
                     app:valueFormat="@string/two_strings_with_hyphen_format" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_surveillanceOfficer"
+                    android:id="@+id/event_responsibleUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@{data.surveillanceOfficer}" />
+                    app:value="@{data.responsibleUser}" />
 
             </LinearLayout>
 
@@ -242,6 +242,11 @@
                 style="@style/ControlSingleColumnStyle"
                 app:maxLines="5"
                 app:value="@{data.eventLocation}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/exposure_workEnvironment"
+                app:value="@{data.workEnvironment}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransport"

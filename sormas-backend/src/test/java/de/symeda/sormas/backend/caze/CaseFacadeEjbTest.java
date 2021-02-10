@@ -43,6 +43,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
+import org.hamcrest.MatcherAssert;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,6 +87,7 @@ import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -137,7 +140,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -156,7 +159,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		singleResult.setReportDate(threeDaysAgo);
 		em.save(singleResult);
 
-		PersonDto cazePerson2 = creator.createPerson("Case", "Person");
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto case2 = creator.createCase(
 			user.toReference(),
 			cazePerson2.toReference(),
@@ -172,6 +175,72 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), true);
 		Assert.assertEquals(1, casesForDuplicateMergingToday.size());
 		Assert.assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfSameSexAndDifferentBirthDateIsEmpty() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 2);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfDifferentSexAndSameBirthDateIsEmpty() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.FEMALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
 	@Test
@@ -1484,6 +1553,54 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(savedCaze.getEpiData().getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedCaze.getEpiData().getExposures().get(0).getUuid(), not(isEmptyOrNullString()));
 	}
+
+	@Test
+	public void testGetDuplicatesWithReportDateThreshold() {
+		RDCF rdcf = creator.createRDCF();
+		Date now = new Date();
+		//case and person matching for asserts
+		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateDD(12);
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+
+		CaseDataDto caze = creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setDistrict(rdcf.district);
+			c.setReportDate(new Date());
+		});
+
+		PersonDto person2 = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person2.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setReportDate(new DateTime(now).minusDays(1).toDate());
+		});
+
+		CasePersonDto casePerson = new CasePersonDto();
+		PersonDto duplicatePerson = PersonDto.build();
+		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
+		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setReportDate(new Date());
+
+		casePerson.setCaze(duplicateCaze);
+		casePerson.setPerson(duplicatePerson);
+
+		List<CasePersonDto> duplicates;
+
+		duplicateCaze.setExternalToken(null);
+		duplicatePerson.setFirstName("Fname");
+		duplicatePerson.setLastName("Lname");
+		duplicates = getCaseFacade().getDuplicates(casePerson, 1);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+	}
+
+
 
 //	@Test
 //	public void testGetSimilarCases() {

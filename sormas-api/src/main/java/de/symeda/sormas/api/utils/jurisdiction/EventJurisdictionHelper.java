@@ -23,8 +23,8 @@ public class EventJurisdictionHelper {
 			return true;
 		}
 
-		if (eventJurisdiction.getSurveillanceOfficerUuid() != null
-			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getSurveillanceOfficerUuid())) {
+		if (eventJurisdiction.getResponsibleUserUuid() != null
+			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getResponsibleUserUuid())) {
 			return true;
 		}
 		return false;

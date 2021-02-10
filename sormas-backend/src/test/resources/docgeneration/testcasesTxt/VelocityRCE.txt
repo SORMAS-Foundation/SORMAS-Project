@@ -1,0 +1,16 @@
+The following should be rendered verbatim without the set-statements. No classloader or reflection related statements should be executed.
+
+#set($start = "")
+#set($classLoaderMethod =$start.getClass().getClass().getDeclaredMethod("getClassLoader", null))
+$classLoaderMethod.setAccessible(true)
+#set($appClassLoader=$classLoaderMethod.invoke(${event.getClass()},null))
+
+#set($runtTimeClass = $appClassLoader.loadClass("java.lang.Runtime"))
+#set($runtimedMethod = $runtTimeClass.getDeclaredMethod("getRuntime", null))
+#set($runtimedMethodExecuted = $runtimedMethod.invoke($runtTimeClass, null))
+#set($stringClass = $appClassLoader.loadClass("java.lang.String"))
+$runtimedMethodExecuted.getClass().getDeclaredMethod("exec", $stringClass).invoke($runtimedMethodExecuted, "echo 'UR pwnd!'")
+
+Includes are disabled, the following should render to empty:
+
+#include("VelocityRCE.txt")

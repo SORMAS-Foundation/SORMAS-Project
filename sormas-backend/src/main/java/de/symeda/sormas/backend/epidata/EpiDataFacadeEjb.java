@@ -133,13 +133,14 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
-		target.setPatientExpositionRole(source.getPatientExpositionRole());
+		target.setExposureRole(source.getExposureRole());
 
 		return target;
 	}
@@ -224,13 +225,14 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
-		target.setPatientExpositionRole(source.getPatientExpositionRole());
+		target.setExposureRole(source.getExposureRole());
 
 		return target;
 	}

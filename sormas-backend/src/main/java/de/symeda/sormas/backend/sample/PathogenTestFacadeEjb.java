@@ -138,10 +138,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllBySample(sample).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
+		return sampleService.getByUuid(sampleRef.getUuid())
+			.getPathogenTests()
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -276,6 +278,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
@@ -326,6 +329,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());

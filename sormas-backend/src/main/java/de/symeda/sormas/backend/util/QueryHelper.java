@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,28 @@ public final class QueryHelper {
 
 	private QueryHelper() {
 		// Hide Utility Class Constructor
+	}
+
+	public static <T> StringBuilder appendInFilterValues(
+		StringBuilder filterBuilder,
+		List<Object> filterBuilderParameters,
+		List<T> values,
+		Function<T, ?> valueMapper) {
+
+		filterBuilder.append("(");
+		boolean first = true;
+		for (T value : values) {
+			if (first) {
+				filterBuilder.append("?");
+				first = false;
+			} else {
+				filterBuilder.append(",?");
+			}
+			filterBuilder.append(filterBuilderParameters.size() + 1);
+			filterBuilderParameters.add(valueMapper.apply(value));
+		}
+		filterBuilder.append(")");
+		return filterBuilder;
 	}
 
 	/**
