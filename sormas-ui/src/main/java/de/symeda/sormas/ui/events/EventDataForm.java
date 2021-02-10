@@ -57,6 +57,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -313,6 +314,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();
 		}
+		ComboBox countryField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.COUNTRY);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
@@ -372,9 +374,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Collections.singletonList(TypeOfPlace.OTHER), true);
 		setTypeOfPlaceTextRequirement();
-		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
+
+		countryField.addValueChangeListener(e -> {
+			CountryReferenceDto country = (CountryReferenceDto) countryField.getValue();
+			if (country != null && isConfiguredServer(country.getIsoCode())) {
+				locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
+			} else {
+				locationForm.setFieldsRequirement(false, LocationDto.REGION, LocationDto.DISTRICT);
+				regionField.setValue(null);
+				districtField.setValue(null);
+			}
+		});
 
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
