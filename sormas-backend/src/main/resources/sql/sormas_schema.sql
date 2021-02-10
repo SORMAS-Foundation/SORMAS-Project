@@ -6467,4 +6467,44 @@ ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
+-- 2020-02-09 Add indexes #4307
+CREATE INDEX IF NOT EXISTS idx_cases_epid_number ON cases USING gist (epidnumber gist_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases (person_id);
+CREATE INDEX IF NOT EXISTS idx_cases_region_id ON cases (region_id);
+CREATE INDEX IF NOT EXISTS idx_cases_district_id ON cases (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact (person_id);
+CREATE INDEX IF NOT EXISTS idx_contact_region_id ON contact (region_id);
+CREATE INDEX IF NOT EXISTS idx_contact_district_id ON contact (region_id);
+CREATE INDEX IF NOT EXISTS idx_contact_case_id ON contact (caze_id);
+
+CREATE INDEX IF NOT EXISTS idx_samples_contact_id ON samples (associatedcontact_id);
+CREATE INDEX IF NOT EXISTS idx_samples_case_id ON samples (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_samples_eventparticipant_id ON samples (associatedeventparticipant_id);
+
+CREATE INDEX IF NOT EXISTS idx_task_contact_id ON task (contact_id);
+CREATE INDEX IF NOT EXISTS idx_task_case_id ON task (caze_id);
+CREATE INDEX IF NOT EXISTS idx_task_event_id ON task (event_id);
+
+CREATE INDEX IF NOT EXISTS idx_visit_case_id ON visit (caze_id);
+CREATE INDEX IF NOT EXISTS idx_visit_person_id ON visit (person_id);
+
+CREATE INDEX IF NOT EXISTS idx_pathogentest_sample_id ON pathogentest (sample_id);
+
+CREATE INDEX IF NOT EXISTS idx_additionaltest_sample_id ON additionaltest (sample_id);
+
+CREATE INDEX IF NOT EXISTS idx_outbreak_district_id ON outbreak (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_events_location_id ON events (eventlocation_id);
+
+CREATE INDEX IF NOT EXISTS idx_location_region_id ON location (region_id);
+CREATE INDEX IF NOT EXISTS idx_location_district_id ON location (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_facility_region_id ON facility (region_id);
+CREATE INDEX IF NOT EXISTS idx_facility_district_id ON facility (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_exposures_epidata_id ON exposures (epidata_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (325, '2020-02-09 Add indexes #4307');
+
 -- *** Insert new sql commands BEFORE this line ***
