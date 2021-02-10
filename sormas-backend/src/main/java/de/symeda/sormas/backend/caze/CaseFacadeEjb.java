@@ -574,10 +574,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
-				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
-				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
-				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
-				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
+				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
 				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
@@ -2216,6 +2214,273 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caseService.getDeletedUuidsSince(since);
 	}
 
+	public static CaseReferenceDto toReferenceDto(Case entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return entity.toReference();
+	}
+
+	public CaseDataDto convertToDto(Case source, Pseudonymizer pseudonymizer) {
+
+		CaseDataDto dto = toDto(source);
+
+		pseudonymizeDto(source, dto, pseudonymizer);
+
+		return dto;
+	}
+
+	private void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
+
+			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
+				User currentUser = userService.getCurrentUser();
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getClassificationUser(), currentUser, dto::setClassificationUser);
+
+				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), inJurisdiction, e -> {
+					pseudonymizer.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> inJurisdiction, (exp, expInJurisdiction) -> {
+						pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null);
+					});
+				});
+
+				pseudonymizer.pseudonymizeDto(HealthConditionsDto.class, c.getClinicalCourse().getHealthConditions(), inJurisdiction, null);
+
+				pseudonymizer.pseudonymizeDtoCollection(
+					PreviousHospitalizationDto.class,
+					c.getHospitalization().getPreviousHospitalizations(),
+					h -> inJurisdiction,
+					null);
+
+				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(MaternalHistoryDto.class, dto.getMaternalHistory(), inJurisdiction, null);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(CaseDataDto dto, Case caze, CaseDataDto existingCaseDto) {
+		if (existingCaseDto != null) {
+			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(caze));
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			User currentUser = userService.getCurrentUser();
+
+			pseudonymizer.restoreUser(caze.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restoreUser(caze.getClassificationUser(), currentUser, dto, dto::setClassificationUser);
+
+			pseudonymizer.restorePseudonymizedValues(CaseDataDto.class, dto, existingCaseDto, inJurisdiction);
+
+			EpiDataDto epiData = dto.getEpiData();
+			EpiDataDto existingEpiData = existingCaseDto.getEpiData();
+
+			pseudonymizer.restorePseudonymizedValues(EpiDataDto.class, epiData, existingEpiData, inJurisdiction);
+
+			epiData.getExposures().forEach(exposure -> {
+				ExposureDto existingExposure =
+					existingEpiData.getExposures().stream().filter(exp -> DataHelper.isSame(exposure, exp)).findFirst().orElse(null);
+
+				if (existingExposure != null) {
+					pseudonymizer.restorePseudonymizedValues(ExposureDto.class, exposure, existingExposure, inJurisdiction);
+					pseudonymizer
+						.restorePseudonymizedValues(LocationDto.class, exposure.getLocation(), existingExposure.getLocation(), inJurisdiction);
+				}
+			});
+
+			pseudonymizer.restorePseudonymizedValues(
+				HealthConditionsDto.class,
+				dto.getClinicalCourse().getHealthConditions(),
+				existingCaseDto.getClinicalCourse().getHealthConditions(),
+				inJurisdiction);
+
+			dto.getHospitalization().getPreviousHospitalizations().forEach(previousHospitalization -> {
+				PreviousHospitalizationDto existingPreviousHospitalization = existingCaseDto.getHospitalization()
+					.getPreviousHospitalizations()
+					.stream()
+					.filter(eh -> DataHelper.isSame(previousHospitalization, eh))
+					.findFirst()
+					.orElse(null);
+
+				if (existingPreviousHospitalization != null) {
+					pseudonymizer.restorePseudonymizedValues(
+						PreviousHospitalizationDto.class,
+						previousHospitalization,
+						existingPreviousHospitalization,
+						inJurisdiction);
+				}
+			});
+
+			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingCaseDto.getSymptoms(), inJurisdiction);
+			pseudonymizer
+				.restorePseudonymizedValues(MaternalHistoryDto.class, dto.getMaternalHistory(), existingCaseDto.getMaternalHistory(), inJurisdiction);
+		}
+	}
+
+	public CaseReferenceDto convertToReferenceDto(Case source) {
+
+		CaseReferenceDto dto = toReferenceDto(source);
+
+		if (dto != null) {
+			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
+			Pseudonymizer.getDefault(userService::hasRight).pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
+		}
+
+		return dto;
+	}
+
+	public static CaseDataDto toDto(Case source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		CaseDataDto target = new CaseDataDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getDiseaseVariant()));
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPlagueType(source.getPlagueType());
+		target.setDengueFeverType(source.getDengueFeverType());
+		target.setRabiesType(source.getRabiesType());
+		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
+		target.setClassificationDate(source.getClassificationDate());
+		target.setClassificationComment(source.getClassificationComment());
+		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
+		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
+		target.setInvestigationStatus(source.getInvestigationStatus());
+		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		if (source.getTherapy() != null) {
+			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
+		}
+		if (source.getClinicalCourse() != null) {
+			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
+		}
+		if (source.getMaternalHistory() != null) {
+			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
+		}
+		if (source.getPortHealthInfo() != null) {
+			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
+		}
+
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
+
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setReportDate(source.getReportDate());
+		target.setInvestigatedDate(source.getInvestigatedDate());
+		target.setRegionLevelDate(source.getRegionLevelDate());
+		target.setNationalLevelDate(source.getNationalLevelDate());
+		target.setDistrictLevelDate(source.getDistrictLevelDate());
+
+		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
+		target.setClinicianName(source.getClinicianName());
+		target.setClinicianPhone(source.getClinicianPhone());
+		target.setClinicianEmail(source.getClinicianEmail());
+		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
+		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+
+		target.setPregnant(source.getPregnant());
+		target.setVaccination(source.getVaccination());
+		target.setVaccinationDoses(source.getVaccinationDoses());
+		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
+		target.setVaccine(source.getVaccine());
+		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
+
+		target.setEpidNumber(source.getEpidNumber());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setOutcome(source.getOutcome());
+		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
+		target.setNotifyingClinic(source.getNotifyingClinic());
+		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+
+		target.setCreationVersion(source.getCreationVersion());
+		target.setCaseOrigin(source.getCaseOrigin());
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
+		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
+		target.setSharedToCountry(source.isSharedToCountry());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
+		target.setQuarantineTo(source.getQuarantineTo());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setReportingType(source.getReportingType());
+		target.setPostpartum(source.getPostpartum());
+		target.setTrimester(source.getTrimester());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+		target.setFacilityType(source.getFacilityType());
+
+		target.setCaseIdIsm(source.getCaseIdIsm());
+		target.setCovidTestReason(source.getCovidTestReason());
+		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
+		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
+		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
+		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
+		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
+		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
+		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
+		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
+
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+
+		return target;
+	}
+
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, () -> {
@@ -2243,6 +2508,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDistrictLevelDate(source.getDistrictLevelDate());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2374,284 +2640,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
-
-		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
-		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
-		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
-		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
-		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
-		return target;
-	}
-
-	public CaseDataDto convertToDto(Case source, Pseudonymizer pseudonymizer) {
-
-		CaseDataDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
-		return dto;
-	}
-
-	private void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
-
-			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
-				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeUser(source.getClassificationUser(), currentUser, dto::setClassificationUser);
-
-				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), inJurisdiction, e -> {
-					pseudonymizer.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> inJurisdiction, (exp, expInJurisdiction) -> {
-						pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null);
-					});
-				});
-
-				pseudonymizer.pseudonymizeDto(HealthConditionsDto.class, c.getClinicalCourse().getHealthConditions(), inJurisdiction, null);
-
-				pseudonymizer.pseudonymizeDtoCollection(
-					PreviousHospitalizationDto.class,
-					c.getHospitalization().getPreviousHospitalizations(),
-					h -> inJurisdiction,
-					null);
-
-				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(MaternalHistoryDto.class, dto.getMaternalHistory(), inJurisdiction, null);
-			});
-		}
-	}
-
-	private void restorePseudonymizedDto(CaseDataDto dto, Case caze, CaseDataDto existingCaseDto) {
-		if (existingCaseDto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(caze));
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-			User currentUser = userService.getCurrentUser();
-
-			pseudonymizer.restoreUser(caze.getReportingUser(), currentUser, dto, dto::setReportingUser);
-			pseudonymizer.restoreUser(caze.getClassificationUser(), currentUser, dto, dto::setClassificationUser);
-
-			pseudonymizer.restorePseudonymizedValues(CaseDataDto.class, dto, existingCaseDto, inJurisdiction);
-
-			EpiDataDto epiData = dto.getEpiData();
-			EpiDataDto existingEpiData = existingCaseDto.getEpiData();
-
-			pseudonymizer.restorePseudonymizedValues(EpiDataDto.class, epiData, existingEpiData, inJurisdiction);
-
-			epiData.getExposures().forEach(exposure -> {
-				ExposureDto existingExposure =
-					existingEpiData.getExposures().stream().filter(exp -> DataHelper.isSame(exposure, exp)).findFirst().orElse(null);
-
-				if (existingExposure != null) {
-					pseudonymizer.restorePseudonymizedValues(ExposureDto.class, exposure, existingExposure, inJurisdiction);
-					pseudonymizer
-						.restorePseudonymizedValues(LocationDto.class, exposure.getLocation(), existingExposure.getLocation(), inJurisdiction);
-				}
-			});
-
-			pseudonymizer.restorePseudonymizedValues(
-				HealthConditionsDto.class,
-				dto.getClinicalCourse().getHealthConditions(),
-				existingCaseDto.getClinicalCourse().getHealthConditions(),
-				inJurisdiction);
-
-			dto.getHospitalization().getPreviousHospitalizations().forEach(previousHospitalization -> {
-				PreviousHospitalizationDto existingPreviousHospitalization = existingCaseDto.getHospitalization()
-					.getPreviousHospitalizations()
-					.stream()
-					.filter(eh -> DataHelper.isSame(previousHospitalization, eh))
-					.findFirst()
-					.orElse(null);
-
-				if (existingPreviousHospitalization != null) {
-					pseudonymizer.restorePseudonymizedValues(
-						PreviousHospitalizationDto.class,
-						previousHospitalization,
-						existingPreviousHospitalization,
-						inJurisdiction);
-				}
-			});
-
-			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingCaseDto.getSymptoms(), inJurisdiction);
-			pseudonymizer
-				.restorePseudonymizedValues(MaternalHistoryDto.class, dto.getMaternalHistory(), existingCaseDto.getMaternalHistory(), inJurisdiction);
-		}
-	}
-
-	public CaseReferenceDto convertToReferenceDto(Case source) {
-
-		CaseReferenceDto dto = toReferenceDto(source);
-
-		if (dto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
-			Pseudonymizer.getDefault(userService::hasRight).pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
-		}
-
-		return dto;
-	}
-
-	public static CaseReferenceDto toReferenceDto(Case entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return entity.toReference();
-	}
-
-	public static CaseDataDto toDto(Case source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		CaseDataDto target = new CaseDataDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getDiseaseVariant()));
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setPlagueType(source.getPlagueType());
-		target.setDengueFeverType(source.getDengueFeverType());
-		target.setRabiesType(source.getRabiesType());
-		target.setCaseClassification(source.getCaseClassification());
-		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
-		target.setClassificationDate(source.getClassificationDate());
-		target.setClassificationComment(source.getClassificationComment());
-		target.setClinicalConfirmation(source.getClinicalConfirmation());
-		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
-		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
-		target.setInvestigationStatus(source.getInvestigationStatus());
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
-		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		if (source.getTherapy() != null) {
-			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
-		}
-		if (source.getClinicalCourse() != null) {
-			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
-		}
-		if (source.getMaternalHistory() != null) {
-			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
-		}
-		if (source.getPortHealthInfo() != null) {
-			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
-		}
-
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
-
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setReportDate(source.getReportDate());
-		target.setInvestigatedDate(source.getInvestigatedDate());
-		target.setRegionLevelDate(source.getRegionLevelDate());
-		target.setNationalLevelDate(source.getNationalLevelDate());
-		target.setDistrictLevelDate(source.getDistrictLevelDate());
-
-		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
-		target.setClinicianName(source.getClinicianName());
-		target.setClinicianPhone(source.getClinicianPhone());
-		target.setClinicianEmail(source.getClinicianEmail());
-		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
-		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
-
-		target.setPregnant(source.getPregnant());
-		target.setVaccination(source.getVaccination());
-		target.setVaccinationDoses(source.getVaccinationDoses());
-		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
-		target.setVaccine(source.getVaccine());
-		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
-		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
-		target.setLastVaccinationDate(source.getLastVaccinationDate());
-		target.setVaccineName(source.getVaccineName());
-		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineManufacturer(source.getVaccineManufacturer());
-		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineInn(source.getVaccineInn());
-		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
-		target.setVaccineUniiCode(source.getVaccineUniiCode());
-		target.setVaccineAtcCode(source.getVaccineAtcCode());
-
-		target.setEpidNumber(source.getEpidNumber());
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		target.setOutcome(source.getOutcome());
-		target.setOutcomeDate(source.getOutcomeDate());
-		target.setSequelae(source.getSequelae());
-		target.setSequelaeDetails(source.getSequelaeDetails());
-		target.setNotifyingClinic(source.getNotifyingClinic());
-		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
-
-		target.setCreationVersion(source.getCreationVersion());
-		target.setCaseOrigin(source.getCaseOrigin());
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
-		target.setAdditionalDetails(source.getAdditionalDetails());
-		target.setExternalID(source.getExternalID());
-		target.setExternalToken(source.getExternalToken());
-		target.setSharedToCountry(source.isSharedToCountry());
-		target.setQuarantine(source.getQuarantine());
-		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
-		target.setQuarantineTo(source.getQuarantineTo());
-		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
-		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
-		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
-		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
-		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
-		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
-		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
-		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
-		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
-		target.setQuarantineExtended(source.isQuarantineExtended());
-		target.setQuarantineReduced(source.isQuarantineReduced());
-		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
-		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
-		target.setPostpartum(source.getPostpartum());
-		target.setTrimester(source.getTrimester());
-		target.setFollowUpComment(source.getFollowUpComment());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setFollowUpUntil(source.getFollowUpUntil());
-		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
-		target.setFacilityType(source.getFacilityType());
-
-		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
-		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
-		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
-		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
-		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
-		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
-		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
-		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
-
-		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
-		target.setInfectionSetting(source.getInfectionSetting());
-
-		target.setProhibitionToWork(source.getProhibitionToWork());
-		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
-		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
-
-		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
-		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
-
-		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
-		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
-		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
-		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
-		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
 	}
@@ -3448,7 +3436,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * @param casePerson
 	 *            - case and person
 	 * @param reportDateThreshold
-	 * 			  - the range bounds on match.reportDate
+	 *            - the range bounds on match.reportDate
 	 * @return list of duplicate cases
 	 */
 	@Override

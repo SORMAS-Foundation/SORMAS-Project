@@ -95,6 +95,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	public void fillInnerFromDto(Case target, CaseDataDto source) {
 
 		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setClassificationUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -234,6 +235,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	public void fillInnerFromAdo(CaseDataDto target, Case source) {
 
 		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		if (source.getClassificationUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getClassificationUser().getId());
 			target.setClassificationUser(UserDtoHelper.toReferenceDto(user));
