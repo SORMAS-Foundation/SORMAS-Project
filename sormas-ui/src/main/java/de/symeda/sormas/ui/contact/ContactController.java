@@ -727,7 +727,7 @@ public class ContactController {
 	public void registerPatientDiaryPerson(PersonDto person) {
 		ExternalJournalValidation validationResult = FacadeProvider.getExternalJournalFacade().validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
-			showPatientDiaryWarningPopup(validationResult.getMessage());
+			VaadinUiUtil.showWarningPopup(validationResult.getMessage());
 		} else {
 			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
 				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
@@ -744,25 +744,6 @@ public class ContactController {
 		String authToken = FacadeProvider.getExternalJournalFacade().getPatientDiaryAuthToken();
 		url += "/data?q=" + personUuid + "&token=" + authToken;
 		UI.getCurrent().getPage().open(url, "_blank");
-	}
-
-	private void showPatientDiaryWarningPopup(String message) {
-		VerticalLayout warningLayout = new VerticalLayout();
-		warningLayout.setMargin(true);
-		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
-		warningIcon.setHeight(35, Unit.PIXELS);
-		warningIcon.setWidth(35, Unit.PIXELS);
-		warningLayout.addComponentAsFirst(warningIcon);
-		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
-		Label messageLabel = new Label(I18nProperties.getValidationError(Validations.externalJournalPersonValidationError));
-		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		warningLayout.addComponent(messageLabel);
-		Label infoLabel = new Label(message);
-		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		warningLayout.addComponent(infoLabel);
-		CssStyles.style(warningLayout, CssStyles.ALIGN_CENTER);
-		popupWindow.addCloseListener(e -> popupWindow.close());
-		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
 	private void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {

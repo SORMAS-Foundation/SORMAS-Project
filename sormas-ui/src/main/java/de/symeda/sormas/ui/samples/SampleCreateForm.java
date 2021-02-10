@@ -34,7 +34,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE)
-		+ fluidRowLocs(6, PathogenTestDto.CQ_VALUE)
+		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT_TEXT);
 
 	public SampleCreateForm() {
@@ -53,6 +53,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
 		TextField cqValueField = addCustomField(PathogenTestDto.CQ_VALUE, Float.class, TextField.class);
+		TextField typingIdField = addCustomField(PathogenTestDto.TYPING_ID, String.class, TextField.class);
 		cqValueField.setConverter(new StringToFloatConverter());
 		DateTimeField testDateField = addCustomField(
 			PathogenTestDto.TEST_DATE_TIME,
@@ -68,6 +69,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		setVisibilities();
 
 		cqValueField.setVisible(false);
+		typingIdField.setVisible(false);
 
 		FieldHelper.setVisibleWhen(
 			includeTestField,
@@ -107,6 +109,12 @@ public class SampleCreateForm extends AbstractSampleForm {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
 			PathogenTestResultType testResult = (PathogenTestResultType) pathogenTestResultField.getValue();
 			showCqValueField(cqValueField, testType, testResult);
+			if (testType == PathogenTestType.PCR_RT_PCR || testType == PathogenTestType.DNA_MICROARRAY || testType == PathogenTestType.SEQUENCING) {
+				typingIdField.setVisible(true);
+			} else {
+				typingIdField.setVisible(false);
+				typingIdField.clear();
+			}
 		});
 
 		includeTestField.addValueChangeListener(e -> {
@@ -150,6 +158,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		final ComboBox testTypeField = (ComboBox) getField(PathogenTestDto.TEST_TYPE);
 		final ComboBox testedDiseaseField = (ComboBox) getField(PathogenTestDto.TESTED_DISEASE);
 		final TextField cqValueField = (TextField) getField(PathogenTestDto.CQ_VALUE);
+		final TextField typingIdField = (TextField) getField(PathogenTestDto.TYPING_ID);
 		final DateTimeField testDateField = (DateTimeField) getField(PathogenTestDto.TEST_DATE_TIME);
 		final TextArea testTextField = (TextArea) getField(PathogenTestDto.TEST_RESULT_TEXT);
 
@@ -158,6 +167,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		testTypeField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE));
 		testedDiseaseField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE));
 		cqValueField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE));
+		typingIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TYPING_ID));
 		testDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME));
 		testTextField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_TEXT));
 	}
