@@ -24,7 +24,8 @@ public enum PathogenTestResultType {
 	INDETERMINATE,
 	PENDING,
 	NEGATIVE,
-	POSITIVE;
+	POSITIVE,
+	NOT_DONE;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
