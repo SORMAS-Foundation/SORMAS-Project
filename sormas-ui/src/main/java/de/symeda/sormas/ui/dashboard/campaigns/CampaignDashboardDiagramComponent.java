@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.highcharts.HighChart;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
-	private static final double MAX_PERCENTAGE_VALUE_THRESHOLD = 70.0;
+	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT = 70.0;
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -308,7 +308,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
 						final double scaledValue =
 								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
-						result = scaledValue > MAX_PERCENTAGE_VALUE_THRESHOLD;
+						result = scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT;
 						if (result) {
 							return true;
 						}
