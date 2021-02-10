@@ -53,6 +53,8 @@ public interface RegionFacade {
 
 	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
 
+	List<RegionReferenceDto> getByExternalId(String id, boolean includeArchivedEntities);
+
 	List<String> getNamesByIds(List<Long> regionIds);
 
 	void archive(String regionUuid);

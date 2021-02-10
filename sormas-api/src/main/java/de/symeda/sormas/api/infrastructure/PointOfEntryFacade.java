@@ -38,6 +38,8 @@ public interface PointOfEntryFacade {
 
 	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities);
 
+	List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities);
+
 	void archive(String pointOfEntryUuid);
 
 	void dearchive(String pointOfEntryUuid);

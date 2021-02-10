@@ -51,6 +51,7 @@ public class DistrictDto extends EntityDto {
 		Float growthRate,
 		String regionUuid,
 		String regionName,
+		String regionExternalId,
 		String externalID) {
 
 		super(creationDate, changeDate, uuid);
@@ -58,7 +59,7 @@ public class DistrictDto extends EntityDto {
 		this.name = name;
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
-		this.region = new RegionReferenceDto(regionUuid, regionName);
+		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		this.externalID = externalID;
 	}
 
@@ -120,7 +121,7 @@ public class DistrictDto extends EntityDto {
 	}
 
 	public DistrictReferenceDto toReference() {
-		return new DistrictReferenceDto(getUuid());
+		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
 
 	public static DistrictDto build() {

@@ -201,8 +201,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
 		if (!eventJurisdictionChecker.isInJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
-			dto.setRegion(user.getRegion() != null ? new RegionReferenceDto(user.getRegion().getUuid()) : null);
-			dto.setDistrict(user.getDistrict() != null ? new DistrictReferenceDto(user.getDistrict().getUuid()) : null);
+			Region region = user.getRegion();
+			dto.setRegion(region != null ? new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()) : null);
+			District district = user.getDistrict();
+			dto.setDistrict(district != null ? new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()) : null);
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
