@@ -153,6 +153,7 @@ public class CaseExportDto implements Serializable {
 	private Boolean notACaseReasonDifferentPathogen;
 	private Boolean notACaseReasonOther;
 	private String notACaseReasonDetails;
+	private CaseIdentificationSource caseIdentificationSource;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
 	private CaseOutcome outcome;
@@ -1694,6 +1695,16 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.CORE)
 	public String getNotACaseReasonDetails() {
 		return notACaseReasonDetails;
+
+	@Order(159)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CASE_IDENTIFICATION_SOURCE)
+	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountriesExcept
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
 	}
 
 	public void setCountry(String country) {
@@ -2014,4 +2025,8 @@ public class CaseExportDto implements Serializable {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken; }
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
+	}
 }
