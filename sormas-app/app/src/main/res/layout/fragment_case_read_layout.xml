@@ -231,6 +231,11 @@
                     app:value="@{data.reportingDistrict}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_caseIdentificationSource"
+                    app:value="@{data.caseIdentificationSource}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

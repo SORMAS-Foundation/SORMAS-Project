@@ -148,6 +148,7 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
+	private CaseIdentificationSource caseIdentificationSource;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
 	private CaseOutcome outcome;
@@ -1640,6 +1641,17 @@ public class CaseExportDto implements Serializable {
 		return reportingDistrict;
 	}
 
+	@Order(153)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CASE_IDENTIFICATION_SOURCE)
+	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountriesExcept
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -1938,4 +1950,8 @@ public class CaseExportDto implements Serializable {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken; }
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
+	}
 }

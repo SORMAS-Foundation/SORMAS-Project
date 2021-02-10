@@ -6460,10 +6460,16 @@ ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
 
+-- 2021-02-05 Case identification source #3420
+ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
+ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
+
 -- 2020-02-09 Add Country to location details #2994
 ALTER TABLE location ADD COLUMN country_id bigint;
 ALTER TABLE location_history ADD COLUMN country_id bigint;
 
-INSERT INTO schema_version (version_number, comment) VALUES (324, 'Add Country to location details #2994');
+INSERT INTO schema_version (version_number, comment) VALUES (325, 'Add Country to location details #2994');
 
 -- *** Insert new sql commands BEFORE this line ***

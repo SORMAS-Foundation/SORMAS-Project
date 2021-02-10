@@ -69,6 +69,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "CaseData";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String CLASSIFICATION_COMMENT = "classificationComment";
@@ -229,6 +230,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private CaseClassification caseClassification;
+	private CaseIdentificationSource caseIdentificationSource;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
@@ -674,6 +676,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
 	}
 
 	public UserReferenceDto getClassificationUser() {
