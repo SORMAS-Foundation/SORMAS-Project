@@ -214,6 +214,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				setEnabled(true, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			} else {
 				setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
+				region.setValue(null);
+				district.setValue(null);
+				community.setValue(null);
 			}
 		});
 
