@@ -2222,33 +2222,6 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 
-		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
-		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
-		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
-		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
-		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
-		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
-		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
-		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
-
-		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
-		target.setInfectionSetting(source.getInfectionSetting());
-
-		target.setProhibitionToWork(source.getProhibitionToWork());
-		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
-		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
-
-		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
-		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
-
-		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
-		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
-		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
-		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
-		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
 		return entity.toReference();
 	}
 
@@ -2509,7 +2482,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
