@@ -69,6 +69,11 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 		this.presentCondition = presentCondition;
 	}
 
+	public PersonCriteria presentCondition(PresentCondition presentCondition) {
+		this.presentCondition = presentCondition;
+		return this;
+	}
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}

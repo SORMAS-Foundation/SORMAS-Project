@@ -69,11 +69,11 @@ public class CriteriaBuilderHelper {
 
 	public static Predicate andEqualsReferenceDto(
 		CriteriaBuilder cb,
-		Join<? extends AbstractDomainObject, ? extends AbstractDomainObject> region,
+		Join<? extends AbstractDomainObject, ? extends AbstractDomainObject> from,
 		Predicate filter,
 		ReferenceDto referenceDto) {
 		if (referenceDto != null) {
-			andEquals(cb, region, filter, referenceDto.getUuid(), AbstractDomainObject.UUID);
+			filter = andEquals(cb, from, filter, referenceDto.getUuid(), AbstractDomainObject.UUID);
 		}
 		return filter;
 	}

@@ -201,8 +201,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.COMMUNITY, JoinType.LEFT);
-		final Join<Location, Community> community = location.join(Location.REGION, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = null;
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
@@ -226,10 +226,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				}
 			}
 		}
-		andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
-		andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
-		andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
-		andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
+		filter = andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
+		filter = andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
+		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
+		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
 
 		if (personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {

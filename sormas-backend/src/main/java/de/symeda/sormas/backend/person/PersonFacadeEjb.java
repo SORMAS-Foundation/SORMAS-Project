@@ -587,8 +587,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 		Root<Person> person = cq.from(Person.class);
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.COMMUNITY, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
 
 		cq.multiselect(

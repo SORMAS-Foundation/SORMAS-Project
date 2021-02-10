@@ -6,12 +6,16 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -79,6 +83,10 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		super.applyDependenciesOnFieldChange(propertyId, event);
 
+		final PersonCriteria criteria = getValue();
+		final ComboBox districtField = getField(PersonCriteria.DISTRICT);
+		final ComboBox communityField = getField(PersonCriteria.COMMUNITY);
+
 		switch (propertyId) {
 		case PersonCriteria.BIRTHDATE_MM: {
 			Integer birthMM = (Integer) event.getProperty().getValue();
@@ -91,6 +99,31 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 					(Integer) getField(PersonCriteria.BIRTHDATE_MM).getValue(),
 					(Integer) getField(PersonCriteria.BIRTHDATE_YYYY).getValue()));
 
+			break;
+		}
+		case PersonCriteria.REGION: {
+			final UserDto user = currentUserDto();
+			final RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
+			if (!DataHelper.equal(region, criteria.getRegion())) {
+				if (region != null) {
+					enableFields(districtField);
+					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				} else {
+					clearAndDisableFields(districtField);
+				}
+			}
+			break;
+		}
+		case PersonCriteria.DISTRICT: {
+			final DistrictReferenceDto newDistrict = (DistrictReferenceDto) event.getProperty().getValue();
+			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
+				if (newDistrict != null) {
+					enableFields(communityField);
+					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
+				} else {
+					clearAndDisableFields(communityField);
+				}
+			}
 			break;
 		}
 		}

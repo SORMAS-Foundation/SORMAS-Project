@@ -9,26 +9,27 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.backend.caze.Case;
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
@@ -38,6 +39,21 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
+
+	@Test
+	public void testGetIndexListByPresentCondition() {
+		final RDCFEntities rdcf = creator.createRDCFEntities();
+		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		person1.setPresentCondition(PresentCondition.DEAD);
+		creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+
+		getPersonFacade().savePerson(person1);
+
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+	}
 
 	@Test
 	public void testGetMatchingNameDtos() {
