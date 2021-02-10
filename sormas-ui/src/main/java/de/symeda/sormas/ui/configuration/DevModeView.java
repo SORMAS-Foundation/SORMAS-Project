@@ -121,6 +121,16 @@ public class DevModeView extends AbstractConfigurationView {
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 
+		Button performanceTestSaveCaseButton = ButtonHelper.createButton("Performance test case creation", e -> {
+			generateCasesPerformance();
+		}, CssStyles.FORCE_CAPTION);
+		contentLayout.addComponent(performanceTestSaveCaseButton);
+
+		Button performanceTestSaveContactButton = ButtonHelper.createButton("Performance test contact creation", e -> {
+			generateContactsPerformance();
+		}, CssStyles.FORCE_CAPTION);
+		contentLayout.addComponent(performanceTestSaveContactButton);
+
 		addComponent(contentLayout);
 	}
 
@@ -503,6 +513,66 @@ public class DevModeView extends AbstractConfigurationView {
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
+	private void generateCasesPerformance() {
+
+		final int numberOfCases = 30;
+
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		LocalDateTime reportDateTime = LocalDateTime.now();
+		Date reportDate = Date.from(reportDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+		// Build a single person
+		PersonDto person = PersonDto.build();
+		person.setSymptomJournalStatus(null);
+		person.setSex(Sex.MALE);
+		person.setFirstName("PerformanceTestPerson");
+		person.setLastName("Person");
+		FacadeProvider.getPersonFacade().savePerson(person);
+
+		// select a facility
+		FacilityCriteria facilityCriteria = new FacilityCriteria();
+		facilityCriteria.region(UserProvider.getCurrent().getUser().getRegion());
+		facilityCriteria.district(UserProvider.getCurrent().getUser().getDistrict());
+		FacilityDto healthFacility =
+			FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, Arrays.asList(new SortProperty(FacilityDto.NAME))).get(0);
+
+		long dt = System.nanoTime();
+		// watch out for overflows here
+		for (int i = 0; i < numberOfCases; i++) {
+			CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
+			caze.setDisease(Disease.CORONAVIRUS);
+			caze.setQuarantineFrom(null);
+			caze.setQuarantineTo(null);
+			caze.setQuarantineExtended(false);
+			caze.setQuarantineReduced(false);
+			caze.setReportingUser(userReference);
+			caze.setReportDate(reportDate);
+			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+			caze.setRegion(healthFacility.getRegion());
+			caze.setDistrict(healthFacility.getDistrict());
+			caze.setCommunity(healthFacility.getCommunity());
+			caze.setHealthFacility(healthFacility.toReference());
+			caze.setFacilityType(healthFacility.getType());
+			caze.setReportLat(healthFacility.getLatitude());
+			caze.setReportLon(healthFacility.getLongitude());
+			// local test showed that the above calls hat an absolutely negligible impact on performance
+			System.out.println("Initiating saveCase()");
+			long dt2 = System.nanoTime();
+			FacadeProvider.getCaseFacade().saveCase(caze);
+			dt2 = System.nanoTime() - dt2;
+			System.out.println("Finished saveCase() after " + dt2 / 1_000_000 + "ms");
+		}
+		dt = System.nanoTime() - dt;
+
+		// TODO: Cleanup created cases&contacts here?
+
+		double perCase = dt / numberOfCases;
+		String msg =
+			String.format("Generating %,d identical cases took %,d  ms (%.1f ms per case)", numberOfCases, dt / 1_000_000, perCase / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
+	}
+
 	private void generateContacts() {
 
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
@@ -630,6 +700,59 @@ public class DevModeView extends AbstractConfigurationView {
 				}
 			}
 		}
+	}
+
+	private void generateContactsPerformance() {
+
+		final int numberOfContacts = 30;
+
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		LocalDateTime reportDateTime = LocalDateTime.now();
+		Date reportDate = Date.from(reportDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
+		DistrictReferenceDto district = UserProvider.getCurrent().getUser().getDistrict();
+
+		// Build a single person
+		PersonDto person = PersonDto.build();
+		person.setSymptomJournalStatus(null);
+		person.setSex(Sex.MALE);
+		person.setFirstName("PerformanceTestPerson");
+		person.setLastName("Person");
+		FacadeProvider.getPersonFacade().savePerson(person);
+
+		// select a random sourcecase
+		CaseReferenceDto contactCase = FacadeProvider.getCaseFacade()
+			.getRandomCaseReferences(new CaseCriteria().region(region).district(district).disease(Disease.CORONAVIRUS), 1)
+			.get(0);
+
+		long dt = System.nanoTime();
+		// watch out for overflows here
+		for (int i = 0; i < numberOfContacts; i++) {
+			ContactDto contact = ContactDto.build();
+			contact.setPerson(person.toReference());
+			contact.setCaze(contactCase);
+			contact.setDisease(Disease.CORONAVIRUS);
+			contact.setReportingUser(userReference);
+			contact.setReportDateTime(reportDate);
+			contact.setRegion(region);
+			contact.setDistrict(district);
+			contact.setLastContactDate(reportDate);
+			// local test showed that the above calls hat an absolutely negligible impact on performance
+			System.out.println("Initiating saveContact()");
+			long dt2 = System.nanoTime();
+			contact = FacadeProvider.getContactFacade().saveContact(contact);
+			dt2 = System.nanoTime() - dt2;
+			System.out.println("Finished saveContact() after " + dt2 / 1_000_000 + "ms");
+		}
+		dt = System.nanoTime() - dt;
+
+		// TODO: Cleanup created cases&contacts here?
+
+		double perContact = dt / numberOfContacts;
+		String msg = String
+			.format("Generating %,d identical contacts took %,d  ms (%.1f ms per contact)", numberOfContacts, dt / 1_000_000, perContact / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
 	private LocalDateTime getReferenceDateTime(int i, int count, float baseOffset, Disease disease, LocalDate startDate, int daysBetween) {
