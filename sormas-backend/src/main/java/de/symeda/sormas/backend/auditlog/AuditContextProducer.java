@@ -17,12 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.auditlog;
 
-import de.symeda.auditlog.api.Auditor;
-import de.symeda.auditlog.api.Current;
-import de.symeda.auditlog.api.TransactionId;
-import de.symeda.auditlog.api.UserId;
-import de.symeda.sormas.api.ConfigFacade;
-
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -30,6 +24,12 @@ import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.transaction.TransactionScoped;
+
+import de.symeda.auditlog.api.Auditor;
+import de.symeda.auditlog.api.Current;
+import de.symeda.auditlog.api.TransactionId;
+import de.symeda.auditlog.api.UserId;
+import de.symeda.sormas.api.ConfigFacade;
 
 /**
  * Provides the relevant environment for the Auditlog.
