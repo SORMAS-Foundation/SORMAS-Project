@@ -119,7 +119,6 @@ public class DistrictsView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_districts",
 				"sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

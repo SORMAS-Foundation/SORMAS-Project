@@ -279,7 +279,7 @@ public final class DataHelper {
 		}
 	}
 
-	public static String parseBoolean(Boolean value) {
+	public static String stringifyBoolean(Boolean value) {
 
 		if (value == null) {
 			return "";
@@ -288,6 +288,21 @@ public final class DataHelper {
 		} else {
 			return I18nProperties.getString(Strings.no);
 		}
+	}
+
+	public static Boolean parseBoolean(String value) {
+
+		if (value == null) {
+			return null;
+		}
+
+		if (I18nProperties.getString(Strings.yes).equalsIgnoreCase(value)) {
+			return true;
+		} else if (I18nProperties.getString(Strings.no).equalsIgnoreCase(value)) {
+			return false;
+		}
+
+		return Boolean.parseBoolean(value);
 	}
 
 	public static String getSexAndAgeGroupString(AgeGroup ageGroup, Sex sex) {
@@ -356,7 +371,7 @@ public final class DataHelper {
 		} else if (value instanceof Date) {
 			return DateFormatHelper.formatDate((Date) value);
 		} else if (value.getClass().equals(Boolean.class)) {
-			return DataHelper.parseBoolean((Boolean) value);
+			return DataHelper.stringifyBoolean((Boolean) value);
 		} else if (value instanceof Set) {
 			StringBuilder sb = new StringBuilder();
 			for (Object o : (Set<?>) value) {

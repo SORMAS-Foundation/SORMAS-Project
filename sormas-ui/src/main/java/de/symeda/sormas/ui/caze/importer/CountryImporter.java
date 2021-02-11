@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.utils.EmptyValueException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -24,7 +23,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.CountryImportProgressLayout;
 import de.symeda.sormas.ui.importer.ImportErrorException;
@@ -34,7 +34,7 @@ import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
 public class CountryImporter extends InfrastructureImporter {
 
-	public CountryImporter(File inputFile, UserReferenceDto currentUser) {
+	public CountryImporter(File inputFile, UserDto currentUser) {
 		super(inputFile, currentUser, InfrastructureType.COUNTRY);
 	}
 

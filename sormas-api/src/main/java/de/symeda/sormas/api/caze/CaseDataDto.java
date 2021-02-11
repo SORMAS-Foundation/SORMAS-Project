@@ -185,9 +185,18 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
+	public static final String RE_INFECTION = "reInfection";
+	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
+
+	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
+	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
+	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
+	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
+	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -569,11 +578,35 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
 
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private YesNoUnknown reInfection;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Date previousInfectionDate;
+
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonNegativeTest;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonPhysicianInformation;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonDifferentPathogen;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonOther;
+
+	@HideForCountriesExcept
+	private String notACaseReasonDetails;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1569,6 +1602,22 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
 	public DistrictReferenceDto getReportingDistrict() {
 		return reportingDistrict;
 	}
@@ -1592,4 +1641,45 @@ public class CaseDataDto extends PseudonymizableDto {
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
+
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
+	}
+
 }
