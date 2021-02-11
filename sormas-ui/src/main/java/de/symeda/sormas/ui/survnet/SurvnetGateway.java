@@ -15,17 +15,28 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides UI components to integrate with the SurvNet gateway
  */
 public class SurvnetGateway {
+
+	private static final Logger logger = LoggerFactory.getLogger(SurvnetGateway.class);
 
 	public static final String SURVNET_GATEWAY_LOC = "survnetGateway";
 
@@ -33,7 +44,7 @@ public class SurvnetGateway {
 		//NOOP
 	}
 
-	public static HorizontalLayout addComponentToLayout(CustomLayout targetLayout, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
+	public static HorizontalLayout addComponentToLayout(CustomLayout targetLayout, DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
 		if (!FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
 			return null;
 		}
@@ -44,7 +55,7 @@ public class SurvnetGateway {
 		Button button = ButtonHelper.createIconButton(
 			Captions.SurvnetGateway_send,
 			VaadinIcons.OUTBOX,
-			e -> sendToSurvnet(gatewayType, uuids.get()),
+			e -> onSendButtonClick(editComponent, gatewayType, uuids),
 			ValoTheme.BUTTON_PRIMARY);
 
 		HorizontalLayout layout = new HorizontalLayout(header, button);
@@ -57,6 +68,42 @@ public class SurvnetGateway {
 		targetLayout.addComponent(layout, SURVNET_GATEWAY_LOC);
 
 		return layout;
+	}
+
+	private static void onSendButtonClick(DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
+
+		int numberOfEntities = CollectionUtils.size(uuids.get());
+
+		String entityString;
+		if (gatewayType == SurvnetGatewayType.CASES &&  numberOfEntities == 1) {
+			entityString = I18nProperties.getString(Strings.entityCase).toLowerCase();
+		} else if (gatewayType == SurvnetGatewayType.CASES) {
+			entityString = I18nProperties.getString(Strings.entityCases).toLowerCase();
+		} else if (gatewayType == SurvnetGatewayType.EVENTS && numberOfEntities == 1) {
+			entityString = I18nProperties.getString(Strings.entityEvent).toLowerCase();
+		} else {
+			entityString = I18nProperties.getString(Strings.entityEvents).toLowerCase();
+		}
+
+		if (editComponent.isDirty()) {
+			VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
+					String.format(I18nProperties.getString(Strings.SurvnetGateway_unableToSend), entityString)
+					);
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
+					new Label(String.format(I18nProperties.getString(Strings.SurvnetGateway_confirmSend), entityString)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							sendToSurvnet(gatewayType, uuids.get());
+							SormasUI.refreshView();
+						}
+					});
+		}
 	}
 
 	public static void sendToSurvnet(SurvnetGatewayType gatewayType, List<String> uuids) {
@@ -93,6 +140,31 @@ public class SurvnetGateway {
 		}
 
 		Notification.show(I18nProperties.getCaption(Captions.SurvnetGateway_title), message, type);
+	}
+
+	public static <T extends EntityDto> boolean deleteInSurvnet(SurvnetGatewayType gatewayType, List<T> entities) {
+		int statusCode;
+
+		switch (gatewayType) {
+			case CASES:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteCases((List<CaseDataDto>) entities);
+				break;
+			case EVENTS:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteEvents((List<EventDto>) entities);
+				break;
+			default:
+				throw new IllegalArgumentException(gatewayType.toString());
+		}
+
+		switch (statusCode) {
+			case HttpServletResponse.SC_OK:
+			case HttpServletResponse.SC_NO_CONTENT:
+				return true;
+			case HttpServletResponse.SC_BAD_REQUEST:
+			default:
+				logger.warn("Cannot delete entities in SurvNet due to {} response", statusCode);
+				return false;
+		}
 	}
 
 }

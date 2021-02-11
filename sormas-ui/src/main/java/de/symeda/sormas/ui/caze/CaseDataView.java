@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -175,7 +175,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.CASES, () -> Arrays.asList(caze.getUuid()));
+		SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.CASES, () -> Collections.singletonList(caze.getUuid()));
 
 		CaseDocumentsComponent.addComponentToLayout(layout, caze);
 

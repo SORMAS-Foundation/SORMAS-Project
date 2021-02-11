@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -1064,7 +1065,7 @@ public final class DateHelper {
 
 	/**
 	 * Redundant to {@link #now()} to propose {@code startTime} as variable name.
-	 * 
+	 *
 	 * @return Current time in milliseconds.
 	 */
 	public static long startTime() {
@@ -1091,6 +1092,24 @@ public final class DateHelper {
 	 */
 	public static long toSeconds(long milliseconds) {
 		return milliseconds / MILLISECONDS_PER_SECOND;
+	}
+
+	/**
+	 * Find the latest date between 2 dates
+	 * @param date1 the first date
+	 * @param date2 the second date
+	 * @return the latest date between 2 dates. If any is null, the other is returned. If both are null, null is returned.
+	 */
+	public static Date getLatestDate(Date date1, Date date2) {
+		if (ObjectUtils.allNotNull(date1, date2)) {
+			if (date1.after(date2)) {
+				return date1;
+			} else {
+				return date2;
+			}
+		} else {
+			return ObjectUtils.firstNonNull(date1, date2);
+		}
 	}
 
 	public static class ParsedDateFormat {

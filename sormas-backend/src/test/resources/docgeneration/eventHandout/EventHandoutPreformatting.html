@@ -5,7 +5,7 @@
 
 <table>
     <tr><th>Disease</th><th>Status</th><th>Event Date</th><th>Report Date</th><th>User</th></tr>
-    <tr><td>$event.disease</td><td>$event.eventStatus</td><td>$event_startDate</td><td>$event_reportDateTime</td><td>$event_surveillanceOfficer_firstname $event_surveillanceOfficer_lastname</td></tr>
+    <tr><td>$event.disease</td><td>$event.eventStatus</td><td>$event_startDate</td><td>$event_reportDateTime</td><td>$event_responsibleUser_firstname $event_responsibleUser_lastname</td></tr>
 </table>
 
 <h2>Event Participants</h2>
@@ -23,6 +23,6 @@
     <h2>$action.title</h2>
     <p>$F.format($action.getDate())</p>
     <div>#if($action.getDescription()) $action.getDescription() #else <span style="color:#f00">*</span> #end</div>
-    <div>#if($action.reply) $action.reply #else <span style="color:#f00">*</span> #end</div>
+    <div>#if($action.reply) $action.reply #else <span class="red">*</span> #end</div>
 </div>
 #end

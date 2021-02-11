@@ -25,6 +25,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -69,6 +70,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
+	private Join<Case, DiseaseVariant> diseaseVariant;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -272,5 +274,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	public Join<Case, DiseaseVariant> getDiseaseVariant() {
+		return getOrCreate(diseaseVariant, Case.DISEASE_VARIANT, JoinType.LEFT, this::setDiseaseVariant);
+	}
+
+	public void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 }

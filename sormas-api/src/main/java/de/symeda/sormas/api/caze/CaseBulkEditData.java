@@ -22,6 +22,8 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -37,6 +39,7 @@ public class CaseBulkEditData extends EntityDto {
 	private static final long serialVersionUID = -4670022133882295863L;
 
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
@@ -53,6 +56,7 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String FACILITY_TYPE = "facilityType";
 
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
@@ -74,6 +78,14 @@ public class CaseBulkEditData extends EntityDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getDiseaseDetails() {

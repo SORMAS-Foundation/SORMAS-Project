@@ -33,12 +33,11 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.highcharts.HighChart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CampaignDashboardDiagramComponent.class);
+	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_LOWER_BOUND = 70.0;
+	private static final double MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND = 100.0;
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -65,7 +64,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			totalValuesWithoutStacks = true;
 		}
 
-		showAsColumnChart = DiagramType.values().length > 0 && DiagramType.COLUMN == DiagramType.values()[0];
+		showAsColumnChart = DiagramType.COLUMN == diagramDefinition.getDiagramType();
 		campaignColumnChart = new HighChart();
 
 		setSizeFull();
@@ -198,7 +197,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
-		final List noPopulationDataLocations = new LinkedList<>();
+		final List<Object> noPopulationDataLocations = new LinkedList<>();
 		if (Objects.nonNull(totalValuesMap)) {
 			for (Object key : xAxisInfo.keySet()) {
 				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
@@ -209,13 +208,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		hcjs.append("xAxis: {");
 		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
-			Optional isPopulationGroupUsed =
+			Optional<CampaignDiagramSeries> isPopulationGroupUsed =
 				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();
 			if (showPercentages && isPopulationGroupUsed.isPresent() && !CollectionUtils.isEmpty(noPopulationDataLocations)) {
 				hcjs.append(
 					"title: {" + "        text:'"
 						+ String
-							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations))
+							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations.toString()))
 						+ "' },");
 			} else {
 				hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
@@ -233,7 +232,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]},");
 
 		//@formatter:off
-		hcjs.append("yAxis: { min: 0, title: { text: '"+ (showPercentages
+		final String restrictMaxValueProperty = totalsNeedClampTo100() ? "max: 100, " : "";
+		hcjs.append("yAxis: {" + restrictMaxValueProperty + "min: 0, title: { text: '"+ (showPercentages
 				? I18nProperties.getCaption(Captions.dashboardProportion)
 				: I18nProperties.getCaption(Captions.dashboardAggregatedNumber)) +"'}");
 		if (stackMap.size() > 1) {
@@ -287,6 +287,37 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		Iterator<CampaignDiagramDataDto> iterator = values.iterator();
 		return iterator.hasNext() ? iterator.next().getFieldCaption() : defaultValue;
+	}
+
+	private boolean totalsNeedClampTo100() {
+		if (!showPercentages || totalValuesMap == null) {
+			return false;
+		}
+		boolean result = false;
+		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
+			String seriesKey = series.getFormId() + series.getFieldId();
+			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
+				continue;
+			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
+			for (Object axisKey : xAxisInfo.keySet()) {
+				if (seriesData.containsKey(axisKey)) {
+					Double totalValue = totalValuesMap.get(new CampaignDashboardTotalsReference(
+									seriesData.get(axisKey).getGroupingKey(),
+									totalValuesWithoutStacks ? null : series.getStack())
+					);
+					if (totalValue != null && totalValue > 0) {
+						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+						final double scaledValue =
+								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+						if (scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_UPPER_BOUND) {
+							return false;
+						}
+						result |= scaledValue > MAX_YAXIS_VALUE_DYNAMIC_CHART_HEIGHT_LOWER_BOUND;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	private void appendData(

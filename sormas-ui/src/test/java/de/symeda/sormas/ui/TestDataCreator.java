@@ -291,7 +291,7 @@ public class TestDataCreator {
 		Date eventDate,
 		Date reportDateTime,
 		UserReferenceDto reportingUser,
-		UserReferenceDto surveillanceOfficer,
+		UserReferenceDto responsibleUser,
 		Disease disease) {
 
 		EventDto event = EventDto.build();
@@ -305,7 +305,7 @@ public class TestDataCreator {
 		event.setStartDate(eventDate);
 		event.setReportDateTime(reportDateTime);
 		event.setReportingUser(reportingUser);
-		event.setSurveillanceOfficer(surveillanceOfficer);
+		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
 
 		event = FacadeProvider.getEventFacade().saveEvent(event);

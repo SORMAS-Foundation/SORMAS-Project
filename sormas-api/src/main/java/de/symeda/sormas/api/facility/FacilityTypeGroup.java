@@ -29,7 +29,8 @@ public enum FacilityTypeGroup {
 	LEISURE_FACILITY,
 	MEDICAL_FACILITY,
 	WORKING_PLACE,
-	RESIDENCE;
+	RESIDENCE,
+	COMMERCE;
 
 	private static List<FacilityTypeGroup> accomodationGroups = null;
 

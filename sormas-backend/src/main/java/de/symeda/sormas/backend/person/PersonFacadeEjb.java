@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.maxBy;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -42,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -54,7 +59,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -87,6 +92,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -141,6 +147,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -346,9 +354,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
-		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
-		if (configFacade.getPatientDiaryConfig().getUrl() != null
-			&& (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status))) {
+		if (existingPerson.isEnrolledInExternalJournal()) {
 			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
@@ -376,8 +382,27 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
+	//@formatter:off
 	@Override
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
+		Stream<PersonFollowUpEndDto> contactLatestDates = getContactLatestFollowUpEndDates(since, forSymptomJournal);
+		boolean caseFollowupEnabled = featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		if (caseFollowupEnabled) {
+			Stream<PersonFollowUpEndDto> caseLatestDates = getCaseLatestFollowUpEndDates(since, forSymptomJournal);
+			Map<String, Optional<PersonFollowUpEndDto>> latestDates = Stream.concat(contactLatestDates, caseLatestDates)
+					.collect(groupingBy(PersonFollowUpEndDto::getPersonUuid,
+						     maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate))));
+			return latestDates.values().stream()
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.collect(Collectors.toList());
+		} else {
+			return contactLatestDates.collect(Collectors.toList());
+		}
+	}
+	//@formatter:on
+
+	private Stream<PersonFollowUpEndDto> getContactLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -402,11 +427,48 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
 
-		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+		return em.createQuery(cq).getResultList().stream().distinct();
+	}
+
+	private Stream<PersonFollowUpEndDto> getCaseLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+		if (since != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, caseService.createChangeDateFilter(cb, caseRoot, since));
+		}
+
+		if (forSymptomJournal) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(personJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
+
+		return em.createQuery(cq).getResultList().stream().distinct();
 	}
 
 	@Override
 	public Date getLatestFollowUpEndDateByUuid(String uuid) {
+		Date contactLatestDate = getContactLatestFollowUpEndDate(uuid);
+
+		boolean caseFollowupEnabled = featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		if (caseFollowupEnabled) {
+			Date caseLatestDate = getCaseLatestFollowUpEndDate(uuid);
+			return DateHelper.getLatestDate(contactLatestDate, caseLatestDate);
+		} else {
+			return contactLatestDate;
+		}
+	}
+
+	private Date getContactLatestFollowUpEndDate(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -427,13 +489,39 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.orderBy(cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
 
-		List<PersonFollowUpEndDto> resultlist = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
-		if (resultlist.isEmpty()) {
+		List<PersonFollowUpEndDto> results = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+		if (results.isEmpty()) {
 			return null;
 		} else {
-			return resultlist.get(0).getLatestFollowUpEndDate();
+			return results.get(0).getLatestFollowUpEndDate();
+		}
+	}
+
+	private Date getCaseLatestFollowUpEndDate(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+
+		if (uuid != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
 
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(personJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		cq.orderBy(cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
+
+		List<PersonFollowUpEndDto> results = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+		if (results.isEmpty()) {
+			return null;
+		} else {
+			return results.get(0).getLatestFollowUpEndDate();
+		}
 	}
 
 	@Override
@@ -497,7 +585,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		assert (parameterStatus != null);
 
 		for (FollowUpStatusDto status : list) {
-			if (!parameterStatus.equals(status)) {
+			if (!parameterStatus.equals(status.getFollowUpStatus())) {
 				return false;
 			}
 		}

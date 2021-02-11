@@ -68,6 +68,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
@@ -147,6 +148,7 @@ public class Contact extends CoreAdo {
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+	public static final String VACCINATION_INFO = "vaccinationInfo";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -232,6 +234,8 @@ public class Contact extends CoreAdo {
 	private Date prohibitionToWorkUntil;
 
 	private District reportingDistrict;
+
+	private VaccinationInfo vaccinationInfo;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -933,5 +937,15 @@ public class Contact extends CoreAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public VaccinationInfo getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }
