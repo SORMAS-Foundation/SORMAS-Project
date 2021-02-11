@@ -16,8 +16,10 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -25,11 +27,12 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.ContactSelectionField;
@@ -60,7 +63,7 @@ public class ContactImporter extends DataImporter {
 	private CaseDataDto caze;
 	private UI currentUI;
 
-	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, CaseDataDto caze) {
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
 
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.caze = caze;
@@ -91,7 +94,7 @@ public class ContactImporter extends DataImporter {
 
 		final PersonDto newPersonTemp = PersonDto.build();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
-		newContactTemp.setReportingUser(currentUser);
+		newContactTemp.setReportingUser(currentUser.toReference());
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
 			// If the cell entry is not empty, try to insert it into the current contact or person object
@@ -307,6 +310,13 @@ public class ContactImporter extends DataImporter {
 					// Set the current element to the created person
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
+					}
+				} else if (ContactExportDto.BIRTH_DATE.equals(headerPathElementName)) {
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					if (birthDateDto != null) {
+						person.setBirthdateDD(birthDateDto.getBirthdateDD());
+						person.setBirthdateMM(birthDateDto.getBirthdateMM());
+						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());

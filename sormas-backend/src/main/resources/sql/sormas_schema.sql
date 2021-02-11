@@ -6466,10 +6466,40 @@ ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
+-- 2021-02-10 SurvNet Adaptations - Create new field “Suspicious case” to cases
+
+ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonNegativeTest boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonPhysicianInformation boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonDifferentPathogen boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean default false;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonOther boolean default false;
+
+ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;
+ALTER TABLE cases_history ADD COLUMN notACaseReasonDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (325, 'SurvNet Adaptations - Create new field “Suspicious case” to cases #3419');
+
+-- 2020-02-09 #3831 SurvNet Adaptations - Create new field “Reinfection” for cases
+ALTER TABLE cases
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
+
 -- 2020-02-09 Add Country to location details #2994
 ALTER TABLE location ADD COLUMN country_id bigint;
 ALTER TABLE location_history ADD COLUMN country_id bigint;
 
-INSERT INTO schema_version (version_number, comment) VALUES (325, 'Add Country to location details #2994');
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Add Country to location details #2994');
 
 -- *** Insert new sql commands BEFORE this line ***
