@@ -159,7 +159,7 @@ public class SampleDataView extends AbstractSampleView {
 				callback.run();
 			}
 
-			editComponent.getWrappedComponent().makePathogenTestResultRequired();
+			editComponent.getWrappedComponent().fillPathogenTestResult();
 		};
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {

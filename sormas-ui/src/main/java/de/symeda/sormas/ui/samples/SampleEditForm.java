@@ -29,6 +29,12 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.utils.FieldHelper;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class SampleEditForm extends AbstractSampleForm {
 
@@ -64,16 +70,35 @@ public class SampleEditForm extends AbstractSampleForm {
 
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
-			if (FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference())) {
-				getField(SampleDto.PATHOGEN_TEST_RESULT).setRequired(true);
-			} else {
-				getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(false);
-			}
+			fillPathogenTestResult();
 		});
 	}
 
-	public void makePathogenTestResultRequired() {
+	public void fillPathogenTestResult() {
 		ComboBox pathogenTestResultField = (ComboBox) getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT);
+
+		boolean hasPathogenTests = FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference());
+
+		if (!hasPathogenTests) {
+			FieldHelper.updateEnumData(pathogenTestResultField, Collections.singletonList(PathogenTestResultType.NOT_DONE));
+			pathogenTestResultField.setEnabled(false);
+			pathogenTestResultField.setRequired(false);
+			pathogenTestResultField.setValue(PathogenTestResultType.NOT_DONE);
+			return;
+		}
+
+		boolean hasOnlyPendingPathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(Collections.singletonList(getValue().getUuid()))
+				.stream().allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING);
+
+		Collection<PathogenTestResultType> pathogenTestResultTypes;
+
+		if (hasOnlyPendingPathogenTests) {
+			pathogenTestResultTypes = Arrays.asList(PathogenTestResultType.values());
+		} else {
+			pathogenTestResultTypes = Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList());
+		}
+
+		FieldHelper.updateEnumData(pathogenTestResultField, pathogenTestResultTypes);
 		pathogenTestResultField.setEnabled(true);
 		pathogenTestResultField.setRequired(true);
 
