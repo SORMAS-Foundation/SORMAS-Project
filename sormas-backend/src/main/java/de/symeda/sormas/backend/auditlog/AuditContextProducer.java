@@ -29,7 +29,7 @@ import de.symeda.auditlog.api.Auditor;
 import de.symeda.auditlog.api.Current;
 import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
-import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Provides the relevant environment for the Auditlog.
@@ -41,7 +41,7 @@ import de.symeda.sormas.api.ConfigFacade;
 public class AuditContextProducer {
 
 	@EJB
-	private ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Resource
 	private SessionContext context;
