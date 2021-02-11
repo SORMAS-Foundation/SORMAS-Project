@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ejb.Remote;
 
@@ -153,7 +154,7 @@ public interface CaseFacade {
 	 */
 	void updateArchived(List<String> caseUuids, boolean archived);
 
-	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
 	boolean isCaseEditAllowed(String caseUuid);
 

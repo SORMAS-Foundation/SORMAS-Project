@@ -115,7 +115,6 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
-	// TODO: add seed to getRandomCaseReference
 	// TODO: add default configs for performance testing
 
 	public DevModeView() {
@@ -162,10 +161,17 @@ public class DevModeView extends AbstractConfigurationView {
 			seedLabel.setValue("Actual Long seed: " + manualSeed);
 		});
 
-		verticalLayout.addComponent(seedField);
+		CheckBox useManualSeedCheckbox = new CheckBox("Use Manual Seed");
+		useManualSeedCheckbox.setValue(false);
+		useManualSeedCheckbox.addValueChangeListener(e -> {
+			useManualSeed = e.getValue();
+		});
+
 		verticalLayout.addComponent(seedLabel);
-		verticalLayout.setComponentAlignment(seedField, Alignment.BOTTOM_LEFT);
+		verticalLayout.addComponent(useManualSeedCheckbox);
+		horizontalLayout.addComponent(seedField);
 		horizontalLayout.addComponent(verticalLayout);
+		horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_LEFT);
 
 		return horizontalLayout;
 	}
@@ -493,14 +499,11 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static void initializeRandomGenerator() {
 		if (useManualSeed) {
+			System.out.println("Initializing random generator with seed " + manualSeed);
 			randomGenerator = new Random(manualSeed);
 		} else {
 			randomGenerator = new Random();
 		}
-	}
-
-	private static void initializeRandomGenerator(long seed) {
-		randomGenerator = new Random(seed);
 	}
 
 	private static Random random() {
@@ -719,7 +722,8 @@ public class DevModeView extends AbstractConfigurationView {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
 					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
-					config.getContactCount() * 2);
+					config.getContactCount() * 2,
+					random());
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
 				return;
@@ -940,7 +944,8 @@ public class DevModeView extends AbstractConfigurationView {
 					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 						.getRandomCaseReferences(
 							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
-							numParticipants * 2);
+							numParticipants * 2,
+							random());
 					int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
 					for (int k = 0; (k < numContacts && (cases != null)); k++) {
 						ContactDto contact = ContactDto.build(eventParticipant);
