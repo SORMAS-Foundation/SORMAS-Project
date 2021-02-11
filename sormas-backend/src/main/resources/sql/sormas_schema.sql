@@ -6504,5 +6504,9 @@ CREATE INDEX IF NOT EXISTS idx_contacts_reporting_user_id ON contact USING btree
 CREATE INDEX IF NOT EXISTS idx_diseaseconfig_changedate on diseaseconfiguration (changedate DESC);
 CREATE INDEX IF NOT EXISTS idx_person_uuid ON person USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'evaluate performance cases #3481');
 
 -- *** Insert new sql commands BEFORE this line ***
