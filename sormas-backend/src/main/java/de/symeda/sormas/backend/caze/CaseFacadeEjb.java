@@ -2094,18 +2094,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		return generateEpidNumber(caze.getEpidNumber(), caze.getUuid(), caze.getDisease(), caze.getReportDate(), caze.getDistrict().getUuid());
 	}
 
-	private String generateEpidNumber(String newEpidNumber, String caseUUID, Disease disease, Date reportDate, String districtUUID) {
+	private String generateEpidNumber(String newEpidNumber, String caseUuid, Disease disease, Date reportDate, String districtUuid) {
 
 		if (!CaseLogic.isEpidNumberPrefix(newEpidNumber)) {
 			// Generate a completely new epid number if the prefix is not complete or doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(reportDate);
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(districtUUID) + "-" + year + "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(districtUuid) + "-" + year + "-";
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caseUUID, disease);
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caseUuid, disease);
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the database, use 001
 			newEpidNumber = newEpidNumber + "001";
