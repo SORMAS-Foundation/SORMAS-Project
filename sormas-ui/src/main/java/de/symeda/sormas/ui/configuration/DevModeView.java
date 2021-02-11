@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -42,6 +41,7 @@ import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -99,12 +99,20 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static Random randomGenerator;
+
+	private static boolean useManualSeed = false;
+	private static long manualSeed = 0;
+
 	private VerticalLayout contentLayout;
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
+
+	// TODO: add seed to getRandomCaseReference
+	// TODO: add default configs for performance testing
 
 	public DevModeView() {
 
@@ -118,10 +126,39 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contentLayout.addComponent(
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptions), ContentMode.HTML));
+
+		contentLayout.addComponent(createSeedSettingsLayout());
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 
 		addComponent(contentLayout);
+	}
+
+	private HorizontalLayout createSeedSettingsLayout() {
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
+		verticalLayout.setSpacing(false);
+
+		Label seedLabel = new Label("Actual Long seed: " + manualSeed);
+		TextField seedField = new TextField();
+		seedField.setCaption("Generator Seed");
+		seedField.setMaxLength(11);
+		seedField.addValueChangeListener(e -> {
+			try {
+				manualSeed = Long.parseLong(e.getValue(), 36);
+			} catch (NumberFormatException ex) {
+				manualSeed = 0;
+			}
+			seedLabel.setValue("Actual Long seed: " + manualSeed);
+		});
+
+		verticalLayout.addComponent(seedField);
+		verticalLayout.addComponent(seedLabel);
+		verticalLayout.setComponentAlignment(seedField, Alignment.BOTTOM_LEFT);
+		horizontalLayout.addComponent(verticalLayout);
+
+		return horizontalLayout;
 	}
 
 	private VerticalLayout createCaseGeneratorLayout() {
@@ -324,8 +361,20 @@ public class DevModeView extends AbstractConfigurationView {
 		"Okar",
 		"Egwu" };
 
+	private static void initializeRandomGenerator() {
+		if (useManualSeed) {
+			randomGenerator = new Random(manualSeed);
+		} else {
+			randomGenerator = new Random();
+		}
+	}
+
+	private static void initializeRandomGenerator(long seed) {
+		randomGenerator = new Random(seed);
+	}
+
 	private static Random random() {
-		return ThreadLocalRandom.current();
+		return randomGenerator;
 	}
 
 	private static boolean randomPercent(int p) {
@@ -429,6 +478,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateCases() {
+		initializeRandomGenerator();
 
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 
@@ -504,6 +554,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateContacts() {
+		initializeRandomGenerator();
 
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
