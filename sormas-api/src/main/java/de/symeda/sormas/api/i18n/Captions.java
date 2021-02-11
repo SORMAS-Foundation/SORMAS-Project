@@ -249,6 +249,11 @@ public interface Captions {
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
+	String CaseData_notACaseReasonDetails = "CaseData.notACaseReasonDetails";
+	String CaseData_notACaseReasonDifferentPathogen = "CaseData.notACaseReasonDifferentPathogen";
+	String CaseData_notACaseReasonNegativeTest = "CaseData.notACaseReasonNegativeTest";
+	String CaseData_notACaseReasonOther = "CaseData.notACaseReasonOther";
+	String CaseData_notACaseReasonPhysicianInformation = "CaseData.notACaseReasonPhysicianInformation";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";

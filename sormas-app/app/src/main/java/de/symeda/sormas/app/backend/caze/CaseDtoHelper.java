@@ -223,6 +223,12 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setSormasToSormasOriginInfo(
 			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 	}
 
 	@Override
@@ -453,6 +459,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
 		}
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 
 	}
 

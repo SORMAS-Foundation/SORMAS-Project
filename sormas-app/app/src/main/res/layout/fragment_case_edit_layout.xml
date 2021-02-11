@@ -127,6 +127,41 @@
                         app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                         style="@style/ControlSingleColumnStyle"/>
 
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_notACaseReasonNegativeTest"
+                    app:dependencyParentField="@{caseDataCaseClassification}"
+                    app:dependencyParentValue="@{CaseClassification.NO_CASE}"
+                    app:value="@={data.notACaseReasonNegativeTest}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_notACaseReasonPhysicianInformation"
+                    app:dependencyParentField="@{caseDataCaseClassification}"
+                    app:dependencyParentValue="@{CaseClassification.NO_CASE}"
+                    app:value="@={data.notACaseReasonPhysicianInformation}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_notACaseReasonDifferentPathogen"
+                    app:dependencyParentField="@{caseDataCaseClassification}"
+                    app:dependencyParentValue="@{CaseClassification.NO_CASE}"
+                    app:value="@={data.notACaseReasonDifferentPathogen}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_notACaseReasonOther"
+                    app:dependencyParentField="@{caseDataCaseClassification}"
+                    app:dependencyParentValue="@{CaseClassification.NO_CASE}"
+                    app:value="@={data.notACaseReasonOther}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_notACaseReasonDetails"
+                    app:dependencyParentField="@{caseDataNotACaseReasonOther}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.notACaseReasonDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                         android:layout_width="match_parent"
                     android:layout_height="wrap_content"
