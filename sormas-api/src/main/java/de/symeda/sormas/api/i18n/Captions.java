@@ -249,6 +249,11 @@ public interface Captions {
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
+	String CaseData_notACaseReasonDetails = "CaseData.notACaseReasonDetails";
+	String CaseData_notACaseReasonDifferentPathogen = "CaseData.notACaseReasonDifferentPathogen";
+	String CaseData_notACaseReasonNegativeTest = "CaseData.notACaseReasonNegativeTest";
+	String CaseData_notACaseReasonOther = "CaseData.notACaseReasonOther";
+	String CaseData_notACaseReasonPhysicianInformation = "CaseData.notACaseReasonPhysicianInformation";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
@@ -267,6 +272,7 @@ public interface Captions {
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
+	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
 	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
 	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
@@ -292,6 +298,7 @@ public interface Captions {
 	String CaseData_rabiesType = "CaseData.rabiesType";
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
+	String CaseData_reInfection = "CaseData.reInfection";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingType = "CaseData.reportingType";
