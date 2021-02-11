@@ -39,7 +39,7 @@ public class UsersSyncLayout extends AbstractImportLayout {
 		super();
 
 		addSyncUsersComponent(1, (event) -> {
-			UserSyncHandler userSyncHandler = new UserSyncHandler(currentUser);
+			UserSyncHandler userSyncHandler = new UserSyncHandler(currentUser.toReference());
 			userSyncHandler.startSync(this::extendDownloadErrorReportButton, currentUI);
 		});
 

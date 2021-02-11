@@ -39,6 +39,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
@@ -155,6 +156,9 @@ public class Event extends PseudonymizableAdo {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date travelDate;
+
+	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
 
 	@Enumerated(EnumType.STRING)
 	private EventSourceType srcType;
@@ -536,6 +540,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Override

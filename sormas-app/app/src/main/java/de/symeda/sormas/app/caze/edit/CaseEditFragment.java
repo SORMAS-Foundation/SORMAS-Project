@@ -15,20 +15,18 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
-import java.util.Date;
-import java.util.List;
-
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
@@ -80,6 +78,9 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
 	public static final String TAG = CaseEditFragment.class.getSimpleName();
@@ -89,6 +90,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	// Enum lists
 
 	private List<Item> caseClassificationList;
+	private List<Item> caseIdentificationSourceList;
 	private List<Item> caseOutcomeList;
 	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
@@ -273,6 +275,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			caseClassificationList
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
+		caseIdentificationSourceList = DataUtils.getEnumItems(CaseIdentificationSource.class, true);
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
@@ -508,6 +511,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList);
 		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
+		contentBinding.caseDataCaseIdentificationSource.initializeSpinner(caseIdentificationSourceList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -567,6 +571,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// end swiss fields
+
 		contentBinding.caseDataInfectionSetting.initializeSpinner(infectionSettingList);
 		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
@@ -574,6 +579,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// vaccination
 		contentBinding.caseDataVaccineName.initializeSpinner(vaccineList);
 		contentBinding.caseDataVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+
+		// reinfection
+		contentBinding.caseDataPreviousInfectionDate.initializeDateField(getChildFragmentManager());
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {

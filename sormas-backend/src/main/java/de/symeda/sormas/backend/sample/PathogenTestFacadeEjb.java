@@ -138,10 +138,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllBySample(sample).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
+		return sampleService.getByUuid(sampleRef.getUuid())
+			.getPathogenTests()
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override

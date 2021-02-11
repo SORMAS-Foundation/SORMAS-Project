@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,18 +39,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -153,7 +154,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 269;
+	public static final int DATABASE_VERSION = 274;
 
 	private static DatabaseHelper instance = null;
 
@@ -219,6 +220,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.clearTable(connectionSource, VaccinationInfo.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -302,6 +305,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Campaign.class);
 			TableUtils.createTable(connectionSource, CampaignFormData.class);
 			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.createTable(connectionSource, VaccinationInfo.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -1910,6 +1915,45 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 268;
 				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN exposureRole varchar(255);");
 
+				// TODO [vaccination info] integrate vaccination info
+//			case 269:
+//
+//				currentVersion = 269;
+//
+//				getDao(VaccinationInfo.class).executeRaw(
+//					"CREATE TABLE vaccinationInfo(vaccination	VARCHAR(255), vaccinationDoses TEXT, vaccinationInfoSource VARCHAR(255), firstVaccinationDate TIMESTAMP, lastVaccinationDate TIMESTAMP, vaccineName VARCHAR(255), otherVaccineName TEXT, "
+//						+ "vaccineManufacturer VARCHAR(255), otherVaccineManufacturer TEXT, vaccineInn TEXT, vaccineBatchNumber TEXT, vaccineUniiCode TEXT, vaccineAtcCode TEXT, "
+//						+ "changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id	INTEGER, lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, PRIMARY KEY(id AUTOINCREMENT), UNIQUE(snapshot, uuid));");
+//
+//				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
+//				getDao(EventParticipant.class)
+//					.executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationInfo_id references vaccinationInfo(id)");
+
+			case 269:
+				currentVersion = 269;
+				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN workEnvironment varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN workEnvironment varchar(255);");
+
+			case 270:
+				currentVersion = 270;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN bloodOrganOrTissueDonated varchar(255);");
+
+			case 271:
+				currentVersion = 271;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean DEFAULT false;");
+
+      		case 272:
+				currentVersion = 272;
+				getDao(Exposure.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
+
+			case 273:
+				currentVersion = 273;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reInfection varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN previousInfectionDate timestamp;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -2245,6 +2289,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Campaign.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
+			// TODO [vaccination info] integrate vaccination info
+//			TableUtils.dropTable(connectionSource, VaccinationInfo.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -2356,7 +2402,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new CampaignFormMetaDao((Dao<CampaignFormMeta, Long>) innerDao);
 				} else if (type.equals(CampaignFormData.class)) {
 					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
-				} else {
+				}
+				// TODO [vaccination info] integrate vaccination info
+//				else if (type.equals(VaccinationInfo.class)) {
+//					dao = (AbstractAdoDao<ADO>) new VaccinationInfoDao((Dao<VaccinationInfo, Long>) innerDao);
+//				}
+				else {
 					throw new UnsupportedOperationException(type.toString());
 				}
 
@@ -2584,6 +2635,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static CampaignFormDataDao getCampaignFormDataDao() {
 		return (CampaignFormDataDao) getAdoDao(CampaignFormData.class);
 	}
+
+	// TODO [vaccination info] integrate vaccination info
+//	public static VaccinationInfoDao getVaccinationInfoDao() {
+//		return (VaccinationInfoDao) getAdoDao(VaccinationInfo.class);
+//	}
 
 	/**
 	 * Close the database connections and clear any cached DAOs.

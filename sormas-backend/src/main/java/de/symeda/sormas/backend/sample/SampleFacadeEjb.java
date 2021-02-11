@@ -633,7 +633,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
-			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
+			List<PathogenTest> pathogenTests = sampleService.getById(exportDto.getId()).getPathogenTests();
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
 				String lab = pathogenTest.getLab() != null

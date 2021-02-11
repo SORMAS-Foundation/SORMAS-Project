@@ -44,6 +44,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 
 public class ContactDto extends PseudonymizableDto {
 
@@ -122,6 +123,8 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
+	public static final String VACCINATION_INFO = "vaccinationInfo";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -273,6 +276,8 @@ public class ContactDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
 
+	private VaccinationInfoDto vaccinationInfo;
+
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
@@ -282,6 +287,7 @@ public class ContactDto extends PseudonymizableDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 		contact.setEpiData(EpiDataDto.build());
 		contact.setHealthConditions(HealthConditionsDto.build());
+		contact.setVaccinationInfo(VaccinationInfoDto.build());
 
 		return contact;
 	}
@@ -887,5 +893,13 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	public VaccinationInfoDto getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfoDto vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }

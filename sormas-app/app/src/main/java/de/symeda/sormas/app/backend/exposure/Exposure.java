@@ -23,6 +23,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -87,6 +88,9 @@ public class Exposure extends PseudonymizableAdo {
 	private String connectionNumber;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String seatNumber;
+
+	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	@Enumerated(EnumType.STRING)
@@ -553,6 +557,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	public YesNoUnknown getProphylaxis() {

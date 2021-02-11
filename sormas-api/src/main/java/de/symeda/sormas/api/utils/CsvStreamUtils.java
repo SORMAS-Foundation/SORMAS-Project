@@ -30,12 +30,14 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
@@ -66,17 +68,7 @@ public class CsvStreamUtils {
 				if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
 
 					// allows us to access the sub entity
-					SubEntityProvider<T> subEntityProvider = new SubEntityProvider<T>() {
-
-						@Override
-						public Object get(T o) {
-							try {
-								return method.invoke(o);
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								throw new RuntimeException(e);
-							}
-						}
-					};
+					SubEntityProvider<T> subEntityProvider = createSubEntityProvider(method);
 
 					// remove entity field
 					readMethods.remove(i);
@@ -92,22 +84,49 @@ public class CsvStreamUtils {
 				}
 			}
 
-			String[] fieldValues = new String[readMethods.size()];
+			Class<?> entityClass = null;
+			if (csvRowClass.isAnnotationPresent(ExportEntity.class)) {
+				entityClass = csvRowClass.getAnnotation(ExportEntity.class).value();
+			}
+			String[] fieldClassNames = new String[readMethods.size()];
+			String[] fieldIds = new String[readMethods.size()];
+			String[] labels = new String[readMethods.size()];
 			for (int i = 0; i < readMethods.size(); i++) {
 				final Method method = readMethods.get(i);
-				// field caption
-				String propertyId = method.getName().startsWith("get") ? method.getName().substring(3) : method.getName().substring(2);
+				String fieldName = getFieldNameFromMethod(method);
+
+				String propertyId = fieldName;
+
 				if (method.isAnnotationPresent(ExportProperty.class)) {
-					// TODO not sure why we are using the export property name to get the caption here
 					final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
 					if (!exportProperty.combined()) {
-						propertyId = exportProperty.value();
+						propertyId = StringUtils.join(exportProperty.value(), ".");
 					}
 				}
-				propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-				fieldValues[i] = propertyIdCaptionSupplier.apply(propertyId, method.getReturnType());
+
+				Class<?> fieldEntityClass = entityClass;
+				if (method.isAnnotationPresent(ExportEntity.class)) {
+					fieldEntityClass = method.getAnnotation(ExportEntity.class).value();
+				}
+
+				if (subEntityProviders.containsKey(method)) {
+					fieldEntityClass = subEntityProviders.get(method).getEntityClass();
+					propertyId = subEntityProviders.get(method).getName() + "." + propertyId;
+				}
+
+				if (fieldEntityClass != null) {
+					fieldClassNames[i] = DataHelper.getHumanClassName(fieldEntityClass);
+				}
+				fieldIds[i] = propertyId;
+				labels[i] = propertyIdCaptionSupplier.apply(fieldName, method.getReturnType());
 			}
-			writer.writeNext(fieldValues);
+
+			if (entityClass != null) {
+				writer.writeNext(fieldClassNames);
+			}
+			writer.writeNext(fieldIds);
+			labels[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + labels[0];
+			writer.writeNext(labels, false);
 
 			int startIndex = 0;
 			List<T> exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
@@ -121,11 +140,13 @@ public class CsvStreamUtils {
 							// Sub entity might be null
 							Object value = entity != null ? method.invoke(entity) : null;
 
-							fieldValues[i] = DataHelper.valueToString(value);
+							labels[i] = DataHelper.valueToString(value);
 						}
-						writer.writeNext(fieldValues);
+						writer.writeNext(labels);
 					} ;
 				} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 
@@ -136,6 +157,12 @@ public class CsvStreamUtils {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static String getFieldNameFromMethod(Method method) {
+		String propertyId = method.getName().startsWith("get") ? method.getName().substring(3) : method.getName().substring(2);
+		propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+		return propertyId;
 	}
 
 	private static <T> List<Method> getExportRowClassReadMethods(
@@ -165,7 +192,7 @@ public class CsvStreamUtils {
 			throw new RuntimeException("Missing @ExportProperty annotation on method [" + m.getName() + "]");
 		}
 
-		return exportConfiguration.getProperties().contains(exportProperty.value());
+		return exportConfiguration.getProperties().contains(StringUtils.join(exportProperty.value(), "."));
 	}
 
 	private static List<Method> getReadMethods(Class<?> clazz, final Predicate filters) {
@@ -202,6 +229,34 @@ public class CsvStreamUtils {
 
 	private interface SubEntityProvider<T> {
 
+		String getName();
+
+		Class<?> getEntityClass();
+
 		Object get(T parent);
+	}
+
+	private static <T> SubEntityProvider<T> createSubEntityProvider(final Method getter) {
+		return new SubEntityProvider<T>() {
+
+			@Override
+			public String getName() {
+				return getFieldNameFromMethod(getter);
+			}
+
+			@Override
+			public Class<?> getEntityClass() {
+				return getter.getReturnType();
+			}
+
+			@Override
+			public Object get(T parent) {
+				try {
+					return getter.invoke(parent);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
 	}
 }

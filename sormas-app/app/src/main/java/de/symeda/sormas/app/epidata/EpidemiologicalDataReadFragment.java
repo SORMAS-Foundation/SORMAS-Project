@@ -28,6 +28,8 @@ import androidx.databinding.ObservableArrayList;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -84,10 +86,15 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 					new FieldVisibilityCheckers(),
 					getFieldAccessCheckers()));
 
+			final DialogExposureReadLayoutBinding exposureBinding = (DialogExposureReadLayoutBinding) infoDialog.getBinding();
 			if (((Exposure) item).getMeansOfTransport() == MeansOfTransport.PLANE) {
-				((DialogExposureReadLayoutBinding) infoDialog.getBinding()).exposureConnectionNumber
-					.setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+				exposureBinding.exposureConnectionNumber.setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
 			}
+
+			final FacilityType facilityType = ((Exposure) item).getLocation().getFacilityType();
+
+			exposureBinding.exposureWorkEnvironment.setVisibility(
+				facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
 
 			FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
 				ExposureDto.class,

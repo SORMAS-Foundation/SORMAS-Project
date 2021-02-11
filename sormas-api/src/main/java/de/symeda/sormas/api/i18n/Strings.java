@@ -411,6 +411,7 @@ public interface Strings {
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
+	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
@@ -486,6 +487,7 @@ public interface Strings {
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
+	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
@@ -529,6 +531,7 @@ public interface Strings {
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
+	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
@@ -719,6 +722,7 @@ public interface Strings {
 	String messageLineListingDisabled = "messageLineListingDisabled";
 	String messageLineListingSaved = "messageLineListingSaved";
 	String messageLoginFailed = "messageLoginFailed";
+	String messageMissingCases = "messageMissingCases";
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
 	String messageNoCaseFound = "messageNoCaseFound";
@@ -886,6 +890,7 @@ public interface Strings {
 	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
 	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
+	String promptExternalIdSurvNet = "promptExternalIdSurvNet";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
