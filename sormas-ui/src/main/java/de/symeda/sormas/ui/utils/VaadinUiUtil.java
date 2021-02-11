@@ -42,6 +42,7 @@ import com.vaadin.v7.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 
 public final class VaadinUiUtil {
 
@@ -354,4 +355,20 @@ public final class VaadinUiUtil {
         CssStyles.style(infoLayout, CssStyles.VSPACE_3);
         return infoLayout;
     }
+
+	public static void showWarningPopup(String message) {
+		VerticalLayout warningLayout = new VerticalLayout();
+		warningLayout.setMargin(true);
+		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
+		warningLayout.addComponentAsFirst(warningIcon);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
+		Label infoLabel = new Label(message);
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		warningLayout.addComponent(infoLabel);
+		CssStyles.style(warningLayout, CssStyles.ALIGN_CENTER);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
+	}
 }

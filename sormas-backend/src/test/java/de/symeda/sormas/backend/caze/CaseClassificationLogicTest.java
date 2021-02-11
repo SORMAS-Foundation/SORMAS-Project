@@ -493,7 +493,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 		caze.setOutcome(CaseOutcome.DECEASED);
-		caze.setVaccinationDate(DateHelper.subtractDays(new Date(), 1));
+		caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 1));
 		caze = getCaseFacade().saveCase(caze);
 		createSampleTestsForAllTestTypesExcept(caze, Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -524,7 +524,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 		creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		caze.setVaccinationDate(DateHelper.subtractDays(new Date(), 1));
+		caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 1));
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 	}
@@ -1194,7 +1194,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		CaseDataDto caze = buildSuspectCase(disease);
 		switch (disease) {
 		case YELLOW_FEVER:
-			caze.setVaccinationDate(DateHelper.subtractDays(new Date(), 31));
+			caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 31));
 			break;
 		default:
 			throw new UnsupportedOperationException("Disease has no constant requirement or variation in confirmed definition");

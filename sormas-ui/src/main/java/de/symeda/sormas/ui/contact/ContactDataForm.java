@@ -77,6 +77,7 @@ import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -89,6 +90,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -100,6 +102,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
+	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -140,6 +143,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
 					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
+					loc(MEDICAL_INFORMATION_LOC) +
+					loc(ContactDto.VACCINATION_INFO) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -169,7 +174,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()).add(new DiseaseFieldVisibilityChecker(disease)),
 			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 
 		this.viewMode = viewMode;
@@ -424,6 +429,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		HealthConditionsForm clinicalCourseForm = addField(ContactDto.HEALTH_CONDITIONS, HealthConditionsForm.class);
 		clinicalCourseForm.setCaption(null);
+
+		VaccinationInfoForm vaccinationForm = addField(ContactDto.VACCINATION_INFO, VaccinationInfoForm.class);
+		if (vaccinationForm.isVisibleAllowed()) {
+			Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
+			medicalInformationCaptionLabel.addStyleName(H3);
+			getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
+		}
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);

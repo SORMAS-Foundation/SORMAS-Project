@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -66,6 +67,9 @@ public class EventExportDto implements Serializable {
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Date reportDateTime;
+	private UserReferenceDto reportingUser;
+	private UserReferenceDto responsibleUser;
+
 	private EventJurisdictionDto jurisdiction;
 
 	public EventExportDto(
@@ -109,8 +113,12 @@ public class EventExportDto implements Serializable {
 		String srcMediaName,
 		String srcMediaDetails,
 		Date reportDateTime,
-		String reportingUserUid,
-		String surveillanceOfficerUuid) {
+		String reportingUserUuid,
+		String reportingUserFirstName,
+		String reportingUserLastName,
+		String responsibleUserUuid,
+		String responsibleUserFirstName,
+		String responsibleUserLastName) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
@@ -146,8 +154,10 @@ public class EventExportDto implements Serializable {
 		this.srcMediaName = srcMediaName;
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -409,6 +419,24 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(34)
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
+	@Order(35)
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+	}
+
+	@Order(36)
 	public long getParticipantCount() {
 		return participantCount;
 	}
@@ -417,7 +445,7 @@ public class EventExportDto implements Serializable {
 		this.participantCount = participantCount;
 	}
 
-	@Order(35)
+	@Order(37)
 	public long getCaseCount() {
 		return caseCount;
 	}
@@ -426,7 +454,7 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
-	@Order(36)
+	@Order(38)
 	public long getDeathCount() {
 		return deathCount;
 	}
@@ -435,7 +463,7 @@ public class EventExportDto implements Serializable {
 		this.deathCount = deathCount;
 	}
 
-	@Order(37)
+	@Order(39)
 	public long getContactCount() {
 		return contactCount;
 	}
@@ -444,12 +472,12 @@ public class EventExportDto implements Serializable {
 		this.contactCount = contactCount;
 	}
 
-	@Order(38)
+	@Order(40)
 	public long getContactCountSourceInEvent() {
 		return contactCountSourceInEvent;
 	}
 
-	@Order(39)
+	@Order(41)
 	public String getExternalToken() {
 		return externalToken;
 	}

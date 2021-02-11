@@ -34,6 +34,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import static org.junit.Assert.fail;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
@@ -205,6 +206,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 			// Modify the SymptomJournalStatus of the original person
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
 			person = entityManager.merge(person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
@@ -263,10 +265,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 			method.invoke(person, propertyValue);
 		} catch (NoSuchMethodException e) {
 			// This probably means that the set method is gone, which may impose changes to the External Journal Interface
-			assertTrue(false);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+			fail();
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}

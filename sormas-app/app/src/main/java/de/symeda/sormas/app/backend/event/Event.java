@@ -39,6 +39,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
@@ -78,7 +79,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String TRAVEL_DATE = "travelDate";
@@ -157,6 +158,9 @@ public class Event extends PseudonymizableAdo {
 	private Date travelDate;
 
 	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
+
+	@Enumerated(EnumType.STRING)
 	private EventSourceType srcType;
 
 	@Enumerated(EnumType.STRING)
@@ -192,8 +196,8 @@ public class Event extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private User surveillanceOfficer;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
+	private User responsibleUser;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String typeOfPlaceText;
@@ -466,12 +470,12 @@ public class Event extends PseudonymizableAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public User getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public String getTypeOfPlaceText() {
@@ -536,6 +540,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Override

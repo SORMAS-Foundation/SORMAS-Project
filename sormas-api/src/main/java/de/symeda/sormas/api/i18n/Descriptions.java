@@ -20,6 +20,8 @@ public interface Descriptions {
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
 	String CaseData_reportLon = "CaseData.reportLon";
+	String CaseData_vaccineInn = "CaseData.vaccineInn";
+	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";

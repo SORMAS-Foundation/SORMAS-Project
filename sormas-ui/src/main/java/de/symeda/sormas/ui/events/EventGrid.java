@@ -120,6 +120,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.SRC_TYPE,
 				INFORMATION_SOURCE,
 				EventIndexDto.REPORT_DATE_TIME,
+				EventIndexDto.REPORTING_USER,
+				EventIndexDto.RESPONSIBLE_USER,
 				NUMBER_OF_PENDING_TASKS,
 				EventIndexDto.PARTICIPANT_COUNT,
 				EventIndexDto.CASE_COUNT,
