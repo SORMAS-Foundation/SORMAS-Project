@@ -1227,6 +1227,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(caze.get(Case.UUID));
 
 		List<String> uuids = em.createQuery(cq).getResultList();
+		if (uuids.isEmpty()) {
+			return null;
+		}
 
 		return new Random().ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
