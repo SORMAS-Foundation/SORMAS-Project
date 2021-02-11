@@ -6497,10 +6497,17 @@ ALTER TABLE cases_history
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
 -- 2021-02-05 Add reason hospitalization #4187
-ALTER TABLE hospitalization ADD COLUMN reasonforhospitalization varchar(255);
-ALTER TABLE hospitalization ADD COLUMN otherreasonforhospitalization varchar(255);
-ALTER TABLE previoushospitalization ADD COLUMN reasonforhospitalization varchar(255);
-ALTER TABLE previoushospitalization ADD COLUMN otherreasonforhospitalization varchar(255);
+ALTER TABLE hospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN hospitalizationreason varchar(255);
+
+ALTER TABLE hospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE hospitalization_history ADD COLUMN otherhospitalizationreason text;
+
+ALTER TABLE previoushospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason varchar(255);
+
+ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, '#4187 add reason for hospitalization');
 

@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,11 +93,17 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		ComboBox reasonForHospitalization = addField(PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION);
 		otherReasonForHospitalization = addField(PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION, TextField.class);
-		otherReasonForHospitalization.setEnabled(false);
 
 		healthFacility.setImmediate(true);
 
 		initializeAccessAndAllowedAccesses();
+
+		FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION,
+				PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION,
+				Collections.singletonList(HospitalizationReasonType.OTHER),
+				true);
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -178,30 +185,10 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		} else {
 			setReadOnly(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT);
 		}
-		reasonForHospitalization.addValueChangeListener(this::updateOtherReasonForHospitalizationField);
 	}
 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
-	}
-
-	private void updateOtherReasonForHospitalizationField(final Property.ValueChangeEvent event) {
-		if (null == event.getProperty().getValue()) {
-			otherReasonForHospitalization.setValue(null);
-			otherReasonForHospitalization.setEnabled(false);
-			return;
-		}
-		if (event.getProperty().getValue() instanceof HospitalizationReasonType) {
-			final HospitalizationReasonType selectedHospitalizationReasonType = (HospitalizationReasonType) event.getProperty().getValue();
-			otherReasonForHospitalization.setEnabled(HospitalizationReasonType.OTHER == selectedHospitalizationReasonType);
-			if (!otherReasonForHospitalization.isEnabled()) {
-				otherReasonForHospitalization.setValue(null);
-			}
-			return;
-		}
-		LOG.warn("Value is not of type HospitalizationReasonType: {}", event.getProperty().getValue());
-		otherReasonForHospitalization.setEnabled(false);
-		otherReasonForHospitalization.setValue(null);
 	}
 }

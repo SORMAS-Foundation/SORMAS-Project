@@ -44,8 +44,8 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
-	public static final String REASON_FOR_HOSPITALIZATION = "reasonForHospitalization";
-	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherReasonForHospitalization";
+	public static final String REASON_FOR_HOSPITALIZATION = "hospitalizationReason";
+	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherHospitalizationReason";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -62,8 +62,8 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
-	private HospitalizationReasonType reasonForHospitalization;
-	private String otherReasonForHospitalization;
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -161,19 +161,19 @@ public class HospitalizationDto extends EntityDto {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 	}
 
-	public HospitalizationReasonType getReasonForHospitalization() {
-		return reasonForHospitalization;
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
 	}
 
-	public void setReasonForHospitalization(HospitalizationReasonType reasonForHospitalization) {
-		this.reasonForHospitalization = reasonForHospitalization;
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
 	}
 
-	public String getOtherReasonForHospitalization() {
-		return otherReasonForHospitalization;
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
 	}
 
-	public void setOtherReasonForHospitalization(String otherReasonForHospitalization) {
-		this.otherReasonForHospitalization = otherReasonForHospitalization;
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
 	}
 }

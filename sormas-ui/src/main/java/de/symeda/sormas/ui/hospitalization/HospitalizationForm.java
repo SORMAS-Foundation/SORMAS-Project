@@ -26,11 +26,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -60,12 +60,8 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(HospitalizationForm.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -141,7 +137,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		ComboBox reasonForHospitalization = addField(HospitalizationDto.REASON_FOR_HOSPITALIZATION);
 		otherReasonForHospitalization = addField(HospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION, TextField.class);
-		otherReasonForHospitalization.setEnabled(false);
 
 		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
@@ -182,6 +177,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				Arrays.asList(YesNoUnknown.YES),
 				true);
 		}
+
+		FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				HospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION,
+				HospitalizationDto.REASON_FOR_HOSPITALIZATION,
+				Collections.singletonList(HospitalizationReasonType.OTHER),
+				true);
 
 		// Validations
 		admissionDateField.addValidator(
@@ -239,26 +241,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
-		reasonForHospitalization.addValueChangeListener(this::updateOtherReasonForHospitalizationField);
-	}
-
-	private void updateOtherReasonForHospitalizationField(final Property.ValueChangeEvent event) {
-		if (null == event.getProperty().getValue()) {
-			otherReasonForHospitalization.setValue(null);
-			otherReasonForHospitalization.setEnabled(false);
-			return;
-		}
-		if (event.getProperty().getValue() instanceof HospitalizationReasonType) {
-			final HospitalizationReasonType selectedHospitalizationReasonType = (HospitalizationReasonType) event.getProperty().getValue();
-			otherReasonForHospitalization.setEnabled(HospitalizationReasonType.OTHER == selectedHospitalizationReasonType);
-			if (!otherReasonForHospitalization.isEnabled()) {
-				otherReasonForHospitalization.setValue(null);
-			}
-			return;
-		}
-		LOG.warn("Value is not of type HospitalizationReasonType: {}", event.getProperty().getValue());
-		otherReasonForHospitalization.setEnabled(false);
-		otherReasonForHospitalization.setValue(null);
 	}
 
 	private void setDateFieldVisibilties() {

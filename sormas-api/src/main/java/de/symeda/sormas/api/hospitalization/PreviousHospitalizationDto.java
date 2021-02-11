@@ -44,8 +44,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
-	public static final String REASON_FOR_HOSPITALIZATION = "reasonForHospitalization";
-	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherReasonForHospitalization";
+	public static final String REASON_FOR_HOSPITALIZATION = "hospitalizationReason";
+	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherHospitalizationReason";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -61,8 +61,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	private String description;
 
-	private HospitalizationReasonType reasonForHospitalization;
-	private String otherReasonForHospitalization;
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -163,19 +163,19 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
-	public HospitalizationReasonType getReasonForHospitalization() {
-		return reasonForHospitalization;
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
 	}
 
-	public void setReasonForHospitalization(HospitalizationReasonType reasonForHospitalization) {
-		this.reasonForHospitalization = reasonForHospitalization;
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
 	}
 
-	public String getOtherReasonForHospitalization() {
-		return otherReasonForHospitalization;
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
 	}
 
-	public void setOtherReasonForHospitalization(String otherReasonForHospitalization) {
-		this.otherReasonForHospitalization = otherReasonForHospitalization;
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
 	}
 }

@@ -69,8 +69,8 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private YesNoUnknown isolated;
 	private String description;
 	private Hospitalization hospitalization;
-	private HospitalizationReasonType reasonForHospitalization;
-	private String otherReasonForHospitalization;
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -164,19 +164,19 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	}
 
     @Enumerated(EnumType.STRING)
-    public HospitalizationReasonType getReasonForHospitalization() {
-        return reasonForHospitalization;
+    public HospitalizationReasonType getHospitalizationReason() {
+        return hospitalizationReason;
     }
 
-    public void setReasonForHospitalization(HospitalizationReasonType reasonForHospitalization) {
-        this.reasonForHospitalization = reasonForHospitalization;
+    public void setHospitalizationReason(HospitalizationReasonType reasonForHospitalization) {
+        this.hospitalizationReason = reasonForHospitalization;
     }
 
-    public String getOtherReasonForHospitalization() {
-        return otherReasonForHospitalization;
+    public String getOtherHospitalizationReason() {
+        return otherHospitalizationReason;
     }
 
-    public void setOtherReasonForHospitalization(String otherReasonForHospitalization) {
-        this.otherReasonForHospitalization = otherReasonForHospitalization;
+    public void setOtherHospitalizationReason(String otherReasonForHospitalization) {
+        this.otherHospitalizationReason = otherReasonForHospitalization;
     }
 }
