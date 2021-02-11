@@ -19,7 +19,10 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.*;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +31,10 @@ import java.util.Objects;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
