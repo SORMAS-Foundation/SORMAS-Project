@@ -1661,6 +1661,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
@@ -2059,7 +2063,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
 			completeness += 0.2f;
 		}
-		if (sampleService.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
+		if (sampleService
+			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
 			completeness += 0.15f;
 		}
 		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {

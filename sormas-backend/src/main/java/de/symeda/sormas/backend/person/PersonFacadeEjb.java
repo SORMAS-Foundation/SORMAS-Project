@@ -46,7 +46,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -59,6 +58,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -354,6 +354,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		if (existingPerson.isEnrolledInExternalJournal()) {
 			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
@@ -594,7 +598,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
-		PersonDto person = getPersonByUuid(personUuid);;
+		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
 		savePerson(person);
 		return true;
