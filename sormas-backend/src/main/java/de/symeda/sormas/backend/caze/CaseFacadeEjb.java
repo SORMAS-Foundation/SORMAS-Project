@@ -290,6 +290,7 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseFacadeEjb implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
+	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -500,8 +501,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			eventSummaries.stream()
 				.filter(v -> v.getCaseId() == caze.getId())
-				.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-				.findFirst()
+				.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 				.ifPresent(eventSummary -> {
 					caze.setLatestEventId(eventSummary.getEventUuid());
 					caze.setLatestEventStatus(eventSummary.getEventStatus());
@@ -947,8 +947,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (eventSummaries != null && exportDto.getEventCount() != 0) {
 					eventSummaries.stream()
 						.filter(v -> v.getCaseId() == exportDto.getId())
-						.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-						.findFirst()
+						.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 						.ifPresent(eventSummary -> {
 							exportDto.setLatestEventId(eventSummary.getEventUuid());
 							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
@@ -1348,8 +1347,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.diff(
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-			new Long(30 * 24 * 60 * 60) // 30 days
-		);
+			SECONDS_30_DAYS);
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
@@ -1375,8 +1373,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					cb.diff(
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
-				new Long(30 * 24 * 60 * 60) // 30 days
-			));
+				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
 			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
@@ -2121,7 +2118,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// suffix containing numbers
 				newEpidNumber = newEpidNumber + "001";
 			} else {
-				int suffix = Integer.valueOf(suffixString) + 1;
+				int suffix = Integer.parseInt(suffixString) + 1;
 				newEpidNumber += String.format("%03d", suffix);
 			}
 		}
@@ -2304,20 +2301,18 @@ public class CaseFacadeEjb implements CaseFacade {
 				inJurisdiction);
 
 			dto.getHospitalization().getPreviousHospitalizations().forEach(previousHospitalization -> {
-				PreviousHospitalizationDto existingPreviousHospitalization = existingCaseDto.getHospitalization()
+				existingCaseDto.getHospitalization()
 					.getPreviousHospitalizations()
 					.stream()
 					.filter(eh -> DataHelper.isSame(previousHospitalization, eh))
 					.findFirst()
-					.orElse(null);
+					.ifPresent(
+						existingPreviousHospitalization -> pseudonymizer.restorePseudonymizedValues(
+							PreviousHospitalizationDto.class,
+							previousHospitalization,
+							existingPreviousHospitalization,
+							inJurisdiction));
 
-				if (existingPreviousHospitalization != null) {
-					pseudonymizer.restorePseudonymizedValues(
-						PreviousHospitalizationDto.class,
-						previousHospitalization,
-						existingPreviousHospitalization,
-						inJurisdiction);
-				}
 			});
 
 			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingCaseDto.getSymptoms(), inJurisdiction);
@@ -3543,7 +3538,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
 				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();
 
 				reportDatePredicate = cb.between(
 					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),

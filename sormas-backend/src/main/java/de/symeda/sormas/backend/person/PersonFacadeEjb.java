@@ -825,8 +825,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (entity == null) {
 			return null;
 		}
-		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
-		return dto;
+		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 	}
 
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
