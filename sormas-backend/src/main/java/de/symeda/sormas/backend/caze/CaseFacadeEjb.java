@@ -581,6 +581,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
+				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
@@ -2473,6 +2474,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());

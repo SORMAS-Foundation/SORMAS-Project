@@ -6465,7 +6465,7 @@ ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
 ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
-                                                                                                                                         
+
 -- 2021-02-10 SurvNet Adaptations - Create new field “Suspicious case” to cases
 
 ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean default false;
@@ -6484,5 +6484,16 @@ ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;
 ALTER TABLE cases_history ADD COLUMN notACaseReasonDetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (325, 'SurvNet Adaptations - Create new field “Suspicious case” to cases #3419');
+
+-- 2020-02-09 #3831 SurvNet Adaptations - Create new field “Reinfection” for cases
+ALTER TABLE cases
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
 -- *** Insert new sql commands BEFORE this line ***

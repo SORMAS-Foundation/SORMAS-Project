@@ -467,6 +467,19 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_reInfection"
+                    style="@style/ControlSingleColumnStyle"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.reInfection}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_previousInfectionDate"
+                    style="@style/ControlSingleColumnStyle"
+                    app:dependencyParentField="@{caseDataReInfection}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.previousInfectionDate}" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_quarantineHomePossible"
                     app:value="@={data.quarantineHomePossible}"
                     style="@style/ControlSingleColumnStyle" />
