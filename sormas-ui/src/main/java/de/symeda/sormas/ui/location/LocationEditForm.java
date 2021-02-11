@@ -357,8 +357,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							VaadinUiUtil.showConfirmationPopup(
 								I18nProperties.getString(Strings.headingLocation),
 								new Label(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride)),
-								I18nProperties.getCaption(Captions.actionConfirm),
-								I18nProperties.getCaption(Captions.actionCancel),
+								I18nProperties.getString(Strings.yes),
+								I18nProperties.getString(Strings.no),
 								640,
 								confirmationEvent -> {
 									if (confirmationEvent) {

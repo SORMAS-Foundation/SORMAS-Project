@@ -217,12 +217,10 @@ public class LocationDialog extends FormDialog {
                             getActivity(),
                             R.string.heading_location,
                             -1,
-                            R.string.action_confirm,
-                            R.string.action_cancel);
+                            R.string.yes,
+                            R.string.no);
                     confirmationDialog.getConfig().setSubHeading(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride));
-                    confirmationDialog.setPositiveCallback(() -> {
-                        overrideLocationDetailsWithFacilityOnes(facility);
-                    });
+                    confirmationDialog.setPositiveCallback(() -> overrideLocationDetailsWithFacilityOnes(facility));
                     confirmationDialog.show();
                 } else {
                     overrideLocationDetailsWithFacilityOnes(facility);
