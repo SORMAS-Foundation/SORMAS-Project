@@ -6499,6 +6499,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adapt
 -- 2020-02-09 Add Country to location details #2994
 ALTER TABLE location ADD COLUMN country_id bigint;
 ALTER TABLE location_history ADD COLUMN country_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Add Country to location details #2994');
 

@@ -1956,7 +1956,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 274:
 				currentVersion = 274;
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN country_id BIGINT;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN country_id BIGINT REFERENCES country(id);");
 
 				// ATTENTION: break should only be done after last version
 				break;
