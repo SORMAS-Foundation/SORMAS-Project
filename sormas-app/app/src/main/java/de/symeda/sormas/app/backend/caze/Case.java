@@ -385,6 +385,11 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Date prohibitionToWorkUntil;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown reInfection;
+	@DatabaseField
+	private Date previousInfectionDate;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
 
@@ -395,6 +400,18 @@ public class Case extends PseudonymizableAdo {
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
 	private boolean ownershipHandedOver;
+
+	@DatabaseField
+	private boolean notACaseReasonNegativeTest;
+	@DatabaseField
+	private boolean notACaseReasonPhysicianInformation;
+	@DatabaseField
+	private boolean notACaseReasonDifferentPathogen;
+	@DatabaseField
+	private boolean notACaseReasonOther;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String notACaseReasonDetails;
 
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -1296,6 +1313,22 @@ public class Case extends PseudonymizableAdo {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
 	public District getReportingDistrict() {
 		return reportingDistrict;
 	}
@@ -1326,5 +1359,45 @@ public class Case extends PseudonymizableAdo {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
 	}
 }
