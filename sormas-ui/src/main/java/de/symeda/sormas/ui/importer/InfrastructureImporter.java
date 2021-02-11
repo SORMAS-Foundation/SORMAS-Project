@@ -23,7 +23,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 /**
@@ -33,7 +33,7 @@ public class InfrastructureImporter extends DataImporter {
 
 	private final InfrastructureType type;
 
-	public InfrastructureImporter(File inputFile, UserReferenceDto currentUser, InfrastructureType type) {
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type) {
 		super(inputFile, false, currentUser);
 		this.type = type;
 	}
@@ -183,7 +183,7 @@ public class InfrastructureImporter extends DataImporter {
 								community = FacadeProvider.getCommunityFacade().getByName(value, ((FacilityDto) newEntityDto).getDistrict(), false);
 							} else {
 								throw new UnsupportedOperationException(
-										I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
+									I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 							}
 							if (community.isEmpty()) {
 								throw new ImportErrorException(

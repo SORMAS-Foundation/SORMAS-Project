@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
@@ -47,7 +47,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -82,7 +82,7 @@ public class CaseImporter extends DataImporter {
 	private final PersonFacade personFacade;
 	private final CaseFacade caseFacade;
 
-	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
+	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
 		super(inputFile, hasEntityClassRow, currentUser);
 
 		caseImportFacade = FacadeProvider.getCaseImportFacade();

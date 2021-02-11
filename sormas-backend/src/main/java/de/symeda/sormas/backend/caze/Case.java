@@ -43,6 +43,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -100,6 +101,7 @@ public class Case extends CoreAdo {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
 	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
 	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
 	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
@@ -196,6 +198,7 @@ public class Case extends CoreAdo {
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
 	public static final String COVID_TEST_REASON = "covidTestReason";
@@ -206,8 +209,17 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
+
+	public static final String RE_INFECTION = "reInfection";
+	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
+	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
+	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
+	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
+	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
+	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 
 	private Person person;
 	private String description;
@@ -220,6 +232,7 @@ public class Case extends CoreAdo {
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
+	private CaseIdentificationSource caseIdentificationSource;
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
@@ -360,8 +373,16 @@ public class Case extends CoreAdo {
 	private Date prohibitionToWorkFrom;
 	private Date prohibitionToWorkUntil;
 
+	private YesNoUnknown reInfection;
+	private Date previousInfectionDate;
+
 	private District reportingDistrict;
 
+	private boolean notACaseReasonNegativeTest;
+	private boolean notACaseReasonPhysicianInformation;
+	private boolean notACaseReasonDifferentPathogen;
+	private boolean notACaseReasonOther;
+	private String notACaseReasonDetails;
 	/**
 	 * Blood/organ/tissue donation in the last 6 months
 	 */
@@ -452,6 +473,15 @@ public class Case extends CoreAdo {
 
 	public void setCaseClassification(CaseClassification caseStatus) {
 		this.caseClassification = caseStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
 	}
 
 	@ManyToOne(cascade = {})
@@ -1534,6 +1564,24 @@ public class Case extends CoreAdo {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
 	@ManyToOne
 	public District getReportingDistrict() {
 		return reportingDistrict;
@@ -1541,6 +1589,51 @@ public class Case extends CoreAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	@Column
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	@Column
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	@Column
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	@Column
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
 	}
 
 	@Enumerated(EnumType.STRING)

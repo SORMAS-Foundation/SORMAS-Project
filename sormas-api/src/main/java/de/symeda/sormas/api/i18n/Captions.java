@@ -192,6 +192,7 @@ public interface Captions {
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String CaseData_caseIdentificationSource = "CaseData.caseIdentificationSource";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
@@ -248,6 +249,11 @@ public interface Captions {
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
+	String CaseData_notACaseReasonDetails = "CaseData.notACaseReasonDetails";
+	String CaseData_notACaseReasonDifferentPathogen = "CaseData.notACaseReasonDifferentPathogen";
+	String CaseData_notACaseReasonNegativeTest = "CaseData.notACaseReasonNegativeTest";
+	String CaseData_notACaseReasonOther = "CaseData.notACaseReasonOther";
+	String CaseData_notACaseReasonPhysicianInformation = "CaseData.notACaseReasonPhysicianInformation";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
@@ -266,6 +272,7 @@ public interface Captions {
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
+	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
 	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
 	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
@@ -291,6 +298,7 @@ public interface Captions {
 	String CaseData_rabiesType = "CaseData.rabiesType";
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
+	String CaseData_reInfection = "CaseData.reInfection";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingType = "CaseData.reportingType";
@@ -376,6 +384,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -581,6 +590,7 @@ public interface Captions {
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
@@ -755,8 +765,20 @@ public interface Captions {
 	String devModeContactEndDate = "devModeContactEndDate";
 	String devModeContactRegion = "devModeContactRegion";
 	String devModeContactStartDate = "devModeContactStartDate";
+	String devModeEventCasePercentage = "devModeEventCasePercentage";
+	String devModeEventCount = "devModeEventCount";
+	String devModeEventDisease = "devModeEventDisease";
+	String devModeEventDistrict = "devModeEventDistrict";
+	String devModeEventEndDate = "devModeEventEndDate";
+	String devModeEventMaxContacts = "devModeEventMaxContacts";
+	String devModeEventMaxParticipants = "devModeEventMaxParticipants";
+	String devModeEventMinContacts = "devModeEventMinContacts";
+	String devModeEventMinParticipants = "devModeEventMinParticipants";
+	String devModeEventRegion = "devModeEventRegion";
+	String devModeEventStartDate = "devModeEventStartDate";
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
+	String devModeGenerateEvents = "devModeGenerateEvents";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";

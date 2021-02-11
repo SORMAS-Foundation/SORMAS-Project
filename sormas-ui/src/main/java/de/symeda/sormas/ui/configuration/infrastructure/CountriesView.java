@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
@@ -22,6 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CountryCriteria;
+import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -101,9 +103,9 @@ public class CountriesView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_countries",
 				"sormas_countries_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				CountriesGrid.EDIT_BTN_ID);
+				Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
+				Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
