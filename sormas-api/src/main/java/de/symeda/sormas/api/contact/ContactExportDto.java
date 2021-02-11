@@ -830,7 +830,7 @@ public class ContactExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(68)
+	@Order(69)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_DETAILS })
@@ -839,7 +839,7 @@ public class ContactExportDto implements Serializable {
 		return occupationDetails;
 	}
 
-	@Order(69)
+	@Order(70)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ARMED_FORCES_RELATION_TYPE })
@@ -929,98 +929,124 @@ public class ContactExportDto implements Serializable {
 		this.returningTraveler = returningTraveler;
 	}
 
-	@Order(80)
-	@ExportProperty(VaccinationInfoDto.VACCINATION)
+	@Order(90)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
 
-	@Order(81)
-	@ExportProperty(VaccinationInfoDto.VACCINATION_DOSES)
+	@Order(91)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION_DOSES })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
 
-	@Order(82)
-	@ExportProperty(VaccinationInfoDto.VACCINATION_INFO_SOURCE)
+	@Order(92)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION_INFO_SOURCE })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public VaccinationInfoSource getVaccinationInfoSource() {
 		return vaccinationInfoSource;
 	}
 
-	@Order(83)
-	@ExportProperty(VaccinationInfoDto.FIRST_VACCINATION_DATE)
+	@Order(93)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.FIRST_VACCINATION_DATE })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Date getFirstVaccinationDate() {
 		return firstVaccinationDate;
 	}
 
-	@Order(84)
-	@ExportProperty(VaccinationInfoDto.LAST_VACCINATION_DATE)
+	@Order(94)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.LAST_VACCINATION_DATE })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Date getLastVaccinationDate() {
 		return lastVaccinationDate;
 	}
 
-	@Order(85)
-	@ExportProperty(VaccinationInfoDto.VACCINE_NAME)
+	@Order(95)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_NAME })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Vaccine getVaccineName() {
 		return vaccineName;
 	}
 
-	@Order(86)
-	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_NAME)
+	@Order(96)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.OTHER_VACCINE_NAME })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getOtherVaccineName() {
 		return otherVaccineName;
 	}
 
-	@Order(87)
-	@ExportProperty(VaccinationInfoDto.VACCINE_MANUFACTURER)
+	@Order(97)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_MANUFACTURER })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
 
-	@Order(88)
-	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER)
+	@Order(98)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getOtherVaccineManufacturer() {
 		return otherVaccineManufacturer;
 	}
 
-	@Order(89)
-	@ExportProperty(VaccinationInfoDto.VACCINE_INN)
+	@Order(99)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_INN })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineInn() {
 		return vaccineInn;
 	}
 
-	@Order(90)
-	@ExportProperty(VaccinationInfoDto.VACCINE_BATCH_NUMBER)
+	@Order(100)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_BATCH_NUMBER })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineBatchNumber() {
 		return vaccineBatchNumber;
 	}
 
-	@Order(91)
-	@ExportProperty(VaccinationInfoDto.VACCINE_UNII_CODE)
+	@Order(101)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_UNII_CODE })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineUniiCode() {
 		return vaccineUniiCode;
 	}
 
-	@Order(92)
-	@ExportProperty(VaccinationInfoDto.VACCINE_ATC_CODE)
+	@Order(102)
+	@ExportProperty({
+		ContactDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_ATC_CODE })
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineAtcCode() {
 		return vaccineAtcCode;
 	}
 
-	@Order(100)
+	@Order(110)
 	@ExportProperty(LATEST_EVENT_ID)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventId() {
@@ -1031,7 +1057,7 @@ public class ContactExportDto implements Serializable {
 		this.latestEventId = latestEventId;
 	}
 
-	@Order(101)
+	@Order(111)
 	@ExportProperty(LATEST_EVENT_TITLE)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventTitle() {
@@ -1042,14 +1068,14 @@ public class ContactExportDto implements Serializable {
 		this.latestEventTitle = latestEventTitle;
 	}
 
-	@Order(102)
+	@Order(112)
 	@ExportProperty(EVENT_COUNT)
 	@ExportGroup(ExportGroupType.EVENT)
 	public Long getEventCount() {
 		return eventCount;
 	}
 
-	@Order(103)
+	@Order(113)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.BIRTH_NAME })
@@ -1059,7 +1085,7 @@ public class ContactExportDto implements Serializable {
 		return birthName;
 	}
 
-	@Order(104)
+	@Order(114)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.BIRTH_COUNTRY })
@@ -1069,7 +1095,7 @@ public class ContactExportDto implements Serializable {
 		return birthCountry;
 	}
 
-	@Order(105)
+	@Order(115)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.CITIZENSHIP })
@@ -1079,7 +1105,7 @@ public class ContactExportDto implements Serializable {
 		return citizenship;
 	}
 
-	@Order(106)
+	@Order(116)
 	@ExportProperty(ContactDto.REPORTING_DISTRICT)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept
@@ -1087,7 +1113,7 @@ public class ContactExportDto implements Serializable {
 		return reportingDistrict;
 	}
 
-	@Order(107)
+	@Order(117)
 	@ExportProperty(ContactDto.EXTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {

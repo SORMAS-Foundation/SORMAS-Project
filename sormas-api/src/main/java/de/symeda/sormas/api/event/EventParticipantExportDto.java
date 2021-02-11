@@ -28,6 +28,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -265,6 +266,10 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(10)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.UUID })
 	public String getPersonUuid() {
 		return personUuid;
 	}
@@ -279,6 +284,10 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(12)
+	@ExportEntity(CaseDataDto.class)
+	@ExportProperty({
+		EventParticipantDto.RESULTING_CASE,
+		CaseDataDto.UUID })
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -509,79 +518,118 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(45)
-	@ExportProperty(VaccinationInfoDto.VACCINATION)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION })
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
 
 	@Order(46)
-	@ExportProperty(VaccinationInfoDto.VACCINATION_DOSES)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION_DOSES })
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
 
-	@Order(45)
-	@ExportProperty(VaccinationInfoDto.VACCINATION_INFO_SOURCE)
+	@Order(47)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINATION_INFO_SOURCE })
 	public VaccinationInfoSource getVaccinationInfoSource() {
 		return vaccinationInfoSource;
 	}
 
-	@Order(46)
-	@ExportProperty(VaccinationInfoDto.FIRST_VACCINATION_DATE)
+	@Order(48)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.FIRST_VACCINATION_DATE })
 	public Date getFirstVaccinationDate() {
 		return firstVaccinationDate;
 	}
 
-	@Order(47)
-	@ExportProperty(VaccinationInfoDto.LAST_VACCINATION_DATE)
+	@Order(49)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.LAST_VACCINATION_DATE })
 	public Date getLastVaccinationDate() {
 		return lastVaccinationDate;
 	}
 
-	@Order(48)
-	@ExportProperty(VaccinationInfoDto.VACCINE_NAME)
+	@Order(50)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_NAME })
 	public Vaccine getVaccineName() {
 		return vaccineName;
 	}
 
-	@Order(49)
-	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_NAME)
+	@Order(51)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.OTHER_VACCINE_NAME })
 	public String getOtherVaccineName() {
 		return otherVaccineName;
 	}
 
-	@Order(50)
-	@ExportProperty(VaccinationInfoDto.VACCINE_MANUFACTURER)
+	@Order(52)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_MANUFACTURER })
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
 
-	@Order(51)
-	@ExportProperty(VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER)
+	@Order(53)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER })
 	public String getOtherVaccineManufacturer() {
 		return otherVaccineManufacturer;
 	}
 
-	@Order(52)
-	@ExportProperty(VaccinationInfoDto.VACCINE_INN)
+	@Order(54)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_INN })
 	public String getVaccineInn() {
 		return vaccineInn;
 	}
 
-	@Order(53)
-	@ExportProperty(VaccinationInfoDto.VACCINE_BATCH_NUMBER)
+	@Order(55)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_BATCH_NUMBER })
 	public String getVaccineBatchNumber() {
 		return vaccineBatchNumber;
 	}
 
-	@Order(54)
-	@ExportProperty(VaccinationInfoDto.VACCINE_UNII_CODE)
+	@Order(56)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_UNII_CODE })
 	public String getVaccineUniiCode() {
 		return vaccineUniiCode;
 	}
 
-	@Order(55)
-	@ExportProperty(VaccinationInfoDto.VACCINE_ATC_CODE)
+	@Order(57)
+	@ExportEntity(VaccinationInfoDto.class)
+	@ExportProperty({
+		EventParticipantDto.VACCINATION_INFO,
+		VaccinationInfoDto.VACCINE_ATC_CODE })
 	public String getVaccineAtcCode() {
 		return vaccineAtcCode;
 	}
@@ -607,7 +655,9 @@ public class EventParticipantExportDto implements Serializable {
 
 	@Order(62)
 	@ExportEntity(EventDto.class)
-	@ExportProperty(EventDto.UUID)
+	@ExportProperty({
+		EventParticipantDto.EVENT,
+		EventDto.UUID })
 	public String getEventUuid() {
 		return eventUuid;
 	}
