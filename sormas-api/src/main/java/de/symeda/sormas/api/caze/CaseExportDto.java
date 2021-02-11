@@ -148,6 +148,12 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
+	private Boolean notACaseReasonNegativeTest;
+	private Boolean notACaseReasonPhysicianInformation;
+	private Boolean notACaseReasonDifferentPathogen;
+	private Boolean notACaseReasonOther;
+	private String notACaseReasonDetails;
+	private CaseIdentificationSource caseIdentificationSource;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
 	private CaseOutcome outcome;
@@ -283,7 +289,8 @@ public class CaseExportDto implements Serializable {
 						 String districtUuid, String district, String communityUuid, String community,
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
-						 InvestigationStatus investigationStatus, CaseOutcome outcome, Date outcomeDate, YesNoUnknown bloodOrganOrTissueDonated,
+						 Boolean notACaseReasonNegativeTest, Boolean notACaseReasonPhysicianInformation, Boolean notACaseReasonDifferentPathogen, Boolean notACaseReasonOther,
+						 String notACaseReasonDetails, InvestigationStatus investigationStatus, CaseOutcome outcome, Date outcomeDate, YesNoUnknown bloodOrganOrTissueDonated,
 						 FollowUpStatus followUpStatus, Date followUpUntil,
 						 Boolean nosocomialOutbreak, InfectionSetting infectionSetting,
 						 YesNoUnknown reInfection, Date previousInfectionDate,
@@ -337,6 +344,11 @@ public class CaseExportDto implements Serializable {
 		this.district = district;
 		this.community = community;
 		this.caseClassification = caseClassification;
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+		this.notACaseReasonOther = notACaseReasonOther;
+		this.notACaseReasonDetails = notACaseReasonDetails;
 		this.investigationStatus = investigationStatus;
 		this.outcome = outcome;
 		this.outcomeDate = outcomeDate;
@@ -727,7 +739,6 @@ public class CaseExportDto implements Serializable {
 			CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.OUTCOME_DATE)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	public Date getOutcomeDate() {
 		return outcomeDate;
 	}
@@ -1669,6 +1680,62 @@ public class CaseExportDto implements Serializable {
 		return reportingDistrict;
 	}
 
+	@Order(154)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST)
+	@ExportGroup(ExportGroupType.CORE)
+	public Boolean getNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	@Order(155)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION)
+	@ExportGroup(ExportGroupType.CORE)
+	public Boolean getNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	@Order(156)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public Boolean getNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	@Order(157)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.NOT_A_CASE_REASON_OTHER)
+	@ExportGroup(ExportGroupType.CORE)
+	public Boolean getNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	@Order(158)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.NOT_A_CASE_REASON_DETAILS)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	@Order(159)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CASE_IDENTIFICATION_SOURCE)
+	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountriesExcept
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -1787,6 +1854,26 @@ public class CaseExportDto implements Serializable {
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+
+	public void setNotACaseReasonNegativeTest(Boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(Boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(Boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonOther(Boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
 	}
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
@@ -1967,4 +2054,8 @@ public class CaseExportDto implements Serializable {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken; }
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
+	}
 }

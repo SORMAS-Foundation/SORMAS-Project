@@ -43,6 +43,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -100,6 +101,7 @@ public class Case extends CoreAdo {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
 	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
 	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
 	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
@@ -212,6 +214,11 @@ public class Case extends CoreAdo {
 
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
+	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
+	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
+	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
+	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
+	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 
 	private Person person;
 	private String description;
@@ -224,6 +231,7 @@ public class Case extends CoreAdo {
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
+	private CaseIdentificationSource caseIdentificationSource;
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
@@ -369,6 +377,11 @@ public class Case extends CoreAdo {
 
 	private District reportingDistrict;
 
+	private boolean notACaseReasonNegativeTest;
+	private boolean notACaseReasonPhysicianInformation;
+	private boolean notACaseReasonDifferentPathogen;
+	private boolean notACaseReasonOther;
+	private String notACaseReasonDetails;
 	/**
 	 * Blood/organ/tissue donation in the last 6 months
 	 */
@@ -459,6 +472,15 @@ public class Case extends CoreAdo {
 
 	public void setCaseClassification(CaseClassification caseStatus) {
 		this.caseClassification = caseStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
 	}
 
 	@ManyToOne(cascade = {})
@@ -1566,6 +1588,51 @@ public class Case extends CoreAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	@Column
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	@Column
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	@Column
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	@Column
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
 	}
 
 	@Enumerated(EnumType.STRING)

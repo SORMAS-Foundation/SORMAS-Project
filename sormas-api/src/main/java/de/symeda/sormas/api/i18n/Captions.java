@@ -192,6 +192,7 @@ public interface Captions {
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String CaseData_caseIdentificationSource = "CaseData.caseIdentificationSource";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
@@ -248,6 +249,11 @@ public interface Captions {
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
+	String CaseData_notACaseReasonDetails = "CaseData.notACaseReasonDetails";
+	String CaseData_notACaseReasonDifferentPathogen = "CaseData.notACaseReasonDifferentPathogen";
+	String CaseData_notACaseReasonNegativeTest = "CaseData.notACaseReasonNegativeTest";
+	String CaseData_notACaseReasonOther = "CaseData.notACaseReasonOther";
+	String CaseData_notACaseReasonPhysicianInformation = "CaseData.notACaseReasonPhysicianInformation";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
