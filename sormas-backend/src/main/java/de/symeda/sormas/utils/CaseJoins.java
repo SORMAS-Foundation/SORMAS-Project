@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -71,6 +72,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, DiseaseVariant> diseaseVariant;
+	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -282,5 +284,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	public void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
+		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	}
+
+	public void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
 	}
 }
