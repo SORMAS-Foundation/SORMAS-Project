@@ -112,11 +112,6 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/exposure_exposureRole"
-                app:value="@={data.exposureRole}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/exposure_gatheringType"
                 app:value="@={data.gatheringType}"
                 app:dependencyParentField="@{exposureExposureType}"
@@ -164,6 +159,11 @@
                 android:text="@{I18nProperties.getString(Strings.headingExposureDetails)}"
                 android:layout_marginBottom="24dp"
                 style="@style/SubHeadingCompactStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_exposureRole"
+                app:value="@={data.exposureRole}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/exposure_riskArea"

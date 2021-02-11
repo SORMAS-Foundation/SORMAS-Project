@@ -384,6 +384,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -589,6 +590,7 @@ public interface Captions {
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
@@ -763,8 +765,20 @@ public interface Captions {
 	String devModeContactEndDate = "devModeContactEndDate";
 	String devModeContactRegion = "devModeContactRegion";
 	String devModeContactStartDate = "devModeContactStartDate";
+	String devModeEventCasePercentage = "devModeEventCasePercentage";
+	String devModeEventCount = "devModeEventCount";
+	String devModeEventDisease = "devModeEventDisease";
+	String devModeEventDistrict = "devModeEventDistrict";
+	String devModeEventEndDate = "devModeEventEndDate";
+	String devModeEventMaxContacts = "devModeEventMaxContacts";
+	String devModeEventMaxParticipants = "devModeEventMaxParticipants";
+	String devModeEventMinContacts = "devModeEventMinContacts";
+	String devModeEventMinParticipants = "devModeEventMinParticipants";
+	String devModeEventRegion = "devModeEventRegion";
+	String devModeEventStartDate = "devModeEventStartDate";
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
+	String devModeGenerateEvents = "devModeGenerateEvents";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";

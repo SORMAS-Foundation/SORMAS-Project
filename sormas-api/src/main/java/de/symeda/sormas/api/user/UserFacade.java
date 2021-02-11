@@ -20,7 +20,6 @@ package de.symeda.sormas.api.user;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.ejb.Remote;
 
