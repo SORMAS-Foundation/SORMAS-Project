@@ -440,10 +440,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 	}
 
-	public LocationEditForm getAddressForm() {
-		return getField(PersonDto.ADDRESS);
-	}
-
 	private void addListenersToInfrastructureFields(
 		ComboBox regionField,
 		ComboBox districtField,

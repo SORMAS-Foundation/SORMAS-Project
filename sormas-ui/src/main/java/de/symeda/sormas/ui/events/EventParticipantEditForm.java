@@ -31,10 +31,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -86,11 +84,6 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPseudonymized);
 		pef.setWidth(100, Unit.PERCENTAGE);
 		pef.setImmediate(true);
-
-		CountryReferenceDto countryDto = event.getEventLocation().getCountry();
-		pef.getAddressForm().getField(LocationDto.COUNTRY).setEnabled(false);
-		pef.getAddressForm()
-			.setFieldsRequirement(!(countryDto != null && isConfiguredServer(countryDto.getIsoCode())), LocationDto.REGION, LocationDto.DISTRICT);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);
 
