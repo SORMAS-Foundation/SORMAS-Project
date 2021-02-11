@@ -1,6 +1,6 @@
 disease,diseaseDetails,plagueType,dengueFeverType,rabiesType,person.firstName,person.lastName,person.sex,person.birthdateDD,person.birthdateMM,person.birthdateYYYY,epidNumber,reportDate,caseOrigin,region,district,community,facilityType,healthFacility,healthFacilityDetails,pointOfEntry,pointOfEntryDetails,symptoms.onsetDate
-MEASLES,,,,,Test,One,MALE,23,7,1982,,21.11.2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,18.11.2019
-CHOLERA,,,,,Test,Two,MALE,23,4,1982,,22.11.2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,18.11.2019
-DENGUE,,,DENGUE_FEVER,,Test,Three,MALE,4,7,1982,,23.11.2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,18.11.2019
-CHOLERA,,,,,Test,Four,FEMALE,1,8,1982,,24.11.2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,18.11.2019
-MONKEYPOX,,,,,Test,Five,FEMALE,5,3,1982,,25.11.2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,18.11.2019
+MEASLES,,,,,Test,One,MALE,23,7,1982,,11/21/2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,11/18/2019
+CHOLERA,,,,,Test,Two,MALE,23,4,1982,,11/22/2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,11/18/2019
+DENGUE,,,DENGUE_FEVER,,Test,Three,MALE,4,7,1982,,11/23/2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,11/18/2019
+CHOLERA,,,,,Test,Four,FEMALE,1,8,1982,,11/24/2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,11/18/2019
+MONKEYPOX,,,,,Test,Five,FEMALE,5,3,1982,,11/25/2019,,Abia,Bende,Bende Ward,HOSPITAL,Bende Maternity Home,,,,11/18/2019

@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -35,12 +36,16 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.caseimport.ImportLineResultDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -51,6 +56,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -66,6 +72,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
@@ -112,6 +119,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private EnumService enumService;
 
 	@Override
 	@Transactional
@@ -243,8 +252,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		CaseImportEntities entities)
-		throws InvalidColumnException {
+		CaseImportEntities entities) {
 
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
@@ -342,10 +350,10 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		Function<ImportCellData, Exception> insertCallback)
-		throws InvalidColumnException {
+		Function<ImportCellData, Exception> insertCallback) {
 
 		String importError = null;
+		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
 			String value = values[i];
@@ -367,10 +375,14 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						importError = exception.getMessage();
 						break;
 					} else if (exception instanceof InvalidColumnException) {
-						throw (InvalidColumnException) exception;
+						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
 					}
 				}
 			}
+		}
+
+		if (invalidColumns.size() > 0) {
+			LOGGER.warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return importError != null ? ImportLineResultDto.errorResult(importError) : ImportLineResultDto.successResult();
@@ -386,12 +398,20 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 
+			Language language = userService.getCurrentUser().getLanguage();
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
 					// Set the current element to the created person
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
+					}
+				} else if (CaseExportDto.BIRTH_DATE.equals(headerPathElementName)) {
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
+					if (birthDateDto != null) {
+						person.setBirthdateDD(birthDateDto.getBirthdateDD());
+						person.setBirthdateMM(birthDateDto.getBirthdateMM());
+						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
@@ -432,6 +452,15 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImportHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
+
+						if (I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY).equals(entry)) {
+							entry = FacilityDto.OTHER_FACILITY;
+						}
+
+						if (I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY).equals(entry)) {
+							entry = FacilityDto.NO_FACILITY;
+						}
+
 						List<FacilityReferenceDto> facilities = facilityFacade.getByNameAndType(
 							entry,
 							infrastructureData.getElement0(),
@@ -491,11 +520,14 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException | EnumService.InvalidEnumCaptionException e) {
 				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(language.getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
@@ -573,22 +605,29 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+
+			Enum enumValue = null;
+			Class<Enum> enumType = (Class<Enum>) propertyType;
+			try {
+				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				// ignore
+			}
+
+			if (enumValue == null) {
+				enumValue = enumService.getEnumByCaption(enumType, entry);
+			}
+
+			pd.getWriteMethod().invoke(element, enumValue);
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 10) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
-				return true;
-			}
+			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, userService.getCurrentUser().getLanguage().getDateFormat()));
+			return true;
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {
 			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
@@ -603,7 +642,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
+			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
 			return true;
 		}
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {

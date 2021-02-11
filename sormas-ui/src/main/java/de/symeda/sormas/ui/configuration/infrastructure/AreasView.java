@@ -94,7 +94,6 @@ public class AreasView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_areas",
 				"sormas_areas_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				AreasGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

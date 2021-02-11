@@ -572,6 +572,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getRegion().get(Region.UUID), joins.getRegion().get(Region.NAME),
 				joins.getDistrict().get(District.UUID), joins.getDistrict().get(District.NAME),
 				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
+				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
@@ -2649,8 +2650,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 
 		return target;
 	}

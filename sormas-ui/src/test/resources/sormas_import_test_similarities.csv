@@ -1,3 +1,3 @@
 CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData
 disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,region,district,community,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.contactWithSourceCaseKnown,facilityType
-EVD,Import Test,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-10,20.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-10,11/20/2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
