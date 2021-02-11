@@ -173,4 +173,20 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	public static class UserRoleConfigFacadeEjbLocal extends UserRoleConfigFacadeEjb {
 
 	}
+
+	@Override
+	public Set<UserRole> getEnabledUserRoles() {
+
+		Set<UserRole> userRolesList = Arrays.stream(UserRole.values()).collect(Collectors.toSet());
+
+		List<UserRoleConfig> userRoleConfigList = userRoleConfigService.getAll();
+
+		for (UserRoleConfig userRoleConfig : userRoleConfigList) {
+			if (!userRoleConfig.isEnabled()) {
+				userRolesList.remove(userRoleConfig.getUserRole());
+			}
+		}
+		return userRolesList;
+	}
+
 }
