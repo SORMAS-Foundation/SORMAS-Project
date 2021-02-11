@@ -397,7 +397,9 @@ public interface Captions {
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
 	String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
+	String CaseHospitalization_otherReasonForHospitalization = "CaseHospitalization.otherReasonForHospitalization";
 	String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
+	String CaseHospitalization_reasonForHospitalization = "CaseHospitalization.reasonForHospitalization";
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
@@ -421,7 +423,9 @@ public interface Captions {
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
 	String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
+	String CasePreviousHospitalization_otherReasonForHospitalization = "CasePreviousHospitalization.otherReasonForHospitalization";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
+	String CasePreviousHospitalization_reasonForHospitalization = "CasePreviousHospitalization.reasonForHospitalization";
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
