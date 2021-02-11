@@ -148,12 +148,12 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
-	private CaseIdentificationSource caseIdentificationSource;
 	private Boolean notACaseReasonNegativeTest;
 	private Boolean notACaseReasonPhysicianInformation;
 	private Boolean notACaseReasonDifferentPathogen;
 	private Boolean notACaseReasonOther;
 	private String notACaseReasonDetails;
+	private CaseIdentificationSource caseIdentificationSource;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
 	private CaseOutcome outcome;

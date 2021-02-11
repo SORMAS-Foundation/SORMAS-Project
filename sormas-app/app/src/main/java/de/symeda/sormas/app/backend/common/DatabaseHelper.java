@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,18 +39,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -1939,15 +1940,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 271:
 				currentVersion = 271;
-				getDao(Exposure.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
-
-			case 272:
-				currentVersion = 272;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean DEFAULT false;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean DEFAULT false;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean DEFAULT false;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean DEFAULT false;");
-				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;");
+
+      case 272:
+				currentVersion = 272;
+				getDao(Exposure.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;
