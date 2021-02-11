@@ -20,6 +20,9 @@ package de.symeda.sormas.ui.events;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -68,7 +71,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -162,32 +164,65 @@ public class EventsView extends AbstractView {
 			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource;
+				if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+					streamResource = new GridExportStreamResourceXLSX(grid,
+									"sormas_events",
+									"sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".xlsx");
+				} else {
+					streamResource = new GridExportStreamResourceCSV(grid,
+							"sormas_events",
+							"sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				}
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
 				if (isDefaultViewType()) {
-					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-						EventExportDto.class,
-						null,
-						(Integer start, Integer max) -> FacadeProvider.getEventFacade().getExportList((EventCriteria) grid.getCriteria(), start, max),
-						(propertyId, type) -> {
-							String caption = I18nProperties.findPrefixCaption(
-								propertyId,
-								EventExportDto.I18N_PREFIX,
-								EventIndexDto.I18N_PREFIX,
-								EventDto.I18N_PREFIX,
-								LocationDto.I18N_PREFIX);
-							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-							}
-							return caption;
-						},
-						createFileNameWithCurrentDate("sormas_events_", ".csv"),
-						null);
+					StreamResource exportStreamResource;
+					if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+						exportStreamResource = DownloadUtil.createXslxExportStreamResource(
+								EventExportDto.class,
+								null,
+								(Integer start, Integer max) -> FacadeProvider.getEventFacade().getExportList((EventCriteria) grid.getCriteria(), start, max),
+								(propertyId, type) -> {
+									String caption = I18nProperties.findPrefixCaption(
+											propertyId,
+											EventExportDto.I18N_PREFIX,
+											EventIndexDto.I18N_PREFIX,
+											EventDto.I18N_PREFIX,
+											LocationDto.I18N_PREFIX);
+									if (Date.class.isAssignableFrom(type)) {
+										caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+									}
+									return caption;
+								},
+								createFileNameWithCurrentDate("sormas_events_", ".xslx"),
+								null);
+					} else {
+						exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+								EventExportDto.class,
+								null,
+								(Integer start, Integer max) -> FacadeProvider.getEventFacade().getExportList((EventCriteria) grid.getCriteria(), start, max),
+								(propertyId, type) -> {
+									String caption = I18nProperties.findPrefixCaption(
+											propertyId,
+											EventExportDto.I18N_PREFIX,
+											EventIndexDto.I18N_PREFIX,
+											EventDto.I18N_PREFIX,
+											LocationDto.I18N_PREFIX);
+									if (Date.class.isAssignableFrom(type)) {
+										caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+									}
+									return caption;
+								},
+								createFileNameWithCurrentDate("sormas_events_", ".csv"),
+								null);
+
+					}
 					addExportButton(
 						exportStreamResource,
 						exportPopupButton,
@@ -196,25 +231,48 @@ public class EventsView extends AbstractView {
 						Captions.exportDetailed,
 						Strings.infoDetailedExport);
 				} else {
-					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-						EventActionExportDto.class,
-						null,
-						(Integer start, Integer max) -> FacadeProvider.getActionFacade()
-							.getEventActionExportList((EventCriteria) grid.getCriteria(), start, max),
-						(propertyId, type) -> {
-							String caption = I18nProperties.findPrefixCaption(
-								propertyId,
-								EventActionExportDto.I18N_PREFIX,
-								EventActionIndexDto.I18N_PREFIX,
-								ActionDto.I18N_PREFIX,
-								EventDto.I18N_PREFIX);
-							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-							}
-							return caption;
-						},
-						createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
-						null);
+					StreamResource exportStreamResource;
+					if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+						exportStreamResource = DownloadUtil.createXslxExportStreamResource(
+								EventActionExportDto.class,
+								null,
+								(Integer start, Integer max) -> FacadeProvider.getActionFacade()
+										.getEventActionExportList((EventCriteria) grid.getCriteria(), start, max),
+								(propertyId, type) -> {
+									String caption = I18nProperties.findPrefixCaption(
+											propertyId,
+											EventActionExportDto.I18N_PREFIX,
+											EventActionIndexDto.I18N_PREFIX,
+											ActionDto.I18N_PREFIX,
+											EventDto.I18N_PREFIX);
+									if (Date.class.isAssignableFrom(type)) {
+										caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+									}
+									return caption;
+								},
+								createFileNameWithCurrentDate("sormas_events_actions", ".xslx"),
+								null);
+					} else {
+						exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+								EventActionExportDto.class,
+								null,
+								(Integer start, Integer max) -> FacadeProvider.getActionFacade()
+										.getEventActionExportList((EventCriteria) grid.getCriteria(), start, max),
+								(propertyId, type) -> {
+									String caption = I18nProperties.findPrefixCaption(
+											propertyId,
+											EventActionExportDto.I18N_PREFIX,
+											EventActionIndexDto.I18N_PREFIX,
+											ActionDto.I18N_PREFIX,
+											EventDto.I18N_PREFIX);
+									if (Date.class.isAssignableFrom(type)) {
+										caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+									}
+									return caption;
+								},
+								createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
+								null);
+					}
 					addExportButton(
 						exportStreamResource,
 						exportPopupButton,

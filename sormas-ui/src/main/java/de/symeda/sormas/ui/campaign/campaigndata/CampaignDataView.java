@@ -23,8 +23,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.naming.NamingException;
+import javax.xml.registry.infomodel.User;
 
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -66,7 +69,7 @@ import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -164,8 +167,23 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "campaign_data", createFileNameWithCurrentDate("campaign_data_", ".csv"), EDIT_BTN_ID);
+				StreamResource streamResource;
+				String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+				if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+					streamResource =
+							new GridExportStreamResourceXLSX(grid,
+									"campaign_data",
+									createFileNameWithCurrentDate("campaign_data_", ".xlsx"),
+									EDIT_BTN_ID);
+
+				} else {
+					streamResource =
+							new GridExportStreamResourceCSV(grid,
+									"campaign_data",
+									createFileNameWithCurrentDate("campaign_data_", ".csv"),
+									EDIT_BTN_ID);
+
+				}
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}

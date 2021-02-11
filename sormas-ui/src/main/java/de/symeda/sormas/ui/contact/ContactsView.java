@@ -23,6 +23,9 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -67,7 +70,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -197,14 +199,26 @@ public class ContactsView extends AbstractView {
 			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportButton);
 
-			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
 
+			{
+				StreamResource streamResource;
+				if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+					streamResource =
+							new GridExportStreamResourceXLSX(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".xlsx"));
+				} else {
+					streamResource =
+							new GridExportStreamResourceCSV(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
+				}
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
-				StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
+				StreamResource extendedExportStreamResource;
+				if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+					extendedExportStreamResource = ContactDownloadUtil.createContactExportResourceXLSX(grid.getCriteria(), null);
+				} else {
+					extendedExportStreamResource = ContactDownloadUtil.createContactExportResourceCSV(grid.getCriteria(), null);
+				}
 
 				addExportButton(
 					extendedExportStreamResource,
@@ -239,14 +253,24 @@ public class ContactsView extends AbstractView {
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
-				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
-					BAGExportContactDto.class,
-					null,
-					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
-					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
-					null);
-
+				StreamResource bagExportResource;
+				if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+					bagExportResource = DownloadUtil.createXslxExportStreamResource(
+							BAGExportContactDto.class,
+							null,
+							(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
+							(propertyId, type) -> propertyId,
+							createFileNameWithCurrentDate("sormas_BAG_contacts_", ".xslx"),
+							null);
+				} else {
+					bagExportResource = DownloadUtil.createCsvExportStreamResource(
+							BAGExportContactDto.class,
+							null,
+							(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
+							(propertyId, type) -> propertyId,
+							createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
+							null);
+				}
 				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
 			}
 

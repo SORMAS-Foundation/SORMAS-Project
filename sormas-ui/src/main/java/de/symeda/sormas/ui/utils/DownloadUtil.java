@@ -88,7 +88,7 @@ import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.CsvStreamUtils;
+import de.symeda.sormas.api.utils.ExportStreamUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
@@ -276,7 +276,7 @@ public final class DownloadUtil {
 	}
 
 	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
-		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, CaseExportType.CASE_MANAGEMENT, null);
+		StreamResource casesResource = CaseDownloadUtil.createCaseExportResourceCSV(criteria, CaseExportType.CASE_MANAGEMENT, null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(
 			PrescriptionExportDto.class,
@@ -524,23 +524,23 @@ public final class DownloadUtil {
 	}
 
 	public static <T> StreamResource createCsvExportStreamResource(
-		Class<T> exportRowClass,
-		Enum<?> exportType,
-		CsvStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
-		CsvStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
-		String exportFileName,
-		ExportConfigurationDto exportConfiguration) {
+			Class<T> exportRowClass,
+			Enum<?> exportType,
+			ExportStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+			ExportStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
+			String exportFileName,
+			ExportConfigurationDto exportConfiguration) {
 
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try {
-				CsvStreamUtils.writeCsvContentToStream(
-					exportRowClass,
-					exportRowsSupplier,
-					propertyIdCaptionFunction,
-					exportConfiguration,
-					(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
-					FacadeProvider.getConfigFacade(),
-					out);
+				ExportStreamUtils.writeCsvContentToStream(
+						exportRowClass,
+						exportRowsSupplier,
+						propertyIdCaptionFunction,
+						exportConfiguration,
+						(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
+						FacadeProvider.getConfigFacade(),
+						out);
 			} catch (Exception e) {
 				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
 
@@ -548,19 +548,61 @@ public final class DownloadUtil {
 			}
 
 		},
-			e -> {
-				// TODO This currently requires the user to click the "Export" button again or reload the page
-				//  as the UI
-				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-				VaadinSession.getCurrent()
-					.access(
-						() -> new Notification(
-							I18nProperties.getString(Strings.headingExportFailed),
-							I18nProperties.getString(Strings.messageExportFailed),
-							Type.ERROR_MESSAGE,
-							false).show(Page.getCurrent()));
-			}), exportFileName);
+				e -> {
+					// TODO This currently requires the user to click the "Export" button again or reload the page
+					//  as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					VaadinSession.getCurrent()
+							.access(
+									() -> new Notification(
+											I18nProperties.getString(Strings.headingExportFailed),
+											I18nProperties.getString(Strings.messageExportFailed),
+											Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent()));
+				}), exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");
+		extendedStreamResource.setCacheTime(0);
+		return extendedStreamResource;
+	}
+
+	public static <T> StreamResource createXslxExportStreamResource(
+			Class<T> exportRowClass,
+			Enum<?> exportType,
+			ExportStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+			ExportStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
+			String exportFileName,
+			ExportConfigurationDto exportConfiguration) {
+
+		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
+			try {
+				ExportStreamUtils.writeXslxContentToStream(
+						exportRowClass,
+						exportRowsSupplier,
+						propertyIdCaptionFunction,
+						exportConfiguration,
+						(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
+						FacadeProvider.getConfigFacade(),
+						out);
+			} catch (Exception e) {
+				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+
+				throw e;
+			}
+
+		},
+				e -> {
+					// TODO This currently requires the user to click the "Export" button again or reload the page
+					//  as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					VaadinSession.getCurrent()
+							.access(
+									() -> new Notification(
+											I18nProperties.getString(Strings.headingExportFailed),
+											I18nProperties.getString(Strings.messageExportFailed),
+											Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent()));
+				}), exportFileName);
+		extendedStreamResource.setMIMEType(MimeTypes.XSLX.mimeType);
 		extendedStreamResource.setCacheTime(0);
 		return extendedStreamResource;
 	}
@@ -600,7 +642,7 @@ public final class DownloadUtil {
 	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
 	 * </p>
 	 *
-	 * @param exportButton
+	 * @param exportComponent
 	 * @param closeListener
 	 */
 	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {

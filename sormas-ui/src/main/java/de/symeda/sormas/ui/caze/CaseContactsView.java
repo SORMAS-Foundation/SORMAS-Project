@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -64,7 +66,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -291,18 +293,34 @@ public class CaseContactsView extends AbstractCaseView {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
 
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource;
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				streamResource =
+						new GridExportStreamResourceXLSX(grid,
+								"sormas_contacts",
+								"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".xlsx");
+			} else {
+				streamResource =
+						new GridExportStreamResourceCSV(grid,
+								"sormas_contacts",
+								"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			}
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
+			StreamResource extendedExportStreamResource;
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				extendedExportStreamResource = ContactDownloadUtil.createContactExportResourceXLSX(grid.getCriteria(), null);
+			} else {
+				extendedExportStreamResource = ContactDownloadUtil.createContactExportResourceCSV(grid.getCriteria(), null);
+			}
 			addExportButton(
-				extendedExportStreamResource,
-				exportButton,
-				exportLayout,
-				VaadinIcons.FILE_TEXT,
-				Captions.exportDetailed,
-				Descriptions.descDetailedExportButton);
+					extendedExportStreamResource,
+					exportButton,
+					exportLayout,
+					VaadinIcons.FILE_TEXT,
+					Captions.exportDetailed,
+					Descriptions.descDetailedExportButton);
 
 			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
 				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());

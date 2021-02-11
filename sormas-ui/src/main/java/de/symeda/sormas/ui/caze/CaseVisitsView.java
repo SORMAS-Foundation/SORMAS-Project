@@ -47,6 +47,7 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class CaseVisitsView extends AbstractCaseView {
@@ -95,26 +96,49 @@ public class CaseVisitsView extends AbstractCaseView {
 				}
 			}
 
-			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				VisitExportDto.class,
-				VisitExportType.CONTACT_VISITS,
-				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
-					.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
-				(propertyId, type) -> {
-					String caption = findPrefixCaption(
-						propertyId,
-						VisitExportDto.I18N_PREFIX,
-						VisitDto.I18N_PREFIX,
-						PersonDto.I18N_PREFIX,
-						SymptomsDto.I18N_PREFIX);
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-					}
-					return caption;
-				},
-				createFileNameWithCurrentDate("sormas_case_visits_", ".csv"),
-				null);
-
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+			StreamResource exportStreamResource;
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				exportStreamResource = DownloadUtil.createXslxExportStreamResource(
+						VisitExportDto.class,
+						VisitExportType.CONTACT_VISITS,
+						(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
+								.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+						(propertyId, type) -> {
+							String caption = findPrefixCaption(
+									propertyId,
+									VisitExportDto.I18N_PREFIX,
+									VisitDto.I18N_PREFIX,
+									PersonDto.I18N_PREFIX,
+									SymptomsDto.I18N_PREFIX);
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_case_visits_", ".xlsx"),
+						null);
+			} else {
+				exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+						VisitExportDto.class,
+						VisitExportType.CONTACT_VISITS,
+						(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
+								.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+						(propertyId, type) -> {
+							String caption = findPrefixCaption(
+									propertyId,
+									VisitExportDto.I18N_PREFIX,
+									VisitDto.I18N_PREFIX,
+									PersonDto.I18N_PREFIX,
+									SymptomsDto.I18N_PREFIX);
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_case_visits_", ".csv"),
+						null);
+			}
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 

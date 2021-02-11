@@ -54,8 +54,10 @@ import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -121,11 +123,21 @@ public class CommunitiesView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				grid,
-				"sormas_communities",
-				"sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				CommunitiesGrid.EDIT_BTN_ID);
+			StreamResource streamResource;
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				streamResource = new GridExportStreamResourceXLSX(
+						grid,
+						"sormas_communities",
+						"sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".xlsx",
+						CommunitiesGrid.EDIT_BTN_ID);
+			} else {
+				streamResource = new GridExportStreamResourceCSV(
+						grid,
+						"sormas_communities",
+						"sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+						CommunitiesGrid.EDIT_BTN_ID);
+			}
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

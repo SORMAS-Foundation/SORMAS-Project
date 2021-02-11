@@ -36,7 +36,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 
 @SuppressWarnings("serial")
 public class AggregateReportsView extends AbstractView {
@@ -113,10 +115,19 @@ public class AggregateReportsView extends AbstractView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				grid,
-				"sormas_aggregate_reports",
-				"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource;
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				streamResource = new GridExportStreamResourceXLSX(
+						grid,
+						"sormas_aggregate_reports",
+						"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".xlsx");
+			} else {
+				streamResource = new GridExportStreamResourceCSV(
+						grid,
+						"sormas_aggregate_reports",
+						"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			}
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}

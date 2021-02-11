@@ -36,16 +36,26 @@ import de.symeda.sormas.api.person.PersonDto;
 
 public class EventParticipantDownloadUtil {
 
-	public static StreamResource createExtendedEventParticipantExportResource(EventParticipantCriteria criteria) {
-
+	public static StreamResource createExtendedEventParticipantExportResourceCSV(EventParticipantCriteria criteria) {
 		return DownloadUtil.createCsvExportStreamResource(
-			EventParticipantExportDto.class,
-			null,
-			(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
-				.getExportList(criteria, start, max, I18nProperties.getUserLanguage()),
-			EventParticipantDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"),
-			null);
+				EventParticipantExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
+						.getExportList(criteria, start, max, I18nProperties.getUserLanguage()),
+				EventParticipantDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"),
+				null);
+	}
+
+	public static StreamResource createExtendedEventParticipantExportResourceXSLX(EventParticipantCriteria criteria) {
+		return DownloadUtil.createXslxExportStreamResource(
+				EventParticipantExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
+						.getExportList(criteria, start, max, I18nProperties.getUserLanguage()),
+				EventParticipantDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_eventParticipants_", ".xlsx"),
+				null);
 	}
 
 	private static String captionProvider(String propertyId, Class<?> type) {

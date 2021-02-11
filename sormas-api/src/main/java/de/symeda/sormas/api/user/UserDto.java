@@ -58,6 +58,7 @@ public class UserDto extends EntityDto {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
+	public static final String EXPORT_FORMAT = "exportFormat";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 
 	private boolean active = true;
@@ -88,6 +89,8 @@ public class UserDto extends EntityDto {
 	private Disease limitedDisease;
 
 	private Language language;
+
+	private String exportFormat;
 
 	private boolean hasConsentedToGdpr;
 
@@ -245,6 +248,14 @@ public class UserDto extends EntityDto {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	public String getExportFormat() {
+		return exportFormat;
+	}
+
+	public void setExportFormat(String exportFormat) {
+		this.exportFormat = exportFormat;
 	}
 
 	public boolean isHasConsentedToGdpr() {
