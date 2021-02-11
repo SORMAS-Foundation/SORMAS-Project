@@ -6500,5 +6500,5 @@ INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adapt
 ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
 ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (325, 'Make user roles deactivateable #3716');
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
 -- *** Insert new sql commands BEFORE this line ***
