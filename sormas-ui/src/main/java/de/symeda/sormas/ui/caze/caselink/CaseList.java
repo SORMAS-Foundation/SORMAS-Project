@@ -24,6 +24,7 @@ public class CaseList extends PaginationList<CaseIndexDto> {
 	public CaseList(PersonReferenceDto personRef) {
 		super(5);
 		caseCriteria.setPerson(personRef);
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
 		noCaseLabel = new Label(I18nProperties.getCaption(Captions.personNoCaseLinkedToPerson));
 	}
 

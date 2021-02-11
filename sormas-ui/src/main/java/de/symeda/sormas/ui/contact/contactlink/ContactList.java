@@ -24,6 +24,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 	public ContactList(PersonReferenceDto personRef) {
 		super(5);
 		contactCriteria.setPerson(personRef);
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
 		noContactLabel = new Label(I18nProperties.getCaption(Captions.personNoContactLinkedToPerson));
 	}
 

@@ -362,7 +362,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
 			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
-			cb.isTrue(event.get(Event.DELETED)));
+			cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));

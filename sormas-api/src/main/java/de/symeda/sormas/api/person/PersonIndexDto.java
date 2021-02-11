@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.person;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -53,6 +54,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	private String phone;
 	@SensitiveData
 	private String emailAddress;
+	private Date changeDate;
 	private Boolean isInJurisdiction;
 
 	public PersonIndexDto(
@@ -72,6 +74,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		String city,
 		String phone,
 		String email,
+		Date changeDate,
 		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
@@ -86,6 +89,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.city = city;
 		this.phone = phone;
 		this.emailAddress = email;
+		this.changeDate = changeDate;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -183,6 +187,14 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public Date getChangeDate() {
+		return changeDate;
+	}
+
+	public void setChangeDate(Date changeDate) {
+		this.changeDate = changeDate;
 	}
 
 	public Boolean getInJurisdiction() {

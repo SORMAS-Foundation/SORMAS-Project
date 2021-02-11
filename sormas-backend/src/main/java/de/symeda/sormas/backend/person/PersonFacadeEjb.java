@@ -607,6 +607,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			location.get(Location.CITY),
 			person.get(Person.PHONE),
 			person.get(Person.EMAIL_ADDRESS),
+			person.get(Person.CHANGE_DATE),
 			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
@@ -618,6 +619,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -677,19 +679,15 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Person> person = cq.from(Person.class);
 
-		Predicate filter = null;
-
-		personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {
-			Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
-
 		if (filter != null) {
 			cq.where(filter);
 		}
-
-		cq.select(cb.count(person));
+		cq.select(cb.countDistinct(person));
 		return em.createQuery(cq).getSingleResult();
 	}
 

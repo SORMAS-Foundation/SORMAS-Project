@@ -54,8 +54,6 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
-import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -155,46 +153,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> personFrom) {
-
-		// TODO: 01/02/2021 clarify if this is needed
-//		User currentUser = getCurrentUser();
-//		if (currentUser == null) {
-//			return null;
-//		}
-//
-//		Predicate filter = null;
-//
-//		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
-//
-//		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-//		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
-//
-//			switch (jurisdictionLevel) {
-//			case REGION:
-//				final Region region = currentUser.getRegion();
-//				if (region != null) {
-//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.REGION).get(Region.ID), region.getId()));
-//				}
-//				break;
-//			case DISTRICT:
-//				final District district = currentUser.getDistrict();
-//				if (district != null) {
-//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.DISTRICT).get(District.ID), district.getId()));
-//				}
-//				break;
-//			case COMMUNITY:
-//				final Community community = currentUser.getCommunity();
-//				if (community != null) {
-//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.COMMUNITY).get(Community.ID), community.getId()));
-//				}
-//				break;
-//			default:
-//			}
-//
-//			return filter;
-//		}
-
-		return null;
+		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, personFrom.join(Person.CASES, JoinType.LEFT));
+		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, personFrom.join(Person.CONTACTS, JoinType.LEFT));
+		final Predicate eventParticipantUserFilter =
+			eventParticipantService.createUserFilter(cb, cq, personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT));
+		return CriteriaBuilderHelper.or(cb, caseUserFilter, contactUserFilter, eventParticipantUserFilter);
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
@@ -410,9 +373,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
-		Join<Person, Case> personCaseJoin = personRoot.join(Person.PERSON_CASES, JoinType.LEFT);
-		Join<Person, Contact> personContactJoin = personRoot.join(Person.PERSON_CONTACTS, JoinType.LEFT);
-		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.PERSON_EVENT_PARTICIPANTS, JoinType.LEFT);
+		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
+		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
+		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 
 		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
 

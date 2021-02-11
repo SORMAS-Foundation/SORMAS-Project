@@ -31,8 +31,8 @@ public class PersonJurisdictionChecker {
 		final JurisdictionLevel userJurisdictionLevel = user.getJurisdictionLevel();
 		final UserJurisdiction userJurisdiction = JurisdictionHelper.createUserJurisdiction(user);
 
-		if (!person.getPersonCases().isEmpty()) {
-			for (Case aCase : person.getPersonCases()) {
+		if (!person.getCases().isEmpty()) {
+			for (Case aCase : person.getCases()) {
 				if (CaseJurisdictionHelper
 					.isInJurisdictionOrOwned(userJurisdictionLevel, userJurisdiction, JurisdictionHelper.createCaseJurisdictionDto(aCase)))
 					return true;
