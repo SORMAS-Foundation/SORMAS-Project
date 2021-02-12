@@ -75,15 +75,15 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<PointOfEntry> getByExternalId(String name, boolean includeArchivedEntities) {
+	public List<PointOfEntry> getByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
 		Root<PointOfEntry> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(PointOfEntry.EXTERNAL_ID)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.EXTERNAL_ID))), name.trim().toLowerCase()));
+			cb.equal(cb.trim(from.get(PointOfEntry.EXTERNAL_ID)), externalId.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.EXTERNAL_ID))), externalId.trim().toLowerCase()));
 
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));

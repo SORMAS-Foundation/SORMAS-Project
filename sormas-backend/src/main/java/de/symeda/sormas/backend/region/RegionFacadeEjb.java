@@ -322,8 +322,11 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public List<RegionReferenceDto> getByExternalId(String id, boolean includeArchivedEntities) {
-		return regionService.getByExternalId(id, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	public List<RegionReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+		return regionService.getByExternalId(externalId, includeArchivedEntities)
+			.stream()
+			.map(RegionFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
