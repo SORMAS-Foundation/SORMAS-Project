@@ -6,16 +6,17 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -65,27 +66,21 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		final ComboBox presentConditionField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		final UserDto user = currentUserDto();
-		ComboBox regionField = null;
-		if (user.getRegion() == null) {
-			regionField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		}
+		final ComboBox regionFilter = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		ComboBox districtField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.DISTRICT, 140));
-		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+		final ComboBox districtFilter = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.DISTRICT, 140));
+		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
 		addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.COMMUNITY, 140));
-
 	}
 
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		super.applyDependenciesOnFieldChange(propertyId, event);
 
-		final PersonCriteria criteria = getValue();
-		final ComboBox districtField = getField(PersonCriteria.DISTRICT);
-		final ComboBox communityField = getField(PersonCriteria.COMMUNITY);
+		final ComboBox districtFilter = getField(PersonCriteria.DISTRICT);
+		final ComboBox communityFilter = getField(PersonCriteria.COMMUNITY);
 
 		switch (propertyId) {
 		case PersonCriteria.BIRTHDATE_MM: {
@@ -101,84 +96,65 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 
 			break;
 		}
-		case PersonCriteria.REGION: {
-			final UserDto user = currentUserDto();
-			final RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
-			if (!DataHelper.equal(region, criteria.getRegion())) {
-				if (region != null) {
-					enableFields(districtField);
-					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				} else {
-					clearAndDisableFields(districtField);
-				}
+		case CampaignFormDataDto.REGION:
+			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
+			if (region != null) {
+				districtFilter.removeAllItems();
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			} else {
+				districtFilter.removeAllItems();
+				districtFilter.clear();
 			}
 			break;
-		}
-		case PersonCriteria.DISTRICT: {
-			final DistrictReferenceDto newDistrict = (DistrictReferenceDto) event.getProperty().getValue();
-			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
-				if (newDistrict != null) {
-					enableFields(communityField);
-					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
-				} else {
-					clearAndDisableFields(communityField);
-				}
+		case CampaignFormDataDto.DISTRICT:
+			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
+
+			if (district != null) {
+				communityFilter.removeAllItems();
+				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			} else {
+				communityFilter.removeAllItems();
+				communityFilter.clear();
 			}
 			break;
-		}
 		}
 	}
 
 	@Override
 	protected void applyDependenciesOnNewValue(PersonCriteria criteria) {
-
-		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
-		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-
-		disableFields(districtField, communityField);
-
-		final UserDto user = currentUserDto();
-
-		if (user.getRegion() != null) {
-			if (user.getDistrict() == null) {
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-				enableFields(districtField);
+		final ComboBox regionFilter = getField(PersonCriteria.REGION);
+		final ComboBox districtFilter = getField(PersonCriteria.DISTRICT);
+		final ComboBox communityFilter = getField(PersonCriteria.COMMUNITY);
+		UserDto user = currentUserDto();
+		final RegionReferenceDto userRegion = user.getRegion();
+		final DistrictReferenceDto userDistrict = user.getDistrict();
+		final CommunityReferenceDto userCommunity = user.getCommunity();
+		if (userRegion != null) {
+			regionFilter.setEnabled(false);
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+			if (userDistrict != null) {
+				districtFilter.setEnabled(false);
+				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
+				if (userCommunity != null) {
+					communityFilter.setEnabled(false);
+				}
 			}
 		} else {
-			final RegionReferenceDto region = criteria.getRegion();
-
-			if (region == null) {
-				disableFields(districtField);
-			} else {
-				enableFields(districtField);
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			}
+			regionFilter.clear();
 		}
-
-		if (user.getDistrict() != null && user.getCommunity() == null) {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
-			enableFields(communityField);
-		} else if (criteria.getDistrict() != null) {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid()));
-			enableFields(communityField);
-		} else {
-			disableFields(communityField);
+		if (userDistrict == null) {
+			districtFilter.clear();
 		}
-
-		final DistrictReferenceDto district = criteria.getDistrict();
-
-		if (district == null) {
-			disableFields(communityField);
-		} else {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+		if (userCommunity == null) {
+			communityFilter.clear();
 		}
 
 		ComboBox birthDateDD = getField(PersonCriteria.BIRTHDATE_DD);
 		if (getField(PersonCriteria.BIRTHDATE_YYYY).getValue() != null && getField(PersonCriteria.BIRTHDATE_MM).getValue() != null) {
 			birthDateDD.addItems(
-					DateHelper.getDaysInMonth(
-							(Integer) getField(PersonCriteria.BIRTHDATE_MM).getValue(),
-							(Integer) getField(PersonCriteria.BIRTHDATE_YYYY).getValue()));
+				DateHelper.getDaysInMonth(
+					(Integer) getField(PersonCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(PersonCriteria.BIRTHDATE_YYYY).getValue()));
 			birthDateDD.setEnabled(true);
 		} else {
 			birthDateDD.clear();

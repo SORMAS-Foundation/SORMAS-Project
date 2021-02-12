@@ -14,6 +14,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -98,6 +100,10 @@ public class PersonsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
+		final UserDto user = UserProvider.getCurrent().getUser();
+		criteria.setRegion(user.getRegion());
+		criteria.setDistrict(user.getDistrict());
+		criteria.setCommunity(user.getCommunity());
 		filterForm = new PersonFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter()) {
