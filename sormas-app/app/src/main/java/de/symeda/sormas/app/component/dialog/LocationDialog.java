@@ -188,7 +188,7 @@ public class LocationDialog extends FormDialog {
 	public void setRequiredFieldsBasedOnCountry() {
 		contentBinding.locationCountry.addValueChangedListener(e -> {
 			Country country = (Country) e.getValue();
-			if (country != null && ConfigProvider.isConfiguredServer(country.getIsoCode())) {
+			if (country != null && ConfigProvider.getServerCountryName().equalsIgnoreCase(country.getName())) {
 				this.setRegionAndDistrictRequired(true);
 			} else {
 				this.setRegionAndDistrictRequired(false);
