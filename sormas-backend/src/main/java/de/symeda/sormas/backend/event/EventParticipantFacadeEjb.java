@@ -52,6 +52,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -70,6 +71,7 @@ import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
@@ -252,7 +254,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 
@@ -338,6 +340,50 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			null);
 
 		return indexList;
+	}
+
+	@Override
+	public List<EventParticipantListEntryDto> getListEntries(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipantListEntryDto> cq = cb.createQuery(EventParticipantListEntryDto.class);
+		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+
+		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		cq.multiselect(
+			eventParticipant.get(EventParticipant.UUID),
+			event.get(Event.UUID),
+			event.get(Event.EVENT_STATUS),
+			event.get(Event.DISEASE),
+			event.get(Event.EVENT_TITLE));
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
+			cb.isFalse(event.get(Event.DELETED)));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
+
+		List<EventParticipantListEntryDto> result;
+		if (first != null && max != null) {
+			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			result = em.createQuery(cq).getResultList();
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventParticipantListEntryDto.class,
+			result,
+			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			null);
+
+		return result;
 	}
 
 	@Override

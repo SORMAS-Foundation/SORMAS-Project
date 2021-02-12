@@ -70,6 +70,7 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
+import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -88,41 +89,6 @@ public class MainScreen extends HorizontalLayout {
 
 	// Add new views to this set to make sure that the right error page is shown
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
-
-	private static Set<String> initKnownViews() {
-		final Set<String> views = new HashSet<>(
-			Arrays.asList(
-				TasksView.VIEW_NAME,
-				CasesView.VIEW_NAME,
-				ContactsView.VIEW_NAME,
-				EventsView.VIEW_NAME,
-				SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME,
-				CampaignDataView.VIEW_NAME,
-				ReportsView.VIEW_NAME,
-				StatisticsView.VIEW_NAME,
-				UsersView.VIEW_NAME,
-				OutbreaksView.VIEW_NAME,
-				RegionsView.VIEW_NAME,
-				DistrictsView.VIEW_NAME,
-				CommunitiesView.VIEW_NAME,
-				FacilitiesView.VIEW_NAME,
-				PointsOfEntryView.VIEW_NAME,
-				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME));
-
-		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			views.add(SurveillanceDashboardView.VIEW_NAME);
-		}
-		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			views.add(ContactsDashboardView.VIEW_NAME);
-		}
-		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
-			views.add(CampaignDashboardView.VIEW_NAME);
-		}
-
-		return views;
-	}
 
 	private Menu menu;
 
@@ -226,6 +192,10 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
 		}
+		if (permitted(UserRight.PERSON_VIEW)) {
+			ControllerProvider.getPersonController().registerViews(navigator);
+			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
+		}
 		if (permitted(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
@@ -295,6 +265,42 @@ public class MainScreen extends HorizontalLayout {
 		setSpacing(false);
 		setMargin(false);
 		setSizeFull();
+	}
+
+	private static Set<String> initKnownViews() {
+		final Set<String> views = new HashSet<>(
+			Arrays.asList(
+				TasksView.VIEW_NAME,
+				CasesView.VIEW_NAME,
+				ContactsView.VIEW_NAME,
+				EventsView.VIEW_NAME,
+				SamplesView.VIEW_NAME,
+				CampaignsView.VIEW_NAME,
+				CampaignDataView.VIEW_NAME,
+				ReportsView.VIEW_NAME,
+				StatisticsView.VIEW_NAME,
+				PersonsView.VIEW_NAME,
+				UsersView.VIEW_NAME,
+				OutbreaksView.VIEW_NAME,
+				RegionsView.VIEW_NAME,
+				DistrictsView.VIEW_NAME,
+				CommunitiesView.VIEW_NAME,
+				FacilitiesView.VIEW_NAME,
+				PointsOfEntryView.VIEW_NAME,
+				CountriesView.VIEW_NAME,
+				LabMessagesView.VIEW_NAME));
+
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+			views.add(SurveillanceDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+			views.add(ContactsDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			views.add(CampaignDashboardView.VIEW_NAME);
+		}
+
+		return views;
 	}
 
 	// notify the view menu about view changes so that it can display which view
