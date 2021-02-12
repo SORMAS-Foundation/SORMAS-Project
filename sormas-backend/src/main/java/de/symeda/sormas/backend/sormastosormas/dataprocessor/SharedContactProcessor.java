@@ -34,11 +34,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.ProcessedContactData;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 
 @Stateless
 @LocalBean
-public class SharedContactProcessor implements SharedDataProcessor<SormasToSormasContactDto, ProcessedContactData> {
+public class SharedContactProcessor
+//		implements SharedDataProcessor<SormasToSormasContactDto, ProcessedContactData>
+{
 
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;

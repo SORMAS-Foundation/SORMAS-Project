@@ -6496,4 +6496,14 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
+-- 2020-02-12 [SORMAS 2 SORMAS] Send and receive Events #4348
+ALTER TABLE events ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE events ADD CONSTRAINT fk_events_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN event_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, '[SORMAS 2 SORMAS] Send and receive Events #4348');
+
 -- *** Insert new sql commands BEFORE this line ***

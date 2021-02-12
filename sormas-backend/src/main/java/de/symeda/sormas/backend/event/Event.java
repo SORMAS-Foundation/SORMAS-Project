@@ -37,6 +37,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -51,12 +52,14 @@ import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "events")
 @Audited
-public class Event extends CoreAdo {
+public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 
@@ -156,6 +159,7 @@ public class Event extends CoreAdo {
 	private Float reportLatLonAccuracy;
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 
 	private boolean archived;
 
@@ -588,5 +592,15 @@ public class Event extends CoreAdo {
 
 	public void setSubordinateEvents(List<Event> subordinateEvents) {
 		this.subordinateEvents = subordinateEvents;
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
 	}
 }

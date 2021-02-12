@@ -30,6 +30,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
@@ -63,6 +64,11 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		if (criteria.getSample() != null) {
 			filter = CriteriaBuilderHelper.
 				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
+		}
+
+		if (criteria.getEvent() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.EVENT, JoinType.LEFT).get(Event.UUID), criteria.getEvent().getUuid()));
 		}
 
 		return filter;

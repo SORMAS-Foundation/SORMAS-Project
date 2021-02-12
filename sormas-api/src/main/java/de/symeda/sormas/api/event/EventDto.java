@@ -22,14 +22,16 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class EventDto extends PseudonymizableDto {
+public class EventDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 
@@ -134,6 +136,8 @@ public class EventDto extends PseudonymizableDto {
 	private Float reportLatLonAccuracy;
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
+
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -497,6 +501,16 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setSuperordinateEvent(EventReferenceDto superordinateEvent) {
 		this.superordinateEvent = superordinateEvent;
+	}
+
+	@Override
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
 	public EventReferenceDto toReference() {

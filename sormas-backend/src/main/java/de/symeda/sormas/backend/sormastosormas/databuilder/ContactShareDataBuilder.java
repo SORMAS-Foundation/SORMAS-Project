@@ -31,20 +31,20 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class ContactShareDataBuilder implements ShareDataBuilder<Contact, ContactShareData> {
+public class ContactShareDataBuilder
+//		implements ShareDataBuilder<Contact, ContactShareData> 
+{
 
 	@EJB
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
-	@Override
 	public ContactShareData buildShareData(Contact contact, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 

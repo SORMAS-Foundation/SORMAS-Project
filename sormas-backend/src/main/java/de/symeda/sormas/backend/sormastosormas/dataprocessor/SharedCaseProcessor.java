@@ -38,24 +38,22 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.dataprocessor.SharedDataProcessorHelper.InfrastructureData;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCaseDto, ProcessedCaseData> {
+public class SharedCaseProcessor
+//		implements SharedDataProcessor<SormasToSormasCaseDto, ProcessedCaseData>
+{
 
 	@EJB
 	private UserService userService;
 	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
-	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
 
-	@Override
+//	@Override
 	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 

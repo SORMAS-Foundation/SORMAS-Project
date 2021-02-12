@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,13 +15,9 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.user.User;
+public interface SormasToSormasEntity {
 
-public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto> {
+	SormasToSormasOriginInfo getSormasToSormasOriginInfo();
 
-	ShareData<S> buildShareData(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo);
 }

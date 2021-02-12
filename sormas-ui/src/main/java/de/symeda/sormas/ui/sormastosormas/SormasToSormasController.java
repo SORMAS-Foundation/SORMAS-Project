@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
@@ -86,6 +87,19 @@ public class SormasToSormasController {
 					contact.getSormasToSormasOriginInfo(),
 					FacadeProvider.getSormasToSormasFacade()
 						.getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), null, null))));
+	}
+
+	public void shareEventFromDetailsPage(EventDto event, SormasToSormasListComponent listComponent) {
+		SormasToSormasOriginInfoDto sormasToSormas = event.getSormasToSormasOriginInfo();
+		shareToSormasFromDetailPage(
+			(options) -> FacadeProvider.getSormasToSormasEventFacade().shareEntities(Collections.singletonList(event.getUuid()), options),
+			listComponent,
+			new SormasToSormasOptionsForm(
+				false,
+				getOrganizationIds(
+					event.getSormasToSormasOriginInfo(),
+					FacadeProvider.getSormasToSormasFacade()
+						.getShareInfoIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), null, null))));
 	}
 
 	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {

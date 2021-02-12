@@ -40,13 +40,14 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class CaseShareDataBuilder implements ShareDataBuilder<Case, CaseShareData> {
+public class CaseShareDataBuilder
+//implements ShareDataBuilder<Case, CaseShareData> 
+{
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;

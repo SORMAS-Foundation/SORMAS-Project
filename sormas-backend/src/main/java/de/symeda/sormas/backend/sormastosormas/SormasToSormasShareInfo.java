@@ -27,6 +27,7 @@ import javax.persistence.ManyToOne;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
@@ -38,6 +39,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String SAMPLE = "sample";
+	public static final String EVENT = "event";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
 
@@ -46,6 +48,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private Contact contact;
 
 	private Sample sample;
+
+	private Event event;
 
 	private String organizationId;
 
@@ -91,6 +95,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setSample(Sample sample) {
 		this.sample = sample;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)

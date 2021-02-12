@@ -122,4 +122,17 @@ public class SormasToSormasResource {
 		return Response.noContent().build();
 	}
 
+	@POST
+	@Path(SormasToSormasApiConstants.EVENT_ENDPOINT)
+	public Response saveSharedEvents(SormasToSormasEncryptedDataDto sharedEvents) {
+		try {
+			FacadeProvider.getSormasToSormasEventFacade().saveSharedEntities(sharedEvents);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+		} catch (SormasToSormasException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
+
+		return Response.noContent().build();
+	}
 }
