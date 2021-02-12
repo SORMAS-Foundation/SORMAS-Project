@@ -152,13 +152,7 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseHospitalization_hospitalizationReason"
                     app:value="@{data.hospitalizationReason}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseHospitalization_otherHospitalizationReason"
-                    app:value="@{data.otherHospitalizationReason}"
-                    app:dependencyParentField="@{caseHospitalizationHospitalizationReason}"
-                    app:dependencyParentValue="@{HospitalizationReasonType.OTHER}"
+                    app:appendValue="@{data.otherHospitalizationReason}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
