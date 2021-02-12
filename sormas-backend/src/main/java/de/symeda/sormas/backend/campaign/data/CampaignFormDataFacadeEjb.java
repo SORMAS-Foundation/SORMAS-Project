@@ -724,7 +724,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData) {
-		DtoHelper.fillDto(existingData, newData, true);
+		DtoHelper.copyDtoValues(existingData, newData, true);
 		saveCampaignFormData(existingData);
 	}
 

@@ -6496,4 +6496,10 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
+-- 2020-02-12 Remove locations assigned to more than one exposure from deleted cases #4338
+ALTER TABLE exposures ALTER COLUMN location_id DROP NOT NULL;
+UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = exposures.epidata_id AND cases.deleted IS true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Remove locations assigned to more than one exposure from deleted cases #4338');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -52,7 +52,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// lead has no value, other has
 			sourceDto.setDiabetes(YesNoUnknown.YES);
 
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			// Check no values
 			assertNull(targetDto.getHiv());
@@ -93,7 +93,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			targetDto.setSymptoms(targetSymptomsDto);
 			sourceDto.setSymptoms(sourceSymptomsDto);
 
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			// Check no values
 			assertNull(targetDto.getSymptoms().getBackache());
@@ -135,14 +135,14 @@ public class DtoHelperTest extends AbstractBeanTest {
 			sourceList2.add(subDto2);
 
 			// Check no values
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 			assertTrue(targetDto.getEpiData().getExposures().isEmpty());
 
 			// Check 'lead has still same entries'
 			targetDto.getEpiData().setExposures(targetList1);
 			sourceDto.getEpiData().setExposures(sourceList1);
 			String existingUuid = targetList1.get(0).getUuid();
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertEquals(targetList1.size(), targetDto.getEpiData().getExposures().size());
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
@@ -152,7 +152,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has value, other has not'
 			targetDto.getEpiData().setExposures(targetList2);
 			sourceDto.getEpiData().setExposures(null);
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
 			assertEquals(targetList2.size(), targetDto.getEpiData().getExposures().size());
@@ -162,7 +162,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has no value, other has'
 			targetDto.getEpiData().setExposures(null);
 			sourceDto.getEpiData().setExposures(sourceList2);
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
 			assertEquals(sourceList2.size(), targetDto.getEpiData().getExposures().size());
@@ -182,7 +182,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.NEUTRALIZING_ANTIBODIES);
 
 			SampleDto targetDto = SampleDto.build(user.toReference(), targetCaseDto.toReference());
-			DtoHelper.fillDto(targetDto, sourceDto, false);
+			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 			assertEquals(2, targetDto.getRequestedPathogenTests().size());
 		}
 	}
