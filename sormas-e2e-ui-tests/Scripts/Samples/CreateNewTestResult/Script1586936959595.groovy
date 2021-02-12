@@ -42,7 +42,7 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/label_No'))
 
 WebUI.click(findTestObject('ReusableORs/div_Save_modalWindow'))
 
-WebUI.delay(1)
+WebUI.delay(2)
 
 String dateToCheck = WebUI.getText(findTestObject('Samples/SampleInformation/last_testResultDateTime'))
 
