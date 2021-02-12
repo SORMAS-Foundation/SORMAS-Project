@@ -69,7 +69,8 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			return null;
 		}
 
-		PointOfEntryReferenceDto ref = new PointOfEntryReferenceDto(entity.getUuid(), entity.toString());
+		PointOfEntryReferenceDto ref =
+			new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
 		return ref;
 	}
 
@@ -122,8 +123,10 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			root.get(PointOfEntry.NAME),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			district.get(District.UUID),
 			district.get(District.NAME),
+			district.get(District.EXTERNAL_ID),
 			root.get(PointOfEntry.LATITUDE),
 			root.get(PointOfEntry.LONGITUDE),
 			root.get(PointOfEntry.ACTIVE),
@@ -146,7 +149,18 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
-		return service.getByName(name, districtService.getByReferenceDto(district)).stream().map(p -> toReferenceDto(p)).collect(Collectors.toList());
+		return service.getByName(name, districtService.getByReferenceDto(district))
+			.stream()
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities) {
+		return service.getByExternalId(name, includeArchivedEntities)
+			.stream()
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override

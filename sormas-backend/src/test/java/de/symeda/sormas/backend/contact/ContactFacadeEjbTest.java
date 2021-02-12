@@ -945,8 +945,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contact.setEpiData(epiData);
 		getContactFacade().saveContact(contact);
 
-		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		contactPerson.getAddress().setCity("City");
 		contactPerson.getAddress().setStreet("Test street");
 		contactPerson.getAddress().setHouseNumber("Test number");

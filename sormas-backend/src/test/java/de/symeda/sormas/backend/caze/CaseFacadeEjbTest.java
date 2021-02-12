@@ -43,7 +43,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.hamcrest.MatcherAssert;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -338,10 +337,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference());
 
-		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
-		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
-		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
-		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
+		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid(), null, null));
+		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid(), null, null));
+		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid(), null, null));
+		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid(), null, null));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
 		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		CaseLogic.handleHospitalization(caze, oldCase, true);
@@ -1362,18 +1361,18 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer(), is(survOff2));
 
 		// Surveillance officer is removed if the district changes
-		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
-		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
-		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
-		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid()));
+		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid(), null, null));
+		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid(), null, null));
+		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid(), null, null));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid(), null, null));
 		caze = getCaseFacade().saveCase(caze);
 		assertNull(caze.getSurveillanceOfficer());
 
 		// Surveillance officer is set to the associated officer of an informant if available
-		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
-		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
-		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
-		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
+		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid(), null, null));
+		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
+		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid(), null, null));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid(), null, null));
 		caze = getCaseFacade().saveCase(caze);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
 	}
