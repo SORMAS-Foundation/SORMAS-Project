@@ -57,6 +57,7 @@ WebUI.scrollToElement(findTestObject('ReusableORs/div_Save'), 2)
 WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.scrollToElement(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'), 2)
+WebUI.delay(1)
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'))
 
 // CHECK
