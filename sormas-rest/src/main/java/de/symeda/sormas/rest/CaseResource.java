@@ -83,10 +83,4 @@ public class CaseResource extends EntityDtoResource {
 	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
 		return FacadeProvider.getCaseFacade().getDuplicates(casePerson);
 	}
-
-	@POST
-	@Path("/getduplicates/{reportDateThreshold}")
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, @PathParam("reportDateThreshold") int reportDateThreshold) {
-		return FacadeProvider.getCaseFacade().getDuplicates(casePerson, reportDateThreshold);
-	}
 }
