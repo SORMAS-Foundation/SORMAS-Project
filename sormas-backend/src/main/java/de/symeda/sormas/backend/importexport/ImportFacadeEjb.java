@@ -64,6 +64,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Provider;
 
+import de.symeda.sormas.api.event.EventDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -124,6 +125,32 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static final List<String> PERSON_COLUMNS_TO_REMOVE = Arrays.asList(
+		PersonDto.PLACE_OF_BIRTH_COMMUNITY,
+		PersonDto.PLACE_OF_BIRTH_DISTRICT,
+		PersonDto.PLACE_OF_BIRTH_FACILITY,
+		PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS,
+		PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
+		PersonDto.PLACE_OF_BIRTH_REGION,
+		PersonDto.GESTATION_AGE_AT_BIRTH,
+		PersonDto.BIRTH_DATE,
+		PersonDto.BIRTH_DATE_MM,
+		PersonDto.BIRTH_DATE_DD,
+		PersonDto.BIRTH_DATE_YYYY,
+		PersonDto.BIRTH_WEIGHT,
+		PersonDto.PRESENT_CONDITION,
+		PersonDto.DEATH_DATE,
+		PersonDto.DEATH_PLACE_DESCRIPTION,
+		PersonDto.DEATH_PLACE_TYPE,
+		PersonDto.CAUSE_OF_DEATH,
+		PersonDto.CAUSE_OF_DEATH_DETAILS,
+		PersonDto.CAUSE_OF_DEATH_DISEASE,
+		PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS,
+		PersonDto.BURIAL_CONDUCTOR,
+		PersonDto.BURIAL_DATE,
+		PersonDto.BURIAL_PLACE_DESCRIPTION,
+		PersonDto.ADDRESSES);
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -134,6 +161,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
+	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_event_template.csv";
 	private static final String EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_eventparticipant_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
@@ -165,6 +193,22 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateEventImportTemplateFile() throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, EventDto.class, "", separator);
+		importColumns = importColumns.stream()
+			.filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName()))
+			.collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getEventImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
 	public void generateEventParticipantImportTemplateFile() throws IOException {
 
 		createExportDirectoryIfNecessary();
@@ -176,32 +220,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
 
-		List<String> columnsToRemove = Arrays.asList(
-			PersonDto.PLACE_OF_BIRTH_COMMUNITY,
-			PersonDto.PLACE_OF_BIRTH_DISTRICT,
-			PersonDto.PLACE_OF_BIRTH_FACILITY,
-			PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS,
-			PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
-			PersonDto.PLACE_OF_BIRTH_REGION,
-			PersonDto.GESTATION_AGE_AT_BIRTH,
-			PersonDto.BIRTH_DATE,
-			PersonDto.BIRTH_DATE_MM,
-			PersonDto.BIRTH_DATE_DD,
-			PersonDto.BIRTH_DATE_YYYY,
-			PersonDto.BIRTH_WEIGHT,
-			PersonDto.PRESENT_CONDITION,
-			PersonDto.DEATH_DATE,
-			PersonDto.DEATH_PLACE_DESCRIPTION,
-			PersonDto.DEATH_PLACE_TYPE,
-			PersonDto.CAUSE_OF_DEATH,
-			PersonDto.CAUSE_OF_DEATH_DETAILS,
-			PersonDto.CAUSE_OF_DEATH_DISEASE,
-			PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS,
-			PersonDto.BURIAL_CONDUCTOR,
-			PersonDto.BURIAL_DATE,
-			PersonDto.BURIAL_PLACE_DESCRIPTION,
-			PersonDto.ADDRESSES);
-		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
+		importColumns = importColumns.stream().filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName())).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
@@ -390,6 +409,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getEventImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(EVENT_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
