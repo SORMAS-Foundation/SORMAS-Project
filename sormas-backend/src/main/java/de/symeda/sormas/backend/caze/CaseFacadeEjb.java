@@ -290,6 +290,7 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseFacadeEjb implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
+	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -500,8 +501,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			eventSummaries.stream()
 				.filter(v -> v.getCaseId() == caze.getId())
-				.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-				.findFirst()
+				.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 				.ifPresent(eventSummary -> {
 					caze.setLatestEventId(eventSummary.getEventUuid());
 					caze.setLatestEventStatus(eventSummary.getEventStatus());
@@ -572,13 +572,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getRegion().get(Region.UUID), joins.getRegion().get(Region.NAME),
 				joins.getDistrict().get(District.UUID), joins.getDistrict().get(District.NAME),
 				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
+				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
-				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
-				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
+				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
+				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
+				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
 				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
+				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
@@ -943,8 +947,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (eventSummaries != null && exportDto.getEventCount() != 0) {
 					eventSummaries.stream()
 						.filter(v -> v.getCaseId() == exportDto.getId())
-						.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-						.findFirst()
+						.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 						.ifPresent(eventSummary -> {
 							exportDto.setLatestEventId(eventSummary.getEventUuid());
 							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
@@ -1223,6 +1226,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(caze.get(Case.UUID));
 
 		List<String> uuids = em.createQuery(cq).getResultList();
+		if (uuids.isEmpty()) {
+			return null;
+		}
 
 		return new Random().ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
@@ -1344,8 +1350,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.diff(
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-			new Long(30 * 24 * 60 * 60) // 30 days
-		);
+			SECONDS_30_DAYS);
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
@@ -1371,8 +1376,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					cb.diff(
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
-				new Long(30 * 24 * 60 * 60) // 30 days
-			));
+				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
 			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
@@ -1657,6 +1661,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
@@ -2055,7 +2063,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
 			completeness += 0.2f;
 		}
-		if (sampleService.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
+		if (sampleService
+			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
 			completeness += 0.15f;
 		}
 		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
@@ -2112,7 +2121,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// suffix containing numbers
 				newEpidNumber = newEpidNumber + "001";
 			} else {
-				int suffix = Integer.valueOf(suffixString) + 1;
+				int suffix = Integer.parseInt(suffixString) + 1;
 				newEpidNumber += String.format("%03d", suffix);
 			}
 		}
@@ -2295,20 +2304,18 @@ public class CaseFacadeEjb implements CaseFacade {
 				inJurisdiction);
 
 			dto.getHospitalization().getPreviousHospitalizations().forEach(previousHospitalization -> {
-				PreviousHospitalizationDto existingPreviousHospitalization = existingCaseDto.getHospitalization()
+				existingCaseDto.getHospitalization()
 					.getPreviousHospitalizations()
 					.stream()
 					.filter(eh -> DataHelper.isSame(previousHospitalization, eh))
 					.findFirst()
-					.orElse(null);
+					.ifPresent(
+						existingPreviousHospitalization -> pseudonymizer.restorePseudonymizedValues(
+							PreviousHospitalizationDto.class,
+							previousHospitalization,
+							existingPreviousHospitalization,
+							inJurisdiction));
 
-				if (existingPreviousHospitalization != null) {
-					pseudonymizer.restorePseudonymizedValues(
-						PreviousHospitalizationDto.class,
-						previousHospitalization,
-						existingPreviousHospitalization,
-						inJurisdiction);
-				}
 			});
 
 			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingCaseDto.getSymptoms(), inJurisdiction);
@@ -2472,9 +2479,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
@@ -2638,8 +2653,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 
 		return target;
 	}
@@ -3517,7 +3541,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
 				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();
 
 				reportDatePredicate = cb.between(
 					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
