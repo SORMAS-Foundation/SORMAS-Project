@@ -111,7 +111,7 @@ public class LocationDialog extends FormDialog {
 		if (data.getCountry() == null) {
 			for (Item countryItem : initialCountries) {
 				Country country = (Country) countryItem.getValue();
-				if (country != null && ConfigProvider.isConfiguredServer(country.getIsoCode())) {
+				if (country != null && ConfigProvider.getServerCountryName().equalsIgnoreCase(country.getName())) {
 					data.setCountry(country);
 					break;
 				}
