@@ -488,6 +488,7 @@ public interface Strings {
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
 	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
+	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
@@ -566,6 +567,7 @@ public interface Strings {
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
+	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfCountries = "labelNumberOfCountries";

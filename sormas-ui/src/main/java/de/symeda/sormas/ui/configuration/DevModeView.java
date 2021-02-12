@@ -133,6 +133,8 @@ public class DevModeView extends AbstractConfigurationView {
 			new Label(
 				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsContactGeneration),
 				ContentMode.HTML));
+		contentLayout.addComponent(
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsSeedUsage), ContentMode.HTML));
 
 		contentLayout.addComponent(createSeedSettingsLayout());
 		contentLayout.addComponent(createCaseGeneratorLayout());
@@ -148,9 +150,9 @@ public class DevModeView extends AbstractConfigurationView {
 		verticalLayout.setMargin(false);
 		verticalLayout.setSpacing(false);
 
-		Label seedLabel = new Label("Actual Long seed: " + manualSeed);
+		Label seedLabel = new Label(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
 		TextField seedField = new TextField();
-		seedField.setCaption("Generator Seed");
+		seedField.setCaption(I18nProperties.getCaption(Captions.devModeGeneratorSeed));
 		seedField.setMaxLength(11);
 		seedField.addValueChangeListener(e -> {
 			try {
@@ -158,10 +160,10 @@ public class DevModeView extends AbstractConfigurationView {
 			} catch (NumberFormatException ex) {
 				manualSeed = 0;
 			}
-			seedLabel.setValue("Actual Long seed: " + manualSeed);
+			seedLabel.setValue(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
 		});
 
-		CheckBox useManualSeedCheckbox = new CheckBox("Use Manual Seed");
+		CheckBox useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
 		useManualSeedCheckbox.setValue(false);
 		useManualSeedCheckbox.addValueChangeListener(e -> {
 			useManualSeed = e.getValue();
