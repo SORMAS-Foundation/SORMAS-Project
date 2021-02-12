@@ -394,7 +394,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return getFullEpidCodeForDistrict(district);
 	}
 
-	public String getFullEpidCodeForDistrict(District district) {
+	private String getFullEpidCodeForDistrict(District district) {
 		return (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "") + "-"
 			+ (district.getEpidCode() != null ? district.getEpidCode() : "");
 	}

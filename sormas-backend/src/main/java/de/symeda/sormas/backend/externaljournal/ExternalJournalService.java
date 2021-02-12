@@ -53,8 +53,6 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterRes
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -227,11 +225,12 @@ public class ExternalJournalService {
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
 		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
-		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
-		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
-		return relevantPerson && relevantFieldsUpdated;
+		if (SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus())) {
+			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+			return !existingJournalPerson.equals(updatedJournalPerson);
+		}
+		return false;
 	}
 
 	private void notifySymptomJournal(String personUuid) {
@@ -389,16 +388,15 @@ public class ExternalJournalService {
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
 		boolean sameFamily = response.getResults()
-				.stream()
-				.map(PatientDiaryPersonData::getIdatId)
-				.map(PatientDiaryIdatId::getIdat)
-				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
 		return notUsed || samePerson || sameFamily;
 	}
 
 	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
-				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {

@@ -144,6 +144,7 @@ public class Contact extends CoreAdo {
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
@@ -559,7 +560,9 @@ public class Contact extends CoreAdo {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@ManyToOne(cascade = {})
 	public Region getRegion() {

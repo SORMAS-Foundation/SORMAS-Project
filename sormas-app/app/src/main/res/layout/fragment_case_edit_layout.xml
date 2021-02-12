@@ -461,6 +461,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/caseData_prohibitionToWorkUntil"
                         style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:allowedDaysInFuture="-1"
                         app:dependencyParentField="@{caseDataProhibitionToWork}"
                         app:dependencyParentValue="@{YesNoUnknown.YES}"
                         app:value="@={data.prohibitionToWorkUntil}" />

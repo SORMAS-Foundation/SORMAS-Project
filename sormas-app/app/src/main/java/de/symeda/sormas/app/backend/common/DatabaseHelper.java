@@ -1944,6 +1944,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean DEFAULT false;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean DEFAULT false;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;");
 
       		case 272:
 				currentVersion = 272;

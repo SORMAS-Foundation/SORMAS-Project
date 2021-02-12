@@ -292,7 +292,7 @@ public class CaseContactsView extends AbstractCaseView {
 			}
 
 			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				new GridExportStreamResource(grid, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
