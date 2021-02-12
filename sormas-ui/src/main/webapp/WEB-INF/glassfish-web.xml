@@ -22,6 +22,7 @@
         <group-name>NATIONAL_OBSERVER</group-name>
         <group-name>STATE_OBSERVER</group-name>
         <group-name>DISTRICT_OBSERVER</group-name>
+        <group-name>COMMUNITY_OFFICER</group-name>
         <group-name>NATIONAL_CLINICIAN</group-name>
         <group-name>POE_SUPERVISOR</group-name>
         <group-name>POE_NATIONAL_USER</group-name>

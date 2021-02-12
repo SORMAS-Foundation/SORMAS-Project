@@ -43,7 +43,8 @@ public enum UserRole
 	ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION), // FIXME : remove this when user rights management is doable by users
 	SURVEILLANCE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY),
-	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY),
+	COMMUNITY_OFFICER(false, false, true, false, JurisdictionLevel.COMMUNITY),
+	COMMUNITY_INFORMANT(false, false, false, false, JurisdictionLevel.COMMUNITY),
 	CASE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
 	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	CONTACT_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
@@ -76,6 +77,7 @@ public enum UserRole
 	public static final String _SURVEILLANCE_SUPERVISOR = SURVEILLANCE_SUPERVISOR.name();
 	public static final String _SURVEILLANCE_OFFICER = SURVEILLANCE_OFFICER.name();
 	public static final String _HOSPITAL_INFORMANT = HOSPITAL_INFORMANT.name();
+	public static final String _COMMUNITY_OFFICER = COMMUNITY_OFFICER.name();
 	public static final String _COMMUNITY_INFORMANT = COMMUNITY_INFORMANT.name();
 	public static final String _CASE_SUPERVISOR = CASE_SUPERVISOR.name();
 	public static final String _CASE_OFFICER = CASE_OFFICER.name();
