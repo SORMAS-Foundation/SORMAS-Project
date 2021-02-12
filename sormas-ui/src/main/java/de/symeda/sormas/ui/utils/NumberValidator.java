@@ -31,22 +31,11 @@ public class NumberValidator extends AbstractValidator<String> {
 	private boolean decimalAllowed;
 
 	public NumberValidator(String errorMessage) {
-		super(errorMessage);
-		decimalAllowed = true;
+		this(errorMessage, null, null, true);
 	}
 
 	public NumberValidator(String errorMessage, Number minValue, Number maxValue) {
-		super(errorMessage);
-
-		if (minValue != null) {
-			this.minValue = new BigDecimal(minValue.toString());
-		}
-
-		if (maxValue != null) {
-			this.maxValue = new BigDecimal(maxValue.toString());
-		}
-
-		decimalAllowed = true;
+		this(errorMessage, minValue, maxValue, true);
 	}
 
 	public NumberValidator(String errorMessage, Number minValue, Number maxValue, boolean decimalAllowed) {
