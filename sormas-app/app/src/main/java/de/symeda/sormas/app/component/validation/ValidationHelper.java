@@ -33,7 +33,7 @@ public class ValidationHelper {
 			if (dateUntilContol.getValue() != null && dateFromControl.getValue() != null) {
 				if (dateUntilContol.getValue().before(dateFromControl.getValue())) {
 					dateUntilContol.enableErrorState(
-						I18nProperties.getValidationError(Validations.beforeDate, dateUntilContol.getCaption(), dateFromControl.getCaption()));
+						I18nProperties.getValidationError(Validations.afterDate, dateUntilContol.getCaption(), dateFromControl.getCaption()));
 					return true;
 				}
 			}
