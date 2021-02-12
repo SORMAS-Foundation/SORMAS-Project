@@ -1263,7 +1263,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 * not use {@link ContactCriteria}. This essentially removes
 	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb,  From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
 

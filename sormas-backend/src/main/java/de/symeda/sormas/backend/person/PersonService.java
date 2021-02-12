@@ -46,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -153,11 +154,23 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> personFrom) {
-		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, personFrom.join(Person.CASES, JoinType.LEFT));
-		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, personFrom.join(Person.CONTACTS, JoinType.LEFT));
-		final Predicate eventParticipantUserFilter =
-			eventParticipantService.createUserFilter(cb, cq, personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT));
-		return CriteriaBuilderHelper.or(cb, caseUserFilter, contactUserFilter, eventParticipantUserFilter);
+		final Join<Object, Case> caseJoin = personFrom.join(Person.CASES, JoinType.LEFT);
+		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
+		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
+		
+		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
+		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
+		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
+
+		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
+		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
+		final Predicate eventParticipantNotDeleted = eventParticipantService.createDefaultFilter(cb, eventParticipantJoin);
+
+		final Predicate caseFilter = CriteriaBuilderHelper.and(cb, caseUserFilter, caseNotDeleted);
+		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
+		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
+
+		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {

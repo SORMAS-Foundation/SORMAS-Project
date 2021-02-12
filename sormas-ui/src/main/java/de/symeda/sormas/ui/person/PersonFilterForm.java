@@ -128,4 +128,61 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		}
 		}
 	}
+
+	@Override
+	protected void applyDependenciesOnNewValue(PersonCriteria criteria) {
+
+		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
+		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
+
+		disableFields(districtField, communityField);
+
+		final UserDto user = currentUserDto();
+
+		if (user.getRegion() != null) {
+			if (user.getDistrict() == null) {
+				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+				enableFields(districtField);
+			}
+		} else {
+			final RegionReferenceDto region = criteria.getRegion();
+
+			if (region == null) {
+				disableFields(districtField);
+			} else {
+				enableFields(districtField);
+				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			}
+		}
+
+		if (user.getDistrict() != null && user.getCommunity() == null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			enableFields(communityField);
+		} else if (criteria.getDistrict() != null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid()));
+			enableFields(communityField);
+		} else {
+			disableFields(communityField);
+		}
+
+		final DistrictReferenceDto district = criteria.getDistrict();
+
+		if (district == null) {
+			disableFields(communityField);
+		} else {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+		}
+
+		ComboBox birthDateDD = getField(PersonCriteria.BIRTHDATE_DD);
+		if (getField(PersonCriteria.BIRTHDATE_YYYY).getValue() != null && getField(PersonCriteria.BIRTHDATE_MM).getValue() != null) {
+			birthDateDD.addItems(
+					DateHelper.getDaysInMonth(
+							(Integer) getField(PersonCriteria.BIRTHDATE_MM).getValue(),
+							(Integer) getField(PersonCriteria.BIRTHDATE_YYYY).getValue()));
+			birthDateDD.setEnabled(true);
+		} else {
+			birthDateDD.clear();
+			birthDateDD.setEnabled(false);
+		}
+	}
 }

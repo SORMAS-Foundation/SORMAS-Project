@@ -18,7 +18,10 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
@@ -27,7 +30,6 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -53,6 +55,52 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
 		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+	}
+
+	@Test
+	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() {
+		final RDCFEntities rdcf = creator.createRDCFEntities();
+		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		person1.setPresentCondition(PresentCondition.DEAD);
+		creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseDataDto caze2 = creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+
+		getCaseFacade().deleteCase(caze.getUuid());
+
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+
+		getCaseFacade().deleteCase(caze2.getUuid());
+
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), person1.toReference(), caze, new Date(), new Date(), null);
+
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+
+		getContactFacade().deleteContact(contact.getUuid());
+
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}
 
 	@Test
