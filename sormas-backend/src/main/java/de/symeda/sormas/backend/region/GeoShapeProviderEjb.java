@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -167,18 +166,19 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
 
-	@PostConstruct
-	private void loadData() {
-
-		String countryName = configFacade.getCountryName();
-		if (countryName.isEmpty()) {
-			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
-		} else {
-			loadRegionData(countryName);
-			loadDistrictData(countryName);
-		}
-		buildCountryShape();
-	}
+	/*
+	 * @PostConstruct
+	 * private void loadData() {
+	 * String countryName = configFacade.getCountryName();
+	 * if (countryName.isEmpty()) {
+	 * logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
+	 * } else {
+	 * loadRegionData(countryName);
+	 * loadDistrictData(countryName);
+	 * }
+	 * buildCountryShape();
+	 * }
+	 */
 
 	private void loadRegionData(String countryName) {
 

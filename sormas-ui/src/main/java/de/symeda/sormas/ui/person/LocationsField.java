@@ -45,8 +45,10 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		if (create) {
 			List<CountryReferenceDto> countryItems = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+			String countryName = FacadeProvider.getConfigFacade().getCountryName();
+			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getByDefaultName(countryName, false).get(0);
 			CountryReferenceDto defaultCountry = countryItems.stream()
-				.filter(countryReferenceDto -> FacadeProvider.getConfigFacade().isConfiguredCountry(countryReferenceDto.getIsoCode()))
+				.filter(countryReferenceDto -> countryReferenceDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()))
 				.findFirst()
 				.orElse(null);
 			entry.setCountry(defaultCountry);

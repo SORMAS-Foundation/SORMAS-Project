@@ -105,7 +105,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		CountryReferenceDto countryDto = event.getEventLocation().getCountry();
-		boolean shouldBeRequired = !(countryDto != null && isConfiguredServer(countryDto.getIsoCode()));
+		CountryReferenceDto serverCountryDto = getServerCountry();
+		boolean shouldBeRequired = !(countryDto != null && countryDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()));
 		region.setRequired(shouldBeRequired);
 		district.setRequired(shouldBeRequired);
 

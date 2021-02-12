@@ -209,8 +209,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 
 		country.addValueChangeListener(e -> {
+			CountryReferenceDto serverCountryDto = getServerCountry();
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
-			if (countryDto != null && isConfiguredServer(countryDto.getIsoCode())) {
+			if (countryDto != null && serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
 				setEnabled(true, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			} else {
 				setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
