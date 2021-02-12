@@ -290,6 +290,7 @@ public enum UserRight {
 	),
 	SAMPLE_DELETE(
 			ADMIN,
+			ADMIN_SUPERVISOR,
 			NATIONAL_USER
 	),
 	SAMPLE_TRANSFER(

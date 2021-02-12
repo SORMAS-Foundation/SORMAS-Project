@@ -63,6 +63,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String EVENT_LIKE = "eventLike";
 	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
+	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -117,6 +118,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean onlyContactsSharingEventWithSourceCase;
 	private EventParticipantReferenceDto eventParticipant;
 	private EventReferenceDto onlyContactsWithSourceCaseInGivenEvent;
+	private Boolean onlyContactsFromOtherInstances;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -572,5 +574,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria onlyContactsWithSourceCaseInGivenEvent(EventReferenceDto onlyContactsWithSourceCaseInGivenEvent) {
 		this.onlyContactsWithSourceCaseInGivenEvent = onlyContactsWithSourceCaseInGivenEvent;
 		return this;
+	}
+
+	public Boolean getOnlyContactsFromOtherInstances() {
+		return onlyContactsFromOtherInstances;
+	}
+
+	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
+		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
 	}
 }
