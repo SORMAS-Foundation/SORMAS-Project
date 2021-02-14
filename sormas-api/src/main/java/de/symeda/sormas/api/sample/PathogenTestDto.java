@@ -52,6 +52,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
 	public static final String CQ_VALUE = "cqValue";
+	public static final String REPORT_DATE = "reportDate";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -83,6 +84,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	private String serotype;
 	private Float cqValue;
+	private Date reportDate;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -245,5 +247,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public String toString() {
 		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 }

@@ -138,6 +138,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		});
 
 //        // Initialize ControlDateFields
+		contentBinding.pathogenTestReportDate.initializeDateField(getFragmentManager());
 		contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
 
 		if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {

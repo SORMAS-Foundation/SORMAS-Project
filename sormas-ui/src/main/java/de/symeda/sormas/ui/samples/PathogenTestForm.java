@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -58,6 +59,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
+			fluidRowLocs(PathogenTestDto.REPORT_DATE, "") +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
 			fluidRowLocs("", PathogenTestDto.TYPING_ID) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TESTED_DISEASE_DETAILS) +
@@ -97,6 +99,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			return;
 		}
 
+		DateField reportDateField = addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
