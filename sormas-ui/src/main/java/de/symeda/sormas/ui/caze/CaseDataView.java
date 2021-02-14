@@ -180,14 +180,16 @@ public class CaseDataView extends AbstractCaseView {
 
 		SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.CASES, () -> Collections.singletonList(caze.getUuid()));
 
-		SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
-		surveillanceReportList.addStyleNames(CssStyles.SIDE_COMPONENT);
-		VerticalLayout surveillanceReportListLocLayout = new VerticalLayout();
-		surveillanceReportListLocLayout.setMargin(false);
-		surveillanceReportListLocLayout.setSpacing(false);
-		surveillanceReportListLocLayout.addComponent(surveillanceReportList);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
+			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
+			surveillanceReportList.addStyleNames(CssStyles.SIDE_COMPONENT);
+			VerticalLayout surveillanceReportListLocLayout = new VerticalLayout();
+			surveillanceReportListLocLayout.setMargin(false);
+			surveillanceReportListLocLayout.setSpacing(false);
+			surveillanceReportListLocLayout.addComponent(surveillanceReportList);
 
-		layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
+			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
+		}
 
 		CaseDocumentsComponent.addComponentToLayout(layout, caze);
 
