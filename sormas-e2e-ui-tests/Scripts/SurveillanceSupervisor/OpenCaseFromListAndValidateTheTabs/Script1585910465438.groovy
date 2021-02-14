@@ -7,9 +7,12 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
+WebUI.delay(3)
 WebUI.click(findTestObject('Surveillance/SearchView/a_Search_Entry_link'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Case/input_Case_CaseIdUuid_inputBox'), 3)
+
+WebUI.delay(1)
 
 WebUI.click(findTestObject('Surveillance/CaseView/div_Case Person_tab'))
 

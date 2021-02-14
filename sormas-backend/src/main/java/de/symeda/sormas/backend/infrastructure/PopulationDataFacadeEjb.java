@@ -66,7 +66,10 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).districtIsNull(true).region(new RegionReferenceDto(regionUuid));
+			new PopulationDataCriteria().ageGroupIsNull(true)
+				.sexIsNull(true)
+				.districtIsNull(true)
+				.region(new RegionReferenceDto(regionUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
@@ -92,7 +95,10 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).districtIsNull(true).region(new RegionReferenceDto(regionUuid));
+			new PopulationDataCriteria().ageGroupIsNull(true)
+				.sexIsNull(true)
+				.districtIsNull(true)
+				.region(new RegionReferenceDto(regionUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 
@@ -112,7 +118,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid));
+			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
@@ -138,7 +144,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid));
+			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 

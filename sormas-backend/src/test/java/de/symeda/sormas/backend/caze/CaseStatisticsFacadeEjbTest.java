@@ -58,7 +58,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
 		criteria.years(Arrays.asList(new Year(year), new Year(year + 1)), StatisticsCaseAttribute.ONSET_TIME);
-		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
+		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 
 		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
@@ -104,7 +104,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
 		criteria.years(Arrays.asList(new Year(year), new Year(year + 1)), StatisticsCaseAttribute.ONSET_TIME);
-		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
+		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 
 		List<StatisticsCaseCountDto> results =

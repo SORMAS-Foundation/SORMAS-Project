@@ -6441,7 +6441,7 @@ $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
 
 
--- 2020-02-04
+-- 2021-02-04 - [SurvNet Interface] Add fields next to type of place #4038
 ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
 ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
 ALTER TABLE events ADD COLUMN workenvironment varchar(255);
@@ -6496,11 +6496,17 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
+-- 2021-02-10 - Make user roles deactivateable #3716
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
+
 -- 2020-02-09 Add Country to location details #2994
 ALTER TABLE location ADD COLUMN country_id bigint;
 ALTER TABLE location_history ADD COLUMN country_id bigint;
 ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (327, 'Add Country to location details #2994');
+INSERT INTO schema_version (version_number, comment) VALUES (328, 'Add Country to location details #2994');
 
 -- *** Insert new sql commands BEFORE this line ***

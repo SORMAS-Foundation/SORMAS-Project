@@ -28,12 +28,17 @@ public class NumberValidator extends AbstractValidator<String> {
 
 	private BigDecimal minValue;
 	private BigDecimal maxValue;
+	private boolean decimalAllowed;
 
 	public NumberValidator(String errorMessage) {
-		super(errorMessage);
+		this(errorMessage, null, null, true);
 	}
 
 	public NumberValidator(String errorMessage, Number minValue, Number maxValue) {
+		this(errorMessage, minValue, maxValue, true);
+	}
+
+	public NumberValidator(String errorMessage, Number minValue, Number maxValue, boolean decimalAllowed) {
 		super(errorMessage);
 
 		if (minValue != null) {
@@ -43,6 +48,8 @@ public class NumberValidator extends AbstractValidator<String> {
 		if (maxValue != null) {
 			this.maxValue = new BigDecimal(maxValue.toString());
 		}
+
+		this.decimalAllowed = decimalAllowed;
 	}
 
 	@Override
@@ -58,6 +65,9 @@ public class NumberValidator extends AbstractValidator<String> {
 			try {
 				parsedNumber = Long.valueOf(number);
 			} catch (NumberFormatException le) {
+				if (!decimalAllowed) {
+					return false;
+				}
 				try {
 					parsedNumber = Float.valueOf(number);
 				} catch (NumberFormatException fe) {
