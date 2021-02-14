@@ -289,6 +289,7 @@ public interface Strings {
 	String headingCreateNewUser = "headingCreateNewUser";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
+	String headingCreateSuerveillanceReport = "headingCreateSuerveillanceReport";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
@@ -315,6 +316,7 @@ public interface Strings {
 	String headingEditLineListing = "headingEditLineListing";
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
+	String headingEditSuerveillanceReport = "headingEditSuerveillanceReport";
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
 	String headingEditUser = "headingEditUser";
@@ -921,6 +923,7 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String surveillanceReports = "surveillanceReports";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_notificationEntryNotDeleted = "SurvnetGateway.notificationEntryNotDeleted";
 	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
