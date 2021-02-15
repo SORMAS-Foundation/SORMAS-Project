@@ -6501,4 +6501,11 @@ ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
 ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
+
+-- 2020-02-12 Remove locations assigned to more than one exposure from deleted cases #4338
+ALTER TABLE exposures ALTER COLUMN location_id DROP NOT NULL;
+ALTER TABLE exposures_history ALTER COLUMN location_id DROP NOT NULL;
+UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = exposures.epidata_id AND cases.deleted IS true AND (SELECT COUNT(location_id) FROM exposures ex WHERE ex.location_id = exposures.location_id) > 1;
+
+INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
 -- *** Insert new sql commands BEFORE this line ***
