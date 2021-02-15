@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -35,7 +35,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
-import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
+import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -86,7 +86,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DocGenerationComponent.QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CaseDocumentsComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -175,9 +175,9 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.CASES, () -> Arrays.asList(caze.getUuid()));
+		SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.CASES, () -> Collections.singletonList(caze.getUuid()));
 
-		DocGenerationComponent.addComponentToLayout(layout, getCaseRef(), caze.getQuarantine());
+		CaseDocumentsComponent.addComponentToLayout(layout, caze);
 
 		setCaseEditPermission(container);
 	}

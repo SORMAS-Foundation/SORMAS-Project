@@ -59,7 +59,7 @@ public class DashboardEventDto implements Serializable {
 		Double locationLat,
 		Double locationLon,
 		String reportingUserUuid,
-		String surveillanceOfficerUuid,
+		String responsibleUserUuid,
 		String regionUuid,
 		String districtName,
 		String districtUuid,
@@ -75,9 +75,9 @@ public class DashboardEventDto implements Serializable {
 		this.reportLon = reportLon;
 		this.locationLat = locationLat;
 		this.locationLon = locationLon;
-		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.district = new DistrictReferenceDto(districtUuid, districtName, null);
 
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	public String getUuid() {

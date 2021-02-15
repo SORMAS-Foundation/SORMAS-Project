@@ -115,7 +115,6 @@ public class AggregateReportsView extends AbstractView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_aggregate_reports",
 				"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);

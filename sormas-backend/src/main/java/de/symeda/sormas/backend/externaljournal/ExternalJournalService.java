@@ -185,8 +185,8 @@ public class ExternalJournalService {
 	 *            the follow-up end date before the update
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
-		if (SymptomJournalStatus.REGISTERED.equals(savedStatus) || SymptomJournalStatus.ACCEPTED.equals(savedStatus)) {
+		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+		if (person.isEnrolledInExternalJournal()) {
 			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 					notifySymptomJournal(contact.getPerson().getUuid());
@@ -208,7 +208,7 @@ public class ExternalJournalService {
 	 */
 	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
-		if (shouldNotify(existingJournalPerson)) {
+		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
@@ -225,11 +225,12 @@ public class ExternalJournalService {
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
 		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
-		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
-		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
-		return relevantPerson && relevantFieldsUpdated;
+		if (SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus())) {
+			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+			return !existingJournalPerson.equals(updatedJournalPerson);
+		}
+		return false;
 	}
 
 	private void notifySymptomJournal(String personUuid) {
@@ -387,16 +388,15 @@ public class ExternalJournalService {
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
 		boolean sameFamily = response.getResults()
-				.stream()
-				.map(PatientDiaryPersonData::getIdatId)
-				.map(PatientDiaryIdatId::getIdat)
-				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
 		return notUsed || samePerson || sameFamily;
 	}
 
 	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
-				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {

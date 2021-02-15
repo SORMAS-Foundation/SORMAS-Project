@@ -18,13 +18,38 @@ package de.symeda.sormas.ui.utils;
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-import com.vaadin.v7.data.validator.AbstractValidator;
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.vaadin.v7.data.validator.AbstractValidator;
 
 public class NumberValidator extends AbstractValidator<String> {
 
+	private BigDecimal minValue;
+	private BigDecimal maxValue;
+	private boolean decimalAllowed;
+
 	public NumberValidator(String errorMessage) {
+		this(errorMessage, null, null, true);
+	}
+
+	public NumberValidator(String errorMessage, Number minValue, Number maxValue) {
+		this(errorMessage, minValue, maxValue, true);
+	}
+
+	public NumberValidator(String errorMessage, Number minValue, Number maxValue, boolean decimalAllowed) {
 		super(errorMessage);
+
+		if (minValue != null) {
+			this.minValue = new BigDecimal(minValue.toString());
+		}
+
+		if (maxValue != null) {
+			this.maxValue = new BigDecimal(maxValue.toString());
+		}
+
+		this.decimalAllowed = decimalAllowed;
 	}
 
 	@Override
@@ -33,17 +58,21 @@ public class NumberValidator extends AbstractValidator<String> {
 			return true;
 		}
 
+		Number parsedNumber;
 		try {
-			Integer.valueOf(number);
+			parsedNumber = Integer.valueOf(number);
 		} catch (NumberFormatException ie) {
 			try {
-				Long.valueOf(number);
+				parsedNumber = Long.valueOf(number);
 			} catch (NumberFormatException le) {
+				if (!decimalAllowed) {
+					return false;
+				}
 				try {
-					Float.valueOf(number);
+					parsedNumber = Float.valueOf(number);
 				} catch (NumberFormatException fe) {
 					try {
-						Double.valueOf(number);
+						parsedNumber = Double.valueOf(number);
 					} catch (NumberFormatException de) {
 						return false;
 					}
@@ -51,11 +80,25 @@ public class NumberValidator extends AbstractValidator<String> {
 			}
 		}
 
-		return true;
+		return validateRange(parsedNumber);
 	}
 
 	@Override
 	public Class<String> getType() {
 		return String.class;
+	}
+
+	private boolean validateRange(Number number) {
+		BigDecimal decimalNumber = new BigDecimal(number.toString());
+
+		if (minValue != null && minValue.compareTo(decimalNumber) > 0) {
+			return false;
+		}
+
+		if (maxValue != null && maxValue.compareTo(decimalNumber) < 0) {
+			return false;
+		}
+
+		return true;
 	}
 }

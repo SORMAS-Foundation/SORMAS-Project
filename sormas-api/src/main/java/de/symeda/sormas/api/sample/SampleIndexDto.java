@@ -30,6 +30,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -140,7 +141,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.sampleDateTime = sampleDateTime;
 		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
-		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName));
+		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName), null);
 		this.sampleMaterial = sampleMaterial;
 		this.samplePurpose = samplePurpose;
 		this.specimenCondition = specimenCondition;
@@ -206,13 +207,13 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(caseDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(caseDistrictUuid, districtName, null);
 		} else if (contactDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(contactDistrictUuid, districtName, null);
 		} else if (contactCaseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactCaseDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(contactCaseDistrictUuid, districtName, null);
 		} else if (eventDistrictUuid != null) {
-			ref = new DistrictReferenceDto(eventDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(eventDistrictUuid, districtName, null);
 		}
 
 		return ref;
@@ -398,5 +399,16 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateFormatHelper.formatLocalDateTime(sampleDateTime)).append(" - ");
+		sb.append(sampleMaterial);
+		sb.append(" (").append(disease).append(")");
+		if (pathogenTestResult != null) {
+			sb.append(": ").append(pathogenTestResult);
+		}
+		return sb.toString();
 	}
 }

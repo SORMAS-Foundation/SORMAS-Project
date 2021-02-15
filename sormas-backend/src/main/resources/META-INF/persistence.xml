@@ -42,6 +42,7 @@
 		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
+		<class>de.symeda.sormas.backend.disease.DiseaseVariant</class>
 		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
 		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
@@ -61,6 +62,7 @@
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
+		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

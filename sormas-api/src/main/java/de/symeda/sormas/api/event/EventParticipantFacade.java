@@ -51,6 +51,11 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	List<EventParticipantListEntryDto> getListEntries(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max);
+
 	EventParticipantDto getByUuid(String uuid);
 
 	void validate(EventParticipantDto eventParticipant);

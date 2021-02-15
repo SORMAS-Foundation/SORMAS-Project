@@ -44,6 +44,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.disease.DiseaseVariantDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -256,6 +257,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		new OutbreakDtoHelper().pullEntities(false);
 		new DiseaseConfigurationDtoHelper().pullEntities(false);
+		new DiseaseVariantDtoHelper().pullEntities(false);
 
 		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
 		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
@@ -339,6 +341,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserDtoHelper().repullEntities();
 		new OutbreakDtoHelper().repullEntities();
 		new DiseaseConfigurationDtoHelper().repullEntities();
+		new DiseaseVariantDtoHelper().repullEntities();
 		new FeatureConfigurationDtoHelper().repullEntities();
 		personDtoHelper.repullEntities();
 		caseDtoHelper.repullEntities();
@@ -401,6 +404,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserDtoHelper().pullEntities(false);
 		new DiseaseClassificationDtoHelper().pullEntities(false);
 		new DiseaseConfigurationDtoHelper().pullEntities(false);
+		new DiseaseVariantDtoHelper().pullEntities(false);
 
 		// user role configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
@@ -620,6 +624,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// disease configurations
 		List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
 		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+		// Disease variants
+		List<String> diseaseVariantUuids = executeUuidCall(RetroProvider.getDiseaseVariantFacade().pullUuids());
+		DatabaseHelper.getDiseaseVariantDao().deleteInvalid(diseaseVariantUuids);
 		// feature configurations
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
 		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
@@ -665,6 +672,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
 		new UserDtoHelper().pullMissing(userUuids);
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
+		new DiseaseVariantDtoHelper().pullMissing(diseaseVariantUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			new CampaignDtoHelper().pullMissing(featureConfigurationUuids);

@@ -23,12 +23,14 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -62,12 +64,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
+	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	private CaseOutcome outcome;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -107,10 +112,12 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
+	private SymptomJournalStatus symptomJournalStatus;
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+	private Boolean onlyContactsFromOtherInstances;
 
 	@Override
 	public CaseCriteria clone() {
@@ -157,6 +164,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public Disease getDisease() {
 		return disease;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public CaseCriteria diseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		setDiseaseVariant(diseaseVariant);
+		return this;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
 	}
 
 	public void setRegion(RegionReferenceDto region) {
@@ -529,6 +549,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return this;
 	}
 
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
 	public Date getReportDateTo() {
 		return reportDateTo;
 	}
@@ -559,5 +587,13 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
 		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
+	}
+
+	public Boolean getOnlyContactsFromOtherInstances() {
+		return onlyContactsFromOtherInstances;
+	}
+
+	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
+		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
 	}
 }

@@ -1,0 +1,28 @@
+<h1>$event.eventTitle</h1>
+<p>Event-ID: <b>$event.uuid</b></p>
+
+<p>$event.eventDesc</p>
+
+<table>
+    <tr><th>Disease</th><th>Status</th><th>Event Date</th><th>Report Date</th></tr>
+    <tr><td>$event.disease</td><td>$event.eventStatus</td><td>$F.format($event.startDate)</td><td>$F.format($event.reportDateTime)</td></tr>
+</table>
+
+<h2>Event Participants</h2>
+
+<table>
+    <tr><th>First Name</th><th>Last Name</th><th>Phone</th><th>Contacted</th></tr>
+    #foreach($participant in $eventParticipants)
+    <tr><td>$participant.person.firstName</td><td>$participant.person.lastName</td><td>$participant.person.phone</td><td>[ ]</td></tr>
+    #end
+</table>
+
+
+#foreach($action in $eventActions)
+<div class="actions">
+    <h2>$action.title</h2>
+    <p>$F.format($action.getDate())</p>
+    <div>#if($action.getDescription()) $action.getDescription() #else <span style="color:#f00">*</span> #end</div>
+    <div>#if($action.reply) $action.reply #else <span class="red">*</span> #end</div>
+</div>
+#end

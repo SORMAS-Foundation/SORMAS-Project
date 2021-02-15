@@ -47,15 +47,17 @@ public class CommunityDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
+		String regionExternalId,
 		String districtUuid,
 		String districtName,
+		String districtExternalId,
 		String externalID) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
 		this.name = name;
-		this.region = new RegionReferenceDto(regionUuid, regionName);
-		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
+		this.district = new DistrictReferenceDto(districtUuid, districtName, districtExternalId);
 		this.externalID = externalID;
 	}
 
@@ -104,7 +106,7 @@ public class CommunityDto extends EntityDto {
 	}
 
 	public CommunityReferenceDto toReference() {
-		return new CommunityReferenceDto(getUuid());
+		return new CommunityReferenceDto(getUuid(), getName(), getExternalID());
 	}
 
 	@Override

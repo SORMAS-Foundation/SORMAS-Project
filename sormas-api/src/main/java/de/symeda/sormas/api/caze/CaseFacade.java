@@ -131,7 +131,7 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
-	String generateEpidNumber(CaseReferenceDto caze);
+	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 
@@ -204,6 +204,8 @@ public interface CaseFacade {
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer);
+
+	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 }

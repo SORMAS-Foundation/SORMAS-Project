@@ -69,10 +69,11 @@ public class LabMessageController {
 		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
 
 		LabMessageEditForm form = new LabMessageEditForm(true);
-		form.setValue(newDto);
+		form.setWidth(550, Sizeable.Unit.PIXELS);
 		VerticalLayout layout = new VerticalLayout(form);
 		layout.setMargin(true);
 		VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
+		form.setValue(newDto);
 	}
 
 	public void process(String uuid) {
@@ -406,6 +407,9 @@ public class LabMessageController {
 		caseCreateComponent.getWrappedComponent().setValue(caseDto);
 		caseCreateComponent.getWrappedComponent().setPerson(person);
 
+		caseCreateComponent.getWrappedComponent().getField(PersonDto.FIRST_NAME).setEnabled(false);
+		caseCreateComponent.getWrappedComponent().getField(PersonDto.LAST_NAME).setEnabled(false);
+
 		showFormWithLabMessage(labMessageDto, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -437,6 +441,9 @@ public class LabMessageController {
 		contactCreateComponent.addDiscardListener(() -> window.close());
 		contactCreateComponent.getWrappedComponent().setValue(contactDto);
 		contactCreateComponent.getWrappedComponent().setPerson(person);
+
+		contactCreateComponent.getWrappedComponent().getField(PersonDto.FIRST_NAME).setEnabled(false);
+		contactCreateComponent.getWrappedComponent().getField(PersonDto.LAST_NAME).setEnabled(false);
 
 		showFormWithLabMessage(labMessageDto, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
@@ -496,6 +503,7 @@ public class LabMessageController {
 		pathogenTestDto.setTestType(labMessageDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
+		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
 
 		Window window = VaadinUiUtil.createPopupWindow();
 

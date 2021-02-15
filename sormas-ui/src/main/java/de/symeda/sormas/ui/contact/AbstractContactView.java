@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
@@ -43,6 +44,7 @@ import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
@@ -59,7 +61,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			btnCreatePIAAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openSymptomJournalWindow(contactPerson);
+				ExternalJournalUtil.openSymptomJournalWindow(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
@@ -71,7 +73,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().registerPatientDiaryPerson(contactPerson);
+				ExternalJournalUtil.onPatientDiaryButtonClick(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnClimedoAccount);
 		}

@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.utils;
 
 import java.io.BufferedReader;
@@ -35,7 +33,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
@@ -156,7 +153,7 @@ public final class DataHelper {
 		return buffer.array();
 	}
 
-	public static String getShortUuid(EntityDto domainObject) {
+	public static String getShortUuid(HasUuid domainObject) {
 		return getShortUuid(domainObject.getUuid());
 	}
 
@@ -282,7 +279,7 @@ public final class DataHelper {
 		}
 	}
 
-	public static String parseBoolean(Boolean value) {
+	public static String stringifyBoolean(Boolean value) {
 
 		if (value == null) {
 			return "";
@@ -291,6 +288,21 @@ public final class DataHelper {
 		} else {
 			return I18nProperties.getString(Strings.no);
 		}
+	}
+
+	public static Boolean parseBoolean(String value) {
+
+		if (value == null) {
+			return null;
+		}
+
+		if (I18nProperties.getString(Strings.yes).equalsIgnoreCase(value)) {
+			return true;
+		} else if (I18nProperties.getString(Strings.no).equalsIgnoreCase(value)) {
+			return false;
+		}
+
+		return Boolean.parseBoolean(value);
 	}
 
 	public static String getSexAndAgeGroupString(AgeGroup ageGroup, Sex sex) {
@@ -359,7 +371,7 @@ public final class DataHelper {
 		} else if (value instanceof Date) {
 			return DateFormatHelper.formatDate((Date) value);
 		} else if (value.getClass().equals(Boolean.class)) {
-			return DataHelper.parseBoolean((Boolean) value);
+			return DataHelper.stringifyBoolean((Boolean) value);
 		} else if (value instanceof Set) {
 			StringBuilder sb = new StringBuilder();
 			for (Object o : (Set<?>) value) {

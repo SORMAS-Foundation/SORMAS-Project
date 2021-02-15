@@ -61,7 +61,6 @@ import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -170,7 +169,7 @@ public class StartupShutdownService {
 
 		facilityService.createConstantFacilities();
 
-		createConstantPointsOfEntry();
+		pointOfEntryService.createConstantPointsOfEntry();
 
 		createDefaultUsers();
 
@@ -301,44 +300,21 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createConstantPointsOfEntry() {
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
-			PointOfEntry otherAirport = new PointOfEntry();
-			otherAirport.setName("OTHER_AIRPORT");
-			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
-			otherAirport.setActive(true);
-			otherAirport.setPointOfEntryType(PointOfEntryType.AIRPORT);
-			pointOfEntryService.persist(otherAirport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
-			PointOfEntry otherSeaport = new PointOfEntry();
-			otherSeaport.setName("OTHER_SEAPORT");
-			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
-			otherSeaport.setActive(true);
-			otherSeaport.setPointOfEntryType(PointOfEntryType.SEAPORT);
-			pointOfEntryService.persist(otherSeaport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
-			PointOfEntry otherGC = new PointOfEntry();
-			otherGC.setName("OTHER_GROUND_CROSSING");
-			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
-			otherGC.setActive(true);
-			otherGC.setPointOfEntryType(PointOfEntryType.GROUND_CROSSING);
-			pointOfEntryService.persist(otherGC);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
-			PointOfEntry otherPoe = new PointOfEntry();
-			otherPoe.setName("OTHER_POE");
-			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
-			otherPoe.setActive(true);
-			otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
-			pointOfEntryService.persist(otherPoe);
-		}
-	}
-
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
+
+			// Create Admin
+			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
+			admin.setUserName("admin");
+			userService.persist(admin);
+			userUpdateEvent.fire(new UserUpdateEvent(admin));
+
+			if (!configFacade.isCreateDefaultUsers()) {
+				// return if getCreateDefaultUsers() is false
+				logger.info("Skipping the creation of default users");
+				return;
+			}
 
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
@@ -349,11 +325,7 @@ public class StartupShutdownService {
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
-			// Create Admin
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			admin.setUserName("admin");
-			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin));
+			logger.info("Create default users");
 
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");

@@ -496,7 +496,7 @@ public final class SymptomsHelper {
 		appendYesSymptom(string, symptomsDto.getHighOrLowBloodPressure(), SymptomsDto.HIGH_OR_LOW_BLOOD_PRESSURE);
 		appendYesSymptom(string, symptomsDto.getUrinaryRetention(), SymptomsDto.URINARY_RETENTION);
 
-		appendNotNullValue(string, symptomsDto.otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
+		appendNotNullValue(string, symptomsDto.getOtherComplicationsText(), SymptomsDto.OTHER_COMPLICATIONS_TEXT);
 
 		// symptomsComments;
 

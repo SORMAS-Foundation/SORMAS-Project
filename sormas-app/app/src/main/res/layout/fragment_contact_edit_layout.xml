@@ -193,6 +193,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_prohibitionToWorkUntil"
                         style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:allowedDaysInFuture="-1"
                         app:dependencyParentField="@{contactProhibitionToWork}"
                         app:dependencyParentValue="@{YesNoUnknown.YES}"
                         app:value="@={data.prohibitionToWorkUntil}" />
@@ -443,6 +444,21 @@
                     android:id="@+id/contact_highPriority"
                     app:value="@={data.highPriority}"
                     style="@style/ControlSingleColumnStyle" />
+
+<!--                // TODO [vaccination info] integrate vaccination info-->
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/medicalInformationHeader"-->
+<!--                    android:text="@string/heading_additional_medical_information"-->
+<!--                    style="@style/SubHeadingStyle" />-->
+
+<!--                <include-->
+<!--                    android:id="@+id/vaccinationInfoEdit_layout"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    layout="@layout/fragment_vaccination_info_edit_layout"-->
+<!--                    app:data="@{data.vaccinationInfo}"/>-->
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/contact_immunosuppressiveTherapyBasicDisease"

@@ -278,6 +278,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
@@ -328,6 +329,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());

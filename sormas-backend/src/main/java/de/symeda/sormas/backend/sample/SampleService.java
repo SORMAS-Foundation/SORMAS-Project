@@ -159,18 +159,6 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public int getSampleCountByCase(Case caze) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> from = cq.from(getElementClass());
-
-		cq.select(cb.count(from));
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Sample.ASSOCIATED_CASE), caze)));
-
-		return em.createQuery(cq).getSingleResult().intValue();
-	}
-
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 *
@@ -317,13 +305,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
-		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
-		if (sampleAssociationType == SampleAssociationType.CASE) {
-			filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
-		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-			filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
-		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
-			filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+		if (criteria != null) {
+			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+			if (sampleAssociationType == SampleAssociationType.CASE) {
+				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+			}
 		}
 
 		return filter;
