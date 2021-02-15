@@ -6524,24 +6524,25 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
 INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
 
 -- 2020-02-12 [SurvNet Interface] Add Reports to case information #4282
+
 CREATE TABLE surveillancereports (
-    id bigint NOT NULL,
-    changedate timestamp without time zone NOT NULL,
-    creationdate timestamp without time zone NOT NULL,
-    uuid character varying(36) NOT NULL,
-    reportingtype varchar(255),
-    creatinguser_id bigint,
-    reportdate timestamp NOT NULL,
-    dateofdiagnosis timestamp,
-    facilityregion_id bigint,
-    facilitydistrict_id bigint,
-    facilitytype varchar(255),
-    facility_id bigint,
-    facilitydetails text,
-    notificationdetails text,
-    caze_id bigint,
-    sys_period tstzrange not null,
-    primary key (id)
+                                     id bigint NOT NULL,
+                                     changedate timestamp without time zone NOT NULL,
+                                     creationdate timestamp without time zone NOT NULL,
+                                     uuid character varying(36) NOT NULL,
+                                     reportingtype varchar(255),
+                                     creatinguser_id bigint,
+                                     reportdate timestamp NOT NULL,
+                                     dateofdiagnosis timestamp,
+                                     facilityregion_id bigint,
+                                     facilitydistrict_id bigint,
+                                     facilitytype varchar(255),
+                                     facility_id bigint,
+                                     facilitydetails text,
+                                     notificationdetails text,
+                                     caze_id bigint,
+                                     sys_period tstzrange not null,
+                                     primary key (id)
 );
 
 ALTER TABLE surveillancereports OWNER TO sormas_user;
@@ -6560,19 +6561,20 @@ ALTER TABLE surveillancereports_history OWNER TO sormas_user;
 
 DO $$
     DECLARE rec RECORD;
-    BEGIN
-        FOR rec IN SELECT id as _caze_id, reportingtype as _reportingtype, reportdate as _reportdate, reportinguser_id as _reportinguser_id
-        FROM public.cases WHERE cases.reportingtype IS NOT NULL and cases.reportingtype <> 'LABORATORY'
-            LOOP
-                INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, caze_id)
-                VALUES (nextval('entity_seq'),
-                        overlay(overlay(overlay(
-                            substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                            placing '-' from 7) placing '-' from 14) placing '-' from 21),
-                        now(), now(),
-                        rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._caze_id);
-            END LOOP;
-    END;
+BEGIN
+FOR rec IN SELECT id as _caze_id, reportingtype as _reportingtype, reportdate as _reportdate, reportinguser_id as _reportinguser_id
+           FROM public.cases WHERE cases.reportingtype IS NOT NULL and cases.reportingtype <> 'LABORATORY'
+               LOOP
+           INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, caze_id)
+           VALUES (nextval('entity_seq'),
+               upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+               overlay(overlay(overlay(
+               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+               placing '-' from 7) placing '-' from 14) placing '-' from 21),
+               now(), now(),
+               rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._caze_id);
+END LOOP;
+END;
 $$ LANGUAGE plpgsql;
 
 ALTER TABLE cases DROP COLUMN reportingtype;
