@@ -80,10 +80,7 @@ public class SampleEditForm extends AbstractSampleForm {
 		boolean hasPathogenTests = FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference());
 
 		if (!hasPathogenTests) {
-			FieldHelper.updateEnumData(pathogenTestResultField, Collections.singletonList(PathogenTestResultType.NOT_DONE));
-			pathogenTestResultField.setEnabled(false);
-			pathogenTestResultField.setRequired(false);
-			pathogenTestResultField.setValue(PathogenTestResultType.NOT_DONE);
+			FieldHelper.updateEnumData(pathogenTestResultField, Arrays.asList(PathogenTestResultType.PENDING, PathogenTestResultType.NOT_DONE));
 			return;
 		}
 
@@ -99,8 +96,6 @@ public class SampleEditForm extends AbstractSampleForm {
 		}
 
 		FieldHelper.updateEnumData(pathogenTestResultField, pathogenTestResultTypes);
-		pathogenTestResultField.setEnabled(true);
-		pathogenTestResultField.setRequired(true);
 
 		if (pathogenTestResultField.getValue() == null) {
 			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
