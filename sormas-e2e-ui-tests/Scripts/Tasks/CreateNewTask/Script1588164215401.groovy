@@ -8,6 +8,7 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
+WebUI.delay(2)
 WebUI.click(findTestObject('Login/MainView/menu_Tasks'))
 WebUI.delay(1)
 

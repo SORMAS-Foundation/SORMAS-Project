@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.person;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -120,17 +121,15 @@ public class Person extends AbstractDomainObject {
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
-	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String CONTACTS = "contacts";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
-	public static final String PERSON_CASES = "personCases";
-	public static final String PERSON_CONTACTS = "personContacts";
-	public static final String PERSON_EVENT_PARTICIPANTS = "personEventParticipants";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 
 	private String firstName;
 	private String lastName;
@@ -200,12 +199,9 @@ public class Person extends AbstractDomainObject {
 	private Country birthCountry;
 	private Country citizenship;
 
-	private Set<EventParticipant> eventParticipants = new HashSet<>();
-	private Set<Contact> contacts = new HashSet<>();
-
-	private List<Case> personCases;
-	private List<Contact> personContacts;
-	private List<EventParticipant> personEventParticipants;
+	private List<Case> cases = new ArrayList<>();
+	private List<Contact> contacts = new ArrayList<>();
+	private List<EventParticipant> eventParticipants = new ArrayList<>();
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -707,48 +703,30 @@ public class Person extends AbstractDomainObject {
 		this.citizenship = nationality;
 	}
 
-	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
-		this.eventParticipants = eventParticipants;
-	}
-
-	@OneToMany(cascade = {}, mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
-	public Set<EventParticipant> getEventParticipants() {
-		return eventParticipants;
-	}
-
 	@OneToMany(mappedBy = Case.PERSON, fetch = FetchType.LAZY)
-	public List<Case> getPersonCases() {
-		return personCases;
+	public List<Case> getCases() {
+		return cases;
 	}
 
-	public void setPersonCases(List<Case> personCases) {
-		this.personCases = personCases;
-	}
-
-	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public List<Contact> getPersonContacts() {
-		return personContacts;
-	}
-
-	public void setPersonContacts(List<Contact> personContacts) {
-		this.personContacts = personContacts;
+	public void setCases(List<Case> cases) {
+		this.cases = cases;
 	}
 
 	@OneToMany(mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
-	public List<EventParticipant> getPersonEventParticipants() {
-		return personEventParticipants;
+	public List<EventParticipant> getEventParticipants() {
+		return eventParticipants;
 	}
 
-	public void setPersonEventParticipants(List<EventParticipant> personEventParticipants) {
-		this.personEventParticipants = personEventParticipants;
+	public void setEventParticipants(List<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public Set<Contact> getContacts() {
+	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public List<Contact> getContacts() {
 		return contacts;
 	}
 
-	public void setContacts(Set<Contact> contacts) {
+	public void setContacts(List<Contact> contacts) {
 		this.contacts = contacts;
 	}
 

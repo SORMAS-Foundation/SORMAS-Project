@@ -30,9 +30,12 @@ import javax.persistence.Query;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
+import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -45,6 +48,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -71,7 +75,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 		initH2Functions();
 
-		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		I18nProperties.setUserLanguage(Language.EN);
+		UserDto user = creator.createUser(null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
@@ -105,6 +110,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+
+	public ContactFacade getContactFacade() {
+		return getBean(ContactFacadeEjbLocal.class);
 	}
 
 	public CaseImportFacade getCaseImportFacade() {

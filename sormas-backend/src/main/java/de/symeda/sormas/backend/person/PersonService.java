@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.person;
 
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -44,13 +46,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -64,7 +69,9 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -146,8 +153,86 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
-		throw new UnsupportedOperationException();
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> personFrom) {
+		final Join<Object, Case> caseJoin = personFrom.join(Person.CASES, JoinType.LEFT);
+		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
+		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
+		
+		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
+		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
+		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
+
+		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
+		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
+		final Predicate eventParticipantNotDeleted = eventParticipantService.createDefaultFilter(cb, eventParticipantJoin);
+
+		final Predicate caseFilter = CriteriaBuilderHelper.and(cb, caseUserFilter, caseNotDeleted);
+		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
+		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
+
+		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
+	}
+
+	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
+
+		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+
+		Predicate filter = null;
+		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
+		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateMM(), Person.BIRTHDATE_MM);
+		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateDD(), Person.BIRTHDATE_DD);
+		if (personCriteria.getNameAddressPhoneEmailLike() != null) {
+			String[] textFilters = personCriteria.getNameAddressPhoneEmailLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = formatForLike(textFilters[i]);
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.EMAIL_ADDRESS)), textFilter),
+						phoneNumberPredicate(cb, personFrom.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.STREET)), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+				}
+			}
+		}
+		filter = andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
+		filter = andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
+		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
+		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
+
+		if (personCriteria.getPersonAssociation() != null) {
+			switch (personCriteria.getPersonAssociation()) {
+
+			case CASE:
+				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
+				final Root<Case> caseRoot = caseSubquery.from(Case.class);
+				caseSubquery.select(caseRoot.get(Case.ID)).where(cb.equal(caseRoot.get(Case.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(caseSubquery));
+				break;
+			case CONTACT:
+				final Subquery<Contact> contactSubquery = cq.subquery(Contact.class);
+				final Root<Contact> contactRoot = contactSubquery.from(Contact.class);
+				contactSubquery.select(contactRoot.get(Contact.ID)).where(cb.equal(contactRoot.get(Contact.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(contactSubquery));
+				break;
+			case EVENT_PARTICIPANT:
+				final Subquery<EventParticipant> eventParticipantSubquery = cq.subquery(EventParticipant.class);
+				final Root<EventParticipant> eventParticipantRoot = eventParticipantSubquery.from(EventParticipant.class);
+				eventParticipantSubquery.select(eventParticipantRoot.get(EventParticipant.ID))
+					.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(eventParticipantSubquery));
+				break;
+			}
+		}
+
+		return filter;
 	}
 
 	@Override
@@ -256,7 +341,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	private Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Person> personRoot) {
+	public Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Person> personRoot) {
 
 		final Path<Object> personId = personRoot.get(Person.ID);
 
@@ -301,9 +386,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
-		Join<Person, Case> personCaseJoin = personRoot.join(Person.PERSON_CASES, JoinType.LEFT);
-		Join<Person, Contact> personContactJoin = personRoot.join(Person.PERSON_CONTACTS, JoinType.LEFT);
-		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.PERSON_EVENT_PARTICIPANTS, JoinType.LEFT);
+		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
+		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
+		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 
 		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
 
@@ -311,23 +396,21 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, personCaseJoin);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
-		Predicate personCasePredicate =
-				and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
+		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
 		// Persons of active contacts
 		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
 		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
-		Predicate personContactPredicate =
-				and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
+		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
 		// Persons of event participants in active events
 		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 		Predicate personEventParticipantPredicate =
-				and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
 
 		caseContactEventParticipantLinkPredicate =
-				CriteriaBuilderHelper.or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
+			CriteriaBuilderHelper.or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
 
 		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
 		personQuery.distinct(true);

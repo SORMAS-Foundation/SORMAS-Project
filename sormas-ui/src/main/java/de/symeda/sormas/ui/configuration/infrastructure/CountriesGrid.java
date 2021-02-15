@@ -39,7 +39,13 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 			setCriteria(criteria);
 		}
 
-		setColumns(CountryIndexDto.ISO_CODE, CountryIndexDto.DISPLAY_NAME, CountryIndexDto.EXTERNAL_ID, CountryIndexDto.UNO_CODE);
+		setColumns(
+			CountryIndexDto.ISO_CODE,
+			CountryIndexDto.DISPLAY_NAME,
+			CountryIndexDto.EXTERNAL_ID,
+			CountryIndexDto.UNO_CODE,
+			CountryIndexDto.DEFAULT_NAME);
+		getColumn(CountryIndexDto.DEFAULT_NAME).setHidden(true);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCountry(e.getUuid()));

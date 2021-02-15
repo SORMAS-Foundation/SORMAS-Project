@@ -64,21 +64,36 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
-	//@formatter:off
-	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION,
-			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseCriteria.FACILITY_TYPE_GROUP, CaseCriteria.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY,
-			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
-			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO,
-			ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-			CaseCriteria.BIRTHDATE_YYYY,
-			CaseCriteria.BIRTHDATE_MM,
-			CaseCriteria.BIRTHDATE_DD)
-			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
-					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
-					CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE,
-					CaseCriteria.WITH_REDUCED_QUARANTINE, CaseCriteria.ONLY_CASES_WITH_EVENTS, CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
-			+ loc(WEEK_AND_DATE_FILTER);
-	//@formatter:on
+	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
+		CaseCriteria.PRESENT_CONDITION,
+		CaseDataDto.REGION,
+		CaseDataDto.DISTRICT,
+		CaseDataDto.COMMUNITY,
+		CaseCriteria.FACILITY_TYPE_GROUP,
+		CaseCriteria.FACILITY_TYPE,
+		CaseDataDto.HEALTH_FACILITY,
+		CaseDataDto.POINT_OF_ENTRY,
+		CaseDataDto.SURVEILLANCE_OFFICER,
+		CaseCriteria.REPORTING_USER_ROLE,
+		CaseCriteria.REPORTING_USER_LIKE,
+		CaseDataDto.QUARANTINE_TO,
+		CaseCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+		CaseCriteria.BIRTHDATE_YYYY,
+		CaseCriteria.BIRTHDATE_MM,
+		CaseCriteria.BIRTHDATE_DD)
+		+ filterLocsCss(
+			"vspace-3",
+			CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
+			CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY,
+			CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
+			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
+			CaseCriteria.WITH_EXTENDED_QUARANTINE,
+			CaseCriteria.WITH_REDUCED_QUARANTINE,
+			CaseCriteria.ONLY_CASES_WITH_EVENTS,
+			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
+		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
 		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
@@ -182,11 +197,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					200));
 			followUpUntilTo.removeAllValidators();
 			addField(
-					moreFiltersContainer,
-					FieldConfiguration.withCaptionAndPixelSized(
-							CaseCriteria.SYMPTOM_JOURNAL_STATUS,
-							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
-							240));
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					CaseCriteria.SYMPTOM_JOURNAL_STATUS,
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+					240));
 		}
 
 		addField(
@@ -276,6 +291,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+				I18nProperties.getCaption(Captions.caseFilterOnlyFromOtherInstances),
+				I18nProperties.getDescription(Descriptions.descCaseFilterOnlyFromOtherInstances),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
@@ -458,6 +482,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					}
 				}
 			}
+			break;
 		}
 		case CaseDataDto.DISEASE: {
 			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);

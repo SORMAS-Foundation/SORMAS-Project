@@ -148,6 +148,7 @@ public interface Strings {
 	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventParticipant = "entityEventParticipant";
+	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
 	String entityGathering = "entityGathering";
@@ -487,6 +488,7 @@ public interface Strings {
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
+	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
@@ -498,6 +500,7 @@ public interface Strings {
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
+	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
@@ -530,6 +533,7 @@ public interface Strings {
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
+	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
@@ -721,6 +725,7 @@ public interface Strings {
 	String messageLineListingDisabled = "messageLineListingDisabled";
 	String messageLineListingSaved = "messageLineListingSaved";
 	String messageLoginFailed = "messageLoginFailed";
+	String messageMissingCases = "messageMissingCases";
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
 	String messageNoCaseFound = "messageNoCaseFound";
@@ -892,6 +897,7 @@ public interface Strings {
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
+	String promptPersonsSearchField = "promptPersonsSearchField";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptSampleDateFrom = "promptSampleDateFrom";

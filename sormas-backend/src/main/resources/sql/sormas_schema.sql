@@ -6441,7 +6441,7 @@ $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
 
 
--- 2020-02-04
+-- 2021-02-04 - [SurvNet Interface] Add fields next to type of place #4038
 ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
 ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
 ALTER TABLE events ADD COLUMN workenvironment varchar(255);
@@ -6496,6 +6496,19 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
+-- 2021-02-10 - Make user roles deactivateable #3716
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
+
+-- 2020-02-12 Remove locations assigned to more than one exposure from deleted cases #4338
+ALTER TABLE exposures ALTER COLUMN location_id DROP NOT NULL;
+ALTER TABLE exposures_history ALTER COLUMN location_id DROP NOT NULL;
+UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = exposures.epidata_id AND cases.deleted IS true AND (SELECT COUNT(location_id) FROM exposures ex WHERE ex.location_id = exposures.location_id) > 1;
+
+INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
+
 -- 2021-02-05 Add reason hospitalization #4187
 ALTER TABLE hospitalization ADD COLUMN hospitalizationreason varchar(255);
 ALTER TABLE hospitalization_history ADD COLUMN hospitalizationreason varchar(255);
@@ -6509,6 +6522,6 @@ ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason var
 ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
 ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (327, '#4187 add reason for hospitalization');
+INSERT INTO schema_version (version_number, comment) VALUES (329, '#4187 add reason for hospitalization');
 
 -- *** Insert new sql commands BEFORE this line ***

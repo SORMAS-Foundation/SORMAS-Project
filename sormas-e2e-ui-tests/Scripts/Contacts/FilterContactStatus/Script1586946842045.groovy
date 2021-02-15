@@ -16,14 +16,17 @@ allCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('All Cases:' + allCases)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Active contact'))
+WebUI.delay(2)
 activeContacts = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('activeContacts:' + activeContacts)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Converted to case'))
+WebUI.delay(2)
 convertedToCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('convertedToCases:' + convertedToCases)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Dropped'))
+WebUI.delay(2)
 droppedCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('droppedCases:' + droppedCases)
 
