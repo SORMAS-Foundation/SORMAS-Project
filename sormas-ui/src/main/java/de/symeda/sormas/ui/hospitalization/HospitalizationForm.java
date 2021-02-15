@@ -73,14 +73,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private NullableOptionGroup intensiveCareUnit;
 	private DateField intensiveCareUnitStart;
 	private DateField intensiveCareUnitEnd;
-	private TextField otherReasonForHospitalization;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
 			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
-			fluidRowLocs(HospitalizationDto.REASON_FOR_HOSPITALIZATION, HospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION) +
+			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
 							HospitalizationDto.INTENSIVE_CARE_UNIT_START,
 							3,
@@ -135,8 +134,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
 
-		ComboBox reasonForHospitalization = addField(HospitalizationDto.REASON_FOR_HOSPITALIZATION);
-		otherReasonForHospitalization = addField(HospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION, TextField.class);
+		addField(HospitalizationDto.HOSPITALIZATION_REASON);
+		addField(HospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 
 		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
@@ -180,8 +179,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				HospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION,
-				HospitalizationDto.REASON_FOR_HOSPITALIZATION,
+				HospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+				HospitalizationDto.HOSPITALIZATION_REASON,
 				Collections.singletonList(HospitalizationReasonType.OTHER),
 				true);
 

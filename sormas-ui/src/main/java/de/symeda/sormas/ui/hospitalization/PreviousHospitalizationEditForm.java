@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
@@ -29,7 +28,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -53,13 +51,11 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(PreviousHospitalizationEditForm.class);
 
-	private TextField otherReasonForHospitalization;
-
 	private static final String HTML_LAYOUT = fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)
 		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
-		+ fluidRowLocs(PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION, PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION)
+		+ fluidRowLocs(PreviousHospitalizationDto.HOSPITALIZATION_REASON, PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON)
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
@@ -91,8 +87,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 
-		ComboBox reasonForHospitalization = addField(PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION);
-		otherReasonForHospitalization = addField(PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION, TextField.class);
+		addField(PreviousHospitalizationDto.HOSPITALIZATION_REASON);
+		addField(PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 
 		healthFacility.setImmediate(true);
 
@@ -100,8 +96,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				PreviousHospitalizationDto.OTHER_REASON_FOR_HOSPITALIZATION,
-				PreviousHospitalizationDto.REASON_FOR_HOSPITALIZATION,
+				PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+				PreviousHospitalizationDto.HOSPITALIZATION_REASON,
 				Collections.singletonList(HospitalizationReasonType.OTHER),
 				true);
 

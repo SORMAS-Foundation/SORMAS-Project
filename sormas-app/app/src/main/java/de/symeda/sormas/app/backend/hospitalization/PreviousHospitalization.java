@@ -87,7 +87,7 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private HospitalizationReasonType hospitalizationReason;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String otherHospitalizationReason;
 
 	public Date getAdmissionDate() {

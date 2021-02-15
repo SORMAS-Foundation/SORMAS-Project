@@ -44,8 +44,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
-	public static final String REASON_FOR_HOSPITALIZATION = "hospitalizationReason";
-	public static final String OTHER_REASON_FOR_HOSPITALIZATION = "otherHospitalizationReason";
+	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
+	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 
 	private Date admissionDate;
 	private Date dischargeDate;

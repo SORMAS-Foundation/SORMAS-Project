@@ -34,8 +34,6 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
 @Entity(name = Hospitalization.TABLE_NAME)
 @DatabaseTable(tableName = Hospitalization.TABLE_NAME)
 @EmbeddedAdo
@@ -74,7 +72,7 @@ public class Hospitalization extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private HospitalizationReasonType hospitalizationReason;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String otherHospitalizationReason;
 
 	// just for reference, not persisted in DB
