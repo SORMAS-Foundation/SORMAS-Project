@@ -6500,8 +6500,8 @@ CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree 
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
-CREATE INDEX IF NOT EXISTS idx_contacts_reporting_user_id ON contact USING btree (reportinguser_id);
-CREATE INDEX IF NOT EXISTS idx_diseaseconfig_changedate on diseaseconfiguration (changedate DESC);
+CREATE INDEX IF NOT EXISTS idx_contact_reporting_user_id ON contact USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfiguration_changedate on diseaseconfiguration (changedate DESC);
 CREATE INDEX IF NOT EXISTS idx_person_uuid ON person USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
