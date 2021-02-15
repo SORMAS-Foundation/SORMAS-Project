@@ -303,7 +303,6 @@ public interface Captions {
 	String CaseData_reInfection = "CaseData.reInfection";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
-	String CaseData_reportingType = "CaseData.reportingType";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
@@ -1595,6 +1594,19 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurveillanceReport = "SurveillanceReport";
+	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
+	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
+	String SurveillanceReport_facility = "SurveillanceReport.facility";
+	String SurveillanceReport_facilityDetails = "SurveillanceReport.facilityDetails";
+	String SurveillanceReport_facilityDistrict = "SurveillanceReport.facilityDistrict";
+	String SurveillanceReport_facilityRegion = "SurveillanceReport.facilityRegion";
+	String SurveillanceReport_facilityType = "SurveillanceReport.facilityType";
+	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
+	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
+	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String surveillanceReportNewReport = "surveillanceReportNewReport";
+	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_send = "SurvnetGateway.send";
 	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
