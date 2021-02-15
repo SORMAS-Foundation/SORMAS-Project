@@ -6521,6 +6521,8 @@ CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
 
+INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
+
 -- 2020-02-12 [SurvNet Interface] Add Reports to case information #4282
 
 CREATE TABLE surveillancereports (
@@ -6578,8 +6580,6 @@ ALTER TABLE cases DROP COLUMN reportingtype;
 
 INSERT INTO schema_version (version_number, comment) VALUES (330, '[SurvNet Interface] Add Reports to case information #4282');
 
-
-INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
 -- 2021-02-15 Case identification source - screening #3420
 ALTER TABLE cases ADD COLUMN screeningtype character varying(255);
 ALTER TABLE cases_history ADD COLUMN screeningtype character varying(255);
@@ -6590,5 +6590,5 @@ UPDATE cases SET screeningtype = 'ON_ENTRY_FROM_RISK_AREA', caseidentificationso
 UPDATE cases SET screeningtype = 'HEALTH_SECTOR_EMPLOYEE', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'HEALTH_SECTOR_EMPLOYEE';
 UPDATE cases SET screeningtype = 'EDUCATIONAL_INSTITUTIONS', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'EDUCATIONAL_INSTITUTIONS';
 
-INSERT INTO schema_version (version_number, comment) VALUES (328, 'Case identification source - screening type #3420');
+INSERT INTO schema_version (version_number, comment) VALUES (331, 'Case identification source - screening type #3420');
 -- *** Insert new sql commands BEFORE this line ***
