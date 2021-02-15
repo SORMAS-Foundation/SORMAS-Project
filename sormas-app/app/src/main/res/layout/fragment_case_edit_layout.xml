@@ -244,7 +244,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_screeningType"
                     app:dependencyParentField="@{caseDataCaseIdentificationSource}"
-                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentValue="@{CaseIdentificationSource.SCREENING}"
                     app:value="@={data.screeningType}"
                     app:required="false"
                     style="@style/ControlSingleColumnStyle" />

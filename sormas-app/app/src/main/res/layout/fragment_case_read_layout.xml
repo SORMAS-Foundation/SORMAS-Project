@@ -25,6 +25,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.Vaccination" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
@@ -287,7 +288,7 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_screeningType"
                     app:dependencyParentField="@{caseDataCaseIdentificationSource}"
-                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentValue="@{CaseIdentificationSource.SCREENING}"
                     app:value="@{data.screeningType}"
                     style="@style/ControlSingleColumnStyle" />
 
