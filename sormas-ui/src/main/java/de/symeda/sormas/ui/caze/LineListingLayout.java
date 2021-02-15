@@ -516,8 +516,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void formatAsFirstLine() {
 
-			setRequiredInicatorsVisibility(true);
-
 			formatAsOtherLine();
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
@@ -544,21 +542,11 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void formatAsOtherLine() {
 
-			setRequiredInicatorsVisibility(false);
-
 			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facility, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		}
-
-		private void setRequiredInicatorsVisibility(boolean visible) {
-
-			dateOfReport.setRequiredIndicatorVisible(visible);
-			facility.setRequiredIndicatorVisible(visible);
-			firstname.setRequiredIndicatorVisible(visible);
-			lastname.setRequiredIndicatorVisible(visible);
 		}
 
 		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {

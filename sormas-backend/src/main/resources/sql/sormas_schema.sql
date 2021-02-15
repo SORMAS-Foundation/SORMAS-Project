@@ -4,14 +4,14 @@
 -- #1
 CREATE TABLE schema_version
 (
-    version_number integer NOT NULL,
-    changedate timestamp without time zone NOT NULL DEFAULT now(),
-    comment character varying(255),
-    CONSTRAINT schema_version_pkey PRIMARY KEY (version_number )
+  version_number integer NOT NULL,
+  changedate timestamp without time zone NOT NULL DEFAULT now(),
+  comment character varying(255),
+  CONSTRAINT schema_version_pkey PRIMARY KEY (version_number )
 )
-    WITH (
-        OIDS=FALSE
-        );
+WITH (
+  OIDS=FALSE
+);
 
 ALTER TABLE schema_version OWNER TO sormas_user;
 
@@ -38,31 +38,31 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE cases (
-                       id bigint NOT NULL,
-                       casestatus character varying(255),
-                       changedate timestamp without time zone NOT NULL,
-                       confirmeddate timestamp without time zone,
-                       creationdate timestamp without time zone NOT NULL,
-                       description character varying(512),
-                       disease character varying(255),
-                       investigateddate timestamp without time zone,
-                       negativedate timestamp without time zone,
-                       nocasedate timestamp without time zone,
-                       postivedate timestamp without time zone,
-                       recovereddate timestamp without time zone,
-                       reportdate timestamp without time zone,
-                       suspectdate timestamp without time zone,
-                       uuid character varying(36) NOT NULL,
-                       caseofficer_id bigint,
-                       casesupervisor_id bigint,
-                       contactofficer_id bigint,
-                       contactsupervisor_id bigint,
-                       healthfacility_id bigint,
-                       illlocation_id bigint,
-                       reportinguser_id bigint,
-                       surveillanceofficer_id bigint,
-                       surveillancesupervisor_id bigint,
-                       person_id bigint NOT NULL
+    id bigint NOT NULL,
+    casestatus character varying(255),
+    changedate timestamp without time zone NOT NULL,
+    confirmeddate timestamp without time zone,
+    creationdate timestamp without time zone NOT NULL,
+    description character varying(512),
+    disease character varying(255),
+    investigateddate timestamp without time zone,
+    negativedate timestamp without time zone,
+    nocasedate timestamp without time zone,
+    postivedate timestamp without time zone,
+    recovereddate timestamp without time zone,
+    reportdate timestamp without time zone,
+    suspectdate timestamp without time zone,
+    uuid character varying(36) NOT NULL,
+    caseofficer_id bigint,
+    casesupervisor_id bigint,
+    contactofficer_id bigint,
+    contactsupervisor_id bigint,
+    healthfacility_id bigint,
+    illlocation_id bigint,
+    reportinguser_id bigint,
+    surveillanceofficer_id bigint,
+    surveillancesupervisor_id bigint,
+    person_id bigint NOT NULL
 );
 
 
@@ -74,12 +74,12 @@ ALTER TABLE cases OWNER TO sormas_user;
 --
 
 CREATE TABLE community (
-                           id bigint NOT NULL,
-                           changedate timestamp without time zone NOT NULL,
-                           creationdate timestamp without time zone NOT NULL,
-                           name character varying(255),
-                           uuid character varying(36) NOT NULL,
-                           district_id bigint NOT NULL
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    name character varying(255),
+    uuid character varying(36) NOT NULL,
+    district_id bigint NOT NULL
 );
 
 
@@ -91,12 +91,12 @@ ALTER TABLE community OWNER TO sormas_user;
 --
 
 CREATE TABLE district (
-                          id bigint NOT NULL,
-                          changedate timestamp without time zone NOT NULL,
-                          creationdate timestamp without time zone NOT NULL,
-                          name character varying(255),
-                          uuid character varying(36) NOT NULL,
-                          region_id bigint NOT NULL
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    name character varying(255),
+    uuid character varying(36) NOT NULL,
+    region_id bigint NOT NULL
 );
 
 
@@ -123,14 +123,14 @@ ALTER TABLE entity_seq OWNER TO sormas_user;
 --
 
 CREATE TABLE facility (
-                          id bigint NOT NULL,
-                          changedate timestamp without time zone NOT NULL,
-                          creationdate timestamp without time zone NOT NULL,
-                          name character varying(255),
-                          publicownership boolean,
-                          type character varying(255),
-                          uuid character varying(36) NOT NULL,
-                          location_id bigint
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    name character varying(255),
+    publicownership boolean,
+    type character varying(255),
+    uuid character varying(36) NOT NULL,
+    location_id bigint
 );
 
 
@@ -142,18 +142,18 @@ ALTER TABLE facility OWNER TO sormas_user;
 --
 
 CREATE TABLE location (
-                          id bigint NOT NULL,
-                          address character varying(255),
-                          changedate timestamp without time zone NOT NULL,
-                          city character varying(255),
-                          creationdate timestamp without time zone NOT NULL,
-                          details character varying(255),
-                          latitude double precision,
-                          longitude double precision,
-                          uuid character varying(36) NOT NULL,
-                          community_id bigint,
-                          district_id bigint,
-                          region_id bigint
+    id bigint NOT NULL,
+    address character varying(255),
+    changedate timestamp without time zone NOT NULL,
+    city character varying(255),
+    creationdate timestamp without time zone NOT NULL,
+    details character varying(255),
+    latitude double precision,
+    longitude double precision,
+    uuid character varying(36) NOT NULL,
+    community_id bigint,
+    district_id bigint,
+    region_id bigint
 );
 
 
@@ -165,28 +165,28 @@ ALTER TABLE location OWNER TO sormas_user;
 --
 
 CREATE TABLE person (
-                        id bigint NOT NULL,
-                        approximateage integer,
-                        approximateagetype integer,
-                        birthdate date,
-                        burialconductor character varying(255),
-                        burialdate date,
-                        changedate timestamp without time zone NOT NULL,
-                        creationdate timestamp without time zone NOT NULL,
-                        dead boolean,
-                        deathdate date,
-                        firstname character varying(255) NOT NULL,
-                        lastname character varying(255) NOT NULL,
-                        occupationdetails character varying(255),
-                        occupationtype character varying(255),
-                        phone character varying(255),
-                        presentcondition integer,
-                        sex character varying(255),
-                        uuid character varying(36) NOT NULL,
-                        address_id bigint,
-                        buriallocation_id bigint,
-                        deathlocation_id bigint,
-                        occupationfacility_id bigint
+    id bigint NOT NULL,
+    approximateage integer,
+    approximateagetype integer,
+    birthdate date,
+    burialconductor character varying(255),
+    burialdate date,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    dead boolean,
+    deathdate date,
+    firstname character varying(255) NOT NULL,
+    lastname character varying(255) NOT NULL,
+    occupationdetails character varying(255),
+    occupationtype character varying(255),
+    phone character varying(255),
+    presentcondition integer,
+    sex character varying(255),
+    uuid character varying(36) NOT NULL,
+    address_id bigint,
+    buriallocation_id bigint,
+    deathlocation_id bigint,
+    occupationfacility_id bigint
 );
 
 
@@ -198,11 +198,11 @@ ALTER TABLE person OWNER TO sormas_user;
 --
 
 CREATE TABLE region (
-                        id bigint NOT NULL,
-                        changedate timestamp without time zone NOT NULL,
-                        creationdate timestamp without time zone NOT NULL,
-                        name character varying(255),
-                        uuid character varying(36) NOT NULL
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    name character varying(255),
+    uuid character varying(36) NOT NULL
 );
 
 
@@ -214,8 +214,8 @@ ALTER TABLE region OWNER TO sormas_user;
 --
 
 CREATE TABLE userroles (
-                           user_id bigint NOT NULL,
-                           userrole character varying(255) NOT NULL
+    user_id bigint NOT NULL,
+    userrole character varying(255) NOT NULL
 );
 
 
@@ -227,21 +227,21 @@ ALTER TABLE userroles OWNER TO sormas_user;
 --
 
 CREATE TABLE users (
-                       id bigint NOT NULL,
-                       aktiv boolean NOT NULL,
-                       changedate timestamp without time zone NOT NULL,
-                       creationdate timestamp without time zone NOT NULL,
-                       firstname character varying(255) NOT NULL,
-                       lastname character varying(255) NOT NULL,
-                       password character varying(64) NOT NULL,
-                       phone character varying(255),
-                       seed character varying(16) NOT NULL,
-                       useremail character varying(255),
-                       username character varying(255) NOT NULL,
-                       uuid character varying(36) NOT NULL,
-                       address_id bigint,
-                       associatedofficer_id bigint,
-                       region_id bigint
+    id bigint NOT NULL,
+    aktiv boolean NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    firstname character varying(255) NOT NULL,
+    lastname character varying(255) NOT NULL,
+    password character varying(64) NOT NULL,
+    phone character varying(255),
+    seed character varying(16) NOT NULL,
+    useremail character varying(255),
+    username character varying(255) NOT NULL,
+    uuid character varying(36) NOT NULL,
+    address_id bigint,
+    associatedofficer_id bigint,
+    region_id bigint
 );
 
 
@@ -638,50 +638,50 @@ INSERT INTO schema_version (version_number, comment) VALUES (2, 'Split person bi
 
 -- 2016-10-04; #58
 CREATE TABLE symptoms (
-                          id bigint not null,
-                          abdominalpain varchar(255),
-                          anorexiaappetiteloss varchar(255),
-                          bleedingvagina varchar(255),
-                          changedate timestamp not null,
-                          chestpain varchar(255),
-                          comaunconscious varchar(255),
-                          confuseddisoriented varchar(255),
-                          conjunctivitis varchar(255),
-                          cough varchar(255),
-                          creationdate timestamp not null,
-                          diarrhea varchar(255),
-                          difficultybreathing varchar(255),
-                          difficultyswallowing varchar(255),
-                          digestedbloodvomit varchar(255),
-                          epistaxis varchar(255),
-                          eyepainlightsensitive varchar(255),
-                          fever varchar(255),
-                          gumsbleeding varchar(255),
-                          headache varchar(255),
-                          hematemesis varchar(255),
-                          hematuria varchar(255),
-                          hemoptysis varchar(255),
-                          hiccups varchar(255),
-                          injectionsitebleeding varchar(255),
-                          intensefatigueweakness varchar(255),
-                          jaundice varchar(255),
-                          jointpain varchar(255),
-                          melena varchar(255),
-                          musclepain varchar(255),
-                          otherhemorrhagic varchar(255),
-                          otherhemorrhagictext varchar(255),
-                          othernonhemorrhagic varchar(255),
-                          othernonhemorrhagicsymptoms varchar(255),
-                          petechiae varchar(255),
-                          skinrash varchar(255),
-                          sorethroat varchar(255),
-                          onsetdate timestamp without time zone,
-                          temperature real,
-                          temperaturesource varchar(255),
-                          unexplainedbleeding varchar(255),
-                          uuid varchar(36) not null unique,
-                          vomitingnausea varchar(255),
-                          PRIMARY KEY (id));
+id bigint not null,
+abdominalpain varchar(255),
+anorexiaappetiteloss varchar(255),
+bleedingvagina varchar(255),
+changedate timestamp not null,
+chestpain varchar(255),
+comaunconscious varchar(255),
+confuseddisoriented varchar(255),
+conjunctivitis varchar(255),
+cough varchar(255),
+creationdate timestamp not null,
+diarrhea varchar(255),
+difficultybreathing varchar(255),
+difficultyswallowing varchar(255),
+digestedbloodvomit varchar(255),
+epistaxis varchar(255),
+eyepainlightsensitive varchar(255),
+fever varchar(255),
+gumsbleeding varchar(255),
+headache varchar(255),
+hematemesis varchar(255),
+hematuria varchar(255),
+hemoptysis varchar(255),
+hiccups varchar(255),
+injectionsitebleeding varchar(255),
+intensefatigueweakness varchar(255),
+jaundice varchar(255),
+jointpain varchar(255),
+melena varchar(255),
+musclepain varchar(255),
+otherhemorrhagic varchar(255),
+otherhemorrhagictext varchar(255),
+othernonhemorrhagic varchar(255),
+othernonhemorrhagicsymptoms varchar(255),
+petechiae varchar(255),
+skinrash varchar(255),
+sorethroat varchar(255),
+onsetdate timestamp without time zone,
+temperature real,
+temperaturesource varchar(255),
+unexplainedbleeding varchar(255),
+uuid varchar(36) not null unique,
+vomitingnausea varchar(255),
+PRIMARY KEY (id));
 
 ALTER TABLE symptoms OWNER TO sormas_user;
 
@@ -695,22 +695,22 @@ INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 -- 2016-10-14; #63
 
 CREATE TABLE task (
-                      id bigint not null,
-                      assigneereply varchar(512),
-                      changedate timestamp not null,
-                      creationdate timestamp not null,
-                      creatorcomment varchar(512),
-                      duedate timestamp,
-                      perceivedstart timestamp,
-                      statuschangedate timestamp,
-                      taskcontext varchar(255),
-                      taskstatus varchar(255),
-                      tasktype varchar(255),
-                      uuid varchar(36) not null unique,
-                      assigneeuser_id bigint,
-                      caze_id bigint,
-                      creatoruser_id bigint,
-                      PRIMARY KEY (id));
+id bigint not null,
+assigneereply varchar(512),
+changedate timestamp not null,
+creationdate timestamp not null,
+creatorcomment varchar(512),
+duedate timestamp,
+perceivedstart timestamp,
+statuschangedate timestamp,
+taskcontext varchar(255),
+taskstatus varchar(255),
+tasktype varchar(255),
+uuid varchar(36) not null unique,
+assigneeuser_id bigint,
+caze_id bigint,
+creatoruser_id bigint,
+PRIMARY KEY (id));
 
 ALTER TABLE task OWNER TO sormas_user;
 
@@ -782,18 +782,18 @@ INSERT INTO schema_version (version_number, comment) VALUES (7, 'Case + User: re
 -- 2016-11-10; Contact #85
 
 CREATE TABLE contact (
-                         id bigint not null,
-                         changedate timestamp not null,
-                         contactproximity varchar(255),
-                         contactstatus varchar(255),
-                         creationdate timestamp not null,
-                         lastcontactdate timestamp,
-                         reportdatetime timestamp not null,
-                         uuid varchar(36) not null unique,
-                         caze_id bigint not null,
-                         person_id bigint not null,
-                         reportinguser_id bigint not null,
-                         primary key (id));
+id bigint not null,
+changedate timestamp not null,
+contactproximity varchar(255),
+contactstatus varchar(255),
+creationdate timestamp not null,
+lastcontactdate timestamp,
+reportdatetime timestamp not null,
+uuid varchar(36) not null unique,
+caze_id bigint not null,
+person_id bigint not null,
+reportinguser_id bigint not null,
+primary key (id));
 
 ALTER TABLE contact ADD CONSTRAINT fk_contact_person_id FOREIGN KEY (person_id) REFERENCES person (id);
 ALTER TABLE contact ADD CONSTRAINT fk_contact_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
@@ -826,18 +826,18 @@ ALTER TABLE contact ADD COLUMN followupstatus varchar(255);
 ALTER TABLE contact ADD COLUMN followupuntil timestamp;
 
 CREATE TABLE visit (
-                       id bigint not null,
-                       uuid varchar(36) not null unique,
-                       changedate timestamp not null,
-                       creationdate timestamp not null,
-                       person_id bigint not null,
-                       visituser_id bigint not null,
-                       visitremarks character varying(512),
-                       disease character varying(255),
-                       visitdatetime timestamp not null,
-                       visitstatus character varying(255),
-                       symptoms_id bigint,
-                       primary key (id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	person_id bigint not null,
+	visituser_id bigint not null,
+    visitremarks character varying(512),
+    disease character varying(255),
+	visitdatetime timestamp not null,
+    visitstatus character varying(255),
+	symptoms_id bigint,
+	primary key (id));
 ALTER TABLE visit OWNER TO sormas_user;
 
 ALTER TABLE visit ADD CONSTRAINT fk_visit_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -894,37 +894,37 @@ INSERT INTO schema_version (version_number, comment) VALUES (14, 'Update symptom
 -- 2017-01-05 Event backend #63
 
 CREATE TABLE events (
-                        id bigint not null,
-                        uuid varchar(36) not null unique,
-                        changedate timestamp not null,
-                        creationdate timestamp not null,
-                        eventtype varchar(255) not null,
-                        eventstatus varchar(255) not null,
-                        eventdesc varchar(512) not null,
-                        eventdate timestamp,
-                        reportdatetime timestamp not null,
-                        reportinguser_id bigint not null,
-                        location_id bigint,
-                        typeofplace varchar(255) not null,
-                        srcfirstname varchar(512) not null,
-                        srclastname varchar(512) not null,
-                        srctelno varchar(512) not null,
-                        srcemail varchar(512),
-                        primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	eventtype varchar(255) not null,
+	eventstatus varchar(255) not null,
+	eventdesc varchar(512) not null,
+	eventdate timestamp,
+	reportdatetime timestamp not null,
+	reportinguser_id bigint not null,
+	location_id bigint,
+	typeofplace varchar(255) not null,
+	srcfirstname varchar(512) not null,
+	srclastname varchar(512) not null,
+	srctelno varchar(512) not null,
+	srcemail varchar(512),
+	primary key(id));
 ALTER TABLE events OWNER TO sormas_user;
 
 ALTER TABLE events ADD CONSTRAINT fk_events_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
 ALTER TABLE events ADD CONSTRAINT fk_events_location_id FOREIGN KEY (location_id) REFERENCES location (id);
 
 CREATE TABLE eventparticipant (
-                                  id bigint not null,
-                                  uuid varchar(36) not null unique,
-                                  changedate timestamp not null,
-                                  creationdate timestamp not null,
-                                  event_id bigint,
-                                  person_id bigint,
-                                  kindofinvolvement varchar(255),
-                                  primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	event_id bigint,
+	person_id bigint,
+	kindofinvolvement varchar(255),
+	primary key(id));
 ALTER TABLE eventparticipant OWNER TO sormas_user;
 
 ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_event_id FOREIGN KEY (event_id) REFERENCES events (id);
@@ -988,42 +988,42 @@ INSERT INTO schema_version (version_number, comment) VALUES (23, 'Add health fac
 -- 2017-01-30 Sample and SampleTest backend #106
 
 CREATE TABLE samples(
-                        id bigint not null,
-                        uuid varchar(36) not null unique,
-                        changedate timestamp not null,
-                        creationdate timestamp not null,
-                        associatedcase_id bigint not null,
-                        samplecode varchar(512),
-                        sampledatetime timestamp not null,
-                        reportdatetime timestamp not null,
-                        reportinguser_id bigint not null,
-                        samplematerial varchar(255) not null,
-                        samplematerialtext varchar(512),
-                        lab_id bigint not null,
-                        otherlab_id bigint,
-                        shipmentstatus varchar(255) not null,
-                        shipmentdate timestamp not null,
-                        shipmentdetails varchar(512),
-                        receiveddate timestamp,
-                        notestpossible boolean,
-                        notestpossiblereason varchar(512),
-                        primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	associatedcase_id bigint not null,
+	samplecode varchar(512),
+	sampledatetime timestamp not null,
+	reportdatetime timestamp not null,
+	reportinguser_id bigint not null,
+	samplematerial varchar(255) not null,
+	samplematerialtext varchar(512),
+	lab_id bigint not null,
+	otherlab_id bigint,
+	shipmentstatus varchar(255) not null,
+	shipmentdate timestamp not null,
+	shipmentdetails varchar(512),
+	receiveddate timestamp,
+	notestpossible boolean,
+	notestpossiblereason varchar(512),
+	primary key(id));
 
 CREATE TABLE sampletest(
-                           id bigint not null,
-                           uuid varchar(36) not null unique,
-                           changedate timestamp not null,
-                           creationdate timestamp not null,
-                           sample_id bigint not null,
-                           testtype varchar(255) not null,
-                           testtypetext varchar(512),
-                           testdatetime timestamp not null,
-                           lab_id bigint not null,
-                           labuser_id bigint not null,
-                           testresult varchar(255) not null,
-                           testresulttext varchar(512) not null,
-                           testresultverified boolean not null,
-                           primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sample_id bigint not null,
+	testtype varchar(255) not null,
+	testtypetext varchar(512),
+	testdatetime timestamp not null,
+	lab_id bigint not null,
+	labuser_id bigint not null,
+	testresult varchar(255) not null,
+	testresulttext varchar(512) not null,
+	testresultverified boolean not null,
+	primary key(id));
 
 ALTER TABLE samples OWNER TO sormas_user;
 ALTER TABLE sampletest OWNER TO sormas_user;
@@ -1072,31 +1072,31 @@ INSERT INTO schema_version (version_number, comment) VALUES (29, 'Update samples
 -- 2017-02-21 Hospitalization and PreviousHospitalization entities #89
 
 CREATE TABLE hospitalization(
-                                id bigint not null,
-                                uuid varchar(36) not null unique,
-                                changedate timestamp not null,
-                                creationdate timestamp not null,
-                                hospitalized varchar(255),
-                                admissiondate timestamp,
-                                healthfacility_id bigint,
-                                isolated varchar(255),
-                                isolationdate timestamp,
-                                hospitalizedpreviously varchar(255),
-                                primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	hospitalized varchar(255),
+	admissiondate timestamp,
+	healthfacility_id bigint,
+	isolated varchar(255),
+	isolationdate timestamp,
+	hospitalizedpreviously varchar(255),
+	primary key(id));
 ALTER TABLE hospitalization OWNER TO sormas_user;
 ALTER TABLE hospitalization ADD CONSTRAINT fk_hospitalization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility (id);
 
 CREATE TABLE previoushospitalization(
-                                        id bigint not null,
-                                        uuid varchar(36) not null unique,
-                                        changedate timestamp not null,
-                                        creationdate timestamp not null,
-                                        admissiondate timestamp,
-                                        dischargedate timestamp,
-                                        healthfacility_id bigint,
-                                        isolated varchar(255),
-                                        hospitalization_id bigint not null,
-                                        primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	admissiondate timestamp,
+	dischargedate timestamp,
+	healthfacility_id bigint,
+	isolated varchar(255),
+	hospitalization_id bigint not null,
+	primary key(id));
 ALTER TABLE previoushospitalization OWNER TO sormas_user;
 ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility (id);
 ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_hospitalization_id FOREIGN KEY (hospitalization_id) REFERENCES hospitalization (id);
@@ -1158,86 +1158,86 @@ INSERT INTO schema_version (version_number, comment) VALUES (35, 'Case measles a
 -- 2017-03-02 Epidemiological data
 
 CREATE TABLE epidata(
-                        id bigint not null,
-                        uuid varchar(36) not null unique,
-                        changedate timestamp not null,
-                        creationdate timestamp not null,
-                        rodents varchar(255),
-                        bats varchar(255),
-                        primates varchar(255),
-                        swine varchar(255),
-                        birds varchar(255),
-                        poultryeat varchar(255),
-                        poultry varchar(255),
-                        poultrydetails varchar(512),
-                        poultrysick varchar(255),
-                        poultrysickdetails varchar(512),
-                        poultrydate timestamp,
-                        poultrylocation varchar(512),
-                        wildbirds varchar(255),
-                        wildbirdsdetails varchar(512),
-                        wildbirdsdate timestamp,
-                        wildbirdslocation varchar(512),
-                        cattle varchar(255),
-                        otheranimals varchar(255),
-                        otheranimalsdetails varchar(512),
-                        watersource varchar(255),
-                        watersourceother varchar(512),
-                        waterbody varchar(255),
-                        waterbodydetails varchar(512),
-                        tickbite varchar(255),
-                        burialattended varchar(255),
-                        gatheringattended varchar(255),
-                        traveled varchar(255),
-                        primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	rodents varchar(255),
+	bats varchar(255),
+	primates varchar(255),
+	swine varchar(255),
+	birds varchar(255),
+	poultryeat varchar(255),
+	poultry varchar(255),
+	poultrydetails varchar(512),
+	poultrysick varchar(255),
+	poultrysickdetails varchar(512),
+	poultrydate timestamp,
+	poultrylocation varchar(512),
+	wildbirds varchar(255),
+	wildbirdsdetails varchar(512),
+	wildbirdsdate timestamp,
+	wildbirdslocation varchar(512),
+	cattle varchar(255),
+	otheranimals varchar(255),
+	otheranimalsdetails varchar(512),
+	watersource varchar(255),
+	watersourceother varchar(512),
+	waterbody varchar(255),
+	waterbodydetails varchar(512),
+	tickbite varchar(255),
+	burialattended varchar(255),
+	gatheringattended varchar(255),
+	traveled varchar(255),
+	primary key(id)
 );
 ALTER TABLE epidata OWNER TO sormas_user;
 
 CREATE TABLE epidataburial(
-                              id bigint not null,
-                              uuid varchar(36) not null unique,
-                              changedate timestamp not null,
-                              creationdate timestamp not null,
-                              epidata_id bigint not null,
-                              burialpersonname varchar(512),
-                              burialrelation varchar(512),
-                              burialdatefrom timestamp,
-                              burialdateto timestamp,
-                              burialaddress_id bigint,
-                              burialill varchar(255),
-                              burialtouching varchar(255),
-                              primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	burialpersonname varchar(512),
+	burialrelation varchar(512),
+	burialdatefrom timestamp,
+	burialdateto timestamp,
+	burialaddress_id bigint,
+	burialill varchar(255),
+	burialtouching varchar(255),
+	primary key(id)
 );
 ALTER TABLE epidataburial OWNER TO sormas_user;
 ALTER TABLE epidataburial ADD CONSTRAINT fk_epidataburial_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
 ALTER TABLE epidataburial ADD CONSTRAINT fk_epidataburial_burialaddress_id FOREIGN KEY (burialaddress_id) REFERENCES location(id);
 
 CREATE TABLE epidatagathering(
-                                 id bigint not null,
-                                 uuid varchar(36) not null unique,
-                                 changedate timestamp not null,
-                                 creationdate timestamp not null,
-                                 epidata_id bigint not null,
-                                 description varchar(512),
-                                 gatheringdate timestamp,
-                                 gatheringaddress_id bigint,
-                                 primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	description varchar(512),
+	gatheringdate timestamp,
+	gatheringaddress_id bigint,
+	primary key(id)
 );
 ALTER TABLE epidatagathering OWNER TO sormas_user;
 ALTER TABLE epidatagathering ADD CONSTRAINT fk_epidatagathering_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
 ALTER TABLE epidatagathering ADD CONSTRAINT fk_epidatagathering_gatheringaddress_id FOREIGN KEY (gatheringaddress_id) REFERENCES location(id);
 
 CREATE TABLE epidatatravel(
-                              id bigint not null,
-                              uuid varchar(36) not null unique,
-                              changedate timestamp not null,
-                              creationdate timestamp not null,
-                              epidata_id bigint not null,
-                              traveltype varchar(255),
-                              traveldestination varchar(512),
-                              traveldatefrom timestamp,
-                              traveldateto timestamp,
-                              primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	traveltype varchar(255),
+	traveldestination varchar(512),
+	traveldatefrom timestamp,
+	traveldateto timestamp,
+	primary key(id)
 );
 ALTER TABLE epidatatravel OWNER TO sormas_user;
 ALTER TABLE epidatatravel ADD CONSTRAINT fk_epidatatravel_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
@@ -1250,7 +1250,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiologica
 
 CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
 INSERT INTO epidata (id, changedate, creationdate, uuid)
-SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
+	SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
 UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
 DROP TABLE tmp_caseids;
 
@@ -1375,8 +1375,8 @@ UPDATE cases SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE cases ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE cases_history (LIKE cases);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON cases
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON cases
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
 ALTER TABLE cases_history OWNER TO sormas_user;
 
 ALTER TABLE contact ADD COLUMN sys_period tstzrange;
@@ -1384,8 +1384,8 @@ UPDATE contact SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE contact ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE contact_history (LIKE contact);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON contact
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON contact
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_history', true);
 ALTER TABLE contact_history OWNER TO sormas_user;
 
 ALTER TABLE epidata ADD COLUMN sys_period tstzrange;
@@ -1393,8 +1393,8 @@ UPDATE epidata SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE epidata ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE epidata_history (LIKE epidata);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON epidata
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidata_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON epidata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidata_history', true);
 ALTER TABLE epidata_history OWNER TO sormas_user;
 
 ALTER TABLE epidataburial ADD COLUMN sys_period tstzrange;
@@ -1402,8 +1402,8 @@ UPDATE epidataburial SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE epidataburial ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE epidataburial_history (LIKE epidataburial);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON epidataburial
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidataburial_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON epidataburial
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidataburial_history', true);
 ALTER TABLE epidataburial_history OWNER TO sormas_user;
 
 ALTER TABLE epidatagathering ADD COLUMN sys_period tstzrange;
@@ -1411,8 +1411,8 @@ UPDATE epidatagathering SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE epidatagathering ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE epidatagathering_history (LIKE epidatagathering);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON epidatagathering
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatagathering_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON epidatagathering
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatagathering_history', true);
 ALTER TABLE epidatagathering_history OWNER TO sormas_user;
 
 ALTER TABLE epidatatravel ADD COLUMN sys_period tstzrange;
@@ -1420,8 +1420,8 @@ UPDATE epidatatravel SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE epidatatravel ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE epidatatravel_history (LIKE epidatatravel);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON epidatatravel
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatatravel_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON epidatatravel
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatatravel_history', true);
 ALTER TABLE epidatatravel_history OWNER TO sormas_user;
 
 ALTER TABLE events ADD COLUMN sys_period tstzrange;
@@ -1429,8 +1429,8 @@ UPDATE events SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE events ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE events_history (LIKE events);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON events
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON events
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_history', true);
 ALTER TABLE events_history OWNER TO sormas_user;
 
 ALTER TABLE location ADD COLUMN sys_period tstzrange;
@@ -1438,8 +1438,8 @@ UPDATE location SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE location ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE location_history (LIKE location);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON location
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'location_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON location
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'location_history', true);
 ALTER TABLE location_history OWNER TO sormas_user;
 
 ALTER TABLE person ADD COLUMN sys_period tstzrange;
@@ -1447,8 +1447,8 @@ UPDATE person SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE person ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE person_history (LIKE person);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON person
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON person
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_history', true);
 ALTER TABLE person_history OWNER TO sormas_user;
 
 ALTER TABLE previoushospitalization ADD COLUMN sys_period tstzrange;
@@ -1456,8 +1456,8 @@ UPDATE previoushospitalization SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE previoushospitalization ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE previoushospitalization_history (LIKE previoushospitalization);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON previoushospitalization
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'previoushospitalization_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON previoushospitalization
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'previoushospitalization_history', true);
 ALTER TABLE previoushospitalization_history OWNER TO sormas_user;
 
 ALTER TABLE samples ADD COLUMN sys_period tstzrange;
@@ -1465,8 +1465,8 @@ UPDATE samples SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE samples ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE samples_history (LIKE samples);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON samples
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samples_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON samples
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samples_history', true);
 ALTER TABLE samples_history OWNER TO sormas_user;
 
 ALTER TABLE sampletest ADD COLUMN sys_period tstzrange;
@@ -1474,8 +1474,8 @@ UPDATE sampletest SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE sampletest ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE sampletest_history (LIKE sampletest);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON sampletest
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sampletest_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON sampletest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sampletest_history', true);
 ALTER TABLE sampletest_history OWNER TO sormas_user;
 
 ALTER TABLE symptoms ADD COLUMN sys_period tstzrange;
@@ -1483,8 +1483,8 @@ UPDATE symptoms SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE symptoms ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE symptoms_history (LIKE symptoms);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON symptoms
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'symptoms_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON symptoms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'symptoms_history', true);
 ALTER TABLE symptoms_history OWNER TO sormas_user;
 
 ALTER TABLE task ADD COLUMN sys_period tstzrange;
@@ -1492,8 +1492,8 @@ UPDATE task SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE task ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE task_history (LIKE task);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON task
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON task
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_history', true);
 ALTER TABLE task_history OWNER TO sormas_user;
 
 ALTER TABLE users ADD COLUMN sys_period tstzrange;
@@ -1501,8 +1501,8 @@ UPDATE users SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE users ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE users_history (LIKE users);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON users
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON users
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_history', true);
 ALTER TABLE users_history OWNER TO sormas_user;
 
 ALTER TABLE visit ADD COLUMN sys_period tstzrange;
@@ -1510,8 +1510,8 @@ UPDATE visit SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE visit ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE visit_history (LIKE visit);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON visit
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'visit_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON visit
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'visit_history', true);
 ALTER TABLE visit_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history for future reporting (postgres temporal tables) #170');
@@ -1665,15 +1665,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (63, 'Generic names 
 
 -- 2017-09-06 Weekly Reports and Weekly Report Entries #171
 CREATE TABLE weeklyreport(
-                             id bigint not null,
-                             uuid varchar(36) not null unique,
-                             changedate timestamp not null,
-                             creationdate timestamp not null,
-                             healthfacility_id bigint not null,
-                             informant_id bigint not null,
-                             reportdatetime timestamp not null,
-                             totalnumberofcases integer not null,
-                             primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	healthfacility_id bigint not null,
+	informant_id bigint not null,
+	reportdatetime timestamp not null,
+	totalnumberofcases integer not null,
+	primary key(id)
 );
 
 ALTER TABLE weeklyreport OWNER TO sormas_user;
@@ -1681,14 +1681,14 @@ ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_healthfacility_id FOREIG
 ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_informant_id FOREIGN KEY (informant_id) REFERENCES users(id);
 
 CREATE TABLE weeklyreportentry(
-                                  id bigint not null,
-                                  uuid varchar(36) not null unique,
-                                  changedate timestamp not null,
-                                  creationdate timestamp not null,
-                                  weeklyreport_id bigint not null,
-                                  disease character varying(255) not null,
-                                  numberofcases integer not null,
-                                  primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	weeklyreport_id bigint not null,
+    disease character varying(255) not null,
+    numberofcases integer not null,
+    primary key(id)
 );
 
 ALTER TABLE weeklyreportentry OWNER TO sormas_user;
@@ -1714,8 +1714,8 @@ UPDATE userroles SET sys_period=tstzrange((SELECT users.creationdate FROM users 
 ALTER TABLE userroles ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE userroles_history (LIKE userroles);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON userroles
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', true);
 ALTER TABLE userroles_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (67, 'Create history table for UserRoles #328');
@@ -1945,15 +1945,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (84, 'New fields for
 
 -- 2018-01-16 Outbreak mode per disease and district #473
 CREATE TABLE outbreak(
-                         id bigint not null,
-                         uuid varchar(36) not null unique,
-                         changedate timestamp not null,
-                         creationdate timestamp not null,
-                         district_id bigint not null,
-                         disease varchar(255) not null,
-                         reportdate timestamp not null,
-                         reportinguser_id bigint not null,
-                         primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	district_id bigint not null,
+	disease varchar(255) not null,
+	reportdate timestamp not null,
+	reportinguser_id bigint not null,
+	primary key(id)
 );
 
 ALTER TABLE outbreak OWNER TO sormas_user;
@@ -1969,8 +1969,8 @@ UPDATE outbreak SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE outbreak ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE outbreak_history (LIKE outbreak);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON outbreak
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON outbreak
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true);
 ALTER TABLE outbreak_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (86, 'Outbreak history table #473');
@@ -2056,12 +2056,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (93, 'Resulting case
 -- 2018-02-26 Export function for database export #507
 
 CREATE FUNCTION export_database(table_name text, path text, file_name text)
-    RETURNS VOID
-    LANGUAGE plpgsql
+	RETURNS VOID
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				) TO
@@ -2070,17 +2070,17 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-END;
+		END;
 	$BODY$
 ;
 
 CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, path text, file_name text)
-    RETURNS VOID
-    LANGUAGE plpgsql
+	RETURNS VOID
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				INNER JOIN
@@ -2095,7 +2095,7 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-END;
+		END;
 	$BODY$
 ;
 
@@ -2113,7 +2113,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case
 CREATE OR REPLACE FUNCTION add_health_facility(_name character varying(512), _islaboratory boolean, _regionname character varying(512), _districtname character varying(512), _communityname character varying(512), _city character varying(512), _latitude double precision, _longitude double precision)
 RETURNS bigint AS $resultid$
 DECLARE
-_type character varying(512);
+	_type character varying(512);
 	_id bigint;
 	_uuid character varying(36);
 	_region_id bigint;
@@ -2122,44 +2122,44 @@ _type character varying(512);
 BEGIN
 	IF (_regionname IS NULL) THEN
 		RAISE EXCEPTION 'you need to pass a region name';
-END IF;
+	END IF;
 	IF (NOT(_islaboratory) AND _districtname IS NULL) THEN
 		RAISE EXCEPTION 'you need to pass a district name';
-END IF;
+	END IF;
 
 	IF (_islaboratory) THEN
 		_type = 'LABORATORY';
-END IF;
+	END IF;
 
-SELECT region.id FROM region WHERE region.name = _regionname INTO _region_id;
-SELECT district.id FROM district WHERE district.name = _districtname AND district.region_id = _region_id INTO _district_id;
-SELECT community.id FROM community WHERE community.name = _communityname AND community.district_id = _district_id INTO _community_id;
+	SELECT region.id FROM region WHERE region.name = _regionname INTO _region_id;
+	SELECT district.id FROM district WHERE district.name = _districtname AND district.region_id = _region_id INTO _district_id;
+	SELECT community.id FROM community WHERE community.name = _communityname AND community.district_id = _district_id INTO _community_id;
 
-IF (_regionname IS NOT NULL AND _region_id IS NULL) THEN
+	IF (_regionname IS NOT NULL AND _region_id IS NULL) THEN
 		RAISE EXCEPTION 'region not found %', _regionname;
-END IF;
+	END IF;
 	IF (_districtname IS NOT NULL AND _district_id IS NULL) THEN
 		RAISE EXCEPTION 'district not found %', _districtname;
-END IF;
+	END IF;
 	IF (_communityname IS NOT NULL AND _community_id IS NULL) THEN
 		RAISE EXCEPTION 'community not found %', _communityname;
-END IF;
+	END IF;
 
-_id = nextval('entity_seq');
+	_id = nextval('entity_seq');
 	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
-_uuid = upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29));
+	_uuid = upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29));
 
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
-END IF;
+	END IF;
 
-INSERT INTO facility(
-    id, changedate, creationdate, name, publicownership, type, uuid,
-    region_id, district_id, community_id, city, latitude, longitude)
-VALUES (_id, now(), now(), _name, FALSE, _type, _uuid,
-        _region_id, _district_id, _community_id, _city, _latitude, _longitude);
+	INSERT INTO facility(
+            id, changedate, creationdate, name, publicownership, type, uuid,
+            region_id, district_id, community_id, city, latitude, longitude)
+	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid,
+            _region_id, _district_id, _community_id, _city, _latitude, _longitude);
 
-RETURN _id;
+        RETURN _id;
 END;
 $resultid$  LANGUAGE plpgsql;
 
@@ -2183,12 +2183,12 @@ DROP FUNCTION export_database(text, text, text);
 DROP FUNCTION export_database_join(text, text, text, text, text, text);
 
 CREATE FUNCTION export_database(table_name text, file_path text)
-    RETURNS VOID
-    LANGUAGE plpgsql
+	RETURNS VOID
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				) TO
@@ -2197,17 +2197,17 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-END;
+		END;
 	$BODY$
 ;
 
 CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
-    RETURNS VOID
-    LANGUAGE plpgsql
+	RETURNS VOID
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				INNER JOIN
@@ -2222,7 +2222,7 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-END;
+		END;
 	$BODY$
 ;
 
@@ -2234,8 +2234,8 @@ UPDATE eventparticipant SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE eventparticipant ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE eventparticipant_history (LIKE eventparticipant);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON eventparticipant
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON eventparticipant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
 ALTER TABLE eventparticipant_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (100, 'Create history table for event participant #509');
@@ -2268,7 +2268,7 @@ DECLARE year integer;
 	isodow_start integer;
 	epi_week integer;
 BEGIN
-year := date_part('year', indate);
+   year := date_part('year', indate);
    -- days until end of year
    -- DOY: The day of the year (1 - 365/366)
    doy = date_part('DOY', indate);
@@ -2281,15 +2281,15 @@ year := date_part('year', indate);
    if (doy_end - doy < isodow_start_next-1) THEN
 	-- falls into next epi year
 	epi_week := 1;
-ELSE
+   ELSE
 	-- 2018: 01.01 is monday -> ceil(doy/7) = epi-week
 	-- 2017: 01.01 is sunday -> ceil((doy+6)/7) = epi-week
 	-- 2016: 01.01 is friday -> ceil((doy+4)/7) = epi-week
 	isodow_start := date_part('isodow', date (year || '-01-01'));
 	epi_week := ceil((doy + isodow_start - 1) / 7.0);
-END if;
+   END if;
 
-RETURN epi_week;
+   RETURN epi_week;
 END;
 $result$
 LANGUAGE plpgsql;
@@ -2305,18 +2305,18 @@ DECLARE year integer;
 	isodow_start integer;
 	epi_year integer;
 BEGIN
-year := date_part('year', indate);
+   year := date_part('year', indate);
    doy = date_part('DOY', indate);
    doy_end := date_part('DOY', date (year || '-12-31'));
    isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
    if (doy_end - doy < isodow_start_next-1) THEN
 	-- next year
 	epi_year := year+1;
-ELSE
+   ELSE
 	epi_year := year;
-END if;
+   END if;
 
-RETURN epi_year;
+   RETURN epi_year;
 END;
 $result$
 LANGUAGE plpgsql;
@@ -2519,33 +2519,33 @@ DROP TRIGGER versioning_trigger ON userroles;
 ALTER TABLE userroles RENAME TO users_userroles;
 ALTER TABLE userroles_history RENAME TO users_userroles_history;
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON users_userroles
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON users_userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (117, 'Rename useroles to users_userroles #830');
 
 -- 2018-12-03 User role configuration #830
 
 CREATE TABLE userrolesconfig (
-                                 id bigint not null,
-                                 uuid varchar(36) not null unique,
-                                 changedate timestamp not null,
-                                 creationdate timestamp not null,
-                                 userrole varchar(255) not null unique,
-                                 sys_period tstzrange NOT NULL,
-                                 primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	userrole varchar(255) not null unique,
+	sys_period tstzrange NOT NULL,
+	primary key(id)
 );
 ALTER TABLE userrolesconfig OWNER TO sormas_user;
 
 CREATE TABLE userrolesconfig_history (LIKE userrolesconfig);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userrolesconfig
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
 ALTER TABLE userrolesconfig_history OWNER TO sormas_user;
 
 CREATE TABLE userroles_userrights (
-                                      userrole character varying(255) NOT NULL,
-                                      userright character varying(255) NOT NULL,
-                                      sys_period tstzrange NOT NULL
+    userrole character varying(255) NOT NULL,
+    userright character varying(255) NOT NULL,
+	sys_period tstzrange NOT NULL
 );
 ALTER TABLE userroles_userrights OWNER TO sormas_user;
 
@@ -2556,7 +2556,7 @@ ALTER TABLE ONLY userroles_userrights
 
 CREATE TABLE userroles_userrights_history (LIKE userroles_userrights);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_userrights
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
 ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (118, 'User role configuration #830');
@@ -2621,8 +2621,8 @@ UPDATE weeklyreport SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE weeklyreport ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE weeklyreport_history (LIKE weeklyreport);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON weeklyreport
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
 ALTER TABLE weeklyreport_history OWNER TO sormas_user;
 
 ALTER TABLE weeklyreportentry ADD COLUMN sys_period tstzrange;
@@ -2630,8 +2630,8 @@ UPDATE weeklyreportentry SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE weeklyreportentry ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE weeklyreportentry_history (LIKE weeklyreportentry);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON weeklyreportentry
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreportentry
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
 ALTER TABLE weeklyreportentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table and change date for embedded weekly report lists #610');
@@ -2639,74 +2639,74 @@ INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table
 -- 2019-01-29 Therapy, treatment and prescription tables #936
 
 CREATE TABLE therapy(
-                        id bigint not null,
-                        uuid varchar(36) not null unique,
-                        changedate timestamp not null,
-                        creationdate timestamp not null,
-                        sys_period tstzrange not null,
-                        primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE therapy OWNER TO sormas_user;
 
 CREATE TABLE therapy_history (LIKE therapy);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON therapy
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'therapy_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON therapy
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'therapy_history', true);
 ALTER TABLE therapy_history OWNER TO sormas_user;
 
 CREATE TABLE prescription(
-                             id bigint not null,
-                             uuid varchar(36) not null unique,
-                             changedate timestamp not null,
-                             creationdate timestamp not null,
-                             therapy_id bigint not null,
-                             prescriptiondate timestamp not null,
-                             prescriptionstart timestamp,
-                             prescriptionend timestamp,
-                             prescribingclinician varchar(512),
-                             prescriptiontype varchar(255) not null,
-                             prescriptiondetails varchar(512),
-                             frequency varchar(512),
-                             dose varchar(512),
-                             route varchar(255),
-                             routedetails varchar(512),
-                             additionalnotes varchar(512),
-                             sys_period tstzrange not null,
-                             primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	therapy_id bigint not null,
+	prescriptiondate timestamp not null,
+	prescriptionstart timestamp,
+	prescriptionend timestamp,
+	prescribingclinician varchar(512),
+	prescriptiontype varchar(255) not null,
+	prescriptiondetails varchar(512),
+	frequency varchar(512),
+	dose varchar(512),
+	route varchar(255),
+	routedetails varchar(512),
+	additionalnotes varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE prescription OWNER TO sormas_user;
 ALTER TABLE prescription ADD CONSTRAINT fk_prescription_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
 
 CREATE TABLE prescription_history (LIKE prescription);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON prescription
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'prescription_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON prescription
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'prescription_history', true);
 ALTER TABLE prescription_history OWNER TO sormas_user;
 
 CREATE TABLE treatment(
-                          id bigint not null,
-                          uuid varchar(36) not null unique,
-                          changedate timestamp not null,
-                          creationdate timestamp not null,
-                          therapy_id bigint not null,
-                          treatmentdatetime timestamp not null,
-                          executingclinician varchar(512),
-                          treatmenttype varchar(255) not null,
-                          treatmentdetails varchar(512),
-                          dose varchar(512),
-                          route varchar(255),
-                          routedetails varchar(512),
-                          additionalnotes varchar(512),
-                          sys_period tstzrange not null,
-                          primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	therapy_id bigint not null,
+	treatmentdatetime timestamp not null,
+	executingclinician varchar(512),
+	treatmenttype varchar(255) not null,
+	treatmentdetails varchar(512),
+	dose varchar(512),
+	route varchar(255),
+	routedetails varchar(512),
+	additionalnotes varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE treatment OWNER TO sormas_user;
 ALTER TABLE treatment ADD CONSTRAINT fk_treatment_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
 
 CREATE TABLE treatment_history (LIKE treatment);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON treatment
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'treatment_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON treatment
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'treatment_history', true);
 ALTER TABLE treatment_history OWNER TO sormas_user;
 
 ALTER TABLE cases ADD COLUMN therapy_id bigint;
@@ -2731,35 +2731,35 @@ INSERT INTO schema_version (version_number, comment) VALUES (126, 'Type of drug 
 -- 2019-02-11 Clinical course and visits #938
 
 CREATE TABLE clinicalcourse(
-                               id bigint not null,
-                               uuid varchar(36) not null unique,
-                               changedate timestamp not null,
-                               creationdate timestamp not null,
-                               sys_period tstzrange not null,
-                               primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE clinicalcourse OWNER TO sormas_user;
 
 CREATE TABLE clinicalcourse_history (LIKE clinicalcourse);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON clinicalcourse
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalcourse
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
 ALTER TABLE clinicalcourse_history OWNER TO sormas_user;
 
 CREATE TABLE clinicalvisit(
-                              id bigint not null,
-                              uuid varchar(36) not null unique,
-                              changedate timestamp not null,
-                              creationdate timestamp not null,
-                              clinicalcourse_id bigint not null,
-                              symptoms_id bigint not null,
-                              person_id bigint not null,
-                              disease varchar(255),
-                              visitdatetime timestamp,
-                              visitremarks varchar(512),
-                              visitingperson varchar(512),
-                              sys_period tstzrange not null,
-                              primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	clinicalcourse_id bigint not null,
+	symptoms_id bigint not null,
+	person_id bigint not null,
+	disease varchar(255),
+	visitdatetime timestamp,
+	visitremarks varchar(512),
+	visitingperson varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE clinicalvisit OWNER TO sormas_user;
 ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_clinicalcourse_id FOREIGN KEY (clinicalcourse_id) REFERENCES clinicalcourse (id);
@@ -2768,8 +2768,8 @@ ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_person_id FOREIGN KEY 
 
 CREATE TABLE clinicalvisit_history (LIKE clinicalvisit);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON clinicalvisit
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalvisit
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
 ALTER TABLE clinicalvisit_history OWNER TO sormas_user;
 
 ALTER TABLE cases ADD COLUMN clinicalcourse_id bigint;
@@ -2788,32 +2788,32 @@ INSERT INTO schema_version (version_number, comment) VALUES (127, 'Clinical cour
 -- 2019-02-13 Health conditions #952
 
 CREATE TABLE healthconditions(
-                                 id bigint not null,
-                                 uuid varchar(36) not null unique,
-                                 changedate timestamp not null,
-                                 creationdate timestamp not null,
-                                 tuberculosis varchar(255),
-                                 asplenia varchar(255),
-                                 hepatitis varchar(255),
-                                 diabetes varchar(255),
-                                 hiv varchar(255),
-                                 hivart varchar(255),
-                                 chronicliverdisease varchar(255),
-                                 malignancychemotherapy varchar(255),
-                                 chronicheartfailure varchar(255),
-                                 chronicpulmonarydisease varchar(255),
-                                 chronickidneydisease varchar(255),
-                                 chronicneurologiccondition varchar(255),
-                                 otherconditions varchar(512),
-                                 sys_period tstzrange not null,
-                                 primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	tuberculosis varchar(255),
+	asplenia varchar(255),
+	hepatitis varchar(255),
+	diabetes varchar(255),
+	hiv varchar(255),
+	hivart varchar(255),
+	chronicliverdisease varchar(255),
+	malignancychemotherapy varchar(255),
+	chronicheartfailure varchar(255),
+	chronicpulmonarydisease varchar(255),
+	chronickidneydisease varchar(255),
+	chronicneurologiccondition varchar(255),
+	otherconditions varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE healthconditions OWNER TO sormas_user;
 
 CREATE TABLE healthconditions_history (LIKE healthconditions);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON healthconditions
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON healthconditions
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
 ALTER TABLE healthconditions_history OWNER TO sormas_user;
 
 ALTER TABLE clinicalcourse ADD COLUMN healthconditions_id bigint;
@@ -2851,8 +2851,8 @@ UPDATE hospitalization SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE hospitalization ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE hospitalization_history (LIKE hospitalization);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON hospitalization
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON hospitalization
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
 ALTER TABLE hospitalization_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (130, 'Additional Hospitalization fields and history table #935');
@@ -2893,42 +2893,42 @@ ALTER TABLE sampletest RENAME TO pathogentest;
 ALTER TABLE sampletest_history RENAME TO pathogentest_history;
 
 CREATE TABLE additionaltest(
-                               id bigint not null,
-                               uuid varchar(36) not null unique,
-                               changedate timestamp not null,
-                               creationdate timestamp not null,
-                               sample_id bigint not null,
-                               testdatetime timestamp not null,
-                               haemoglobinuria varchar(255),
-                               proteinuria varchar(255),
-                               hematuria varchar(255),
-                               arterialvenousgasph integer,
-                               arterialvenousgaspco2 integer,
-                               arterialvenousgaspao2 integer,
-                               arterialvenousgashco3 integer,
-                               gasoxygentherapy integer,
-                               altsgpt integer,
-                               astsgot integer,
-                               creatinine integer,
-                               potassium integer,
-                               urea integer,
-                               haemoglobin integer,
-                               totalbilirubin integer,
-                               conjbilirubin integer,
-                               wbccount integer,
-                               platelets integer,
-                               prothrombintime integer,
-                               othertestresults varchar(512),
-                               sys_period tstzrange not null,
-                               primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sample_id bigint not null,
+	testdatetime timestamp not null,
+	haemoglobinuria varchar(255),
+	proteinuria varchar(255),
+	hematuria varchar(255),
+	arterialvenousgasph integer,
+	arterialvenousgaspco2 integer,
+	arterialvenousgaspao2 integer,
+	arterialvenousgashco3 integer,
+	gasoxygentherapy integer,
+	altsgpt integer,
+	astsgot integer,
+	creatinine integer,
+	potassium integer,
+	urea integer,
+	haemoglobin integer,
+	totalbilirubin integer,
+	conjbilirubin integer,
+	wbccount integer,
+	platelets integer,
+	prothrombintime integer,
+	othertestresults varchar(512),
+	sys_period tstzrange not null,
+	primary key(id));
 
 ALTER TABLE additionaltest OWNER TO sormas_user;
 ALTER TABLE additionaltest ADD CONSTRAINT fk_additionaltest_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
 
 CREATE TABLE additionaltest_history (LIKE additionaltest);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON additionaltest
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON additionaltest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
 ALTER TABLE additionaltest_history OWNER TO sormas_user;
 
 ALTER TABLE samples ADD COLUMN pathogentestingrequested boolean;
@@ -2983,8 +2983,8 @@ ALTER TABLE samples_history DROP COLUMN mainsampletest_id;
 
 DROP TRIGGER versioning_trigger ON pathogentest;
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (134, 'Add pathogen test result to sample #919');
 
@@ -3040,13 +3040,13 @@ DECLARE new_clinical_course_id INTEGER;
 DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
-    LOOP
-           INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+LOOP
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
-    LOOP
-           INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+LOOP
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
 INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
@@ -3070,13 +3070,13 @@ DECLARE new_clinical_course_id INTEGER;
 DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
-    LOOP
-           INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+LOOP
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
-    LOOP
-           INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+LOOP
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
 INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
@@ -3090,12 +3090,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (141, 'Create potent
 DROP FUNCTION export_database_join(text, text, text, text, text);
 
 CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
-    RETURNS VOID
-    LANGUAGE plpgsql
+	RETURNS VOID
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT
 					' || quote_ident(table_name) || '
 				.* FROM
@@ -3112,7 +3112,7 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-END;
+		END;
 	$BODY$
 ;
 
@@ -3134,24 +3134,24 @@ INSERT INTO schema_version (version_number, comment) VALUES (144, 'Rename aktiv 
 -- 2019-04-24 Add DiseaseConfiguration entity #1074
 
 CREATE TABLE diseaseconfiguration(
-                                     id bigint not null,
-                                     uuid varchar(36) not null unique,
-                                     changedate timestamp not null,
-                                     creationdate timestamp not null,
-                                     disease varchar(255),
-                                     active boolean,
-                                     primarydisease boolean,
-                                     followupenabled boolean,
-                                     followupduration integer,
-                                     sys_period tstzrange not null,
-                                     primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255),
+	active boolean,
+	primarydisease boolean,
+	followupenabled boolean,
+	followupduration integer,
+	sys_period tstzrange not null,
+	primary key(id));
 
 ALTER TABLE diseaseconfiguration OWNER TO sormas_user;
 
 CREATE TABLE diseaseconfiguration_history (LIKE diseaseconfiguration);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON diseaseconfiguration
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON diseaseconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
 ALTER TABLE diseaseconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (145, 'Add DiseaseConfiguration entity #1074');
@@ -3250,38 +3250,38 @@ ALTER TABLE cases_history ADD COLUMN notifyingclinic varchar(255);
 ALTER TABLE cases_history ADD COLUMN notifyingclinicdetails varchar(512);
 
 CREATE TABLE maternalhistory(
-                                id bigint not null,
-                                uuid varchar(36) not null unique,
-                                changedate timestamp not null,
-                                creationdate timestamp not null,
-                                childrennumber integer,
-                                ageatbirth integer,
-                                conjunctivitis varchar(255),
-                                conjunctivitisonset timestamp,
-                                conjunctivitismonth integer,
-                                maculopapularrash varchar(255),
-                                maculopapularrashonset timestamp,
-                                maculopapularrashmonth integer,
-                                swollenlymphs varchar(255),
-                                swollenlymphsonset timestamp,
-                                swollenlymphsmonth integer,
-                                arthralgiaarthritis varchar(255),
-                                arthralgiaarthritisonset timestamp,
-                                arthralgiaarthritismonth integer,
-                                othercomplications varchar(255),
-                                othercomplicationsonset timestamp,
-                                othercomplicationsmonth integer,
-                                othercomplicationsdetails varchar(512),
-                                rubella varchar(255),
-                                rubellaonset timestamp,
-                                rashexposure varchar(255),
-                                rashexposuredate timestamp,
-                                rashexposuremonth integer,
-                                rashexposureregion_id bigint,
-                                rashexposuredistrict_id bigint,
-                                rashexposurecommunity_id bigint,
-                                sys_period tstzrange not null,
-                                primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	childrennumber integer,
+	ageatbirth integer,
+	conjunctivitis varchar(255),
+	conjunctivitisonset timestamp,
+	conjunctivitismonth integer,
+	maculopapularrash varchar(255),
+	maculopapularrashonset timestamp,
+	maculopapularrashmonth integer,
+	swollenlymphs varchar(255),
+	swollenlymphsonset timestamp,
+	swollenlymphsmonth integer,
+	arthralgiaarthritis varchar(255),
+	arthralgiaarthritisonset timestamp,
+	arthralgiaarthritismonth integer,
+	othercomplications varchar(255),
+	othercomplicationsonset timestamp,
+	othercomplicationsmonth integer,
+	othercomplicationsdetails varchar(512),
+	rubella varchar(255),
+	rubellaonset timestamp,
+	rashexposure varchar(255),
+	rashexposuredate timestamp,
+	rashexposuremonth integer,
+	rashexposureregion_id bigint,
+	rashexposuredistrict_id bigint,
+	rashexposurecommunity_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE maternalhistory OWNER TO sormas_user;
 ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposureregion_id FOREIGN KEY (rashexposureregion_id) REFERENCES region (id);
@@ -3290,8 +3290,8 @@ ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposurecommun
 
 CREATE TABLE maternalhistory_history (LIKE maternalhistory);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON maternalhistory
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'maternalhistory_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON maternalhistory
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'maternalhistory_history', true);
 ALTER TABLE maternalhistory_history OWNER TO sormas_user;
 
 ALTER TABLE cases ADD COLUMN maternalhistory_id bigint;
@@ -3303,8 +3303,8 @@ DECLARE rec RECORD;
 DECLARE new_maternalhistory_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE maternalhistory_id IS NULL
-    LOOP
-           INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
+LOOP
+INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
 UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3377,18 +3377,18 @@ INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing
 
 -- 2019-06-28 Add fields and tables for points of entry and port health info #985
 CREATE TABLE pointofentry(
-                             id bigint not null,
-                             uuid varchar(36) not null unique,
-                             changedate timestamp not null,
-                             creationdate timestamp not null,
-                             pointofentrytype varchar(255),
-                             name varchar(512),
-                             region_id bigint,
-                             district_id bigint,
-                             latitude double precision,
-                             longitude double precision,
-                             active boolean,
-                             primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	pointofentrytype varchar(255),
+	name varchar(512),
+	region_id bigint,
+	district_id bigint,
+	latitude double precision,
+	longitude double precision,
+	active boolean,
+	primary key(id)
 );
 ALTER TABLE pointofentry OWNER TO sormas_user;
 ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_region_id FOREIGN KEY (region_id) REFERENCES region (id);
@@ -3410,42 +3410,42 @@ ALTER TABLE users_history ADD COLUMN pointofentry_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
 
 CREATE TABLE porthealthinfo(
-                               id bigint not null,
-                               uuid varchar(36) not null unique,
-                               changedate timestamp not null,
-                               creationdate timestamp not null,
-                               airlinename varchar(512),
-                               flightnumber varchar(512),
-                               departuredatetime timestamp,
-                               arrivaldatetime timestamp,
-                               freeseating varchar(255),
-                               seatnumber varchar(512),
-                               departureairport varchar(512),
-                               numberoftransitstops integer,
-                               transitstopdetails1 varchar(512),
-                               transitstopdetails2 varchar(512),
-                               transitstopdetails3 varchar(512),
-                               transitstopdetails4 varchar(512),
-                               transitstopdetails5 varchar(512),
-                               vesselname varchar(512),
-                               vesseldetails varchar(512),
-                               portofdeparture varchar(512),
-                               lastportofcall varchar(512),
-                               conveyancetype varchar(255),
-                               conveyancetypedetails varchar(512),
-                               departurelocation varchar(512),
-                               finaldestination varchar(512),
-                               details varchar(512),
-                               sys_period tstzrange not null,
-                               primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	airlinename varchar(512),
+	flightnumber varchar(512),
+	departuredatetime timestamp,
+	arrivaldatetime timestamp,
+	freeseating varchar(255),
+	seatnumber varchar(512),
+	departureairport varchar(512),
+	numberoftransitstops integer,
+	transitstopdetails1 varchar(512),
+	transitstopdetails2 varchar(512),
+	transitstopdetails3 varchar(512),
+	transitstopdetails4 varchar(512),
+	transitstopdetails5 varchar(512),
+	vesselname varchar(512),
+	vesseldetails varchar(512),
+	portofdeparture varchar(512),
+	lastportofcall varchar(512),
+	conveyancetype varchar(255),
+	conveyancetypedetails varchar(512),
+	departurelocation varchar(512),
+	finaldestination varchar(512),
+	details varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE porthealthinfo OWNER TO sormas_user;
 
 CREATE TABLE porthealthinfo_history (LIKE porthealthinfo);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
 ALTER TABLE porthealthinfo_history OWNER TO sormas_user;
 
 ALTER TABLE cases ADD COLUMN porthealthinfo_id bigint;
@@ -3504,12 +3504,12 @@ DROP FUNCTION export_database(text, text);
 DROP FUNCTION export_database_join(text, text, text, text, text);
 
 CREATE FUNCTION export_database(table_name text, file_path text)
-    RETURNS INTEGER
-    LANGUAGE plpgsql
+	RETURNS INTEGER
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				) TO
@@ -3518,18 +3518,18 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-RETURN 1;
-END;
+			RETURN 1;
+		END;
 	$BODY$
 ;
 
 CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
-    RETURNS INTEGER
-    LANGUAGE plpgsql
+	RETURNS INTEGER
+	LANGUAGE plpgsql
 	SECURITY DEFINER
 	AS $BODY$
-BEGIN
-EXECUTE '
+		BEGIN
+			EXECUTE '
 				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
 				INNER JOIN
@@ -3544,8 +3544,8 @@ EXECUTE '
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
 			';
-RETURN 1;
-END;
+			RETURN 1;
+		END;
 	$BODY$
 ;
 
@@ -3591,24 +3591,24 @@ INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted f
 
 -- 2019-09-10 Add ExportConfiguration entity #1276
 CREATE TABLE exportconfiguration(
-                                    id bigint not null,
-                                    uuid varchar(36) not null unique,
-                                    changedate timestamp not null,
-                                    creationdate timestamp not null,
-                                    name varchar(512),
-                                    user_id bigint,
-                                    exporttype varchar(255),
-                                    propertiesstring varchar,
-                                    sys_period tstzrange not null,
-                                    primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	user_id bigint,
+	exporttype varchar(255),
+	propertiesstring varchar,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE exportconfiguration OWNER TO sormas_user;
 
 CREATE TABLE exportconfiguration_history (LIKE exportconfiguration);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON exportconfiguration
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON exportconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
 ALTER TABLE exportconfiguration_history OWNER TO sormas_user;
 
 ALTER TABLE exportconfiguration ADD CONSTRAINT fk_exportconfiguration_user_id FOREIGN KEY (user_id) REFERENCES users(id);
@@ -3617,17 +3617,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (164, 'Add ExportCon
 
 -- 2019-09-11 Add PopulationData entity #1084
 CREATE TABLE populationdata(
-                               id bigint not null,
-                               uuid varchar(36) not null unique,
-                               changedate timestamp not null,
-                               creationdate timestamp not null,
-                               region_id bigint,
-                               district_id bigint,
-                               sex varchar(255),
-                               agegroup varchar(255),
-                               population integer,
-                               collectiondate timestamp,
-                               primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	region_id bigint,
+	district_id bigint,
+	sex varchar(255),
+	agegroup varchar(255),
+	population integer,
+	collectiondate timestamp,
+	primary key(id)
 );
 
 ALTER TABLE populationdata OWNER TO sormas_user;
@@ -3760,17 +3760,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (172, 'Add new disea
 
 -- 2019-11-27 Add FeatureConfiguration entity #1346
 CREATE TABLE featureconfiguration(
-                                     id bigint not null,
-                                     uuid varchar(36) not null unique,
-                                     changedate timestamp not null,
-                                     creationdate timestamp not null,
-                                     featuretype varchar(255),
-                                     region_id bigint,
-                                     district_id bigint,
-                                     disease varchar(255),
-                                     enddate timestamp,
-                                     sys_period tstzrange not null,
-                                     primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	featuretype varchar(255),
+	region_id bigint,
+	district_id bigint,
+	disease varchar(255),
+	enddate timestamp,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE featureconfiguration OWNER TO sormas_user;
@@ -3779,8 +3779,8 @@ ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_district
 
 CREATE TABLE featureconfiguration_history (LIKE featureconfiguration);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON featureconfiguration
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON featureconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
 ALTER TABLE featureconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');
@@ -3791,8 +3791,8 @@ DECLARE rec RECORD;
 DECLARE new_porthealthinfo_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE porthealthinfo_id IS NULL
-    LOOP
-           INSERT INTO porthealthinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_porthealthinfo_id;
+LOOP
+INSERT INTO porthealthinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_porthealthinfo_id;
 UPDATE cases SET porthealthinfo_id = new_porthealthinfo_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3802,23 +3802,23 @@ INSERT INTO schema_version (version_number, comment) VALUES (174, 'Add port heal
 
 -- 2019-12-04 Aggregate reports #1277
 CREATE TABLE aggregatereport(
-                                id bigint not null,
-                                uuid varchar(36) not null unique,
-                                changedate timestamp not null,
-                                creationdate timestamp not null,
-                                reportinguser_id bigint,
-                                region_id bigint,
-                                district_id bigint,
-                                healthfacility_id bigint,
-                                pointofentry_id bigint,
-                                disease varchar(255),
-                                year integer,
-                                epiweek integer,
-                                newcases integer,
-                                labconfirmations integer,
-                                deaths integer,
-                                sys_period tstzrange not null,
-                                primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	reportinguser_id bigint,
+	region_id bigint,
+	district_id bigint,
+	healthfacility_id bigint,
+	pointofentry_id bigint,
+	disease varchar(255),
+	year integer,
+	epiweek integer,
+	newcases integer,
+	labconfirmations integer,
+	deaths integer,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE aggregatereport OWNER TO sormas_user;
@@ -3830,8 +3830,8 @@ ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_reportinguser_id F
 
 CREATE TABLE aggregatereport_history (LIKE aggregatereport);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON aggregatereport
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON aggregatereport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
 ALTER TABLE aggregatereport_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (175, 'Aggregate reports #1277');
@@ -4212,9 +4212,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new sympt
 
 -- 2020-05-05 Added table for contact-visit association #1329
 CREATE TABLE contacts_visits(
-                                contact_id bigint NOT NULL,
-                                visit_id bigint NOT NULL,
-                                sys_period tstzrange NOT NULL
+	contact_id bigint NOT NULL,
+	visit_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
 );
 
 ALTER TABLE contacts_visits OWNER TO sormas_user;
@@ -4224,21 +4224,21 @@ ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_visit_id FORE
 
 CREATE TABLE contacts_visits_history (LIKE contacts_visits);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON contacts_visits
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
 ALTER TABLE contacts_visits_history OWNER TO sormas_user;
 
 WITH ids AS
-         (SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
-             CASE
-                 WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime >= (c.lastcontactdate - interval '30' day)
-                 ELSE v.visitdatetime >= (c.reportdatetime - interval '30' day)
-                 END
-                                                                                AND
-             CASE
-                 WHEN c.followupuntil IS NOT NULL THEN v.visitdatetime <= (c.followupuntil + interval '30' day)
-                 WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime <= (c.lastcontactdate + interval '30' day)
-                 ELSE v.visitdatetime <= (c.reportdatetime + interval '30' day)
-                 END)
+(SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
+CASE
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime >= (c.lastcontactdate - interval '30' day)
+ELSE v.visitdatetime >= (c.reportdatetime - interval '30' day)
+END
+AND
+CASE
+WHEN c.followupuntil IS NOT NULL THEN v.visitdatetime <= (c.followupuntil + interval '30' day)
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime <= (c.lastcontactdate + interval '30' day)
+ELSE v.visitdatetime <= (c.reportdatetime + interval '30' day)
+END)
 INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
 
 INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table for contact-visit association #1329');
@@ -4293,26 +4293,26 @@ INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspe
 
 -- 2020-05-25 Add campaigns #1984
 CREATE TABLE campaigns(
-                          id bigint not null,
-                          uuid varchar(36) not null unique,
-                          changedate timestamp not null,
-                          creationdate timestamp not null,
-                          name varchar(255),
-                          description varchar(512),
-                          startdate timestamp,
-                          enddate timestamp,
-                          creatinguser_id bigint,
-                          deleted boolean DEFAULT false,
-                          archived boolean DEFAULT false,
-                          sys_period tstzrange not null,
-                          primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(255),
+	description varchar(512),
+	startdate timestamp,
+	enddate timestamp,
+	creatinguser_id bigint,
+	deleted boolean DEFAULT false,
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE campaigns OWNER TO sormas_user;
 ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
 CREATE TABLE campaigns_history (LIKE campaigns);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigns
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', true);
 ALTER TABLE campaigns_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (213, 'Add campaigns #1984');
@@ -4624,45 +4624,45 @@ INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongl
 
 -- 2020-06-18 Add campaign forms #2268
 CREATE TABLE campaignforms(
-                              id bigint not null,
-                              uuid varchar(36) not null unique,
-                              changedate timestamp not null,
-                              creationdate timestamp not null,
-                              formid varchar(255),
-                              languagecode varchar(255),
-                              campaignformelements text,
-                              campaignformtranslations text,
-                              sys_period tstzrange not null,
-                              primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formid varchar(255),
+	languagecode varchar(255),
+	campaignformelements text,
+	campaignformtranslations text,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE campaignforms OWNER TO sormas_user;
 
 CREATE TABLE campaignforms_history (LIKE campaigns);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignforms
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignforms_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignforms_history', true);
 ALTER TABLE campaignforms_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add campaign forms #2268');
 
 -- 2020-06-19 Add Area as new infrastructure type #1983
 CREATE TABLE areas(
-                      id bigint not null,
-                      uuid varchar(36) not null unique,
-                      changedate timestamp not null,
-                      creationdate timestamp not null,
-                      name varchar(512),
-                      externalid varchar(512),
-                      archived boolean DEFAULT false,
-                      sys_period tstzrange not null,
-                      primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	externalid varchar(512),
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
 ALTER TABLE areas OWNER TO sormas_user;
 
 CREATE TABLE areas_history (LIKE areas);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
 ALTER TABLE areas_history OWNER TO sormas_user;
 
 ALTER TABLE region ADD COLUMN area_id bigint;
@@ -4671,23 +4671,23 @@ ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERE
 INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
 
 CREATE TABLE campaignformdata(
-                                 id bigint not null,
-                                 uuid varchar(36) not null unique,
-                                 changedate timestamp not null,
-                                 creationdate timestamp not null,
-                                 formData text,
-                                 campaign_id bigint NOT NULL,
-                                 campaignform_id bigint NOT NULL,
-                                 region_id bigint NOT NULL,
-                                 district_id bigint NOT NULL,
-                                 community_id bigint,
-                                 sys_period tstzrange not null,
-                                 primary key(id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formData text,
+	campaign_id bigint NOT NULL,
+	campaignform_id bigint NOT NULL,
+	region_id bigint NOT NULL,
+	district_id bigint NOT NULL,
+	community_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 ALTER TABLE campaignformdata OWNER TO sormas_user;
 CREATE TABLE campaignformdata_history (LIKE campaignformdata);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformdata
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
 ALTER TABLE campaignformdata_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add campaignformdata #1992');
@@ -4737,13 +4737,13 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_epidata_id FOREIGN KEY (epidata_id
 DO $$
     DECLARE rec RECORD;
         DECLARE new_epidata_id INTEGER;
-BEGIN
-FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
-    LOOP
-           INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
-UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
-END LOOP;
-END;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
+            LOOP
+                INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
+                UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
+            END LOOP;
+    END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
@@ -4815,7 +4815,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (229, 'Rename campai
 -- 2020-07-27 Drop and re-create versioning trigger for campaignformmeta #1997
 DROP TRIGGER versioning_trigger ON campaignformmeta;
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformmeta
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (230, 'Drop and re-create versioning trigger for campaignformmeta #1997');
 
@@ -4828,22 +4828,22 @@ INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add list elem
 -- 2020-06-10 Add actions
 
 CREATE TABLE action (
-                        id bigint not null,
-                        reply varchar(4096),
-                        changedate timestamp not null,
-                        creationdate timestamp not null,
-                        description varchar(4096),
-                        date timestamp,
-                        statuschangedate timestamp,
-                        actioncontext varchar(512),
-                        actionstatus varchar(512),
-                        uuid varchar(36) not null unique,
-                        event_id bigint,
-                        creatoruser_id bigint,
-                        priority varchar(512),
-                        replyinguser_id bigint,
-                        sys_period tstzrange not null,
-                        PRIMARY KEY (id));
+id bigint not null,
+reply varchar(4096),
+changedate timestamp not null,
+creationdate timestamp not null,
+description varchar(4096),
+date timestamp,
+statuschangedate timestamp,
+actioncontext varchar(512),
+actionstatus varchar(512),
+uuid varchar(36) not null unique,
+event_id bigint,
+creatoruser_id bigint,
+priority varchar(512),
+replyinguser_id bigint,
+sys_period tstzrange not null,
+PRIMARY KEY (id));
 
 ALTER TABLE action OWNER TO sormas_user;
 
@@ -4854,8 +4854,8 @@ UPDATE action SET sys_period=tstzrange(creationdate, null);
 ALTER TABLE action ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE action_history (LIKE action);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON action
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON action
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
 ALTER TABLE action_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (232, 'Adds actions to events');
@@ -4868,15 +4868,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list e
 
 -- 2020-07-29 Campaign diagram definition
 CREATE TABLE campaigndiagramdefinition(
-                                          id bigint not null,
-                                          uuid varchar(36) not null unique,
-                                          changedate timestamp not null,
-                                          creationdate timestamp not null,
-                                          diagramId varchar(255) not null unique,
-                                          diagramType varchar(255),
-                                          campaignDiagramSeries text,
-                                          sys_period tstzrange not null,
-                                          primary key(id)
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              diagramId varchar(255) not null unique,
+                              diagramType varchar(255),
+                              campaignDiagramSeries text,
+                              sys_period tstzrange not null,
+                              primary key(id)
 );
 
 ALTER TABLE campaigndiagramdefinition OWNER TO sormas_user;
@@ -4986,19 +4986,19 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_healthconditions_id FOREIGN KEY (h
 DO $$
     DECLARE rec RECORD;
     DECLARE new_healthcondition_id INTEGER;
-BEGIN
-UPDATE contact SET healthconditions_id = (SELECT hc.id FROM healthconditions hc
-                                                                inner join clinicalcourse cc on cc.healthconditions_id = hc.id
-                                                                inner join cases ca on ca.clinicalcourse_id = cc.id
-                                          where ca.id = resultingcase_id)
-WHERE resultingcase_id IS NOT NULL AND healthconditions_id IS NULL;
+    BEGIN
+        UPDATE contact SET healthconditions_id = (SELECT hc.id FROM healthconditions hc
+                                                                                inner join clinicalcourse cc on cc.healthconditions_id = hc.id
+                                                                                inner join cases ca on ca.clinicalcourse_id = cc.id
+                                                          where ca.id = resultingcase_id)
+        WHERE resultingcase_id IS NOT NULL AND healthconditions_id IS NULL;
 
-FOR rec IN SELECT id FROM public.contact where resultingcase_id IS NULL and healthconditions_id IS NULL
-    LOOP
-           INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_healthcondition_id;
-UPDATE contact SET healthconditions_id = new_healthcondition_id WHERE id = rec.id;
-END LOOP;
-END;
+        FOR rec IN SELECT id FROM public.contact where resultingcase_id IS NULL and healthconditions_id IS NULL
+            LOOP
+                INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_healthcondition_id;
+                UPDATE contact SET healthconditions_id = new_healthcondition_id WHERE id = rec.id;
+            END LOOP;
+    END;
 $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (241, 'update healthconditions table #2564');
 
@@ -5073,13 +5073,13 @@ AS SELECT e.* FROM epidata e WHERE e.id IN (SELECT ca.epidata_id FROM cases ca) 
 
 CREATE temp table t_id_map
 AS SELECT id AS old_id,
-          nextval('entity_seq') AS new_id,
-          create_new_uuid(uuid) AS new_uuid
-   FROM t_epidata;
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_epidata;
 
 UPDATE t_epidata te SET
-                        id = (SELECT new_id FROM t_id_map WHERE te.id = old_id),
-                        uuid = (SELECT new_uuid FROM t_id_map WHERE te.id = old_id);
+id = (SELECT new_id FROM t_id_map WHERE te.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE te.id = old_id);
 
 -- BURIALS
 
@@ -5088,30 +5088,30 @@ AS SELECT edb.* FROM epidataburial edb, t_id_map WHERE edb.epidata_id = t_id_map
 
 CREATE temp table t_edb_id_map
 AS SELECT id AS edb_old_id,
-          nextval('entity_seq') AS edb_new_id,
-          create_new_uuid(uuid) AS edb_new_uuid
-   FROM t_epidataburial;
+nextval('entity_seq') AS edb_new_id,
+create_new_uuid(uuid) AS edb_new_uuid
+FROM t_epidataburial;
 
 CREATE temp table t_epidataburial_location
 AS SELECT edbl.* FROM location edbl, t_epidataburial edb WHERE edb.burialaddress_id = edbl.id;
 
 CREATE temp table t_edbl_id_map
 AS SELECT id AS edbl_old_id,
-          nextval('entity_seq') AS edbl_new_id,
-          create_new_uuid(uuid) AS edbl_new_uuid
-   FROM t_epidataburial_location;
+nextval('entity_seq') AS edbl_new_id,
+create_new_uuid(uuid) AS edbl_new_uuid
+FROM t_epidataburial_location;
 
 UPDATE t_epidataburial_location tedbl SET
-                                          id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id),
-                                          uuid = (SELECT edbl_new_uuid FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id);
+id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id),
+uuid = (SELECT edbl_new_uuid FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id);
 
 INSERT INTO location (SELECT * FROM t_epidataburial_location);
 
 UPDATE t_epidataburial tedb SET
-                                id = (SELECT edb_new_id FROM t_edb_id_map WHERE tedb.id = edb_old_id),
-                                uuid = (SELECT edb_new_uuid FROM t_edb_id_map WHERE tedb.id = edb_old_id),
-                                epidata_id = (SELECT new_id FROM t_id_map WHERE tedb.epidata_id = old_id),
-                                burialaddress_id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedb.burialaddress_id = edbl_old_id);
+id = (SELECT edb_new_id FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+uuid = (SELECT edb_new_uuid FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedb.epidata_id = old_id),
+burialaddress_id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedb.burialaddress_id = edbl_old_id);
 
 -- BURIALS END
 
@@ -5122,30 +5122,30 @@ AS SELECT edg.* FROM epidatagathering edg, t_id_map WHERE edg.epidata_id = t_id_
 
 CREATE temp table t_edg_id_map
 AS SELECT id AS edg_old_id,
-          nextval('entity_seq') AS edg_new_id,
-          create_new_uuid(uuid) AS edg_new_uuid
-   FROM t_epidatagathering;
+nextval('entity_seq') AS edg_new_id,
+create_new_uuid(uuid) AS edg_new_uuid
+FROM t_epidatagathering;
 
 CREATE temp table t_epidatagathering_location
 AS SELECT edgl.* FROM location edgl, t_epidatagathering edg WHERE edg.gatheringaddress_id = edgl.id;
 
 CREATE temp table t_edgl_id_map
 AS SELECT id AS edgl_old_id,
-          nextval('entity_seq') AS edgl_new_id,
-          create_new_uuid(uuid) AS edgl_new_uuid
-   FROM t_epidatagathering_location;
+nextval('entity_seq') AS edgl_new_id,
+create_new_uuid(uuid) AS edgl_new_uuid
+FROM t_epidatagathering_location;
 
 UPDATE t_epidatagathering_location tedgl SET
-                                             id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id),
-                                             uuid = (SELECT edgl_new_uuid FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id);
+id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id),
+uuid = (SELECT edgl_new_uuid FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id);
 
 INSERT INTO location (SELECT * FROM t_epidatagathering_location);
 
 UPDATE t_epidatagathering tedg SET
-                                   id = (SELECT edg_new_id FROM t_edg_id_map WHERE tedg.id = edg_old_id),
-                                   uuid = (SELECT edg_new_uuid FROM t_edg_id_map WHERE tedg.id = edg_old_id),
-                                   epidata_id = (SELECT new_id FROM t_id_map WHERE tedg.epidata_id = old_id),
-                                   gatheringaddress_id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedg.gatheringaddress_id = edgl_old_id);
+id = (SELECT edg_new_id FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+uuid = (SELECT edg_new_uuid FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedg.epidata_id = old_id),
+gatheringaddress_id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedg.gatheringaddress_id = edgl_old_id);
 
 -- GATHERINGS END
 
@@ -5156,14 +5156,14 @@ AS SELECT edt.* FROM epidatatravel edt, t_id_map WHERE edt.epidata_id = t_id_map
 
 CREATE temp table t_edt_id_map
 AS SELECT id AS edt_old_id,
-          nextval('entity_seq') AS edt_new_id,
-          create_new_uuid(uuid) AS edt_new_uuid
-   FROM t_epidatatravel;
+nextval('entity_seq') AS edt_new_id,
+create_new_uuid(uuid) AS edt_new_uuid
+FROM t_epidatatravel;
 
 UPDATE t_epidatatravel tedt SET
-                                id = (SELECT edt_new_id FROM t_edt_id_map WHERE tedt.id = edt_old_id),
-                                uuid = (SELECT edt_new_uuid FROM t_edt_id_map WHERE tedt.id = edt_old_id),
-                                epidata_id = (SELECT new_id FROM t_id_map WHERE tedt.epidata_id = old_id);
+id = (SELECT edt_new_id FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+uuid = (SELECT edt_new_uuid FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedt.epidata_id = old_id);
 
 -- TRAVELS END
 
@@ -5186,13 +5186,13 @@ AS SELECT s.* FROM symptoms s WHERE s.id IN (SELECT ca.symptoms_id FROM cases ca
 
 CREATE temp table t_id_map
 AS SELECT id AS old_id,
-          nextval('entity_seq') AS new_id,
-          create_new_uuid(uuid) AS new_uuid
-   FROM t_symptoms;
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_symptoms;
 
 UPDATE t_symptoms ts SET
-                         id = (SELECT new_id FROM t_id_map WHERE ts.id = old_id),
-                         uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
+id = (SELECT new_id FROM t_id_map WHERE ts.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
 
 INSERT INTO symptoms (SELECT * FROM t_symptoms);
 
@@ -5274,7 +5274,7 @@ ALTER TABLE campaigns_history ADD COLUMN dashboardElements json;
 
 create or replace function cast_to_int(text, integer) returns integer as $$
 begin
-return cast($1 as integer);
+    return cast($1 as integer);
 exception
     when invalid_text_representation then
         return $2;
@@ -5286,9 +5286,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dash
 -- 2020-09-14 Add person_locations table and remove person reference from locations #2746
 
 CREATE TABLE person_locations(
-                                 person_id bigint NOT NULL,
-                                 location_id bigint NOT NULL,
-                                 sys_period tstzrange NOT NULL
+	person_id bigint NOT NULL,
+	location_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
 );
 
 ALTER TABLE person_locations OWNER TO sormas_user;
@@ -5298,7 +5298,7 @@ ALTER TABLE ONLY person_locations ADD CONSTRAINT fk_person_locations_location_id
 
 CREATE TABLE person_locations_history (LIKE person_locations);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON person_locations
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
 ALTER TABLE person_locations_history OWNER TO sormas_user;
 
 INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id FROM location l WHERE l.person_id IS NOT NULL;
@@ -5370,7 +5370,7 @@ ALTER TABLE location_history ADD COLUMN facilitydetails varchar(512);
 
 CREATE temp table t_id_map
 AS SELECT id AS person_id, nextval('entity_seq') AS location_id, create_new_uuid(uuid) AS uuid, occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype
-   FROM person WHERE occupationregion_id IS NOT NULL OR occupationdistrict_id IS NOT NULL OR occupationcommunity_id IS NOT NULL OR occupationfacility_id IS NOT NULL;
+FROM person WHERE occupationregion_id IS NOT NULL OR occupationdistrict_id IS NOT NULL OR occupationcommunity_id IS NOT NULL OR occupationfacility_id IS NOT NULL;
 
 INSERT INTO location (id, uuid, changedate, creationdate, region_id, district_id, community_id, facility_id, facilitydetails, facilitytype, addresstype)
 SELECT location_id, uuid, now(), now(), occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype, 'PLACE_OF_WORK'
@@ -5420,17 +5420,17 @@ ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (263, 'Add new field returningTraveler to contact #2603');
 -- 2020-08-13 Sormas 2 Sormas sharing information #2624
 CREATE TABLE sormastosormasorigininfo (
-                                          id bigint NOT NULL,
-                                          uuid varchar(36) not null unique,
-                                          creationdate timestamp without time zone NOT NULL,
-                                          changedate timestamp not null,
-                                          organizationid varchar(512),
-                                          sendername varchar(512),
-                                          senderemail varchar(512),
-                                          senderphonenumber varchar(512),
-                                          ownershiphandedover boolean NOT NULL DEFAULT false,
-                                          comment varchar(4096),
-                                          primary key(id)
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    organizationid varchar(512),
+    sendername varchar(512),
+    senderemail varchar(512),
+    senderphonenumber varchar(512),
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
 );
 ALTER TABLE sormastosormasorigininfo OWNER TO sormas_user;
 
@@ -5441,17 +5441,17 @@ ALTER TABLE contact ADD COLUMN sormasToSormasOriginInfo_id bigint;
 ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 CREATE TABLE sormastosormasshareinfo (
-                                         id bigint NOT NULL,
-                                         uuid varchar(36) not null unique,
-                                         creationdate timestamp without time zone NOT NULL,
-                                         changedate timestamp not null,
-                                         caze_id bigint,
-                                         contact_id bigint,
-                                         organizationid varchar(512),
-                                         sender_id bigint,
-                                         ownershiphandedover boolean NOT NULL DEFAULT false,
-                                         comment varchar(4096),
-                                         primary key(id)
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    contact_id bigint,
+    organizationid varchar(512),
+    sender_id bigint,
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
 );
 
 ALTER TABLE sormastosormasshareinfo OWNER TO sormas_user;
@@ -5472,9 +5472,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field
 -- 2020-09-23 CampaignFormMeta to Campaigns relation #2855
 
 CREATE TABLE campaign_campaignformmeta(
-                                          campaign_id bigint NOT NULL,
-                                          campaignformmeta_id bigint NOT NULL,
-                                          sys_period tstzrange NOT NULL
+                                campaign_id bigint NOT NULL,
+                                campaignformmeta_id bigint NOT NULL,
+                                sys_period tstzrange NOT NULL
 );
 
 ALTER TABLE campaign_campaignformmeta OWNER TO sormas_user;
@@ -5555,16 +5555,16 @@ INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-
 
 -- 2020-??-?? Create country table #2993
 CREATE TABLE country (
-                         id bigint NOT NULL,
-                         uuid varchar(36) not null unique,
-                         creationdate timestamp without time zone NOT NULL,
-                         changedate timestamp not null,
-                         archived boolean not null default false,
-                         defaultname varchar(255),
-                         externalid varchar(255),
-                         isocode varchar(3) unique not null,
-                         unocode varchar(3) unique,
-                         primary key(id)
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    archived boolean not null default false,
+    defaultname varchar(255),
+    externalid varchar(255),
+    isocode varchar(3) unique not null,
+    unocode varchar(3) unique,
+    primary key(id)
 );
 ALTER TABLE country OWNER TO sormas_user;
 
@@ -5573,20 +5573,20 @@ INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create countr
 -- 2020-11-10 Add documents
 
 CREATE TABLE documents (
-                           id bigint PRIMARY KEY NOT NULL,
-                           uuid character varying(36) NOT NULL,
-                           changedate timestamp without time zone NOT NULL,
-                           creationdate timestamp without time zone NOT NULL,
-                           deleted boolean DEFAULT false,
-                           uploadinguser_id bigint NOT NULL,
-                           name character varying(255) NOT NULL,
-                           mimetype character varying(255) NOT NULL,
-                           size bigint NOT NULL,
-                           storage_reference character varying(255) NOT NULL,
-                           relatedentity_uuid character varying(36) NOT NULL,
-                           relatedentity_type character varying(255) NOT NULL,
+    id bigint PRIMARY KEY NOT NULL,
+    uuid character varying(36) NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    deleted boolean DEFAULT false,
+    uploadinguser_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    mimetype character varying(255) NOT NULL,
+    size bigint NOT NULL,
+    storage_reference character varying(255) NOT NULL,
+    relatedentity_uuid character varying(36) NOT NULL,
+    relatedentity_type character varying(255) NOT NULL,
 
-                           CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
+    CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
 );
 
 INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
@@ -5603,69 +5603,69 @@ ALTER TABLE epidata ADD COLUMN exposuredetailsknown varchar(255);
 ALTER TABLE epidata_history ADD COLUMN exposuredetailsknown varchar(255);
 
 UPDATE epidata SET exposuredetailsknown =
-                       CASE
-                           WHEN traveled = 'YES' OR gatheringattended = 'YES' OR burialattended = 'YES' THEN 'YES'
-                           WHEN traveled = 'NO' OR gatheringattended = 'NO' OR burialattended = 'NO' THEN 'NO'
-                           WHEN traveled = 'UNKNOWN' OR gatheringattended = 'UNKNOWN' OR burialattended = 'UNKNOWN' THEN 'UNKNOWN'
-                           END;
+CASE
+WHEN traveled = 'YES' OR gatheringattended = 'YES' OR burialattended = 'YES' THEN 'YES'
+WHEN traveled = 'NO' OR gatheringattended = 'NO' OR burialattended = 'NO' THEN 'NO'
+WHEN traveled = 'UNKNOWN' OR gatheringattended = 'UNKNOWN' OR burialattended = 'UNKNOWN' THEN 'UNKNOWN'
+END;
 
 CREATE TABLE exposures(
-                          id bigint not null,
-                          uuid varchar(36) not null unique,
-                          changedate timestamp not null,
-                          creationdate timestamp not null,
-                          epidata_id bigint not null,
-                          reportinguser_id bigint,
-                          startdate timestamp,
-                          enddate timestamp,
-                          description text,
-                          exposuretype varchar(255) not null,
-                          exposuretypedetails text,
-                          location_id bigint not null,
-                          typeofplace varchar(255),
-                          typeofplacedetails text,
-                          meansoftransport varchar(255),
-                          meansoftransportdetails text,
-                          connectionnumber varchar(512),
-                          seatnumber varchar(512),
-                          indoors varchar(255),
-                          outdoors varchar(255),
-                          wearingmask varchar(255),
-                          wearingppe varchar(255),
-                          otherprotectivemeasures varchar(255),
-                          protectivemeasuresdetails text,
-                          shortdistance varchar(255),
-                          longfacetofacecontact varchar(255),
-                          animalmarket varchar(255),
-                          percutaneous varchar(255),
-                          contacttobodyfluids varchar(255),
-                          handlingsamples varchar(255),
-                          eatingrawanimalproducts varchar(255),
-                          handlinganimals varchar(255),
-                          animalcondition varchar(255),
-                          animalvaccinated varchar(255),
-                          animalcontacttype varchar(255),
-                          animalcontacttypedetails text,
-                          bodyofwater varchar(255),
-                          watersource varchar(255),
-                          watersourcedetails text,
-                          contacttocase_id bigint,
-                          gatheringtype varchar(255),
-                          gatheringdetails text,
-                          habitationtype varchar(255),
-                          habitationdetails text,
-                          typeofanimal varchar(255),
-                          typeofanimaldetails text,
-                          physicalcontactduringpreparation varchar(255),
-                          physicalcontactwithbody varchar(255),
-                          deceasedpersonill varchar(255),
-                          deceasedpersonname varchar(512),
-                          deceasedpersonrelation varchar(512),
-                          prophylaxis varchar(255),
-                          prophylaxisdate timestamp,
-                          riskarea varchar(255),
-                          sys_period tstzrange not null,
-                          primary key(id)
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    epidata_id bigint not null,
+    reportinguser_id bigint,
+    startdate timestamp,
+    enddate timestamp,
+    description text,
+    exposuretype varchar(255) not null,
+    exposuretypedetails text,
+    location_id bigint not null,
+    typeofplace varchar(255),
+    typeofplacedetails text,
+    meansoftransport varchar(255),
+    meansoftransportdetails text,
+    connectionnumber varchar(512),
+    seatnumber varchar(512),
+    indoors varchar(255),
+    outdoors varchar(255),
+    wearingmask varchar(255),
+    wearingppe varchar(255),
+    otherprotectivemeasures varchar(255),
+    protectivemeasuresdetails text,
+    shortdistance varchar(255),
+    longfacetofacecontact varchar(255),
+    animalmarket varchar(255),
+    percutaneous varchar(255),
+    contacttobodyfluids varchar(255),
+    handlingsamples varchar(255),
+    eatingrawanimalproducts varchar(255),
+    handlinganimals varchar(255),
+    animalcondition varchar(255),
+    animalvaccinated varchar(255),
+    animalcontacttype varchar(255),
+    animalcontacttypedetails text,
+    bodyofwater varchar(255),
+    watersource varchar(255),
+    watersourcedetails text,
+    contacttocase_id bigint,
+    gatheringtype varchar(255),
+    gatheringdetails text,
+    habitationtype varchar(255),
+    habitationdetails text,
+    typeofanimal varchar(255),
+    typeofanimaldetails text,
+    physicalcontactduringpreparation varchar(255),
+    physicalcontactwithbody varchar(255),
+    deceasedpersonill varchar(255),
+    deceasedpersonname varchar(512),
+    deceasedpersonrelation varchar(512),
+    prophylaxis varchar(255),
+    prophylaxisdate timestamp,
+    riskarea varchar(255),
+    sys_period tstzrange not null,
+    primary key(id)
 );
 
 ALTER TABLE exposures OWNER TO sormas_user;
@@ -5684,8 +5684,8 @@ INSERT INTO exposures(
     deceasedpersonill, startdate, enddate, exposuretype)
 SELECT nextval('entity_seq'),
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21),
+            substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+            placing '-' from 7) placing '-' from 14) placing '-' from 21),
        now(), now(), b.epidata_id, b.burialaddress_id, b.burialpersonname, b.burialrelation, b.burialtouching,
        b.burialill, b.burialdatefrom, b.burialdateto, 'BURIAL'
 FROM epidataburial b;
@@ -5694,8 +5694,8 @@ INSERT INTO exposures(
     id, uuid, changedate, creationdate, epidata_id, location_id, startdate, enddate, description, exposuretype)
 SELECT nextval('entity_seq'),
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21),
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21),
        now(), now(), g.epidata_id, g.gatheringaddress_id, g.gatheringdate, g.gatheringdate, g.description, 'GATHERING'
 FROM epidatagathering g;
 
@@ -5719,8 +5719,8 @@ INSERT INTO exposures(
     id, uuid, changedate, creationdate, epidata_id, location_id, startdate, enddate, exposuretype)
 SELECT nextval('entity_seq'),
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21),
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21),
        now(), now(), tl.epidata_id, tl.location_id, tl.traveldatefrom, tl.traveldateto, 'TRAVEL'
 FROM tl_map tl;
 
@@ -5746,18 +5746,18 @@ AS
 $BODY$
 BEGIN
 EXECUTE
-        'DROP TABLE IF EXISTS id_map;
-        CREATE TEMP TABLE id_map AS
-        SELECT id as epidata_id,
-               nextval(''entity_seq'') as location_id,
-               nextval(''entity_seq'') as exposure_id,
-               overlay(overlay(overlay(
-                   substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
-                   placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as location_uuid,
-               overlay(overlay(overlay(
-                   substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
-                   placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
-               CAST (' || epidata_startdate_field_name || ' AS timestamp) as startdate,
+    'DROP TABLE IF EXISTS id_map;
+    CREATE TEMP TABLE id_map AS
+    SELECT id as epidata_id,
+           nextval(''entity_seq'') as location_id,
+           nextval(''entity_seq'') as exposure_id,
+           overlay(overlay(overlay(
+               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as location_uuid,
+           overlay(overlay(overlay(
+               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
+           CAST (' || epidata_startdate_field_name || ' AS timestamp) as startdate,
            CAST (' || epidata_enddate_field_name || ' AS timestamp) as enddate,
            ' || epidata_description_field_name || ' as description,
            ' || epidata_locationinfo_field_name || ' as locationinfo
@@ -5818,11 +5818,11 @@ SELECT id as epidata_id,
        nextval('entity_seq') as location_id,
        nextval('entity_seq') as exposure_id,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid,
        dateoflastexposure,
        placeoflastexposure,
        animalcondition,
@@ -5847,11 +5847,11 @@ SELECT id as epidata_id,
        nextval('entity_seq') as location_id,
        nextval('entity_seq') as exposure_id,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
 FROM epidata WHERE traveled = 'YES' AND epidata.id NOT IN (SELECT epidatatravel.epidata_id FROM epidatatravel);
 
 INSERT INTO location (id, uuid, changedate, creationdate)
@@ -5868,11 +5868,11 @@ SELECT id as epidata_id,
        nextval('entity_seq') as location_id,
        nextval('entity_seq') as exposure_id,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
 FROM epidata WHERE gatheringattended = 'YES' AND epidata.id NOT IN (SELECT epidatagathering.epidata_id FROM epidatagathering);
 
 INSERT INTO location (id, uuid, changedate, creationdate)
@@ -5889,11 +5889,11 @@ SELECT id as epidata_id,
        nextval('entity_seq') as location_id,
        nextval('entity_seq') as exposure_id,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
        overlay(overlay(overlay(
-               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
-                   placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
 FROM epidata WHERE burialattended = 'YES' AND epidata.id NOT IN (SELECT epidataburial.epidata_id FROM epidataburial);
 
 INSERT INTO location (id, uuid, changedate, creationdate)
@@ -6048,37 +6048,37 @@ INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send
 
 -- 2020-12-07 Add LabMessage #3486
 CREATE TABLE labmessage (
-                            id bigint not null,
-                            uuid varchar(36) not null unique,
-                            changedate timestamp not null,
-                            creationdate timestamp not null,
-                            sampledatetime timestamp,
-                            samplereceiveddate timestamp,
-                            labsampleid text,
-                            samplematerial varchar(255),
-                            testlabname varchar(255),
-                            testlabexternalid varchar(255),
-                            testlabpostalcode varchar(255),
-                            testlabcity varchar(255),
-                            specimencondition varchar(255),
-                            testtype varchar(255),
-                            testeddisease varchar(255),
-                            testdatetime timestamp,
-                            testresult varchar(255),
-                            personfirstName varchar(255),
-                            personlastName varchar(255),
-                            personsex varchar(255),
-                            personbirthdatedd integer,
-                            personbirthdatemm integer,
-                            personbirthdateyyyy integer,
-                            personpostalcode varchar(255),
-                            personcity varchar(255),
-                            personstreet varchar(255),
-                            personhousenumber varchar(255),
-                            labMessageDetails text,
-                            processed boolean default false,
-                            sys_period tstzrange not null,
-                            primary key(id)
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        labsampleid text,
+        samplematerial varchar(255),
+        testlabname varchar(255),
+        testlabexternalid varchar(255),
+        testlabpostalcode varchar(255),
+        testlabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        testresult varchar(255),
+        personfirstName varchar(255),
+        personlastName varchar(255),
+        personsex varchar(255),
+        personbirthdatedd integer,
+        personbirthdatemm integer,
+        personbirthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        processed boolean default false,
+        sys_period tstzrange not null,
+        primary key(id)
 );
 
 CREATE TABLE labmessage_history (LIKE labmessage);
@@ -6205,16 +6205,16 @@ INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adapt
 
 -- 2021-01-07 Add system events #3927
 CREATE TABLE systemevent (
-                             id bigint not null,
-                             uuid varchar(36) not null unique,
-                             changedate timestamp not null,
-                             creationdate timestamp not null,
-                             type varchar(255) not null,
-                             startdate timestamp not null,
-                             enddate timestamp,
-                             status varchar(255) not null,
-                             additionalInfo text,
-                             primary key(id)
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    type varchar(255) not null,
+    startdate timestamp not null,
+    enddate timestamp,
+    status varchar(255) not null,
+    additionalInfo text,
+    primary key(id)
 );
 
 ALTER TABLE systemevent OWNER TO sormas_user;
@@ -6333,21 +6333,21 @@ INSERT INTO schema_version (version_number, comment) VALUES (315, 'Activate vacc
 
 -- 2021-01-19 Add DiseaseVariant entity #4042
 CREATE TABLE diseasevariant(
-                               id bigint not null,
-                               uuid varchar(36) not null unique,
-                               changedate timestamp not null,
-                               creationdate timestamp not null,
-                               disease varchar(255) not null,
-                               name varchar(512) not null,
-                               sys_period tstzrange not null,
-                               primary key(id));
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255) not null,
+	name varchar(512) not null,
+	sys_period tstzrange not null,
+	primary key(id));
 
 ALTER TABLE diseasevariant OWNER TO sormas_user;
 
 CREATE TABLE diseasevariant_history (LIKE diseasevariant);
 CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON diseasevariant
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseasevariant_history', true);
+BEFORE INSERT OR UPDATE OR DELETE ON diseasevariant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseasevariant_history', true);
 ALTER TABLE diseasevariant_history OWNER TO sormas_user;
 
 ALTER TABLE cases ADD COLUMN diseasevariant_id bigint;
@@ -6356,7 +6356,7 @@ ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (disease
 
 INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
 
--- 2020-02-03
+ -- 2020-02-03
 ALTER TABLE pathogentest ADD COLUMN typingId text;
 ALTER TABLE pathogentest_history ADD COLUMN typingId text;
 
@@ -6381,25 +6381,25 @@ INSERT INTO schema_version (version_number, comment) VALUES (319, '[SurvNet Inte
 -- 2021-02-04 Add vaccination for contacts and event participant #4137
 
 CREATE TABLE vaccinationinfo (
-                                 id bigint NOT NULL,
-                                 changedate timestamp without time zone NOT NULL,
-                                 creationdate timestamp without time zone NOT NULL,
-                                 uuid character varying(36) NOT NULL,
-                                 vaccination varchar(255),
-                                 vaccinationdoses varchar(512),
-                                 vaccinationinfosource varchar(255),
-                                 firstvaccinationdate timestamp,
-                                 lastvaccinationdate timestamp,
-                                 vaccinename varchar(255),
-                                 othervaccinename text,
-                                 vaccinemanufacturer varchar(255),
-                                 othervaccinemanufacturer text,
-                                 vaccineinn text,
-                                 vaccinebatchnumber text,
-                                 vaccineuniicode text,
-                                 vaccineatccode text,
-                                 sys_period tstzrange not null,
-                                 primary key (id)
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uuid character varying(36) NOT NULL,
+    vaccination varchar(255),
+    vaccinationdoses varchar(512),
+    vaccinationinfosource varchar(255),
+    firstvaccinationdate timestamp,
+    lastvaccinationdate timestamp,
+    vaccinename varchar(255),
+    othervaccinename text,
+    vaccinemanufacturer varchar(255),
+    othervaccinemanufacturer text,
+    vaccineinn text,
+    vaccinebatchnumber text,
+    vaccineuniicode text,
+    vaccineatccode text,
+    sys_period tstzrange not null,
+    primary key (id)
 );
 
 ALTER TABLE vaccinationinfo OWNER TO sormas_user;
@@ -6423,19 +6423,19 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_vaccinationinfo_
 DO $$
     DECLARE rec RECORD;
         DECLARE new_vaccination_info_id INTEGER;
-BEGIN
-FOR rec IN SELECT id FROM public.contact WHERE contact.vaccinationinfo_id IS NULL
-    LOOP
-           INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
-UPDATE contact SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
-END LOOP;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE contact.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE contact SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
 
-FOR rec IN SELECT id FROM public.eventparticipant WHERE eventparticipant.vaccinationinfo_id IS NULL
-    LOOP
-           INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
-UPDATE eventparticipant SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
-END LOOP;
-END;
+        FOR rec IN SELECT id FROM public.eventparticipant WHERE eventparticipant.vaccinationinfo_id IS NULL
+            LOOP
+                INSERT INTO vaccinationinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_vaccination_info_id;
+                UPDATE eventparticipant SET vaccinationinfo_id = new_vaccination_info_id WHERE id = rec.id;
+            END LOOP;
+    END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
@@ -6580,10 +6580,19 @@ ALTER TABLE cases DROP COLUMN reportingtype;
 
 INSERT INTO schema_version (version_number, comment) VALUES (330, '[SurvNet Interface] Add Reports to case information #4282');
 
--- 2021-02-15 Add reportDate to pathogen test #4363
-ALTER TABLE pathogentest ADD COLUMN reportdate timestamp;
-ALTER TABLE pathogentest_history ADD COLUMN reportdate timestamp;
+-- 2021-02-05 Add reason hospitalization #4187
+ALTER TABLE hospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN hospitalizationreason varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (331, 'Add reportDate to pathogen test #4363');
+ALTER TABLE hospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE hospitalization_history ADD COLUMN otherhospitalizationreason text;
+
+ALTER TABLE previoushospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason varchar(255);
+
+ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (331, '#4187 add reason for hospitalization');
 
 -- *** Insert new sql commands BEFORE this line ***
