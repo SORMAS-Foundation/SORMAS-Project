@@ -153,6 +153,7 @@ public class DevModeView extends AbstractConfigurationView {
 		Label seedLabel = new Label(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
 		TextField seedField = new TextField();
 		seedField.setCaption(I18nProperties.getCaption(Captions.devModeGeneratorSeed));
+		seedField.setValue(Long.toString(manualSeed, 36));
 		seedField.setMaxLength(11);
 		seedField.addValueChangeListener(e -> {
 			try {
@@ -164,7 +165,7 @@ public class DevModeView extends AbstractConfigurationView {
 		});
 
 		CheckBox useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
-		useManualSeedCheckbox.setValue(false);
+		useManualSeedCheckbox.setValue(useManualSeed);
 		useManualSeedCheckbox.addValueChangeListener(e -> {
 			useManualSeed = e.getValue();
 		});
@@ -816,7 +817,7 @@ public class DevModeView extends AbstractConfigurationView {
 				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
-					int[] followUpDays = new Random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
+					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates.add(
