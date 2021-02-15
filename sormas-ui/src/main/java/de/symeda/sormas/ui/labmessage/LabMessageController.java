@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestSelectionField;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -298,6 +299,19 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
 	}
 
+	private PersonDto savePerson(PersonDto personDto, LabMessageDto labMessageDto) {
+		if (personDto.getAddress().getCity() == null
+				&& personDto.getAddress().getHouseNumber() == null
+				&& personDto.getAddress().getPostalCode() == null
+				&& personDto.getAddress().getStreet() == null) {
+			personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
+			personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
+			personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
+			personDto.getAddress().setCity(labMessageDto.getPersonCity());
+		}
+		return FacadeProvider.getPersonFacade().savePerson(personDto);
+	}
+
 	private void pickOrCreateSample(PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
 		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
 
@@ -404,18 +418,9 @@ public class LabMessageController {
 		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		caseCreateComponent.addCommitListener(() -> {
-			PersonDto personDto =
-				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid());
-			if (personDto.getAddress().getCity() == null
-				&& personDto.getAddress().getHouseNumber() == null
-				&& personDto.getAddress().getPostalCode() == null
-				&& personDto.getAddress().getStreet() == null) {
-				personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
-				personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-				personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-				personDto.getAddress().setCity(labMessageDto.getPersonCity());
-				FacadeProvider.getPersonFacade().savePerson(personDto);
-			}
+			savePerson(
+				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				labMessageDto);
 			createSample(
 				SampleDto.build(UserProvider.getCurrent().getUserReference(), caseCreateComponent.getWrappedComponent().getValue().toReference()),
 				labMessageDto);
@@ -439,18 +444,9 @@ public class LabMessageController {
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		contactCreateComponent.addCommitListener(() -> {
-			PersonDto personDto =
-				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid());
-			if (personDto.getAddress().getCity() == null
-				&& personDto.getAddress().getHouseNumber() == null
-				&& personDto.getAddress().getPostalCode() == null
-				&& personDto.getAddress().getStreet() == null) {
-				personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
-				personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-				personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-				personDto.getAddress().setCity(labMessageDto.getPersonCity());
-				FacadeProvider.getPersonFacade().savePerson(personDto);
-			}
+			savePerson(
+				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				labMessageDto);
 			createSample(
 				SampleDto.build(UserProvider.getCurrent().getUserReference(), contactCreateComponent.getWrappedComponent().getValue().toReference()),
 				labMessageDto);
