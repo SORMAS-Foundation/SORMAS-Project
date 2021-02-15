@@ -70,6 +70,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String CLASSIFICATION_COMMENT = "classificationComment";
@@ -240,6 +241,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Required
 	private CaseClassification caseClassification;
 	private CaseIdentificationSource caseIdentificationSource;
+	private ScreeningType screeningType;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
@@ -717,6 +719,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public UserReferenceDto getClassificationUser() {

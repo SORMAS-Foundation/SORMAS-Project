@@ -6509,7 +6509,7 @@ UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = expo
 
 INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
 
--- 2020-02-15 Add missing indexes #3481 
+-- 2020-02-15 Add missing indexes #3481
 CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
@@ -6522,5 +6522,15 @@ CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
 
 INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
+-- 2021-02-15 Case identification source - screening #3420
+ALTER TABLE cases ADD COLUMN screeningtype character varying(255);
+ALTER TABLE cases_history ADD COLUMN screeningtype character varying(255);
+UPDATE cases SET screeningtype = 'ON_HOSPITAL_ADMISSION', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'ON_HOSPITAL_ADMISSION';
+UPDATE cases SET screeningtype = 'ON_CARE_HOME_ADMISSION', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'ON_CARE_HOME_ADMISSION';
+UPDATE cases SET screeningtype = 'ON_ASYLUM_ADMISSION', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'ON_ASYLUM_ADMISSION';
+UPDATE cases SET screeningtype = 'ON_ENTRY_FROM_RISK_AREA', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'ON_ENTRY_FROM_RISK_AREA';
+UPDATE cases SET screeningtype = 'HEALTH_SECTOR_EMPLOYEE', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'HEALTH_SECTOR_EMPLOYEE';
+UPDATE cases SET screeningtype = 'EDUCATIONAL_INSTITUTIONS', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'EDUCATIONAL_INSTITUTIONS';
 
+INSERT INTO schema_version (version_number, comment) VALUES (328, 'Case identification source - screening type #3420');
 -- *** Insert new sql commands BEFORE this line ***

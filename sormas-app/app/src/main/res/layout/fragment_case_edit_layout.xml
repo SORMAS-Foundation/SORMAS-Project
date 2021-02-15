@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.api.caze.CaseClassification" />
         <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
+        <import type="de.symeda.sormas.api.caze.ScreeningType" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.PlagueType" />
         <import type="de.symeda.sormas.api.caze.DengueFeverType" />
@@ -237,6 +238,14 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_caseIdentificationSource"
                     app:value="@={data.caseIdentificationSource}"
+                    app:required="false"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_screeningType"
+                    app:dependencyParentField="@{caseDataCaseIdentificationSource}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.screeningType}"
                     app:required="false"
                     style="@style/ControlSingleColumnStyle" />
 
