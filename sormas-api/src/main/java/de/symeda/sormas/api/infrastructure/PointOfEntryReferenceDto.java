@@ -1,22 +1,27 @@
 package de.symeda.sormas.api.infrastructure;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 
-public class PointOfEntryReferenceDto extends ReferenceDto {
+public class PointOfEntryReferenceDto extends InfrastructureDataReferenceDto {
 
 	private static final long serialVersionUID = 4124483408068181854L;
 
-	public PointOfEntryReferenceDto() {
+	private PointOfEntryType pointOfEntryType;
 
+	public PointOfEntryReferenceDto() {
 	}
 
 	public PointOfEntryReferenceDto(String uuid) {
-		setUuid(uuid);
+		super(uuid);
 	}
 
-	public PointOfEntryReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
+	public PointOfEntryReferenceDto(String uuid, String caption, PointOfEntryType pointOfEntryType, String externalId) {
+		super(uuid, caption, externalId);
+		this.pointOfEntryType = pointOfEntryType;
+	}
+
+	public PointOfEntryType getPointOfEntryType() {
+		return pointOfEntryType;
 	}
 
 	public boolean isOtherPointOfEntry() {

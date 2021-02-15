@@ -44,4 +44,6 @@ public interface UserRoleConfigFacade {
 	 * Will fallback to default user rights for each role that has no configuration defined
 	 */
 	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
+
+	Set<UserRole> getEnabledUserRoles();
 }

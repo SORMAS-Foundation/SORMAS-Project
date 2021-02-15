@@ -937,10 +937,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
-				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid));
+				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid, null, null));
 				break;
 			case DISTRICTS:
-				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
+				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid, null, null));
 				break;
 			default:
 				throw new IllegalArgumentException(visualizationComponent.getVisualizationMapType().toString());

@@ -12,6 +12,8 @@ WebUI.click(findTestObject('Surveillance/SearchView/a_Search_Entry_link'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Case/input_Case_CaseIdUuid_inputBox'), 3)
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Surveillance/CaseView/div_Case Person_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Person/input_Person_PassportNumber_inputBox'), 3)

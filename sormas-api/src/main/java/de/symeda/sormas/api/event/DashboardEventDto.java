@@ -75,7 +75,7 @@ public class DashboardEventDto implements Serializable {
 		this.reportLon = reportLon;
 		this.locationLat = locationLat;
 		this.locationLon = locationLon;
-		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.district = new DistrictReferenceDto(districtUuid, districtName, null);
 
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}

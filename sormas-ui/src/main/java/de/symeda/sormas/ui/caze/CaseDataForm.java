@@ -655,14 +655,30 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.VACCINATION);
 		addField(CaseDataDto.VACCINATION_DOSES)
-			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
+			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		addFields(
 			CaseDataDto.VACCINATION_INFO_SOURCE,
 			CaseDataDto.VACCINE,
 			CaseDataDto.SMALLPOX_VACCINATION_SCAR,
-			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
-			CaseDataDto.FIRST_VACCINATION_DATE,
-			CaseDataDto.LAST_VACCINATION_DATE);
+			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
+		final DateField firstVaccinationDateField = addDateField(CaseDataDto.FIRST_VACCINATION_DATE, DateField.class, 0);
+		final DateField lastVaccinationDateField = addDateField(CaseDataDto.LAST_VACCINATION_DATE, DateField.class, 0);
+		firstVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				firstVaccinationDateField,
+				lastVaccinationDateField,
+				true,
+				false,
+				I18nProperties
+					.getValidationError(Validations.beforeDate, firstVaccinationDateField.getCaption(), lastVaccinationDateField.getCaption())));
+		lastVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				lastVaccinationDateField,
+				firstVaccinationDateField,
+				false,
+				false,
+				I18nProperties
+					.getValidationError(Validations.afterDate, lastVaccinationDateField.getCaption(), firstVaccinationDateField.getCaption())));
 
 		ComboBox vaccineName = addField(CaseDataDto.VACCINE_NAME);
 		ComboBox vaccineManufacturer = addField(CaseDataDto.VACCINE_MANUFACTURER);

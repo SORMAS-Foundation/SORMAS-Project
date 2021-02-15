@@ -123,7 +123,8 @@ public class EventParticipantsController {
 										ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
 									}
 								}
-							}, true);
+							},
+							true);
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);

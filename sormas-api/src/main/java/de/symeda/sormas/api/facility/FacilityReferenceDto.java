@@ -17,24 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class FacilityReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
+public class FacilityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public FacilityReferenceDto() {
-
 	}
 
 	public FacilityReferenceDto(String uuid) {
-		setUuid(uuid);
+		super(uuid);
 	}
 
-	public FacilityReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
+	public FacilityReferenceDto(String uuid, String caption, String externalId) {
+		super(uuid, caption, externalId);
 	}
 
 	@Override

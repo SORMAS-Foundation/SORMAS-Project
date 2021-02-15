@@ -35,9 +35,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventHelper;
@@ -69,24 +68,12 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private final TextField searchField;
 	private final EventCriteria criteria;
 
-	public EventSelectionField(CaseDataDto caseReference) {
+	public EventSelectionField(Disease disease, String infoPickOrCreateEvent) {
 		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForCase);
+		this.infoPickOrCreateEvent = infoPickOrCreateEvent;
 
 		this.criteria = new EventCriteria();
-		criteria.setDisease(caseReference.getDisease());
-		criteria.setUserFilterIncluded(false);
-		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-
-		initializeGrid();
-	}
-
-	public EventSelectionField(ContactDto contact) {
-		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForContact);
-
-		this.criteria = new EventCriteria();
-		criteria.setDisease(contact.getDisease());
+		criteria.setDisease(disease);
 		criteria.setUserFilterIncluded(false);
 		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
