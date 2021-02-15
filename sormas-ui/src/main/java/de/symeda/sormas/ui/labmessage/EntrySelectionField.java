@@ -159,8 +159,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		rbSelectEventParticipant.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectContact.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
 				eventParticipantGrid.setEnabled(true);
 				if (caseGrid != null) {
 					caseGrid.setEnabled(false);
