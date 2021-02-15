@@ -160,7 +160,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -536,8 +535,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
-	@HideForCountriesExcept
-	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
@@ -1424,14 +1421,6 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	public YesNoUnknown getPostpartum() {

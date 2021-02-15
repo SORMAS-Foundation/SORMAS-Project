@@ -6509,7 +6509,7 @@ UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = expo
 
 INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
 
--- 2020-02-15 Add missing indexes #3481 
+-- 2020-02-15 Add missing indexes #3481
 CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
@@ -6522,5 +6522,62 @@ CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
 
 INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
+
+-- 2020-02-12 [SurvNet Interface] Add Reports to case information #4282
+
+CREATE TABLE surveillancereports (
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uuid character varying(36) NOT NULL,
+    reportingtype varchar(255),
+    creatinguser_id bigint,
+    reportdate timestamp NOT NULL,
+    dateofdiagnosis timestamp,
+    facilityregion_id bigint,
+    facilitydistrict_id bigint,
+    facilitytype varchar(255),
+    facility_id bigint,
+    facilitydetails text,
+    notificationdetails text,
+    caze_id bigint,
+    sys_period tstzrange not null,
+    primary key (id)
+);
+
+ALTER TABLE surveillancereports OWNER TO sormas_user;
+
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_facilityregion_id FOREIGN KEY (facilityregion_id) REFERENCES region(id);
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_facilitydistrict_id FOREIGN KEY (facilitydistrict_id) REFERENCES district(id);
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_facility_id FOREIGN KEY (facility_id) REFERENCES facility(id);
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_caze_id FOREIGN KEY (caze_id) REFERENCES cases(id);
+
+CREATE TABLE surveillancereports_history (LIKE surveillancereports);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON surveillancereports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveillancereports_history', true);
+ALTER TABLE surveillancereports_history OWNER TO sormas_user;
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id as _caze_id, reportingtype as _reportingtype, reportdate as _reportdate, reportinguser_id as _reportinguser_id
+        FROM public.cases WHERE cases.reportingtype IS NOT NULL and cases.reportingtype <> 'LABORATORY'
+            LOOP
+                INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, caze_id)
+                VALUES (nextval('entity_seq'),
+                        overlay(overlay(overlay(
+                            substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                            placing '-' from 7) placing '-' from 14) placing '-' from 21),
+                        now(), now(),
+                        rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._caze_id);
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases DROP COLUMN reportingtype;
+
+INSERT INTO schema_version (version_number, comment) VALUES (330, '[SurvNet Interface] Add Reports to case information #4282');
 
 -- *** Insert new sql commands BEFORE this line ***
