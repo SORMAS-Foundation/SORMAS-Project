@@ -111,7 +111,6 @@ import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -392,8 +391,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
