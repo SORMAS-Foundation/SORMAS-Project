@@ -6595,4 +6595,9 @@ ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreaso
 
 INSERT INTO schema_version (version_number, comment) VALUES (331, '#4187 add reason for hospitalization');
 
+-- 2021-02-15 Add reportDate to pathogen test #4363
+ALTER TABLE pathogentest ADD COLUMN reportdate timestamp;
+ALTER TABLE pathogentest_history ADD COLUMN reportdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (332, 'Add reportDate to pathogen test #4363');
 -- *** Insert new sql commands BEFORE this line ***
