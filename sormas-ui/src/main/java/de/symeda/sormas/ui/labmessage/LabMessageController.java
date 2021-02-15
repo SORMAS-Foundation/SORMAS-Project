@@ -52,7 +52,6 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestSelectionField;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -233,6 +232,8 @@ public class LabMessageController {
 			window.close();
 		});
 
+		component.addDiscardListener(() -> window.close());
+
 		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
 			component.getCommitButton().setEnabled(commitAllowed);
 		});
@@ -301,9 +302,9 @@ public class LabMessageController {
 
 	private PersonDto savePerson(PersonDto personDto, LabMessageDto labMessageDto) {
 		if (personDto.getAddress().getCity() == null
-				&& personDto.getAddress().getHouseNumber() == null
-				&& personDto.getAddress().getPostalCode() == null
-				&& personDto.getAddress().getStreet() == null) {
+			&& personDto.getAddress().getHouseNumber() == null
+			&& personDto.getAddress().getPostalCode() == null
+			&& personDto.getAddress().getStreet() == null) {
 			personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
 			personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
 			personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
@@ -441,6 +442,7 @@ public class LabMessageController {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		contactDto.setPerson(person.toReference());
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		contactCreateComponent.addCommitListener(() -> {
