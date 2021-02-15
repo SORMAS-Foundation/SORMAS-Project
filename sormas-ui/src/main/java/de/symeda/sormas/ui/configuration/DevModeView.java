@@ -112,6 +112,9 @@ public class DevModeView extends AbstractConfigurationView {
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
 	private Binder<EventGenerationConfig> eventGeneratorConfigBinder = new Binder<>();
+	CaseGenerationConfig caseGenerationConfig = new CaseGenerationConfig();
+	ContactGenerationConfig contactGenerationConfig = new ContactGenerationConfig();
+	EventGenerationConfig eventGenerationConfig = new EventGenerationConfig();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -170,10 +173,47 @@ public class DevModeView extends AbstractConfigurationView {
 			useManualSeed = e.getValue();
 		});
 
+		Button performanceConfigButton = ButtonHelper.createButton("Load performance config", e -> {
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadPerformanceTestConfig();
+			caseGenerationConfig.setRegion(region);
+			caseGenerationConfig.setDistrict(district);
+			contactGenerationConfig.loadPerformanceTestConfig();
+			contactGenerationConfig.setRegion(region);
+			contactGenerationConfig.setDistrict(district);
+			eventGenerationConfig.loadPerformanceTestConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+		Button defaultConfigButton = ButtonHelper.createButton("Load default config", e -> {
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadDefaultConfig();
+			caseGenerationConfig.setRegion(region);
+			contactGenerationConfig.loadDefaultConfig();
+			contactGenerationConfig.setRegion(region);
+			eventGenerationConfig.loadDefaultConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+
 		verticalLayout.addComponent(seedLabel);
 		verticalLayout.addComponent(useManualSeedCheckbox);
 		horizontalLayout.addComponent(seedField);
 		horizontalLayout.addComponent(verticalLayout);
+		horizontalLayout.addComponent(performanceConfigButton);
+		horizontalLayout.addComponent(defaultConfigButton);
 		horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_LEFT);
 
 		return horizontalLayout;
@@ -242,9 +282,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
 
-		CaseGenerationConfig config = new CaseGenerationConfig();
-		config.setRegion(regions.get(0));
-		caseGeneratorConfigBinder.setBean(config);
+		caseGenerationConfig.setRegion(regions.get(0));
+		caseGeneratorConfigBinder.setBean(caseGenerationConfig);
 
 		return caseGeneratorLayout;
 	}
@@ -336,9 +375,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contactGeneratorLayout.addComponent(contactOptionsSecondLineLayout);
 
-		ContactGenerationConfig config = new ContactGenerationConfig();
-		config.setRegion(regions.get(0));
-		contactGeneratorConfigBinder.setBean(config);
+		contactGenerationConfig.setRegion(regions.get(0));
+		contactGeneratorConfigBinder.setBean(contactGenerationConfig);
 
 		return contactGeneratorLayout;
 	}
@@ -443,11 +481,11 @@ public class DevModeView extends AbstractConfigurationView {
 			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
 		eventOptionsSecondLineLayout.addComponent(percentageOfCasesField);
 
-		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
-		config.setRegion(regions.get(0));
-		config.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(config.getRegion().getUuid()).get(0));
-		eventGeneratorConfigBinder.setBean(config);
+		eventGenerationConfig.setRegion(regions.get(0));
+		eventGenerationConfig
+			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(eventGenerationConfig.getRegion().getUuid()).get(0));
+		eventGeneratorConfigBinder.setBean(eventGenerationConfig);
 
 		return eventGeneratorLayout;
 	}
@@ -1012,12 +1050,34 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class CaseGenerationConfig {
 
-		private int caseCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
+		private int caseCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+
+		CaseGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			caseCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+		}
+
+		public void loadPerformanceTestConfig() {
+			caseCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+		}
 
 		public int getCaseCount() {
 			return caseCount;
@@ -1070,15 +1130,43 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class ContactGenerationConfig {
 
-		private int contactCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private boolean createWithoutSourceCases = false;
-		private boolean createMultipleContactsPerPerson = false;
-		private boolean createWithVisits = false;
+		private int contactCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private boolean createWithoutSourceCases;
+		private boolean createMultipleContactsPerPerson;
+		private boolean createWithVisits;
+
+		ContactGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			contactCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
+
+		public void loadPerformanceTestConfig() {
+			contactCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
 
 		public int getContactCount() {
 			return contactCount;
@@ -1155,17 +1243,49 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class EventGenerationConfig {
 
-		private int eventCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private int minParticipantsPerEvent = 3;
-		private int maxParticipantsPerEvent = 10;
-		private int minContactsPerParticipant = 0;
-		private int maxContactsPerParticipant = 3;
-		private int percentageOfCases = 20;
+		private int eventCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private int minParticipantsPerEvent;
+		private int maxParticipantsPerEvent;
+		private int minContactsPerParticipant;
+		private int maxContactsPerParticipant;
+		private int percentageOfCases;
+
+		EventGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			eventCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 10;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 3;
+			percentageOfCases = 20;
+		}
+
+		public void loadPerformanceTestConfig() {
+			eventCount = 30;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			// region?
+			// district?
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 8;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 2;
+			percentageOfCases = 15;
+		}
 
 		public int getEventCount() {
 			return eventCount;
