@@ -116,7 +116,8 @@ public class EventController {
 
 		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
-		EventSelectionField eventSelect = new EventSelectionField(caseDataDto);
+		EventSelectionField eventSelect =
+			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase));
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -155,7 +156,8 @@ public class EventController {
 
 	public void selectOrCreateEvent(ContactDto contact) {
 
-		EventSelectionField eventSelect = new EventSelectionField(contact);
+		EventSelectionField eventSelect =
+			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -555,7 +557,7 @@ public class EventController {
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private EventDto createNewEvent(Disease disease) {
+	public EventDto createNewEvent(Disease disease) {
 		EventDto event = EventDto.build();
 
 		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
