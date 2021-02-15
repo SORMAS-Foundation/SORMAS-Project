@@ -378,9 +378,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
 		countryField.addValueChangeListener(e -> {
-			CountryReferenceDto serverCountryDto = getServerCountry();
+			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 			CountryReferenceDto countryDto = (CountryReferenceDto) countryField.getValue();
-			if (countryDto != null && serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
+			if (countryDto != null && serverCountryDto != null && serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
 				locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 			} else {
 				locationForm.setFieldsRequirement(false, LocationDto.REGION, LocationDto.DISTRICT);

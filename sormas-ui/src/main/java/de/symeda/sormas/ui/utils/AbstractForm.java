@@ -19,7 +19,6 @@ import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -399,11 +398,6 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	protected boolean isConfiguredServer(String countryCode) {
 		return FacadeProvider.getConfigFacade().isConfiguredCountry(countryCode);
-	}
-
-	protected CountryReferenceDto getServerCountry() {
-		String countryName = FacadeProvider.getConfigFacade().getCountryName();
-		return FacadeProvider.getCountryFacade().getByDefaultName(countryName, false).get(0);
 	}
 
 	private static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {
