@@ -74,6 +74,8 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
 		previousHospitalization.setHealthFacilityDetails(oldCase.getHealthFacilityDetails());
 		previousHospitalization.setHospitalization(caze.getHospitalization());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
+    previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
+    previousHospitalization.setOtherHospitalizationReason(hospitalization.getOtherHospitalizationReason());
 
 		return previousHospitalization;
 	}
