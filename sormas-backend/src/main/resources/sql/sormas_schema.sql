@@ -6540,14 +6540,14 @@ ALTER TABLE surveillancereports_history OWNER TO sormas_user;
 DO $$
     DECLARE rec RECORD;
     BEGIN
-        FOR rec IN SELECT id as _caze_id, reportingtype as _reportingtype, reportdate as _reportdate, reportinguser_id as _reportinguser_id, reportingdistrict_id as _reportingdistrict_id
+        FOR rec IN SELECT id as _caze_id, reportingtype as _reportingtype, reportdate as _reportdate, reportinguser_id as _reportinguser_id
         FROM public.cases WHERE cases.reportingtype IS NOT NULL and cases.reportingtype <> 'LABORATORY'
             LOOP
-                INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, facilitydistrict_id, caze_id)
+                INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, caze_id)
                 VALUES (nextval('entity_seq'),
                         upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
                         now(), now(),
-                        rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._reportingdistrict_id, rec._caze_id);
+                        rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._caze_id);
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;

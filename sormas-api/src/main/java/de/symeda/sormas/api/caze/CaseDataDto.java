@@ -187,6 +187,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
 
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
 	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
@@ -581,6 +583,9 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
 	private Date previousInfectionDate;
+
+	@HideForCountriesExcept
+	private DistrictReferenceDto reportingDistrict;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
@@ -1600,6 +1605,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	public DistrictReferenceDto getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {

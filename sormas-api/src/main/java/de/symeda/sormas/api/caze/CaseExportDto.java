@@ -293,6 +293,8 @@ public class CaseExportDto implements Serializable {
 	private String birthCountry;
 	private String citizenship;
 
+	private String reportingDistrict;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -326,7 +328,8 @@ public class CaseExportDto implements Serializable {
 
 						 YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken,
-						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName) {
+						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+						 String reportingDistrict) {
 		//@formatter:on
 
 		this.id = id;
@@ -437,6 +440,7 @@ public class CaseExportDto implements Serializable {
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
+		this.reportingDistrict = reportingDistrict;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1887,6 +1891,17 @@ public class CaseExportDto implements Serializable {
 	@HideForCountriesExcept
 	public String getCitizenship() {
 		return citizenship;
+	}
+
+	@Order(163)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.REPORTING_DISTRICT)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept
+	public String getReportingDistrict() {
+		return reportingDistrict;
 	}
 
 	@Order(164)

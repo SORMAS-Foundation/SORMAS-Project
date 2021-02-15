@@ -211,6 +211,7 @@ public class Case extends CoreAdo {
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
 
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
 	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
@@ -370,6 +371,8 @@ public class Case extends CoreAdo {
 
 	private YesNoUnknown reInfection;
 	private Date previousInfectionDate;
+
+	private District reportingDistrict;
 
 	private boolean notACaseReasonNegativeTest;
 	private boolean notACaseReasonPhysicianInformation;
@@ -1564,6 +1567,15 @@ public class Case extends CoreAdo {
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	@ManyToOne
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	@Column
