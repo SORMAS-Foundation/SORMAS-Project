@@ -201,6 +201,11 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EventDto.class, "", separator);
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
+
+		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
 		importColumns = importColumns.stream()
 			.filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName()))
 			.collect(Collectors.toList());

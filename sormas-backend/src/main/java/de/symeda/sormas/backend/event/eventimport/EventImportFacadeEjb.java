@@ -125,6 +125,14 @@ public class EventImportFacadeEjb implements EventImportFacade {
 			return validationResult;
 		}
 
+		for (EventParticipantDto eventParticipant : entities.getEventParticipants()) {
+			PersonDto person = eventParticipant.getPerson();
+
+			if (isPersonSimilarToExisting(person)) {
+				return ImportLineResultDto.duplicateResult(entities);
+			}
+		}
+
 		return saveImportedEntities(entities);
 	}
 
@@ -132,11 +140,21 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	public ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities) {
 
 		EventDto event = entities.getEvent();
+		List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
 
 		try {
 			eventFacade.saveEvent(event);
 
-			// TODO : Manage EventParticipants
+			for (EventParticipantDto eventParticipant : eventParticipants) {
+				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());
+				// Check if the person already exists
+				// In that case it would means that the person related to the event participant were deduped by the user
+				// So no need to persist an already existing person
+				if (existingPerson == null) {
+					personFacade.savePerson(eventParticipant.getPerson());
+				}
+				eventParticipantFacade.saveEventParticipant(eventParticipant);
+			}
 
 			return ImportLineResultDto.successResult();
 		} catch (ValidationRuntimeException e) {
@@ -185,7 +203,29 @@ public class EventImportFacadeEjb implements EventImportFacade {
 					}
 
 					EventDto event = entities.getEvent();
-					if (!StringUtils.isEmpty(cellData.getValue())) {
+					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(EventParticipantDto.class))
+						|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PersonDto.class))
+						|| (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(LocationDto.class)) && eventParticipants.size() > 0)) {
+						// If the current column belongs to an EventParticipant, set firstEventParticipantColumnName if it's empty, add a new participant
+						// to the list if the first column of a new participant has been reached and insert the entry of the cell into the participant
+						if (firstEventParticipantColumnName.getValue() == null) {
+							firstEventParticipantColumnName.setValue(String.join(".", cellData.getEntityPropertyPath()));
+						}
+						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstEventParticipantColumnName.getValue())) {
+							currentEventParticipantHasEntries.setFalse();
+							EventParticipantDto eventParticipantDto = EventParticipantDto.build(new EventReferenceDto(event.getUuid()), currentUserRef);
+							eventParticipantDto.setPerson(PersonDto.build());
+							eventParticipants.add(eventParticipantDto);
+						}
+						if (!StringUtils.isEmpty(cellData.getValue())) {
+							currentEventParticipantHasEntries.setTrue();
+							insertColumnEntryIntoEventParticipantData(
+								eventParticipants.get(eventParticipants.size() - 1),
+								cellData.getValue(),
+								cellData.getEntityPropertyPath());
+						}
+
+					} else if (!StringUtils.isEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current event
 						insertColumnEntryIntoData(event, cellData.getValue(), cellData.getEntityPropertyPath());
 					}
@@ -362,6 +402,113 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		}
 	}
 
+	/**
+	 * Inserts the entry of a single cell into the event participant
+	 */
+	private void insertColumnEntryIntoEventParticipantData(EventParticipantDto eventParticipant, String entry, String[] entryHeaderPath)
+		throws InvalidColumnException, ImportErrorException {
+		Object currentElement = eventParticipant;
+		for (int i = 0; i < entryHeaderPath.length; i++) {
+			String headerPathElementName = entryHeaderPath[i];
+
+			try {
+				if (i != entryHeaderPath.length - 1) {
+					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+				} else {
+					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
+					Class<?> propertyType = pd.getPropertyType();
+
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the sample or pathogen test fields
+					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+						continue;
+					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
+						List<DistrictReferenceDto> district =
+							districtFacade.getByName(entry, ImportHelper.getRegionBasedOnDistrict(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement), false);
+						if (district.isEmpty()) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (district.size() > 1) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, district.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+						List<CommunityReferenceDto> community =
+							communityFacade.getByName(entry, ImportHelper.getDistrictBasedOnCommunity(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement), false);
+						if (community.isEmpty()) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrDistrict,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
+						} else if (community.size() > 1) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, community.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
+						DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData = ImportHelper
+							.getDistrictAndCommunityBasedOnFacility(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement);
+						List<FacilityReferenceDto> facilities = facilityFacade.getByNameAndType(
+							entry,
+							infrastructureData.getElement0(),
+							infrastructureData.getElement1(),
+							getTypeOfFacility(pd.getName(), currentElement),
+							false);
+
+						if (facilities.isEmpty()) {
+							if (infrastructureData.getElement1() != null) {
+								throw new ImportErrorException(
+									I18nProperties.getValidationError(
+										Validations.importEntryDoesNotExistDbOrCommunity,
+										entry,
+										buildEntityProperty(entryHeaderPath)));
+							} else {
+								throw new ImportErrorException(
+									I18nProperties.getValidationError(
+										Validations.importEntryDoesNotExistDbOrDistrict,
+										entry,
+										buildEntityProperty(entryHeaderPath)));
+							}
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
+						}
+					} else {
+						throw new UnsupportedOperationException(
+							I18nProperties.getValidationError(Validations.importEventsPropertyTypeNotAllowed, propertyType.getName()));
+					}
+				}
+			} catch (IntrospectionException e) {
+				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+			} catch (InvocationTargetException | IllegalAccessException e) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
+			} catch (IllegalArgumentException e) {
+				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
+			} catch (ParseException e) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+			} catch (ImportErrorException e) {
+				throw e;
+			} catch (Exception e) {
+				LOGGER.error("Unexpected error when trying to import a case: " + e.getMessage());
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
+			}
+		}
+	}
+
 	protected FacilityType getTypeOfFacility(String propertyName, Object currentElement)
 		throws IntrospectionException, InvocationTargetException, IllegalAccessException {
 		String typeProperty;
@@ -451,6 +598,20 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		}
 
 		return false;
+	}
+
+	private boolean isPersonSimilarToExisting(PersonDto referencePerson) {
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+			.lastName(referencePerson.getLastName())
+			.sex(referencePerson.getSex())
+			.birthdateDD(referencePerson.getBirthdateDD())
+			.birthdateMM(referencePerson.getBirthdateMM())
+			.birthdateYYYY(referencePerson.getBirthdateYYYY())
+			.passportNumber(referencePerson.getPassportNumber())
+			.nationalHealthId(referencePerson.getNationalHealthId());
+
+		return personFacade.checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventFacade;
@@ -36,14 +38,20 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportEntities;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.event.eventimport.ImportLineResultDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.person.PersonSelectionField;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Data importer that is used to import cases and associated samples.
@@ -161,7 +169,36 @@ public class EventImporter extends DataImporter {
 	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
 	 */
 	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-		// TODO
+		currentUI.accessSynchronously(() -> {
+			PersonSelectionField personSelect =
+				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
+			personSelect.setWidth(1024, Unit.PIXELS);
+
+			if (personSelect.hasMatches()) {
+				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
+				component.addCommitListener(() -> {
+					SimilarPersonDto person = personSelect.getValue();
+					if (person == null) {
+						resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(new EventParticipantImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
+					}
+				});
+
+				component.addDiscardListener(
+					() -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
+
+				personSelect.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+
+				Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+				window.addCloseListener(
+					event -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
+
+				personSelect.selectBestMatch();
+			} else {
+				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			}
+		});
 	}
 
 	private class EventImportConsumer {
