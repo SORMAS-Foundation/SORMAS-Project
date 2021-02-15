@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 
@@ -41,8 +42,15 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 			fluidRowLocs(SurveillanceReportDto.NOTIFICATION_DETAILS);
 	//@formatter:on
 
-	protected SurveillanceReportForm() {
-		super(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX);
+	protected SurveillanceReportForm(SurveillanceReportDto report) {
+		super(
+			SurveillanceReportDto.class,
+			SurveillanceReportDto.I18N_PREFIX,
+			true,
+			null,
+			UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized()));
+
+		setValue(report);
 	}
 
 	@Override
@@ -71,6 +79,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 		addField(SurveillanceReportDto.NOTIFICATION_DETAILS, TextArea.class).setRows(7);
 
+		initializeAccessAndAllowedAccesses();
 	}
 
 	private ComboBox addFacilityTypeGroupField() {

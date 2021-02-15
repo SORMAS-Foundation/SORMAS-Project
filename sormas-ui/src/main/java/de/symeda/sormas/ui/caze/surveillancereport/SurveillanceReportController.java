@@ -41,9 +41,8 @@ public class SurveillanceReportController {
 	}
 
 	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback) {
-		SurveillanceReportForm surveillanceReportForm = new SurveillanceReportForm();
+		SurveillanceReportForm surveillanceReportForm = new SurveillanceReportForm(report);
 		surveillanceReportForm.setWidth(600, Sizeable.Unit.PIXELS);
-		surveillanceReportForm.setValue(report);
 
 		final CommitDiscardWrapperComponent<SurveillanceReportForm> editView =
 			new CommitDiscardWrapperComponent<>(surveillanceReportForm, surveillanceReportForm.getFieldGroup());

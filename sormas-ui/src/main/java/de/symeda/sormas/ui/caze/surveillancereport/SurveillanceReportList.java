@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -91,8 +92,11 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 		private Button editButton;
 
+		private UiFieldAccessCheckers fieldAccessCheckers;
+
 		public SurveillanceReportListEntry(SurveillanceReportDto report) {
 			this.report = report;
+			this.fieldAccessCheckers = UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized());
 
 			setMargin(false);
 			setSpacing(true);
@@ -107,25 +111,32 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			setExpandRatio(mainLayout, 1);
 
 			Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
-			mainLayout.addComponent(createRow(null, report.getReportingType()));
+			mainLayout.addComponent(createRow(null, report.getReportingType(), SurveillanceReportDto.REPORTING_TYPE));
 			mainLayout.addComponent(
 				createRow(
 					I18nProperties.getPrefixCaption(SurveillanceReportDto.I18N_PREFIX, SurveillanceReportDto.REPORT_DATE),
-					DateHelper.formatLocalDate(report.getReportDate(), userLanguage)));
+					DateHelper.formatLocalDate(report.getReportDate(), userLanguage),
+					SurveillanceReportDto.REPORT_DATE));
 
 			if (report.getDateOfDiagnosis() != null) {
 				mainLayout.addComponent(
 					createRow(
 						I18nProperties.getPrefixCaption(SurveillanceReportDto.I18N_PREFIX, SurveillanceReportDto.DATE_OF_DIAGNOSIS),
-						DateHelper.formatLocalDate(report.getDateOfDiagnosis(), userLanguage)));
+						DateHelper.formatLocalDate(report.getDateOfDiagnosis(), userLanguage),
+						SurveillanceReportDto.DATE_OF_DIAGNOSIS));
 			}
 
 			FacilityReferenceDto facility = report.getFacility();
 			if (facility != null) {
-				String facilityName =
-					facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) ? report.getFacilityDetails() : facility.getCaption();
+				boolean isOtherFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				String facilityName = isOtherFacility ? report.getFacilityDetails() : facility.getCaption();
+				String propertyId = isOtherFacility ? SurveillanceReportDto.FACILITY_DETAILS : SurveillanceReportDto.FACILITY;
+
 				mainLayout.addComponent(
-					createRow(I18nProperties.getPrefixCaption(SurveillanceReportDto.I18N_PREFIX, SurveillanceReportDto.FACILITY), facilityName));
+					createRow(
+						I18nProperties.getPrefixCaption(SurveillanceReportDto.I18N_PREFIX, propertyId),
+						facilityName,
+						SurveillanceReportDto.FACILITY_DETAILS));
 			}
 		}
 
@@ -150,25 +161,28 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 			editButton.addClickListener(clickListener);
 		}
-	}
 
-	private HorizontalLayout createRow(@Null String label, Object value) {
-		HorizontalLayout row = new HorizontalLayout();
-		row.setMargin(false);
-		row.setSpacing(false);
+		private HorizontalLayout createRow(@Null String label, Object value, String propertyId) {
+			HorizontalLayout row = new HorizontalLayout();
+			row.setMargin(false);
+			row.setSpacing(false);
 
-		if (label != null) {
-			Label rowLabel = new Label(DataHelper.toStringNullable(label) + ":");
-			CssStyles.style(rowLabel, CssStyles.HSPACE_RIGHT_4);
-			row.addComponent(rowLabel);
+			if (label != null) {
+				Label rowLabel = new Label(DataHelper.toStringNullable(label) + ":");
+				CssStyles.style(rowLabel, CssStyles.HSPACE_RIGHT_4);
+				row.addComponent(rowLabel);
+			}
+
+			Label rowValue = new Label(DataHelper.toStringNullable(value));
+			if (!fieldAccessCheckers.isAccessible(SurveillanceReportDto.class, propertyId)) {
+				rowValue.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+			}
+			if (label == null) {
+				rowValue.addStyleName(CssStyles.LABEL_BOLD);
+			}
+			row.addComponent(rowValue);
+
+			return row;
 		}
-
-		Label rowValue = new Label(DataHelper.toStringNullable(value));
-		if (label == null) {
-			rowValue.addStyleName(CssStyles.LABEL_BOLD);
-		}
-		row.addComponent(rowValue);
-
-		return row;
 	}
 }
