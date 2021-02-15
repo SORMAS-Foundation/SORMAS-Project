@@ -57,7 +57,7 @@ if (numberOfCaseContactsBefore != (numberOfCaseContactsAfter - 1)) {
     numberOfCaseContactsAfter) + ' + 1')
 }
 
-WebUI.click(findTestObject('Contacts/MainView/menu_Contacts'))
+WebUI.click(findTestObject('Login/MainView/menu_Contacts'))
 
 WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), newContactLastName)
 
