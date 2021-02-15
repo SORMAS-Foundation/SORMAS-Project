@@ -6509,6 +6509,20 @@ UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = expo
 
 INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
 
+-- 2020-02-15 Add missing indexes #3481
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_contact_reporting_user_id ON contact USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfiguration_changedate on diseaseconfiguration (changedate DESC);
+CREATE INDEX IF NOT EXISTS idx_person_uuid ON person USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
+
+INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
+
 -- 2021-02-05 Add reason hospitalization #4187
 ALTER TABLE hospitalization ADD COLUMN hospitalizationreason varchar(255);
 ALTER TABLE hospitalization_history ADD COLUMN hospitalizationreason varchar(255);
@@ -6522,6 +6536,6 @@ ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason var
 ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
 ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (329, '#4187 add reason for hospitalization');
+INSERT INTO schema_version (version_number, comment) VALUES (330, '#4187 add reason for hospitalization');
 
 -- *** Insert new sql commands BEFORE this line ***
