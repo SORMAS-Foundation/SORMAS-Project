@@ -39,6 +39,11 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return person;
 	}
 
+
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
 	public EventParticipantCriteria person(PersonReferenceDto person) {
 		this.person = person;
 		return this;

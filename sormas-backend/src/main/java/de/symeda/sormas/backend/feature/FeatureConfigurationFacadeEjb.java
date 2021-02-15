@@ -178,8 +178,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto = FeatureConfigurationDto.build();
 			configurationDto.setFeatureType(featureType);
 			configurationDto.setDisease(configuration.getDisease());
-			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
-			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid(), null, null));
+			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid(), null, null));
 			configurationDto.setEnabled(configuration.isEnabled());
 		}
 

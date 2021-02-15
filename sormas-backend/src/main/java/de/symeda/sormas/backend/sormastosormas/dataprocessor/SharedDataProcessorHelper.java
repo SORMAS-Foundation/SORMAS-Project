@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.ejb.EJB;
@@ -125,83 +126,54 @@ public class SharedDataProcessorHelper {
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
+		CommunityReferenceDto community) {
+		return loadLocalInfrastructure(region, district, community, null, null, null, null, null);
+	}
+
+	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
 		CommunityReferenceDto community,
 		FacilityType facilityType,
 		FacilityReferenceDto facility,
-		PointOfEntryReferenceDto pointOfEntry) {
+		String facilityDetails,
+		PointOfEntryReferenceDto pointOfEntry,
+		String pointOfEntryDetails) {
 
 		InfrastructureData infrastructureData = new InfrastructureData();
 		List<String> unmatchedFields = new ArrayList<>();
 
-		RegionReferenceDto localRegion = null;
-		if (region != null) {
-			String regionName = region.getCaption();
-			localRegion = regionFacade.getByName(regionName, false).stream().findFirst().orElse(null);
-
-			if (localRegion == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.region) + ": " + regionName);
-			} else {
-				infrastructureData.region = localRegion;
-			}
+		infrastructureData.region = loadLocalRegion(region);
+		if (region != null && infrastructureData.region == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.region) + ": " + region.getCaption());
 		}
 
-		DistrictReferenceDto localDistrict = null;
-		if (district != null) {
-			String districtName = district.getCaption();
-			localDistrict = districtFacade.getByName(districtName, localRegion, false).stream().findFirst().orElse(null);
-			if (localDistrict == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.district) + ": " + districtName);
-			} else {
-				infrastructureData.district = localDistrict;
-			}
+		infrastructureData.district = loadLocalDistrict(district);
+		if (district != null && infrastructureData.district == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.district) + ": " + district.getCaption());
 		}
 
-		CommunityReferenceDto localCommunity = null;
-		if (community != null) {
-			String communityName = community.getCaption();
-			localCommunity = communityFacade.getByName(communityName, localDistrict, false).stream().findFirst().orElse(null);
-
-			if (localCommunity == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.community) + ": " + communityName);
-			} else {
-				infrastructureData.community = localCommunity;
-			}
-		}
+		infrastructureData.community = loadLocalCommunity(community);
 
 		if (facility != null) {
-			String facilityUuid = facility.getUuid();
-			if (FacilityDto.CONSTANT_FACILITY_UUIDS.contains(facilityUuid)) {
-				infrastructureData.facility = facilityFacade.getByUuid(facilityUuid).toReference();
-			} else {
-				String facilityName = facility.getCaption();
-				FacilityReferenceDto localFacility = facilityFacade.getByNameAndType(facilityName, localDistrict, localCommunity, facilityType, false)
-					.stream()
-					.findFirst()
-					.orElse(null);
+			WithDetails<FacilityReferenceDto> localFacility = loadLocalFacility(facility, facilityType, facilityDetails);
 
-				if (localFacility == null) {
-					unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facilityName);
-				} else {
-					infrastructureData.facility = localFacility;
-				}
+			if (localFacility.entity == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facility.getCaption());
+			} else {
+				infrastructureData.facility = localFacility.entity;
+				infrastructureData.facilityDetails = localFacility.details;
 			}
 		}
 
 		if (pointOfEntry != null) {
-			String pointOfEntryUuid = pointOfEntry.getUuid();
+			WithDetails<PointOfEntryReferenceDto> localPointOfEntry = loadLocalPointOfEntry(pointOfEntry, pointOfEntryDetails);
 
-			if (PointOfEntryDto.CONSTANT_POE_UUIDS.contains(pointOfEntryUuid)) {
-				infrastructureData.pointOfEntry = pointOfEntryFacade.getByUuid(pointOfEntryUuid).toReference();
+			if (localPointOfEntry.entity == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntry.getCaption());
 			} else {
-				String pointOfEntryName = pointOfEntry.getCaption();
-				PointOfEntryReferenceDto localPointOfEntry =
-					pointOfEntryFacade.getByName(pointOfEntryName, localDistrict, false).stream().findFirst().orElse(null);
-
-				if (localPointOfEntry == null) {
-					unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntryName);
-				} else {
-					infrastructureData.pointOfEntry = localPointOfEntry;
-				}
+				infrastructureData.pointOfEntry = localPointOfEntry.entity;
+				infrastructureData.pointOfEntryDetails = localPointOfEntry.details;
 			}
 		}
 
@@ -251,10 +223,11 @@ public class SharedDataProcessorHelper {
 			sample.setReportingUser(userService.getCurrentUser().toReference());
 
 			DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
-				loadLocalInfrastructure(null, null, null, null, sample.getLab(), null);
+				loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
 
 			handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
 				sample.setLab(infrastructureData.facility);
+				sample.setLabDetails(infrastructureData.facilityDetails);
 			}));
 
 			if (sampleErrors.hasError()) {
@@ -262,12 +235,20 @@ public class SharedDataProcessorHelper {
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureData, List<String>> ptInfrastructureAndErrors =
-					loadLocalInfrastructure(null, null, null, FacilityType.LABORATORY, pathogenTest.getLab(), null);
+				DataHelper.Pair<InfrastructureData, List<String>> ptInfrastructureAndErrors = loadLocalInfrastructure(
+					null,
+					null,
+					null,
+					FacilityType.LABORATORY,
+					pathogenTest.getLab(),
+					pathogenTest.getLabDetails(),
+					null,
+					null);
 
 				ValidationErrors pathogenTestErrors = new ValidationErrors();
 				handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
 					pathogenTest.setLab(infrastructureData.facility);
+					pathogenTest.setLabDetails(infrastructureData.facilityDetails);
 				}));
 
 				if (pathogenTestErrors.hasError()) {
@@ -288,7 +269,7 @@ public class SharedDataProcessorHelper {
 		contact.setReportingUser(userService.getCurrentUser().toReference());
 
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
-			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity(), null, null, null);
+			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
 			contact.setRegion(infrastructure.region);
@@ -319,6 +300,8 @@ public class SharedDataProcessorHelper {
 			address.getCommunity(),
 			address.getFacilityType(),
 			address.getFacility(),
+			address.getFacilityDetails(),
+			null,
 			null);
 
 		handleInfraStructure(infrastructureAndErrors, groupNameTag, validationErrors, (infrastructure -> {
@@ -326,7 +309,128 @@ public class SharedDataProcessorHelper {
 			address.setDistrict(infrastructure.district);
 			address.setCommunity(infrastructure.community);
 			address.setFacility(infrastructure.facility);
+			address.setFacilityDetails(infrastructure.facilityDetails);
 		}));
+	}
+
+	private RegionReferenceDto loadLocalRegion(RegionReferenceDto region) {
+		if (region == null) {
+			return null;
+		}
+
+		Optional<RegionReferenceDto> localRegion =
+			region.getExternalId() != null ? regionFacade.getByExternalId(region.getExternalId(), false).stream().findFirst() : Optional.empty();
+
+		if (!localRegion.isPresent()) {
+			localRegion = regionFacade.getByName(region.getCaption(), false).stream().findFirst();
+		}
+
+		return localRegion.orElse(null);
+	}
+
+	private DistrictReferenceDto loadLocalDistrict(DistrictReferenceDto district) {
+		if (district == null) {
+			return null;
+		}
+
+		Optional<DistrictReferenceDto> localDistrict = district.getExternalId() != null
+			? districtFacade.getByExternalId(district.getExternalId(), false).stream().findFirst()
+			: Optional.empty();
+
+		if (!localDistrict.isPresent()) {
+			localDistrict = districtFacade.getByName(district.getCaption(), null, false).stream().findFirst();
+		}
+
+		return localDistrict.orElse(null);
+	}
+
+	private CommunityReferenceDto loadLocalCommunity(CommunityReferenceDto community) {
+		if (community == null) {
+			return null;
+		}
+
+		Optional<CommunityReferenceDto> localCommunity = community.getExternalId() != null
+			? communityFacade.getByExternalId(community.getExternalId(), false).stream().findFirst()
+			: Optional.empty();
+
+		if (!localCommunity.isPresent()) {
+			localCommunity = communityFacade.getByName(community.getCaption(), null, false).stream().findFirst();
+		}
+
+		return localCommunity.orElse(null);
+	}
+
+	private WithDetails<FacilityReferenceDto> loadLocalFacility(FacilityReferenceDto facility, FacilityType facilityType, String facilityDetails) {
+		String facilityUuid = facility.getUuid();
+
+		if (FacilityDto.CONSTANT_FACILITY_UUIDS.contains(facilityUuid)) {
+
+			FacilityReferenceDto localFacility = facilityDetails != null
+				? facilityFacade.getByNameAndType(facilityDetails.trim(), null, null, facilityType, false).stream().findFirst().orElse(null)
+				: null;
+			if (localFacility == null) {
+				localFacility = facilityFacade.getByUuid(facilityUuid).toReference();
+			} else {
+				facilityDetails = null;
+			}
+
+			return WithDetails.of(localFacility, facilityDetails);
+		} else {
+			Optional<FacilityReferenceDto> localFacility = facility.getExternalId() != null
+				? facilityFacade.getByExternalIdAndType(facility.getExternalId(), facilityType, false).stream().findFirst()
+				: Optional.empty();
+
+			if (!localFacility.isPresent()) {
+				localFacility = facilityFacade.getByNameAndType(facility.getCaption(), null, null, facilityType, false).stream().findFirst();
+			}
+
+			final String details;
+			if (!localFacility.isPresent()) {
+				details = facility.getCaption();
+				localFacility = Optional.of(facilityFacade.getByUuid(FacilityDto.OTHER_FACILITY_UUID).toReference());
+			} else {
+				details = facilityDetails;
+			}
+
+			return localFacility.map((f) -> WithDetails.of(f, details)).orElse(null);
+		}
+	}
+
+	private WithDetails<PointOfEntryReferenceDto> loadLocalPointOfEntry(PointOfEntryReferenceDto pointOfEntry, String pointOfEntryDetails) {
+		String pointOfEntryUuid = pointOfEntry.getUuid();
+
+		if (PointOfEntryDto.CONSTANT_POE_UUIDS.contains(pointOfEntryUuid)) {
+			PointOfEntryReferenceDto localPointOfEntry = pointOfEntryDetails != null
+				? pointOfEntryFacade.getByName(pointOfEntryDetails.trim(), null, false).stream().findFirst().orElse(null)
+				: null;
+			if (localPointOfEntry == null) {
+				localPointOfEntry = pointOfEntryFacade.getByUuid(pointOfEntryUuid).toReference();
+			} else {
+				pointOfEntryDetails = null;
+			}
+
+			return WithDetails.of(localPointOfEntry, pointOfEntryDetails);
+		} else {
+
+			Optional<PointOfEntryReferenceDto> localPointOfEntry = pointOfEntry.getExternalId() != null
+				? pointOfEntryFacade.getByExternalId(pointOfEntry.getExternalId(), false).stream().findFirst()
+				: Optional.empty();
+
+			if (!localPointOfEntry.isPresent()) {
+				localPointOfEntry = pointOfEntryFacade.getByName(pointOfEntry.getCaption(), null, false).stream().findFirst();
+			}
+
+			final String details;
+			if (!localPointOfEntry.isPresent()) {
+				details = pointOfEntry.getCaption();
+				localPointOfEntry = Optional
+					.of(pointOfEntryFacade.getByUuid(PointOfEntryDto.getOtherPointOfEntryUuid(pointOfEntry.getPointOfEntryType())).toReference());
+			} else {
+				details = pointOfEntryDetails;
+			}
+
+			return localPointOfEntry.map(p -> WithDetails.of(p, details)).orElse(null);
+		}
 	}
 
 	public static class InfrastructureData {
@@ -335,7 +439,9 @@ public class SharedDataProcessorHelper {
 		private DistrictReferenceDto district;
 		private CommunityReferenceDto community;
 		private FacilityReferenceDto facility;
+		private String facilityDetails;
 		private PointOfEntryReferenceDto pointOfEntry;
+		private String pointOfEntryDetails;
 
 		public RegionReferenceDto getRegion() {
 			return region;
@@ -353,8 +459,31 @@ public class SharedDataProcessorHelper {
 			return facility;
 		}
 
+		public String getFacilityDetails() {
+			return facilityDetails;
+		}
+
 		public PointOfEntryReferenceDto getPointOfEntry() {
 			return pointOfEntry;
+		}
+
+		public String getPointOfEntryDetails() {
+			return pointOfEntryDetails;
+		}
+	}
+
+	private static final class WithDetails<T> {
+
+		private T entity;
+		private String details;
+
+		public static <T> WithDetails<T> of(T facility, String facilityDetails) {
+			WithDetails<T> localFacility = new WithDetails<>();
+
+			localFacility.entity = facility;
+			localFacility.details = facilityDetails;
+
+			return localFacility;
 		}
 	}
 }

@@ -52,8 +52,10 @@ public class PointOfEntryDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
+		String regionExternalId,
 		String districtUuid,
 		String districtName,
+		String districtExternalId,
 		Double latitude,
 		Double longitude,
 		boolean active,
@@ -65,10 +67,10 @@ public class PointOfEntryDto extends EntityDto {
 		this.pointOfEntryType = pointOfEntryType;
 		this.name = name;
 		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName);
+			this.region = new RegionReferenceDto(regionUuid, regionName, districtExternalId);
 		}
 		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName);
+			this.district = new DistrictReferenceDto(districtUuid, districtName, regionExternalId);
 		}
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -99,6 +101,19 @@ public class PointOfEntryDto extends EntityDto {
 
 	public static boolean isNameOtherPointOfEntry(String name) {
 		return OTHER_AIRPORT.equals(name) || OTHER_SEAPORT.equals(name) || OTHER_GROUND_CROSSING.equals(name) || OTHER_POE.equals(name);
+	}
+
+	public static String getOtherPointOfEntryUuid(PointOfEntryType pointOfEntryType) {
+		switch (pointOfEntryType) {
+		case AIRPORT:
+			return OTHER_AIRPORT_UUID;
+		case SEAPORT:
+			return OTHER_SEAPORT_UUID;
+		case GROUND_CROSSING:
+			return OTHER_GROUND_CROSSING_UUID;
+		default:
+			return OTHER_POE_UUID;
+		}
 	}
 
 	public PointOfEntryType getPointOfEntryType() {
@@ -179,6 +194,6 @@ public class PointOfEntryDto extends EntityDto {
 	}
 
 	public PointOfEntryReferenceDto toReference() {
-		return new PointOfEntryReferenceDto(getUuid(), toString());
+		return new PointOfEntryReferenceDto(getUuid(), toString(), pointOfEntryType, externalID);
 	}
 }
