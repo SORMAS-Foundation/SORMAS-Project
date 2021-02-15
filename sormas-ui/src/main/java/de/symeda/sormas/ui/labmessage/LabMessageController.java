@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -206,7 +208,23 @@ public class LabMessageController {
 				if (!eventIndexDtos.contains(selectedEvent)) {
 					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
 				} else {
-					VaadinUiUtil.showSimplePopupWindow(Captions.info, Strings.infoEventParticipantAlreadyExisting);
+					CommitDiscardWrapperComponent commitDiscardWrapperComponent = new CommitDiscardWrapperComponent(
+						new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
+					commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+					commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionBack));
+
+					commitDiscardWrapperComponent.addCommitListener(() -> {
+						EventParticipantReferenceDto participant =
+							FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(selectedEvent.getUuid(), person.getUuid());
+						List<SampleDto> samples = FacadeProvider.getSampleFacade().getByEventParticipantUuids(Arrays.asList(participant.getUuid()));
+						if (samples.isEmpty()) {
+							createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), participant), labMessageDto);
+						} else {
+							pickOrCreateSample(FacadeProvider.getEventParticipantFacade().getByUuid(participant.getUuid()), labMessageDto, samples);
+						}
+					});
+					commitDiscardWrapperComponent.addDiscardListener(() -> pickOrCreateEvent(labMessageDto, person));
+					VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info));
 				}
 			} else {
 				createEvent(labMessageDto, person);
