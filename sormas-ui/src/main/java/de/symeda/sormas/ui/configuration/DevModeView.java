@@ -104,6 +104,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static Random randomGenerator;
 
+	private TextField seedField;
+	private CheckBox useManualSeedCheckbox;
 	private static boolean useManualSeed = false;
 	private static long manualSeed = 0;
 
@@ -154,7 +156,7 @@ public class DevModeView extends AbstractConfigurationView {
 		verticalLayout.setSpacing(false);
 
 		Label seedLabel = new Label(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
-		TextField seedField = new TextField();
+		seedField = new TextField();
 		seedField.setCaption(I18nProperties.getCaption(Captions.devModeGeneratorSeed));
 		seedField.setValue(Long.toString(manualSeed, 36));
 		seedField.setMaxLength(11);
@@ -167,13 +169,15 @@ public class DevModeView extends AbstractConfigurationView {
 			seedLabel.setValue(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
 		});
 
-		CheckBox useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
+		useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
 		useManualSeedCheckbox.setValue(useManualSeed);
 		useManualSeedCheckbox.addValueChangeListener(e -> {
 			useManualSeed = e.getValue();
 		});
 
-		Button performanceConfigButton = ButtonHelper.createButton("Load performance config", e -> {
+		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
+			seedField.setValue("performance");
+			useManualSeedCheckbox.setValue(true);
 			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
@@ -191,7 +195,8 @@ public class DevModeView extends AbstractConfigurationView {
 			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
 			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
 		}, CssStyles.FORCE_CAPTION);
-		Button defaultConfigButton = ButtonHelper.createButton("Load default config", e -> {
+		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
+			useManualSeedCheckbox.setValue(false);
 			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
@@ -540,7 +545,6 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static void initializeRandomGenerator() {
 		if (useManualSeed) {
-			System.out.println("Initializing random generator with seed " + manualSeed);
 			randomGenerator = new Random(manualSeed);
 		} else {
 			randomGenerator = new Random();
