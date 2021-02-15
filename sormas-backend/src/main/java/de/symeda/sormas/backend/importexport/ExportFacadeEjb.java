@@ -174,10 +174,10 @@ public class ExportFacadeEjb implements ExportFacade {
 		Predicate filters;
 		if (isPublic) {
 			filters = CriteriaBuilderHelper.and(
-					cb,
-					criteriaFilters,
-					cb.equal(config.get(ExportConfiguration.SHARED_TO_PUBLIC), true),
-					cb.notEqual(config.get(ExportConfiguration.USER), user));
+				cb,
+				criteriaFilters,
+				cb.equal(config.get(ExportConfiguration.SHARED_TO_PUBLIC), true),
+				cb.notEqual(config.get(ExportConfiguration.USER), user));
 		} else {
 			filters = CriteriaBuilderHelper.and(cb, criteriaFilters, cb.equal(config.get(ExportConfiguration.USER), user));
 		}

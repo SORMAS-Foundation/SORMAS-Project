@@ -6501,6 +6501,28 @@ ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
 ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
+
+-- 2020-02-12 Remove locations assigned to more than one exposure from deleted cases #4338
+ALTER TABLE exposures ALTER COLUMN location_id DROP NOT NULL;
+ALTER TABLE exposures_history ALTER COLUMN location_id DROP NOT NULL;
+UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = exposures.epidata_id AND cases.deleted IS true AND (SELECT COUNT(location_id) FROM exposures ex WHERE ex.location_id = exposures.location_id) > 1;
+
+INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
+
+-- 2020-02-15 Add missing indexes #3481
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_contact_reporting_user_id ON contact USING btree (reportinguser_id);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfiguration_changedate on diseaseconfiguration (changedate DESC);
+CREATE INDEX IF NOT EXISTS idx_person_uuid ON person USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_contact_uuid ON contact USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_uuid ON users USING hash(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users USING hash(username);
+
+INSERT INTO schema_version (version_number, comment) VALUES (329, 'evaluate performance cases #3481');
+
 -- 2020-02-12 [SurvNet Interface] Add Reports to case information #4282
 
 CREATE TABLE surveillancereports (
@@ -6554,6 +6576,6 @@ $$ LANGUAGE plpgsql;
 
 ALTER TABLE cases DROP COLUMN reportingtype;
 
-INSERT INTO schema_version (version_number, comment) VALUES (328, '[SurvNet Interface] Add Reports to case information #4282');
+INSERT INTO schema_version (version_number, comment) VALUES (330, '[SurvNet Interface] Add Reports to case information #4282');
 
 -- *** Insert new sql commands BEFORE this line ***
