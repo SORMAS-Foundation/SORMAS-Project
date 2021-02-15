@@ -123,7 +123,6 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_communities",
 				"sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				CommunitiesGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

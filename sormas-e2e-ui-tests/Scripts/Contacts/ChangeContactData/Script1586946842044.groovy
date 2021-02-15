@@ -34,7 +34,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/sp
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took place'),
     'this is a test')
-WebUI.delay(0.5)
+WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Quarantine_v-filterselect-button'))
 

@@ -24,6 +24,8 @@ WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
+WebUI.delay(1)
+
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Test Result')
 
 WebUI.click(findTestObject('Samples/MainView/filterselect-button-condition'))
@@ -35,6 +37,8 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
+
+WebUI.delay(1)
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Specimen Condition')
 
@@ -48,6 +52,8 @@ WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
+WebUI.delay(1)
+
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Case Classification')	
 
 WebUI.click(findTestObject('Samples/MainView/filterselect-button-disease'))
@@ -59,6 +65,8 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
+
+WebUI.delay(1)
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Disease')
 
@@ -72,6 +80,8 @@ WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
+WebUI.delay(1)
+
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'District')
 
 WebUI.click(findTestObject('Samples/MainView/filterselect-button-laboratory'))
@@ -84,6 +94,8 @@ WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
+WebUI.delay(1)
+
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Laboratory')
 
 WebUI.setText(findTestObject('Samples/MainView/input_Export_caseCodeIdLike'), 'test')
@@ -93,6 +105,8 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
+
+WebUI.delay(1)
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Free Text filter')
 

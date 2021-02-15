@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.user;
 
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -50,7 +52,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.StringUtils;
 
 public class UserController {
 
@@ -255,7 +256,10 @@ public class UserController {
 		}, ValoTheme.BUTTON_LINK);
 	}
 
-	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, String userEmail, CommitDiscardWrapperComponent<UserEditForm> editView) {
+	public ConfirmationComponent getResetPasswordConfirmationComponent(
+		String userUuid,
+		String userEmail,
+		CommitDiscardWrapperComponent<UserEditForm> editView) {
 		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
 
 			private static final long serialVersionUID = 1L;
@@ -282,8 +286,7 @@ public class UserController {
 		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
 		form.setValue(user);
 
-		final CommitDiscardWrapperComponent<UserSettingsForm> component =
-				new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();

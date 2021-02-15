@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.user;
 
+import java.util.Collections;
 import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -24,12 +25,19 @@ import de.symeda.sormas.ui.UserProvider;
 
 public class UserUiHelper {
 
-	public static Set<UserRole> getAssignableRoles() {
+	public static Set<UserRole> getAssignableRoles(Set<UserRole> assignedUserRoles) {
+
+		final Set<UserRole> assignedRoles = assignedUserRoles == null ? Collections.emptySet() : assignedUserRoles;
+
 		Set<UserRole> allRoles = UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles());
 
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			allRoles.remove(UserRole.BAG_USER);
 		}
+
+		Set<UserRole> enabledUserRoles = FacadeProvider.getUserRoleConfigFacade().getEnabledUserRoles();
+
+		allRoles.removeIf(userRole -> !enabledUserRoles.contains(userRole) && !assignedRoles.contains(userRole));
 
 		return allRoles;
 	}

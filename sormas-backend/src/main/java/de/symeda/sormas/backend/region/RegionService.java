@@ -58,6 +58,24 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Region> getByExternalId(String externalId, boolean includeArchivedEntities) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
+		Root<Region> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(
+			cb.equal(cb.trim(from.get(Region.EXTERNAL_ID)), externalId.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(Region.EXTERNAL_ID))), externalId.trim().toLowerCase()));
+
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Region> from) {
@@ -81,7 +99,8 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Region.ARCHIVED), false), cb.isNull(from.get(Region.ARCHIVED))));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Region.ARCHIVED), false), cb.isNull(from.get(Region.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Region.ARCHIVED), true));
 			}

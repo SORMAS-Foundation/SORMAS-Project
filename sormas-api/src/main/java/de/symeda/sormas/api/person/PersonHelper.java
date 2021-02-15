@@ -19,15 +19,16 @@ package de.symeda.sormas.api.person;
 
 import java.text.Normalizer;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.simmetrics.metrics.StringMetrics;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
 public final class PersonHelper {
@@ -91,6 +92,43 @@ public final class PersonHelper {
 		}
 	}
 
+	public static BirthDateDto parseBirthdate(String birthDate, Language language) {
+
+		if (StringUtils.isEmpty(birthDate)) {
+			return null;
+		}
+
+		String dateFormat = language.getDateFormat();
+		List<String> dateFormatFields = DateHelper.getDateFields(dateFormat);
+		List<String> dateFields = DateHelper.getDateFields(birthDate);
+
+		if (dateFormatFields == null || dateFields == null) {
+			return null;
+		}
+
+		Integer birthdateDD = null;
+		Integer birthdateMM = null;
+		Integer birthdateYYYY = null;
+
+		for (int i = 0; i < dateFormatFields.size(); i++) {
+			String dateField = dateFields.get(i);
+			String formatField = dateFormatFields.get(i);
+
+			if (!StringUtils.isEmpty(dateField)) {
+				if (formatField.toLowerCase().startsWith("d")) {
+					birthdateDD = Integer.parseInt(dateField);
+				} else if (formatField.toLowerCase().startsWith("m")) {
+					birthdateMM = Integer.parseInt(dateField);
+				} else if (formatField.toLowerCase().startsWith("y")) {
+					birthdateYYYY = Integer.parseInt(dateField);
+				}
+
+			}
+		}
+
+		return new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
+	}
+
 	public static String getAgeAndBirthdateString(
 		Integer age,
 		ApproximateAgeType ageType,
@@ -128,21 +166,6 @@ public final class PersonHelper {
 				result.append(" ");
 			}
 			result.append(burialPlaceDescription);
-		}
-		return result.toString();
-	}
-
-	public static String buildPhoneString(String phone, String phoneOwner) {
-
-		StringBuilder result = new StringBuilder();
-		if (!DataHelper.isNullOrEmpty(phone)) {
-			result.append(phone);
-		}
-		if (!DataHelper.isNullOrEmpty(phoneOwner)) {
-			if (result.length() > 0) {
-				result.append(" - ");
-			}
-			result.append(phoneOwner);
 		}
 		return result.toString();
 	}

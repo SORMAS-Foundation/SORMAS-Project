@@ -198,6 +198,7 @@ public class Case extends CoreAdo {
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
 	public static final String COVID_TEST_REASON = "covidTestReason";
