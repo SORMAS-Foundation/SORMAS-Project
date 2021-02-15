@@ -19,6 +19,7 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -84,6 +86,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	private String serotype;
 	private Float cqValue;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private Date reportDate;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {

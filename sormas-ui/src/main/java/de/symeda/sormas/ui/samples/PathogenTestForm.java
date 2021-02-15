@@ -80,7 +80,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
-			new FieldVisibilityCheckers(),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.forSensitiveData(!create && isPseudonymized));
 
 		this.sample = sample;
@@ -136,6 +136,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(6);
 
 		initializeAccessAndAllowedAccesses();
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

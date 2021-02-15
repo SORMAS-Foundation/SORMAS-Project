@@ -25,9 +25,11 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -57,7 +59,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			PathogenTestEditFragment.class,
 			null,
 			activityRootData,
-			null,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
