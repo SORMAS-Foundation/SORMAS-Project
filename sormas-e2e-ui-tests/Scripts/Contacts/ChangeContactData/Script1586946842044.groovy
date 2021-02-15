@@ -47,7 +47,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/
 WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'), 1)
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     'this is a test')
-WebUI.delay(0.5)
+WebUI.delay(1)
 
 //WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filterselect'))
 
