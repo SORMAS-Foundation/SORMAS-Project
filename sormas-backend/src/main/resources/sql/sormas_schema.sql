@@ -6593,6 +6593,6 @@ ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason var
 ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
 ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (330, '#4187 add reason for hospitalization');
+INSERT INTO schema_version (version_number, comment) VALUES (331, '#4187 add reason for hospitalization');
 
 -- *** Insert new sql commands BEFORE this line ***
