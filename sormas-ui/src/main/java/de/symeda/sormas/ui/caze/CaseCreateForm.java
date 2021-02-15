@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Sets;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -203,7 +205,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		facilityType = addField(CaseDataDto.FACILITY_TYPE);
+		facilityType = new ComboBox();
+		facilityType.setId("type");
+		facilityType.setCaption(I18nProperties.getCaption(Captions.facilityType));
+		facilityType.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(facilityType, CaseDataDto.FACILITY_TYPE);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -260,7 +266,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue()) || TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}
@@ -287,30 +293,54 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
 		facilityType.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
-			if (facilityType.getValue() != null && district.getValue() != null) {
-				if (community.getValue() != null) {
-					FieldHelper.updateItems(
-						facility,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) community.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
-				} else {
-					FieldHelper.updateItems(
-						facility,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType(
-								(DistrictReferenceDto) district.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
+			if (facilityType.isReadOnly()) {
+				FieldHelper.removeItems(facility);
+				if (facilityType.getValue() != null && district.getValue() != null) {
+					if (community.getValue() != null) {
+						FieldHelper.updateItems(
+							facility,
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByCommunityAndType(
+									(CommunityReferenceDto) community.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false));
+					} else {
+						FieldHelper.updateItems(
+							facility,
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false));
+					}
 				}
 			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+
+		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
+			region.setReadOnly(true);
+			district.setReadOnly(true);
+		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+			region.setReadOnly(true);
+			district.setReadOnly(true);
+			community.setReadOnly(true);
+
+			facilityOrHome.setImmediate(true);
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.FACILITY)); // [FACILITY]
+			facilityOrHome.setReadOnly(true);
+			facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+			facilityTypeGroup.setReadOnly(true);
+			facilityType.setValue(FacilityType.HOSPITAL);
+			facilityType.setReadOnly(true);
+			facility.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
+			facility.setReadOnly(true);
+		}
+
+		System.out.println(facilityType.getValue());
 
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
