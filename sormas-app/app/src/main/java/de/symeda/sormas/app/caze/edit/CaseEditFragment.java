@@ -107,7 +107,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
 	private List<Item> quarantineList;
-	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> quarantineReasonList;
@@ -208,7 +207,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 			contentBinding.caseDataExternalToken.setVisibility(GONE);
-			contentBinding.caseDataReportingType.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
@@ -286,7 +284,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
-		reportingTypeList = DataUtils.getEnumItems(ReportingType.class, true);
 
 		initialRegions = InfrastructureHelper.loadRegions();
 		allDistricts = InfrastructureHelper.loadAllDistricts();
@@ -537,7 +534,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
-		contentBinding.caseDataReportingType.initializeSpinner(reportingTypeList);
 
 		// Replace classification user field with classified by field when case has been classified automatically
 		if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {

@@ -186,7 +186,6 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String SAMPLES = "samples";
@@ -340,8 +339,6 @@ public class Case extends CoreAdo {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
-
-	private ReportingType reportingType;
 
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
@@ -1366,15 +1363,6 @@ public class Case extends CoreAdo {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	@Enumerated(EnumType.STRING)

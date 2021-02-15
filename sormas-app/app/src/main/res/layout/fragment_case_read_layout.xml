@@ -271,11 +271,6 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_reportingType"
-                    app:value="@{data.reportingType}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_reportingDistrict"
                     app:value="@{data.reportingDistrict}"
                     style="@style/ControlSingleColumnStyle" />

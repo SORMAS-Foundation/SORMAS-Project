@@ -192,7 +192,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -427,7 +426,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());

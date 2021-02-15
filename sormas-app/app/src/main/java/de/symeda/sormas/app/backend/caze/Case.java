@@ -352,8 +352,6 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
 	@Enumerated(EnumType.STRING)
-	private ReportingType reportingType;
-	@Enumerated(EnumType.STRING)
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
@@ -1171,14 +1169,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	public YesNoUnknown getPostpartum() {
