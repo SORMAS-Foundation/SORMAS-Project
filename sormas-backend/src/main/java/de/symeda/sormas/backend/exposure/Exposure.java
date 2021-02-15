@@ -191,7 +191,7 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public Location getLocation() {
 		if (location == null) {
 			location = new Location();

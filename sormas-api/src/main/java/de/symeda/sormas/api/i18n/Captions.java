@@ -36,6 +36,7 @@ public interface Captions {
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
+	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
 	String actionCancel = "actionCancel";
 	String actionClear = "actionClear";
@@ -44,6 +45,7 @@ public interface Captions {
 	String actionCompare = "actionCompare";
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
+	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
