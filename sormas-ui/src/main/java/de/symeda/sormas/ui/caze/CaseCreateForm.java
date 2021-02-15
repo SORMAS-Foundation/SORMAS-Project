@@ -293,28 +293,26 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
 		facilityType.addValueChangeListener(e -> {
-			if (facilityType.isReadOnly()) {
-				FieldHelper.removeItems(facility);
-				if (facilityType.getValue() != null && district.getValue() != null) {
-					if (community.getValue() != null) {
-						FieldHelper.updateItems(
-							facility,
-							FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByCommunityAndType(
-									(CommunityReferenceDto) community.getValue(),
-									(FacilityType) facilityType.getValue(),
-									true,
-									false));
-					} else {
-						FieldHelper.updateItems(
-							facility,
-							FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) district.getValue(),
-									(FacilityType) facilityType.getValue(),
-									true,
-									false));
-					}
+			FieldHelper.removeItems(facility);
+			if (facilityType.getValue() != null && district.getValue() != null) {
+				if (community.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(
+								(CommunityReferenceDto) community.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				} else {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
 				}
 			}
 		});
@@ -340,8 +338,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facility.setReadOnly(true);
 		}
 
-		System.out.println(facilityType.getValue());
-
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
@@ -350,10 +346,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					setRequired(false, CaseDataDto.POINT_OF_ENTRY);
 					updateFacilityFields(facility, facilityDetails);
 				} else {
-					facilityOrHome.clear();
 					setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 					setRequired(true, CaseDataDto.POINT_OF_ENTRY);
-					setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					if (userJurisditionLevel != JurisdictionLevel.HEALTH_FACILITY) {
+						facilityOrHome.clear();
+						setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					}
 					updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 				}
 			});
