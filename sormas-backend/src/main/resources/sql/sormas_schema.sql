@@ -6509,6 +6509,7 @@ UPDATE exposures SET location_id = null FROM cases WHERE cases.epidata_id = expo
 
 INSERT INTO schema_version (version_number, comment) VALUES (328, 'Remove locations assigned to more than one exposure from deleted cases #4338');
 
+-- 2020-02-15 Add missing indexes #3481 
 CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples USING btree (associatedcase_id);
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_reporting_user_id ON eventparticipant USING btree (reportinguser_id);
 CREATE INDEX IF NOT EXISTS idx_cases_reporting_user_id ON cases USING hash (reportinguser_id);
