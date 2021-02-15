@@ -385,6 +385,11 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Date prohibitionToWorkUntil;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown reInfection;
+	@DatabaseField
+	private Date previousInfectionDate;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
 
@@ -1306,6 +1311,22 @@ public class Case extends PseudonymizableAdo {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
 	}
 
 	public District getReportingDistrict() {

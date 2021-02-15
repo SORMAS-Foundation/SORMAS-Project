@@ -6441,7 +6441,7 @@ $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
 
 
--- 2020-02-04
+-- 2021-02-04 - [SurvNet Interface] Add fields next to type of place #4038
 ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
 ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
 ALTER TABLE events ADD COLUMN workenvironment varchar(255);
@@ -6465,7 +6465,7 @@ ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
 ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
-                                                                                                                                         
+
 -- 2021-02-10 SurvNet Adaptations - Create new field “Suspicious case” to cases
 
 ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean default false;
@@ -6485,4 +6485,20 @@ ALTER TABLE cases_history ADD COLUMN notACaseReasonDetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (325, 'SurvNet Adaptations - Create new field “Suspicious case” to cases #3419');
 
+-- 2020-02-09 #3831 SurvNet Adaptations - Create new field “Reinfection” for cases
+ALTER TABLE cases
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN reinfection varchar(255),
+    ADD COLUMN previousinfectiondate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
+
+-- 2021-02-10 - Make user roles deactivateable #3716
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
 -- *** Insert new sql commands BEFORE this line ***

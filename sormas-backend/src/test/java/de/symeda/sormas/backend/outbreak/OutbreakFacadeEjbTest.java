@@ -47,7 +47,7 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testOutbreakCreationAndDeletion() {
 
-		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid());
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid(), null, null);
 		Disease disease = Disease.EVD;
 
 		getOutbreakFacade().startOutbreak(district, disease);

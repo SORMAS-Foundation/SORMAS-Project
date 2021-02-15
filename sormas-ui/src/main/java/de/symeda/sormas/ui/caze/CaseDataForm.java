@@ -183,6 +183,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
+					fluidRowLocs(CaseDataDto.RE_INFECTION, CaseDataDto.PREVIOUS_INFECTION_DATE) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
@@ -309,7 +310,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = ButtonHelper.createButton(
 			Captions.actionAssignNewEpidNumber,
-			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference())),
+			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue())),
 			ValoTheme.BUTTON_DANGER,
 			FORCE_CAPTION);
 
@@ -413,6 +414,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.NOSOCOMIAL_OUTBREAK).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(CaseDataDto.INFECTION_SETTING);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.INFECTION_SETTING, CaseDataDto.NOSOCOMIAL_OUTBREAK, true, true);
+
+		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
+		addField(CaseDataDto.PREVIOUS_INFECTION_DATE);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, true);
 
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
@@ -650,14 +655,30 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.VACCINATION);
 		addField(CaseDataDto.VACCINATION_DOSES)
-			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
+			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		addFields(
 			CaseDataDto.VACCINATION_INFO_SOURCE,
 			CaseDataDto.VACCINE,
 			CaseDataDto.SMALLPOX_VACCINATION_SCAR,
-			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
-			CaseDataDto.FIRST_VACCINATION_DATE,
-			CaseDataDto.LAST_VACCINATION_DATE);
+			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
+		final DateField firstVaccinationDateField = addDateField(CaseDataDto.FIRST_VACCINATION_DATE, DateField.class, 0);
+		final DateField lastVaccinationDateField = addDateField(CaseDataDto.LAST_VACCINATION_DATE, DateField.class, 0);
+		firstVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				firstVaccinationDateField,
+				lastVaccinationDateField,
+				true,
+				false,
+				I18nProperties
+					.getValidationError(Validations.beforeDate, firstVaccinationDateField.getCaption(), lastVaccinationDateField.getCaption())));
+		lastVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				lastVaccinationDateField,
+				firstVaccinationDateField,
+				false,
+				false,
+				I18nProperties
+					.getValidationError(Validations.afterDate, lastVaccinationDateField.getCaption(), firstVaccinationDateField.getCaption())));
 
 		ComboBox vaccineName = addField(CaseDataDto.VACCINE_NAME);
 		ComboBox vaccineManufacturer = addField(CaseDataDto.VACCINE_MANUFACTURER);

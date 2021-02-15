@@ -93,7 +93,7 @@ public class RegionIndexDto extends EntityDto {
 	}
 
 	public RegionReferenceDto toReference() {
-		return new RegionReferenceDto(getUuid());
+		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
 
 	public static RegionIndexDto build() {

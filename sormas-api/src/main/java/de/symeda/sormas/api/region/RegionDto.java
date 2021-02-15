@@ -17,12 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-
-import java.util.Date;
 
 public class RegionDto extends EntityDto {
 
@@ -120,7 +120,7 @@ public class RegionDto extends EntityDto {
 	}
 
 	public RegionReferenceDto toReference() {
-		return new RegionReferenceDto(getUuid());
+		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
 
 	public static RegionDto build() {

@@ -131,7 +131,6 @@ public class FacilitiesView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_facilities",
 				"sormas_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				FacilitiesGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

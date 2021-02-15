@@ -352,12 +352,15 @@ public class EventFacadeEjb implements EventFacade {
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate isInIndexlist = epRoot.get(EventParticipant.EVENT)
+				.get(AbstractDomainObject.UUID)
+				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
 				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
 				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
-			participantCQ.where(notDeleted);
+			participantCQ.where(notDeleted, isInIndexlist);
 			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(participantCQ).getResultList();
@@ -377,6 +380,9 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+			isInIndexlist = epRoot.get(EventParticipant.EVENT)
+				.get(AbstractDomainObject.UUID)
+				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -389,7 +395,7 @@ public class EventFacadeEjb implements EventFacade {
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
 				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
-			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted);
+			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInIndexlist);
 			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(contactCQ).getResultList();
@@ -506,12 +512,15 @@ public class EventFacadeEjb implements EventFacade {
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate isInExportlist = epRoot.get(EventParticipant.EVENT)
+				.get(AbstractDomainObject.UUID)
+				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
 				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
 				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
-			participantCQ.where(notDeleted);
+			participantCQ.where(notDeleted, isInExportlist);
 			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(participantCQ).getResultList();
@@ -531,6 +540,9 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+			isInExportlist = epRoot.get(EventParticipant.EVENT)
+				.get(AbstractDomainObject.UUID)
+				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -543,7 +555,7 @@ public class EventFacadeEjb implements EventFacade {
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
 				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
-			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted);
+			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInExportlist);
 			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(contactCQ).getResultList();

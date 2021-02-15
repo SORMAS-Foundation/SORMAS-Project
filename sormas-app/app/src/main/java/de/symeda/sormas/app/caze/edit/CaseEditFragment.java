@@ -498,6 +498,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
 		ValidationHelper
 			.initIntegerValidator(contentBinding.caseDataVaccinationDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
+		ValidationHelper.initDateIntervalValidator(contentBinding.caseDataFirstVaccinationDate, contentBinding.caseDataLastVaccinationDate);
 	}
 
 	@Override
@@ -571,6 +572,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// end swiss fields
+
 		contentBinding.caseDataInfectionSetting.initializeSpinner(infectionSettingList);
 		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
@@ -578,6 +580,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// vaccination
 		contentBinding.caseDataVaccineName.initializeSpinner(vaccineList);
 		contentBinding.caseDataVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+
+		// reinfection
+		contentBinding.caseDataPreviousInfectionDate.initializeDateField(getChildFragmentManager());
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {

@@ -59,6 +59,8 @@ public class CurrentUserService {
 
 		if (user != null) {
 			user.getUserRoles().size();
+			// TODO
+			user.getAddress().getAddressType();
 			return new CurrentUser(user);
 		} else {
 			return new CurrentUser(null);

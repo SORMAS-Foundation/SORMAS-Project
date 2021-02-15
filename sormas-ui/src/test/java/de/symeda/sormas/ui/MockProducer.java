@@ -62,6 +62,7 @@ public class MockProducer {
 	static {
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ",");
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_EPID_PREFIX, "ng");
 
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");

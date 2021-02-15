@@ -272,6 +272,7 @@ public interface Captions {
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
+	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
 	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
 	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
@@ -297,6 +298,7 @@ public interface Captions {
 	String CaseData_rabiesType = "CaseData.rabiesType";
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
+	String CaseData_reInfection = "CaseData.reInfection";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingType = "CaseData.reportingType";
@@ -382,6 +384,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -587,6 +590,7 @@ public interface Captions {
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
@@ -761,8 +765,20 @@ public interface Captions {
 	String devModeContactEndDate = "devModeContactEndDate";
 	String devModeContactRegion = "devModeContactRegion";
 	String devModeContactStartDate = "devModeContactStartDate";
+	String devModeEventCasePercentage = "devModeEventCasePercentage";
+	String devModeEventCount = "devModeEventCount";
+	String devModeEventDisease = "devModeEventDisease";
+	String devModeEventDistrict = "devModeEventDistrict";
+	String devModeEventEndDate = "devModeEventEndDate";
+	String devModeEventMaxContacts = "devModeEventMaxContacts";
+	String devModeEventMaxParticipants = "devModeEventMaxParticipants";
+	String devModeEventMinContacts = "devModeEventMinContacts";
+	String devModeEventMinParticipants = "devModeEventMinParticipants";
+	String devModeEventRegion = "devModeEventRegion";
+	String devModeEventStartDate = "devModeEventStartDate";
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
+	String devModeGenerateEvents = "devModeGenerateEvents";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -1163,6 +1179,7 @@ public interface Captions {
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
 	String mainMenuEvents = "mainMenuEvents";
+	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
 	String mainMenuStatistics = "mainMenuStatistics";
@@ -1313,6 +1330,13 @@ public interface Captions {
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
+	String personLinkToCases = "personLinkToCases";
+	String personLinkToContacts = "personLinkToContacts";
+	String personLinkToEvents = "personLinkToEvents";
+	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
+	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
+	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
+	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
@@ -1915,6 +1939,8 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_persons = "View.persons";
+	String View_persons_data = "View.persons.data";
 	String View_reports = "View.reports";
 	String View_reports_sub = "View.reports.sub";
 	String View_samples = "View.samples";

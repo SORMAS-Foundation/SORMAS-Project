@@ -119,6 +119,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			root.get(District.GROWTH_RATE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			root.get(District.EXTERNAL_ID));
 	}
 
@@ -269,7 +270,16 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		return districtService.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
 			.stream()
-			.map(d -> toReferenceDto(d))
+			.map(DistrictFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DistrictReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		return districtService.getByExternalId(externalId, includeArchivedEntities)
+			.stream()
+			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -331,7 +341,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return null;
 		}
 
-		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString());
+		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}
 
@@ -394,7 +404,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return getFullEpidCodeForDistrict(district);
 	}
 
-	public String getFullEpidCodeForDistrict(District district) {
+	private String getFullEpidCodeForDistrict(District district) {
 		return (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "") + "-"
 			+ (district.getEpidCode() != null ? district.getEpidCode() : "");
 	}

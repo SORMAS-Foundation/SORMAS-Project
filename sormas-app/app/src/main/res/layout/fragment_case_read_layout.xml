@@ -432,6 +432,24 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_reInfection"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@{data.reInfection}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_previousInfectionDate"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{caseDataReInfection}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.previousInfectionDate}" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_quarantineHomePossible"
                         app:value="@{data.quarantineHomePossible}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
