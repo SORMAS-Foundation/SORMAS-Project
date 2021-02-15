@@ -51,7 +51,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "SurveillanceReportFacade")
-public class SurveillanceReportFacadeEJB implements SurveillanceReportFacade {
+public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -90,8 +90,7 @@ public class SurveillanceReportFacadeEJB implements SurveillanceReportFacade {
 
 	@Override
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
-		SurveillanceReport report = service.getByUuid(surveillanceReportUuid);
-		service.delete(report);
+		service.delete(service.getByUuid(surveillanceReportUuid));
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class SurveillanceReportFacadeEJB implements SurveillanceReportFacade {
 			resultList = em.createQuery(cq).getResultList();
 		}
 
-		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEJB::toDto).collect(Collectors.toList());
+		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 
 		User currentUser = userService.getCurrentUser();
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -188,7 +187,7 @@ public class SurveillanceReportFacadeEJB implements SurveillanceReportFacade {
 
 	@LocalBean
 	@Stateless
-	public static class SurveillanceReportFacadeEjbLocal extends SurveillanceReportFacadeEJB {
+	public static class SurveillanceReportFacadeEjbLocal extends SurveillanceReportFacadeEjb {
 
 	}
 }

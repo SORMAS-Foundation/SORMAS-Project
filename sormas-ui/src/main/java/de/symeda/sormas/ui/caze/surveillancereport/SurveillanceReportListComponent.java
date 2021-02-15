@@ -52,11 +52,11 @@ public class SurveillanceReportListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(I18nProperties.getString(Strings.surveillanceReports));
-		tasksHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(tasksHeader);
+		Label reportsHeader = new Label(I18nProperties.getString(Strings.headingSurveillanceReports));
+		reportsHeader.addStyleName(CssStyles.H3);
+		componentHeader.addComponent(reportsHeader);
 
-		createButton = new Button(I18nProperties.getCaption(Captions.newSurveillanceReport));
+		createButton = new Button(I18nProperties.getCaption(Captions.surveillanceReportNewReport));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 		createButton.addClickListener(e -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));

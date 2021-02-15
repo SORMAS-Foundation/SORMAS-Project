@@ -6509,7 +6509,7 @@ CREATE TABLE surveillancereports (
     creationdate timestamp without time zone NOT NULL,
     uuid character varying(36) NOT NULL,
     reportingtype varchar(255),
-    creatinguser_id bigint NOT NULL,
+    creatinguser_id bigint,
     reportdate timestamp NOT NULL,
     dateofdiagnosis timestamp,
     facilityregion_id bigint,

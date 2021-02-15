@@ -1224,7 +1224,6 @@ public interface Captions {
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
-	String newSurveillanceReport = "newSurveillanceReport";
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
@@ -1533,7 +1532,6 @@ public interface Captions {
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
 	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
-	String sampleNoSurveillanceReportsForCase = "sampleNoSurveillanceReportsForCase";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";
@@ -1604,6 +1602,8 @@ public interface Captions {
 	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
 	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
 	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String surveillanceReportNewReport = "surveillanceReportNewReport";
+	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_send = "SurvnetGateway.send";
 	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";

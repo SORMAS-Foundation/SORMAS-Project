@@ -289,7 +289,7 @@ public interface Strings {
 	String headingCreateNewUser = "headingCreateNewUser";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
-	String headingCreateSuerveillanceReport = "headingCreateSuerveillanceReport";
+	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
@@ -316,7 +316,7 @@ public interface Strings {
 	String headingEditLineListing = "headingEditLineListing";
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
-	String headingEditSuerveillanceReport = "headingEditSuerveillanceReport";
+	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
 	String headingEditUser = "headingEditUser";
@@ -439,6 +439,7 @@ public interface Strings {
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
+	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
@@ -925,7 +926,6 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
-	String surveillanceReports = "surveillanceReports";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_notificationEntryNotDeleted = "SurvnetGateway.notificationEntryNotDeleted";
 	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";

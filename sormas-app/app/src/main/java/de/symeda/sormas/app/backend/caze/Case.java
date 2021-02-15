@@ -41,7 +41,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -347,8 +346,6 @@ public class Case extends PseudonymizableAdo {
 	private boolean quarantineOfficialOrderSent;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
-	@Enumerated(EnumType.STRING)
-	private ReportingType reportingType;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
@@ -1159,14 +1156,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	public YesNoUnknown getPostpartum() {

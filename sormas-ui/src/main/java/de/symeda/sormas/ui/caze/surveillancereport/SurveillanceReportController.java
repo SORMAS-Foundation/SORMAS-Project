@@ -31,13 +31,13 @@ public class SurveillanceReportController {
 	public void createSurveillanceReport(CaseReferenceDto caze, Runnable callback) {
 		openEditWindow(
 			SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUser().toReference()),
-			Strings.headingCreateSuerveillanceReport,
+			Strings.headingCreateSurveillanceReport,
 			false,
 			callback);
 	}
 
 	public void editSurveillanceReport(SurveillanceReportDto report, Runnable callback) {
-		openEditWindow(report, Strings.headingEditSuerveillanceReport, true, callback);
+		openEditWindow(report, Strings.headingEditSurveillanceReport, true, callback);
 	}
 
 	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback) {

@@ -65,7 +65,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 		} else {
 			listLayout.removeAllComponents();
 			updatePaginationLayout();
-			Label noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSurveillanceReportsForCase));
+			Label noSamplesLabel = new Label(I18nProperties.getCaption(Captions.surveillanceReportNoReportsForCase));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}
