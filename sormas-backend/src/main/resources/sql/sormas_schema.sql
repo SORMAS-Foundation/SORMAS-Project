@@ -6567,7 +6567,9 @@ DO $$
             LOOP
                 INSERT INTO surveillancereports(id, uuid, creationdate, changedate, reportingtype, reportdate, creatinguser_id, caze_id)
                 VALUES (nextval('entity_seq'),
-                        upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+                        overlay(overlay(overlay(
+                            substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                            placing '-' from 7) placing '-' from 14) placing '-' from 21),
                         now(), now(),
                         rec._reportingtype, rec._reportdate, rec._reportinguser_id, rec._caze_id);
             END LOOP;
