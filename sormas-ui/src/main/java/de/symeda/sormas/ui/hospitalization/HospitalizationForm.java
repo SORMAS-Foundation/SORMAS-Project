@@ -134,8 +134,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
 
-		addField(HospitalizationDto.HOSPITALIZATION_REASON);
-		addField(HospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
+		final ComboBox hospitalizationReason = addField(HospitalizationDto.HOSPITALIZATION_REASON);
+		final TextField otherHospitalizationReason = addField(HospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 
 		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
@@ -154,7 +154,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				intensiveCareUnitEnd,
 				isolationDateField,
 				isolatedField,
-				leftAgainstAdviceField);
+				leftAgainstAdviceField,
+				hospitalizationReason,
+				otherHospitalizationReason);
 		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
