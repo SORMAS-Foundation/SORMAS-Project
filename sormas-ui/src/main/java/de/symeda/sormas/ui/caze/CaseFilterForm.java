@@ -482,6 +482,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					}
 				}
 			}
+			break;
 		}
 		case CaseDataDto.DISEASE: {
 			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);
