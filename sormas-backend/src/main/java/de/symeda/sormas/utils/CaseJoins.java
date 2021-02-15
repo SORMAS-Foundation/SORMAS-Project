@@ -266,23 +266,15 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 		return getOrCreate(personCitizenship, Person.CITIZENSHIP, JoinType.LEFT, getPerson(), this::setPersonCitizenship);
 	}
 
-	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
+	private void setPersonCitizenship(Join<Person, Country> personCitizenship) {
 		this.personCitizenship = personCitizenship;
-	}
-
-	public Join<Case, District> getReportingDistrict() {
-		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
-	}
-
-	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
 	}
 
 	public Join<Case, DiseaseVariant> getDiseaseVariant() {
 		return getOrCreate(diseaseVariant, Case.DISEASE_VARIANT, JoinType.LEFT, this::setDiseaseVariant);
 	}
 
-	public void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
+	private void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 
@@ -290,7 +282,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
 	}
 
-	public void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+	private void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
 		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
 	}
 }

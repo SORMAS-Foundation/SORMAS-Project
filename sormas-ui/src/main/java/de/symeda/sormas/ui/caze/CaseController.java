@@ -26,13 +26,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.vaadin.server.Sizeable;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -88,6 +87,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -412,7 +412,6 @@ public class CaseController {
 		UserDto user = UserProvider.getCurrent().getUser();
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
-		caze.setReportingDistrict(user.getDistrict());
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			caze.setRegion(user.getRegion());

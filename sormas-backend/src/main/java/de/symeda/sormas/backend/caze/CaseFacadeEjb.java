@@ -626,8 +626,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
 				joins.getPersonCitizenship().get(Country.ISO_CODE),
-				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
-				joins.getReportingDistrict().get(District.NAME)
+				joins.getPersonCitizenship().get(Country.DEFAULT_NAME)
 				);
 		//@formatter:on
 
@@ -2488,7 +2487,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
-		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
@@ -2661,7 +2659,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
-		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
