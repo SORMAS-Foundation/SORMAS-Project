@@ -6497,8 +6497,8 @@ ALTER TABLE cases_history
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
 -- 2021-02-10 - Make user roles deactivateable #3716
-ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
-ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL default true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
 
@@ -6612,4 +6612,18 @@ UPDATE cases SET screeningtype = 'HEALTH_SECTOR_EMPLOYEE', caseidentificationsou
 UPDATE cases SET screeningtype = 'EDUCATIONAL_INSTITUTIONS', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'EDUCATIONAL_INSTITUTIONS';
 
 INSERT INTO schema_version (version_number, comment) VALUES (333, 'Case identification source - screening type #3420');
+
+-- 2021-02-16 - Make user roles deactivateable #3716
+-- initial deploy was in schema version 327 but without "default true" statement. This has been installed on most servers
+-- but on some servers which had data in userrolesconfig table the change crashed as we would need to add a default value
+-- in order to make script available in both situations on already installed and on crashed servers the change consists in
+--  a) add "default true" statement to schema version 327 to resolve the servers which are crashing
+--  b) add schema version 334 in order to add "default true" to servers which ran already version 327 and need the default true for future use
+ALTER TABLE userrolesconfig DROP COLUMN IF EXISTS enabled;
+ALTER TABLE userrolesconfig_history DROP COLUMN IF EXISTS enabled;
+
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL default true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (334, 'Make user roles deactivateable #3716');
 -- *** Insert new sql commands BEFORE this line ***
