@@ -50,7 +50,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import de.symeda.sormas.api.AuthProvider;
-import de.symeda.sormas.api.user.UserSyncResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -487,6 +486,11 @@ public class StartupShutdownService {
 
 	}
 
+	/**
+	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * @see AuthProvider#isUserSyncSupported()
+	 * @see AuthProvider#isUserSyncAtStartupEnabled()
+	 */
 	private void syncUsers() {
 
 		AuthProvider authProvider = AuthProvider.getProvider();
@@ -501,40 +505,28 @@ public class StartupShutdownService {
 			return;
 		}
 
-		List<User> users = userService.getAll();
-		int count = 0;
+		List<User> users = userService.getAllActive();
 		for (User user : users) {
-			if (syncUser(user)) {
-				count++;
-			}
+			syncUser(user);
 		}
-		logger.debug("Successfully synchronized {} out of {} users", count, users.size());
+		logger.info("User synchronization finalized");
 	}
 
-	private boolean syncUser(User user) {
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	private void syncUser(User user) {
 		String shortUuid = DataHelper.getShortUuid(user.getUuid());
 		logger.debug("Synchronizing user {}", shortUuid);
 		try {
 
-			UserSyncResult userSyncResult = new UserSyncResult();
-			userSyncResult.setSuccess(true);
-
 			UserUpdateEvent event = new UserUpdateEvent(user);
-			event.setExceptionCallback(exceptionMessage -> {
-				userSyncResult.setSuccess(false);
-				logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage);
-			});
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
 
-			this.userUpdateEvent.fire(event);
-
-			if (userSyncResult.isSuccess()) {
-				logger.debug("User {} synchronized successfully", shortUuid);
-				return true;
-			}
+			this.userUpdateEvent.fireAsync(event);
 		} catch (Throwable e) {
 			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
 		}
-		return false;
 	}
 
 	/**
