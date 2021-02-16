@@ -188,12 +188,14 @@ public class LocationDialog extends FormDialog {
 	public void setRequiredFieldsBasedOnCountry() {
 		contentBinding.locationCountry.addValueChangedListener(e -> {
 			Country country = (Country) e.getValue();
-			if (country != null && ConfigProvider.getServerCountryName().equalsIgnoreCase(country.getName())) {
+			if (country == null || ConfigProvider.getServerCountryName().equalsIgnoreCase(country.getName())) {
 				this.setRegionAndDistrictRequired(true);
 			} else {
 				this.setRegionAndDistrictRequired(false);
 				contentBinding.locationRegion.setValue(null);
 				contentBinding.locationDistrict.setValue(null);
+				contentBinding.locationCommunity.setValue(null);
+				contentBinding.locationFacility.setValue(null);
 			}
 		});
 	}
