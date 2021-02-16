@@ -7,11 +7,11 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 public class EventParticipantSelectionGrid extends Grid {
 
@@ -33,33 +33,33 @@ public class EventParticipantSelectionGrid extends Grid {
 		setSelectionMode(SelectionMode.SINGLE);
 		setHeightMode(HeightMode.ROW);
 
-		BeanItemContainer<SimilarEventParticipantDto> container = new BeanItemContainer<>(SimilarEventParticipantDto.class);
+		BeanItemContainer<SimilarEventParticipantDto> container = new BeanItemContainer(SimilarEventParticipantDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-//		setColumns(
-//			SimilarEventParticipantDto.FIRST_NAME,
-//			SimilarEventParticipantDto.LAST_NAME,
-//			SimilarEventParticipantDto.UUID,
-//			SimilarEventParticipantDto.CAZE,
-//			SimilarEventParticipantDto.CASE_ID_EXTERNAL_SYSTEM,
-//			SimilarEventParticipantDto.LAST_CONTACT_DATE,
-//			SimilarEventParticipantDto.CONTACT_PROXIMITY,
-//			SimilarEventParticipantDto.CONTACT_CLASSIFICATION,
-//			SimilarEventParticipantDto.CONTACT_STATUS,
-//			SimilarEventParticipantDto.FOLLOW_UP_STATUS);
+		setColumns(
+			SimilarEventParticipantDto.UUID,
+			SimilarEventParticipantDto.FIRST_NAME,
+			SimilarEventParticipantDto.LAST_NAME,
+			SimilarEventParticipantDto.INVOLVEMENT_DESCRIPTION,
+			SimilarEventParticipantDto.EVENT_UUID,
+			SimilarEventParticipantDto.EVENT_STATUS,
+			SimilarEventParticipantDto.EVENT_TITLE,
+			SimilarEventParticipantDto.START_DATE);
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(
 				I18nProperties.findPrefixCaption(
 					column.getPropertyId().toString(),
+					SimilarEventParticipantDto.I18N_PREFIX,
 					SimilarPersonDto.I18N_PREFIX,
-					EventParticipantIndexDto.I18N_PREFIX,
-					EventParticipantDto.I18N_PREFIX));
+					EventDto.I18N_PREFIX));
 		}
 
-//		getColumn(SimilarEventParticipantDto.FIRST_NAME).setMinimumWidth(150);
-//		getColumn(SimilarEventParticipantDto.LAST_NAME).setMinimumWidth(150);
+		getColumn(SimilarEventParticipantDto.UUID).setRenderer(new V7UuidRenderer());
+		getColumn(SimilarEventParticipantDto.FIRST_NAME).setMinimumWidth(150);
+		getColumn(SimilarEventParticipantDto.LAST_NAME).setMinimumWidth(150);
+		getColumn(SimilarEventParticipantDto.EVENT_UUID).setRenderer(new V7UuidRenderer());
 	}
 
 	private BeanItemContainer<SimilarEventParticipantDto> getContainer() {

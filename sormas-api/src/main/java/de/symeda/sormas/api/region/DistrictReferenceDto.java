@@ -25,7 +25,10 @@ public class DistrictReferenceDto extends InfrastructureDataReferenceDto impleme
 	private static final long serialVersionUID = 8990957700033431836L;
 
 	public DistrictReferenceDto() {
+	}
 
+	public DistrictReferenceDto(String uuid) {
+		super(uuid);
 	}
 
 	public DistrictReferenceDto(String uuid, String caption, String externalId) {

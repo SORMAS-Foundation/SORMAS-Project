@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
@@ -2360,6 +2359,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2459,7 +2459,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFollowUpComment(source.getFollowUpComment());
@@ -2531,6 +2530,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2626,7 +2626,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
@@ -3065,14 +3064,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Case
-		fillDto(leadCaseData, otherCaseData, cloning);
+		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
 		// 1.2 Person
 		if (!cloning) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			fillDto(leadPerson, otherPerson, cloning);
+			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
 			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
@@ -3088,7 +3087,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
-				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
+				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);
 			} else {
 				// simply move existing entities to the merge target
@@ -3102,19 +3101,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
-				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
+				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
 				sampleFacade.saveSample(newSample, false, true);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-					fillDto(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
+					DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
 				}
 
 				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
 					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
@@ -3143,7 +3142,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Treatment treatment : treatments) {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.build(leadCaseTherapyReference);
-				fillDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
+				DtoHelper.copyDtoValues(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
 				treatmentFacade.saveTreatment(newTreatment);
 			} else {
 				// simply move existing entities to the merge target
@@ -3158,7 +3157,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Prescription prescription : prescriptions) {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
-				fillDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
+				DtoHelper.copyDtoValues(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
 				prescriptionFacade.savePrescription(newPrescription);
 			} else {
 				// simply move existing entities to the merge target
@@ -3174,7 +3173,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (ClinicalVisit clinicalVisit : clinicalVisits) {
 			if (cloning) {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.build(leadCaseData.getClinicalCourse().toReference(), leadCase.getDisease());
-				fillDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
+				DtoHelper.copyDtoValues(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
 				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
 			} else {
 				// simply move existing entities to the merge target

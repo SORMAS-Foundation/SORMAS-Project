@@ -25,7 +25,10 @@ public class FacilityReferenceDto extends InfrastructureDataReferenceDto impleme
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public FacilityReferenceDto() {
+	}
 
+	public FacilityReferenceDto(String uuid) {
+		super(uuid);
 	}
 
 	public FacilityReferenceDto(String uuid, String caption, String externalId) {

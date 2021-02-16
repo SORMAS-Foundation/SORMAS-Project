@@ -9,7 +9,10 @@ public class PointOfEntryReferenceDto extends InfrastructureDataReferenceDto {
 	private PointOfEntryType pointOfEntryType;
 
 	public PointOfEntryReferenceDto() {
+	}
 
+	public PointOfEntryReferenceDto(String uuid) {
+		super(uuid);
 	}
 
 	public PointOfEntryReferenceDto(String uuid, String caption, PointOfEntryType pointOfEntryType, String externalId) {
