@@ -176,8 +176,9 @@
                     app:value="@={data.comment}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_pathogenTestResult"
+                    app:required="true"
                     app:value="@{data.pathogenTestResult}"
                     style="@style/ControlSingleColumnStyle" />
 
