@@ -225,9 +225,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		});
 
 		if (finalTestResults != null) {
-			contentBinding.samplePathogenTestResult.initializeSpinner(finalTestResults, field -> {
-				field.getValue();
-			});
+			contentBinding.samplePathogenTestResult.initializeSpinner(finalTestResults);
 			if (contentBinding.samplePathogenTestResult.getValue() == null) {
 				contentBinding.samplePathogenTestResult.setValue(PathogenTestResultType.PENDING);
 			}
