@@ -91,7 +91,7 @@ public class LabMessageController {
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
 				if (selectedPerson != null) {
-					PersonDto selectedPersonDto = null;
+					PersonDto selectedPersonDto;
 					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
 						selectedPersonDto = personDto;
 					} else {
