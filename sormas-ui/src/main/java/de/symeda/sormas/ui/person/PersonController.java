@@ -120,7 +120,12 @@ public class PersonController {
 							resultConsumer.accept(selectedPerson.toReference());
 						}
 					} else {
-						PersonDto savedPerson = personFacade.savePerson(person);
+						PersonDto savedPerson;
+						if (saveNewPerson) {
+							savedPerson = personFacade.savePerson(person);
+						} else {
+							savedPerson = person;
+						}
 						resultConsumer.accept(savedPerson.toReference());
 					}
 				}
