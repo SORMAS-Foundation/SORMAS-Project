@@ -1948,7 +1948,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
       		case 272:
 				currentVersion = 272;
-				getDao(Exposure.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
 
 			case 273:
 				currentVersion = 273;
