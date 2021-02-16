@@ -70,6 +70,7 @@ $v-table-border-width: 1px;
     }
 
     .v-table-header {
+
       .v-table-header-cell {
         border-left: none;
         border-bottom: none;
@@ -90,6 +91,7 @@ $v-table-border-width: 1px;
           border-bottom: $v-border;
         }
       }
+
       .v-table-header-cell-desc {
         border-left: none;
         border-bottom: none;
@@ -100,7 +102,6 @@ $v-table-border-width: 1px;
           border-bottom: $v-border;
         }
       }
-
     }
   }
 }

@@ -88,7 +88,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
 				COLUMN_DESCRIPTION,
-				COLUMN_SOURCE_CASE_NAME);
+				COLUMN_SOURCE_CASE_NAME);- added styles to table-header-cellasc and table-header-cell-desc
 		} else {
 			table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_EXPOSURE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
 		}
@@ -97,11 +97,9 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		for (Object columnId : table.getVisibleColumns()) {
-
 			if (columnId.equals(EDIT_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
-			}
-			else{
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
 			}
 		}
