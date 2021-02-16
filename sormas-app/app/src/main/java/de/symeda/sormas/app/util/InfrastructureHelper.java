@@ -189,7 +189,8 @@ public final class InfrastructureHelper {
 		}
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
-			if (selectedCountry == null || ConfigProvider.getServerCountryName().equalsIgnoreCase(selectedCountry.getName())) {
+			String serverCountryName = ConfigProvider.getServerCountryName();
+			if (selectedCountry == null || serverCountryName == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName())) {
 				regionField.setEnabled(true);
 				districtField.setEnabled(true);
 				communityField.setEnabled(true);
