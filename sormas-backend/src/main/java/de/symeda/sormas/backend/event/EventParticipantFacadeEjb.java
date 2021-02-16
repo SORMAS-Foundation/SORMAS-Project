@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -415,6 +416,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public List<EventParticipantExportDto> getExportList(
 		EventParticipantCriteria eventParticipantCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		Language userLanguage) {
@@ -511,6 +513,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			vaccinationInfo.get(VaccinationInfo.VACCINE_ATC_CODE));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
 		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();

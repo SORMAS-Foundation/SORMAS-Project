@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.bagexport;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.location.Location;
@@ -53,6 +55,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "BAGExportFacade")
 public class BAGExportFacadeEjb implements BAGExportFacade {
@@ -63,7 +66,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 	private EntityManager em;
 
 	@Override
-	public List<BAGExportCaseDto> getCaseExportList(int first, int max) {
+	public List<BAGExportCaseDto> getCaseExportList(Collection<String> selectedRows, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BAGExportCaseDto> cq = cb.createQuery(BAGExportCaseDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -116,6 +119,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			caseRoot.get(Case.QUARANTINE_TO),
 			caseRoot.get(Case.END_OF_ISOLATION_REASON),
 			caseRoot.get(Case.END_OF_ISOLATION_REASON_DETAILS));
+
+		if (CollectionUtils.isNotEmpty(selectedRows)) {
+			cq.where(CriteriaBuilderHelper.andInValues(selectedRows, null, cb, caseRoot.get(Case.UUID)));
+		}
 
 		List<BAGExportCaseDto> exportList =
 			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
@@ -219,7 +226,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 	}
 
 	@Override
-	public List<BAGExportContactDto> getContactExportList(int first, int max) {
+	public List<BAGExportContactDto> getContactExportList(Collection<String> selectedRows, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BAGExportContactDto> cq = cb.createQuery(BAGExportContactDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -258,6 +265,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			contactRoot.get(Contact.QUARANTINE_TO),
 			contactRoot.get(Contact.END_OF_QUARANTINE_REASON),
 			contactRoot.get(Contact.END_OF_QUARANTINE_REASON_DETAILS));
+
+		if (CollectionUtils.isNotEmpty(selectedRows)) {
+			cq.where(CriteriaBuilderHelper.andInValues(selectedRows, null, cb, contactRoot.get(Contact.UUID)));
+		}
 
 		List<BAGExportContactDto> exportList =
 			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();

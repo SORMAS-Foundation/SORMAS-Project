@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -525,6 +526,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -638,6 +640,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caseRoot, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, caseRoot.get(Case.UUID));
 
 		if (filter != null) {
 			cq.where(filter);

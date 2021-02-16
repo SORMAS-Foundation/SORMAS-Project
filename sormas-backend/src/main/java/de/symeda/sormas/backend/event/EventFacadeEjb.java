@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,8 +53,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -74,16 +73,13 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
@@ -461,7 +457,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max) {
+	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -527,6 +523,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));

@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -169,7 +170,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		Case caze = getCaseService().getByUuid(cazeDto.getUuid());
 
-		List<BAGExportCaseDto> caseList = getBAGExportFacade().getCaseExportList(0, 100);
+		List<BAGExportCaseDto> caseList = getBAGExportFacade().getCaseExportList(Collections.emptySet(), 0, 100);
 
 		BAGExportCaseDto firstCase = caseList.get(0);
 
@@ -343,7 +344,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		Contact contact = getContactService().getByUuid(contactDto.getUuid());
 
-		List<BAGExportContactDto> contactList = getBAGExportFacade().getContactExportList(0, 100);
+		List<BAGExportContactDto> contactList = getBAGExportFacade().getContactExportList(Collections.emptySet(), 0, 100);
 
 		BAGExportContactDto firstContact = contactList.get(0);
 
@@ -383,7 +384,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getExposureLocationCity(), is("Exposure city"));
 		assertThat(firstContact.getExposureLocationPostalCode(), is("098765"));
 		assertThat(firstContact.getExposureLocationCountry(), isEmptyOrNullString());
-
 
 		assertThat(dateFormat.format(firstContact.getStartOfQuarantineDate()), is(dateFormat.format(quarantineFromDate)));
 		assertThat(dateFormat.format(firstContact.getEndOfQuarantineDate()), is(dateFormat.format(quarantineToDate)));

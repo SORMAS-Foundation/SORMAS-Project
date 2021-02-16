@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public interface EventFacade {
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max);
+	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 
 	boolean isArchived(String caseUuid);
 
