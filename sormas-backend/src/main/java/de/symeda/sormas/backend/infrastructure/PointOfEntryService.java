@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -66,8 +67,26 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		Predicate filter = cb.or(
 			cb.equal(cb.trim(from.get(PointOfEntry.NAME)), name.trim()),
 			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase()));
-		if (!PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
+		if (district != null && !PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
+		}
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<PointOfEntry> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
+		Root<PointOfEntry> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(
+			cb.equal(cb.trim(from.get(PointOfEntry.EXTERNAL_ID)), externalId.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.EXTERNAL_ID))), externalId.trim().toLowerCase()));
+
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
 		cq.where(filter);
@@ -78,8 +97,8 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -121,5 +140,40 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PointOfEntry> from) {
 		return null;
+	}
+
+	public void createConstantPointsOfEntry() {
+		if (getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
+			PointOfEntry otherAirport = new PointOfEntry();
+			otherAirport.setName("OTHER_AIRPORT");
+			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
+			otherAirport.setActive(true);
+			otherAirport.setPointOfEntryType(PointOfEntryType.AIRPORT);
+			persist(otherAirport);
+		}
+		if (getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
+			PointOfEntry otherSeaport = new PointOfEntry();
+			otherSeaport.setName("OTHER_SEAPORT");
+			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
+			otherSeaport.setActive(true);
+			otherSeaport.setPointOfEntryType(PointOfEntryType.SEAPORT);
+			persist(otherSeaport);
+		}
+		if (getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
+			PointOfEntry otherGC = new PointOfEntry();
+			otherGC.setName("OTHER_GROUND_CROSSING");
+			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
+			otherGC.setActive(true);
+			otherGC.setPointOfEntryType(PointOfEntryType.GROUND_CROSSING);
+			persist(otherGC);
+		}
+		if (getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
+			PointOfEntry otherPoe = new PointOfEntry();
+			otherPoe.setName("OTHER_POE");
+			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
+			otherPoe.setActive(true);
+			otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
+			persist(otherPoe);
+		}
 	}
 }

@@ -154,7 +154,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 272;
+	public static final int DATABASE_VERSION = 277;
 
 	private static DatabaseHelper instance = null;
 
@@ -1940,7 +1940,41 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 271:
 				currentVersion = 271;
-				getDao(Exposure.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonPhysicianInformation boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDifferentPathogen boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonOther boolean DEFAULT false;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;");
+
+      		case 272:
+				currentVersion = 272;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdentificationSource varchar(255);");
+
+			case 273:
+				currentVersion = 273;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reInfection varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN previousInfectionDate timestamp;");
+
+			case 274:
+				currentVersion = 274;
+				getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN hospitalizationReason varchar(255);");
+				getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN otherHospitalizationReason text;");
+				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN hospitalizationReason varchar(255);");
+				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN otherHospitalizationReason text;");
+
+			case 275:
+				currentVersion = 275;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN reportDate timestamp;");
+
+			case 276:
+				currentVersion = 276;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN screeningType varchar(255);");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'ON_HOSPITAL_ADMISSION', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'ON_HOSPITAL_ADMISSION';");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'ON_CARE_HOME_ADMISSION', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'ON_CARE_HOME_ADMISSION';");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'ON_ASYLUM_ADMISSION', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'ON_ASYLUM_ADMISSION';");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'ON_ENTRY_FROM_RISK_AREA', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'ON_ENTRY_FROM_RISK_AREA';");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'HEALTH_SECTOR_EMPLOYEE', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'HEALTH_SECTOR_EMPLOYEE';");
+				getDao(Case.class).executeRaw("UPDATE cases SET screeningType = 'EDUCATIONAL_INSTITUTIONS', caseIdentificationSource = 'SCREENING' where caseIdentificationSource = 'EDUCATIONAL_INSTITUTIONS';");
 
 				// ATTENTION: break should only be done after last version
 				break;

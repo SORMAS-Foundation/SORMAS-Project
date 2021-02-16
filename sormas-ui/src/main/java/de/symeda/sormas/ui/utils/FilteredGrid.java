@@ -76,4 +76,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 		addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));
 	}
+
+	protected void removeColumnIfExists(String columnId) {
+		if (getColumn(columnId) != null) {
+			removeColumn(columnId);
+		}
+	}
 }

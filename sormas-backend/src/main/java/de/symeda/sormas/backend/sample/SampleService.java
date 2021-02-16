@@ -236,6 +236,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Sample> getByEventParticipantUuids(List<String> eventParticipantUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, EventParticipant> eventParticipantJoin = sampleRoot.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+
+		Predicate filter = cb.and(createDefaultFilter(cb, sampleRoot), eventParticipantJoin.get(AbstractDomainObject.UUID).in(eventParticipantUuids));
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 
 		if (CollectionUtils.isEmpty(caseIds)) {
@@ -292,13 +305,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
-		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
-		if (sampleAssociationType == SampleAssociationType.CASE) {
-			filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
-		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-			filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
-		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
-			filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+		if (criteria != null) {
+			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+			if (sampleAssociationType == SampleAssociationType.CASE) {
+				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+			}
 		}
 
 		return filter;

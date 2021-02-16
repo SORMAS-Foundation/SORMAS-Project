@@ -85,6 +85,25 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<District> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
+		Root<District> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(
+			cb.equal(cb.trim(from.get(District.EXTERNAL_ID)), externalId.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(District.EXTERNAL_ID))), externalId.trim().toLowerCase()));
+
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, District> from) {
@@ -96,7 +115,8 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getNameEpidLike() != null) {
 			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
@@ -111,7 +131,8 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(District.ARCHIVED), false), cb.isNull(from.get(District.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(District.ARCHIVED), false), cb.isNull(from.get(District.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(District.ARCHIVED), true));
 			}

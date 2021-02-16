@@ -28,6 +28,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -171,6 +172,10 @@ public class SampleController {
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
+			if (dateField != null) {
+				pathogenTest.setReportDate(dateField.getValue());
+			}
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());

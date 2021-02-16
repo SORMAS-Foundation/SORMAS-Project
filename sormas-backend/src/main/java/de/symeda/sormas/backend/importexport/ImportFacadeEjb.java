@@ -37,8 +37,9 @@ import static de.symeda.sormas.api.caze.CaseDataDto.REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.REPORT_DATE;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -619,7 +620,9 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * @throws IOException
 	 */
 	private void writeTemplate(Path templatePath, List<ImportColumn> importColumns, boolean includeEntityNames) throws IOException {
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(templatePath.toString()), configFacade.getCsvSeparator())) {
+		try (CSVWriter writer = CSVUtils.createCSVWriter(
+			new OutputStreamWriter(new FileOutputStream(templatePath.toString()), StandardCharsets.UTF_8.newEncoder()),
+			configFacade.getCsvSeparator())) {
 			if (includeEntityNames) {
 				writer.writeNext(importColumns.stream().map(ImportColumn::getEntityName).toArray(String[]::new));
 			}

@@ -70,6 +70,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String CLASSIFICATION_COMMENT = "classificationComment";
@@ -160,7 +161,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -185,9 +185,18 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
+	public static final String RE_INFECTION = "reInfection";
+	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
+
+	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
+	public static final String NOT_A_CASE_REASON_PHYSICIAN_INFORMATION = "notACaseReasonPhysicianInformation";
+	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
+	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
+	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -231,6 +240,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Required
 	private CaseClassification caseClassification;
 	private CaseIdentificationSource caseIdentificationSource;
+	private ScreeningType screeningType;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
@@ -527,8 +537,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
-	@HideForCountriesExcept
-	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
@@ -569,11 +577,35 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
 
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private YesNoUnknown reInfection;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Date previousInfectionDate;
+
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonNegativeTest;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonPhysicianInformation;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonDifferentPathogen;
+
+	@HideForCountriesExcept
+	private boolean notACaseReasonOther;
+
+	@HideForCountriesExcept
+	private String notACaseReasonDetails;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -684,6 +716,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public UserReferenceDto getClassificationUser() {
@@ -1393,14 +1433,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
-	}
-
 	public YesNoUnknown getPostpartum() {
 		return postpartum;
 	}
@@ -1569,6 +1601,22 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
 	public DistrictReferenceDto getReportingDistrict() {
 		return reportingDistrict;
 	}
@@ -1592,4 +1640,45 @@ public class CaseDataDto extends PseudonymizableDto {
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
+
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
+	}
+
 }

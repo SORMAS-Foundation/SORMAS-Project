@@ -3,8 +3,8 @@
 ## This is a comment line with a , inside
 "caseIdExternalSystem","caseOrEventInformation","disease","diseaseDetails","reportDateTime","region","district","lastContactDate","person.firstName","person.lastName","person.sex","person.birthdateDD","person.birthdateMM","person.birthdateYYYY"
 ## This is a comment line after the headers
-ABCDEF-GHIJKL-MNOPQR,,CORONAVIRUS,,14.03.2020,Abia,Umuahia North,,Number,One
-" aBCDEF-GHIJKL-MNOPQR ",,,,15.03.2020,,,,Number,Two
+ABCDEF-GHIJKL-MNOPQR,,CORONAVIRUS,,03.14.2020,Abia,Umuahia North,,Number,One
+" aBCDEF-GHIJKL-MNOPQR ",,,,03/15/2020,,,,Number,Two
 ## This is a comment line between data rows
-Unknown,Other System,CORONAVIRUS,,16.03.2020,Abia,Umuahia North,,Number,Three
+Unknown,Other System,CORONAVIRUS,,03-16-03-2020,Abia,Umuahia North,,Number,Three
 ## This is an end of file comment line

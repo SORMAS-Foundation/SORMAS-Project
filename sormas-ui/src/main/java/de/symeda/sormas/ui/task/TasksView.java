@@ -72,7 +72,6 @@ public class TasksView extends AbstractView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				taskListComponent.getGrid(),
-				"sormas_tasks",
 				"sormas_tasks_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

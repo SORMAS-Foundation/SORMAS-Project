@@ -8,7 +8,7 @@ import internal.GlobalVariable as GlobalVariable
 
 WebUI.callTestCase(findTestCase('Contacts/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
+WebUI.click(findTestObject('Login/MainView/menu_Cases'))
 
 WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_More_nameUuidEpidNumberLike'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 2))

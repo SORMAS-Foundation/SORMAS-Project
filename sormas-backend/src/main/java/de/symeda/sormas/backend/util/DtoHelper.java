@@ -65,7 +65,7 @@ public final class DtoHelper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public static <T extends EntityDto> void fillDto(T target, T source, boolean overrideValues) {
+	public static <T extends EntityDto> void copyDtoValues(T target, T source, boolean overrideValues) {
 
 		try {
 			PropertyDescriptor[] pds = Introspector.getBeanInfo(target.getClass(), EntityDto.class).getPropertyDescriptors();
@@ -90,8 +90,13 @@ public final class DtoHelper {
 						pd.getWriteMethod().invoke(target, targetValue);
 					}
 
+					// If both entities have the same UUID, assign a new one to targetValue to create a new entity
+					if (((EntityDto) targetValue).getUuid().equals(((EntityDto) sourceValue).getUuid())) {
+						((EntityDto) targetValue).setUuid(DataHelper.createUuid());
+					}
+
 					// entity: just fill the existing one with the source
-					fillDto((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
+					copyDtoValues((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
 				} else {
 					boolean targetIsEmpty =
 						targetValue == null || (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
@@ -115,7 +120,7 @@ public final class DtoHelper {
 									EntityDto newEntry = ((EntityDto) sourceEntry).clone();
 									newEntry.setUuid(DataHelper.createUuid());
 									newEntry.setCreationDate(null);
-									fillDto(newEntry, (EntityDto) sourceEntry, true);
+									copyDtoValues(newEntry, (EntityDto) sourceEntry, true);
 									targetCollection.add(newEntry);
 								} else if (DataHelper.isValueType(sourceEntry.getClass())
 									|| sourceEntry instanceof ReferenceDto

@@ -63,6 +63,7 @@ public class EventParticipantDto extends PseudonymizableDto {
 		eventParticipant.setUuid(DataHelper.createUuid());
 		eventParticipant.setEvent(event);
 		eventParticipant.setReportingUser(reportingUser);
+		eventParticipant.setVaccinationInfo(VaccinationInfoDto.build());
 
 		return eventParticipant;
 	}

@@ -44,6 +44,8 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
+	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -60,6 +62,8 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -155,5 +159,21 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
 		this.leftAgainstAdvice = leftAgainstAdvice;
+	}
+
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
+	}
+
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
+	}
+
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
+	}
+
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
 	}
 }

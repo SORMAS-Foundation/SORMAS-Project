@@ -32,6 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -68,6 +69,8 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private YesNoUnknown isolated;
 	private String description;
 	private Hospitalization hospitalization;
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -160,4 +163,20 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
+    @Enumerated(EnumType.STRING)
+    public HospitalizationReasonType getHospitalizationReason() {
+        return hospitalizationReason;
+    }
+
+    public void setHospitalizationReason(HospitalizationReasonType reasonForHospitalization) {
+        this.hospitalizationReason = reasonForHospitalization;
+    }
+
+    public String getOtherHospitalizationReason() {
+        return otherHospitalizationReason;
+    }
+
+    public void setOtherHospitalizationReason(String otherReasonForHospitalization) {
+        this.otherHospitalizationReason = otherReasonForHospitalization;
+    }
 }
