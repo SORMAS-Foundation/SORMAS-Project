@@ -21,16 +21,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-
 import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -48,14 +49,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
-import de.symeda.sormas.ui.caze.CasesView;
-import de.symeda.sormas.ui.caze.MergeCasesView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-import org.apache.commons.lang3.StringUtils;
 
 public class PersonController {
 
@@ -84,13 +82,13 @@ public class PersonController {
 
 			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
 				personLabelSb.append(" (* ")
-						.append(
-								PersonHelper.formatBirthdate(
-										personDto.getBirthdateDD(),
-										personDto.getBirthdateMM(),
-										personDto.getBirthdateYYYY(),
-										I18nProperties.getUserLanguage()))
-						.append(")");
+					.append(
+						PersonHelper.formatBirthdate(
+							personDto.getBirthdateDD(),
+							personDto.getBirthdateMM(),
+							personDto.getBirthdateYYYY(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
 			}
 		}
 		personLabelSb.append(personLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
@@ -122,7 +120,12 @@ public class PersonController {
 							resultConsumer.accept(selectedPerson.toReference());
 						}
 					} else {
-						PersonDto savedPerson = personFacade.savePerson(person);
+						PersonDto savedPerson;
+						if (saveNewPerson) {
+							savedPerson = personFacade.savePerson(person);
+						} else {
+							savedPerson = person;
+						}
 						resultConsumer.accept(savedPerson.toReference());
 					}
 				}
@@ -142,9 +145,7 @@ public class PersonController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
-		String personUuid,
-		UserRight editUserRight) {
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, UserRight editUserRight) {
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(personDto.isPseudonymized());
