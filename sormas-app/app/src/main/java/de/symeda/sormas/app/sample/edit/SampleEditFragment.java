@@ -50,7 +50,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
-import de.symeda.sormas.app.backend.sample.PathogenTestCriteria;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.Item;
@@ -129,7 +128,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
 		}
 
-		if(record.getId() == null) {
+		if (record.getId() == null) {
 			contentBinding.samplePathogenTestResult.setVisibility(GONE);
 		}
 	}
@@ -180,10 +179,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		}
 
 		if (record.getId() != null) {
-			long pathogenTestsCount = DatabaseHelper.getSampleTestDao().countByCriteria(new PathogenTestCriteria().sample(record));
-			if (pathogenTestsCount == 0) {
-				finalTestResults = DataUtils.toItems(Arrays.asList(PathogenTestResultType.PENDING, PathogenTestResultType.NOT_DONE));
-			} else if (DatabaseHelper.getSampleTestDao().queryBySample(record).stream().allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING)) {
+			if (DatabaseHelper.getSampleTestDao().queryBySample(record).stream().allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING)) {
 				finalTestResults = DataUtils.toItems(Arrays.asList(PathogenTestResultType.values()));
 			} else {
 				finalTestResults = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList()));

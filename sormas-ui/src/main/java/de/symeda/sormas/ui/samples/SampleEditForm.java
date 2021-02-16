@@ -20,6 +20,11 @@ package de.symeda.sormas.ui.samples;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -30,11 +35,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.FieldHelper;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class SampleEditForm extends AbstractSampleForm {
 
@@ -84,15 +84,18 @@ public class SampleEditForm extends AbstractSampleForm {
 			return;
 		}
 
-		boolean hasOnlyPendingPathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(Collections.singletonList(getValue().getUuid()))
-				.stream().allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING);
+		boolean hasOnlyPendingPathogenTests = FacadeProvider.getPathogenTestFacade()
+			.getBySampleUuids(Collections.singletonList(getValue().getUuid()))
+			.stream()
+			.allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING);
 
 		Collection<PathogenTestResultType> pathogenTestResultTypes;
 
 		if (hasOnlyPendingPathogenTests) {
 			pathogenTestResultTypes = Arrays.asList(PathogenTestResultType.values());
 		} else {
-			pathogenTestResultTypes = Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList());
+			pathogenTestResultTypes =
+				Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList());
 		}
 
 		FieldHelper.updateEnumData(pathogenTestResultField, pathogenTestResultTypes);
