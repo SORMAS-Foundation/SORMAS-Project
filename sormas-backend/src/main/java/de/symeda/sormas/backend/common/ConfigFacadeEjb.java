@@ -123,6 +123,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+	private static final String SORMAS2SORMAS_RETAIN_EXTERNAL_TOKEN = "sormas2sormas.retainExternalToken";
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
@@ -449,6 +450,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		config.setRetainExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_EXTERNAL_TOKEN, true));
 		return config;
 	}
 
