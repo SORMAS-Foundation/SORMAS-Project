@@ -43,11 +43,14 @@ public class AuthProvider {
 
     private final boolean isUserSyncSupported;
 
+    private final String name;
+
     private AuthProvider() {
         String configuredProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
         isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
+        name = configuredProvider;
     }
 
     public static AuthProvider getProvider() {
@@ -82,4 +85,10 @@ public class AuthProvider {
         return isUserSyncSupported;
     }
 
+    /**
+     * Name of the active Authentication Provider.
+     */
+    public String getName() {
+        return name;
+    }
 }

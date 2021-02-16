@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.user.UserSyncResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +88,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -123,6 +127,8 @@ public class StartupShutdownService {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -178,6 +184,8 @@ public class StartupShutdownService {
 		createOrUpdateSymptomJournalUser();
 
 		createOrUpdatePatientDiaryUser();
+
+		syncUsers();
 
 		upgrade();
 
@@ -479,6 +487,31 @@ public class StartupShutdownService {
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		}
 
+	}
+
+	private void syncUsers() {
+
+		AuthProvider authProvider = AuthProvider.getProvider();
+
+		if (!authProvider.isUserSyncSupported()) {
+			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
+			return;
+		}
+
+		List<String> userUuids = userService.getAllUuids();
+		for (String uuid : userUuids) {
+			logger.debug("Synchronizing user with uuid {}", uuid);
+			try {
+				UserSyncResult result = userFacade.syncUser(uuid);
+				if (result.isSuccess()) {
+					logger.debug("User with uuid {} synchronized successfully", uuid);
+				} else {
+					logger.error("Could not synchronize user with uuid {} due to {}", uuid, result.getErrorMessage());
+				}
+			} catch (Exception e) {
+				logger.error(MessageFormat.format("Unexpected exception when synchronizing user with uuid {0}", uuid), e);
+			}
+		}
 	}
 
 	/**
