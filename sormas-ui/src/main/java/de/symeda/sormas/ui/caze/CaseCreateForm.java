@@ -266,7 +266,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue()) || TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())
+				|| ((facilityOrHome.getValue() instanceof java.util.Set) && TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue()))) {
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}
