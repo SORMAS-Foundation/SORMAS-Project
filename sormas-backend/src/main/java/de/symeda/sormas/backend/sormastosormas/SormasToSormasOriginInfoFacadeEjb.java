@@ -31,7 +31,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 
-		SormasToSormasOriginInfo originInfo = toDto(originInfoDto, true);
+		SormasToSormasOriginInfo originInfo = fromDto(originInfoDto, true);
 
 		originInfoService.ensurePersisted(originInfo);
 
@@ -41,7 +41,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 
-	public SormasToSormasOriginInfo toDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
+	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}

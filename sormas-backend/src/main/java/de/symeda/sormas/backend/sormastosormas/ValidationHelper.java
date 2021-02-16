@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -53,7 +52,7 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.PathogenTest, pathogenTest);
 	}
 
-	public static String buildEventValidationGroupName(EventDto event) {
+	public static String buildEventValidationGroupName(HasUuid event) {
 		return buildValidationGroupName(Captions.Event, event);
 	}
 

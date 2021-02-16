@@ -17,14 +17,20 @@ package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -34,6 +40,7 @@ import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
@@ -51,28 +58,16 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	public static final String SAVE_SHARED_EVENTS = RESOURCE_PATH + EVENT_ENDPOINT;
 
 	private EventService eventService;
-
 	private EventShareDataBuilder shareDataBuilder;
 	private SharedEventProcessor sharedEventProcessor;
 	private ProcessedEventDataPersister processedEventDataPersister;
 
-	public SormasToSormasEventFacadeEjb() {
-		super(SAVE_SHARED_EVENTS, Captions.Event);
-	}
-
-	@Override
-	protected BaseAdoService<Event> getEntityService() {
-		return eventService;
-	}
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 
 	@EJB
 	public void setEventService(EventService eventService) {
 		this.eventService = eventService;
-	}
-
-	@Override
-	protected ShareDataBuilder<Event, SormasToSormasEventDto> getShareDataBuilder() {
-		return shareDataBuilder;
 	}
 
 	@EJB
@@ -80,24 +75,81 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		this.shareDataBuilder = shareDataBuilder;
 	}
 
-	@Override
-	protected SharedEventProcessor getSharedDataProcessor() {
-		return sharedEventProcessor;
-	}
-
 	@EJB
 	public void setSharedEventProcessor(SharedEventProcessor sharedEventProcessor) {
 		this.sharedEventProcessor = sharedEventProcessor;
 	}
 
-	@Override
-	protected ProcessedDataPersister<ProcessedEventData> getProcessedDataPersister() {
-		return processedEventDataPersister;
-	}
-
 	@EJB
 	public void setProcessedEventDataPersister(ProcessedEventDataPersister processedEventDataPersister) {
 		this.processedEventDataPersister = processedEventDataPersister;
+	}
+
+	public SormasToSormasEventFacadeEjb() {
+		super(SAVE_SHARED_EVENTS, Captions.Event);
+	}
+
+	@Override
+	protected Class<SormasToSormasEventDto[]> getShareDataClass() {
+		return SormasToSormasEventDto[].class;
+	}
+
+	@Override
+	protected void validateEntityBeforeSend(List<Event> entities) throws SormasToSormasException {
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		for (Event event : entities) {
+			if (!eventService.isEventEditAllowed(event)) {
+				validationErrors.put(
+					buildEventValidationGroupName(event),
+					ValidationErrors
+						.create(I18nProperties.getCaption(Captions.Event), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+		}
+	}
+
+	@Override
+	protected ValidationErrors validateSharedEntity(EventDto entity) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (eventFacade.exists(entity.getUuid())) {
+			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasEventExists));
+		}
+
+		return errors;
+	}
+
+	@Override
+	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Event entity) {
+		sormasToSormasShareInfo.setEvent(entity);
+	}
+
+	@Override
+	protected void setAssociatedObjectShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Object t) {
+
+	}
+
+	@Override
+	protected BaseAdoService<Event> getEntityService() {
+		return eventService;
+	}
+
+	@Override
+	protected ShareDataBuilder<Event, SormasToSormasEventDto> getShareDataBuilder() {
+		return shareDataBuilder;
+	}
+
+	@Override
+	protected SharedEventProcessor getSharedDataProcessor() {
+		return sharedEventProcessor;
+	}
+
+	@Override
+	protected ProcessedDataPersister<ProcessedEventData> getProcessedDataPersister() {
+		return processedEventDataPersister;
 	}
 
 	@Override
@@ -112,31 +164,6 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 	@Override
 	public void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-
-	}
-
-	@Override
-	protected Class<SormasToSormasEventDto[]> getShareDataClass() {
-		return SormasToSormasEventDto[].class;
-	}
-
-	@Override
-	protected void validateEntityBeforeSend(List<Event> entities) throws SormasToSormasException {
-
-	}
-
-	@Override
-	protected ValidationErrors validateSharedEntity(EventDto entity) {
-		return new ValidationErrors();
-	}
-
-	@Override
-	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Event entity) {
-		sormasToSormasShareInfo.setEvent(entity);
-	}
-
-	@Override
-	protected void setAssociatedObjectShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Object t) {
 
 	}
 }

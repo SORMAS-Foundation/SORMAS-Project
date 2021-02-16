@@ -71,6 +71,8 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -95,6 +97,8 @@ public class EventFacadeEjb implements EventFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -710,6 +714,10 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
+
 		return target;
 	}
 
@@ -800,6 +808,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 
 		return target;
 	}
@@ -860,8 +869,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	public Boolean isEventEditAllowed(String eventUuid) {
-
 		Event event = eventService.getByUuid(eventUuid);
-		return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+		return eventService.isEventEditAllowed(event);
 	}
 }

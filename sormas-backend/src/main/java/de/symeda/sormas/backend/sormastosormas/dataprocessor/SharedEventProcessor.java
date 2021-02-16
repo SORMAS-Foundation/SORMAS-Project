@@ -81,6 +81,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		event.setReportingUser(userService.getCurrentUser().toReference());
+		event.setResponsibleUser(userService.getCurrentUser().toReference());
 
 		LocationDto eventLocation = event.getEventLocation();
 		DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
@@ -90,6 +91,8 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 				eventLocation.getCommunity(),
 				eventLocation.getFacilityType(),
 				eventLocation.getFacility(),
+				eventLocation.getFacilityDetails(),
+				null,
 				null);
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {

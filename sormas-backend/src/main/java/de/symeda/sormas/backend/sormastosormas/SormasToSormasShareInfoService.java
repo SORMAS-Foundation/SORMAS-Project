@@ -51,7 +51,8 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		Predicate filter = null;
 
 		if (criteria.getCaze() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 
 		if (criteria.getContact() != null) {
@@ -62,8 +63,8 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		}
 
 		if (criteria.getSample() != null) {
-			filter = CriteriaBuilderHelper.
-				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 
 		if (criteria.getEvent() != null) {
@@ -78,6 +79,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return exists(
 			(cb, root) -> cb
 				.and(cb.equal(root.get(SormasToSormasShareInfo.CAZE), caze), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+	}
+
+	public boolean isEventOwnershipHandedOver(Event event) {
+		return exists(
+			(cb, root) -> cb
+				.and(cb.equal(root.get(SormasToSormasShareInfo.EVENT), event), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 	}
 
 	public boolean isContactOwnershipHandedOver(Contact contact) {
