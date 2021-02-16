@@ -6618,14 +6618,16 @@ CREATE INDEX IF NOT EXISTS idx_cases_epid_number ON cases USING gist (epidnumber
 CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases (person_id);
 CREATE INDEX IF NOT EXISTS idx_cases_region_id ON cases (region_id);
 CREATE INDEX IF NOT EXISTS idx_cases_district_id ON cases (district_id);
+CREATE INDEX IF NOT EXISTS idx_cases_disease ON cases (disease);
 
 CREATE INDEX IF NOT EXISTS idx_contact_region_id ON contact (region_id);
 CREATE INDEX IF NOT EXISTS idx_contact_district_id ON contact (region_id);
 CREATE INDEX IF NOT EXISTS idx_contact_case_id ON contact (caze_id);
 
-CREATE INDEX IF NOT EXISTS idx_samples_contact_id ON samples (associatedcontact_id);
-CREATE INDEX IF NOT EXISTS idx_samples_case_id ON samples (associatedcase_id);
-CREATE INDEX IF NOT EXISTS idx_samples_eventparticipant_id ON samples (associatedeventparticipant_id);
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcontact_id ON samples (associatedcontact_id);
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_samples_associatedeventparticipant_id ON samples (associatedeventparticipant_id);
+CREATE INDEX IF NOT EXISTS idx_samples_lab_id ON samples (lab_id);
 
 CREATE INDEX IF NOT EXISTS idx_task_contact_id ON task (contact_id);
 CREATE INDEX IF NOT EXISTS idx_task_case_id ON task (caze_id);
@@ -6648,8 +6650,9 @@ CREATE INDEX IF NOT EXISTS idx_facility_region_id ON facility (region_id);
 CREATE INDEX IF NOT EXISTS idx_facility_district_id ON facility (district_id);
 
 CREATE INDEX IF NOT EXISTS idx_exposures_epidata_id ON exposures (epidata_id);
-
 CREATE UNIQUE INDEX IF NOT EXISTS idx_exposures_location_id ON exposures (location_id);
+
+CREATE INDEX IF NOT EXISTS idx_previoushospitalization_hospitalization_id ON previoushospitalization (hospitalization_id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (334, '2020-02-09 Add indexes #4307');
 
