@@ -24,6 +24,8 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization"/>
+
+        <import type="de.symeda.sormas.api.hospitalization.HospitalizationReasonType" />
     </data>
 
     <ScrollView
@@ -105,6 +107,18 @@
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/casePreviousHospitalization_isolated"
                 app:value="@={data.isolated}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/casePreviousHospitalization_hospitalizationReason"
+                app:value="@={data.hospitalizationReason}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/casePreviousHospitalization_otherHospitalizationReason"
+                app:value="@={data.otherHospitalizationReason}"
+                app:dependencyParentField="@{casePreviousHospitalizationHospitalizationReason}"
+                app:dependencyParentValue="@{HospitalizationReasonType.OTHER}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

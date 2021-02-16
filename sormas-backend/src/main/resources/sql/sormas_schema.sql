@@ -6580,6 +6580,27 @@ ALTER TABLE cases DROP COLUMN reportingtype;
 
 INSERT INTO schema_version (version_number, comment) VALUES (330, '[SurvNet Interface] Add Reports to case information #4282');
 
+-- 2021-02-05 Add reason hospitalization #4187
+ALTER TABLE hospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN hospitalizationreason varchar(255);
+
+ALTER TABLE hospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE hospitalization_history ADD COLUMN otherhospitalizationreason text;
+
+ALTER TABLE previoushospitalization ADD COLUMN hospitalizationreason varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN hospitalizationreason varchar(255);
+
+ALTER TABLE previoushospitalization ADD COLUMN otherhospitalizationreason text;
+ALTER TABLE previoushospitalization_history ADD COLUMN otherhospitalizationreason text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (331, '#4187 add reason for hospitalization');
+
+-- 2021-02-15 Add reportDate to pathogen test #4363
+ALTER TABLE pathogentest ADD COLUMN reportdate timestamp;
+ALTER TABLE pathogentest_history ADD COLUMN reportdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (332, 'Add reportDate to pathogen test #4363');
+
 -- 2021-02-15 Case identification source - screening #3420
 ALTER TABLE cases ADD COLUMN screeningtype character varying(255);
 ALTER TABLE cases_history ADD COLUMN screeningtype character varying(255);
@@ -6590,5 +6611,5 @@ UPDATE cases SET screeningtype = 'ON_ENTRY_FROM_RISK_AREA', caseidentificationso
 UPDATE cases SET screeningtype = 'HEALTH_SECTOR_EMPLOYEE', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'HEALTH_SECTOR_EMPLOYEE';
 UPDATE cases SET screeningtype = 'EDUCATIONAL_INSTITUTIONS', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'EDUCATIONAL_INSTITUTIONS';
 
-INSERT INTO schema_version (version_number, comment) VALUES (331, 'Case identification source - screening type #3420');
+INSERT INTO schema_version (version_number, comment) VALUES (333, 'Case identification source - screening type #3420');
 -- *** Insert new sql commands BEFORE this line ***
