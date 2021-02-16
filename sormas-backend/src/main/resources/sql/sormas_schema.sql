@@ -6621,8 +6621,12 @@ CREATE INDEX IF NOT EXISTS idx_cases_district_id ON cases (district_id);
 CREATE INDEX IF NOT EXISTS idx_cases_disease ON cases (disease);
 
 CREATE INDEX IF NOT EXISTS idx_contact_region_id ON contact (region_id);
-CREATE INDEX IF NOT EXISTS idx_contact_district_id ON contact (region_id);
+CREATE INDEX IF NOT EXISTS idx_contact_district_id ON contact (district_id);
 CREATE INDEX IF NOT EXISTS idx_contact_case_id ON contact (caze_id);
+
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant (event_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_resultingcase_id ON eventparticipant (resultingcase_id);
 
 CREATE INDEX IF NOT EXISTS idx_samples_associatedcontact_id ON samples (associatedcontact_id);
 CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples (associatedcase_id);
