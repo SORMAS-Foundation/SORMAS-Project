@@ -111,6 +111,8 @@ public interface ConfigFacade {
 
 	String getAuthenticationProvider();
 
+	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
+
 	boolean isExternalJournalActive();
 
 	int getDashboardMapMarkerLimit();

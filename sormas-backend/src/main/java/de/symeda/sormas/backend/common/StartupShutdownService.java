@@ -128,8 +128,6 @@ public class StartupShutdownService {
 	@EJB
 	private UserService userService;
 	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
 	private ContactService contactService;
 	@EJB
 	private RegionService regionService;
@@ -498,20 +496,45 @@ public class StartupShutdownService {
 			return;
 		}
 
-		List<String> userUuids = userService.getAllUuids();
-		for (String uuid : userUuids) {
-			logger.debug("Synchronizing user with uuid {}", uuid);
-			try {
-				UserSyncResult result = userFacade.syncUser(uuid);
-				if (result.isSuccess()) {
-					logger.debug("User with uuid {} synchronized successfully", uuid);
-				} else {
-					logger.error("Could not synchronize user with uuid {} due to {}", uuid, result.getErrorMessage());
-				}
-			} catch (Exception e) {
-				logger.error(MessageFormat.format("Unexpected exception when synchronizing user with uuid {0}", uuid), e);
+		if(!authProvider.isUserSyncAtStartupEnabled()) {
+			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
+			return;
+		}
+
+		List<User> users = userService.getAll();
+		int count = 0;
+		for (User user : users) {
+			if (syncUser(user)) {
+				count++;
 			}
 		}
+		logger.debug("Successfully synchronized {} out of {} users", count, users.size());
+	}
+
+	private boolean syncUser(User user) {
+		String shortUuid = DataHelper.getShortUuid(user.getUuid());
+		logger.debug("Synchronizing user {}", shortUuid);
+		try {
+
+			UserSyncResult userSyncResult = new UserSyncResult();
+			userSyncResult.setSuccess(true);
+
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> {
+				userSyncResult.setSuccess(false);
+				logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage);
+			});
+
+			this.userUpdateEvent.fire(event);
+
+			if (userSyncResult.isSuccess()) {
+				logger.debug("User {} synchronized successfully", shortUuid);
+				return true;
+			}
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
+		}
+		return false;
 	}
 
 	/**
