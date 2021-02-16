@@ -189,6 +189,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
 			logger.warn("Invalid shapefile filepath: " + filepath);
+			return;
 		}
 
 		try {
@@ -274,7 +275,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		String filepath = "shapefiles/" + countryName + "/districts.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
-			throw new RuntimeException("Invalid shapefile filepath: " + filepath);
+			logger.warn("Invalid shapefile filepath: " + filepath);
+			return;
 		}
 
 		try {
