@@ -434,7 +434,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			List<DistrictReferenceDto> districts = districtService.getAllActiveByRegion(regionService.getByUuid(region.getUuid()))
 				.stream()
-				.map(district1 -> new DistrictReferenceDto(district1.getUuid(), district1.getName()))
+				.map(district1 -> new DistrictReferenceDto(district1.getUuid(), district1.getName(), district1.getExternalID()))
 				.collect(Collectors.toList());
 			if (districts.isEmpty()) {
 				resultData.add(
@@ -724,7 +724,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData) {
-		DtoHelper.fillDto(existingData, newData, true);
+		DtoHelper.copyDtoValues(existingData, newData, true);
 		saveCampaignFormData(existingData);
 	}
 

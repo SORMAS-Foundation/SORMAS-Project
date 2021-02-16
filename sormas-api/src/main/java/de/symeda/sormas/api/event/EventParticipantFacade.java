@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -52,6 +51,11 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	List<EventParticipantListEntryDto> getListEntries(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max);
+
 	EventParticipantDto getByUuid(String uuid);
 
 	void validate(EventParticipantDto eventParticipant);
@@ -74,7 +78,7 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantExportDto> getExportList(EventParticipantCriteria eventParticipantCriteria, int first, int max, Language userLanguage);
 
-	List<SimilarEventParticipantDto> getSimilarEventParticipants(EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria);
-
 	List<EventParticipantDto> getByEventUuids(List<String> eventUuids);
+
+	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
 }

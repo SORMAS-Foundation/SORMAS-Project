@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
@@ -174,6 +173,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -290,6 +290,7 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseFacadeEjb implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
+	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -500,8 +501,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			eventSummaries.stream()
 				.filter(v -> v.getCaseId() == caze.getId())
-				.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-				.findFirst()
+				.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 				.ifPresent(eventSummary -> {
 					caze.setLatestEventId(eventSummary.getEventUuid());
 					caze.setLatestEventStatus(eventSummary.getEventStatus());
@@ -947,8 +947,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (eventSummaries != null && exportDto.getEventCount() != 0) {
 					eventSummaries.stream()
 						.filter(v -> v.getCaseId() == exportDto.getId())
-						.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
-						.findFirst()
+						.max(Comparator.comparing(EventSummaryDetails::getEventDate))
 						.ifPresent(eventSummary -> {
 							exportDto.setLatestEventId(eventSummary.getEventUuid());
 							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
@@ -1351,8 +1350,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.diff(
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-			new Long(30 * 24 * 60 * 60) // 30 days
-		);
+			SECONDS_30_DAYS);
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
@@ -1378,8 +1376,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					cb.diff(
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
-				new Long(30 * 24 * 60 * 60) // 30 days
-			));
+				SECONDS_30_DAYS));
 
 		Predicate creationDateFilter = cb.or(
 			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
@@ -1664,6 +1661,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
@@ -1815,8 +1816,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Generate epid number if missing or incomplete
-		if (!CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
-			newCase.setEpidNumber(generateEpidNumber(newCase));
+		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale());
+		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.EPID_NUMBER)
+			&& !CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
+			newCase.setEpidNumber(
+				generateEpidNumber(
+					newCase.getEpidNumber(),
+					newCase.getUuid(),
+					newCase.getDisease(),
+					newCase.getReportDate(),
+					newCase.getDistrict().getUuid()));
 		}
 
 		// update the plague type based on symptoms
@@ -2062,7 +2071,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
 			completeness += 0.2f;
 		}
-		if (sampleService.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
+		if (sampleService
+			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
 			completeness += 0.15f;
 		}
 		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
@@ -2088,24 +2098,22 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String generateEpidNumber(CaseReferenceDto caze) {
-		return generateEpidNumber(caseService.getByReferenceDto(caze));
+	public String generateEpidNumber(CaseDataDto caze) {
+		return generateEpidNumber(caze.getEpidNumber(), caze.getUuid(), caze.getDisease(), caze.getReportDate(), caze.getDistrict().getUuid());
 	}
 
-	public String generateEpidNumber(Case caze) {
+	private String generateEpidNumber(String newEpidNumber, String caseUuid, Disease disease, Date reportDate, String districtUuid) {
 
-		String newEpidNumber = caze.getEpidNumber();
-
-		if (!CaseLogic.isEpidNumberPrefix(caze.getEpidNumber())) {
+		if (!CaseLogic.isEpidNumberPrefix(newEpidNumber)) {
 			// Generate a completely new epid number if the prefix is not complete or doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(caze.getReportDate());
+			calendar.setTime(reportDate);
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict()) + "-" + year + "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(districtUuid) + "-" + year + "-";
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getUuid(), caze.getDisease());
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caseUuid, disease);
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the database, use 001
 			newEpidNumber = newEpidNumber + "001";
@@ -2119,7 +2127,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// suffix containing numbers
 				newEpidNumber = newEpidNumber + "001";
 			} else {
-				int suffix = Integer.valueOf(suffixString) + 1;
+				int suffix = Integer.parseInt(suffixString) + 1;
 				newEpidNumber += String.format("%03d", suffix);
 			}
 		}
@@ -2302,20 +2310,18 @@ public class CaseFacadeEjb implements CaseFacade {
 				inJurisdiction);
 
 			dto.getHospitalization().getPreviousHospitalizations().forEach(previousHospitalization -> {
-				PreviousHospitalizationDto existingPreviousHospitalization = existingCaseDto.getHospitalization()
+				existingCaseDto.getHospitalization()
 					.getPreviousHospitalizations()
 					.stream()
 					.filter(eh -> DataHelper.isSame(previousHospitalization, eh))
 					.findFirst()
-					.orElse(null);
+					.ifPresent(
+						existingPreviousHospitalization -> pseudonymizer.restorePseudonymizedValues(
+							PreviousHospitalizationDto.class,
+							previousHospitalization,
+							existingPreviousHospitalization,
+							inJurisdiction));
 
-				if (existingPreviousHospitalization != null) {
-					pseudonymizer.restorePseudonymizedValues(
-						PreviousHospitalizationDto.class,
-						previousHospitalization,
-						existingPreviousHospitalization,
-						inJurisdiction);
-				}
 			});
 
 			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingCaseDto.getSymptoms(), inJurisdiction);
@@ -2353,6 +2359,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2452,7 +2459,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFollowUpComment(source.getFollowUpComment());
@@ -2524,6 +2530,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2619,7 +2626,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
@@ -3058,14 +3064,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Case
-		fillDto(leadCaseData, otherCaseData, cloning);
+		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
 		// 1.2 Person
 		if (!cloning) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			fillDto(leadPerson, otherPerson, cloning);
+			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
 			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
@@ -3081,7 +3087,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
-				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
+				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);
 			} else {
 				// simply move existing entities to the merge target
@@ -3095,19 +3101,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
-				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
+				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
 				sampleFacade.saveSample(newSample, false, true);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-					fillDto(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
+					DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
 				}
 
 				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
 					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
@@ -3136,7 +3142,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Treatment treatment : treatments) {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.build(leadCaseTherapyReference);
-				fillDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
+				DtoHelper.copyDtoValues(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
 				treatmentFacade.saveTreatment(newTreatment);
 			} else {
 				// simply move existing entities to the merge target
@@ -3151,7 +3157,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Prescription prescription : prescriptions) {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
-				fillDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
+				DtoHelper.copyDtoValues(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
 				prescriptionFacade.savePrescription(newPrescription);
 			} else {
 				// simply move existing entities to the merge target
@@ -3167,7 +3173,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (ClinicalVisit clinicalVisit : clinicalVisits) {
 			if (cloning) {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.build(leadCaseData.getClinicalCourse().toReference(), leadCase.getDisease());
-				fillDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
+				DtoHelper.copyDtoValues(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
 				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
 			} else {
 				// simply move existing entities to the merge target
@@ -3541,7 +3547,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
 				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();
 
 				reportDatePredicate = cb.between(
 					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),

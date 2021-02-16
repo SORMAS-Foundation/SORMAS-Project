@@ -40,13 +40,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -54,11 +55,14 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -66,9 +70,11 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
@@ -80,6 +86,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -195,35 +202,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	public Boolean isValidPersonUuid(String personUuid) {
 		return personService.exists(personUuid);
 	}
-
-	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
-	//	@Override
-	//	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
-	//
-	//		User user = userService.getByReferenceDto(userRef);
-	//		if (user == null) {
-	//			return Collections.emptyList();
-	//		}
-	//		
-	//		CriteriaBuilder cb = em.getCriteriaBuilder();
-	//		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-	//		Root<Person> person = cq.from(Person.class);
-	//
-	//		cq.multiselect(person.get(Person.UUID), 
-	//				person.get(Person.SEX), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
-	//				person.get(Person.PRESENT_CONDITION), person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM),
-	//				person.get(Person.BIRTHDATE_YYYY), person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
-	//				person.get(Person.DEATH_DATE));
-	//
-	//		Predicate filter = personService.createUserFilter(cb, cq, person, user);
-	//
-	//		if (filter != null) {
-	//			cq.where(filter);
-	//		}
-	//
-	//		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
-	//		return resultList;
-	//	}
 
 	@Override
 	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
@@ -354,6 +332,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		if (existingPerson.isEnrolledInExternalJournal()) {
 			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
@@ -409,8 +391,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
@@ -594,10 +574,126 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
-		PersonDto person = getPersonByUuid(personUuid);;
+		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
 		savePerson(person);
 		return true;
+	}
+
+	@Override
+	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+		Root<Person> person = cq.from(Person.class);
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
+
+		cq.multiselect(
+			person.get(Person.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.APPROXIMATE_AGE),
+			person.get(Person.APPROXIMATE_AGE_TYPE),
+			person.get(Person.BIRTHDATE_DD),
+			person.get(Person.BIRTHDATE_MM),
+			person.get(Person.BIRTHDATE_YYYY),
+			person.get(Person.SEX),
+			district.get(District.NAME),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.POSTAL_CODE),
+			location.get(Location.CITY),
+			person.get(Person.PHONE),
+			person.get(Person.EMAIL_ADDRESS),
+			person.get(Person.CHANGE_DATE),
+			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
+
+		Predicate filter = personService.createUserFilter(cb, cq, person);
+		if (criteria != null) {
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case PersonIndexDto.UUID:
+				case PersonIndexDto.FIRST_NAME:
+				case PersonIndexDto.LAST_NAME:
+				case PersonIndexDto.SEX:
+				case PersonIndexDto.PHONE:
+				case PersonIndexDto.EMAIL_ADDRESS:
+					expression = person.get(sortProperty.propertyName);
+					break;
+				case PersonIndexDto.AGE_AND_BIRTH_DATE:
+					expression = person.get(Person.APPROXIMATE_AGE);
+					break;
+				case PersonIndexDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case PersonIndexDto.STREET:
+				case PersonIndexDto.HOUSE_NUMBER:
+				case PersonIndexDto.POSTAL_CODE:
+				case PersonIndexDto.CITY:
+					expression = location.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
+		}
+
+		List<PersonIndexDto> persons;
+		if (first != null && max != null) {
+			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			persons = em.createQuery(cq).getResultList();
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			PersonIndexDto.class,
+			persons,
+			p -> p.getInJurisdiction(),
+			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+
+		return persons;
+	}
+
+	@Override
+	public long count(PersonCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		Predicate filter = personService.createUserFilter(cb, cq, person);
+		if (criteria != null) {
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(cb.countDistinct(person));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return personService.exists(uuid);
 	}
 
 	/**
@@ -821,8 +917,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (entity == null) {
 			return null;
 		}
-		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
-		return dto;
+		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 	}
 
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {

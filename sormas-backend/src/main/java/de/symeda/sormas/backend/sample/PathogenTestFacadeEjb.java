@@ -291,6 +291,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 
 		return target;
 	}
@@ -342,6 +343,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 
 		return target;
 	}

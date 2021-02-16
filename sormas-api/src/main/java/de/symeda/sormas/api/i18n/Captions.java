@@ -36,6 +36,7 @@ public interface Captions {
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
+	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
 	String actionCancel = "actionCancel";
 	String actionClear = "actionClear";
@@ -44,6 +45,7 @@ public interface Captions {
 	String actionCompare = "actionCompare";
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
+	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
@@ -301,11 +303,11 @@ public interface Captions {
 	String CaseData_reInfection = "CaseData.reInfection";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
-	String CaseData_reportingType = "CaseData.reportingType";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
 	String CaseData_reportLon = "CaseData.reportLon";
+	String CaseData_screeningType = "CaseData.screeningType";
 	String CaseData_sequelae = "CaseData.sequelae";
 	String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
 	String CaseData_sharedToCountry = "CaseData.sharedToCountry";
@@ -384,6 +386,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -397,6 +400,7 @@ public interface Captions {
 	String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
 	String CaseHospitalization_dischargeDate = "CaseHospitalization.dischargeDate";
 	String CaseHospitalization_healthFacility = "CaseHospitalization.healthFacility";
+	String CaseHospitalization_hospitalizationReason = "CaseHospitalization.hospitalizationReason";
 	String CaseHospitalization_hospitalizedPreviously = "CaseHospitalization.hospitalizedPreviously";
 	String CaseHospitalization_intensiveCareUnit = "CaseHospitalization.intensiveCareUnit";
 	String CaseHospitalization_intensiveCareUnitEnd = "CaseHospitalization.intensiveCareUnitEnd";
@@ -404,6 +408,7 @@ public interface Captions {
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
 	String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
+	String CaseHospitalization_otherHospitalizationReason = "CaseHospitalization.otherHospitalizationReason";
 	String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
@@ -427,7 +432,9 @@ public interface Captions {
 	String CasePreviousHospitalization_editColumn = "CasePreviousHospitalization.editColumn";
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
+	String CasePreviousHospitalization_hospitalizationReason = "CasePreviousHospitalization.hospitalizationReason";
 	String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
+	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
@@ -589,6 +596,7 @@ public interface Captions {
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
@@ -1177,6 +1185,7 @@ public interface Captions {
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
 	String mainMenuEvents = "mainMenuEvents";
+	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
 	String mainMenuStatistics = "mainMenuStatistics";
@@ -1236,6 +1245,7 @@ public interface Captions {
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
+	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
@@ -1327,6 +1337,13 @@ public interface Captions {
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
+	String personLinkToCases = "personLinkToCases";
+	String personLinkToContacts = "personLinkToContacts";
+	String personLinkToEvents = "personLinkToEvents";
+	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
+	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
+	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
+	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
@@ -1582,6 +1599,19 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurveillanceReport = "SurveillanceReport";
+	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
+	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
+	String SurveillanceReport_facility = "SurveillanceReport.facility";
+	String SurveillanceReport_facilityDetails = "SurveillanceReport.facilityDetails";
+	String SurveillanceReport_facilityDistrict = "SurveillanceReport.facilityDistrict";
+	String SurveillanceReport_facilityRegion = "SurveillanceReport.facilityRegion";
+	String SurveillanceReport_facilityType = "SurveillanceReport.facilityType";
+	String SurveillanceReport_notificationDetails = "SurveillanceReport.notificationDetails";
+	String SurveillanceReport_reportDate = "SurveillanceReport.reportDate";
+	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
+	String surveillanceReportNewReport = "surveillanceReportNewReport";
+	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_send = "SurvnetGateway.send";
 	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
@@ -1929,6 +1959,8 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_persons = "View.persons";
+	String View_persons_data = "View.persons.data";
 	String View_reports = "View.reports";
 	String View_reports_sub = "View.reports.sub";
 	String View_samples = "View.samples";

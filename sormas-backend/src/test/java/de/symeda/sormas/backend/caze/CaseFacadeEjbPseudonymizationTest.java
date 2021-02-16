@@ -369,7 +369,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setCommunity(rdcf2NewCommunity.toReference());
 		caze.setHealthFacility(rdcf2NewFacility.toReference());
 		caze.setHealthFacilityDetails("New HF details");
-		caze.setPointOfEntry(new PointOfEntryReferenceDto(rdcf2NewPointOfEntry.getUuid()));
+		caze.setPointOfEntry(new PointOfEntryReferenceDto(rdcf2NewPointOfEntry.getUuid(), null, null, null));
 		caze.setPointOfEntryDetails("New PoE detail");
 
 		//sensitive data

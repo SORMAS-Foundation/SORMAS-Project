@@ -43,6 +43,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -59,8 +61,8 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -70,6 +72,7 @@ import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
@@ -201,8 +204,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
 		if (!eventJurisdictionChecker.isInJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
-			dto.setRegion(user.getRegion() != null ? new RegionReferenceDto(user.getRegion().getUuid()) : null);
-			dto.setDistrict(user.getDistrict() != null ? new DistrictReferenceDto(user.getDistrict().getUuid()) : null);
+			Region region = user.getRegion();
+			dto.setRegion(region != null ? new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()) : null);
+			District district = user.getDistrict();
+			dto.setDistrict(district != null ? new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()) : null);
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -250,7 +255,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+		if ((eventParticipantCriteria == null) || (eventParticipantCriteria.getEvent() == null && eventParticipantCriteria.getPerson() == null)) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 
@@ -336,6 +341,50 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			null);
 
 		return indexList;
+	}
+
+	@Override
+	public List<EventParticipantListEntryDto> getListEntries(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipantListEntryDto> cq = cb.createQuery(EventParticipantListEntryDto.class);
+		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+
+		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		cq.multiselect(
+			eventParticipant.get(EventParticipant.UUID),
+			event.get(Event.UUID),
+			event.get(Event.EVENT_STATUS),
+			event.get(Event.DISEASE),
+			event.get(Event.EVENT_TITLE));
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
+			cb.isFalse(event.get(Event.DELETED)));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
+
+		List<EventParticipantListEntryDto> result;
+		if (first != null && max != null) {
+			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			result = em.createQuery(cq).getResultList();
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventParticipantListEntryDto.class,
+			result,
+			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			null);
+
+		return result;
 	}
 
 	@Override
@@ -506,76 +555,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		return eventParticipantResultList;
-	}
-
-	@Override
-	public List<SimilarEventParticipantDto> getSimilarEventParticipants(EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria) {
-//		final CriteriaBuilder cb = em.getCriteriaBuilder();
-//		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
-//		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-//
-//		ContactJoins joins = new ContactJoins(eventParticipantRoot);
-//
-//		cq.multiselect(
-//			Stream
-//				.concat(
-//					Stream.of(
-//						joins.getPerson().get(Person.FIRST_NAME),
-//						joins.getPerson().get(Person.LAST_NAME),
-//						eventParticipantRoot.get(Contact.UUID),
-//						joins.getCaze().get(Case.UUID),
-//						joins.getCasePerson().get(Person.FIRST_NAME),
-//						joins.getCasePerson().get(Person.LAST_NAME),
-//						eventParticipantRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
-//						eventParticipantRoot.get(Contact.LAST_CONTACT_DATE),
-//						eventParticipantRoot.get(Contact.CONTACT_PROXIMITY),
-//						eventParticipantRoot.get(Contact.CONTACT_CLASSIFICATION),
-//						eventParticipantRoot.get(Contact.CONTACT_STATUS),
-//						eventParticipantRoot.get(Contact.FOLLOW_UP_STATUS)),
-//					listCriteriaBuilder.getJurisdictionSelections(joins))
-//				.collect(Collectors.toList()));
-//
-//		final Predicate defaultFilter = contactService.createDefaultFilter(cb, eventParticipantRoot);
-//		final Predicate userFilter = contactService.createUserFilter(cb, cq, eventParticipantRoot);
-//
-//		final PersonReferenceDto person = eventParticipantSimilarityCriteria.getPerson();
-//		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
-//
-//		final Disease disease = eventParticipantSimilarityCriteria.getDisease();
-//		final Predicate diseaseFilter = disease != null ? cb.equal(eventParticipantRoot.get(Contact.DISEASE), disease) : null;
-//
-//		final CaseReferenceDto caze = eventParticipantSimilarityCriteria.getCaze();
-//		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
-//
-//		final Date reportDate = eventParticipantSimilarityCriteria.getReportDate();
-//		final Date lastContactDate = eventParticipantSimilarityCriteria.getLastContactDate();
-//		final Predicate recentContactsFilter = AbstractAdoService.and(
-//			cb,
-//			contactService.recentDateFilter(cb, reportDate, eventParticipantRoot.get(Contact.REPORT_DATE_TIME), 30),
-//			contactService.recentDateFilter(cb, lastContactDate, eventParticipantRoot.get(Contact.LAST_CONTACT_DATE), 30));
-//
-//		cq.where(AbstractAdoService.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
-//
-//		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
-//
-//		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-//		pseudonymizer.pseudonymizeDtoCollection(
-//			SimilarContactDto.class,
-//			contacts,
-//			c -> eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(c.getJurisdiction()),
-//			(c, isInJurisdiction) -> {
-//				CaseReferenceDto contactCase = c.getCaze();
-//				if (contactCase != null) {
-//					pseudonymizer.pseudonymizeDto(
-//						CaseReferenceDto.class,
-//						contactCase,
-//						eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(c.getCaseJurisdiction()),
-//						null);
-//				}
-//			});
-//
-//		return contacts;
-		return new ArrayList<SimilarEventParticipantDto>();
 	}
 
 	@Override
@@ -797,4 +776,45 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return eventParticipantService.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
+		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		cq.multiselect(
+			eventParticipantRoot.get(EventParticipant.UUID),
+			personJoin.get(Person.FIRST_NAME),
+			personJoin.get(Person.LAST_NAME),
+			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			eventJoin.get(Event.UUID),
+			eventJoin.get(Event.EVENT_STATUS),
+			eventJoin.get(Event.EVENT_TITLE),
+			eventJoin.get(Event.START_DATE));
+
+		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
+		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
+
+		final PersonReferenceDto person = criteria.getPerson();
+		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;
+
+		final Disease disease = criteria.getDisease();
+		final Predicate diseaseFilter = disease != null ? cb.equal(eventJoin.get(Event.DISEASE), disease) : null;
+
+		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter));
+
+		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
+			SimilarEventParticipantDto.class,
+			participants,
+			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			null);
+
+		return participants;
+	}
 }

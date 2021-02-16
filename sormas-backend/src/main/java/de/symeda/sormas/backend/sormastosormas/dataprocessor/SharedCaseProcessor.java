@@ -107,14 +107,18 @@ public class SharedCaseProcessor
 			caze.getCommunity(),
 			caze.getFacilityType(),
 			caze.getHealthFacility(),
-			caze.getPointOfEntry());
+			caze.getHealthFacilityDetails(),
+			caze.getPointOfEntry(),
+			caze.getPointOfEntryDetails());
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
 			caze.setRegion(infrastructureData.getRegion());
 			caze.setDistrict(infrastructureData.getDistrict());
 			caze.setCommunity(infrastructureData.getCommunity());
 			caze.setHealthFacility(infrastructureData.getFacility());
+			caze.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
 			caze.setPointOfEntry(infrastructureData.getPointOfEntry());
+			caze.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
 		});
 
 		ValidationErrors embeddedObjectErrors = processEmbeddedObjects(caze);
@@ -136,6 +140,8 @@ public class SharedCaseProcessor
 					ph.getCommunity(),
 					FacilityType.HOSPITAL,
 					ph.getHealthFacility(),
+					ph.getHealthFacilityDetails(),
+					null,
 					null);
 
 				dataProcessorHelper.handleInfraStructure(
@@ -147,6 +153,7 @@ public class SharedCaseProcessor
 						ph.setDistrict(phInfrastructure.getDistrict());
 						ph.setCommunity(phInfrastructure.getCommunity());
 						ph.setHealthFacility(phInfrastructure.getFacility());
+						ph.setHealthFacilityDetails(phInfrastructure.getFacilityDetails());
 					});
 			});
 		}
@@ -157,10 +164,7 @@ public class SharedCaseProcessor
 			DataHelper.Pair<InfrastructureData, List<String>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 				maternalHistory.getRashExposureRegion(),
 				maternalHistory.getRashExposureDistrict(),
-				maternalHistory.getRashExposureCommunity(),
-				null,
-				null,
-				null);
+				maternalHistory.getRashExposureCommunity());
 
 			dataProcessorHelper.handleInfraStructure(
 				rashExposureInfrastructureAndErrors,

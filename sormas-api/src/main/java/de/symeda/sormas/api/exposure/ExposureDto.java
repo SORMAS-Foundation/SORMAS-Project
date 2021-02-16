@@ -660,4 +660,11 @@ public class ExposureDto extends PseudonymizableDto {
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
 	}
+
+	@Override
+	public ExposureDto clone() throws CloneNotSupportedException {
+		ExposureDto clone = (ExposureDto) super.clone();
+		clone.setLocation((LocationDto) clone.getLocation().clone());
+		return clone;
+	}
 }
