@@ -6497,8 +6497,8 @@ ALTER TABLE cases_history
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
 -- 2021-02-10 - Make user roles deactivateable #3716
-ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
-ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL default true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
 
