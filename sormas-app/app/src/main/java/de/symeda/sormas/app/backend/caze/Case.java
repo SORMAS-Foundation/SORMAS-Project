@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -127,6 +128,9 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private CaseIdentificationSource caseIdentificationSource;
+
+	@Enumerated(EnumType.STRING)
+	private ScreeningType screeningType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User classificationUser;
@@ -484,6 +488,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public Region getRegion() {

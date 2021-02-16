@@ -2359,6 +2359,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2529,6 +2530,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());

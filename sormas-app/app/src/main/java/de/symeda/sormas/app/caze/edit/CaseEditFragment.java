@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -90,6 +91,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private List<Item> caseClassificationList;
 	private List<Item> caseIdentificationSourceList;
+	private List<Item> caseScreeningTypeList;
 	private List<Item> caseOutcomeList;
 	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
@@ -273,6 +275,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
 		caseIdentificationSourceList = DataUtils.getEnumItems(CaseIdentificationSource.class, true);
+		caseScreeningTypeList = DataUtils.getEnumItems(ScreeningType.class, true);
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
@@ -509,6 +512,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
 		contentBinding.caseDataCaseIdentificationSource.initializeSpinner(caseIdentificationSourceList);
+		contentBinding.caseDataScreeningType.initializeSpinner(caseScreeningTypeList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);

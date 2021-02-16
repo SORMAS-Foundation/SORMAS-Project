@@ -57,6 +57,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -231,6 +232,7 @@ public class Case extends CoreAdo {
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
 	private CaseIdentificationSource caseIdentificationSource;
+	private ScreeningType screeningType;
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
@@ -478,6 +480,15 @@ public class Case extends CoreAdo {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	@ManyToOne(cascade = {})
