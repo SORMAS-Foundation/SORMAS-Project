@@ -77,13 +77,6 @@ public class SampleEditForm extends AbstractSampleForm {
 	public void fillPathogenTestResult() {
 		ComboBox pathogenTestResultField = (ComboBox) getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT);
 
-		boolean hasPathogenTests = FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference());
-
-		if (!hasPathogenTests) {
-			FieldHelper.updateEnumData(pathogenTestResultField, Arrays.asList(PathogenTestResultType.PENDING, PathogenTestResultType.NOT_DONE));
-			return;
-		}
-
 		boolean hasOnlyPendingPathogenTests = FacadeProvider.getPathogenTestFacade()
 			.getBySampleUuids(Collections.singletonList(getValue().getUuid()))
 			.stream()
