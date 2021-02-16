@@ -120,8 +120,6 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
-	// TODO: add default configs for performance testing
-
 	public DevModeView() {
 
 		super(VIEW_NAME);
