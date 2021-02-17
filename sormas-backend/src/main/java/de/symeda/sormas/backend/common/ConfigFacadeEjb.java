@@ -129,6 +129,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 
 	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
 
@@ -546,6 +547,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public String getDocgenerationNullReplacement() {
 		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
+	}
+
+	@Override
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
 	}
 
 	@LocalBean

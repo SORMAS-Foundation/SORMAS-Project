@@ -50,7 +50,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.campaigndata.AbstractCampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
@@ -123,9 +122,7 @@ public class MainScreen extends HorizontalLayout {
 		});
 
 		menu = new Menu(navigator);
-		if (permitted(UserRight.DASHBOARD_VIEW)) {
-			ControllerProvider.getDashboardController().registerViews(navigator);
-		}
+		ControllerProvider.getDashboardController().registerViews(navigator);
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			menu.addView(
 				SurveillanceDashboardView.class,
@@ -340,14 +337,12 @@ public class MainScreen extends HorizontalLayout {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				String defaultView;
-				if (permitted(UserRight.DASHBOARD_VIEW)) {
-					if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-						defaultView = SurveillanceDashboardView.VIEW_NAME;
-					} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
-						defaultView = ContactsDashboardView.VIEW_NAME;
-					} else {
-						defaultView = CampaignDashboardView.VIEW_NAME;
-					}
+				if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+					defaultView = SurveillanceDashboardView.VIEW_NAME;
+				} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+					defaultView = ContactsDashboardView.VIEW_NAME;
+				} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+					defaultView = CampaignDashboardView.VIEW_NAME;
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {

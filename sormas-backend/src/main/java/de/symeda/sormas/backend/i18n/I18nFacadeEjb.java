@@ -13,20 +13,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.surveillancereport;
+package de.symeda.sormas.backend.i18n;
 
-import java.util.List;
+import javax.ejb.Stateless;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nFacade;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-@Remote
-public interface SurveillanceReportFacade {
+@Stateless(name = "I18nFacade")
+public class I18nFacadeEjb implements I18nFacade {
 
-	SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto);
+	@Override
+	public void setUserLanguage(Language language) {
+		I18nProperties.setUserLanguage(language);
+	}
 
-	void deleteSurveillanceReport(String surveillanceReportUuid);
-
-	List<SurveillanceReportDto> getIndexList(SurveillanceReportCriteria criteria, Integer first, Integer max);
-
-	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
+	@Override
+	public void removeUserLanguage() {
+		I18nProperties.removeUserLanguage();
+	}
 }

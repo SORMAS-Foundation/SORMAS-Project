@@ -13,20 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.surveillancereport;
-
-import java.util.List;
+package de.symeda.sormas.api.i18n;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Language;
+
 @Remote
-public interface SurveillanceReportFacade {
+public interface I18nFacade {
 
-	SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto);
+	void setUserLanguage(Language language);
 
-	void deleteSurveillanceReport(String surveillanceReportUuid);
-
-	List<SurveillanceReportDto> getIndexList(SurveillanceReportCriteria criteria, Integer first, Integer max);
-
-	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
+	void removeUserLanguage();
 }
