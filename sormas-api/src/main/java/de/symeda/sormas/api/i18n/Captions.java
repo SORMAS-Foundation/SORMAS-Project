@@ -84,7 +84,6 @@ public interface Captions {
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
 	String ActivityAsCase_connectionNumber = "ActivityAsCase.connectionNumber";
 	String ActivityAsCase_endDate = "ActivityAsCase.endDate";
-	String ActivityAsCase_exposureRole = "ActivityAsCase.exposureRole";
 	String ActivityAsCase_gatheringDetails = "ActivityAsCase.gatheringDetails";
 	String ActivityAsCase_gatheringType = "ActivityAsCase.gatheringType";
 	String ActivityAsCase_habitationDetails = "ActivityAsCase.habitationDetails";
@@ -92,6 +91,7 @@ public interface Captions {
 	String ActivityAsCase_location = "ActivityAsCase.location";
 	String ActivityAsCase_meansOfTransport = "ActivityAsCase.meansOfTransport";
 	String ActivityAsCase_meansOfTransportDetails = "ActivityAsCase.meansOfTransportDetails";
+	String ActivityAsCase_role = "ActivityAsCase.role";
 	String ActivityAsCase_seatNumber = "ActivityAsCase.seatNumber";
 	String ActivityAsCase_startDate = "ActivityAsCase.startDate";
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";

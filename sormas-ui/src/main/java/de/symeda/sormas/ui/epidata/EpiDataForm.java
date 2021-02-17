@@ -158,7 +158,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		NullableOptionGroup ogActivityAsCaseDetailsKnown = addField(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN, NullableOptionGroup.class);
 		ActivityAsCaseField activityAsCaseField = addField(EpiDataDto.ACTIVITIES_AS_CASE, ActivityAsCaseField.class);
-		activityAsCaseField.setEpiDataParentClass(parentClass);
 		activityAsCaseField.setWidthFull();
 		activityAsCaseField.setPseudonymized(isPseudonymized);
 
