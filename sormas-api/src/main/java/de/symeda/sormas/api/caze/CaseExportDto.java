@@ -160,6 +160,7 @@ public class CaseExportDto implements Serializable {
 	private Boolean notACaseReasonOther;
 	private String notACaseReasonDetails;
 	private CaseIdentificationSource caseIdentificationSource;
+	private ScreeningType screeningType;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
 	private CaseOutcome outcome;
@@ -329,7 +330,7 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
-						 String reportingDistrict) {
+						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType) {
 		//@formatter:on
 
 		this.id = id;
@@ -441,6 +442,8 @@ public class CaseExportDto implements Serializable {
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 		this.reportingDistrict = reportingDistrict;
+		this.caseIdentificationSource = caseIdentificationSource;
+		this.screeningType = screeningType;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1960,6 +1963,17 @@ public class CaseExportDto implements Serializable {
 		return caseIdentificationSource;
 	}
 
+	@Order(170)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.SCREENING_TYPE)
+	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountriesExcept
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -2265,5 +2279,9 @@ public class CaseExportDto implements Serializable {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 }

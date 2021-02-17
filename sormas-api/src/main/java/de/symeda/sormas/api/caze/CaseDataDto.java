@@ -239,7 +239,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private CaseClassification caseClassification;
+	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
+	@HideForCountriesExcept
 	private ScreeningType screeningType;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
