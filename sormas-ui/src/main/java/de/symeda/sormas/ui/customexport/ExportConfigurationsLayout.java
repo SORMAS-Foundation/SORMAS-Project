@@ -77,11 +77,11 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		Label sharedExportsLabel =
 			new Label(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedExports));
 		sharedExportsLabel.addStyleName(H3);
-		addComponent(sharedExportsLabel);
 
 		gridSharedExportsToPublic = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, true);
 		if (gridSharedExportsToPublic.getNbOfSharedExportsToPublic() > 0) {
 			gridSharedExportsToPublic.setWidth(100, Unit.PERCENTAGE);
+			addComponent(sharedExportsLabel);
 			addComponent(gridSharedExportsToPublic);
 		}
 
