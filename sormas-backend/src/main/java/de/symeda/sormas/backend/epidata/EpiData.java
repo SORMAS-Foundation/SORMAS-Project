@@ -43,7 +43,7 @@ public class EpiData extends AbstractDomainObject {
 
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
-	public static final String ACTIVITY_AS_CASE = "activitiesAsCase";
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;

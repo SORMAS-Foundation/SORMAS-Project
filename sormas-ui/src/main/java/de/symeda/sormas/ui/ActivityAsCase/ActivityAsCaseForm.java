@@ -37,7 +37,6 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -94,20 +93,12 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
                         loc(ActivityAsCaseDto.LOCATION);
         //@formatter:on
 
-	private final Class<? extends EntityDto> epiDataParentClass;
-
 	private LocationEditForm locationForm;
 
-	public ActivityAsCaseForm(
-		boolean create,
-		Class<? extends EntityDto> epiDataParentClass,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
-		UiFieldAccessCheckers fieldAccessCheckers) {
+	public ActivityAsCaseForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(960, Unit.PIXELS);
-
-		this.epiDataParentClass = epiDataParentClass;
 
 		if (create) {
 			hideValidationUntilNextCommit();
