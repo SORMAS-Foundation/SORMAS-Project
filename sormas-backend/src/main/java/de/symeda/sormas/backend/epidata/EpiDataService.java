@@ -28,6 +28,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -54,8 +55,18 @@ public class EpiDataService extends BaseAdoService<EpiData> {
 
 		Join<EpiData, Exposure> exposures = epiData.join(EpiData.EXPOSURES, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, exposures.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb
-			.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, exposures.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(
+			dateFilter,
+			CriteriaBuilderHelper
+				.greaterThanAndNotNull(cb, exposures.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
+
+		Join<EpiData, ActivityAsCase> activitiesAsCaseJoin = epiData.join(EpiData.ACTIVITY_AS_CASE, JoinType.LEFT);
+		dateFilter =
+			cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, activitiesAsCaseJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(
+			dateFilter,
+			CriteriaBuilderHelper
+				.greaterThanAndNotNull(cb, activitiesAsCaseJoin.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

@@ -46,6 +46,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -56,6 +57,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String LOC_EXPOSURE_INVESTIGATION_HEADING = "locExposureInvestigationHeading";
+	private static final String LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING = "locActivityAsCaseInvestigationHeading";
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 
@@ -64,6 +66,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) + 
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
+			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) + 
+			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
+			loc(EpiDataDto.ACTIVITIES_AS_CASE) + 
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
@@ -110,6 +115,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();
 		exposuresField.setPseudonymized(isPseudonymized);
+
+		if (parentClass == CaseDataDto.class) {
+			addActivityAsCaseFields();
+		}
+
 		addField(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA, NullableOptionGroup.class);
 		addField(EpiDataDto.LARGE_OUTBREAKS_AREA, NullableOptionGroup.class);
 		addField(EpiDataDto.AREA_INFECTED_ANIMALS, NullableOptionGroup.class);
@@ -134,6 +144,33 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		exposuresField.addValueChangeListener(e -> {
 			ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue()));
+		});
+	}
+
+	private void addActivityAsCaseFields() {
+
+		getContent().addComponent(
+			new Label(
+				h3(I18nProperties.getString(Strings.headingActivityAsCase))
+					+ divsCss(VSPACE_3, I18nProperties.getString(Strings.infoActivityAsCaseInvestigation)),
+				ContentMode.HTML),
+			LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING);
+
+		NullableOptionGroup ogActivityAsCaseDetailsKnown = addField(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN, NullableOptionGroup.class);
+		ActivityAsCaseField activityAsCaseField = addField(EpiDataDto.ACTIVITIES_AS_CASE, ActivityAsCaseField.class);
+		activityAsCaseField.setEpiDataParentClass(parentClass);
+		activityAsCaseField.setWidthFull();
+		activityAsCaseField.setPseudonymized(isPseudonymized);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EpiDataDto.ACTIVITIES_AS_CASE,
+			EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN,
+			Collections.singletonList(YesNoUnknown.YES),
+			true);
+
+		activityAsCaseField.addValueChangeListener(e -> {
+			ogActivityAsCaseDetailsKnown.setEnabled(CollectionUtils.isEmpty(activityAsCaseField.getValue()));
 		});
 	}
 

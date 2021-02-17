@@ -29,6 +29,7 @@ import javax.persistence.OneToMany;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.exposure.Exposure;
 
@@ -40,17 +41,19 @@ public class EpiData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "epidata";
 
-	public static final String EXPOSURE_DETAILS_KNOWN = "exposureDetailsKnown";
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
+	public static final String ACTIVITY_AS_CASE = "activitiesAsCase";
 
 	private YesNoUnknown exposureDetailsKnown;
+	private YesNoUnknown activityAsCaseDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
 	private YesNoUnknown areaInfectedAnimals;
 
 	private List<Exposure> exposures = new ArrayList<>();
+	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
 	private Date changeDateOfEmbeddedLists;
 
 	@Enumerated(EnumType.STRING)
@@ -62,6 +65,15 @@ public class EpiData extends AbstractDomainObject {
 		this.exposureDetailsKnown = exposureDetailsKnown;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getActivityAsCaseDetailsKnown() {
+		return activityAsCaseDetailsKnown;
+	}
+
+	public void setActivityAsCaseDetailsKnown(YesNoUnknown activityAsCaseDetailsKnown) {
+		this.activityAsCaseDetailsKnown = activityAsCaseDetailsKnown;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Exposure.EPI_DATA)
 	public List<Exposure> getExposures() {
 		return exposures;
@@ -69,6 +81,15 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setExposures(List<Exposure> exposures) {
 		this.exposures = exposures;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Exposure.EPI_DATA)
+	public List<ActivityAsCase> getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(List<ActivityAsCase> activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
 	}
 
 	/**

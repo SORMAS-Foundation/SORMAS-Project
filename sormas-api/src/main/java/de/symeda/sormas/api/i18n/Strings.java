@@ -131,6 +131,7 @@ public interface Strings {
 	String edit = "edit";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
+	String entityActivityAsCase = "entityActivityAsCase";
 	String entityAdditionalTest = "entityAdditionalTest";
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityBurial = "entityBurial";
@@ -214,6 +215,8 @@ public interface Strings {
 	String forContact = "forContact";
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
+	String headingActivityAsCase = "headingActivityAsCase";
+	String headingActivityAsCaseDetails = "headingActivityAsCaseDetails";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
@@ -459,6 +462,7 @@ public interface Strings {
 	String headingWrongFileType = "headingWrongFileType";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
+	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
