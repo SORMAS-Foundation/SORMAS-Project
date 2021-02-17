@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import android.view.View;
 
@@ -81,7 +83,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		sample = record.getSample();
 		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, true));
-		testResultList = DataUtils.getEnumItems(PathogenTestResultType.class, true);
+		testResultList = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values())
+			.filter(type -> type != PathogenTestResultType.NOT_DONE)
+			.collect(Collectors.toList()), true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 	}
 
