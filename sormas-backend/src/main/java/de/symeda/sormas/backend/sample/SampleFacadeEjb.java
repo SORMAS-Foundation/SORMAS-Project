@@ -39,6 +39,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -247,7 +248,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public SampleDto saveSample(SampleDto dto) {
+	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true);
 	}
 

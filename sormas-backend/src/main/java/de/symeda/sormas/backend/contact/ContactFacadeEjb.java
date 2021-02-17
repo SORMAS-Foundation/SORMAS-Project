@@ -56,6 +56,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -283,12 +284,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto) {
+	public ContactDto saveContact(@Valid ContactDto dto) {
 		return saveContact(dto, true, true);
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+	public ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return saveContact(dto, handleChanges, handleCaseChanges, true);
 	}
 

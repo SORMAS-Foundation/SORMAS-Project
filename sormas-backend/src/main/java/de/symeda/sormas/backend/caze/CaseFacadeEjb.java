@@ -68,6 +68,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1511,7 +1512,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
+	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
 		return saveCase(dto, true, true);
 	}
 

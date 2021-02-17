@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -56,7 +57,7 @@ public class EventResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postEvents(List<EventDto> dtos) {
+	public List<PushResult> postEvents(@Valid List<EventDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventFacade()::saveEvent);
 		return result;
 	}

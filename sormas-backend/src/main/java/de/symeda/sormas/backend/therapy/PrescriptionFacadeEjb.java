@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -115,7 +116,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public PrescriptionDto savePrescription(PrescriptionDto prescription) {
+	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
 
