@@ -84,7 +84,6 @@ public interface Captions {
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
 	String ActivityAsCase_connectionNumber = "ActivityAsCase.connectionNumber";
 	String ActivityAsCase_endDate = "ActivityAsCase.endDate";
-	String ActivityAsCase_exposureDate = "ActivityAsCase.exposureDate";
 	String ActivityAsCase_exposureRole = "ActivityAsCase.exposureRole";
 	String ActivityAsCase_gatheringDetails = "ActivityAsCase.gatheringDetails";
 	String ActivityAsCase_gatheringType = "ActivityAsCase.gatheringType";
