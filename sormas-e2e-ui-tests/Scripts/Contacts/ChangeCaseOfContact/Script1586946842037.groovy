@@ -62,7 +62,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_inpu
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search_button'))
 
-WebUI.delay(0.5)
+WebUI.delay(1)
 
 //String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_epidNumber_field'))
 String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/caseID_field'))
@@ -73,7 +73,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_select
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_confirm_button'))
 
-WebUI.delay(1)
+WebUI.delay(3)
 
 // CHECK
 String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))

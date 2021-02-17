@@ -20,6 +20,7 @@ package de.symeda.sormas.ui;
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
@@ -67,6 +68,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SormasToSormasController sormasToSormasController;
 	private final CustomExportController customExportController;
 	private final LabMessageController labMessageController;
+	private final SurveillanceReportController surveillanceReportController;
 
 	public ControllerProvider() {
 		super();
@@ -94,6 +96,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		sormasToSormasController = new SormasToSormasController();
 		customExportController = new CustomExportController();
 		labMessageController = new LabMessageController();
+		surveillanceReportController = new SurveillanceReportController();
 	}
 
 	protected static ControllerProvider get() {
@@ -190,5 +193,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static LabMessageController getLabMessageController() {
 		return get().labMessageController;
+	}
+
+	public static SurveillanceReportController getSurveillanceReportController() {
+		return get().surveillanceReportController;
 	}
 }

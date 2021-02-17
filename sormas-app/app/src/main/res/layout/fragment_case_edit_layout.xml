@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.api.caze.CaseClassification" />
         <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
+        <import type="de.symeda.sormas.api.caze.ScreeningType" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.PlagueType" />
         <import type="de.symeda.sormas.api.caze.DengueFeverType" />
@@ -219,11 +220,6 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_reportingType"
-                    app:value="@={data.reportingType}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_reportingDistrict"
                     app:value="@={data.reportingDistrict}"
                     style="@style/ControlSingleColumnStyle" />
@@ -237,6 +233,14 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_caseIdentificationSource"
                     app:value="@={data.caseIdentificationSource}"
+                    app:required="false"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_screeningType"
+                    app:dependencyParentField="@{caseDataCaseIdentificationSource}"
+                    app:dependencyParentValue="@{CaseIdentificationSource.SCREENING}"
+                    app:value="@={data.screeningType}"
                     app:required="false"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -461,6 +465,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/caseData_prohibitionToWorkUntil"
                         style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:allowedDaysInFuture="-1"
                         app:dependencyParentField="@{caseDataProhibitionToWork}"
                         app:dependencyParentValue="@{YesNoUnknown.YES}"
                         app:value="@={data.prohibitionToWorkUntil}" />

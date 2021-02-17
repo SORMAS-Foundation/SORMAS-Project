@@ -202,10 +202,13 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			root.get(Facility.NAME),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			district.get(District.UUID),
 			district.get(District.NAME),
+			district.get(District.EXTERNAL_ID),
 			community.get(Community.UUID),
 			community.get(Community.NAME),
+			community.get(Community.EXTERNAL_ID),
 			root.get(Facility.CITY),
 			root.get(Facility.LATITUDE),
 			root.get(Facility.LONGITUDE),
@@ -360,7 +363,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			return null;
 		}
 
-		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString());
+		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}
 

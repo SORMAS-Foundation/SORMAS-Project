@@ -27,6 +27,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -52,8 +53,6 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryRespon
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -227,11 +226,12 @@ public class ExternalJournalService {
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
 		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
-		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
-		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
-		return relevantPerson && relevantFieldsUpdated;
+		if (SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus())) {
+			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+			return !existingJournalPerson.equals(updatedJournalPerson);
+		}
+		return false;
 	}
 
 	private void notifySymptomJournal(String personUuid) {
@@ -323,6 +323,18 @@ public class ExternalJournalService {
 		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
+	public void validateExternalJournalPerson(PersonDto person) {
+		if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+			//TODO Clarify with Conventic how to verify
+		}
+		if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
+			if (!validationResult.isValid()) {
+				throw new ValidationRuntimeException(validationResult.getMessage());
+			}
+		}
+	}
+
 	/**
 	 * Check whether a person has valid data in order to be registered in the patient diary.
 	 * NOTE: since CLIMEDO is only used in Germany, only German numbers are considered valid at the moment
@@ -331,7 +343,7 @@ public class ExternalJournalService {
 	 *            the person to validate
 	 * @return the result of the validation
 	 */
-	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
+	protected ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
 		String email = person.getEmailAddress();
@@ -389,16 +401,15 @@ public class ExternalJournalService {
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
 		boolean sameFamily = response.getResults()
-				.stream()
-				.map(PatientDiaryPersonData::getIdatId)
-				.map(PatientDiaryIdatId::getIdat)
-				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
 		return notUsed || samePerson || sameFamily;
 	}
 
 	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
-				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {

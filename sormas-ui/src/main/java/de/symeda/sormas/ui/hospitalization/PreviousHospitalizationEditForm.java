@@ -28,6 +28,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,6 +42,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import java.util.Collections;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
@@ -50,6 +52,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
+		+ fluidRowLocs(PreviousHospitalizationDto.HOSPITALIZATION_REASON, PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
 	public PreviousHospitalizationEditForm(
@@ -80,9 +83,19 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 
+		addField(PreviousHospitalizationDto.HOSPITALIZATION_REASON);
+		addField(PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
+
 		healthFacility.setImmediate(true);
 
 		initializeAccessAndAllowedAccesses();
+
+		FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+				PreviousHospitalizationDto.HOSPITALIZATION_REASON,
+				Collections.singletonList(HospitalizationReasonType.OTHER),
+				true);
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

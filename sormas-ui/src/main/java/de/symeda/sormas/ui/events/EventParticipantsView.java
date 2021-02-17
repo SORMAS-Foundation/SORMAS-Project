@@ -103,7 +103,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		{
 			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+				new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 

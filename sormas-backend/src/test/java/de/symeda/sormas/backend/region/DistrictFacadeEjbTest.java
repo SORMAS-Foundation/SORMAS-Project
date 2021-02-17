@@ -83,7 +83,10 @@ public class DistrictFacadeEjbTest extends AbstractBeanTest {
 		District d3 = creator.createDistrict("d3", r2);
 
 		Map<String, String> districtRegions = getDistrictFacade().getRegionUuidsForDistricts(
-			Arrays.asList(new DistrictReferenceDto(d1.getUuid()), new DistrictReferenceDto(d2.getUuid()), new DistrictReferenceDto(d3.getUuid())));
+			Arrays.asList(
+				new DistrictReferenceDto(d1.getUuid(), null, null),
+				new DistrictReferenceDto(d2.getUuid(), null, null),
+				new DistrictReferenceDto(d3.getUuid(), null, null)));
 
 		assertThat(districtRegions.get(d1.getUuid()), is(r1.getUuid()));
 		assertThat(districtRegions.get(d2.getUuid()), is(r2.getUuid()));

@@ -1,7 +1,7 @@
 CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData
 disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,region,district,community,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.contactWithSourceCaseKnown,facilityType
-EVD,Import Test,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-1,20.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
-EVD,Import Test,Two,MALE,19,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-2,21.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
-EVD,Import Test,Three,MALE,20,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-3,22.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
-EVD,Import Test,Four,FEMALE,21,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-4,23.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
-EVD,Import Test,Five,FEMALE,22,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-5,24.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-1,11/20/2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,Two,MALE,19,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-2,11/21/2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,Three,MALE,20,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-3,11/22/2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,Four,FEMALE,21,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-4,11-23-2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
+EVD,Import Test,Five,FEMALE,22,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-5,11.24.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL

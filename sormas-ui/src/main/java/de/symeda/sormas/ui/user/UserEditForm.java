@@ -27,6 +27,7 @@ import java.util.Set;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -131,7 +132,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
-        userRoles.addItems(UserUiHelper.getAssignableRoles());
 
         ComboBox region = addInfrastructureField(UserDto.REGION);
         ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
@@ -275,5 +275,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(), (String) value)))
                 throw new InvalidValueException(I18nProperties.getValidationError(Validations.userNameNotUnique));
         }
+    }
+
+    @Override
+    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+
+        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        userRoles.removeAllItems();
+        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+        
+        super.setValue(userDto);
     }
 }

@@ -8,7 +8,11 @@ import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+
+import de.symeda.sormas.api.ReferenceDto;
 
 public class CriteriaBuilderHelper {
 
@@ -49,5 +53,28 @@ public class CriteriaBuilderHelper {
 
 	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Timestamp date) {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
+	}
+
+	public static Predicate andEquals(
+		CriteriaBuilder cb,
+		From<?, ? extends AbstractDomainObject> entityFrom,
+		Predicate filter,
+		Object filterValue,
+		String entityProperty) {
+		if (filterValue != null) {
+			filter = and(cb, filter, cb.equal(entityFrom.get(entityProperty), filterValue));
+		}
+		return filter;
+	}
+
+	public static Predicate andEqualsReferenceDto(
+		CriteriaBuilder cb,
+		Join<? extends AbstractDomainObject, ? extends AbstractDomainObject> from,
+		Predicate filter,
+		ReferenceDto referenceDto) {
+		if (referenceDto != null) {
+			filter = andEquals(cb, from, filter, referenceDto.getUuid(), AbstractDomainObject.UUID);
+		}
+		return filter;
 	}
 }

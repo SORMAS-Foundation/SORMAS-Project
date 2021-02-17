@@ -195,7 +195,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		assertThat(caseIndex1.getCommunity(), is("Confidential"));
 		assertThat(caseIndex1.getHealthFacility(), is("Confidential"));
+		assertThat(caseIndex1.getHealthFacilityDetails(), is("Confidential"));
 		assertThat(caseIndex1.getPointOfEntry(), is("Confidential"));
+		assertThat(caseIndex1.getPointOfEntryDetails(), is("Confidential"));
 		assertThat(caseIndex1.getFirstName(), is("Confidential"));
 		assertThat(caseIndex1.getLastName(), is("Confidential"));
 		assertThat(caseIndex1.getStreet(), is("Confidential"));
@@ -208,8 +210,10 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseExportDto caseIndex2 = exportList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
 		assertThat(caseIndex2.getCommunity(), is(rdcf2.community.getCaption()));
-		assertThat(caseIndex2.getHealthFacility(), is("Facility 2 - Test Facility details"));
-		assertThat(caseIndex2.getPointOfEntry(), is("Point of entry 2 - Test point of entry details"));
+		assertThat(caseIndex2.getHealthFacility(), is("Facility 2"));
+		assertThat(caseIndex2.getHealthFacilityDetails(), is("Test Facility details"));
+		assertThat(caseIndex2.getPointOfEntry(), is("Point of entry 2"));
+		assertThat(caseIndex2.getPointOfEntryDetails(), is("Test point of entry details"));
 		assertThat(caseIndex2.getFirstName(), is("James"));
 		assertThat(caseIndex2.getLastName(), is("Smith"));
 		assertThat(caseIndex2.getStreet(), is("Test street"));
@@ -365,7 +369,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setCommunity(rdcf2NewCommunity.toReference());
 		caze.setHealthFacility(rdcf2NewFacility.toReference());
 		caze.setHealthFacilityDetails("New HF details");
-		caze.setPointOfEntry(new PointOfEntryReferenceDto(rdcf2NewPointOfEntry.getUuid()));
+		caze.setPointOfEntry(new PointOfEntryReferenceDto(rdcf2NewPointOfEntry.getUuid(), null, null, null));
 		caze.setPointOfEntryDetails("New PoE detail");
 
 		//sensitive data

@@ -69,10 +69,13 @@ public class FacilityDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
+		String regionExternalId,
 		String districtUuid,
 		String districtName,
+		String districtExternalId,
 		String communityUuid,
 		String communityName,
+		String communityExternalId,
 		String city,
 		Double latitude,
 		Double longitude,
@@ -84,13 +87,13 @@ public class FacilityDto extends EntityDto {
 		this.archived = archived;
 		this.name = name;
 		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName);
+			this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		}
 		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName);
+			this.district = new DistrictReferenceDto(districtUuid, districtName, districtExternalId);
 		}
 		if (communityUuid != null) {
-			this.community = new CommunityReferenceDto(communityUuid, communityName);
+			this.community = new CommunityReferenceDto(communityUuid, communityName, communityExternalId);
 		}
 		this.city = city;
 		this.latitude = latitude;
@@ -185,7 +188,7 @@ public class FacilityDto extends EntityDto {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString());
+		return new FacilityReferenceDto(getUuid(), toString(), externalID);
 	}
 
 	public String getExternalID() {

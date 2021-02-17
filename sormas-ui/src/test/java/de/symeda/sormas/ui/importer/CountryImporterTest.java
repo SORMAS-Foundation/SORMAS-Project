@@ -17,10 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CountryCriteria;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
@@ -37,7 +35,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
-		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user.toReference());
+		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
 		importer.runImport();
 		getCountryFacade().getByDefaultName("Country with ä", false).get(0);
 	}
@@ -49,7 +47,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_non_utf_test.csv").toURI());
-		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user.toReference());
+		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
 		importer.runImport();
 	}
 
@@ -59,14 +57,14 @@ public class CountryImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
-		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user.toReference());
+		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
 		assertEquals(1, getCountryFacade().count(new CountryCriteria()));
 	}
 
 	private static class CountryImporterExtension extends CountryImporter {
 
-		private CountryImporterExtension(File inputFile, UserReferenceDto currentUser) {
+		private CountryImporterExtension(File inputFile, UserDto currentUser) {
 			super(inputFile, currentUser);
 		}
 

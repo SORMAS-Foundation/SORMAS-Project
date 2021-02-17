@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.Collections;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
@@ -112,11 +114,7 @@ public class UsersView extends AbstractView {
 		}
 
 		if (AuthProvider.getProvider().isUserSyncSupported()) {
-			syncButton = ButtonHelper.createIconButton(
-				Captions.syncUsers,
-				VaadinIcons.REFRESH,
-				e -> ControllerProvider.getUserController().sync()
-			);
+			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);
 		}
@@ -148,7 +146,7 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles());
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);
