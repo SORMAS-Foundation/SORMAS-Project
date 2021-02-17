@@ -62,7 +62,7 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	public static final String HABITATION_TYPE = "habitationType";
 	public static final String HABITATION_DETAILS = "habitationDetails";
 
-	public static final String EXPOSURE_ROLE = "exposureRole";
+	public static final String ROLE = "role";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -76,7 +76,7 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	private String activityAsCaseTypeDetails;
 	private LocationDto location;
 	@HideForCountriesExcept
-	private ExposureRole exposureRole;
+	private ExposureRole role;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -100,11 +100,11 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	@SensitiveData
 	private String habitationDetails;
 
-	public static ActivityAsCaseDto build(ActivityAsCaseType exposureType) {
+	public static ActivityAsCaseDto build(ActivityAsCaseType activityAsCaseType) {
 
 		ActivityAsCaseDto activityAsCase = new ActivityAsCaseDto();
 		activityAsCase.setUuid(DataHelper.createUuid());
-		activityAsCase.setActivityAsCaseType(exposureType);
+		activityAsCase.setActivityAsCaseType(activityAsCaseType);
 		LocationDto location = LocationDto.build();
 		activityAsCase.setLocation(location);
 		return activityAsCase;
@@ -166,12 +166,12 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 		this.location = location;
 	}
 
-	public ExposureRole getExposureRole() {
-		return exposureRole;
+	public ExposureRole getRole() {
+		return role;
 	}
 
-	public void setExposureRole(ExposureRole exposureRole) {
-		this.exposureRole = exposureRole;
+	public void setRole(ExposureRole role) {
+		this.role = role;
 	}
 
 	public TypeOfPlace getTypeOfPlace() {

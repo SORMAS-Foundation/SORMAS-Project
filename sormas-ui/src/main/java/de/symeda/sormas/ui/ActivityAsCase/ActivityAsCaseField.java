@@ -57,14 +57,13 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
-	private static final String COLUMN_EXPOSURE_TYPE = ActivityAsCaseDto.ACTIVITY_AS_CASE_TYPE;
+	private static final String COLUMN_ACTIVITY_AS_CASE_TYPE = ActivityAsCaseDto.ACTIVITY_AS_CASE_TYPE;
 	private static final String COLUMN_TYPE_OF_PLACE = ActivityAsCaseDto.TYPE_OF_PLACE;
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_ADDRESS = Captions.address;
 	private static final String COLUMN_DESCRIPTION = ActivityAsCaseDto.DESCRIPTION;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
-//	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
 
@@ -81,9 +80,21 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		addGeneratedColumns(table);
 
 		if (epiDataParentClass == CaseDataDto.class) {
-			table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_EXPOSURE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
+			table.setVisibleColumns(
+				EDIT_COLUMN_ID,
+				COLUMN_ACTIVITY_AS_CASE_TYPE,
+				COLUMN_TYPE_OF_PLACE,
+				COLUMN_DATE,
+				COLUMN_ADDRESS,
+				COLUMN_DESCRIPTION);
 		} else {
-			table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_EXPOSURE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
+			table.setVisibleColumns(
+				EDIT_COLUMN_ID,
+				COLUMN_ACTIVITY_AS_CASE_TYPE,
+				COLUMN_TYPE_OF_PLACE,
+				COLUMN_DATE,
+				COLUMN_ADDRESS,
+				COLUMN_DESCRIPTION);
 		}
 
 		table.setCellStyleGenerator(
@@ -97,13 +108,13 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 	}
 
 	private void addGeneratedColumns(Table table) {
-		table.addGeneratedColumn(COLUMN_EXPOSURE_TYPE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+		table.addGeneratedColumn(COLUMN_ACTIVITY_AS_CASE_TYPE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ActivityAsCaseDto activityAsCaseDto = (ActivityAsCaseDto) itemId;
-			String exposureString = ActivityAsCaseType.OTHER != activityAsCaseDto.getActivityAsCaseType()
+			String activityAsCaseString = ActivityAsCaseType.OTHER != activityAsCaseDto.getActivityAsCaseType()
 				? activityAsCaseDto.getActivityAsCaseType().toString()
 				: activityAsCaseDto.getActivityAsCaseTypeDetails();
 
-			return new Label(exposureString, ContentMode.HTML);
+			return new Label(activityAsCaseString, ContentMode.HTML);
 		});
 
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
@@ -219,10 +230,6 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		}
 	}
 
-//	public void setGetSourceContactsCallback(Supplier<List<ContactReferenceDto>> callback) {
-//		getSourceContactsCallback = callback;
-//	}
-
 	public void setEpiDataParentClass(Class<? extends EntityDto> epiDataParentClass) {
 		this.epiDataParentClass = epiDataParentClass;
 	}
@@ -231,8 +238,8 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		this.isPseudonymized = isPseudonymized;
 	}
 
-	private void updateAddButtonVisibility(int exposureCount) {
-		if (isReadOnly() || epiDataParentClass == ContactDto.class && exposureCount > 0) {
+	private void updateAddButtonVisibility(int activityAsCaseCount) {
+		if (isReadOnly() || epiDataParentClass == ContactDto.class && activityAsCaseCount > 0) {
 			getAddButton().setVisible(false);
 		} else {
 			getAddButton().setVisible(true);

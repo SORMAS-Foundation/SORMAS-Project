@@ -177,9 +177,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEndDate(source.getEndDate());
 		target.setDescription(source.getDescription());
 		target.setActivityAsCaseType(source.getActivityAsCaseType());
-		target.setExposureTypeDetails(source.getActivityAsCaseTypeDetails());
+		target.setActivityAsCaseTypeDetails(source.getActivityAsCaseTypeDetails());
 		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
-		target.setExposureRole(source.getExposureRole());
+		target.setRole(source.getRole());
 
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());
@@ -312,9 +312,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEndDate(source.getEndDate());
 		target.setDescription(source.getDescription());
 		target.setActivityAsCaseType(source.getActivityAsCaseType());
-		target.setActivityAsCaseTypeDetails(source.getExposureTypeDetails());
+		target.setActivityAsCaseTypeDetails(source.getActivityAsCaseTypeDetails());
 		target.setLocation(LocationFacadeEjb.toDto(source.getLocation()));
-		target.setExposureRole(source.getExposureRole());
+		target.setRole(source.getRole());
 
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());

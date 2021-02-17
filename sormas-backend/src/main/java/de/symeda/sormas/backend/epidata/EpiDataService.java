@@ -65,8 +65,10 @@ public class EpiDataService extends BaseAdoService<EpiData> {
 			cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, activitiesAsCaseJoin.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(
 			dateFilter,
-			CriteriaBuilderHelper
-				.greaterThanAndNotNull(cb, activitiesAsCaseJoin.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
+			CriteriaBuilderHelper.greaterThanAndNotNull(
+				cb,
+				activitiesAsCaseJoin.join(ActivityAsCase.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE),
+				date));
 
 		return dateFilter;
 	}

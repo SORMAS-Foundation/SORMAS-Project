@@ -48,7 +48,6 @@ import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -59,7 +58,6 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 
 	private static final long serialVersionUID = 8262753698264714835L;
 
-	private static final String LOC_EXPOSURE_DETAILS_HEADING = "locExposureDetailsHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
 
 	//@formatter:off
@@ -81,8 +79,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
                                         ActivityAsCaseDto.HABITATION_DETAILS
                                 ))
                         ) +
-                        loc(LOC_EXPOSURE_DETAILS_HEADING) +
-                        loc(ActivityAsCaseDto.EXPOSURE_ROLE) +
+                        loc(ActivityAsCaseDto.ROLE) +
                         loc(LOC_LOCATION_HEADING) +
                         fluidRow(
                                 fluidColumn(6, 0, locs(ActivityAsCaseDto.TYPE_OF_PLACE)),
@@ -149,9 +146,6 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 	}
 
 	private void addHeadingsAndInfoTexts() {
-		getContent()
-			.addComponent(new Label(h3(I18nProperties.getString(Strings.headingActivityAsCase)), ContentMode.HTML), LOC_EXPOSURE_DETAILS_HEADING);
-
 		getContent().addComponent(
 			new Label(h3(I18nProperties.getPrefixCaption(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.LOCATION)), ContentMode.HTML),
 			LOC_LOCATION_HEADING);
@@ -174,7 +168,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 			ActivityAsCaseDto.MEANS_OF_TRANSPORT,
 			ActivityAsCaseDto.MEANS_OF_TRANSPORT_DETAILS,
 			ActivityAsCaseDto.SEAT_NUMBER,
-			ActivityAsCaseDto.EXPOSURE_ROLE,
+			ActivityAsCaseDto.ROLE,
 			ActivityAsCaseDto.WORK_ENVIRONMENT);
 	}
 

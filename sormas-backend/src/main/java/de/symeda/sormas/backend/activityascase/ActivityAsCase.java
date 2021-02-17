@@ -58,7 +58,6 @@ public class ActivityAsCase extends AbstractDomainObject {
 
 	public static final String EPI_DATA = "epiData";
 	public static final String LOCATION = "location";
-	public static final String EXPOSURE_TYPE = "exposureType";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -66,9 +65,9 @@ public class ActivityAsCase extends AbstractDomainObject {
 	private Date endDate;
 	private String description;
 	private ActivityAsCaseType activityAsCaseType;
-	private String exposureTypeDetails;
+	private String activityAsCaseTypeDetails;
 	private Location location;
-	private ExposureRole exposureRole;
+	private ExposureRole role;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -143,12 +142,12 @@ public class ActivityAsCase extends AbstractDomainObject {
 	}
 
 	@Column(columnDefinition = "text")
-	public String getExposureTypeDetails() {
-		return exposureTypeDetails;
+	public String getActivityAsCaseTypeDetails() {
+		return activityAsCaseTypeDetails;
 	}
 
-	public void setExposureTypeDetails(String exposureTypeDetails) {
-		this.exposureTypeDetails = exposureTypeDetails;
+	public void setActivityAsCaseTypeDetails(String activityAsCaseTypeDetails) {
+		this.activityAsCaseTypeDetails = activityAsCaseTypeDetails;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL)
@@ -165,12 +164,12 @@ public class ActivityAsCase extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public ExposureRole getExposureRole() {
-		return exposureRole;
+	public ExposureRole getRole() {
+		return role;
 	}
 
-	public void setExposureRole(ExposureRole exposureRole) {
-		this.exposureRole = exposureRole;
+	public void setRole(ExposureRole role) {
+		this.role = role;
 	}
 
 	@Enumerated(EnumType.STRING)
