@@ -31,6 +31,6 @@ public class I18nFacadeEjb implements I18nFacade {
 
 	@Override
 	public void removeUserLanguage() {
-//		I18nProperties.removeUserLanguage();
+		I18nProperties.removeUserLanguage();
 	}
 }
