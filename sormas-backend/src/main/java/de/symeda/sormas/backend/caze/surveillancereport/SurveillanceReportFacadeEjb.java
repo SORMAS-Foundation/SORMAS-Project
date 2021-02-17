@@ -129,6 +129,11 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		return reports;
 	}
 
+	@Override
+	public List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids) {
+		return service.getByCaseUuids(caseUuids).stream().map(s -> toDto(s)).collect(Collectors.toList());
+	}
+
 	private void restorePseudonymizedDto(SurveillanceReportDto dto, SurveillanceReport existingReport, SurveillanceReportDto existingDto) {
 		if (existingDto != null) {
 			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(existingReport.getCaze());
