@@ -67,20 +67,41 @@ $v-table-border-width: 1px;
     
     .v-table-row-odd {
       background: inherit;
-    } 
-     
+    }
+
     .v-table-header {
 
-	  .v-table-header-cell {
-	    border-left: none;
-	    border-bottom: none;
+      .v-table-header-cell {
+        border-left: none;
+        border-bottom: none;
 
         .v-table-caption-container {
           text-transform: uppercase;
           font-weight: 600;
-	      border-bottom: $v-border;
+          border-bottom: $v-border;
         }
-      }      
+      }
+      .v-table-header-cell-asc {
+        border-left: none;
+        border-bottom: none;
+
+        .v-table-caption-container {
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: $v-border;
+        }
+      }
+
+      .v-table-header-cell-desc {
+        border-left: none;
+        border-bottom: none;
+
+        .v-table-caption-container {
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: $v-border;
+        }
+      }
     }
   }
 }
