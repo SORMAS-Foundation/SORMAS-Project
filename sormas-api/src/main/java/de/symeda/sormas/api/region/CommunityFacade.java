@@ -52,6 +52,8 @@ public interface CommunityFacade {
 
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
 
+	List<CommunityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities);
+
 	void archive(String communityUuid);
 
 	void dearchive(String communityUuid);

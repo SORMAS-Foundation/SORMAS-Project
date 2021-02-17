@@ -14,7 +14,7 @@ public class CaseCriteriaTest {
 	public void testFromToUrlParams() {
 
 		CaseCriteria criteria = new CaseCriteria();
-		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
+		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid(), null, null);
 		criteria.setDistrict(district);
 		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
 		criteria.setEventLike("test EVENT");

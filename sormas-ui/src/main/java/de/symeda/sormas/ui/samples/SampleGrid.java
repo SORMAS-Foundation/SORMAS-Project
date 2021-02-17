@@ -156,7 +156,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		}
 
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
-			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
@@ -166,7 +166,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
-			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 			}

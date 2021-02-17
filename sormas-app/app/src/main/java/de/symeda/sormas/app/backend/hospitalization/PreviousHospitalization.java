@@ -29,6 +29,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -82,6 +83,12 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Hospitalization hospitalization;
+
+	@Enumerated(EnumType.STRING)
+	private HospitalizationReasonType hospitalizationReason;
+
+	@Column(columnDefinition = "text")
+	private String otherHospitalizationReason;
 
 	public Date getAdmissionDate() {
 		return admissionDate;
@@ -161,6 +168,22 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
+	}
+
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
+	}
+
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
+	}
+
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
 	}
 
 	@Override

@@ -1263,7 +1263,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 * not use {@link ContactCriteria}. This essentially removes
 	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb,  From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
 
@@ -1294,7 +1294,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), to)));
 	}
 
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Contact> contactRoot, ContactJoins joins) {
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Contact> contactRoot, ContactJoins joins) {
 		final User currentUser = this.getCurrentUser();
 
 		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);

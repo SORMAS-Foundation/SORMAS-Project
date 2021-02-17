@@ -41,7 +41,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -128,6 +128,9 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private CaseIdentificationSource caseIdentificationSource;
+
+	@Enumerated(EnumType.STRING)
+	private ScreeningType screeningType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User classificationUser;
@@ -348,8 +351,6 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
 	@Enumerated(EnumType.STRING)
-	private ReportingType reportingType;
-	@Enumerated(EnumType.STRING)
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
@@ -487,6 +488,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public Region getRegion() {
@@ -1159,14 +1168,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	public YesNoUnknown getPostpartum() {

@@ -70,6 +70,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String CLASSIFICATION_COMMENT = "classificationComment";
@@ -160,7 +161,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -239,7 +239,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private CaseClassification caseClassification;
+	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
+	@HideForCountriesExcept
+	private ScreeningType screeningType;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
@@ -536,8 +539,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
-	@HideForCountriesExcept
-	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
@@ -717,6 +718,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public UserReferenceDto getClassificationUser() {
@@ -1424,14 +1433,6 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-	}
-
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
 	}
 
 	public YesNoUnknown getPostpartum() {

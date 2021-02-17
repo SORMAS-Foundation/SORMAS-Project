@@ -44,6 +44,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
+	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
+	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -58,6 +60,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	private YesNoUnknown isolated;
 	@SensitiveData
 	private String description;
+
+	private HospitalizationReasonType hospitalizationReason;
+	private String otherHospitalizationReason;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -82,6 +87,8 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		previousHospitalization.setCommunity(caze.getCommunity());
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
+		previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
+		previousHospitalization.setOtherHospitalizationReason(hospitalization.getOtherHospitalizationReason());
 
 		return previousHospitalization;
 	}
@@ -156,5 +163,21 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
+	}
+
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
+	}
+
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
+	}
+
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
 	}
 }

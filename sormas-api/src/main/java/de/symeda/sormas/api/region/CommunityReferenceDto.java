@@ -17,24 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class CommunityReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
+public class CommunityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -8833267932522978860L;
 
 	public CommunityReferenceDto() {
-
+		super();
 	}
 
 	public CommunityReferenceDto(String uuid) {
-		setUuid(uuid);
+		super(uuid);
 	}
 
-	public CommunityReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
+	public CommunityReferenceDto(String uuid, String caption, String externalId) {
+		super(uuid, caption, externalId);
 	}
 
 	@Override

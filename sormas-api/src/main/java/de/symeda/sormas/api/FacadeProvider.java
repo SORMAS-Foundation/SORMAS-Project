@@ -29,6 +29,7 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -360,6 +361,10 @@ public class FacadeProvider {
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public static SurveillanceReportFacade getSurveillanceReportFacade() {
+		return get().lookupEjbRemote(SurveillanceReportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
