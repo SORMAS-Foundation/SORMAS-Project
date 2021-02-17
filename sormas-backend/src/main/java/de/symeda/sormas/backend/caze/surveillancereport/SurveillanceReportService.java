@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.caze.surveillancereport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -31,6 +32,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
@@ -50,24 +53,25 @@ public class SurveillanceReportService extends BaseAdoService<SurveillanceReport
 		return filter;
 	}
 
-	public List<SurveillanceReport> getByCaseUuid(String caseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
-		Root<SurveillanceReport> sampleRoot = cq.from(SurveillanceReport.class);
-		Join<SurveillanceReport, Case> caseJoin = sampleRoot.join(SurveillanceReport.CAZE, JoinType.LEFT);
-
-		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(caseUuid));
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<SurveillanceReport> getByCaseUuids(List<String> caseUuids) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
-		Root<SurveillanceReport> reportRoot = cq.from(SurveillanceReport.class);
-		Join<SurveillanceReport, Case> caseJoin = reportRoot.join(SurveillanceReport.CAZE, JoinType.LEFT);
+		if (caseUuids != null) {
+			List<SurveillanceReport> reports = new ArrayList<>();
 
-		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(caseUuids));
-		return em.createQuery(cq).getResultList();
+			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, s -> {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
+				Root<SurveillanceReport> reportRoot = cq.from(SurveillanceReport.class);
+				Join<SurveillanceReport, Case> caseJoin = reportRoot.join(SurveillanceReport.CAZE, JoinType.LEFT);
+
+				cq.where(caseJoin.get(AbstractDomainObject.UUID).in(caseUuids));
+
+				reports.addAll(em.createQuery(cq).getResultList());
+			});
+
+			return reports;
+		} else {
+			return new ArrayList<>();
+		}
 	}
 }
