@@ -125,7 +125,7 @@ public class SettingsActivity extends BaseLandingActivity {
 	public void setNewLocale(AppCompatActivity mContext, Language language) {
 		LocaleManager.setNewLocale(this, language);
 		if (ConfigProvider.getUser() != null) {
-			I18nProperties.setUserLanguage(ConfigProvider.getUser().getLanguage());
+			I18nProperties.setUserLanguage(language);
 		}
 		Intent intent = mContext.getIntent();
 		startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
