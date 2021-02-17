@@ -61,7 +61,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -189,7 +188,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
@@ -337,10 +335,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		if (existingPerson.isEnrolledInExternalJournal()) {
-			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
-			if (!validationResult.isValid()) {
-				throw new ValidationRuntimeException(validationResult.getMessage());
-			}
+			externalJournalService.validateExternalJournalPerson(updatedPerson);
+
 		}
 		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
