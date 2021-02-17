@@ -557,7 +557,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		final ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
 		final ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
 
-		final DistrictReferenceDto district = criteria.getDistrict();
+		DistrictReferenceDto district = criteria.getDistrict();
+		if (district == null && UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.DISTRICT) {
+			district = user.getDistrict();
+		}
 		final FacilityTypeGroup typeGroup = criteria.getFacilityTypeGroup();
 		final FacilityType type = criteria.getFacilityType();
 		final CommunityReferenceDto community = criteria.getCommunity();
