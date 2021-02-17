@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sample.Sample;
@@ -71,7 +70,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, CaseShareDat
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!sormasToSormasConfig.getRetainExternalToken()){
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()){
 			cazeDto.setExternalToken(null);
 		}
 

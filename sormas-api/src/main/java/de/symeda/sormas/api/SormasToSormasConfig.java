@@ -16,7 +16,7 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 	private String keystorePass;
 	private String truststoreName;
 	private String truststorePass;
-	private boolean retainExternalToken;
+	private boolean retainCaseExternalToken;
 
 	public String getPath() {
 		return path;
@@ -66,12 +66,12 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 		this.truststorePass = truststorePass;
 	}
 
-	public boolean getRetainExternalToken() {
-		return retainExternalToken;
+	public boolean getRetainCaseExternalToken() {
+		return retainCaseExternalToken;
 	}
 
-	public void setRetainExternalToken(boolean retainExternalToken) {
-		this.retainExternalToken = retainExternalToken;
+	public void setRetainCaseExternalToken(boolean retainCaseExternalToken) {
+		this.retainCaseExternalToken = retainCaseExternalToken;
 	}
 
 	@Override
