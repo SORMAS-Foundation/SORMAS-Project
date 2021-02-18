@@ -281,13 +281,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		});
 
-		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateCases, e -> {
-			try {
-				generateCases();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}, CssStyles.FORCE_CAPTION);
+		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateCases, e -> generateCases(), CssStyles.FORCE_CAPTION);
 		caseOptionsLayout.addComponent(generateButton);
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
