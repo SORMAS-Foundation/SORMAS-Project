@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -35,13 +36,16 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "EpiData";
 
 	public static final String EXPOSURE_DETAILS_KNOWN = "exposureDetailsKnown";
+	public static final String ACTIVITY_AS_CASE_DETAILS_KNOWN = "activityAsCaseDetailsKnown";
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String AREA_INFECTED_ANIMALS = "areaInfectedAnimals";
 	public static final String HIGH_TRANSMISSION_RISK_AREA = "highTransmissionRiskArea";
 	public static final String LARGE_OUTBREAKS_AREA = "largeOutbreaksArea";
 
 	private YesNoUnknown exposureDetailsKnown;
+	private YesNoUnknown activityAsCaseDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
@@ -57,12 +61,22 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	private List<ExposureDto> exposures = new ArrayList<>();
 
+	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
+
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
 	}
 
 	public void setExposureDetailsKnown(YesNoUnknown exposureDetailsKnown) {
 		this.exposureDetailsKnown = exposureDetailsKnown;
+	}
+
+	public YesNoUnknown getActivityAsCaseDetailsKnown() {
+		return activityAsCaseDetailsKnown;
+	}
+
+	public void setActivityAsCaseDetailsKnown(YesNoUnknown activityAsCaseDetailsKnown) {
+		this.activityAsCaseDetailsKnown = activityAsCaseDetailsKnown;
 	}
 
 	@ImportIgnore
@@ -72,6 +86,15 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setExposures(List<ExposureDto> exposures) {
 		this.exposures = exposures;
+	}
+
+	@ImportIgnore
+	public List<ActivityAsCaseDto> getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(List<ActivityAsCaseDto> activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
 	}
 
 	public YesNoUnknown getContactWithSourceCaseKnown() {
