@@ -43,6 +43,8 @@ import org.apache.commons.lang.StringUtils;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
@@ -59,7 +61,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -81,6 +85,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
+
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
+
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 
 	@EJB
 	private UserFacadeEjbLocal userFacade;
@@ -369,6 +379,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				Class<? extends ReferenceDto> referenceDtoClass = referenceDto.getClass();
 				if (PersonReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return personFacade.getPersonByUuid(uuid);
+				} else if (CaseReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return caseFacade.getCaseDataByUuid(uuid);
+				} else if (ContactReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return contactFacade.getContactByUuid(uuid);
 				} else if (UserReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return userFacade.getByUuid(uuid);
 				} else if (RegionReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
