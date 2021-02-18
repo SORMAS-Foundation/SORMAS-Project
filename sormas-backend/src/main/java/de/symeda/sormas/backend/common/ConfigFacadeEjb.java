@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+	private static final String AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP = "authentication.provider.userSyncAtStartup";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
@@ -489,6 +490,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
+	}
+
+	@Override
+	public boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
+		return getBoolean(AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP, false);
 	}
 
 	@Override

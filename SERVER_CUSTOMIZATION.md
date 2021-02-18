@@ -36,6 +36,14 @@ The following properties are currently configurable:
   * `geocodingServiceUrlTemplate` is the url for searching for address details, `${street}`, `${houseNumber}`, `${postalCode}`, and `${city}` placeholders will be replaced with the actual address fields when searching;
   * `geocodingLongitudeJsonPath` and `geocodingLatitudeJsonPath` are used to obtain the longitude and latitude of the address in the result of the geocoding service request
 * **Authentication Provider**: Allows the user to choose the way of authentication for SORMAS and all it's third party clients. Supported values `SORMAS` (default) and `KEYCLOAK`
+* **Authentication Provider User Sync At Startup**: Enables async user sync when the system boots up. Since the User Sync is mainly needed for an initial sync only, it's recommended to disable/remove this property once an initial sync has be performed. The User Sync will work similarly to the manual user sync:
+  * creates all the missing users in the External Authentication Provider
+  * updates all existing users in the External Authentication Provider
+  * keeps the user's password if the user doesn't exist in the External Authentication Provider
+  * will not override the user's password if the user already in the External Authentication Provider (matching done by username case insensitive)
+  * will only sync active users (inactive users are automatically synchronized when they are activated manually)
+  * is enabled trough a property in sormas.properties `authentication.provider.userSyncAtStartup` (by default is disabled) 
+  
 
 ### Custom login page
 When setting up the server a custom file directory is created (most likely `/opt/sormas/custom`). You can adjust the `login*.html` files in that directory to customize the login page.
