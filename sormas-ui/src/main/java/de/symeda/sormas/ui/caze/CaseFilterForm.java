@@ -736,7 +736,6 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	@Override
 	public void setValue(CaseCriteria newCriteria) throws ReadOnlyException, Converter.ConversionException {
-		System.out.println("setvalue called");
 
 		super.setValue(newCriteria);
 		ComboBox typeField = (ComboBox) getField(CaseCriteria.FACILITY_TYPE);
