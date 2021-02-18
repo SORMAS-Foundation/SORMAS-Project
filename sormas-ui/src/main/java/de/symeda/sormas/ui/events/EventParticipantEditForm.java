@@ -31,9 +31,9 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -104,10 +104,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		CountryReferenceDto countryDto = event.getEventLocation().getCountry();
-		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
-		boolean shouldBeRequired =
-			!(countryDto == null || serverCountryDto == null || countryDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()));
+		LocationDto locationDto = event.getEventLocation();
+		boolean shouldBeRequired = locationDto.getRegion() == null || locationDto.getDistrict() == null;
 		region.setRequired(shouldBeRequired);
 		district.setRequired(shouldBeRequired);
 
