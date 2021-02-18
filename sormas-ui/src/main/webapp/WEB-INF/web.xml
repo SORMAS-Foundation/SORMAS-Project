@@ -55,6 +55,9 @@
 		<role-name>COMMUNITY_INFORMANT</role-name>
 	</security-role>
 	<security-role>
+		<role-name>COMMUNITY_OFFICER</role-name>
+	</security-role>
+	<security-role>
 	  <role-name>NATIONAL_CLINICIAN</role-name>
 	</security-role>
 	<security-role>
