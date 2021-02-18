@@ -393,7 +393,7 @@ public class LabMessageController {
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestEditComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(testDto, caseSampleCount, () -> {
-				finishProcess(labMessageDto);
+				finishProcessingLabMessage(labMessageDto);
 				window.close();
 			}, onSavedPathogenTest);
 
@@ -456,17 +456,6 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
-	private void showFormWithLabMessage(LabMessageDto labMessageDto, CommitDiscardWrapperComponent createComponent, Window window, String heading) {
-		LabMessageEditForm form = new LabMessageEditForm(true);
-		form.setValue(labMessageDto);
-		form.setWidth(550, Sizeable.Unit.PIXELS);
-		HorizontalLayout layout = new HorizontalLayout(form, createComponent);
-		layout.setMargin(true);
-		window.setContent(layout);
-		window.setCaption(heading);
-		UI.getCurrent().addWindow(window);
-	}
-
 	private void createSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		sampleDto.setSampleDateTime(labMessageDto.getSampleDateTime());
 		if (labMessageDto.getSampleReceivedDate() != null) {
@@ -498,7 +487,7 @@ public class LabMessageController {
 
 		sampleCreateComponent.addCommitListener(() -> {
 			window.close();
-			finishProcess(labMessageDto);
+			finishProcessingLabMessage(labMessageDto);
 		});
 		sampleCreateComponent.addDiscardListener(window::close);
 
@@ -506,27 +495,44 @@ public class LabMessageController {
 	}
 
 	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
+		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto);
+		Window window = VaadinUiUtil.createPopupWindow();
+		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent = getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		showFormWithLabMessage(labMessageDto, pathogenTestCreateComponent, window, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+	}
+
+	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
 		pathogenTestDto.setTestType(labMessageDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
 		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
-
-		Window window = VaadinUiUtil.createPopupWindow();
-
-		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
-				window.close();
-				finishProcess(labMessageDto);
-			}, null);
-
-		pathogenTestCreateComponent.addDiscardListener(window::close);
-		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
-
-		showFormWithLabMessage(labMessageDto, pathogenTestCreateComponent, window, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+		return pathogenTestDto;
 	}
 
-	private void finishProcess(LabMessageDto labMessageDto) {
+	private CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(SampleDto sampleDto, LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto, Window window) {
+		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
+				ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
+					window.close();
+					finishProcessingLabMessage(labMessageDto);
+				}, null);
+		pathogenTestCreateComponent.addDiscardListener(window::close);
+		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
+		return pathogenTestCreateComponent;
+	}
+
+	private void showFormWithLabMessage(LabMessageDto labMessageDto, CommitDiscardWrapperComponent createComponent, Window window, String heading) {
+		LabMessageEditForm form = new LabMessageEditForm(true);
+		form.setValue(labMessageDto);
+		form.setWidth(550, Sizeable.Unit.PIXELS);
+		HorizontalLayout layout = new HorizontalLayout(form, createComponent);
+		layout.setMargin(true);
+		window.setContent(layout);
+		window.setCaption(heading);
+		UI.getCurrent().addWindow(window);
+	}
+
+	private void finishProcessingLabMessage(LabMessageDto labMessageDto) {
 		labMessageDto.setProcessed(true);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
