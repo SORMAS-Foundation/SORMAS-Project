@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.utils.HtmlHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -1038,7 +1039,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (hasMissingPopulationData) {
 					caseIncidencePossible = false;
 					List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
-					missingPopulationDataNames = StringEscapeUtils.escapeEcmaScript(String.join(", ", missingPopulationDataNamesList));
+					missingPopulationDataNames = HtmlHelper.cleanHtml(String.join(", ", missingPopulationDataNamesList));
 				}
 			}
 
