@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -44,6 +45,12 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(
 		DistrictReferenceDto district,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility);
+
+	List<FacilityReferenceDto> getActiveFacilitiesByRegionAndType(
+		RegionReferenceDto region,
 		FacilityType type,
 		boolean includeOtherFacility,
 		boolean includeNoneFacility);

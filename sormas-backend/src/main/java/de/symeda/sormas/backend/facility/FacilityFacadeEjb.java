@@ -53,6 +53,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -107,6 +108,18 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		District district = districtService.getByUuid(districtRef.getUuid());
 		List<Facility> facilities = facilityService.getActiveFacilitiesByDistrictAndType(district, type, includeOtherFacility, includeNoneFacility);
+		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FacilityReferenceDto> getActiveFacilitiesByRegionAndType(
+		RegionReferenceDto regionRef,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
+
+		Region region = regionService.getByUuid(regionRef.getUuid());
+		List<Facility> facilities = facilityService.getActiveFacilitiesByRegionAndType(region, type, includeOtherFacility, includeNoneFacility);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 

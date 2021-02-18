@@ -119,6 +119,37 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return facilities;
 	}
 
+	public List<Facility> getActiveFacilitiesByRegionAndType(
+		Region region,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = createBasicFilter(cb, from);
+		if (type != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		}
+		filter = cb.and(filter, cb.equal(from.get(Facility.REGION), region));
+		cq.where(filter);
+		cq.distinct(true);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+
+		if (includeOtherFacility) {
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+		}
+		if (includeNoneFacility) {
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
+		}
+
+		return facilities;
+	}
+
 	public List<Facility> getAllActiveLaboratories(boolean includeOtherFacility) {
 		return getAllActiveLaboratories(includeOtherFacility, null);
 	}
