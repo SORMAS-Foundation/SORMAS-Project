@@ -430,20 +430,24 @@ public class LabMessageController {
 	}
 
 	private void createContact(LabMessageDto labMessageDto, PersonDto person) {
+		Window window = VaadinUiUtil.createPopupWindow();
+		ContactDto contactDto = buildContact(labMessageDto, person);
+		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent = getContactCreateComponent(labMessageDto, person, window, contactDto);
+
+		showFormWithLabMessage(labMessageDto, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact));
+	}
+
+	private CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(LabMessageDto labMessageDto, PersonDto person, Window window, ContactDto contactDto) {
 		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent =
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
-		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
-		contactDto.setPerson(person.toReference());
-		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
-		Window window = VaadinUiUtil.createPopupWindow();
 		contactCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				labMessageDto);
+					labMessageDto);
 			createSample(
 				SampleDto.build(UserProvider.getCurrent().getUserReference(), contactCreateComponent.getWrappedComponent().getValue().toReference()),
-				labMessageDto);
+					labMessageDto);
 			window.close();
 		});
 		contactCreateComponent.addDiscardListener(window::close);
@@ -452,8 +456,14 @@ public class LabMessageController {
 
 		contactCreateComponent.getWrappedComponent().getField(PersonDto.FIRST_NAME).setEnabled(false);
 		contactCreateComponent.getWrappedComponent().getField(PersonDto.LAST_NAME).setEnabled(false);
+		return contactCreateComponent;
+	}
 
-		showFormWithLabMessage(labMessageDto, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact));
+	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
+		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		contactDto.setPerson(person.toReference());
+		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		return contactDto;
 	}
 
 	private void createSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
