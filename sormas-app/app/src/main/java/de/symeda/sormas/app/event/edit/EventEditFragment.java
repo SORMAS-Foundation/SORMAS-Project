@@ -115,7 +115,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRegionAndDistrictRequired(true);
+		locationDialog.setRequiredFieldsBasedOnCountry();
 		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 
 		locationDialog.setPositiveCallback(() -> {

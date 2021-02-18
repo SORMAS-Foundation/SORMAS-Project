@@ -78,6 +78,7 @@ public final class ConfigProvider {
 	private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
 	private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 	private static String SERVER_LOCALE = "locale";
+	private static String SERVER_COUNTRY_NAME = "countryname";
 	private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
 
 	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
@@ -105,6 +106,7 @@ public final class ConfigProvider {
 	private Long currentAppDownloadId;
 	private Boolean accessGranted;
 	private String serverLocale;
+	private String serverCountryName;
 	private Boolean repullNeeded;
 	private Boolean initialSyncRequired;
 
@@ -658,6 +660,24 @@ public final class ConfigProvider {
 		}
 	}
 
+	public static String getServerCountryName() {
+		if (instance.serverCountryName == null) {
+			synchronized (ConfigProvider.class) {
+				if (instance.serverCountryName == null) {
+					Config config = DatabaseHelper.getConfigDao().queryForId(SERVER_COUNTRY_NAME);
+					if (config != null) {
+						instance.serverCountryName = config.getValue();
+					}
+
+					if (instance.serverCountryName == null) {
+						setServerCountryName("");
+					}
+				}
+			}
+		}
+		return instance.serverCountryName;
+	}
+
 	public static String normalizeLocaleString(String locale) {
 		locale = locale.trim();
 		int pos = Math.max(locale.indexOf('-'), locale.indexOf('_'));
@@ -690,6 +710,18 @@ public final class ConfigProvider {
 
 		instance.serverLocale = serverLocale;
 		saveConfigEntry(SERVER_LOCALE, serverLocale);
+	}
+
+	public static void setServerCountryName(String serverCountryName) {
+		if (serverCountryName != null && serverCountryName.isEmpty()) {
+			serverCountryName = null;
+		}
+
+		if (serverCountryName == instance.serverCountryName || (serverCountryName != null && serverCountryName.equals(instance.serverCountryName)))
+			return;
+
+		instance.serverCountryName = serverCountryName;
+		saveConfigEntry(SERVER_COUNTRY_NAME, serverCountryName);
 	}
 
 	public static boolean isRepullNeeded() {

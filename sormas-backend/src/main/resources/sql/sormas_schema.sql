@@ -6722,4 +6722,12 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON activitya
 ALTER TABLE activityascase_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (336, '[SurvNet Interface] Care/accommodation/work in facility #4163');
+
+-- 2020-02-18 Add Country to location details #2994
+ALTER TABLE location ADD COLUMN country_id bigint;
+ALTER TABLE location_history ADD COLUMN country_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_id) REFERENCES country(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
+
 -- *** Insert new sql commands BEFORE this line ***

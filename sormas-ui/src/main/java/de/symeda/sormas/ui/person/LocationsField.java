@@ -1,14 +1,17 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -38,6 +41,18 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		if (create && entry.getUuid() == null) {
 			entry.setUuid(DataHelper.createUuid());
+		}
+
+		if (create) {
+			List<CountryReferenceDto> countryItems = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+			CountryReferenceDto defaultCountry = countryItems.stream()
+				.filter(
+					countryReferenceDto -> serverCountryDto != null
+						&& countryReferenceDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()))
+				.findFirst()
+				.orElse(null);
+			entry.setCountry(defaultCountry);
 		}
 
 		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
