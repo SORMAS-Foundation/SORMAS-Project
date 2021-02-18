@@ -4176,7 +4176,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4240,7 +4240,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4253,7 +4253,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4266,7 +4266,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4298,7 +4298,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4392,7 +4392,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4416,7 +4416,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4469,7 +4469,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4485,7 +4485,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4501,7 +4501,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4527,7 +4527,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4550,7 +4550,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4600,7 +4600,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4613,7 +4613,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4626,7 +4626,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4681,7 +4681,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4771,7 +4771,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4836,7 +4836,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5264,8 +5264,8 @@
           "previousInfectionDate" : {
             "type" : "string",
             "format" : "date-time",
-            "x-sormas-countries-for" : [ "de" ],
-            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "de" ]
           },
           "reportingDistrict" : {
             "$ref" : "#/components/schemas/DistrictReferenceDto"
@@ -5319,7 +5319,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5337,7 +5337,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -5375,7 +5375,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -5399,7 +5399,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5442,7 +5442,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5645,7 +5645,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5739,7 +5739,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5816,7 +5816,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5903,7 +5903,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6031,7 +6031,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -6063,7 +6063,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6150,7 +6150,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6222,7 +6222,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6262,7 +6262,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6405,49 +6405,49 @@
           },
           "lesionsAllOverBody" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsArms" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "ANTHRAX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "ANTHRAX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsDeepProfound" : {
             "$ref" : "#/components/schemas/SymptomState"
           },
           "lesionsFace" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsGenitals" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsLegs" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsOnsetDate" : {
             "type" : "string",
             "format" : "date-time",
+            "x-sormas-diseases" : [ "MONKEYPOX", "ANTHRAX" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "MONKEYPOX", "ANTHRAX" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsPalmsHands" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsResembleImg1" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6469,18 +6469,18 @@
           },
           "lesionsSolesFeet" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsThatItch" : {
             "$ref" : "#/components/schemas/SymptomState"
           },
           "lesionsThorax" : {
             "type" : "boolean",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "lesions",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lossSkinTurgor" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6538,17 +6538,17 @@
           },
           "otherHemorrhagicSymptomsText" : {
             "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "otherHemorrhagicSymptoms",
-            "x-sormas-countries-except" : [ "de", "ch" ],
-            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de", "ch" ]
           },
           "otherNonHemorrhagicSymptoms" : {
             "$ref" : "#/components/schemas/SymptomState"
           },
           "otherNonHemorrhagicSymptomsText" : {
             "type" : "string",
-            "x-sormas-depends-on" : "otherNonHemorrhagicSymptoms",
             "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "NEW_INFLUENZA", "CSM", "CHOLERA", "MEASLES", "DENGUE", "MONKEYPOX", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "CONGENITAL_RUBELLA", "CORONAVIRUS", "UNDEFINED", "OTHER" ],
+            "x-sormas-depends-on" : "otherNonHemorrhagicSymptoms",
             "x-sormas-outbreaks" : true
           },
           "otitisMedia" : {
@@ -6670,8 +6670,8 @@
           },
           "congenitalHeartDiseaseDetails" : {
             "type" : "string",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
+            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ],
+            "x-sormas-countries-except" : [ "de" ]
           },
           "unexplainedBleeding" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6811,9 +6811,9 @@
           },
           "otherComplicationsText" : {
             "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "NEW_INFLUENZA", "CSM", "CHOLERA", "MEASLES", "POLIO", "UNSPECIFIED_VHF", "GUINEA_WORM", "RABIES", "YELLOW_FEVER", "DENGUE", "PLAGUE", "ANTHRAX", "CORONAVIRUS", "UNDEFINED", "OTHER" ],
             "x-sormas-depends-on" : "otherComplications",
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "NEW_INFLUENZA", "CSM", "CHOLERA", "MEASLES", "POLIO", "UNSPECIFIED_VHF", "GUINEA_WORM", "RABIES", "YELLOW_FEVER", "DENGUE", "PLAGUE", "ANTHRAX", "CORONAVIRUS", "UNDEFINED", "OTHER" ]
+            "x-sormas-countries-except" : [ "de" ]
           },
           "seizures" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6881,7 +6881,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           }
@@ -6959,7 +6959,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -6995,7 +6995,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7185,13 +7185,13 @@
           },
           "hasCovidApp" : {
             "type" : "boolean",
-            "x-sormas-countries-for" : [ "ch" ],
-            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "ch" ]
           },
           "covidCodeDelivered" : {
             "type" : "boolean",
-            "x-sormas-countries-for" : [ "ch" ],
-            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "ch" ]
           },
           "symptomJournalStatus" : {
             "$ref" : "#/components/schemas/SymptomJournalStatus"
@@ -7423,7 +7423,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7453,7 +7453,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -7473,7 +7473,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7513,7 +7513,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7539,7 +7539,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -7576,7 +7576,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7866,7 +7866,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7937,7 +7937,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7974,7 +7974,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8019,7 +8019,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8043,7 +8043,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8081,7 +8081,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8131,7 +8131,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8429,7 +8429,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8482,7 +8482,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8520,7 +8520,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -8642,7 +8642,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8675,10 +8675,10 @@
           "externalID" : {
             "type" : "string"
           },
-          "otherPointOfEntry" : {
+          "nameOtherPointOfEntry" : {
             "type" : "boolean"
           },
-          "nameOtherPointOfEntry" : {
+          "otherPointOfEntry" : {
             "type" : "boolean"
           }
         }
@@ -8695,7 +8695,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8732,7 +8732,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8819,7 +8819,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8904,7 +8904,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8944,7 +8944,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9024,7 +9024,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9080,7 +9080,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -9109,7 +9109,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -9138,7 +9138,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9315,7 +9315,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9402,7 +9402,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -9422,7 +9422,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9478,7 +9478,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9540,7 +9540,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -9595,7 +9595,7 @@
             "format" : "date-time"
           },
           "uuid" : {
-            "pattern" : "^[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{6}-[0-9a-zA-Z]{8}$",
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
