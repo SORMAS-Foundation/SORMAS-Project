@@ -506,10 +506,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		for (CampaignDiagramSeries series : diagramSeries) {
 			//@formatter:off
 
-				final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = '" + area.getUuid() + "'" : "";
-				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'" : "";
-				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
-				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() + "'" : "";
+				final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = :areaUuid" : "";
+				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = :regionUuid" : "";
+				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = :districtUuid" : "";
+				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = :campaignUuid" : "";
 				//@formatter:on
 
 			// SELECT
@@ -618,12 +618,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			// WHERE
 			StringBuilder whereBuilder =
-				new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_ID).append(" = ?0");
+				new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_ID).append(" = :campaignFormMetaId");
 
 			if (series.getFieldId() != null) {
 				whereBuilder.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.ID)
-					.append("' = ?1")
+					.append("' = :campaignFormDataId")
 					.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.VALUE)
 					.append("' IS NOT NULL AND jsonData->>'")
@@ -676,10 +676,22 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 			//@formatter:on
 
-			seriesDataQuery.setParameter(0, series.getFormId());
+			seriesDataQuery.setParameter("campaignFormMetaId", series.getFormId());
+			if (area != null) {
+				seriesDataQuery.setParameter("areaUuid", area.getUuid());
+			}
+			if (region != null) {
+				seriesDataQuery.setParameter("regionUuid", region.getUuid());
+			}
+			if (district != null) {
+				seriesDataQuery.setParameter("districtUuid", district.getUuid());
+			}
+			if (campaign != null) {
+				seriesDataQuery.setParameter("campaignUuid", campaign.getUuid());
+			}
 
 			if (series.getFieldId() != null) {
-				seriesDataQuery.setParameter(1, series.getFieldId());
+				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
 
 			@SuppressWarnings("unchecked")
