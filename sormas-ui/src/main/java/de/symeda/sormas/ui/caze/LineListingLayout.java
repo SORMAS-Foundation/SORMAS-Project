@@ -460,7 +460,7 @@ public class LineListingLayout extends VerticalLayout {
 			sex.setId("lineListingSex_" + lineIndex);
 			sex.setItems(Sex.values());
 			sex.setWidth(100, Unit.PIXELS);
-			binder.forField(sex).bind(CaseLineDto.SEX);
+			binder.forField(sex).asRequired().bind(CaseLineDto.SEX);
 			dateOfOnset = new DateField();
 			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
