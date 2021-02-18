@@ -404,19 +404,23 @@ public class LabMessageController {
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
+		Window window = VaadinUiUtil.createPopupWindow();
+		CaseDataDto caseDto = buildCase(labMessageDto, person);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(labMessageDto, person, window, caseDto);
+		showFormWithLabMessage(labMessageDto, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase));
+	}
+
+	private CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(LabMessageDto labMessageDto, PersonDto person, Window window, CaseDataDto caseDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, true);
 
-		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
-		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
-		Window window = VaadinUiUtil.createPopupWindow();
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				labMessageDto);
+					labMessageDto);
 			createSample(
 				SampleDto.build(UserProvider.getCurrent().getUserReference(), caseCreateComponent.getWrappedComponent().getValue().toReference()),
-				labMessageDto);
+					labMessageDto);
 			window.close();
 		});
 		caseCreateComponent.addDiscardListener(window::close);
@@ -425,16 +429,27 @@ public class LabMessageController {
 
 		caseCreateComponent.getWrappedComponent().getField(PersonDto.FIRST_NAME).setEnabled(false);
 		caseCreateComponent.getWrappedComponent().getField(PersonDto.LAST_NAME).setEnabled(false);
+		return caseCreateComponent;
+	}
 
-		showFormWithLabMessage(labMessageDto, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase));
+	private CaseDataDto buildCase(LabMessageDto labMessageDto, PersonDto person) {
+		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
+		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		return caseDto;
 	}
 
 	private void createContact(LabMessageDto labMessageDto, PersonDto person) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		ContactDto contactDto = buildContact(labMessageDto, person);
 		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent = getContactCreateComponent(labMessageDto, person, window, contactDto);
-
 		showFormWithLabMessage(labMessageDto, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact));
+	}
+
+	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
+		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		contactDto.setPerson(person.toReference());
+		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		return contactDto;
 	}
 
 	private CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(LabMessageDto labMessageDto, PersonDto person, Window window, ContactDto contactDto) {
@@ -457,13 +472,6 @@ public class LabMessageController {
 		contactCreateComponent.getWrappedComponent().getField(PersonDto.FIRST_NAME).setEnabled(false);
 		contactCreateComponent.getWrappedComponent().getField(PersonDto.LAST_NAME).setEnabled(false);
 		return contactCreateComponent;
-	}
-
-	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
-		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
-		contactDto.setPerson(person.toReference());
-		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
-		return contactDto;
 	}
 
 	private void createSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
