@@ -15,17 +15,25 @@
 
 package de.symeda.sormas.backend.caze.surveillancereport;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
@@ -43,5 +51,27 @@ public class SurveillanceReportService extends BaseAdoService<SurveillanceReport
 		}
 
 		return filter;
+	}
+
+	public List<SurveillanceReport> getByCaseUuids(List<String> caseUuids) {
+
+		if (caseUuids != null && !caseUuids.isEmpty()) {
+			List<SurveillanceReport> reports = new ArrayList<>();
+
+			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, s -> {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
+				Root<SurveillanceReport> reportRoot = cq.from(SurveillanceReport.class);
+				Join<SurveillanceReport, Case> caseJoin = reportRoot.join(SurveillanceReport.CAZE, JoinType.LEFT);
+
+				cq.where(caseJoin.get(AbstractDomainObject.UUID).in(s));
+
+				reports.addAll(em.createQuery(cq).getResultList());
+			});
+
+			return reports;
+		} else {
+			return new ArrayList<>();
+		}
 	}
 }

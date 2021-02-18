@@ -99,7 +99,9 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		table.setColumnExpandRatio(LocationDto.COMMUNITY, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
