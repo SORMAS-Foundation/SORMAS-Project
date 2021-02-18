@@ -2167,13 +2167,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
     } else if (existingCase != null
-        && CaseOutcome.DECEASED == newCase.getOutcome()
-        && newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
-        && !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate())) {
-      PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-      newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
-      personFacade.onPersonChanged(existingPerson, newCase.getPerson());
-    }
+				&& CaseOutcome.DECEASED == newCase.getOutcome()
+				&& newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
+				&& newCase.getPerson().getDeathDate() != null
+				&& !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate())) {
+			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+		}
 	}
 
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
