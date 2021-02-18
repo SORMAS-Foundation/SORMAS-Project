@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -56,7 +57,7 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCases(List<CaseDataDto> dtos) {
+	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
 	}
 
@@ -80,13 +81,13 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/getduplicates")
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
 		return FacadeProvider.getCaseFacade().getDuplicates(casePerson);
 	}
 
 	@POST
 	@Path("/getduplicates/{reportDateThreshold}")
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, @PathParam("reportDateThreshold") int reportDateThreshold) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, @PathParam("reportDateThreshold") int reportDateThreshold) {
 		return FacadeProvider.getCaseFacade().getDuplicates(casePerson, reportDateThreshold);
 	}
 }

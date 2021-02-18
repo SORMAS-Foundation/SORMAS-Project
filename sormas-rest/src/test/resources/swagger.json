@@ -2,10 +2,15 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "SORMAS REST API",
-    "version" : "1.53.0-SNAPSHOT"
+    "version" : "1.57.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ]
+  }, {
+    "bearerAuth" : [ ]
   } ],
   "paths" : {
     "/actions/all/{since}" : {
@@ -834,6 +839,75 @@
         }
       }
     },
+    "/cases/getduplicates" : {
+      "post" : {
+        "tags" : [ "Case Controller" ],
+        "operationId" : "getDuplicates",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CasePersonDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CasePersonDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cases/getduplicates/{reportDateThreshold}" : {
+      "post" : {
+        "tags" : [ "Case Controller" ],
+        "operationId" : "getDuplicates_1",
+        "parameters" : [ {
+          "name" : "reportDateThreshold",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CasePersonDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CasePersonDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/cases/push" : {
       "post" : {
         "tags" : [ "Case Controller" ],
@@ -1413,6 +1487,90 @@
         }
       }
     },
+    "/diseasevariants/all/{since}" : {
+      "get" : {
+        "tags" : [ "Disease Variant Controller" ],
+        "operationId" : "getAllDiseaseVariants",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/DiseaseVariantDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diseasevariants/uuids" : {
+      "get" : {
+        "tags" : [ "Disease Variant Controller" ],
+        "operationId" : "getAllUuids_9",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diseasevariants/query" : {
+      "post" : {
+        "tags" : [ "Disease Variant Controller" ],
+        "operationId" : "getByUuids_12",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/DiseaseVariantDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/districts/all/{since}" : {
       "get" : {
         "tags" : [ "District Controller" ],
@@ -1446,7 +1604,7 @@
     "/districts/uuids" : {
       "get" : {
         "tags" : [ "District Controller" ],
-        "operationId" : "getAllUuids_9",
+        "operationId" : "getAllUuids_10",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1467,7 +1625,7 @@
     "/districts/query" : {
       "post" : {
         "tags" : [ "District Controller" ],
-        "operationId" : "getByUuids_12",
+        "operationId" : "getByUuids_13",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -1548,10 +1706,43 @@
         }
       }
     },
+    "/eventparticipants/query/events" : {
+      "post" : {
+        "tags" : [ "Event Participant Controller" ],
+        "operationId" : "getByEventUuids",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EventParticipantDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/eventparticipants/query" : {
       "post" : {
         "tags" : [ "Event Participant Controller" ],
-        "operationId" : "getByUuids_13",
+        "operationId" : "getByUuids_14",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -1728,7 +1919,7 @@
     "/events/query" : {
       "post" : {
         "tags" : [ "Event Controller" ],
-        "operationId" : "getByUuids_14",
+        "operationId" : "getByUuids_15",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2047,7 +2238,7 @@
     "/facilities/uuids" : {
       "get" : {
         "tags" : [ "Facility Controller" ],
-        "operationId" : "getAllUuids_10",
+        "operationId" : "getAllUuids_11",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2098,7 +2289,7 @@
     "/facilities/query" : {
       "post" : {
         "tags" : [ "Facility Controller" ],
-        "operationId" : "getByUuids_15",
+        "operationId" : "getByUuids_16",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2161,7 +2352,7 @@
     "/featureconfigurations/uuids" : {
       "get" : {
         "tags" : [ "Feature Configuration Controller" ],
-        "operationId" : "getAllUuids_11",
+        "operationId" : "getAllUuids_12",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2182,7 +2373,7 @@
     "/featureconfigurations/query" : {
       "post" : {
         "tags" : [ "Feature Configuration Controller" ],
-        "operationId" : "getByUuids_16",
+        "operationId" : "getByUuids_17",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2523,7 +2714,7 @@
     "/pathogentests/query" : {
       "post" : {
         "tags" : [ "Pathogen Test Controller" ],
-        "operationId" : "getByUuids_17",
+        "operationId" : "getByUuids_18",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2649,7 +2840,7 @@
     "/persons/uuids" : {
       "get" : {
         "tags" : [ "Person Controller" ],
-        "operationId" : "getAllUuids_12",
+        "operationId" : "getAllUuids_13",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2670,7 +2861,7 @@
     "/persons/query" : {
       "post" : {
         "tags" : [ "Person Controller" ],
-        "operationId" : "getByUuids_18",
+        "operationId" : "getByUuids_19",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2766,7 +2957,7 @@
     "/pointsofentry/uuids" : {
       "get" : {
         "tags" : [ "Point Of Entry Controller" ],
-        "operationId" : "getAllUuids_13",
+        "operationId" : "getAllUuids_14",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2787,7 +2978,7 @@
     "/pointsofentry/query" : {
       "post" : {
         "tags" : [ "Point Of Entry Controller" ],
-        "operationId" : "getByUuids_19",
+        "operationId" : "getByUuids_20",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2871,7 +3062,7 @@
     "/prescriptions/query" : {
       "post" : {
         "tags" : [ "Prescription Controller" ],
-        "operationId" : "getByUuids_20",
+        "operationId" : "getByUuids_21",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2967,7 +3158,7 @@
     "/regions/uuids" : {
       "get" : {
         "tags" : [ "Region Controller" ],
-        "operationId" : "getAllUuids_14",
+        "operationId" : "getAllUuids_15",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2988,7 +3179,7 @@
     "/regions/query" : {
       "post" : {
         "tags" : [ "Region Controller" ],
-        "operationId" : "getByUuids_21",
+        "operationId" : "getByUuids_22",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -3105,7 +3296,7 @@
     "/samples/query" : {
       "post" : {
         "tags" : [ "Sample Controller" ],
-        "operationId" : "getByUuids_22",
+        "operationId" : "getByUuids_23",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3286,6 +3477,52 @@
         }
       }
     },
+    "/sormasToSormas/cases/sync" : {
+      "post" : {
+        "tags" : [ "Sormas To Sormas Controller" ],
+        "operationId" : "syncSharedCases",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SormasToSormasEncryptedDataDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            }
+          }
+        }
+      }
+    },
+    "/sormasToSormas/contacts/sync" : {
+      "post" : {
+        "tags" : [ "Sormas To Sormas Controller" ],
+        "operationId" : "syncSharedContacts",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SormasToSormasEncryptedDataDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            }
+          }
+        }
+      }
+    },
     "/tasks/all/{since}" : {
       "get" : {
         "tags" : [ "Task Controller" ],
@@ -3340,7 +3577,7 @@
     "/tasks/query" : {
       "post" : {
         "tags" : [ "Task Controller" ],
-        "operationId" : "getByUuids_23",
+        "operationId" : "getByUuids_24",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3457,7 +3694,7 @@
     "/treatments/query" : {
       "post" : {
         "tags" : [ "Treatment Controller" ],
-        "operationId" : "getByUuids_24",
+        "operationId" : "getByUuids_25",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3553,7 +3790,7 @@
     "/users/uuids" : {
       "get" : {
         "tags" : [ "User Controller" ],
-        "operationId" : "getAllUuids_15",
+        "operationId" : "getAllUuids_16",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3574,7 +3811,7 @@
     "/users/query" : {
       "post" : {
         "tags" : [ "User Controller" ],
-        "operationId" : "getByUuids_25",
+        "operationId" : "getByUuids_26",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3637,7 +3874,7 @@
     "/userroles/uuids" : {
       "get" : {
         "tags" : [ "User Role Config Controller" ],
-        "operationId" : "getAllUuids_16",
+        "operationId" : "getAllUuids_17",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3739,7 +3976,7 @@
     "/visits/query" : {
       "post" : {
         "tags" : [ "Visit Controller" ],
-        "operationId" : "getByUuids_26",
+        "operationId" : "getByUuids_27",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3805,7 +4042,7 @@
     "/weeklyreports/uuids" : {
       "get" : {
         "tags" : [ "Weekly Report Controller" ],
-        "operationId" : "getAllUuids_17",
+        "operationId" : "getAllUuids_18",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3856,7 +4093,7 @@
     "/weeklyreports/query" : {
       "post" : {
         "tags" : [ "Weekly Report Controller" ],
-        "operationId" : "getByUuids_27",
+        "operationId" : "getByUuids_28",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -3939,6 +4176,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -3947,6 +4185,9 @@
           },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
+          },
+          "actionMeasure" : {
+            "$ref" : "#/components/schemas/ActionMeasure"
           },
           "priority" : {
             "$ref" : "#/components/schemas/ActionPriority"
@@ -3982,6 +4223,10 @@
           }
         }
       },
+      "ActionMeasure" : {
+        "type" : "string",
+        "enum" : [ "PROHIBITION_OF_ENTRY_AND_WORK_CASES", "SAMPLE_COLLECTION", "FORWARDING_TO_NATIONAL_REFERENCE_CENTER", "CONTACT_FOLLOW_UP", "VERIFICATION_OF_VACCINATION_IMMUNIZATION", "POST_EXPOSURE_PROPHYLAXIS_VACCINATION", "CLOSURE_OF_FACILITY", "PROHIBITION_OF_ENTRY_AND_WORK_CONTACTS", "POPULATION_INFORMATION", "OTHER" ]
+      },
       "ActionPriority" : {
         "type" : "string",
         "enum" : [ "HIGH", "NORMAL", "LOW" ]
@@ -3995,6 +4240,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4007,6 +4253,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4019,6 +4266,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4050,6 +4298,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4143,6 +4392,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4166,6 +4416,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4218,9 +4469,13 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
+            "type" : "string"
+          },
+          "externalId" : {
             "type" : "string"
           }
         }
@@ -4230,9 +4485,13 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
+            "type" : "string"
+          },
+          "externalId" : {
             "type" : "string"
           }
         }
@@ -4242,24 +4501,39 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
             "type" : "string"
+          },
+          "externalId" : {
+            "type" : "string"
+          },
+          "pointOfEntryType" : {
+            "$ref" : "#/components/schemas/PointOfEntryType"
           },
           "otherPointOfEntry" : {
             "type" : "boolean"
           }
         }
       },
+      "PointOfEntryType" : {
+        "type" : "string",
+        "enum" : [ "AIRPORT", "SEAPORT", "GROUND_CROSSING", "OTHER" ]
+      },
       "RegionReferenceDto" : {
         "required" : [ "uuid" ],
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
+            "type" : "string"
+          },
+          "externalId" : {
             "type" : "string"
           }
         }
@@ -4276,6 +4550,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4325,6 +4600,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4337,6 +4613,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4349,9 +4626,13 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
+            "type" : "string"
+          },
+          "externalId" : {
             "type" : "string"
           }
         }
@@ -4400,6 +4681,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4489,6 +4771,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4553,6 +4836,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4561,6 +4845,9 @@
           },
           "disease" : {
             "$ref" : "#/components/schemas/Disease"
+          },
+          "diseaseVariant" : {
+            "$ref" : "#/components/schemas/DiseaseVariantReferenceDto"
           },
           "diseaseDetails" : {
             "type" : "string",
@@ -4606,6 +4893,12 @@
           },
           "caseClassification" : {
             "$ref" : "#/components/schemas/CaseClassification"
+          },
+          "caseIdentificationSource" : {
+            "$ref" : "#/components/schemas/CaseIdentificationSource"
+          },
+          "screeningType" : {
+            "$ref" : "#/components/schemas/ScreeningType"
           },
           "classificationUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
@@ -4667,8 +4960,8 @@
           },
           "healthFacilityDetails" : {
             "type" : "string",
-            "x-sormas-personal-data" : true,
-            "x-sormas-outbreaks" : true
+            "x-sormas-outbreaks" : true,
+            "x-sormas-personal-data" : true
           },
           "pregnant" : {
             "$ref" : "#/components/schemas/YesNoUnknown"
@@ -4678,17 +4971,53 @@
           },
           "vaccinationDoses" : {
             "type" : "string",
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "CSM", "YELLOW_FEVER", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "OTHER" ],
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "CSM", "YELLOW_FEVER", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
             "x-sormas-outbreaks" : true
           },
-          "vaccinationDate" : {
+          "firstVaccinationDate" : {
             "type" : "string",
             "format" : "date-time",
-            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "MONKEYPOX", "UNSPECIFIED_VHF", "RABIES", "ANTHRAX", "OTHER" ],
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "MONKEYPOX", "UNSPECIFIED_VHF", "RABIES", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
+            "x-sormas-outbreaks" : true
+          },
+          "lastVaccinationDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "MONKEYPOX", "UNSPECIFIED_VHF", "RABIES", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
             "x-sormas-outbreaks" : true
           },
           "vaccinationInfoSource" : {
             "$ref" : "#/components/schemas/VaccinationInfoSource"
+          },
+          "vaccineName" : {
+            "$ref" : "#/components/schemas/Vaccine"
+          },
+          "otherVaccineName" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+          },
+          "vaccineManufacturer" : {
+            "$ref" : "#/components/schemas/VaccineManufacturer"
+          },
+          "otherVaccineManufacturer" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+          },
+          "vaccineInn" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineBatchNumber" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineUniiCode" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineAtcCode" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
           },
           "vaccine" : {
             "type" : "string",
@@ -4776,6 +5105,10 @@
             "type" : "string",
             "x-sormas-countries-for" : [ "de", "ch" ]
           },
+          "externalToken" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de", "ch" ]
+          },
           "sharedToCountry" : {
             "type" : "boolean"
           },
@@ -4849,9 +5182,6 @@
             "type" : "string",
             "format" : "date-time",
             "x-sormas-countries-for" : [ "de", "ch" ]
-          },
-          "reportingType" : {
-            "$ref" : "#/components/schemas/ReportingType"
           },
           "postpartum" : {
             "$ref" : "#/components/schemas/YesNoUnknown"
@@ -4927,8 +5257,47 @@
             "type" : "string",
             "format" : "date-time",
             "x-sormas-countries-for" : [ "de" ]
+          },
+          "reInfection" : {
+            "$ref" : "#/components/schemas/YesNoUnknown"
+          },
+          "previousInfectionDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "reportingDistrict" : {
+            "$ref" : "#/components/schemas/DistrictReferenceDto"
+          },
+          "bloodOrganOrTissueDonated" : {
+            "$ref" : "#/components/schemas/YesNoUnknown"
+          },
+          "notACaseReasonNegativeTest" : {
+            "type" : "boolean",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "notACaseReasonPhysicianInformation" : {
+            "type" : "boolean",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "notACaseReasonDifferentPathogen" : {
+            "type" : "boolean",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "notACaseReasonOther" : {
+            "type" : "boolean",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "notACaseReasonDetails" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de" ]
           }
         }
+      },
+      "CaseIdentificationSource" : {
+        "type" : "string",
+        "enum" : [ "UNKNOWN", "OUTBREAK_INVESTIGATION", "CONTACT_TRACKING_APP", "SUSPICION_REPORT", "CONTACT_TRACING", "SCREENING", "OTHER" ]
       },
       "CaseOrigin" : {
         "type" : "string",
@@ -4950,6 +5319,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -4967,6 +5337,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -4999,6 +5370,19 @@
         "type" : "string",
         "enum" : [ "DENGUE_FEVER", "DENGUE_HEMORRHAGIC_FEVER", "DENUGE_SHOCK_SYNDROME" ]
       },
+      "DiseaseVariantReferenceDto" : {
+        "required" : [ "uuid" ],
+        "type" : "object",
+        "properties" : {
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string"
+          },
+          "caption" : {
+            "type" : "string"
+          }
+        }
+      },
       "EndOfIsolationReason" : {
         "type" : "string",
         "enum" : [ "RECOVERED", "DIED", "LOST_TO_FOLLOW_UP", "OTHER" ]
@@ -5015,6 +5399,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5057,6 +5442,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5086,8 +5472,8 @@
           "location" : {
             "$ref" : "#/components/schemas/LocationDto"
           },
-          "patientExpositionRole" : {
-            "$ref" : "#/components/schemas/PatientExpositionRole"
+          "exposureRole" : {
+            "$ref" : "#/components/schemas/ExposureRole"
           },
           "typeOfPlace" : {
             "$ref" : "#/components/schemas/TypeOfPlace"
@@ -5106,6 +5492,9 @@
           },
           "seatNumber" : {
             "type" : "string"
+          },
+          "workEnvironment" : {
+            "$ref" : "#/components/schemas/WorkEnvironment"
           },
           "indoors" : {
             "$ref" : "#/components/schemas/YesNoUnknown"
@@ -5220,13 +5609,17 @@
           }
         }
       },
+      "ExposureRole" : {
+        "type" : "string",
+        "enum" : [ "PASSENGER", "STAFF", "NURSING_STAFF", "MEDICAL_STAFF", "VISITOR", "GUEST", "CUSTOMER", "CONSERVATEE", "PATIENT", "EDUCATOR", "TRAINEE_TEACHER", "PUPIL", "STUDENT", "PARENT", "TEACHER", "UNKNOWN", "OTHER" ]
+      },
       "ExposureType" : {
         "type" : "string",
-        "enum" : [ "WORK", "TRAVEL", "SPORT", "VISIT", "GATHERING", "HABITATION", "PERSONAL_SERVICES", "BURIAL", "ANIMAL_CONTACT", "OTHER" ]
+        "enum" : [ "WORK", "TRAVEL", "SPORT", "VISIT", "GATHERING", "HABITATION", "PERSONAL_SERVICES", "BURIAL", "ANIMAL_CONTACT", "OTHER", "UNKNOWN" ]
       },
       "FacilityType" : {
         "type" : "string",
-        "enum" : [ "ASSOCIATION", "BUSINESS", "CAMPSITE", "CANTINE", "CHILDRENS_DAY_CARE", "CHILDRENS_HOME", "CORRECTIONAL_FACILITY", "CRUISE_SHIP", "ELDERLY_DAY_CARE", "EVENT_VENUE", "FOOD_STALL", "HOLIDAY_CAMP", "HOMELESS_SHELTER", "HOSPITAL", "HOSTEL", "HOTEL", "KINDERGARTEN", "LABORATORY", "MASS_ACCOMMODATION", "MILITARY_BARRACKS", "MOBILE_NURSING_SERVICE", "OTHER_ACCOMMODATION", "OTHER_CARE_FACILITY", "OTHER_CATERING_OUTLET", "OTHER_EDUCATIONAL_FACILITY", "OTHER_LEISURE_FACILITY", "OTHER_MEDICAL_FACILITY", "OTHER_RESIDENCE", "OTHER_WORKING_PLACE", "OUTPATIENT_TREATMENT_FACILITY", "PLACE_OF_WORSHIP", "PUBLIC_PLACE", "REFUGEE_ACCOMMODATION", "REHAB_FACILITY", "RESTAURANT", "RETIREMENT_HOME", "SCHOOL", "SWIMMING_POOL", "THEATER", "UNIVERSITY", "ZOO" ]
+        "enum" : [ "ASSOCIATION", "BUSINESS", "CAMPSITE", "CANTINE", "CHILDRENS_DAY_CARE", "CHILDRENS_HOME", "CORRECTIONAL_FACILITY", "CRUISE_SHIP", "ELDERLY_DAY_CARE", "EVENT_VENUE", "FOOD_STALL", "HOLIDAY_CAMP", "HOMELESS_SHELTER", "HOSPITAL", "HOSTEL", "HOTEL", "KINDERGARTEN", "LABORATORY", "MASS_ACCOMMODATION", "MILITARY_BARRACKS", "MOBILE_NURSING_SERVICE", "OTHER_ACCOMMODATION", "OTHER_CARE_FACILITY", "OTHER_CATERING_OUTLET", "OTHER_EDUCATIONAL_FACILITY", "OTHER_LEISURE_FACILITY", "OTHER_MEDICAL_FACILITY", "OTHER_RESIDENCE", "OTHER_WORKING_PLACE", "OTHER_COMMERCE", "OUTPATIENT_TREATMENT_FACILITY", "PLACE_OF_WORSHIP", "PUBLIC_PLACE", "REFUGEE_ACCOMMODATION", "REHAB_FACILITY", "RESTAURANT", "RETIREMENT_HOME", "RETAIL", "WHOLESALE", "SCHOOL", "SWIMMING_POOL", "THEATER", "UNIVERSITY", "ZOO" ]
       },
       "FollowUpStatus" : {
         "type" : "string",
@@ -5234,7 +5627,7 @@
       },
       "GatheringType" : {
         "type" : "string",
-        "enum" : [ "PARTY", "RELIGIOUS", "MUSICAL", "OTHER" ]
+        "enum" : [ "PARTY", "RELIGIOUS", "MUSICAL", "DEMONSTRATION", "CARNIVAL", "FAIR", "SPORTING_EVENT", "OTHER" ]
       },
       "HabitationType" : {
         "type" : "string",
@@ -5252,6 +5645,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5345,6 +5739,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5388,8 +5783,18 @@
           "intensiveCareUnitEnd" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "hospitalizationReason" : {
+            "$ref" : "#/components/schemas/HospitalizationReasonType"
+          },
+          "otherHospitalizationReason" : {
+            "type" : "string"
           }
         }
+      },
+      "HospitalizationReasonType" : {
+        "type" : "string",
+        "enum" : [ "REPORTED_DISEASE", "OTHER", "UNKNOWN" ]
       },
       "InfectionSetting" : {
         "type" : "string",
@@ -5411,6 +5816,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5497,6 +5903,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5600,11 +6007,7 @@
       },
       "MeansOfTransport" : {
         "type" : "string",
-        "enum" : [ "BUS", "FERRY", "PLANE", "TRAIN", "OTHER" ]
-      },
-      "PatientExpositionRole" : {
-        "type" : "string",
-        "enum" : [ "NOT_COLLECTED", "UNKNOWN", "WORKING_AT", "ACCOMMODATED_IN", "CARED_FOR", "OTHER" ]
+        "enum" : [ "LOCAL_PUBLIC_TRANSPORT", "BUS", "FERRY", "PLANE", "TRAIN", "OTHER" ]
       },
       "PersonAddressType" : {
         "type" : "string",
@@ -5628,6 +6031,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -5659,6 +6063,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5745,6 +6150,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5779,6 +6185,12 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "hospitalizationReason" : {
+            "$ref" : "#/components/schemas/HospitalizationReasonType"
+          },
+          "otherHospitalizationReason" : {
+            "type" : "string"
           }
         }
       },
@@ -5794,9 +6206,9 @@
         "type" : "string",
         "enum" : [ "FURIOUS_RABIES", "PARALYTIC_RABIES" ]
       },
-      "ReportingType" : {
+      "ScreeningType" : {
         "type" : "string",
-        "enum" : [ "DOCTOR", "FORWARDING", "HOSPITAL_OR_STATIONARY_CARE", "COMMUNITY_FACILITY", "LABORATORY", "OWN_DETERMINATION", "NOT_DETERMINABLE", "NOT_RAISED", "OTHER" ]
+        "enum" : [ "ON_HOSPITAL_ADMISSION", "ON_CARE_HOME_ADMISSION", "ON_ASYLUM_ADMISSION", "ON_ENTRY_FROM_RISK_AREA", "HEALTH_SECTOR_EMPLOYEE", "EDUCATIONAL_INSTITUTIONS", "OTHER" ]
       },
       "SormasToSormasOriginInfoDto" : {
         "type" : "object",
@@ -5810,6 +6222,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -5849,6 +6262,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6467,6 +6881,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           }
@@ -6482,7 +6897,7 @@
       },
       "TypeOfPlace" : {
         "type" : "string",
-        "enum" : [ "FACILITY", "FESTIVITIES", "HOME", "HOSPITAL", "MEANS_OF_TRANSPORT", "PUBLIC_PLACE", "UNKNOWN", "OTHER" ]
+        "enum" : [ "FACILITY", "FESTIVITIES", "HOME", "MEANS_OF_TRANSPORT", "PUBLIC_PLACE", "SCATTERED", "UNKNOWN", "OTHER" ]
       },
       "Vaccination" : {
         "type" : "string",
@@ -6490,15 +6905,331 @@
       },
       "VaccinationInfoSource" : {
         "type" : "string",
-        "enum" : [ "VACCINATION_CARD", "ORAL_COMMUNICATION" ]
+        "enum" : [ "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+      },
+      "Vaccine" : {
+        "type" : "string",
+        "enum" : [ "COMIRNATY", "MRNA_1273", "OXFORD_ASTRA_ZENECA", "AD26_COV2_S", "NVX_COV_2373", "SANOFI_GSK", "UNKNOWN", "OTHER" ]
+      },
+      "VaccineManufacturer" : {
+        "type" : "string",
+        "enum" : [ "BIONTECH_PFIZER", "MODERNA", "ASTRA_ZENECA", "JOHNSON_JOHNSON", "NOVAVAX", "SANOFI_GSK", "UNKNOWN", "OTHER" ]
       },
       "WaterSource" : {
         "type" : "string",
         "enum" : [ "PIPE_NETWORK", "COMMUNITY_BOREHOLE_WELL", "PRIVATE_BOREHOLE_WELL", "STREAM", "OTHER" ]
       },
+      "WorkEnvironment" : {
+        "type" : "string",
+        "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
+      },
       "YesNoUnknown" : {
         "type" : "string",
         "enum" : [ "YES", "NO", "UNKNOWN" ]
+      },
+      "ApproximateAgeType" : {
+        "type" : "string",
+        "enum" : [ "YEARS", "MONTHS", "DAYS" ]
+      },
+      "ArmedForcesRelationType" : {
+        "type" : "string",
+        "enum" : [ "UNKNOWN", "NO_RELATION", "CIVIL", "SOLDIER_OR_RELATIVE" ]
+      },
+      "BurialConductor" : {
+        "type" : "string",
+        "enum" : [ "FAMILY_COMMUNITY", "OUTBREAK_TEAM" ]
+      },
+      "CasePersonDto" : {
+        "type" : "object",
+        "properties" : {
+          "caze" : {
+            "$ref" : "#/components/schemas/CaseDataDto"
+          },
+          "person" : {
+            "$ref" : "#/components/schemas/PersonDto"
+          }
+        }
+      },
+      "CauseOfDeath" : {
+        "type" : "string",
+        "enum" : [ "EPIDEMIC_DISEASE", "OTHER_CAUSE" ]
+      },
+      "CountryReferenceDto" : {
+        "required" : [ "uuid" ],
+        "type" : "object",
+        "properties" : {
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string"
+          },
+          "caption" : {
+            "type" : "string"
+          },
+          "isoCode" : {
+            "type" : "string"
+          }
+        }
+      },
+      "DeathPlaceType" : {
+        "type" : "string",
+        "enum" : [ "COMMUNITY", "HOSPITAL", "OTHER" ]
+      },
+      "EducationType" : {
+        "type" : "string",
+        "enum" : [ "NONE", "NURSERY", "PRIMARY", "SECONDARY", "TERTIARY", "OTHER" ]
+      },
+      "OccupationType" : {
+        "type" : "string",
+        "enum" : [ "RETAIL_AND_REPAIR_SERVICE", "MANUFACTURING", "CONSTRUCTION", "TRANSPORT_AND_STORAGE", "HEALTH_AND_SOCIAL", "EDUCATION", "ACCOMMODATION_AND_FOOD_SERVICES", "ARTS_ENTERTAINMENT_AND_RECREATION", "PUBLIC_ADMINISTRATION_AND_DEFENCE", "FINANCE_AND_INSURANCE", "INFORMATION_AND_COMMUNICATION", "PROFESSIONAL_SCIENTIFIC_AND_TECHNICAL", "ADMINISTRATIVE_AND_SUPPORT", "SERVICE_OTHER", "REAL_ESTATE", "ENERGY_SUPPLY", "WATER_SUPPLY_AND_WASTE", "EXTRATERRITORIAL_ORGANIZATIONS", "AGRICULTURE", "MINING", "PRIVATE_HOUSEHOLD", "FARMER", "BUTCHER", "HUNTER_MEAT_TRADER", "MINER", "RELIGIOUS_LEADER", "HOUSEWIFE", "PUPIL_STUDENT", "CHILD", "BUSINESSMAN_WOMAN", "TRANSPORTER", "HEALTHCARE_WORKER", "TRADITIONAL_SPIRITUAL_HEALER", "WORKING_WITH_ANIMALS", "LABORATORY_STAFF", "OTHER" ]
+      },
+      "PersonDto" : {
+        "required" : [ "firstName", "lastName" ],
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string",
+            "x-sormas-outbreaks" : true
+          },
+          "pseudonymized" : {
+            "type" : "boolean"
+          },
+          "firstName" : {
+            "type" : "string",
+            "x-sormas-outbreaks" : true,
+            "x-sormas-personal-data" : true
+          },
+          "lastName" : {
+            "type" : "string",
+            "x-sormas-outbreaks" : true,
+            "x-sormas-personal-data" : true
+          },
+          "salutation" : {
+            "$ref" : "#/components/schemas/Salutation"
+          },
+          "otherSalutation" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "birthName" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de" ],
+            "x-sormas-personal-data" : true
+          },
+          "nickname" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "mothersName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "mothersMaidenName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "fathersName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "namesOfGuardians" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de" ],
+            "x-sormas-personal-data" : true
+          },
+          "sex" : {
+            "$ref" : "#/components/schemas/Sex"
+          },
+          "birthdateDD" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-outbreaks" : true,
+            "x-sormas-personal-data" : true
+          },
+          "birthdateMM" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-outbreaks" : true
+          },
+          "birthdateYYYY" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-outbreaks" : true
+          },
+          "approximateAge" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-outbreaks" : true
+          },
+          "approximateAgeType" : {
+            "$ref" : "#/components/schemas/ApproximateAgeType"
+          },
+          "approximateAgeReferenceDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-outbreaks" : true
+          },
+          "placeOfBirthRegion" : {
+            "$ref" : "#/components/schemas/RegionReferenceDto"
+          },
+          "placeOfBirthDistrict" : {
+            "$ref" : "#/components/schemas/DistrictReferenceDto"
+          },
+          "placeOfBirthCommunity" : {
+            "$ref" : "#/components/schemas/CommunityReferenceDto"
+          },
+          "placeOfBirthFacilityType" : {
+            "$ref" : "#/components/schemas/FacilityType"
+          },
+          "placeOfBirthFacility" : {
+            "$ref" : "#/components/schemas/FacilityReferenceDto"
+          },
+          "placeOfBirthFacilityDetails" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
+          },
+          "gestationAgeAtBirth" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
+          },
+          "birthWeight" : {
+            "type" : "integer",
+            "format" : "int32",
+            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
+          },
+          "presentCondition" : {
+            "$ref" : "#/components/schemas/PresentCondition"
+          },
+          "deathDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "causeOfDeath" : {
+            "$ref" : "#/components/schemas/CauseOfDeath"
+          },
+          "causeOfDeathDisease" : {
+            "$ref" : "#/components/schemas/Disease"
+          },
+          "causeOfDeathDetails" : {
+            "type" : "string"
+          },
+          "deathPlaceType" : {
+            "$ref" : "#/components/schemas/DeathPlaceType"
+          },
+          "deathPlaceDescription" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "POLIO", "UNSPECIFIED_VHF", "CORONAVIRUS", "UNDEFINED", "OTHER" ]
+          },
+          "burialDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "POLIO", "CORONAVIRUS", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ]
+          },
+          "burialPlaceDescription" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "POLIO", "CORONAVIRUS", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ]
+          },
+          "burialConductor" : {
+            "$ref" : "#/components/schemas/BurialConductor"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "phoneOwner" : {
+            "type" : "string"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/LocationDto"
+          },
+          "emailAddress" : {
+            "type" : "string"
+          },
+          "educationType" : {
+            "$ref" : "#/components/schemas/EducationType"
+          },
+          "educationDetails" : {
+            "type" : "string"
+          },
+          "occupationType" : {
+            "$ref" : "#/components/schemas/OccupationType"
+          },
+          "occupationDetails" : {
+            "type" : "string"
+          },
+          "armedForcesRelationType" : {
+            "$ref" : "#/components/schemas/ArmedForcesRelationType"
+          },
+          "generalPractitionerDetails" : {
+            "type" : "string"
+          },
+          "passportNumber" : {
+            "type" : "string"
+          },
+          "nationalHealthId" : {
+            "type" : "string"
+          },
+          "addresses" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LocationDto"
+            }
+          },
+          "hasCovidApp" : {
+            "type" : "boolean",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "ch" ]
+          },
+          "covidCodeDelivered" : {
+            "type" : "boolean",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ],
+            "x-sormas-countries-for" : [ "ch" ]
+          },
+          "symptomJournalStatus" : {
+            "$ref" : "#/components/schemas/SymptomJournalStatus"
+          },
+          "externalId" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "externalToken" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "birthCountry" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
+          "citizenship" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
+          "enrolledInExternalJournal" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "PresentCondition" : {
+        "type" : "string",
+        "enum" : [ "ALIVE", "DEAD", "BURIED", "UNKNOWN" ]
+      },
+      "Salutation" : {
+        "type" : "string",
+        "enum" : [ "MR", "MRS", "MR_AND_MRS", "FAMILY", "GUARDIAN_OF_MINOR", "OTHER" ]
+      },
+      "Sex" : {
+        "type" : "string",
+        "enum" : [ "MALE", "FEMALE", "OTHER", "UNKNOWN" ]
+      },
+      "SymptomJournalStatus" : {
+        "type" : "string",
+        "enum" : [ "UNREGISTERED", "REGISTERED", "ACCEPTED", "REJECTED", "DELETED" ]
       },
       "ClassificationAllOfCriteriaDto" : {
         "type" : "object",
@@ -6692,6 +7423,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6714,13 +7446,14 @@
       },
       "PathogenTestType" : {
         "type" : "string",
-        "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER" ]
+        "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
       },
       "ClinicalCourseReferenceDto" : {
         "required" : [ "uuid" ],
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -6740,6 +7473,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6779,6 +7513,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6804,6 +7539,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -6840,6 +7576,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -6952,6 +7689,10 @@
             "type" : "string"
           },
           "externalID" : {
+            "type" : "string",
+            "x-sormas-countries-for" : [ "de", "ch" ]
+          },
+          "externalToken" : {
             "type" : "string",
             "x-sormas-countries-for" : [ "de", "ch" ]
           },
@@ -7080,6 +7821,12 @@
             "type" : "string",
             "format" : "date-time",
             "x-sormas-countries-for" : [ "de" ]
+          },
+          "reportingDistrict" : {
+            "$ref" : "#/components/schemas/DistrictReferenceDto"
+          },
+          "vaccinationInfo" : {
+            "$ref" : "#/components/schemas/VaccinationInfoDto"
           }
         }
       },
@@ -7107,6 +7854,77 @@
         "type" : "string",
         "enum" : [ "CORONA_WARN_APP", "OTHER", "UNKNOWN" ]
       },
+      "VaccinationInfoDto" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string",
+            "x-sormas-outbreaks" : true
+          },
+          "vaccination" : {
+            "$ref" : "#/components/schemas/Vaccination"
+          },
+          "vaccinationDoses" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "CSM", "YELLOW_FEVER", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
+            "x-sormas-outbreaks" : true
+          },
+          "firstVaccinationDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "MONKEYPOX", "UNSPECIFIED_VHF", "RABIES", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
+            "x-sormas-outbreaks" : true
+          },
+          "lastVaccinationDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "MONKEYPOX", "UNSPECIFIED_VHF", "RABIES", "ANTHRAX", "CORONAVIRUS", "OTHER" ],
+            "x-sormas-outbreaks" : true
+          },
+          "vaccinationInfoSource" : {
+            "$ref" : "#/components/schemas/VaccinationInfoSource"
+          },
+          "vaccineName" : {
+            "$ref" : "#/components/schemas/Vaccine"
+          },
+          "otherVaccineName" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+          },
+          "vaccineManufacturer" : {
+            "$ref" : "#/components/schemas/VaccineManufacturer"
+          },
+          "otherVaccineManufacturer" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
+          },
+          "vaccineInn" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineBatchNumber" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineUniiCode" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          },
+          "vaccineAtcCode" : {
+            "type" : "string",
+            "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MEASLES", "POLIO", "YELLOW_FEVER", "CSM", "RABIES", "UNSPECIFIED_VHF", "ANTHRAX", "CORONAVIRUS", "OTHER" ]
+          }
+        }
+      },
       "CountryDto" : {
         "type" : "object",
         "properties" : {
@@ -7119,6 +7937,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7155,6 +7974,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7187,6 +8007,30 @@
           }
         }
       },
+      "DiseaseVariantDto" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string",
+            "x-sormas-outbreaks" : true
+          },
+          "disease" : {
+            "$ref" : "#/components/schemas/Disease"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
       "DistrictDto" : {
         "type" : "object",
         "properties" : {
@@ -7199,6 +8043,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7223,42 +8068,6 @@
           }
         }
       },
-      "ApproximateAgeType" : {
-        "type" : "string",
-        "enum" : [ "YEARS", "MONTHS", "DAYS" ]
-      },
-      "ArmedForcesRelationType" : {
-        "type" : "string",
-        "enum" : [ "UNKNOWN", "NO_RELATION", "CIVIL", "SOLDIER_OR_RELATIVE" ]
-      },
-      "BurialConductor" : {
-        "type" : "string",
-        "enum" : [ "FAMILY_COMMUNITY", "OUTBREAK_TEAM" ]
-      },
-      "CauseOfDeath" : {
-        "type" : "string",
-        "enum" : [ "EPIDEMIC_DISEASE", "OTHER_CAUSE" ]
-      },
-      "CountryReferenceDto" : {
-        "required" : [ "uuid" ],
-        "type" : "object",
-        "properties" : {
-          "uuid" : {
-            "type" : "string"
-          },
-          "caption" : {
-            "type" : "string"
-          }
-        }
-      },
-      "DeathPlaceType" : {
-        "type" : "string",
-        "enum" : [ "COMMUNITY", "HOSPITAL", "OTHER" ]
-      },
-      "EducationType" : {
-        "type" : "string",
-        "enum" : [ "NONE", "NURSERY", "PRIMARY", "SECONDARY", "TERTIARY", "OTHER" ]
-      },
       "EventParticipantDto" : {
         "required" : [ "event", "person" ],
         "type" : "object",
@@ -7272,6 +8081,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7298,253 +8108,15 @@
           },
           "district" : {
             "$ref" : "#/components/schemas/DistrictReferenceDto"
+          },
+          "vaccinationInfo" : {
+            "$ref" : "#/components/schemas/VaccinationInfoDto"
           }
         }
       },
-      "OccupationType" : {
+      "DiseaseTransmissionMode" : {
         "type" : "string",
-        "enum" : [ "RETAIL_AND_REPAIR_SERVICE", "MANUFACTURING", "CONSTRUCTION", "TRANSPORT_AND_STORAGE", "HEALTH_AND_SOCIAL", "EDUCATION", "ACCOMMODATION_AND_FOOD_SERVICES", "ARTS_ENTERTAINMENT_AND_RECREATION", "PUBLIC_ADMINISTRATION_AND_DEFENCE", "FINANCE_AND_INSURANCE", "INFORMATION_AND_COMMUNICATION", "PROFESSIONAL_SCIENTIFIC_AND_TECHNICAL", "ADMINISTRATIVE_AND_SUPPORT", "SERVICE_OTHER", "REAL_ESTATE", "ENERGY_SUPPLY", "WATER_SUPPLY_AND_WASTE", "EXTRATERRITORIAL_ORGANIZATIONS", "AGRICULTURE", "MINING", "PRIVATE_HOUSEHOLD", "FARMER", "BUTCHER", "HUNTER_MEAT_TRADER", "MINER", "RELIGIOUS_LEADER", "HOUSEWIFE", "PUPIL_STUDENT", "CHILD", "BUSINESSMAN_WOMAN", "TRANSPORTER", "HEALTHCARE_WORKER", "TRADITIONAL_SPIRITUAL_HEALER", "WORKING_WITH_ANIMALS", "LABORATORY_STAFF", "OTHER" ]
-      },
-      "PersonDto" : {
-        "required" : [ "firstName", "lastName" ],
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "changeDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "uuid" : {
-            "type" : "string",
-            "x-sormas-outbreaks" : true
-          },
-          "pseudonymized" : {
-            "type" : "boolean"
-          },
-          "firstName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true,
-            "x-sormas-outbreaks" : true
-          },
-          "lastName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true,
-            "x-sormas-outbreaks" : true
-          },
-          "salutation" : {
-            "$ref" : "#/components/schemas/Salutation"
-          },
-          "otherSalutation" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true
-          },
-          "birthName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true,
-            "x-sormas-countries-for" : [ "de" ]
-          },
-          "nickname" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true
-          },
-          "mothersName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true
-          },
-          "mothersMaidenName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true
-          },
-          "fathersName" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true
-          },
-          "namesOfGuardians" : {
-            "type" : "string",
-            "x-sormas-personal-data" : true,
-            "x-sormas-countries-for" : [ "de" ]
-          },
-          "sex" : {
-            "$ref" : "#/components/schemas/Sex"
-          },
-          "birthdateDD" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-personal-data" : true,
-            "x-sormas-outbreaks" : true
-          },
-          "birthdateMM" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-outbreaks" : true
-          },
-          "birthdateYYYY" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-outbreaks" : true
-          },
-          "approximateAge" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-outbreaks" : true
-          },
-          "approximateAgeType" : {
-            "$ref" : "#/components/schemas/ApproximateAgeType"
-          },
-          "approximateAgeReferenceDate" : {
-            "type" : "string",
-            "format" : "date-time",
-            "x-sormas-outbreaks" : true
-          },
-          "placeOfBirthRegion" : {
-            "$ref" : "#/components/schemas/RegionReferenceDto"
-          },
-          "placeOfBirthDistrict" : {
-            "$ref" : "#/components/schemas/DistrictReferenceDto"
-          },
-          "placeOfBirthCommunity" : {
-            "$ref" : "#/components/schemas/CommunityReferenceDto"
-          },
-          "placeOfBirthFacilityType" : {
-            "$ref" : "#/components/schemas/FacilityType"
-          },
-          "placeOfBirthFacility" : {
-            "$ref" : "#/components/schemas/FacilityReferenceDto"
-          },
-          "placeOfBirthFacilityDetails" : {
-            "type" : "string",
-            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
-          },
-          "gestationAgeAtBirth" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
-          },
-          "birthWeight" : {
-            "type" : "integer",
-            "format" : "int32",
-            "x-sormas-diseases" : [ "CONGENITAL_RUBELLA" ]
-          },
-          "presentCondition" : {
-            "$ref" : "#/components/schemas/PresentCondition"
-          },
-          "deathDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "causeOfDeath" : {
-            "$ref" : "#/components/schemas/CauseOfDeath"
-          },
-          "causeOfDeathDisease" : {
-            "$ref" : "#/components/schemas/Disease"
-          },
-          "causeOfDeathDetails" : {
-            "type" : "string"
-          },
-          "deathPlaceType" : {
-            "$ref" : "#/components/schemas/DeathPlaceType"
-          },
-          "deathPlaceDescription" : {
-            "type" : "string",
-            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "POLIO", "UNSPECIFIED_VHF", "CORONAVIRUS", "UNDEFINED", "OTHER" ]
-          },
-          "burialDate" : {
-            "type" : "string",
-            "format" : "date-time",
-            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "POLIO", "CORONAVIRUS", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ]
-          },
-          "burialPlaceDescription" : {
-            "type" : "string",
-            "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "POLIO", "CORONAVIRUS", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ]
-          },
-          "burialConductor" : {
-            "$ref" : "#/components/schemas/BurialConductor"
-          },
-          "phone" : {
-            "type" : "string"
-          },
-          "phoneOwner" : {
-            "type" : "string"
-          },
-          "address" : {
-            "$ref" : "#/components/schemas/LocationDto"
-          },
-          "emailAddress" : {
-            "type" : "string"
-          },
-          "educationType" : {
-            "$ref" : "#/components/schemas/EducationType"
-          },
-          "educationDetails" : {
-            "type" : "string"
-          },
-          "occupationType" : {
-            "$ref" : "#/components/schemas/OccupationType"
-          },
-          "occupationDetails" : {
-            "type" : "string"
-          },
-          "armedForcesRelationType" : {
-            "$ref" : "#/components/schemas/ArmedForcesRelationType"
-          },
-          "generalPractitionerDetails" : {
-            "type" : "string"
-          },
-          "passportNumber" : {
-            "type" : "string"
-          },
-          "nationalHealthId" : {
-            "type" : "string"
-          },
-          "addresses" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/LocationDto"
-            }
-          },
-          "hasCovidApp" : {
-            "type" : "boolean",
-            "x-sormas-countries-for" : [ "ch" ],
-            "x-sormas-diseases" : [ "CORONAVIRUS" ]
-          },
-          "covidCodeDelivered" : {
-            "type" : "boolean",
-            "x-sormas-countries-for" : [ "ch" ],
-            "x-sormas-diseases" : [ "CORONAVIRUS" ]
-          },
-          "symptomJournalStatus" : {
-            "$ref" : "#/components/schemas/SymptomJournalStatus"
-          },
-          "externalId" : {
-            "type" : "string",
-            "x-sormas-countries-for" : [ "de" ]
-          },
-          "birthCountry" : {
-            "$ref" : "#/components/schemas/CountryReferenceDto"
-          },
-          "citizenship" : {
-            "$ref" : "#/components/schemas/CountryReferenceDto"
-          }
-        }
-      },
-      "PresentCondition" : {
-        "type" : "string",
-        "enum" : [ "ALIVE", "DEAD", "BURIED", "UNKNOWN" ]
-      },
-      "Salutation" : {
-        "type" : "string",
-        "enum" : [ "MR", "MRS", "MR_AND_MRS", "FAMILY", "GUARDIAN_OF_MINOR", "OTHER" ]
-      },
-      "Sex" : {
-        "type" : "string",
-        "enum" : [ "MALE", "FEMALE", "OTHER", "UNKNOWN" ]
-      },
-      "SymptomJournalStatus" : {
-        "type" : "string",
-        "enum" : [ "UNREGISTERED", "REGISTERED", "ACCEPTED", "REJECTED", "DELETED" ]
+        "enum" : [ "HUMAN_TO_HUMAN", "ANIMAL", "ENVIRONMENT", "FOOD", "VECTOR_BORNE", "UNKNOWN" ]
       },
       "EventDto" : {
         "required" : [ "eventDesc", "eventStatus", "reportDateTime", "reportingUser" ],
@@ -7559,11 +8131,15 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
           "pseudonymized" : {
             "type" : "boolean"
+          },
+          "superordinateEvent" : {
+            "$ref" : "#/components/schemas/EventReferenceDto"
           },
           "eventStatus" : {
             "$ref" : "#/components/schemas/EventStatus"
@@ -7583,6 +8159,9 @@
             "format" : "date-time"
           },
           "externalId" : {
+            "type" : "string"
+          },
+          "externalToken" : {
             "type" : "string"
           },
           "eventTitle" : {
@@ -7609,11 +8188,34 @@
           "reportingUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
+          "evolutionDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "evolutionComment" : {
+            "type" : "string"
+          },
           "eventLocation" : {
             "$ref" : "#/components/schemas/LocationDto"
           },
           "typeOfPlace" : {
             "$ref" : "#/components/schemas/TypeOfPlace"
+          },
+          "meansOfTransport" : {
+            "$ref" : "#/components/schemas/MeansOfTransport"
+          },
+          "meansOfTransportDetails" : {
+            "type" : "string"
+          },
+          "connectionNumber" : {
+            "type" : "string"
+          },
+          "travelDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "workEnvironment" : {
+            "$ref" : "#/components/schemas/WorkEnvironment"
           },
           "srcType" : {
             "$ref" : "#/components/schemas/EventSourceType"
@@ -7668,6 +8270,12 @@
           "reportLatLonAccuracy" : {
             "type" : "number",
             "format" : "float"
+          },
+          "transregionalOutbreak" : {
+            "$ref" : "#/components/schemas/YesNoUnknown"
+          },
+          "diseaseTransmissionMode" : {
+            "$ref" : "#/components/schemas/DiseaseTransmissionMode"
           },
           "multiDayEvent" : {
             "type" : "boolean"
@@ -7821,6 +8429,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7873,6 +8482,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -7899,7 +8509,7 @@
       },
       "FeatureType" : {
         "type" : "string",
-        "enum" : [ "LINE_LISTING", "AGGREGATE_REPORTING", "EVENT_SURVEILLANCE", "WEEKLY_REPORTING", "CLINICAL_MANAGEMENT", "NATIONAL_CASE_SHARING", "TASK_MANAGEMENT", "TASK_GENERATION_CASE_SURVEILLANCE", "TASK_GENERATION_CONTACT_TRACING", "TASK_GENERATION_EVENT_SURVEILLANCE", "TASK_GENERATION_GENERAL", "CAMPAIGNS", "CASE_SURVEILANCE", "CONTACT_TRACING", "SAMPLES_LAB", "INFRASTRUCTURE_TYPE_AREA", "CASE_FOLLOWUP", "TASK_NOTIFICATIONS", "MANUAL_EXTERNAL_MESSAGES", "OTHER_NOTIFICATIONS", "DOCUMENTS", "OUTBREAKS", "LAB_MESSAGES" ]
+        "enum" : [ "LINE_LISTING", "AGGREGATE_REPORTING", "EVENT_SURVEILLANCE", "WEEKLY_REPORTING", "CLINICAL_MANAGEMENT", "NATIONAL_CASE_SHARING", "TASK_MANAGEMENT", "TASK_GENERATION_CASE_SURVEILLANCE", "TASK_GENERATION_CONTACT_TRACING", "TASK_GENERATION_EVENT_SURVEILLANCE", "TASK_GENERATION_GENERAL", "CAMPAIGNS", "CASE_SURVEILANCE", "CONTACT_TRACING", "SAMPLES_LAB", "INFRASTRUCTURE_TYPE_AREA", "CASE_FOLLOWUP", "TASK_NOTIFICATIONS", "MANUAL_EXTERNAL_MESSAGES", "OTHER_NOTIFICATIONS", "DOCUMENTS", "OUTBREAKS", "LAB_MESSAGES", "ASSIGN_TASKS_TO_HIGHER_LEVEL", "SURVEILLANCE_REPORTS" ]
       },
       "CompatibilityCheckResponse" : {
         "type" : "string",
@@ -7910,6 +8520,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -8017,7 +8628,7 @@
       },
       "Language" : {
         "type" : "string",
-        "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "DE", "DE_CH", "ES_EC", "ES_CU", "IT", "IT_CH", "FI" ]
+        "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "DE", "DE_CH", "ES_EC", "ES_CU", "IT", "IT_CH", "FI", "PS", "FA" ]
       },
       "PointOfEntryDto" : {
         "type" : "object",
@@ -8031,6 +8642,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8071,10 +8683,6 @@
           }
         }
       },
-      "PointOfEntryType" : {
-        "type" : "string",
-        "enum" : [ "AIRPORT", "SEAPORT", "GROUND_CROSSING", "OTHER" ]
-      },
       "RegionDto" : {
         "type" : "object",
         "properties" : {
@@ -8087,6 +8695,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8123,6 +8732,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8191,7 +8801,7 @@
       },
       "UserRight" : {
         "type" : "string",
-        "enum" : [ "CASE_CREATE", "CASE_VIEW", "CASE_EDIT", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_SHARE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_MERGE", "SAMPLE_CREATE", "SAMPLE_VIEW", "SAMPLE_EDIT", "SAMPLE_EDIT_NOT_OWNED", "SAMPLE_DELETE", "SAMPLE_TRANSFER", "SAMPLE_EXPORT", "SAMPLE_VIEW_ARCHIVED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_CREATE", "CONTACT_IMPORT", "CONTACT_VIEW", "CONTACT_ASSIGN", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_CLASSIFY", "CONTACT_CONVERT", "CONTACT_EXPORT", "CONTACT_VIEW_ARCHIVED", "CONTACT_REASSIGN_CASE", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_CREATE", "TASK_VIEW", "TASK_EDIT", "TASK_ASSIGN", "TASK_VIEW_ARCHIVED", "TASK_DELETE", "TASK_EXPORT", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_CREATE", "EVENT_VIEW", "EVENT_EDIT", "EVENT_EXPORT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_VIEW_ARCHIVED", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "WEEKLYREPORT_CREATE", "WEEKLYREPORT_VIEW", "USER_CREATE", "USER_EDIT", "USER_VIEW", "CONFIGURATION_ACCESS", "OUTBREAK_CONFIGURE_ALL", "OUTBREAK_CONFIGURE_RESTRICTED", "SEND_MANUAL_EXTERNAL_MESSAGES", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "DATABASE_EXPORT_ACCESS", "PERFORM_BULK_OPERATIONS", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "USER_RIGHTS_MANAGE", "DASHBOARD_VIEW", "DASHBOARD_SURVEILLANCE_ACCESS", "DASHBOARD_CONTACT_ACCESS", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_ACCESS", "CASE_MANAGEMENT_ACCESS", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "POPULATION_MANAGE", "DOCUMENT_TEMPLATE_MANAGEMENT", "QUARANTINE_ORDER_CREATE", "LINE_LISTING_CONFIGURE", "LINE_LISTING_CONFIGURE_NATION", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EXPORT", "AGGREGATE_REPORT_EDIT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "BAG_EXPORT", "SORMAS_TO_SORMAS_SHARE" ]
+        "enum" : [ "CASE_CREATE", "CASE_VIEW", "CASE_EDIT", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_SHARE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_MERGE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "SAMPLE_CREATE", "SAMPLE_VIEW", "SAMPLE_EDIT", "SAMPLE_EDIT_NOT_OWNED", "SAMPLE_DELETE", "SAMPLE_TRANSFER", "SAMPLE_EXPORT", "SAMPLE_VIEW_ARCHIVED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_CREATE", "CONTACT_IMPORT", "CONTACT_VIEW", "CONTACT_ASSIGN", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_CLASSIFY", "CONTACT_CONVERT", "CONTACT_EXPORT", "CONTACT_VIEW_ARCHIVED", "CONTACT_REASSIGN_CASE", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_CREATE", "TASK_VIEW", "TASK_EDIT", "TASK_ASSIGN", "TASK_VIEW_ARCHIVED", "TASK_DELETE", "TASK_EXPORT", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_CREATE", "EVENT_VIEW", "EVENT_EDIT", "EVENT_EXPORT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_VIEW_ARCHIVED", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "WEEKLYREPORT_CREATE", "WEEKLYREPORT_VIEW", "USER_CREATE", "USER_EDIT", "USER_VIEW", "CONFIGURATION_ACCESS", "OUTBREAK_CONFIGURE_ALL", "OUTBREAK_CONFIGURE_RESTRICTED", "SEND_MANUAL_EXTERNAL_MESSAGES", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "DATABASE_EXPORT_ACCESS", "PERFORM_BULK_OPERATIONS", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "USER_RIGHTS_MANAGE", "DASHBOARD_SURVEILLANCE_ACCESS", "DASHBOARD_CONTACT_ACCESS", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_ACCESS", "CASE_MANAGEMENT_ACCESS", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "POPULATION_MANAGE", "DOCUMENT_TEMPLATE_MANAGEMENT", "QUARANTINE_ORDER_CREATE", "LINE_LISTING_CONFIGURE", "LINE_LISTING_CONFIGURE_NATION", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EXPORT", "AGGREGATE_REPORT_EDIT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "BAG_EXPORT", "SORMAS_TO_SORMAS_SHARE", "LAB_MESSAGES" ]
       },
       "UserRole" : {
         "type" : "string",
@@ -8209,6 +8819,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8293,6 +8904,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8332,6 +8944,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8345,6 +8958,9 @@
             "$ref" : "#/components/schemas/Disease"
           },
           "testedDiseaseDetails" : {
+            "type" : "string"
+          },
+          "typingId" : {
             "type" : "string"
           },
           "testType" : {
@@ -8384,12 +9000,17 @@
           "cqValue" : {
             "type" : "number",
             "format" : "float"
+          },
+          "reportDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-countries-for" : [ "de" ]
           }
         }
       },
       "PathogenTestResultType" : {
         "type" : "string",
-        "enum" : [ "INDETERMINATE", "PENDING", "NEGATIVE", "POSITIVE" ]
+        "enum" : [ "INDETERMINATE", "PENDING", "NEGATIVE", "POSITIVE", "NOT_DONE" ]
       },
       "PrescriptionDto" : {
         "type" : "object",
@@ -8403,6 +9024,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8458,6 +9080,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -8486,6 +9109,7 @@
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -8514,6 +9138,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8690,6 +9315,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8769,13 +9395,14 @@
       },
       "TaskType" : {
         "type" : "string",
-        "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+        "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
       },
       "PrescriptionReferenceDto" : {
         "required" : [ "uuid" ],
         "type" : "object",
         "properties" : {
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "caption" : {
@@ -8795,6 +9422,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8850,6 +9478,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8911,6 +9540,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8965,6 +9595,7 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string",
             "x-sormas-outbreaks" : true
           },
@@ -8976,6 +9607,17 @@
             "format" : "int32"
           }
         }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "type" : "HTTP",
+        "scheme" : "basic"
+      },
+      "bearerAuth" : {
+        "type" : "HTTP",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
       }
     }
   }

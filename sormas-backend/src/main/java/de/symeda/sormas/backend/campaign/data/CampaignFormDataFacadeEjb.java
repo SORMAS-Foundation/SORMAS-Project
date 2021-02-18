@@ -42,6 +42,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -164,7 +165,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
-	public CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
+	public CampaignFormDataDto saveCampaignFormData(@Valid CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
 
 		CampaignFormData campaignFormData = fromDto(campaignFormDataDto, true);
 		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());

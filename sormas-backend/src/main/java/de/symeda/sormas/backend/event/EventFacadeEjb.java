@@ -47,6 +47,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -168,7 +169,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(@NotNull EventDto dto) {
+	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
