@@ -529,7 +529,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public SystemEventFacade getSystemEventFacade() {
-		return getBean((SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class));
+		return getBean(SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class);
 	}
 
 }
