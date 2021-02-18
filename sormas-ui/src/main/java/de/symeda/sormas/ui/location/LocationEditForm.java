@@ -211,33 +211,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		country.addValueChangeListener(e -> {
 			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
-			if (countryDto == null || serverCountryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
-				setEnabled(
-					true,
-					LocationDto.REGION,
-					LocationDto.DISTRICT,
-					LocationDto.COMMUNITY,
-					LocationDto.FACILITY,
-					LocationDto.FACILITY_DETAILS,
-					LocationDto.FACILITY_TYPE);
-				facilityTypeGroup.setEnabled(true);
+			if (serverCountryDto == null) {
+				if (countryDto == null) {
+					enableInfrastructureFields(true);
+				} else {
+					enableInfrastructureFields(false);
+					resetInfrastructureFields(region, district, community);
+				}
 			} else {
-				setEnabled(
-					false,
-					LocationDto.REGION,
-					LocationDto.DISTRICT,
-					LocationDto.COMMUNITY,
-					LocationDto.FACILITY,
-					LocationDto.FACILITY_DETAILS,
-					LocationDto.FACILITY_TYPE);
-				facilityTypeGroup.setEnabled(false);
-				region.setValue(null);
-				district.setValue(null);
-				community.setValue(null);
-				facility.setValue(null);
-				facilityDetails.setValue(null);
-				facilityType.setValue(null);
-				facilityTypeGroup.setValue(null);
+				if (countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
+					enableInfrastructureFields(true);
+				} else {
+					enableInfrastructureFields(false);
+					resetInfrastructureFields(region, district, community);
+				}
 			}
 		});
 
@@ -334,6 +321,28 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+	}
+
+	private void resetInfrastructureFields(ComboBox region, ComboBox district, ComboBox community) {
+		region.setValue(null);
+		district.setValue(null);
+		community.setValue(null);
+		facility.setValue(null);
+		facilityDetails.setValue(null);
+		facilityType.setValue(null);
+		facilityTypeGroup.setValue(null);
+	}
+
+	private void enableInfrastructureFields(boolean isEnabled) {
+		setEnabled(
+			isEnabled,
+			LocationDto.REGION,
+			LocationDto.DISTRICT,
+			LocationDto.COMMUNITY,
+			LocationDto.FACILITY,
+			LocationDto.FACILITY_DETAILS,
+			LocationDto.FACILITY_TYPE);
+		facilityTypeGroup.setEnabled(isEnabled);
 	}
 
 	private void setOldFacilityValuesIfPossible(
