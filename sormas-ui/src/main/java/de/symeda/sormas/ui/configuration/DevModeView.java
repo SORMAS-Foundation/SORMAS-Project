@@ -69,6 +69,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -280,7 +281,13 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		});
 
-		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateCases, e -> generateCases(), CssStyles.FORCE_CAPTION);
+		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateCases, e -> {
+			try {
+				generateCases();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}, CssStyles.FORCE_CAPTION);
 		caseOptionsLayout.addComponent(generateButton);
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
@@ -718,15 +725,24 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
 			// region & facility
-			FacilityDto healthFacility = random(healthFacilities);
-			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-			caze.setRegion(healthFacility.getRegion());
-			caze.setDistrict(healthFacility.getDistrict());
-			caze.setCommunity(healthFacility.getCommunity());
-			caze.setHealthFacility(healthFacility.toReference());
-			caze.setFacilityType(healthFacility.getType());
-			caze.setReportLat(healthFacility.getLatitude());
-			caze.setReportLon(healthFacility.getLongitude());
+			if (healthFacilities.isEmpty() || randomPercent(20)) {
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setHealthFacility(noFacilityRef);
+				caze.setFacilityType(null);
+				caze.setRegion(config.getRegion());
+				caze.setDistrict(config.getDistrict());
+			} else {
+				FacilityDto healthFacility = random(healthFacilities);
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setRegion(healthFacility.getRegion());
+				caze.setDistrict(healthFacility.getDistrict());
+				caze.setCommunity(healthFacility.getCommunity());
+				caze.setHealthFacility(healthFacility.toReference());
+				caze.setFacilityType(healthFacility.getType());
+				caze.setReportLat(healthFacility.getLatitude());
+				caze.setReportLon(healthFacility.getLongitude());
+			}
 
 			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
