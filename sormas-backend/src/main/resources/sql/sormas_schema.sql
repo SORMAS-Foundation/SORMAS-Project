@@ -6674,11 +6674,60 @@ CREATE INDEX IF NOT EXISTS idx_previoushospitalization_hospitalization_id ON pre
 
 INSERT INTO schema_version (version_number, comment) VALUES (335, '2020-02-09 Add indexes #4307');
 
--- 2020-02-16 Add Country to location details #2994
+-- 2021-02-16 - [SurvNet Interface] Care/accommodation/work in facility #4163
+ALTER TABLE epidata ADD COLUMN activityascasedetailsknown varchar(255);
+ALTER TABLE epidata_history ADD COLUMN activityascasedetailsknown varchar(255);
+
+CREATE TABLE activityascase(
+      id bigint not null,
+      uuid varchar(36) not null unique,
+      changedate timestamp not null,
+      creationdate timestamp not null,
+      epidata_id bigint not null,
+      reportinguser_id bigint,
+      startdate timestamp,
+      enddate timestamp,
+      description text,
+      activityAsCaseType varchar(255) not null,
+      activityAsCaseTypeDetails text,
+      location_id bigint not null,
+      role varchar(255),
+      typeofplace varchar(255),
+      typeofplacedetails text,
+      meansoftransport varchar(255),
+      meansoftransportdetails text,
+      connectionnumber varchar(512),
+      seatnumber varchar(512),
+      workEnvironment varchar(255),
+
+      gatheringtype varchar(255),
+      gatheringdetails text,
+      habitationtype varchar(255),
+      habitationdetails text,
+      typeofanimal varchar(255),
+      typeofanimaldetails text,
+
+      sys_period tstzrange not null,
+      primary key(id)
+);
+
+ALTER TABLE activityascase OWNER TO sormas_user;
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+
+CREATE TABLE activityascase_history (LIKE activityascase);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'activityascase_history', true);
+ALTER TABLE activityascase_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (336, '[SurvNet Interface] Care/accommodation/work in facility #4163');
+
+-- 2020-02-18 Add Country to location details #2994
 ALTER TABLE location ADD COLUMN country_id bigint;
 ALTER TABLE location_history ADD COLUMN country_id bigint;
 ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (336, 'Add Country to location details #2994');
+INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -83,7 +84,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public AggregateReportDto saveAggregateReport(AggregateReportDto dto) {
+	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
 		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);

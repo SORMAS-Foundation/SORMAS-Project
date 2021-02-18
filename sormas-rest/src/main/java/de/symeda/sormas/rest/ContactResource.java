@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -65,7 +66,7 @@ public class ContactResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postContacts(List<ContactDto> dtos) {
+	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::saveContact);
 		return result;

@@ -111,6 +111,8 @@ public interface ConfigFacade {
 
 	String getAuthenticationProvider();
 
+	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
+
 	boolean isExternalJournalActive();
 
 	int getDashboardMapMarkerLimit();
@@ -118,4 +120,6 @@ public interface ConfigFacade {
 	boolean isSmsServiceSetUp();
 
 	String getDemisJndiName();
+
+	boolean isAuditorAttributeLoggingEnabled();
 }

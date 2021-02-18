@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 
@@ -14,7 +15,7 @@ public interface PrescriptionFacade {
 
 	PrescriptionDto getPrescriptionByUuid(String uuid);
 
-	PrescriptionDto savePrescription(PrescriptionDto prescription);
+	PrescriptionDto savePrescription(@Valid PrescriptionDto prescription);
 
 	void deletePrescription(String prescriptionUuid);
 

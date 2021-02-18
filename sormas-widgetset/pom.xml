@@ -36,7 +36,6 @@
 		   <artifactId>extended-token-field</artifactId>
 		</dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -106,5 +105,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

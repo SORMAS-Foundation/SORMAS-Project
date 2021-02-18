@@ -47,6 +47,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -168,7 +169,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(@NotNull EventDto dto) {
+	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -211,7 +212,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		cq.where(filter);
-		cq.select(cb.count(event));
+		cq.select(cb.countDistinct(event));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -261,7 +262,8 @@ public class EventFacadeEjb implements EventFacade {
 			reportingUser.get(User.LAST_NAME),
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
-			responsibleUser.get(User.LAST_NAME));
+			responsibleUser.get(User.LAST_NAME),
+			event.get(Event.CHANGE_DATE));
 
 		Predicate filter = null;
 
@@ -329,8 +331,10 @@ public class EventFacadeEjb implements EventFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
+			cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 		}
+
+		cq.distinct(true);
 
 		List<EventIndexDto> indexList;
 		if (first != null && max != null) {

@@ -460,4 +460,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, User> root) {
 		return cb.isTrue(root.get(User.ACTIVE));
 	}
+
+	public List<User> getAllActive() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		cq.where(createDefaultFilter(cb, from));
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
+	}
 }

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +87,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -178,6 +181,8 @@ public class StartupShutdownService {
 		createOrUpdateSymptomJournalUser();
 
 		createOrUpdatePatientDiaryUser();
+
+		syncUsers();
 
 		upgrade();
 
@@ -479,6 +484,49 @@ public class StartupShutdownService {
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		}
 
+	}
+
+	/**
+	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * @see AuthProvider#isUserSyncSupported()
+	 * @see AuthProvider#isUserSyncAtStartupEnabled()
+	 */
+	private void syncUsers() {
+
+		AuthProvider authProvider = AuthProvider.getProvider();
+
+		if (!authProvider.isUserSyncSupported()) {
+			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
+			return;
+		}
+
+		if(!authProvider.isUserSyncAtStartupEnabled()) {
+			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
+			return;
+		}
+
+		List<User> users = userService.getAllActive();
+		for (User user : users) {
+			syncUser(user);
+		}
+		logger.info("User synchronization finalized");
+	}
+
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	private void syncUser(User user) {
+		String shortUuid = DataHelper.getShortUuid(user.getUuid());
+		logger.debug("Synchronizing user {}", shortUuid);
+		try {
+
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
+
+			this.userUpdateEvent.fireAsync(event);
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
+		}
 	}
 
 	/**

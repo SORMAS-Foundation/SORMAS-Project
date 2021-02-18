@@ -68,6 +68,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -626,7 +627,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
 				joins.getPersonCitizenship().get(Country.ISO_CODE),
 				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
-				joins.getReportingDistrict().get(District.NAME)
+				joins.getReportingDistrict().get(District.NAME),
+				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
+				caseRoot.get(Case.SCREENING_TYPE)
 				);
 		//@formatter:on
 
@@ -1509,7 +1512,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
+	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
 		return saveCase(dto, true, true);
 	}
 

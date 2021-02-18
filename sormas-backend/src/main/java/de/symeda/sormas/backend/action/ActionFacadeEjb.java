@@ -27,6 +27,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
@@ -125,7 +126,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	public ActionDto saveAction(ActionDto dto) {
+	public ActionDto saveAction(@Valid ActionDto dto) {
 
 		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);

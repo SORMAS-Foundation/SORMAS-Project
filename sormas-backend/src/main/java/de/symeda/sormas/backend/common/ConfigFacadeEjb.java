@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+	private static final String AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP = "authentication.provider.userSyncAtStartup";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
@@ -123,12 +124,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 
 	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
 
@@ -448,6 +451,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		return config;
 	}
 
@@ -488,6 +492,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
+	}
+
+	@Override
+	public boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
+		return getBoolean(AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP, false);
 	}
 
 	@Override
@@ -546,6 +555,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public String getDocgenerationNullReplacement() {
 		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
+	}
+
+	@Override
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
 	}
 
 	@LocalBean

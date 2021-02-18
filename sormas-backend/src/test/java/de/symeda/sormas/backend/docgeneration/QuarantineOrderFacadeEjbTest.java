@@ -202,7 +202,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		String rootEntityName = rootEntityReference instanceof CaseReferenceDto
 			? "case"
 			: rootEntityReference instanceof ContactReferenceDto ? "contact" : "eventparticipant";
-		List<String> expectedUsedEntities = Arrays.asList(rootEntityName, "user", "sample", "pathogenTest");
+		List<String> expectedUsedEntities = Arrays.asList(rootEntityName, "person", "user", "sample", "pathogenTest");
 		for (String usedEntity : expectedUsedEntities) {
 			assertTrue("Used entity not detected: " + usedEntity, documentVariables.isUsedEntity(usedEntity));
 		}
