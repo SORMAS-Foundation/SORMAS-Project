@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_EVENT_ACT
 import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_EVENT_PARTICIPANT;
 import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_EVENT_PARTICIPANTS;
 import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_PATHOGEN_TEST;
+import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_PERSON;
 import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_SAMPLE;
 import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_USER;
 import static de.symeda.sormas.api.docgeneneration.TemplateFileType.DOCX;
@@ -41,9 +42,15 @@ public enum DocumentWorkflow {
 	// to either a CaseDataDto or a ContactDto, depending on from where
 	// it is called. So "${case.person.firstName}" in the template refers
 	// to the case's or contact's person's first name in either case.
-	QUARANTINE_ORDER_CASE("quarantine", DOCX, ROOT_CASE, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
-	QUARANTINE_ORDER_CONTACT("quarantineContact", DOCX, ROOT_CONTACT, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
-	QUARANTINE_ORDER_EVENT_PARTICIPANT("quarantineEventParticipant", DOCX, ROOT_EVENT_PARTICIPANT, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
+	QUARANTINE_ORDER_CASE("quarantine", DOCX, ROOT_CASE, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
+	QUARANTINE_ORDER_CONTACT("quarantineContact", DOCX, ROOT_CONTACT, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
+	QUARANTINE_ORDER_EVENT_PARTICIPANT("quarantineEventParticipant",
+		DOCX,
+		ROOT_EVENT_PARTICIPANT,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST),
 	EVENT_HANDOUT("eventHandout", HTML, ROOT_EVENT, ROOT_USER, ROOT_EVENT_ACTIONS, ROOT_EVENT_PARTICIPANTS);
 
 	private String templateDirectory;
