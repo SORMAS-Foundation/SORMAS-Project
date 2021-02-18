@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.ui.ActivityAsCase;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -175,8 +176,6 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		component.addCommitListener(() -> {
 			if (!activityAsCaseForm.getFieldGroup().isModified()) {
 				commitCallback.accept(activityAsCaseForm.getValue());
-
-				updateAddButtonVisibility(getValue().size());
 			}
 		});
 
@@ -185,7 +184,6 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 				popupWindow.close();
 				ActivityAsCaseField.this.removeEntry(entry);
 
-				updateAddButtonVisibility(getValue().size());
 			}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
 		}
 	}
@@ -204,21 +202,11 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 	@Override
 	public void setPropertyDataSource(Property newDataSource) {
 		super.setPropertyDataSource(newDataSource);
-
-		if (getValue() != null) {
-			updateAddButtonVisibility(getValue().size());
-		}
 	}
 
-	public void setPseudonymized(boolean isPseudonymized) {
-		this.isPseudonymized = isPseudonymized;
-	}
-
-	private void updateAddButtonVisibility(int activityAsCaseCount) {
-		if (isReadOnly() && activityAsCaseCount > 0) {
-			getAddButton().setVisible(false);
-		} else {
-			getAddButton().setVisible(true);
-		}
+	@Override
+	public Property<Collection<ActivityAsCaseDto>> getPropertyDataSource() {
+		getAddButton().setVisible(!isPseudonymized);
+		return super.getPropertyDataSource();
 	}
 }
