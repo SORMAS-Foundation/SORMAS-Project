@@ -319,6 +319,15 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 				case EventActionIndexDto.EVENT_EVOLUTION_DATE:
 					expression = event.get(Event.EVOLUTION_DATE);
 					break;
+				case EventActionIndexDto.EVENT_RISK_LEVEL:
+					expression = event.get(Event.RISK_LEVEL);
+					break;
+				case EventActionIndexDto.EVENT_REPORTING_USER:
+					expression = event.get(Event.REPORTING_USER);
+					break;
+				case EventActionIndexDto.EVENT_RESPONSIBLE_USER:
+					expression = event.get(Event.RESPONSIBLE_USER);
+					break;
 				case EventActionIndexDto.ACTION_CHANGE_DATE:
 					expression = action.get(Action.CHANGE_DATE);
 					break;

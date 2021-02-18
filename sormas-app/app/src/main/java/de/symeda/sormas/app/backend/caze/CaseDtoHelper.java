@@ -95,6 +95,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	public void fillInnerFromDto(Case target, CaseDataDto source) {
 
 		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -190,7 +192,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -215,17 +216,30 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
+
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setSormasToSormasOriginInfo(
 			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 	}
 
 	@Override
 	public void fillInnerFromAdo(CaseDataDto target, Case source) {
 
 		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		if (source.getClassificationUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getClassificationUser().getId());
 			target.setClassificationUser(UserDtoHelper.toReferenceDto(user));
@@ -412,7 +426,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -437,6 +450,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
+		target.setReInfection(source.getReInfection());
+		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+
 		if (source.getReportingDistrict() != null) {
 			District district = DatabaseHelper.getDistrictDao().queryForId(source.getReportingDistrict().getId());
 			target.setReportingDistrict(DistrictDtoHelper.toReferenceDto(district));
@@ -444,9 +460,18 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 			target.setReportingDistrict(null);
 		}
 
+		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
+
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
 		}
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
+		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
+		target.setNotACaseReasonPhysicianInformation(source.isNotACaseReasonPhysicianInformation());
+		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
+		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
+		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 
 	}
 

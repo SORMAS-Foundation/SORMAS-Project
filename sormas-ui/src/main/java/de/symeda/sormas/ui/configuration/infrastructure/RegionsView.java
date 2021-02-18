@@ -114,7 +114,6 @@ public class RegionsView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_regions",
 				"sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				RegionsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

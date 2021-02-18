@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,7 +56,7 @@ public class PrescriptionResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPrescriptions(List<PrescriptionDto> dtos) {
+	public List<PushResult> postPrescriptions(@Valid List<PrescriptionDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getPrescriptionFacade()::savePrescription);
 	}
 

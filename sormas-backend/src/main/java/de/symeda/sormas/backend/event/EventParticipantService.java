@@ -295,7 +295,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, EventParticipant> root) {
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 

@@ -86,6 +86,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -207,18 +208,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.select(from.get(Contact.UUID));
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	public int getContactCountByCase(Case caze) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(getElementClass());
-
-		cq.select(cb.count(from));
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.CAZE), caze)));
-
-		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
@@ -1218,6 +1207,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
 		}
+		if (Boolean.TRUE.equals(contactCriteria.getOnlyContactsFromOtherInstances())) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CONTACT)),
+					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+		}
 
 		return filter;
 	}
@@ -1266,7 +1263,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 * not use {@link ContactCriteria}. This essentially removes
 	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb,  From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
 
@@ -1297,7 +1294,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), to)));
 	}
 
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Contact> contactRoot, ContactJoins joins) {
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Contact> contactRoot, ContactJoins joins) {
 		final User currentUser = this.getCurrentUser();
 
 		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);

@@ -104,7 +104,6 @@ public class SamplesView extends AbstractView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				sampleListComponent.getGrid(),
-				"sormas_samples",
 				"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

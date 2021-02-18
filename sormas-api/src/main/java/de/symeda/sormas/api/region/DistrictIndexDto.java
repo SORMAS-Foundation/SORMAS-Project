@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -42,27 +40,6 @@ public class DistrictIndexDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private String externalID;
-
-	public DistrictIndexDto(
-		Date creationDate,
-		Date changeDate,
-		String uuid,
-		String name,
-		String epidCode,
-		Integer population,
-		Float growthRate,
-		String regionUuid,
-		String regionName,
-		String externalID) {
-
-		super(creationDate, changeDate, uuid);
-		this.name = name;
-		this.epidCode = epidCode;
-		this.population = population;
-		this.growthRate = growthRate;
-		this.region = new RegionReferenceDto(regionUuid, regionName);
-		this.externalID = externalID;
-	}
 
 	public DistrictIndexDto() {
 		super();
@@ -122,7 +99,7 @@ public class DistrictIndexDto extends EntityDto {
 	}
 
 	public DistrictReferenceDto toReference() {
-		return new DistrictReferenceDto(getUuid());
+		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
 
 	public static DistrictIndexDto build() {

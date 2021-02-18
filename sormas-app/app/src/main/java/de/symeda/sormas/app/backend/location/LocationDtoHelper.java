@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -68,6 +69,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
+		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
@@ -109,6 +111,11 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 			target.setRegion(RegionDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId())));
 		} else {
 			target.setRegion(null);
+		}
+		if (source.getCountry() != null) {
+			target.setCountry(CountryDtoHelper.toReferenceDto(DatabaseHelper.getCountryDao().queryForId(source.getCountry().getId())));
+		} else {
+			target.setCountry(null);
 		}
 
 		target.setPostalCode(source.getPostalCode());

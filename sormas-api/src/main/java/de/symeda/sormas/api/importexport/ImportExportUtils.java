@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
@@ -95,7 +96,7 @@ public final class ImportExportUtils {
 				continue;
 			}
 
-			String property = method.getAnnotation(ExportProperty.class).value();
+			String property = StringUtils.join(method.getAnnotation(ExportProperty.class).value(), ".");
 			if (method.getAnnotation(ExportProperty.class).combined()) {
 				if (!combinedProperties.add(property)) {
 					continue;

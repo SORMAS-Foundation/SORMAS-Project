@@ -54,6 +54,16 @@ public class Auditor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private final boolean auditorAttributeLoggingEnabled;
+
+	public Auditor() {
+		this.auditorAttributeLoggingEnabled = true;
+	}
+
+	public Auditor(boolean auditorAttributeLoggingEnabled) {
+		this.auditorAttributeLoggingEnabled = auditorAttributeLoggingEnabled;
+	}
+
 	/*
 	 * Should the Auditor be serialized, there will be an NPE for changes.
 	 * However, this is very unlikely.
@@ -158,7 +168,7 @@ public class Auditor implements Serializable {
 
 		Audited audited = entity.getClass().getDeclaredAnnotation(Audited.class);
 		if (audited != null) {
-			container = inspectEntity(entity);
+			container = auditorAttributeLoggingEnabled ? inspectEntity(entity) : new DefaultValueContainer();
 		} else {
 			throw new IllegalStateException("ValueContainer cannot be created for entity: " + entity);
 		}

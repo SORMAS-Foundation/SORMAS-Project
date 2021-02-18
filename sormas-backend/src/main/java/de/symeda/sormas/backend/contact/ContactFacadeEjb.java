@@ -56,6 +56,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -124,6 +125,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -178,6 +180,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -280,12 +284,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto) {
+	public ContactDto saveContact(@Valid ContactDto dto) {
 		return saveContact(dto, true, true);
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+	public ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return saveContact(dto, handleChanges, handleCaseChanges, true);
 	}
 
@@ -341,6 +345,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 	private void handleExternalJournalPerson(ContactDto updatedContact) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.

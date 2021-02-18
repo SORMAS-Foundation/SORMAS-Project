@@ -72,7 +72,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community));
 		informant3 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Info", "Three", UserRole.COMMUNITY_INFORMANT);
-		informant3.setCommunity(new CommunityReferenceDto(rdcf.community.getUuid()));
+		informant3.setCommunity(new CommunityReferenceDto(rdcf.community.getUuid(), null, null));
 		informant3.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant3);
 

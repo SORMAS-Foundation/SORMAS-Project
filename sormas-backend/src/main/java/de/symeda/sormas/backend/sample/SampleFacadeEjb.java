@@ -39,6 +39,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -222,6 +223,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<SampleDto> getByEventParticipantUuids(List<String> eventParticipantUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return sampleService.getByEventParticipantUuids(eventParticipantUuids)
+			.stream()
+			.map(s -> convertToDto(s, pseudonymizer))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -238,7 +248,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public SampleDto saveSample(SampleDto dto) {
+	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true);
 	}
 
@@ -633,7 +643,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
-			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
+			List<PathogenTest> pathogenTests = sampleService.getById(exportDto.getId()).getPathogenTests();
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
 				String lab = pathogenTest.getLab() != null

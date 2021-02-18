@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -67,7 +68,7 @@ public interface CaseFacade {
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -131,7 +132,7 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
-	String generateEpidNumber(CaseReferenceDto caze);
+	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 

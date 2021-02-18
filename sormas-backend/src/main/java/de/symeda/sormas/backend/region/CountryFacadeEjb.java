@@ -32,6 +32,7 @@ import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -47,6 +48,9 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Override
 	public CountryDto getCountryByUuid(String uuid) {
@@ -280,6 +284,13 @@ public class CountryFacadeEjb implements CountryFacade {
 			.map(CountryFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(CountryReferenceDto::getCaption))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public CountryReferenceDto getServerCountry() {
+		String countryName = configFacadeEjb.getCountryName();
+		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
+		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}
 
 	// Need to be in the same order as in the constructor

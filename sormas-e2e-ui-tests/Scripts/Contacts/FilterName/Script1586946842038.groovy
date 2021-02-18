@@ -21,6 +21,8 @@ WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
+WebUI.delay(2)
+
 int rows = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(Helper.createTestObjectWithXPath('//table[@aria-rowcount]'))
 
 if (rows == 1) {

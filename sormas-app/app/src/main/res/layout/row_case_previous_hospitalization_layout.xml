@@ -91,6 +91,19 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_hospitalizationReason"
+                app:value="@{data.hospitalizationReason}"
+                app:appendValue="@{data.otherHospitalizationReason}"
+                style="@style/ControlFirstOfTwoColumnsStyle" />
+
+        </LinearLayout>
+
         <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/casePreviousHospitalization_description"
             app:value="@{data.description}"
