@@ -7101,4 +7101,40 @@ ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (356, '2020-03-19 Add continent and subcontinent to location #4777');
 
+-- 2021-02-18 - Management of EventGroups #4571
+CREATE TABLE event_groups(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    name varchar(255),
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    archived boolean not null default false,
+    deleted boolean not null default false,
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+ALTER TABLE event_groups OWNER TO sormas_user;
+
+CREATE TABLE event_groups_history (LIKE event_groups);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON event_groups
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'event_groups_history', true);
+ALTER TABLE event_groups_history OWNER TO sormas_user;
+
+CREATE TABLE events_event_groups(
+    event_id bigint not null,
+    event_group_id bigint not null,
+    sys_period tstzrange not null,
+    PRIMARY KEY (event_id, event_group_id)
+);
+ALTER TABLE events_event_groups OWNER TO sormas_user;
+ALTER TABLE events_event_groups ADD CONSTRAINT fk_events_event_groups_event_id FOREIGN KEY (event_id) REFERENCES events(id);
+ALTER TABLE events_event_groups ADD CONSTRAINT fk_events_event_groups_event_group_id FOREIGN KEY (event_group_id) REFERENCES event_groups(id);
+
+CREATE TABLE events_event_groups_history (LIKE events_event_groups);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_event_groups
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_event_groups_history', true);
+ALTER TABLE events_event_groups_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (357, 'Management of EventGroups #4571');
+
 -- *** Insert new sql commands BEFORE this line ***

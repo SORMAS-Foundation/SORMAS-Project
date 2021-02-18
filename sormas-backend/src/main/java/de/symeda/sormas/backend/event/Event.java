@@ -31,6 +31,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -72,6 +74,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public static final String TABLE_NAME = "events";
 
+	public static final String EVENTS_EVENT_GROUPS_TABLE_NAME = "events_event_groups";
+
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -91,6 +95,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	public static final String EVOLUTION_DATE = "evolutionDate";
 	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
+	public static final String EVENT_GROUPS = "eventGroups";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
@@ -186,6 +191,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
 	private List<Task> tasks;
+	private List<EventGroup> eventGroups;
 
 	private String internalId;
 
@@ -689,5 +695,16 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
+	}
+
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME, joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "event_group_id"))
+	public List<EventGroup> getEventGroups() {
+		return eventGroups;
+	}
+
+	public void setEventGroups(List<EventGroup> eventGroups) {
+		this.eventGroups = eventGroups;
 	}
 }
