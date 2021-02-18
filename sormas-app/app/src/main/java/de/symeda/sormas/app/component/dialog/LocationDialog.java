@@ -109,9 +109,10 @@ public class LocationDialog extends FormDialog {
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
 
 		if (data.getCountry() == null) {
+			String serverCountryName = ConfigProvider.getServerCountryName();
 			for (Item countryItem : initialCountries) {
 				Country country = (Country) countryItem.getValue();
-				if (country != null && ConfigProvider.getServerCountryName().equalsIgnoreCase(country.getName())) {
+				if (country != null && serverCountryName != null && serverCountryName.equalsIgnoreCase(country.getName())) {
 					data.setCountry(country);
 					break;
 				}
@@ -189,14 +190,10 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationCountry.addValueChangedListener(e -> {
 			Country country = (Country) e.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
-			if (country == null || serverCountryName == null || serverCountryName.equalsIgnoreCase(country.getName())) {
-				this.setRegionAndDistrictRequired(true);
+			if (serverCountryName == null) {
+				setRegionAndDistrictRequired(country == null);
 			} else {
-				this.setRegionAndDistrictRequired(false);
-				contentBinding.locationRegion.setValue(null);
-				contentBinding.locationDistrict.setValue(null);
-				contentBinding.locationCommunity.setValue(null);
-				contentBinding.locationFacility.setValue(null);
+				setRegionAndDistrictRequired(country == null || serverCountryName.equalsIgnoreCase(country.getName()));
 			}
 		});
 	}

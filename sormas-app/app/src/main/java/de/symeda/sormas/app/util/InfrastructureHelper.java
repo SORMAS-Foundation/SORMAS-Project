@@ -190,18 +190,8 @@ public final class InfrastructureHelper {
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
-			if (selectedCountry == null || serverCountryName == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName())) {
-				regionField.setEnabled(true);
-				districtField.setEnabled(true);
-				communityField.setEnabled(true);
-			} else {
-				regionField.setEnabled(false);
-				regionField.setValue(null);
-				districtField.setEnabled(false);
-				districtField.setValue(null);
-				communityField.setEnabled(false);
-				communityField.setValue(null);
-			}
+			boolean shouldBeActive = serverCountryName == null ? selectedCountry == null : selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
+			configureInfrastructureFields(shouldBeActive, regionField, districtField, communityField, typeGroupField, facilityField, facilityDetailsField, typeField);
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(
@@ -538,6 +528,33 @@ public final class InfrastructureHelper {
 					|| selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_POE_UUID) ? VISIBLE : GONE);
 		} else {
 			pointOfEntryDetailsField.setVisibility(GONE);
+		}
+	}
+
+	private static void configureInfrastructureFields(boolean shouldBeActive,
+													  ControlSpinnerField regionField,
+													  ControlSpinnerField districtField,
+													  ControlSpinnerField communityField,
+													  ControlSpinnerField typeGroupField,
+													  ControlSpinnerField facilityField,
+													  ControlTextEditField facilityDetailsField,
+													  ControlSpinnerField typeField) {
+		regionField.setEnabled(shouldBeActive);
+		districtField.setEnabled(shouldBeActive);
+		communityField.setEnabled(shouldBeActive);
+		typeGroupField.setEnabled(shouldBeActive);
+		facilityField.setEnabled(shouldBeActive);
+		facilityDetailsField.setEnabled(shouldBeActive);
+		typeField.setEnabled(shouldBeActive);
+
+		if (!shouldBeActive) {
+			regionField.setValue(null);
+			districtField.setValue(null);
+			communityField.setValue(null);
+			typeGroupField.setValue(null);
+			facilityField.setValue(null);
+			facilityDetailsField.setValue(null);
+			typeField.setValue(null);
 		}
 	}
 }
