@@ -311,14 +311,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
-		if (isCreateForm) {
-			locationForm.hideValidationUntilNextCommit();
-		}
+
 		ComboBox countryField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.COUNTRY);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
+
+		if (isCreateForm) {
+			locationForm.hideValidationUntilNextCommit();
+		}
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
@@ -378,17 +380,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
 		countryField.addValueChangeListener(e -> {
-			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
-			CountryReferenceDto countryDto = (CountryReferenceDto) countryField.getValue();
-			if (serverCountryDto == null) {
-				configureInfrastructureFields(countryDto == null, locationForm, regionField, districtField);
-			} else {
-				configureInfrastructureFields(
-					countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode()),
-					locationForm,
-					regionField,
-					districtField);
-			}
+			configureInfrastructureFields(locationForm, countryField, regionField, districtField);
 		});
 
 		regionField.addValueChangeListener(e -> {
@@ -440,13 +432,21 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			setEnabled(false, EventDto.EXTERNAL_ID);
 			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
 		}
+
+		configureInfrastructureFields(locationForm, countryField, regionField, districtField);
 	}
 
-	private void configureInfrastructureFields(boolean shouldBeActive, LocationEditForm locationForm, ComboBox regionField, ComboBox districtField) {
-		locationForm.getField(LocationDto.REGION).setEnabled(shouldBeActive);
-		locationForm.getField(LocationDto.DISTRICT).setEnabled(shouldBeActive);
-		locationForm.setFieldsRequirement(shouldBeActive, LocationDto.REGION, LocationDto.DISTRICT);
-		if (!shouldBeActive) {
+	private void configureInfrastructureFields(LocationEditForm locationForm, ComboBox countryField, ComboBox regionField, ComboBox districtField) {
+		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+		CountryReferenceDto countryDto = (CountryReferenceDto) countryField.getValue();
+		boolean enabledAndRequired = serverCountryDto == null
+			? countryDto == null
+			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
+
+		locationForm.getField(LocationDto.REGION).setEnabled(enabledAndRequired);
+		locationForm.getField(LocationDto.DISTRICT).setEnabled(enabledAndRequired);
+		locationForm.setFieldsRequirement(enabledAndRequired, LocationDto.REGION, LocationDto.DISTRICT);
+		if (!enabledAndRequired) {
 			regionField.setValue(null);
 			districtField.setValue(null);
 		}
