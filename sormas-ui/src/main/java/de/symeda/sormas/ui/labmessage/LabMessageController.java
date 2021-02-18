@@ -457,6 +457,13 @@ public class LabMessageController {
 	}
 
 	private void createSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
+		fillSample(sampleDto, labMessageDto);
+		Window window = VaadinUiUtil.createPopupWindow();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = getSampleCreateComponent(sampleDto, labMessageDto, window);
+		showFormWithLabMessage(labMessageDto, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample));
+	}
+
+	private void fillSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		sampleDto.setSampleDateTime(labMessageDto.getSampleDateTime());
 		if (labMessageDto.getSampleReceivedDate() != null) {
 			sampleDto.setReceived(true);
@@ -471,8 +478,9 @@ public class LabMessageController {
 		if (labs != null && labs.size() == 1) {
 			sampleDto.setLab(labs.get(0));
 		}
+	}
 
-		Window window = VaadinUiUtil.createPopupWindow();
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, LabMessageDto labMessageDto, Window window) {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> { });
 
@@ -490,8 +498,7 @@ public class LabMessageController {
 			finishProcessingLabMessage(labMessageDto);
 		});
 		sampleCreateComponent.addDiscardListener(window::close);
-
-		showFormWithLabMessage(labMessageDto, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample));
+		return sampleCreateComponent;
 	}
 
 	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
