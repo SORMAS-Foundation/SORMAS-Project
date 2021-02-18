@@ -56,7 +56,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
 		DateField reportDateField;
-		if (CountryHelper.COUNTRY_CODE_GERMANY.equals(FacadeProvider.getConfigFacade().getCountryLocale())) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			reportDateField = addCustomField(
 				PathogenTestDto.REPORT_DATE,
 				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE),
@@ -176,7 +176,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		final DateTimeField testDateField = (DateTimeField) getField(PathogenTestDto.TEST_DATE_TIME);
 		final TextArea testTextField = (TextArea) getField(PathogenTestDto.TEST_RESULT_TEXT);
 
-		if (CountryHelper.COUNTRY_CODE_GERMANY.equals(FacadeProvider.getConfigFacade().getCountryLocale())) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			final DateField reportDateField = (DateField) getField(PathogenTestDto.REPORT_DATE);
 			reportDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE));
 		}
