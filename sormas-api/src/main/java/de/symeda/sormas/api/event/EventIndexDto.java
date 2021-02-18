@@ -125,7 +125,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String reportingUserLastName,
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
-		String responsibleUserLastName) {
+		String responsibleUserLastName,
+		Date changeDate) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
