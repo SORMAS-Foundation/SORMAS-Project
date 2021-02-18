@@ -204,6 +204,10 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		super.setPropertyDataSource(newDataSource);
 	}
 
+	public void setPseudonymized(boolean isPseudonymized) {
+		this.isPseudonymized = isPseudonymized;
+	}
+
 	@Override
 	public Property<Collection<ActivityAsCaseDto>> getPropertyDataSource() {
 		getAddButton().setVisible(!isPseudonymized);
