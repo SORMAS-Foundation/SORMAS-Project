@@ -179,10 +179,10 @@ public class CaseController {
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
 		if (disease == null) {
 			new Notification(
-					I18nProperties.getString(Strings.headingCreateNewCaseIssue),
-					I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			return;
 		}
 
@@ -865,9 +865,11 @@ public class CaseController {
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				} else {
 					Notification.show(
-							String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caze.getUuid())),
-							"",
-							Type.ERROR_MESSAGE);
+						String.format(
+							I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted),
+							DataHelper.getShortUuid(caze.getUuid())),
+						"",
+						Type.ERROR_MESSAGE);
 				}
 			}, I18nProperties.getString(Strings.entityCase));
 		}
@@ -1222,21 +1224,21 @@ public class CaseController {
 					callback.run();
 					if (countNotDeletedCases == 0) {
 						new Notification(
-								I18nProperties.getString(Strings.headingCasesDeleted),
-								I18nProperties.getString(Strings.messageCasesDeleted),
-								Type.HUMANIZED_MESSAGE,
-								false).show(Page.getCurrent());
+							I18nProperties.getString(Strings.headingCasesDeleted),
+							I18nProperties.getString(Strings.messageCasesDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					} else {
 						Window response = VaadinUiUtil.showSimplePopupWindow(
-								I18nProperties.getString(Strings.headingSomeCasesNotDeleted),
+							I18nProperties.getString(Strings.headingSomeCasesNotDeleted),
+							String.format(
+								"%1s <br/> <br/> %2s",
 								String.format(
-										"%1s <br/> <br/> %2s",
-										String.format(
-												I18nProperties.getString(Strings.messageCountCasesNotDeleted),
-												String.format("<b>%s</b>", countNotDeletedCases),
-												String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
-										I18nProperties.getString(Strings.messageCasesNotDeletedReasonSurvnet)),
-								ContentMode.HTML);
+									I18nProperties.getString(Strings.messageCountCasesNotDeleted),
+									String.format("<b>%s</b>", countNotDeletedCases),
+									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
+								I18nProperties.getString(Strings.messageCasesNotDeletedReasonSurvnet)),
+							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);
 					}
 				});
@@ -1471,11 +1473,6 @@ public class CaseController {
 		}
 
 		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.CASES, selectedUuids);
-
-		Notification successNotification =
-			new Notification(I18nProperties.getString(Strings.notificationCasesSentToSurvNet), "", Type.HUMANIZED_MESSAGE);
-		successNotification.setDelayMsec(10000);
-		successNotification.show(Page.getCurrent());
 	}
 
 }
