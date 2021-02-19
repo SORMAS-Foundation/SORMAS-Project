@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import com.google.common.collect.Sets;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -14,6 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -535,6 +535,8 @@ public class LabMessageController {
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.LAB)).setValue(labMessageDto.getTestedDisease());
 		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 			.setValue(labMessageDto.getTestDateTime());
+		((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
+			.setValue(labMessageDto.getMessageDateTime());
 
 		sampleCreateComponent.addCommitListener(() -> {
 			window.close();
