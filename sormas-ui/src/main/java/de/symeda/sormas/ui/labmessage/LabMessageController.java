@@ -32,6 +32,8 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -500,11 +502,18 @@ public class LabMessageController {
 		}
 		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
 		sampleDto.setSpecimenCondition(labMessageDto.getSpecimenCondition());
+		sampleDto.setLab(getLabReference(labMessageDto));
+		sampleDto.setLabDetails(labMessageDto.getTestLabName());
+	}
 
+	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {
+		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
 		List<FacilityReferenceDto> labs =
-			FacadeProvider.getFacilityFacade().getByExternalIdAndType(labMessageDto.getTestLabExternalId(), FacilityType.LABORATORY, false);
+				facilityFacade.getByExternalIdAndType(labMessageDto.getTestLabExternalId(), FacilityType.LABORATORY, false);
 		if (labs != null && labs.size() == 1) {
-			sampleDto.setLab(labs.get(0));
+			return labs.get(0);
+		} else {
+			return facilityFacade.getFacilityReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
 		}
 	}
 
@@ -518,6 +527,7 @@ public class LabMessageController {
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(labMessageDto.getTestResult());
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(labMessageDto.getTestType());
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.LAB)).setValue(labMessageDto.getTestedDisease());
 		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 			.setValue(labMessageDto.getTestDateTime());
 
