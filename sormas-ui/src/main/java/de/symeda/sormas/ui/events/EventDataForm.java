@@ -364,7 +364,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			getFieldGroup(),
 			Arrays.asList(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL),
 			EventDto.SRC_TYPE,
-			Collections.singletonList(EventSourceType.HOTLINE_PERSON),
+			Arrays.asList(EventSourceType.HOTLINE_PERSON, EventSourceType.INSTITUTIONAL_PARTNER),
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
