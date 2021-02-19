@@ -278,17 +278,19 @@ public class LabMessageController {
 	}
 
 	private void createEventParticipant(EventDto eventDto, LabMessageDto labMessageDto, PersonDto person) {
-		EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
-		eventParticipant.setPerson(person);
+		EventParticipantDto eventParticipant = buildEventParticipant(eventDto, person);
+		Window window = VaadinUiUtil.createPopupWindow();
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = getEventParticipantEditForm(eventDto, labMessageDto, eventParticipant, window);
+		showFormWithLabMessage(labMessageDto, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
+	}
 
+	private CommitDiscardWrapperComponent<EventParticipantEditForm> getEventParticipantEditForm(EventDto eventDto, LabMessageDto labMessageDto, EventParticipantDto eventParticipant, Window window) {
 		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
 			createForm.getFieldGroup());
-
-		Window window = VaadinUiUtil.createPopupWindow();
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -302,8 +304,13 @@ public class LabMessageController {
 			}
 		});
 		createComponent.addDiscardListener(window::close);
+		return createComponent;
+	}
 
-		showFormWithLabMessage(labMessageDto, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
+	private EventParticipantDto buildEventParticipant(EventDto eventDto, PersonDto person) {
+		EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
+		eventParticipant.setPerson(person);
+		return eventParticipant;
 	}
 
 	private void savePerson(PersonDto personDto, LabMessageDto labMessageDto) {
@@ -445,7 +452,6 @@ public class LabMessageController {
 	private CaseDataDto buildCase(LabMessageDto labMessageDto, PersonDto person) {
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
 		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
-		caseDto.setReportDate(labMessageDto.getMessageDateTime());
 		return caseDto;
 	}
 
@@ -460,7 +466,6 @@ public class LabMessageController {
 		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		contactDto.setPerson(person.toReference());
-		contactDto.setReportDateTime(labMessageDto.getMessageDateTime());
 		return contactDto;
 	}
 
