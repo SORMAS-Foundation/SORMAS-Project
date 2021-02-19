@@ -53,6 +53,8 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
+	public static final String PERSON_PHONE = "personPhone";
+	public static final String PERSON_EMAIL = "personEmail";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String TEST_RESULT_TEXT = "testResultText";
@@ -81,6 +83,8 @@ public class LabMessage extends AbstractDomainObject {
 	private String personCity;
 	private String personStreet;
 	private String personHouseNumber;
+	private String personPhone;
+	private String personEmail;
 
 	private String labMessageDetails;
 
@@ -302,6 +306,25 @@ public class LabMessage extends AbstractDomainObject {
 	public void setPersonHouseNumber(String personHouseNumber) {
 		this.personHouseNumber = personHouseNumber;
 	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getPersonPhone() {
+		return personPhone;
+	}
+
+	public void setPersonPhone(String personPhone) {
+		this.personPhone = personPhone;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getPersonEmail() {
+		return personEmail;
+	}
+
+	public void setPersonEmail(String personEmail) {
+		this.personEmail = personEmail;
+	}
+
 
 	@Column
 	public String getLabMessageDetails() {
