@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.google.common.collect.Sets;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -80,13 +81,7 @@ public class LabMessageController {
 
 	public void processLabMessage(String labMessageUuid) {
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
-		final PersonDto personDto = PersonDto.build();
-		personDto.setFirstName(labMessageDto.getPersonFirstName());
-		personDto.setLastName(labMessageDto.getPersonLastName());
-		personDto.setBirthdateDD(labMessageDto.getPersonBirthDateDD());
-		personDto.setBirthdateMM(labMessageDto.getPersonBirthDateMM());
-		personDto.setBirthdateYYYY(labMessageDto.getPersonBirthDateYYYY());
-		personDto.setSex(labMessageDto.getPersonSex());
+		final PersonDto personDto = buildPerson(labMessageDto);
 
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
@@ -119,6 +114,19 @@ public class LabMessageController {
 					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
 			}, false);
+	}
+
+	private PersonDto buildPerson(LabMessageDto labMessageDto) {
+		final PersonDto personDto = PersonDto.build();
+		personDto.setFirstName(labMessageDto.getPersonFirstName());
+		personDto.setLastName(labMessageDto.getPersonLastName());
+		personDto.setBirthdateDD(labMessageDto.getPersonBirthDateDD());
+		personDto.setBirthdateMM(labMessageDto.getPersonBirthDateMM());
+		personDto.setBirthdateYYYY(labMessageDto.getPersonBirthDateYYYY());
+		personDto.setSex(labMessageDto.getPersonSex());
+		personDto.setPhone(labMessageDto.getPersonPhone());
+		personDto.setEmailAddress(labMessageDto.getPersonEmail());
+		return personDto;
 	}
 
 	private void pickOrCreateEntry(
@@ -435,6 +443,7 @@ public class LabMessageController {
 	private CaseDataDto buildCase(LabMessageDto labMessageDto, PersonDto person) {
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
 		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		caseDto.setReportDate(labMessageDto.getMessageDateTime());
 		return caseDto;
 	}
 
@@ -447,8 +456,9 @@ public class LabMessageController {
 
 	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
 		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
-		contactDto.setPerson(person.toReference());
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		contactDto.setPerson(person.toReference());
+		contactDto.setReportDateTime(labMessageDto.getMessageDateTime());
 		return contactDto;
 	}
 
