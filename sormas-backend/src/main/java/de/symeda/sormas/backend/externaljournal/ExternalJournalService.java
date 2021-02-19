@@ -422,7 +422,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		return notUsed || samePerson;
+		boolean sameFamily = response.getResults()
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+		return notUsed || samePerson || sameFamily;
 	}
 
 	/**
