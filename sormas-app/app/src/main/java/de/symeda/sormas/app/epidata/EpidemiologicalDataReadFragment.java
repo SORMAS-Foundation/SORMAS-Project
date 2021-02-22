@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -45,6 +47,7 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.databinding.DialogActivityAsCaseReadLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogExposureReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentReadEpidLayoutBinding;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
@@ -55,6 +58,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 
 	private EpiData record;
 	private IEntryItemOnClickListener onExposureItemClickListener;
+	private IEntryItemOnClickListener onActivityAsCaseItemClickListener;
 
 	public static EpidemiologicalDataReadFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
@@ -104,6 +108,36 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 
 			infoDialog.show();
 		};
+
+		onActivityAsCaseItemClickListener = (v, item) -> {
+			InfoDialog infoDialog = new InfoDialog(
+				getContext(),
+				R.layout.dialog_activity_as_case_read_layout,
+				item,
+				boundView -> FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
+					ActivityAsCaseDto.class,
+					(ViewGroup) boundView,
+					new FieldVisibilityCheckers(),
+					getFieldAccessCheckers()));
+
+			final DialogActivityAsCaseReadLayoutBinding activityAsCaseBinding = (DialogActivityAsCaseReadLayoutBinding) infoDialog.getBinding();
+			if (((ActivityAsCase) item).getMeansOfTransport() == MeansOfTransport.PLANE) {
+				activityAsCaseBinding.activityAsCaseConnectionNumber.setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+			}
+
+			final FacilityType facilityType = ((ActivityAsCase) item).getLocation().getFacilityType();
+
+			activityAsCaseBinding.activityAsCaseWorkEnvironment.setVisibility(
+				facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+
+			FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
+				ActivityAsCaseDto.class,
+				(ViewGroup) infoDialog.getBinding().getRoot(),
+				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData())),
+				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized()));
+
+			infoDialog.show();
+		};
 	}
 
 	@Override
@@ -125,6 +159,15 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 		contentBinding.setExposureListBindCallback(
 			v -> FieldVisibilityAndAccessHelper
 				.setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
+
+		ObservableArrayList<ActivityAsCase> activitiesAsCase = new ObservableArrayList<>();
+		activitiesAsCase.addAll(record.getActivitiesAsCase());
+
+		contentBinding.setActivityascaseList(activitiesAsCase);
+		contentBinding.setActivityascaseItemClickCallback(onActivityAsCaseItemClickListener);
+		contentBinding.setActivityascaseListBindCallback(
+			v -> FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
 	}
 
 	@Override
@@ -134,8 +177,16 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			contentBinding.exposuresLayout.setVisibility(View.GONE);
 		}
 
+		if (getActivityRootData() instanceof Case) {
+			if (record.getActivityAsCaseDetailsKnown() != YesNoUnknown.YES) {
+				contentBinding.activitiesascaseLayout.setVisibility(View.GONE);
+			}
+		}
+
 		if (!(getActivityRootData() instanceof Case)) {
 			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
+			contentBinding.activitiesascaseLayout.setVisibility(View.GONE);
+			contentBinding.epiDataActivityAsCaseDetailsKnown.setVisibility(View.GONE);
 		}
 	}
 

@@ -80,6 +80,7 @@ public interface Captions {
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
+	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
 	String ActivityAsCase_connectionNumber = "ActivityAsCase.connectionNumber";

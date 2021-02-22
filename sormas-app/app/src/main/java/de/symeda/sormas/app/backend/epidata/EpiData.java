@@ -25,6 +25,7 @@ import javax.persistence.Enumerated;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.exposure.Exposure;
@@ -42,6 +43,8 @@ public class EpiData extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown exposureDetailsKnown;
 	@Enumerated(EnumType.STRING)
+	private YesNoUnknown activityAsCaseDetailsKnown;
+	@Enumerated(EnumType.STRING)
 	private YesNoUnknown contactWithSourceCaseKnown;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown highTransmissionRiskArea;
@@ -52,12 +55,22 @@ public class EpiData extends PseudonymizableAdo {
 
 	private List<Exposure> exposures = new ArrayList<>();
 
+	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
+
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
 	}
 
 	public void setExposureDetailsKnown(YesNoUnknown exposureDetailsKnown) {
 		this.exposureDetailsKnown = exposureDetailsKnown;
+	}
+
+	public YesNoUnknown getActivityAsCaseDetailsKnown() {
+		return activityAsCaseDetailsKnown;
+	}
+
+	public void setActivityAsCaseDetailsKnown(YesNoUnknown activityAsCaseDetailsKnown) {
+		this.activityAsCaseDetailsKnown = activityAsCaseDetailsKnown;
 	}
 
 	public YesNoUnknown getContactWithSourceCaseKnown() {
@@ -98,6 +111,14 @@ public class EpiData extends PseudonymizableAdo {
 
 	public void setExposures(List<Exposure> exposures) {
 		this.exposures = exposures;
+	}
+
+	public List<ActivityAsCase> getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(List<ActivityAsCase> activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
 	}
 
 	@Override

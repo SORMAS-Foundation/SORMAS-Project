@@ -68,6 +68,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 
 	private EpiData initLazyData(EpiData epiData) {
 		epiData.setExposures(DatabaseHelper.getExposureDao().getByEpiData(epiData));
+		epiData.setActivitiesAsCase(DatabaseHelper.getActivityAsCaseDao().getByEpiData(epiData));
 
 		return epiData;
 	}
@@ -78,6 +79,8 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 		EpiData snapshot = super.saveAndSnapshot(ado);
 
 		DatabaseHelper.getExposureDao().saveCollectionWithSnapshot(DatabaseHelper.getExposureDao().getByEpiData(ado), ado.getExposures(), ado);
+		DatabaseHelper.getActivityAsCaseDao()
+			.saveCollectionWithSnapshot(DatabaseHelper.getActivityAsCaseDao().getByEpiData(ado), ado.getActivitiesAsCase(), ado);
 
 		return snapshot;
 	}
@@ -90,7 +93,9 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 		}
 
 		Date exposureDate = DatabaseHelper.getExposureDao().getLatestChangeDate();
-		if (exposureDate != null && exposureDate.after(date)) {
+		Date activityAsCaseDate = DatabaseHelper.getActivityAsCaseDao().getLatestChangeDate();
+
+		if (exposureDate != null && (exposureDate.after(date) || activityAsCaseDate.after(date))) {
 			date = exposureDate;
 		}
 
