@@ -8,10 +8,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -22,13 +20,13 @@ import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.components.ApplyResetButtonsComponent;
+import de.symeda.sormas.ui.utils.components.ToggleMoreFiltersComponent;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
@@ -41,6 +39,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private static final String MORE_FILTERS_ID = "moreFilters";
 
 	private CustomLayout moreFiltersLayout;
+	private ToggleMoreFiltersComponent showHideMoreButton;
 	private boolean skipChangeEvents;
 	private boolean hasFilter;
 
@@ -64,7 +63,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			getContent().addComponent(moreFiltersLayout, MORE_FILTERS_ID);
 
 			addMoreFilters(moreFiltersLayout);
-			addShowHideMoreButton();
+
+			showHideMoreButton = new ToggleMoreFiltersComponent(moreFiltersLayout);
+			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 		}
 
 		this.addValueChangeListener(e -> {
@@ -72,7 +73,6 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		});
 
 		addStyleName(CssStyles.FILTER_FORM);
-
 	}
 
 	public void onChange() {
@@ -96,27 +96,6 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-	}
-
-	private void addShowHideMoreButton() {
-		String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-		String showLessCaption = I18nProperties.getCaption(Captions.actionShowLessFilters);
-		String showHideMoreCaption = moreFiltersLayout.isVisible() ? showLessCaption : showMoreCaption;
-		Button showHideMoreButton =
-			ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showHideMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
-				Button showHideButton = e.getButton();
-				if (moreFiltersLayout.isVisible()) {
-					showHideButton.setCaption(showMoreCaption);
-					showHideButton.setIcon(VaadinIcons.CHEVRON_DOWN);
-					moreFiltersLayout.setVisible(false);
-				} else {
-					showHideButton.setCaption(showLessCaption);
-					showHideButton.setIcon(VaadinIcons.CHEVRON_UP);
-					moreFiltersLayout.setVisible(true);
-				}
-			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-
-		getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 	}
 
 	protected CustomLayout getMoreFiltersContainer() {
@@ -173,7 +152,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
-				moreFiltersLayout.setVisible(hasExpandedFilter);
+				showHideMoreButton.toggleMoreFilters(hasExpandedFilter);
 			}
 		});
 	}
