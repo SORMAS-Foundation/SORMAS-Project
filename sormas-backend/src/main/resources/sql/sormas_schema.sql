@@ -6730,4 +6730,30 @@ ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_
 
 INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
+-- 2020-02-19 Person contact details #2744
+create table personcontactdetail(
+     id bigint not null,
+     uuid varchar(36) not null unique,
+     changedate timestamp not null,
+     creationdate timestamp not null,
+     person_id bigint not null,
+     primarycontact boolean DEFAULT false,
+     personcontactdetailstype varchar(255),
+     phonenumbertype varchar(255),
+     details varchar(512),
+     contactInformation varchar(255),
+     additionalInformation varchar(512),
+     thirdParty boolean DEFAULT false,
+     thirdPartyRole varchar(512),
+     thirdPartyName varchar(512)
+);
+
+ALTER TABLE personContactDetail
+    ADD CONSTRAINT fk_personcontactdetail_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_person_id ON personcontactdetail (person_id);
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personcontactdetail (primarycontact);
+
+INSERT INTO schema_version (version_number, comment) VALUES (338, 'Person contact details #2744');
+
 -- *** Insert new sql commands BEFORE this line ***
