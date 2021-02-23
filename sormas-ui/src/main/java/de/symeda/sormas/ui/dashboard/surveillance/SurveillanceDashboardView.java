@@ -26,6 +26,7 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.surveillance.layout.DateTypeSelectorLayout;
 
 @SuppressWarnings("serial")
 public class SurveillanceDashboardView extends AbstractDashboardView {
@@ -50,6 +51,8 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		}
 		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
+
+		dashboardLayout.addComponent(new DateTypeSelectorLayout());
 
 		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);
 		dashboardSwitcher.addValueChangeListener(e -> {
