@@ -80,12 +80,16 @@ public class ShareDataBuilderHelper {
 	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
 
+		pseudonymiePerson(options, personDto);
+
+		return personDto;
+	}
+
+	public void pseudonymiePerson(SormasToSormasOptionsDto options, PersonDto personDto) {
 		if (options.isPseudonymizePersonalData() || options.isPseudonymizeSensitiveData()) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
-
-		return personDto;
 	}
 
 	public ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {

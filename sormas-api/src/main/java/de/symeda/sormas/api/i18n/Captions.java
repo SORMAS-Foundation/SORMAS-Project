@@ -1563,6 +1563,8 @@ public interface Captions {
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
 	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
+	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
+	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";
 	String sormasToSormasListTitle = "sormasToSormasListTitle";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
@@ -1570,8 +1572,10 @@ public interface Captions {
 	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
+	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasReturn = "sormasToSormasReturn";
+	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

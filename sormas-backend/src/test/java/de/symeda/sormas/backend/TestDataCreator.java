@@ -647,7 +647,7 @@ public class TestDataCreator {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, "Description", reportingUser);
+		return createEventParticipant(event, eventPerson, "Description", reportingUser, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -655,10 +655,23 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser) {
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser,
+		Consumer<EventParticipantDto> customSettings) {
 
 		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
+
+		if (customSettings != null) {
+			customSettings.accept(eventParticipant);
+		}
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;

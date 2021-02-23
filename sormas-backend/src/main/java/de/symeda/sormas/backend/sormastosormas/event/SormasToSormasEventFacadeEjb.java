@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
@@ -31,11 +33,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.backend.common.BaseAdoService;
@@ -47,6 +46,7 @@ import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ProcessedEventData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.databuilder.EventShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.datapersister.ProcessedEventDataPersister;
 import de.symeda.sormas.backend.sormastosormas.dataprocessor.SharedEventProcessor;
@@ -56,6 +56,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	implements SormasToSormasEventFacade {
 
 	public static final String SAVE_SHARED_EVENTS = RESOURCE_PATH + EVENT_ENDPOINT;
+	public static final String SYNC_SHARED_EVENTS = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
 
 	private EventService eventService;
 	private EventShareDataBuilder shareDataBuilder;
@@ -64,6 +65,9 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
+
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
 
 	@EJB
 	public void setEventService(EventService eventService) {
@@ -86,7 +90,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	public SormasToSormasEventFacadeEjb() {
-		super(SAVE_SHARED_EVENTS, Captions.Event);
+		super(SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event);
 	}
 
 	@Override
@@ -95,7 +99,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntityBeforeSend(List<Event> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<Event> entities) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
@@ -123,8 +127,24 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
+	protected ValidationErrors validateExistingEntity(EventDto entity) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (!eventFacade.exists(entity.getUuid())) {
+			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasReturnEventNotExists));
+		}
+
+		return errors;
+	}
+
+	@Override
 	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Event entity) {
 		sormasToSormasShareInfo.setEvent(entity);
+	}
+
+	@Override
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
+		return shareInfoService.getByEventAndOrganization(entityUuid, organizationId);
 	}
 
 	@Override
@@ -152,18 +172,9 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		return processedEventDataPersister;
 	}
 
-	@Override
-	public void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-
-	}
-
-	@Override
-	public void syncEntity(String eventUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
-
-	}
-
-	@Override
-	public void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+	@LocalBean
+	@Stateless
+	public static class SormasToSormasEventFacadeEjbLocal extends SormasToSormasEventFacadeEjb {
 
 	}
 }

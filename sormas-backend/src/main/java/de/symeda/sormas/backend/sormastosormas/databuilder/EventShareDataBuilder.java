@@ -16,17 +16,24 @@
 package de.symeda.sormas.backend.sormastosormas.databuilder;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.event.EventShareData;
 import de.symeda.sormas.backend.user.User;
@@ -40,6 +47,10 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private EventParticipantService eventParticipantService;
 
 	@Override
 	public EventShareData buildShareData(Event data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -47,16 +58,19 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 
 		EventDto eventDto = getEventDto(data, pseudonymizer);
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(eventDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
+		SormasToSormasEventDto entity = new SormasToSormasEventDto(eventDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
 
-//		List<Sample> samples = Collections.emptyList();
-//		if (options.isWithSamples()) {
-//			samples = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), user);
-//
-//			shareData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-//		}
+		EventShareData eventShareData = new EventShareData(entity);
 
-		return new EventShareData(shareData, Collections.emptyList());
+		List<EventParticipant> eventParticipants = Collections.emptyList();
+		if (options.isWithEventParticipants()) {
+			eventParticipants = eventParticipantService.getByEventUuids(Collections.singletonList(eventDto.getUuid()));
+		}
+
+		entity.setEventParticipants(getEventParticipantDtos(eventParticipants, options, pseudonymizer));
+		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forEventParticipants(eventParticipants));
+
+		return eventShareData;
 	}
 
 	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {
@@ -66,5 +80,21 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		eventDto.setSormasToSormasOriginInfo(null);
 
 		return eventDto;
+	}
+
+	private List<EventParticipantDto> getEventParticipantDtos(
+		List<EventParticipant> eventParticipants,
+		SormasToSormasOptionsDto options,
+		Pseudonymizer pseudonymizer) {
+		return eventParticipants.stream().map(eventParticipant -> {
+			EventParticipantDto dto = eventParticipantFacade.convertToDto(eventParticipant, pseudonymizer);
+
+			dto.setReportingUser(null);
+			dto.setSormasToSormasOriginInfo(null);
+
+			dataBuilderHelper.pseudonymiePerson(options, dto.getPerson());
+
+			return dto;
+		}).collect(Collectors.toList());
 	}
 }

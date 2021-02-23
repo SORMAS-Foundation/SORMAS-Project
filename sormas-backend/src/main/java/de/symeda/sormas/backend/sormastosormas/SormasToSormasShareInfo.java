@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +28,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
@@ -40,6 +41,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String CONTACT = "contact";
 	public static final String SAMPLE = "sample";
 	public static final String EVENT = "event";
+	public static final String EVENT_PARTICIPANT = "eventParticipant";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
 
@@ -50,6 +52,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private Sample sample;
 
 	private Event event;
+
+	private EventParticipant eventParticipant;
 
 	private String organizationId;
 
@@ -105,6 +109,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setEvent(Event event) {
 		this.event = event;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn
+	public EventParticipant getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public void setEventParticipant(EventParticipant eventParticipant) {
+		this.eventParticipant = eventParticipant;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)

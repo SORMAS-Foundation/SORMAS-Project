@@ -64,8 +64,8 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSharedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
-		persistProcessedData(caseData, null, (caze, contact) -> {
+	public void persistSharedData(ProcessedCaseData processedData) throws SormasToSormasValidationException {
+		persistProcessedData(processedData, null, (caze, contact) -> {
 			contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
 		}, (caze, sample) -> {
 			sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
@@ -74,10 +74,11 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistReturnedData(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+	public void persistReturnedData(ProcessedCaseData processedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
 		final MutableBoolean originInfoSaved = new MutableBoolean();
 
-		persistProcessedData(caseData, (caze) -> {
+		persistProcessedData(processedData, (caze) -> {
 			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
 			shareInfo.setOwnershipHandedOver(false);
 			shareInfoService.persist(shareInfo);
@@ -113,10 +114,10 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
-		SormasToSormasOriginInfoDto originInfo = caseData.getOriginInfo();
+	public void persistSyncData(ProcessedCaseData processedData) throws SormasToSormasValidationException {
+		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
-		persistProcessedData(caseData, (caze) -> {
+		persistProcessedData(processedData, (caze) -> {
 			SormasToSormasOriginInfoDto caseOriginInfo = caze.getSormasToSormasOriginInfo();
 			caseOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
 			caseOriginInfo.setComment(originInfo.getComment());

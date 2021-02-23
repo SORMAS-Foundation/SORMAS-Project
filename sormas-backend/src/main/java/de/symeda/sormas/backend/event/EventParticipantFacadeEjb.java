@@ -88,6 +88,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -125,6 +126,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -195,6 +198,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
+		return saveEventParticipant(dto, true);
+	}
+
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
@@ -215,7 +222,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		validate(dto);
 
-		EventParticipant entity = fromDto(dto, true);
+		EventParticipant entity = fromDto(dto, checkChangeDate);
 		eventParticipantService.ensurePersisted(entity);
 
 		return convertToDto(entity, pseudonymizer);
@@ -637,7 +644,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 
-		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant);
+		return eventParticipantService.isEventParticiapntEditAllowed(eventParticipant);
 	}
 
 	@Override
@@ -678,10 +685,14 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			target.setVaccinationInfo(vaccinationInfoFacade.fromDto(vaccinationInfo, checkChangeDate));
 		}
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
+
 		return target;
 	}
 
-	private EventParticipantDto convertToDto(EventParticipant source, Pseudonymizer pseudonymizer) {
+	public EventParticipantDto convertToDto(EventParticipant source, Pseudonymizer pseudonymizer) {
 		EventParticipantDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer);
 
@@ -743,6 +754,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setVaccinationInfo(VaccinationInfoFacadeEjbLocal.toDto(source.getVaccinationInfo()));
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 
 		return target;
 	}

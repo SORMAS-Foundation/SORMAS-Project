@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.i18n.Captions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -81,6 +81,12 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	protected void addFields(String... properties) {
+		for (String property : properties) {
+			addField(property);
+		}
+	}
+
+	protected void addFields(List<String> properties) {
 		for (String property : properties) {
 			addField(property);
 		}

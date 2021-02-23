@@ -15,14 +15,24 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 
 public class ProcessedEventData extends ProcessedData<EventDto> {
 
 	private static final long serialVersionUID = -7001698437353666024L;
 
-	public ProcessedEventData(EventDto entity, SormasToSormasOriginInfoDto originInfoDto) {
+	private final List<EventParticipantDto> eventParticipants;
+
+	public ProcessedEventData(EventDto entity, SormasToSormasOriginInfoDto originInfoDto, List<EventParticipantDto> eventParticipants) {
 		super(entity, originInfoDto);
+		this.eventParticipants = eventParticipants;
+	}
+
+	public List<EventParticipantDto> getEventParticipants() {
+		return eventParticipants;
 	}
 }

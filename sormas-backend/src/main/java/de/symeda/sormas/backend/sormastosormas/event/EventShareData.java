@@ -15,15 +15,12 @@
 
 package de.symeda.sormas.backend.sormastosormas.event;
 
-import java.util.List;
-
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
 import de.symeda.sormas.backend.sormastosormas.ShareData;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 
 public class EventShareData extends ShareData<SormasToSormasEventDto> {
 
-	public EventShareData(SormasToSormasEventDto data, List<? extends SormasToSormasEntity> associatedEntities) {
-		super(data, associatedEntities);
+	public EventShareData(SormasToSormasEventDto data) {
+		super(data);
 	}
 }

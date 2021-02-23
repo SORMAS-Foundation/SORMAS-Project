@@ -15,16 +15,39 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 
 public class SormasToSormasEventDto extends SormasToSormasDto<EventDto> {
 
 	private static final long serialVersionUID = 5998850723108574369L;
+
+	private List<EventParticipantDto> eventParticipants;
+
+	private List<SormasToSormasSampleDto> samples;
 
 	public SormasToSormasEventDto() {
 	}
 
 	public SormasToSormasEventDto(EventDto data, SormasToSormasOriginInfoDto originInfo) {
 		super(data, originInfo);
+	}
+
+	public List<EventParticipantDto> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<EventParticipantDto> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
+	public List<SormasToSormasSampleDto> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(List<SormasToSormasSampleDto> samples) {
+		this.samples = samples;
 	}
 }

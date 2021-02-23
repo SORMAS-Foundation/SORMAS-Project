@@ -110,6 +110,7 @@ public interface Validations {
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
 	String sormasToSormasReturnCaseNotExists = "sormasToSormasReturnCaseNotExists";
 	String sormasToSormasReturnContactNotExists = "sormasToSormasReturnContactNotExists";
+	String sormasToSormasReturnEventNotExists = "sormasToSormasReturnEventNotExists";
 	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";

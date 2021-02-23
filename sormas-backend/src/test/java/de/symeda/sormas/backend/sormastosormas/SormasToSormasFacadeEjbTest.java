@@ -22,10 +22,7 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.mock;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -35,10 +32,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -54,7 +48,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -73,9 +66,6 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -101,19 +91,13 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.StartupShutdownService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
+public class SormasToSormasFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ACCESS_CN = "default";
@@ -161,7 +145,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
@@ -178,7 +163,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
-		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
@@ -208,7 +193,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
@@ -225,7 +211,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
-		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
@@ -254,7 +240,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		portHealthInfo.setAirlineName("Test Airline");
 		caze.setPortHealthInfo(portHealthInfo);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -283,7 +270,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		portHealthInfo.setAirlineName("Test Airline");
 		caze.setPortHealthInfo(portHealthInfo);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -307,7 +295,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = createPersonDto(rdcf);
 		contact.setPerson(contactPerson.toReference());
 
-		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		shareData.setAssociatedContacts(Collections.singletonList(new SormasToSormasCaseDto.AssociatedContactDto(contactPerson, contact)));
 
 		byte[] encryptedData = encryptShareData(shareData);
@@ -332,7 +320,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf.remoteRdcf, caze.toReference(), null);
 
-		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		shareData.setSamples(Collections.singletonList(sample));
 
 		byte[] encryptedData = encryptShareData(shareData);
@@ -360,7 +348,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 		getSormasToSormasFacade().saveSharedContacts(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
@@ -371,7 +360,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedContact.getEpiData().getExposures().get(0).getAnimalCondition(), is(AnimalCondition.PROCESSED));
 
-		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
+		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 		assertThat(savedContact.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedContact.getPerson().getUuid());
@@ -392,7 +381,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
 		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf.remoteRdcf, null, contact.toReference());
 
-		SormasToSormasContactDto shareData = new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo());
+		SormasToSormasContactDto shareData =
+			new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		shareData.setSamples(Collections.singletonList(sample));
 
 		byte[] encryptedData = encryptShareData(shareData);
@@ -922,12 +912,20 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		SampleDto newSample2 = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setContact(getContactService().getByReferenceDto(sharedContact.toReference()))));
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(officerUser, DEFAULT_SERVER_ACCESS_CN, true, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(
+				officerUser,
+				DEFAULT_SERVER_ACCESS_CN,
+				true,
+				i -> i.setContact(getContactService().getByReferenceDto(sharedContact.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(
+				officerUser,
+				DEFAULT_SERVER_ACCESS_CN,
+				true,
+				i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
 
 		caze.setQuarantine(QuarantineType.HOTEL);
 
@@ -936,8 +934,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
-		originInfo.setOwnershipHandedOver(true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, true);
 
 		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
 		shareData.setAssociatedContacts(
@@ -999,10 +996,18 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		SampleDto newSample = creator.createSample(contact.toReference(), officer, rdcf.localRdcf.facility, null);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(
+				officerUser,
+				DEFAULT_SERVER_ACCESS_CN,
+				true,
+				i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(
+				officerUser,
+				DEFAULT_SERVER_ACCESS_CN,
+				true,
+				i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
 
 		contact.setQuarantine(QuarantineType.HOTEL);
 
@@ -1011,7 +1016,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		contact.setChangeDate(calendar.getTime());
 
-		SormasToSormasContactDto shareData = new SormasToSormasContactDto(contactPerson, contact, createSormasToSormasOriginInfo());
+		SormasToSormasContactDto shareData =
+			new SormasToSormasContactDto(contactPerson, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, true));
 		shareData.setSamples(
 			Arrays.asList(
 				new SormasToSormasSampleDto(sharedSample, Collections.emptyList(), Collections.emptyList()),
@@ -1033,7 +1039,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(sampleShares.get(0).isOwnershipHandedOver(), is(false));
 
 		SampleDto returnedNewSample = getSampleFacade().getSampleByUuid(newSample.getUuid());
-		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 	}
 
 	@Test
@@ -1047,7 +1053,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 		caze.setHealthFacility(new FacilityReferenceDto("unknown", "Unknown facility", "unknown"));
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
@@ -1074,7 +1081,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		portHealthInfo.setAirlineName("Test Airline");
 		caze.setPortHealthInfo(portHealthInfo);
 
-		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		byte[] encryptedData =
+			encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -1098,8 +1106,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(officerUser, DEFAULT_SERVER_ACCESS_CN, true, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
 
 		caze.setHealthFacilityDetails(rdcf.localRdcf.facility.getCaption());
 
@@ -1108,8 +1116,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
-		originInfo.setOwnershipHandedOver(true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, true);
 
 		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
 
@@ -1141,8 +1148,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService()
-			.persist(createShareInfo(officerUser, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+		getSormasToSormasShareInfoService().persist(
+			createShareInfo(officerUser, DEFAULT_SERVER_ACCESS_CN, true, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
 
 		caze.setPointOfEntryDetails(rdcf.localRdcf.pointOfEntry.getCaption());
 
@@ -1151,8 +1158,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
-		originInfo.setOwnershipHandedOver(true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, true);
 
 		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
 
@@ -1167,76 +1173,6 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertThat(returnedCase.getPointOfEntry(), is(rdcf.localRdcf.pointOfEntry));
 		assertThat(returnedCase.getPointOfEntryDetails(), is(nullValue()));
-	}
-
-	private PersonDto createPersonDto(MappableRdcf rdcf) {
-		PersonDto person = PersonDto.build();
-		person.setFirstName("John");
-		person.setLastName("Smith");
-
-		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
-		person.getAddress().setRegion(rdcf.remoteRdcf.region);
-		person.getAddress().setCommunity(rdcf.remoteRdcf.community);
-
-		return person;
-	}
-
-	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo() {
-		SormasToSormasOriginInfoDto source = new SormasToSormasOriginInfoDto();
-		source.setOrganizationId("testHealthDep");
-		source.setSenderName("John doe");
-
-		return source;
-	}
-
-	private MappableRdcf createRDCF(boolean withExternalId) {
-
-		String regionName = "Region";
-		String districtName = "District";
-		String communityName = "Community";
-		String facilityName = "Facility";
-		String pointOfEntryName = "Point of Entry";
-
-		String regionExternalId = null;
-		String districtExternalId = null;
-		String communityExternalId = null;
-		String facilityExternalId = null;
-		String pointOfEntryExternalId = null;
-
-		if (withExternalId) {
-			regionExternalId = "RegionExtId";
-			districtExternalId = "DistrictExtId";
-			communityExternalId = "CommunityExtId";
-			facilityExternalId = "FacilityExtId";
-			pointOfEntryExternalId = "Point of EntryExtId";
-		}
-
-		MappableRdcf rdcf = new MappableRdcf();
-		rdcf.remoteRdcf = new RDCF(
-			new RegionReferenceDto(DataHelper.createUuid(), withExternalId ? null : regionName, regionExternalId),
-			new DistrictReferenceDto(DataHelper.createUuid(), withExternalId ? null : districtName, districtExternalId),
-			new CommunityReferenceDto(DataHelper.createUuid(), withExternalId ? null : communityName, communityExternalId),
-			new FacilityReferenceDto(DataHelper.createUuid(), withExternalId ? null : facilityName, facilityExternalId),
-			new PointOfEntryReferenceDto(
-				DataHelper.createUuid(),
-				withExternalId ? null : pointOfEntryName,
-				PointOfEntryType.AIRPORT,
-				pointOfEntryExternalId));
-
-		Region region = creator.createRegion(regionName, regionExternalId);
-		District district = creator.createDistrict(districtName, region, districtExternalId);
-		Community community = creator.createCommunity(communityName, district, communityExternalId);
-		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
-		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
-
-		rdcf.localRdcf = new RDCF(
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
-			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
-			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-
-		return rdcf;
 	}
 
 	private CaseDataDto createRemoteCaseDto(RDCF remoteRdcf, PersonDto person) {
@@ -1294,80 +1230,5 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		additionalTest.setTestDateTime(new Date());
 
 		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
-	}
-
-	private SormasToSormasShareInfo createShareInfo(User sender, Consumer<SormasToSormasShareInfo> setTarget) {
-		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
-
-		shareInfo.setOwnershipHandedOver(true);
-		shareInfo.setOrganizationId("testHealthDep");
-		shareInfo.setSender(sender);
-
-		setTarget.accept(shareInfo);
-
-		return shareInfo;
-	}
-
-	private void mockDefaultServerAccess() {
-
-		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
-
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(DEFAULT_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("default.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("truster");
-	}
-
-	private void mockSecondServerAccess() {
-		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
-
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(SECOND_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("second.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusteR");
-	}
-
-	private byte[] encryptShareData(Object shareData) throws JsonProcessingException, SormasToSormasException {
-		mockDefaultServerAccess();
-
-		byte[] data = objectMapper.writeValueAsBytes(Collections.singletonList(shareData));
-		byte[] encryptedData = getSormasToSormasEncryptionService().encrypt(data, SECOND_SERVER_ACCESS_CN);
-
-		mockSecondServerAccess();
-
-		return encryptedData;
-	}
-
-	private <T> T[] decryptSharesData(byte[] data, Class<T[]> dataType) throws SormasToSormasException, IOException {
-		mockSecondServerAccess();
-
-		byte[] decryptData = getSormasToSormasEncryptionService().decrypt(data, DEFAULT_SERVER_ACCESS_CN);
-		T[] parsedData = objectMapper.readValue(decryptData, dataType);
-
-		mockDefaultServerAccess();
-
-		return parsedData;
-	}
-
-	private static class MappableRdcf {
-
-		private RDCF remoteRdcf;
-		private RDCF localRdcf;
-	}
-
-	@Specializes
-	private static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
-
-		static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
-
-		@Override
-		@Produces
-		public SormasToSormasConfig sormas2SormasConfig() {
-			return sormasToSormasConfig;
-		}
 	}
 }

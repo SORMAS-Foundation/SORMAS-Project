@@ -173,6 +173,10 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto saveEvent(@NotNull EventDto dto) {
+		return saveEvent(dto, true);
+	}
+
+	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -180,7 +184,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
-		Event event = fromDto(dto, true);
+		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
 		return convertToDto(event, pseudonymizer);

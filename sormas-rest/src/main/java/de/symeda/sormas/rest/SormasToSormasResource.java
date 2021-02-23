@@ -125,8 +125,24 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.EVENT_ENDPOINT)
 	public Response saveSharedEvents(SormasToSormasEncryptedDataDto sharedEvents) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveSharedEntities(sharedEvents));
+	}
+
+	@PUT
+	@Path(SormasToSormasApiConstants.EVENT_ENDPOINT)
+	public Response saveReturnedEvent(SormasToSormasEncryptedDataDto sharedEvent) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveReturnedEntity(sharedEvent));
+	}
+
+	@POST
+	@Path(SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT)
+	public Response syncSharedEvents(SormasToSormasEncryptedDataDto sharedEvent) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveSyncedEntity(sharedEvent));
+	}
+
+	private Response handleRequest(FacadeCall facadeCall) {
 		try {
-			FacadeProvider.getSormasToSormasEventFacade().saveSharedEntities(sharedEvents);
+			facadeCall.call();
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
 		} catch (SormasToSormasException e) {
@@ -134,5 +150,10 @@ public class SormasToSormasResource {
 		}
 
 		return Response.noContent().build();
+	}
+
+	private interface FacadeCall {
+
+		void call() throws SormasToSormasValidationException, SormasToSormasException;
 	}
 }

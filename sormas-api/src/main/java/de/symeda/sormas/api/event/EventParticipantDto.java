@@ -21,6 +21,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -57,6 +58,8 @@ public class EventParticipantDto extends PseudonymizableDto {
 	private DistrictReferenceDto district;
 
 	private VaccinationInfoDto vaccinationInfo;
+
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -158,5 +161,13 @@ public class EventParticipantDto extends PseudonymizableDto {
 
 	public void setVaccinationInfo(VaccinationInfoDto vaccinationInfo) {
 		this.vaccinationInfo = vaccinationInfo;
+	}
+
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 }

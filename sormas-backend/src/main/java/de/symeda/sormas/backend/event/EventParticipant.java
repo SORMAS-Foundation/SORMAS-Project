@@ -36,12 +36,14 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity
 @Audited
-public class EventParticipant extends CoreAdo {
+public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -63,6 +65,7 @@ public class EventParticipant extends CoreAdo {
 	private Region region;
 	private District district;
 	private VaccinationInfo vaccinationInfo;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -151,5 +154,17 @@ public class EventParticipant extends CoreAdo {
 
 	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
 		this.vaccinationInfo = vaccinationInfo;
+	}
+
+	@Override
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 }

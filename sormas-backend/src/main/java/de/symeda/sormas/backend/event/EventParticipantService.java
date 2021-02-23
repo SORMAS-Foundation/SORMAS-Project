@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 
@@ -55,6 +56,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -336,5 +341,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
 
 		return dateFilter;
+	}
+
+	public boolean isEventParticiapntEditAllowed(EventParticipant eventParticipant) {
+		if (eventParticipant.getSormasToSormasOriginInfo() != null) {
+			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant)
+			&& !sormasToSormasShareInfoService.isEventOwnershipHandedOver(eventParticipant);
 	}
 }

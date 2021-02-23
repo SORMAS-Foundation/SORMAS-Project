@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.dataprocessor;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
@@ -58,23 +60,24 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
 		eventValidationErrors.addAll(originInfoErrors);
 
-		ValidationErrors contactDataErrors = processEventData(event);
-		eventValidationErrors.addAll(contactDataErrors);
+		ValidationErrors eventErrors = processEventData(event);
+		eventValidationErrors.addAll(eventErrors);
 
 		if (eventValidationErrors.hasError()) {
 			validationErrors.put(buildEventValidationGroupName(event), eventValidationErrors);
 		}
 
-//		if (participants != null) {
-//			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-//			validationErrors.putAll(sampleErrors);
-//		}
+		List<EventParticipantDto> eventParticipants = sharedData.getEventParticipants();
+		if (eventParticipants != null) {
+			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
+			validationErrors.putAll(eventParticipantErrors);
+		}
 
 		if (validationErrors.size() > 0) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
-		return new ProcessedEventData(event, originInfo);
+		return new ProcessedEventData(event, originInfo, eventParticipants);
 	}
 
 	private ValidationErrors processEventData(EventDto event) {
@@ -102,9 +105,29 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 			eventLocation.setFacility(infrastructureData.getFacility());
 		});
 
-//		ValidationErrors embeddedObjectErrors = processEmbeddedObjects(caze);
-//		caseValidationErrors.addAll(embeddedObjectErrors);
-
 		return caseValidationErrors;
+	}
+
+	private Map<String, ValidationErrors> processEventParticipants(List<EventParticipantDto> eventParticipants) {
+		Map<String, ValidationErrors> errors = new HashMap<>();
+
+		eventParticipants.forEach(eventParticipant -> {
+			dataProcessorHelper.processPerson(eventParticipant.getPerson());
+
+			ValidationErrors validationErrors = new ValidationErrors();
+
+			DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infraStruvtureAndErrors =
+				dataProcessorHelper.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
+			dataProcessorHelper.handleInfraStructure(infraStruvtureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
+				eventParticipant.setRegion(infrastructureData.getRegion());
+				eventParticipant.setDistrict(infrastructureData.getDistrict());
+			}));
+
+			if (validationErrors.hasError()) {
+				errors.put(buildEventParticipantValidationGroupName(eventParticipant), validationErrors);
+			}
+		});
+
+		return errors;
 	}
 }

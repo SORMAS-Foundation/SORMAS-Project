@@ -56,6 +56,10 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.Event, event);
 	}
 
+	public static String buildEventParticipantValidationGroupName(HasUuid event) {
+		return buildValidationGroupName(Captions.Event, event);
+	}
+
 	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, String parentValidationGroup)
 		throws SormasToSormasValidationException {
 		try {

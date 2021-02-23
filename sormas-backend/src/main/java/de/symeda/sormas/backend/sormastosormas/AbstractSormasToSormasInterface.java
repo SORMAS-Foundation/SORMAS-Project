@@ -59,7 +59,8 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 	@EJB
 	private SormasToSormasOriginInfoService originInfoService;
 
-	private final String shareEndpoint;
+	private final String saveEndpoint;
+	private final String syncEndpoint;
 
 	private final String entityCaptionTag;
 
@@ -67,8 +68,9 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		throw new RuntimeException("AbstractSormasToSormasInterface should not be instantiated");
 	}
 
-	public AbstractSormasToSormasInterface(String shareEndpoint, String entityCaptionTag) {
-		this.shareEndpoint = shareEndpoint;
+	public AbstractSormasToSormasInterface(String saveEndpoint, String syncEndpoint, String entityCaptionTag) {
+		this.saveEndpoint = saveEndpoint;
+		this.syncEndpoint = syncEndpoint;
 		this.entityCaptionTag = entityCaptionTag;
 	}
 
@@ -77,26 +79,29 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		User currentUser = userService.getCurrentUser();
 		List<T> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntityBeforeSend(entities);
+		validateEntitiesBeforeSend(entities);
 
 		List<S> entitiesToSend = new ArrayList<>();
-		List<Object> associatedEntitiesToSend = new ArrayList<>();
+		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
 		for (T entity : entities) {
 			ShareData<S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
 			entitiesToSend.add(shareData.getDto());
-			associatedEntitiesToSend.addAll(shareData.getAssociatedEntities());
 
+			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			entitiesToSend,
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, shareEndpoint, authToken, encryptedData));
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, saveEndpoint, authToken, encryptedData));
 
 		entities.forEach(entity -> saveNewShareInfo(currentUser.toReference(), options, entity, this::setEntityShareInfoAssociatedObject));
-		associatedEntitiesToSend
-			.forEach(entity -> saveNewShareInfo(currentUser.toReference(), options, entity, this::setAssociatedObjectShareInfoAssociatedObject));
+		associatedEntities.forEach(wrapper -> {
+			saveNewShareInfo(currentUser.toReference(), options, wrapper.getEntity(), (s, e) -> {
+				wrapper.setShareInfoAssociatedObject(s);
+			});
+		});
 	}
 
 	@Override
@@ -113,7 +118,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 				ValidationErrors caseErrors = validateSharedEntity(entity);
 
 				if (caseErrors.hasError()) {
-					validationErrors.put(buildValidationGroupName(entityCaptionTag, entity), caseErrors);
+					validationErrors.put(buildEntityValidationGroupName(entity), caseErrors);
 				} else {
 					P processedData = getSharedDataProcessor().processSharedData(data);
 
@@ -141,23 +146,123 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		User currentUser = userService.getCurrentUser();
 
 		T entity = getEntityService().getByUuid(entityUuid);
-		validateEntityBeforeSend(Collections.singletonList(entity));
+		validateEntitiesBeforeSend(Collections.singletonList(entity));
 
 		ShareData<S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			Collections.singletonList(shareData.getDto()),
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.put(host, shareEndpoint, authToken, encryptedData));
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.put(host, saveEndpoint, authToken, encryptedData));
 
 		entity.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
 		originInfoService.persist(entity.getSormasToSormasOriginInfo());
 
-		shareData.getAssociatedEntities().forEach(c -> {
-			if (c.getSormasToSormasOriginInfo() == null) {
-				saveNewShareInfo(currentUser.toReference(), options, c, this::setAssociatedObjectShareInfoAssociatedObject);
+		shareData.getAssociatedEntities().forEach(wrapper -> {
+			if (wrapper.getEntity().getSormasToSormasOriginInfo() == null) {
+				saveNewShareInfo(currentUser.toReference(), options, wrapper.getEntity(), (s, e) -> {
+					wrapper.setShareInfoAssociatedObject(s);
+				});
 			}
 		});
+	}
+
+	@Override
+	public void saveReturnedEntity(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException {
+		S[] sharedEntities = sormasToSormasFacadeHelper.decryptSharedData(sharedData, getShareDataClass());
+
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<P> entitiesToSave = new ArrayList<>(sharedEntities.length);
+
+		for (S sharedEntity : sharedEntities) {
+			try {
+				U entity = sharedEntity.getEntity();
+				ValidationErrors entityErrors = validateExistingEntity(entity);
+				if (entityErrors.hasError()) {
+					validationErrors.put(buildEntityValidationGroupName(entity), entityErrors);
+				} else {
+					P processedEntity = getSharedDataProcessor().processSharedData(sharedEntity);
+					entitiesToSave.add(processedEntity);
+				}
+			} catch (SormasToSormasValidationException validationException) {
+				validationErrors.putAll(validationException.getErrors());
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		for (P contactData : entitiesToSave) {
+			getProcessedDataPersister().persistReturnedData(contactData, contactData.getOriginInfo());
+		}
+	}
+
+	@Override
+	public void syncEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		User currentUser = userService.getCurrentUser();
+		T entity = getEntityService().getByUuid(entityUuid);
+
+		validateEntitiesBeforeSend(Collections.singletonList(entity));
+
+		ShareData<S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
+
+		sormasToSormasFacadeHelper.sendEntitiesToSormas(
+			Collections.singletonList(shareData.getDto()),
+			options,
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, syncEndpoint, authToken, encryptedData));
+
+		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), options.getOrganization().getUuid());
+		updateShareInfoOptions(shareInfo, options);
+
+		shareData.getAssociatedEntities().forEach(entityWrapper -> {
+			SormasToSormasShareInfo sampleShareInfo = entityWrapper.getExistingShareInfo(shareInfoService, options.getOrganization().getUuid());
+			if (sampleShareInfo == null) {
+				saveNewShareInfo(
+					currentUser.toReference(),
+					options,
+					entityWrapper.getEntity(),
+					(i, ae) -> entityWrapper.setShareInfoAssociatedObject(i));
+			} else {
+				updateShareInfoOptions(sampleShareInfo, options);
+			}
+		});
+	}
+
+	@Override
+	public void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+		S[] sharedEntities = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, getShareDataClass());
+
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<P> entitiesToSave = new ArrayList<>(sharedEntities.length);
+
+		for (S sharedEntity : sharedEntities) {
+			try {
+				U entity = sharedEntity.getEntity();
+
+				ValidationErrors contactErrors = validateExistingEntity(entity);
+				if (contactErrors.hasError()) {
+					validationErrors.put(buildEntityValidationGroupName(entity), contactErrors);
+				} else {
+					P processedContactData = getSharedDataProcessor().processSharedData(sharedEntity);
+					entitiesToSave.add(processedContactData);
+				}
+			} catch (SormasToSormasValidationException validationException) {
+				validationErrors.putAll(validationException.getErrors());
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		for (P contactData : entitiesToSave) {
+			getProcessedDataPersister().persistSyncData(contactData);
+		}
+	}
+
+	private String buildEntityValidationGroupName(U entity) {
+		return buildValidationGroupName(entityCaptionTag, entity);
 	}
 
 	protected abstract BaseAdoService<T> getEntityService();
@@ -170,11 +275,15 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntityBeforeSend(List<T> entities) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeSend(List<T> entities) throws SormasToSormasException;
 
 	protected abstract ValidationErrors validateSharedEntity(U entity);
 
+	protected abstract ValidationErrors validateExistingEntity(U entity);
+
 	protected abstract void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, T entity);
+
+	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId);
 
 	protected abstract void setAssociatedObjectShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Object t);
 
@@ -204,5 +313,11 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		shareInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
 		shareInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
 		shareInfo.setComment(options.getComment());
+	}
+
+	private void updateShareInfoOptions(SormasToSormasShareInfo shareInfo, SormasToSormasOptionsDto options) {
+		addOptionsToShareInfo(options, shareInfo);
+
+		shareInfoService.ensurePersisted(shareInfo);
 	}
 }

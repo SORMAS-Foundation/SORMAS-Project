@@ -56,8 +56,8 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSharedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
-		persistProcessedData(contactData, null, (contact, sample) -> {
+	public void persistSharedData(ProcessedContactData processedData) throws SormasToSormasValidationException {
+		persistProcessedData(processedData, null, (contact, sample) -> {
 			sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
 		}, true);
 	}
@@ -65,10 +65,10 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistReturnedData(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
+	public void persistReturnedData(ProcessedContactData processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
 
-		persistProcessedData(contactData, contact -> {
+		persistProcessedData(processedData, contact -> {
 			SormasToSormasShareInfo contactShareInfo =
 				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
 			contactShareInfo.setOwnershipHandedOver(false);
