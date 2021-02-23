@@ -133,14 +133,14 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			dialog.show();
 		});
 
-		contentBinding.epiDataActivityascaseDetailsKnown.addValueChangedListener(field -> {
+		contentBinding.epiDataActivityAsCaseDetailsKnown.addValueChangedListener(field -> {
 			YesNoUnknown value = (YesNoUnknown) field.getValue();
 			contentBinding.activityascaseLayout.setVisibility(value == YesNoUnknown.YES ? VISIBLE : GONE);
 			if (value != YesNoUnknown.YES) {
 				clearActivitiesAsCase();
 			}
 
-			getContentBinding().epiDataActivityascaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
+			getContentBinding().epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
 		});
 
 	}
@@ -190,7 +190,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	private void updateActivitiesAsCase() {
 		getContentBinding().setActivityAsCaseList(getActivityAsCaseList());
-		getContentBinding().epiDataActivityascaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
+		getContentBinding().epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
 		updateAddActivitiesAsCaseButtonVisibility();
 	}
 
@@ -237,7 +237,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	public void onAfterLayoutBinding(FragmentEditEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 		contentBinding.epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
-		contentBinding.epiDataActivityascaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
+		contentBinding.epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
 
 		if (!(getActivityRootData() instanceof Case)) {
 			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
@@ -245,7 +245,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			contentBinding.exposureInvestigationInfo.setText(Html.fromHtml(I18nProperties.getString(Strings.infoExposureInvestigationContacts)));
 			contentBinding.activityascaseInvestigationInfo.setText(Html.fromHtml(I18nProperties.getString(Strings.infoActivityAsCaseInvestigation)));
 			contentBinding.activityascaseLayout.setVisibility(GONE);
-			contentBinding.epiDataActivityascaseDetailsKnown.setVisibility(GONE);
+			contentBinding.epiDataActivityAsCaseDetailsKnown.setVisibility(GONE);
 		}
 	}
 

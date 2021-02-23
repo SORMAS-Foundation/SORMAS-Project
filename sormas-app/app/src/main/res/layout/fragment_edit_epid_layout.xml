@@ -164,7 +164,7 @@
                     style="@style/SubHeadingDescriptionStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/epiData_activityascaseDetailsKnown"
+                    android:id="@+id/epiData_activityAsCaseDetailsKnown"
                     app:value="@={data.activityAsCaseDetailsKnown}"
                     style="@style/ControlSingleColumnStyle"/>
 
