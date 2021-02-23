@@ -45,6 +45,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -507,7 +508,7 @@ public class LabMessageController {
 			sampleDto.setLabSampleID(labMessageDto.getLabSampleId());
 		}
 		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
-		sampleDto.setSpecimenCondition(labMessageDto.getSpecimenCondition());
+		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getTestLabName());
 	}
