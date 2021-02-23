@@ -6747,4 +6747,11 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_ev
 
 INSERT INTO schema_version (version_number, comment) VALUES (338, '[SORMAS 2 SORMAS] Send and receive Events #4348');
 
+--2021-02-23 Add event management status to Event #4255
+
+ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add event management status to Event #4255');
+
 -- *** Insert new sql commands BEFORE this line ***

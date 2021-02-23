@@ -123,6 +123,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setEventManagementStatus(source.getEventManagementStatus());
 	}
 
 	@Override
@@ -207,6 +208,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		}
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setEventManagementStatus(source.getEventManagementStatus());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

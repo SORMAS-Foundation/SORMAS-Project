@@ -492,7 +492,8 @@ public class EventFacadeEjb implements EventFacade {
 			reportingUser.get(User.LAST_NAME),
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
-			responsibleUser.get(User.LAST_NAME));
+			responsibleUser.get(User.LAST_NAME),
+			event.get(Event.EVENT_MANAGEMENT_STATUS));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -718,6 +719,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -813,6 +815,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

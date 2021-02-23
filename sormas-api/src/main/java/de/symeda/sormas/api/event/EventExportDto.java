@@ -69,6 +69,7 @@ public class EventExportDto implements Serializable {
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
 	private UserReferenceDto responsibleUser;
+	private EventManagementStatus eventManagementStatus;
 
 	private EventJurisdictionDto jurisdiction;
 
@@ -118,7 +119,8 @@ public class EventExportDto implements Serializable {
 		String reportingUserLastName,
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
-		String responsibleUserLastName) {
+		String responsibleUserLastName,
+		EventManagementStatus eventManagementStatus) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
@@ -156,6 +158,7 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
+		this.eventManagementStatus = eventManagementStatus;
 
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
@@ -484,6 +487,15 @@ public class EventExportDto implements Serializable {
 
 	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
+	}
+
+	@Order(42)
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {
