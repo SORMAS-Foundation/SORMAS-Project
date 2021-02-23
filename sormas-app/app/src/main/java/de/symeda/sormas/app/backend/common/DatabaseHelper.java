@@ -2021,8 +2021,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN ownershipHandedOver boolean;");
 
             case 280:
-                currentVersion = 278;
-                getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);");
+                currentVersion = 280;
+                getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventManagementStatus varchar(255);");
 
                 // ATTENTION: break should only be done after last version
                 break;
