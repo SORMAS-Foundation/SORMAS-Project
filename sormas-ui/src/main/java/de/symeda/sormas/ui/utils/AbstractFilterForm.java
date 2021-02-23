@@ -25,8 +25,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.components.ApplyResetButtonsComponent;
-import de.symeda.sormas.ui.utils.components.ToggleMoreFiltersComponent;
+import de.symeda.sormas.ui.utils.components.FormActionButtonsComponent;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
@@ -34,24 +33,18 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	public static final String FILTER_ITEM_STYLE = "filter-item";
 
-	private static final String APPLY_RESET_BUTTON_ID = "apply-reset";
-	private static final String EXPAND_COLLAPSE_ID = "expandCollapse";
+	private static final String ACTION_BUTTONS_ID = "actionButtons";
 	private static final String MORE_FILTERS_ID = "moreFilters";
 
 	private CustomLayout moreFiltersLayout;
-	private ToggleMoreFiltersComponent showHideMoreButton;
 	private boolean skipChangeEvents;
 	private boolean hasFilter;
 
-	protected ApplyResetButtonsComponent applyResetButtonsComponent;
+	protected FormActionButtonsComponent formActionButtonsComponent;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(null, null), true);
-
-		// needed before adding date filters
-		applyResetButtonsComponent = new ApplyResetButtonsComponent();
-		getContent().addComponent(applyResetButtonsComponent, APPLY_RESET_BUTTON_ID);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -61,11 +54,13 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			moreFiltersLayout.setTemplateContents(moreFiltersHtmlLayout);
 			moreFiltersLayout.setVisible(false);
 			getContent().addComponent(moreFiltersLayout, MORE_FILTERS_ID);
+		}
 
+		formActionButtonsComponent = new FormActionButtonsComponent(moreFiltersLayout);
+		getContent().addComponent(formActionButtonsComponent, ACTION_BUTTONS_ID);
+
+		if (hasMoreFilters) {
 			addMoreFilters(moreFiltersLayout);
-
-			showHideMoreButton = new ToggleMoreFiltersComponent(moreFiltersLayout);
-			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 		}
 
 		this.addValueChangeListener(e -> {
@@ -81,7 +76,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, APPLY_RESET_BUTTON_ID)) + loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + loc(MORE_FILTERS_ID));
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -125,11 +120,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	public void addResetHandler(Button.ClickListener resetHandler) {
-		applyResetButtonsComponent.addResetHandler(resetHandler);
+		formActionButtonsComponent.addResetHandler(resetHandler);
 	}
 
 	public void addApplyHandler(Button.ClickListener applyHandler) {
-		applyResetButtonsComponent.addApplyHandler(applyHandler);
+		formActionButtonsComponent.addApplyHandler(applyHandler);
 	}
 
 	@Override
@@ -152,7 +147,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
-				showHideMoreButton.toggleMoreFilters(hasExpandedFilter);
+				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
 		});
 	}
