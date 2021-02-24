@@ -37,6 +37,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -206,6 +207,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			campaignForm.getCampaignFormTranslations());
 
 		campaignFormBuilder.buildForm();
+
+		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(campaignFormBuilder);
+		expressionProcessor.disableExpressionFieldsForEditing();
+		expressionProcessor.addExpressionListener();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}
