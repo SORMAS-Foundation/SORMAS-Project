@@ -14,7 +14,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class AliveOrDeadCurveBuilder extends EpiCurveBuilder {
+public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 	public AliveOrDeadCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);

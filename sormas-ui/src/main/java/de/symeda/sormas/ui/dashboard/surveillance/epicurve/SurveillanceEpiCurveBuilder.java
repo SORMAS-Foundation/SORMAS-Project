@@ -12,12 +12,12 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
-public abstract class EpiCurveBuilder {
+public abstract class SurveillanceEpiCurveBuilder {
 
 	protected final EpiCurveGrouping epiCurveGrouping;
 	protected final StringBuilder hcjs;
 
-	public EpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
+	public SurveillanceEpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		this.epiCurveGrouping = epiCurveGrouping;
 		hcjs = new StringBuilder();
 	}
