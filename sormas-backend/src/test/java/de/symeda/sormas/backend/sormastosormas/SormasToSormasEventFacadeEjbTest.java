@@ -51,7 +51,9 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -59,6 +61,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
@@ -309,19 +312,25 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	@Test
 	public void testSaveSharedEventsWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
+		FacilityDto remoteLab = FacilityDto.build();
+		remoteLab.setName("Test Lab");
+		FacilityDto localLab = creator.createFacility("Test Lab", rdcf.localRdcf.region, rdcf.localRdcf.district, null, FacilityType.LABORATORY);
 
 		EventDto event = createEventDto(rdcf.remoteRdcf);
 		UserDto sampleUser = UserDto.build();
 		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), sampleUser.toReference(), rdcf);
-		SampleDto sample = createSample(eventParticipant.toReference(), sampleUser.toReference(), rdcf.remoteRdcf.facility);
+
+		SampleDto sample = createSample(eventParticipant.toReference(), sampleUser.toReference(), remoteLab.toReference());
 		sample.setLabSampleID("Test lab sample id");
 
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, sampleUser);
-		pathogenTest.setLab(rdcf.remoteRdcf.facility);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setLab(remoteLab.toReference());
 		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
 		pathogenTest.setTestResult(PathogenTestResultType.PENDING);
 
 		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
+		additionalTest.setTestDateTime(new Date());
 		additionalTest.setHaemoglobin(0.2F);
 		additionalTest.setConjBilirubin(0.3F);
 
@@ -338,7 +347,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(savedSample, is(notNullValue()));
 		assertThat(savedSample.getAssociatedEventParticipant(), is(eventParticipant.toReference()));
 		assertThat(savedSample.getSampleMaterial(), is(SampleMaterial.BLOOD));
-		assertThat(savedSample.getLab(), is(rdcf.localRdcf.facility));
+		assertThat(savedSample.getLab(), is(localLab.toReference()));
 		assertThat(savedSample.getLabSampleID(), is("Test lab sample id"));
 
 		assertThat(savedSample.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
@@ -346,7 +355,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		PathogenTestDto savedPathogenTest = getPathogenTestFacade().getByUuid(pathogenTest.getUuid());
 		assertThat(savedPathogenTest, is(notNullValue()));
-		assertThat(savedPathogenTest.getLab(), is(rdcf.localRdcf.facility));
+		assertThat(savedPathogenTest.getLab(), is(localLab.toReference()));
 		assertThat(savedPathogenTest.getTestType(), is(PathogenTestType.RAPID_TEST));
 		assertThat(savedPathogenTest.getTestResult(), is(PathogenTestResultType.PENDING));
 
@@ -597,7 +606,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	private SampleDto createSample(EventParticipantReferenceDto eventParticipant, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
 		SampleDto sample = SampleDto.build(reportingUser, eventParticipant);
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.INTERNAL);
 		sample.setLab(lab);
+		sample.setSampleDateTime(new Date());
 
 		return sample;
 	}

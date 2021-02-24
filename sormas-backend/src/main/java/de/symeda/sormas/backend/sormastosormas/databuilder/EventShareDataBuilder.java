@@ -33,6 +33,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.event.EventShareData;
@@ -51,6 +53,8 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private SampleService sampleService;
 
 	@Override
 	public EventShareData buildShareData(Event data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -67,8 +71,16 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 			eventParticipants = eventParticipantService.getByEventUuids(Collections.singletonList(eventDto.getUuid()));
 		}
 
+		List<Sample> samples = Collections.emptyList();
+		if (eventParticipants.size() > 0 && options.isWithSamples()) {
+			samples =
+				sampleService.getByEventParticipantUuids(eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList()));
+		}
+
 		entity.setEventParticipants(getEventParticipantDtos(eventParticipants, options, pseudonymizer));
+		entity.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
 		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forEventParticipants(eventParticipants));
+		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 
 		return eventShareData;
 	}

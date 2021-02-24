@@ -33,6 +33,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -48,6 +49,8 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 @LocalBean
 public class ProcessedEventDataPersister implements ProcessedDataPersister<ProcessedEventData> {
 
+	@EJB
+	private ProcessedDataPersisterHelper processedDataPersisterHelper;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 
@@ -69,6 +72,8 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	public void persistSharedData(ProcessedEventData processedData) throws SormasToSormasValidationException {
 		persistProcessedData(processedData, null, (event, eventParticipant) -> {
 			eventParticipant.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
+		}, (event, sample) -> {
+			sample.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
 		});
 	}
 
@@ -97,6 +102,19 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 				eventParticipantShareInfo.setOwnershipHandedOver(false);
 				shareInfoService.persist(eventParticipantShareInfo);
 			}
+		}, (event, sample) -> {
+			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+			if (sampleShareInfo == null) {
+				if (!originInfoSaved.booleanValue()) {
+					oriInfoFacade.saveOriginInfo(originInfo);
+					originInfoSaved.setValue(true);
+				}
+
+				sample.setSormasToSormasOriginInfo(originInfo);
+			} else {
+				sampleShareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(sampleShareInfo);
+			}
 		});
 	}
 
@@ -116,13 +134,18 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 			if (eventParticipant.getSormasToSormasOriginInfo() == null) {
 				eventParticipant.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
 			}
+		}, (event, sample) -> {
+			if (sample.getSormasToSormasOriginInfo() == null) {
+				sample.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
+			}
 		});
 	}
 
 	private void persistProcessedData(
 		ProcessedEventData eventData,
 		Consumer<EventDto> afterSaveEvent,
-		BiConsumer<EventDto, EventParticipantDto> beforeSaveEventParticipant)
+		BiConsumer<EventDto, EventParticipantDto> beforeSaveEventParticipant,
+		BiConsumer<EventDto, SampleDto> beforeSaveSample)
 		throws SormasToSormasValidationException {
 		EventDto event = eventData.getEntity();
 
@@ -136,6 +159,11 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 			persistEventParticipants(
 				eventData.getEventParticipants(),
 				beforeSaveEventParticipant != null ? (ep) -> beforeSaveEventParticipant.accept(savedEvent, ep) : null);
+		}
+
+		if (eventData.getSamples() != null) {
+			processedDataPersisterHelper
+				.persistSamples(eventData.getSamples(), beforeSaveSample != null ? (s) -> beforeSaveSample.accept(savedEvent, s) : null);
 		}
 	}
 

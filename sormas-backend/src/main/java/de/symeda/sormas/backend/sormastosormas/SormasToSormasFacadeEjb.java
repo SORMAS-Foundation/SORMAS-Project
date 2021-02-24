@@ -600,6 +600,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 		shareInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
 		shareInfo.setWithSamples(options.isWithSamples());
+		shareInfo.setWithEventParticipants(options.isWithEventParticipants());
 		shareInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
 		shareInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
 		shareInfo.setComment(options.getComment());
@@ -630,6 +631,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
 		target.setWithSamples(source.isWithSamples());
+		target.setWithEvenParticipants(source.isWithEventParticipants());
 		target.setPseudonymizedPersonalData(source.isPseudonymizedPersonalData());
 		target.setPseudonymizedSensitiveData(source.isPseudonymizedSensitiveData());
 		target.setComment(source.getComment());

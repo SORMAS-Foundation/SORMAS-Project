@@ -205,6 +205,7 @@ public class SormasToSormasController {
 		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(shareInfoDto.getTarget().getUuid()));
 		defaultOptions.setWithAssociatedContacts(shareInfoDto.isWithAssociatedContacts());
 		defaultOptions.setWithSamples(shareInfoDto.isWithSamples());
+		defaultOptions.setWithEventParticipants(shareInfoDto.isWithEvenParticipants());
 		defaultOptions.setPseudonymizePersonalData(shareInfoDto.isPseudonymizedPersonalData());
 		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
 		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());

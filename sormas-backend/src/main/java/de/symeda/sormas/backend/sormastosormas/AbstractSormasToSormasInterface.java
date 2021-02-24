@@ -310,6 +310,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 		shareInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
 		shareInfo.setWithSamples(options.isWithSamples());
+		shareInfo.setWithEventParticipants(options.isWithEventParticipants());
 		shareInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
 		shareInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
 		shareInfo.setComment(options.getComment());

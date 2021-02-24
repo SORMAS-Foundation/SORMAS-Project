@@ -20,6 +20,7 @@ import java.util.List;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 
 public class ProcessedEventData extends ProcessedData<EventDto> {
 
@@ -27,12 +28,23 @@ public class ProcessedEventData extends ProcessedData<EventDto> {
 
 	private final List<EventParticipantDto> eventParticipants;
 
-	public ProcessedEventData(EventDto entity, SormasToSormasOriginInfoDto originInfoDto, List<EventParticipantDto> eventParticipants) {
+	private final List<SormasToSormasSampleDto> samples;
+
+	public ProcessedEventData(
+		EventDto entity,
+		SormasToSormasOriginInfoDto originInfoDto,
+		List<EventParticipantDto> eventParticipants,
+		List<SormasToSormasSampleDto> samples) {
 		super(entity, originInfoDto);
 		this.eventParticipants = eventParticipants;
+		this.samples = samples;
 	}
 
 	public List<EventParticipantDto> getEventParticipants() {
 		return eventParticipants;
+	}
+
+	public List<SormasToSormasSampleDto> getSamples() {
+		return samples;
 	}
 }

@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
@@ -48,27 +50,40 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private List<String> excludedOrganizationIds;
 
+	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
+
 	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
 			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
-			excludedOrganizationIds);
+			excludedOrganizationIds,
+			null);
 	}
 
 	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
-		return new SormasToSormasOptionsForm(Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), excludedOrganizationIds);
+		return new SormasToSormasOptionsForm(Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), excludedOrganizationIds, null);
 	}
 
 	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
 			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
-			excludedOrganizationIds);
+			excludedOrganizationIds,
+			(form) -> FieldHelper.setVisibleWhen(
+				form.getFieldGroup(),
+				SormasToSormasOptionsDto.WITH_SAMPLES,
+				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+				Boolean.TRUE,
+				true));
 	}
 
-	private SormasToSormasOptionsForm(List<String> customOptions, List<String> excludedOrganizationIds) {
+	private SormasToSormasOptionsForm(
+		List<String> customOptions,
+		List<String> excludedOrganizationIds,
+		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
 		this.customOptions = customOptions;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
+		this.customFieldDependencies = customFieldDependencies;
 
 		addFields();
 
@@ -101,6 +116,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 		comment.setRows(3);
+
+		if (customFieldDependencies != null) {
+			customFieldDependencies.accept(this);
+		}
 	}
 
 	public void disableOrganization() {

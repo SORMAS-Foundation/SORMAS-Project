@@ -21,6 +21,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.sample.Sample;
 
 public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 
@@ -35,6 +36,16 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					ep,
 					SormasToSormasShareInfo::setEventParticipant,
 					(shareInfoService, organizationId) -> shareInfoService.getByEventParticipantAndOrganization(ep.getUuid(), organizationId)))
+			.collect(Collectors.toList());
+	}
+
+	public static List<AssociatedEntityWrapper<?>> forSamples(List<Sample> eventParticipants) {
+		return eventParticipants.stream()
+			.map(
+				s -> new AssociatedEntityWrapper<>(
+					s,
+					SormasToSormasShareInfo::setSample,
+					(shareInfoService, organizationId) -> shareInfoService.getBySampleAndOrganization(s.getUuid(), organizationId)))
 			.collect(Collectors.toList());
 	}
 

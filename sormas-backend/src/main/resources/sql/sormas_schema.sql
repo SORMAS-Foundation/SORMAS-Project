@@ -6622,7 +6622,9 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_sormasToSormasOr
 ALTER TABLE sormastosormasshareinfo ADD COLUMN event_id bigint;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-ALTER TABLE sormastosormasshareinfo ADD COLUMN eventparticipant_id bigint;
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN witheventparticipants boolean DEFAULT false;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (334, '[SORMAS 2 SORMAS] Send and receive Events #4348');

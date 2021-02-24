@@ -32,6 +32,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -73,11 +74,17 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 			validationErrors.putAll(eventParticipantErrors);
 		}
 
+		List<SormasToSormasSampleDto> samples = sharedData.getSamples();
+		if (samples != null) {
+			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			validationErrors.putAll(sampleErrors);
+		}
+
 		if (validationErrors.size() > 0) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
-		return new ProcessedEventData(event, originInfo, eventParticipants);
+		return new ProcessedEventData(event, originInfo, eventParticipants, samples);
 	}
 
 	private ValidationErrors processEventData(EventDto event) {

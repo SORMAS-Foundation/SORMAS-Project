@@ -65,6 +65,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private boolean withSamples;
 
+	private boolean withEventParticipants;
+
 	private boolean pseudonymizedPersonalData;
 
 	private boolean pseudonymizedSensitiveData;
@@ -165,6 +167,15 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setWithSamples(boolean withSamples) {
 		this.withSamples = withSamples;
+	}
+
+	@Column
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
 	}
 
 	@Column
