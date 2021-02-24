@@ -44,7 +44,7 @@ public class EventParticipantDownloadUtil {
 			(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
 				.getExportList(criteria, start, max, I18nProperties.getUserLanguage()),
 			EventParticipantDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"),
+			DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.EVENT_PARTICIPANTS, ".csv"),
 			null);
 	}
 

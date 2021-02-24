@@ -45,6 +45,7 @@ import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.google.common.base.CharMatcher;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -578,7 +579,7 @@ public final class DownloadUtil {
 				exportTypeSupplier = exportTarget::visitExportTypes;
 
 			}
-			return exportTypeSupplier == null ? false : containsExportType(exportType, exportTypeSupplier);
+			return exportTypeSupplier != null && containsExportType(exportType, exportTypeSupplier);
 		}
 		return false;
 	}
@@ -599,7 +600,7 @@ public final class DownloadUtil {
 	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
 	 * </p>
 	 *
-	 * @param exportButton
+	 * @param exportComponent
 	 * @param closeListener
 	 */
 	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
@@ -620,7 +621,16 @@ public final class DownloadUtil {
 		dialog.addCloseListener(closeListener);
 	}
 
-	public static String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
-		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
+	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
+		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
+		String processedInstanceName = getProcessedName(instanceName);
+		String processedEntityName = getProcessedName(entityName.getLocalizedName());
+		String exportDate = DateHelper.formatDateForExport(new Date());
+		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
+	}
+
+	private static String getProcessedName(String name) {
+		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(Character::isAlphabetic).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }
