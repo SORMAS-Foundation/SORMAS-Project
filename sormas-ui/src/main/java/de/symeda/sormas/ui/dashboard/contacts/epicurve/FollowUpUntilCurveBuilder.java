@@ -11,7 +11,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class FollowUpUntilCurveBuilder extends ContactsEpiCurveBuilder {
+public class FollowUpUntilCurveBuilder extends EpiCurveBuilder {
 
 	public FollowUpUntilCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);

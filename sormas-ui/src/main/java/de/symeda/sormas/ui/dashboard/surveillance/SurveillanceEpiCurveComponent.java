@@ -22,8 +22,8 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.epicurve.SurveillanceEpiCurveBuilder;
-import de.symeda.sormas.ui.dashboard.surveillance.epicurve.SurveillanceEpiCurveBuilders;
+import de.symeda.sormas.ui.dashboard.surveillance.epicurve.EpiCurveBuilder;
+import de.symeda.sormas.ui.dashboard.surveillance.epicurve.EpiCurveBuilders;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
@@ -56,8 +56,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
 	@Override
 	public void clearAndFillEpiCurveChart() {
-		SurveillanceEpiCurveBuilder surveillanceEpiCurveBuilder =
-			SurveillanceEpiCurveBuilders.getEpiCurveBuilder(epiCurveSurveillanceMode, epiCurveGrouping);
-		epiCurveChart.setHcjs(surveillanceEpiCurveBuilder.buildFrom(buildListOfFilteredDates(), dashboardDataProvider));
+		EpiCurveBuilder epiCurveBuilder = EpiCurveBuilders.getEpiCurveBuilder(epiCurveSurveillanceMode, epiCurveGrouping);
+		epiCurveChart.setHcjs(epiCurveBuilder.buildFrom(buildListOfFilteredDates(), dashboardDataProvider));
 	}
 }

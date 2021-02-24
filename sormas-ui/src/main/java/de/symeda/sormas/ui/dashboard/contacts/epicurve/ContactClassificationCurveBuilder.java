@@ -13,7 +13,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class ContactClassificationCurveBuilder extends ContactsEpiCurveBuilder {
+public class ContactClassificationCurveBuilder extends EpiCurveBuilder {
 
 	public ContactClassificationCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);
