@@ -435,7 +435,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
 			statisticsCaseGrid.getContainerDataSource(),
 			statisticsCaseGrid.getColumns(),
-			"sormas_statistics",
 			"sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);

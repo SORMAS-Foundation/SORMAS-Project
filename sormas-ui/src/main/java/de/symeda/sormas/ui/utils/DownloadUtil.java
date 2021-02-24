@@ -138,11 +138,10 @@ public final class DownloadUtil {
 	public static StreamResource createGridExportStreamResource(
 		Indexed container,
 		List<Column> columns,
-		String tempFilePrefix,
 		String fileName,
 		String... ignoredPropertyIds) {
 
-		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
+		return new V7GridExportStreamResource(container, columns, fileName, ignoredPropertyIds);
 	}
 
 	public static StreamResource createFileStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
