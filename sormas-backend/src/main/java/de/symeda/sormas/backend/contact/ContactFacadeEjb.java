@@ -330,8 +330,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			if (dropped || convertedToCase) {
 				contactService.cancelFollowUp(
 					entity,
-					I18nProperties
-						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
+					new StringBuilder(entity.getFollowUpComment()).append(" ")
+						.append(
+							I18nProperties
+								.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
+						.toString());
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
