@@ -6,7 +6,6 @@ import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -21,7 +20,7 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider) {
+	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		// Adds the number of alive and dead cases for each day as data
 		int[] aliveNumbers = new int[filteredDates.size()];
 		int[] deadNumbers = new int[filteredDates.size()];
@@ -33,11 +32,14 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 				.region(dashboardDataProvider.getRegion())
 				.district(dashboardDataProvider.getDistrict());
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), dashboardDataProvider.getNewCaseDateType());
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), dashboardDataProvider.getNewCaseDateType());
 			} else {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), dashboardDataProvider.getNewCaseDateType());
 			}
 
 			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);

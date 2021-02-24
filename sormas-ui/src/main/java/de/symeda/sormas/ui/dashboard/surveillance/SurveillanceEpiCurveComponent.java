@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.epicurve.SurveillanceEpiCurveBuilder;
@@ -59,7 +58,6 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 	public void clearAndFillEpiCurveChart() {
 		SurveillanceEpiCurveBuilder surveillanceEpiCurveBuilder =
 			SurveillanceEpiCurveBuilders.getEpiCurveBuilder(epiCurveSurveillanceMode, epiCurveGrouping);
-		epiCurveChart
-			.setHcjs(surveillanceEpiCurveBuilder.buildFrom(buildListOfFilteredDates(), NewCaseDateType.MOST_RELEVANT, dashboardDataProvider));
+		epiCurveChart.setHcjs(surveillanceEpiCurveBuilder.buildFrom(buildListOfFilteredDates(), dashboardDataProvider));
 	}
 }

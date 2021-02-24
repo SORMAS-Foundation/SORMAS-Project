@@ -7,7 +7,6 @@ import java.util.Map;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -21,7 +20,7 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider) {
+	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		// Adds the number of confirmed, probable and suspect cases for each day as data
 		int[] confirmedNumbers = new int[filteredDates.size()];
 		int[] probableNumbers = new int[filteredDates.size()];
@@ -35,11 +34,14 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 				.region(dashboardDataProvider.getRegion())
 				.district(dashboardDataProvider.getDistrict());
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), dashboardDataProvider.getNewCaseDateType());
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), dashboardDataProvider.getNewCaseDateType());
 			} else {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), newCaseDateType);
+				caseCriteria
+					.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), dashboardDataProvider.getNewCaseDateType());
 			}
 
 			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);

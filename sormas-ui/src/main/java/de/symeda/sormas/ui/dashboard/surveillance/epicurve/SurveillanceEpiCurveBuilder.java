@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -23,7 +22,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 		hcjs = new StringBuilder();
 	}
 
-	public String buildFrom(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider) {
+	public String buildFrom(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		//@formatter:off
         hcjs.append(
             "var options = {"
@@ -62,7 +61,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		buildEpiCurve(filteredDates, newCaseDateType, dashboardDataProvider);
+		buildEpiCurve(filteredDates, dashboardDataProvider);
 
 		//@formatter:off
 		hcjs.append("exporting: {\n" +
@@ -107,5 +106,5 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract void buildEpiCurve(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider);
+	abstract void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
 }
