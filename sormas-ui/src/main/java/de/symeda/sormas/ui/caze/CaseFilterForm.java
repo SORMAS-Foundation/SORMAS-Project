@@ -568,7 +568,6 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		// facility
-		System.out.println("Deciding which facilityfields to show");
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			facilityField.setValue(user.getHealthFacility());
 			disableFields(typeGroupField, typeField, facilityField);
