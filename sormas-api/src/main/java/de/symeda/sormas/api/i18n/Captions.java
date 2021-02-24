@@ -98,6 +98,7 @@ public interface Captions {
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";
 	String ActivityAsCase_typeOfPlaceDetails = "ActivityAsCase.typeOfPlaceDetails";
 	String ActivityAsCase_workEnvironment = "ActivityAsCase.workEnvironment";
+	String activityAsCaseFlightNumber = "activityAsCaseFlightNumber";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
