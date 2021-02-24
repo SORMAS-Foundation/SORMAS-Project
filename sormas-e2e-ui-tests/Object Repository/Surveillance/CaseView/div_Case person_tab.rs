@@ -4,6 +4,12 @@
    <name>div_Case Person_tab</name>
    <tag></tag>
    <elementGuidId>7bd43824-ea1b-4456-b0a4-2d17fe70be48</elementGuidId>
+   <selectorCollection>
+      <entry>
+         <key>BASIC</key>
+         <value>//div[@id = 'tab-cases-person' and (text() = 'Case person' or . = 'Case person')]</value>
+      </entry>
+   </selectorCollection>
    <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
@@ -28,7 +34,7 @@
       <value>tab-cases-person</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
