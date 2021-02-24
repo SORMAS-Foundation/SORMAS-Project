@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +47,7 @@ public class SurvnetGatewayFacadeEjbTest extends AbstractBeanTest {
 	private SurvnetGatewayFacade subjectUnderTest;
 
 	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(WIREMOCK_TESTING_PORT);
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
 
 	@Before
 	public void setup() {
@@ -79,8 +80,9 @@ public class SurvnetGatewayFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSendingCasesNotOk() {
 		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY"))
-				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
+			post(urlEqualTo("/export"))
+					.withRequestBody(containing("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY"))
+					.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		int result = subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
 		assertThat(result, CoreMatchers.is(HttpStatus.SC_NOT_FOUND));
