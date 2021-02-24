@@ -295,7 +295,13 @@ public class EventsView extends AbstractView {
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
-		filterForm.addApplyHandler(e -> navigateTo(criteria));
+		filterForm.addApplyHandler(e -> {
+			if (isDefaultViewType()) {
+				((EventGrid) grid).reload();
+			} else {
+				((EventActionsGrid) grid).reload();
+			}
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
