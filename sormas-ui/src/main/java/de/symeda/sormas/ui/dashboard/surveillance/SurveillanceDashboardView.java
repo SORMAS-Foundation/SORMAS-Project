@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -52,7 +53,12 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
 
-		dashboardLayout.addComponent(new DateTypeSelectorLayout());
+		DateTypeSelectorLayout dateTypeSelectorLayout = new DateTypeSelectorLayout();
+		dateTypeSelectorLayout.addValueChangeListener(e -> {
+			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
+			refreshDashboard();
+		});
+		dashboardLayout.addComponent(dateTypeSelectorLayout);
 
 		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);
 		dashboardSwitcher.addValueChangeListener(e -> {
