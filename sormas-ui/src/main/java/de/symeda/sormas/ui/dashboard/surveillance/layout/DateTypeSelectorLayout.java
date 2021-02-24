@@ -27,4 +27,8 @@ public class DateTypeSelectorLayout extends HorizontalLayout {
 	public void addValueChangeListener(Property.ValueChangeListener valueChangeListener) {
 		dateTypeSelectorComponent.addValueChangeListener(valueChangeListener);
 	}
+
+	public void setValue(NewCaseDateType newCaseDateType) {
+		dateTypeSelectorComponent.setValue(newCaseDateType);
+	}
 }
