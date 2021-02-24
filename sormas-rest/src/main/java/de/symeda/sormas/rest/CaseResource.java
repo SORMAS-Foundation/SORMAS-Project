@@ -17,21 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.*;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.utils.SortProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.Date;
+import java.util.List;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -76,4 +73,24 @@ public class CaseResource extends EntityDtoResource {
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
 	}
+
+	///
+	@GET
+	@Path("/allPagingCases/{since}")
+	public Page<CaseDataDto> getPagingAllCases(@PathParam("since") long since, @QueryParam("page") int page, @QueryParam("size") int size ) {
+		return FacadeProvider.getCaseFacade().getPagingAllActiveCasesAfter(new Date(since), page, size);
+	}
+
+	@POST
+	@Path("/caseIndex")
+	public Page<CaseIndexDto> getIndexList(@RequestBody CaseCriteriaAndSorting caseCriteriaAndSorting, @QueryParam("page") int page, @QueryParam("size") int size ) {
+		return FacadeProvider.getCaseFacade().getIndexPage(caseCriteriaAndSorting.getCaseCriteria(),  page,  size, caseCriteriaAndSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/caseIndexDetailed")
+	public Page<CaseIndexDetailedDto> getIndexDetailedList(@RequestBody CaseCriteriaAndSorting caseCriteriaAndSorting, @QueryParam("page") int page, @QueryParam("size") int size ) {
+		return FacadeProvider.getCaseFacade().getIndexDetailedPage(caseCriteriaAndSorting.getCaseCriteria(),  page,  size, caseCriteriaAndSorting.getSortProperties());
+	}
+
 }

@@ -27,6 +27,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -53,7 +54,13 @@ public interface CaseFacade {
 
 	long count(CaseCriteria caseCriteria);
 
+	Page<CaseDataDto> getPagingAllActiveCasesAfter(Date date, int page, int size);
+
+
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
@@ -126,6 +133,8 @@ public interface CaseFacade {
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 
 	List<String> getArchivedUuidsSince(Date since);
+
+	public List<String> getPagingArchivedUuidsSince(Date since, int page, int size);
 
 	List<String> getDeletedUuidsSince(Date since);
 

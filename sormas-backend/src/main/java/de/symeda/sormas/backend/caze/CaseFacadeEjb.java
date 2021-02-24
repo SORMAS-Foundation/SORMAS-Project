@@ -62,6 +62,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -381,6 +382,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		return getAllActiveCasesAfter(date, false);
 	}
 
+
+
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
 
@@ -396,10 +399,36 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public Page<CaseDataDto> getPagingAllActiveCasesAfter(Date date, int page, int size) {
+
+		if (userService.getCurrentUser() == null) {
+			return Page.emptyResults();
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Page<Case> casePage = caseService.getPagingAllActiveCasesAfter(date, false, page, size);
+		List<CaseDataDto> caseDataDtoSlide =
+				casePage.getElements().stream()
+				.map(c -> convertToDto(c, pseudonymizer))
+				.collect(Collectors.toList());
+
+		 return new Page<CaseDataDto>(caseDataDtoSlide, page, size, casePage.getTotalNoElements());
+	}
+
+	@Override
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return caseService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
+
+	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties){
+
+		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, page*size, size,sortProperties);
+		long totalNumberOfCaseIndex = count(caseCriteria);
+
+		return new Page<CaseIndexDto>(caseIndexList, page, size, totalNumberOfCaseIndex) ;
+	}
+
 
 	@Override
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
@@ -430,6 +459,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties){
+		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, page*size, size,sortProperties);
+		long totalNumberOfCaseIndex = count(caseCriteria);
+		return new Page<CaseIndexDetailedDto>(caseIndexDetailedList, page, size, totalNumberOfCaseIndex) ;
 	}
 
 	@Override
@@ -1999,6 +2034,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return caseService.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public List<String> getPagingArchivedUuidsSince(Date since, int page, int size) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return caseService.getPagingArchivedUuidsSince(since, page, size);
 	}
 
 	@Override
