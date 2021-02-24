@@ -718,25 +718,6 @@ public class ContactController {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	/**
-	 * Attempts to register the given person as a new patient in CLIMEDO
-	 * Displays the result in a popup
-	 */
-	public void registerPatientDiaryPerson(PersonDto person) {
-		ExternalJournalValidation validationResult = FacadeProvider.getExternalJournalFacade().validatePatientDiaryPerson(person);
-		if (!validationResult.isValid()) {
-			VaadinUiUtil.showWarningPopup(validationResult.getMessage());
-		} else {
-			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
-				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
-				openPatientDiaryEnrollPage(person.getUuid());
-			} else {
-				PatientDiaryRegisterResult registerResult = FacadeProvider.getExternalJournalFacade().registerPatientDiaryPerson(person);
-				showPatientRegisterResultPopup(registerResult);
-			}
-		}
-	}
-
 	private void openPatientDiaryEnrollPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
 		String authToken = FacadeProvider.getExternalJournalFacade().getPatientDiaryAuthToken();
