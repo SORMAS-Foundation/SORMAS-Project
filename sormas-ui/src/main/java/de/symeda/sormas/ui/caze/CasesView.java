@@ -526,12 +526,10 @@ public class CasesView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!navigateTo(criteria, false)) {
-				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-					((CaseFollowUpGrid) grid).reload();
-				} else {
-					((AbstractCaseGrid<?>) grid).reload();
-				}
+			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				((CaseFollowUpGrid) grid).reload();
+			} else {
+				((AbstractCaseGrid<?>) grid).reload();
 			}
 		});
 		filterLayout.addComponent(filterForm);
