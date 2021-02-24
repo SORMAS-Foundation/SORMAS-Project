@@ -548,12 +548,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		// district
 		if (region != null) {
-			if (district == null) {
-				enableFields(districtField);
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			} else {
+			enableFields(districtField);
+			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			if (district != null) {
 				districtField.setValue(district);
-				disableFields(districtField);
 			}
 		} else {
 			disableFields(districtField);
@@ -564,17 +562,25 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 			enableFields(communityField, typeGroupField);
 		} else if (district != null && community != null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 			communityField.setValue(community);
-			disableFields(communityField);
+			enableFields(communityField);
 		}
 
 		// facility
+		System.out.println("Deciding which facilityfields to show");
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			facilityField.setValue(user.getHealthFacility());
 			disableFields(typeGroupField, typeField, facilityField);
 		} else {
+			enableFields(typeGroupField);
+			FieldHelper.updateEnumData(typeGroupField, FacilityTypeGroup.getAccomodationGroups());
 			if (typeGroup != null) {
+				typeGroupField.setValue(typeGroup);
+				enableFields(typeField);
+				FieldHelper.updateEnumData(typeField, FacilityType.getAccommodationTypes(typeGroup));
 				if (type != null) {
+					typeField.setValue(type);
 					enableFields(facilityField);
 					if (community != null) {
 						facilityField
@@ -585,14 +591,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 						facilityField.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByRegionAndType(region, type, true, false));
 					}
 				} else {
-					enableFields(typeField);
 					disableFields(facilityField);
-					FieldHelper.updateEnumData(typeField, FacilityType.getAccommodationTypes(typeGroup));
 				}
 			} else {
-				enableFields(typeGroupField);
 				disableFields(typeField);
-				FieldHelper.updateEnumData(typeGroupField, FacilityTypeGroup.getAccomodationGroups());
 			}
 		}
 
