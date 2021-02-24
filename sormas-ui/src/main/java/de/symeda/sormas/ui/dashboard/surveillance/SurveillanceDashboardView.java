@@ -57,7 +57,9 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		dateTypeSelectorLayout.setValue(NewCaseDateType.MOST_RELEVANT);
 		dateTypeSelectorLayout.addValueChangeListener(e -> {
 			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
+			dashboardDataProvider.refreshData();
 			refreshDashboard();
+			surveillanceOverviewLayout.refresh();
 		});
 		dashboardLayout.addComponent(dateTypeSelectorLayout);
 
