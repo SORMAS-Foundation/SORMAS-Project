@@ -68,13 +68,13 @@ public class FacilityIndexDto implements Serializable {
 		this.name = name;
 		this.type = type;
 		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName);
+			this.region = new RegionReferenceDto(regionUuid, regionName, null);
 		}
 		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName);
+			this.district = new DistrictReferenceDto(districtUuid, districtName, null);
 		}
 		if (communityUuid != null) {
-			this.community = new CommunityReferenceDto(communityUuid, communityName);
+			this.community = new CommunityReferenceDto(communityUuid, communityName, null);
 		}
 		this.city = city;
 		this.latitude = latitude;
@@ -168,6 +168,6 @@ public class FacilityIndexDto implements Serializable {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString());
+		return new FacilityReferenceDto(getUuid(), toString(), getExternalID());
 	}
 }

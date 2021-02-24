@@ -807,7 +807,7 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
-		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
 
 		long dt = System.nanoTime();
 
@@ -876,7 +876,7 @@ public class DevModeView extends AbstractConfigurationView {
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 						caze.setRegion(config.getRegion());
 						caze.setDistrict(config.getDistrict());
-						FacilityDto facility = random(healthFacilities);
+						FacilityIndexDto facility = random(healthFacilities);
 						caze.setHealthFacility(facility.toReference());
 						caze.setFacilityType(facility.getType());
 						caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
