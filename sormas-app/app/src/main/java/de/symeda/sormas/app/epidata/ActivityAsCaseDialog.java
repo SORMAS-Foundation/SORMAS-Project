@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -108,13 +108,13 @@ public class ActivityAsCaseDialog extends FormDialog {
 		contentBinding.activityAsCaseMeansOfTransport.addValueChangedListener(e -> {
 			contentBinding.activityAsCaseConnectionNumber.setCaption(
 				e.getValue() == MeansOfTransport.PLANE
-					? I18nProperties.getCaption(Captions.exposureFlightNumber)
-					: I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, ExposureDto.CONNECTION_NUMBER));
+					? I18nProperties.getCaption(Captions.activityAsCaseFlightNumber)
+					: I18nProperties.getPrefixCaption(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.CONNECTION_NUMBER));
 		});
 
 		contentBinding.activityAsCaseLocation.setOnClickListener(v -> openAddressPopup());
 
-		setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) getRootView());
+		setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) getRootView());
 
 		contentBinding.activityAsCaseTypeOfPlace.addValueChangedListener(e -> {
 			if (e.getValue() != TypeOfPlace.FACILITY) {

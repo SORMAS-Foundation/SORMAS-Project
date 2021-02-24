@@ -19,6 +19,7 @@ import java.util.Date;
 
 import com.j256.ormlite.dao.Dao;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -92,12 +93,8 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 			return null;
 		}
 
-		Date exposureDate = DatabaseHelper.getExposureDao().getLatestChangeDate();
-		Date activityAsCaseDate = DatabaseHelper.getActivityAsCaseDao().getLatestChangeDate();
-
-		if (exposureDate != null && (exposureDate.after(date) || activityAsCaseDate.after(date))) {
-			date = exposureDate;
-		}
+		date = DateHelper.getLatestDate(date, DatabaseHelper.getExposureDao().getLatestChangeDate());
+		date = DateHelper.getLatestDate(date, DatabaseHelper.getActivityAsCaseDao().getLatestChangeDate());
 
 		return date;
 	}

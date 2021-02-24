@@ -122,7 +122,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 
 			final DialogActivityAsCaseReadLayoutBinding activityAsCaseBinding = (DialogActivityAsCaseReadLayoutBinding) infoDialog.getBinding();
 			if (((ActivityAsCase) item).getMeansOfTransport() == MeansOfTransport.PLANE) {
-				activityAsCaseBinding.activityAsCaseConnectionNumber.setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+				activityAsCaseBinding.activityAsCaseConnectionNumber.setCaption(I18nProperties.getCaption(Captions.activityAsCaseFlightNumber));
 			}
 
 			final FacilityType facilityType = ((ActivityAsCase) item).getLocation().getFacilityType();

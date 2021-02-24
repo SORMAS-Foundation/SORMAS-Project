@@ -119,13 +119,6 @@
                 app:dependencyParentValue="@{HabitationType.OTHER}"
                 style="@style/ControlSingleColumnStyle" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{I18nProperties.getString(Strings.headingActivityAsCaseDetails)}"
-                android:layout_marginBottom="24dp"
-                style="@style/SubHeadingCompactStyle" />
-
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/activityAsCase_role"
                 app:value="@={data.role}"

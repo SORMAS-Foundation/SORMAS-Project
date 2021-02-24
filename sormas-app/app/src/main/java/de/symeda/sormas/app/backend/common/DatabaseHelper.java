@@ -214,6 +214,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
 			TableUtils.clearTable(connectionSource, EpiData.class);
 			TableUtils.clearTable(connectionSource, Exposure.class);
+			TableUtils.clearTable(connectionSource, ActivityAsCase.class);
 			TableUtils.clearTable(connectionSource, WeeklyReport.class);
 			TableUtils.clearTable(connectionSource, WeeklyReportEntry.class);
 			TableUtils.clearTable(connectionSource, AggregateReport.class);
@@ -1992,8 +1993,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 278:
 				currentVersion = 278;
+
 				TableUtils.createTable(connectionSource, ActivityAsCase.class);
-				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN activityascasedetailsknown varchar(255);");
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN activityAsCaseDetailsKnown varchar(255);");
+
+				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Therapy.class).executeRaw("UPDATE therapy SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(ClinicalCourse.class).executeRaw("UPDATE clinicalCourse SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(HealthConditions.class).executeRaw("UPDATE healthConditions SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Exposure.class).executeRaw("UPDATE exposures SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
 				// ATTENTION: break should only be done after last version
 				break;

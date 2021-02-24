@@ -11,7 +11,6 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.location.Location;
 
 public class ActivityAsCaseDao extends AbstractAdoDao<ActivityAsCase> {
@@ -48,7 +47,7 @@ public class ActivityAsCaseDao extends AbstractAdoDao<ActivityAsCase> {
 
 	public List<ActivityAsCase> getByEpiData(EpiData epiData) {
 		if (epiData.isSnapshot()) {
-			return querySnapshotsForEq(Exposure.EPI_DATA + "_id", epiData, ActivityAsCase.CHANGE_DATE, false);
+			return querySnapshotsForEq(ActivityAsCase.EPI_DATA + "_id", epiData, ActivityAsCase.CHANGE_DATE, false);
 		}
 
 		return queryForEq(ActivityAsCase.EPI_DATA + "_id", epiData, ActivityAsCase.CHANGE_DATE, false);
