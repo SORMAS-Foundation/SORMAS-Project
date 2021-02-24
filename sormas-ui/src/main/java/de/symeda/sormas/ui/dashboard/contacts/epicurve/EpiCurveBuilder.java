@@ -63,12 +63,25 @@ public abstract class EpiCurveBuilder {
 
 		buildEpiCurve(datesGroupedBy, dashboardDataProvider);
 
+		//@formatter:off
 		hcjs.append(
-			"exporting: {\n" + "        buttons: {\n" + "            contextButton: {\n" + "                menuItems: [\n"
-				+ "                    'printChart',\n" + "                    'separator',\n" + "                    'downloadPNG',\n"
-				+ "                    'downloadJPEG',\n" + "                    'downloadPDF',\n" + "                    'downloadSVG',\n"
-				+ "                    'downloadCSV',\n" + "                    'downloadXLS'\n" + "                ]\n" + "            }\n"
-				+ "        }\n" + "    }");
+			"exporting: {\n" + 
+				"        buttons: {\n" + 
+				"            contextButton: {\n" + 
+				"                menuItems: [\n" + 
+				"                    'printChart',\n" + 
+				"                    'separator',\n" + 
+				"                    'downloadPNG',\n" + 
+				"                    'downloadJPEG',\n" + 
+				"                    'downloadPDF',\n" + 
+				"                    'downloadSVG',\n" + 
+				"                    'downloadCSV',\n" + 
+				"                    'downloadXLS'\n" + 
+				"                ]\n" + 
+				"            }\n" + 
+				"        }\n" + 
+				"    }");
+		//@formatter:on
 
 		hcjs.append("};");
 
