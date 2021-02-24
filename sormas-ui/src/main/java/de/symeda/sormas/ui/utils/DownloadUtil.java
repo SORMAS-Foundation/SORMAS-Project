@@ -46,6 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.google.common.base.CharMatcher;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -139,9 +140,10 @@ public final class DownloadUtil {
 	public static StreamResource createGridExportStreamResource(
 		Indexed container,
 		List<Column> columns,
-		String fileName,
+		ExportEntityName entityName,
 		String... ignoredPropertyIds) {
 
+		String fileName = createFileNameWithCurrentDate(entityName, ".csv");
 		return new V7GridExportStreamResource(container, columns, fileName, ignoredPropertyIds);
 	}
 

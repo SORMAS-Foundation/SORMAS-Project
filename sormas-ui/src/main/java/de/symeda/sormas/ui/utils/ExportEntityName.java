@@ -6,7 +6,8 @@ public enum ExportEntityName {
     CAMPAIGN_DATA("entityCampaignData", "campaign data"),
     CASES("entityCases", "cases"),
     CONTACTS("entityContacts", "contacts"),
-    EVENT_PARTICIPANTS("entityEventParticipants", "event participants");
+    EVENT_PARTICIPANTS("entityEventParticipants", "event participants"),
+    STATISTICS("entityStatistics", "statistics");
 
     private final String languageKey;
     private final String defaultName;
