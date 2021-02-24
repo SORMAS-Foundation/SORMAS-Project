@@ -343,7 +343,7 @@ public class ExternalJournalService {
 	 *            the person to validate
 	 * @return the result of the validation
 	 */
-	protected ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
+	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
 		String email = person.getEmailAddress();
