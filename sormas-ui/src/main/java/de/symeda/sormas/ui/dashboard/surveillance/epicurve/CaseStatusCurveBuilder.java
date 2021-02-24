@@ -21,8 +21,8 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
-// Adds the number of confirmed, probable and suspect cases for each day as data
+	void buildEpiCurve(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider) {
+		// Adds the number of confirmed, probable and suspect cases for each day as data
 		int[] confirmedNumbers = new int[filteredDates.size()];
 		int[] probableNumbers = new int[filteredDates.size()];
 		int[] suspectNumbers = new int[filteredDates.size()];
@@ -35,11 +35,11 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 				.region(dashboardDataProvider.getRegion())
 				.district(dashboardDataProvider.getDistrict());
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), newCaseDateType);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), newCaseDateType);
 			} else {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), newCaseDateType);
 			}
 
 			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);

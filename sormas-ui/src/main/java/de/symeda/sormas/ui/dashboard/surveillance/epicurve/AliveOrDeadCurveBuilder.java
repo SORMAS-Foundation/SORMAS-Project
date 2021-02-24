@@ -21,7 +21,7 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	void buildEpiCurve(List<Date> filteredDates, NewCaseDateType newCaseDateType, DashboardDataProvider dashboardDataProvider) {
 		// Adds the number of alive and dead cases for each day as data
 		int[] aliveNumbers = new int[filteredDates.size()];
 		int[] deadNumbers = new int[filteredDates.size()];
@@ -33,11 +33,11 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 				.region(dashboardDataProvider.getRegion())
 				.district(dashboardDataProvider.getDistrict());
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), newCaseDateType);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), newCaseDateType);
 			} else {
-				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), NewCaseDateType.MOST_RELEVANT);
+				caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), newCaseDateType);
 			}
 
 			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
