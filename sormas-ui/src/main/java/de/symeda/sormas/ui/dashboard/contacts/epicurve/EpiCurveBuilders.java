@@ -5,7 +5,7 @@ import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
 public class EpiCurveBuilders {
 
-	public static EpiCurveBuilder getEpiCurveBuilder(ContactsEpiCurveMode epiCurveContactsMode, EpiCurveGrouping epiCurveGrouping) {
+	public static ContactsEpiCurveBuilder getEpiCurveBuilder(ContactsEpiCurveMode epiCurveContactsMode, EpiCurveGrouping epiCurveGrouping) {
 		if (epiCurveContactsMode == ContactsEpiCurveMode.CONTACT_CLASSIFICATION) {
 			return new ContactClassificationCurveBuilder(epiCurveGrouping);
 		} else if (epiCurveContactsMode == ContactsEpiCurveMode.FOLLOW_UP_STATUS) {

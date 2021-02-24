@@ -14,15 +14,15 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class CaseStatusCurveBuilder extends EpiCurveBuilder {
+public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 	public CaseStatusCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
-// Adds the number of confirmed, probable and suspect cases for each day as data
+	public void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+		// Adds the number of confirmed, probable and suspect cases for each day as data
 		int[] confirmedNumbers = new int[filteredDates.size()];
 		int[] probableNumbers = new int[filteredDates.size()];
 		int[] suspectNumbers = new int[filteredDates.size()];

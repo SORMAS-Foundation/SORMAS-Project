@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard.surveillance.epicurve;
+package de.symeda.sormas.ui.dashboard.epicurve;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,7 +22,7 @@ public abstract class EpiCurveBuilder {
 		hcjs = new StringBuilder();
 	}
 
-	public String buildFrom(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	public String buildFrom(List<Date> filteredDates, String title, DashboardDataProvider dashboardDataProvider) {
 		//@formatter:off
         hcjs.append(
             "var options = {"
@@ -50,37 +50,37 @@ public abstract class EpiCurveBuilder {
 		}
 
 		//@formatter:off
-		hcjs.append("yAxis: { min: 0, title: { text: '" + I18nProperties.getCaption(Captions.dashboardNumberOfCases) + "' }, allowDecimals: false, softMax: 10, "
-			+ "stackLabels: { enabled: true, "
-			+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
-			+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
-			+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
-			+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.dashboardTotal) + ": {point.stackTotal}'},"
-			+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
-			+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
-			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
-		//@formatter:on
+        hcjs.append("yAxis: { min: 0, title: { text: '" + title + "' }, allowDecimals: false, softMax: 10, "
+            + "stackLabels: { enabled: true, "
+            + "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
+            + "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
+            + "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
+            + "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.dashboardTotal) + ": {point.stackTotal}'},"
+            + "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
+            + "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
+            + "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
+        //@formatter:on
 
 		buildEpiCurve(filteredDates, dashboardDataProvider);
 
 		//@formatter:off
-		hcjs.append("exporting: {\n" +
-			"        buttons: {\n" +
-			"            contextButton: {\n" +
-			"                menuItems: [\n" +
-			"                    'printChart',\n" +
-			"                    'separator',\n" +
-			"                    'downloadPNG',\n" +
-			"                    'downloadJPEG',\n" +
-			"                    'downloadPDF',\n" +
-			"                    'downloadSVG',\n" +
-			"                    'downloadCSV',\n" +
-			"                    'downloadXLS'\n" +
-			"                ]\n" +
-			"            }\n" +
-			"        }\n" +
-			"    }");
-		//@formatter:on
+        hcjs.append("exporting: {\n" +
+            "        buttons: {\n" +
+            "            contextButton: {\n" +
+            "                menuItems: [\n" +
+            "                    'printChart',\n" +
+            "                    'separator',\n" +
+            "                    'downloadPNG',\n" +
+            "                    'downloadJPEG',\n" +
+            "                    'downloadPDF',\n" +
+            "                    'downloadSVG',\n" +
+            "                    'downloadCSV',\n" +
+            "                    'downloadXLS'\n" +
+            "                ]\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }");
+        //@formatter:on
 
 		hcjs.append("};");
 
@@ -106,5 +106,5 @@ public abstract class EpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
+	public abstract void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
 }

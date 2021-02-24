@@ -14,14 +14,14 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class AliveOrDeadCurveBuilder extends EpiCurveBuilder {
+public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 	public AliveOrDeadCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	public void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		// Adds the number of alive and dead cases for each day as data
 		int[] aliveNumbers = new int[filteredDates.size()];
 		int[] deadNumbers = new int[filteredDates.size()];
