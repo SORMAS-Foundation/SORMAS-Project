@@ -55,18 +55,30 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 @SuppressWarnings("serial")
 public class GridExportStreamResource {
 
+	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
+		return new GridExportStreamResource(grid, entityName, excludePropertyIds).getStreamResource();
+	}
+
+	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
+		return new GridExportStreamResource(grid, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
+	}
+
 	private StreamResource streamResource;
 
-	public GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
+	private GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
 		this(grid, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList());
 	}
 
-	public GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
+	private GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
 		String filename = "";
 		GridExportStreamSource streamSource = new GridExportStreamSource(grid, excludePropertyIds, includePropertyIds);
 		this.streamResource = new StreamResource(streamSource, filename);
 		this.streamResource.setMIMEType("text/csv");
 		this.streamResource.setCacheTime(0);
+	}
+
+	private StreamResource getStreamResource() {
+		return this.streamResource;
 	}
 	
 	private class GridExportStreamSource implements StreamResource.StreamSource {
