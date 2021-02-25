@@ -96,6 +96,6 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void readTemplateTest() throws DocumentTemplateException {
 		byte[] template = documentTemplateFacade.getDocumentTemplate(QUARANTINE_ORDER_CASE, "Quarantine.docx");
-		assertEquals(12683, template.length);
+		assertEquals(12731, template.length);
 	}
 }

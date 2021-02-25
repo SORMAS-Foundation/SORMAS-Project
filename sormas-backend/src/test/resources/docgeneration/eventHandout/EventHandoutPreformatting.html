@@ -22,7 +22,7 @@
 <div class="actions">
     <h2>$action.title</h2>
     <p>$F.format($action.getDate())</p>
-    <div>#if($action.getDescription()) $action.getDescription() #else <span style="color:#f00">*</span> #end</div>
-    <div>#if($action.reply) $action.reply #else <span class="red">*</span> #end</div>
+    <div>#if($action.getDescription() != "") $action.getDescription() #else <span style="color:#f00">*</span> #end</div>
+    <div>#if($action.reply != "") $action.reply #else <span class="red">*</span> #end</div>
 </div>
 #end

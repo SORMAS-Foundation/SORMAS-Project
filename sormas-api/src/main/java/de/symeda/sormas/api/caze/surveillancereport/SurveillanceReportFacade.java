@@ -27,4 +27,6 @@ public interface SurveillanceReportFacade {
 	void deleteSurveillanceReport(String surveillanceReportUuid);
 
 	List<SurveillanceReportDto> getIndexList(SurveillanceReportCriteria criteria, Integer first, Integer max);
+
+	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
 }

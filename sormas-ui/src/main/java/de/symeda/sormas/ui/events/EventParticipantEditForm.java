@@ -31,6 +31,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -102,6 +103,11 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		});
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+
+		LocationDto locationDto = event.getEventLocation();
+		boolean shouldBeRequired = locationDto.getRegion() == null || locationDto.getDistrict() == null;
+		region.setRequired(shouldBeRequired);
+		district.setRequired(shouldBeRequired);
 
 		addField(EventParticipantDto.REPORTING_USER, ComboBox.class);
 		setReadOnly(true, EventParticipantDto.REPORTING_USER);

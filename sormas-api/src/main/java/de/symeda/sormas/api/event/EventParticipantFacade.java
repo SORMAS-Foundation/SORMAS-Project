@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -37,7 +38,7 @@ public interface EventParticipantFacade {
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 
-	EventParticipantDto saveEventParticipant(EventParticipantDto dto);
+	EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto);
 
 	List<String> getAllActiveUuids();
 

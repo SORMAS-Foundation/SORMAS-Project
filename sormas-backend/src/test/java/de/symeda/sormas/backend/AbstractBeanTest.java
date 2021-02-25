@@ -16,6 +16,8 @@ package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
+import de.symeda.sormas.backend.survnet.SurvnetGatewayFacadeEjb;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -547,7 +549,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public SystemEventFacade getSystemEventFacade() {
-		return getBean((SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class));
+		return getBean(SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class);
 	}
 
+	public SurvnetGatewayFacade getSurvnetGatewayFacade() {
+		return getBean(SurvnetGatewayFacadeEjb.class);
+	}
 }

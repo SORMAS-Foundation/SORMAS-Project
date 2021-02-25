@@ -48,6 +48,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
@@ -380,6 +381,10 @@ public class FacadeProvider {
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {
 		return get().lookupEjbRemote(SurveillanceReportFacade.class);
+	}
+
+	public static I18nFacade getI18nFacade() {
+		return get().lookupEjbRemote(I18nFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

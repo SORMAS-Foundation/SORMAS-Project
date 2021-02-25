@@ -28,6 +28,8 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -39,6 +41,8 @@ public class LocationFacadeEjb implements LocationFacade {
 
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private CountryService countryService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -62,6 +66,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
@@ -96,6 +101,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));

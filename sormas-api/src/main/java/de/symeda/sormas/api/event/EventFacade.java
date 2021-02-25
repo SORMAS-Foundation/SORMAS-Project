@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -41,7 +42,7 @@ public interface EventFacade {
 
 	EventDto getEventByUuid(String uuid);
 
-	EventDto saveEvent(@NotNull EventDto dto);
+	EventDto saveEvent(@Valid @NotNull EventDto dto);
 
 	EventReferenceDto getReferenceByUuid(String uuid);
 

@@ -92,12 +92,13 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		} else {
 			table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_EXPOSURE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
 		}
-
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
 			}
 		}

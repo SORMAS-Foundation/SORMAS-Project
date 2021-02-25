@@ -43,6 +43,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -198,7 +199,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public VisitDto saveVisit(VisitDto dto) {
+	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 		final VisitDto existingDto = toDto(existingVisit);

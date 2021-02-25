@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -59,12 +61,21 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
+	@Inject
+	private SormasToSormasConfig sormasToSormasConfig;
 
 	public ShareData<SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, options);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+
+		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
+		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
+		// format
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()){
+			cazeDto.setExternalToken(null);
+		}
 
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 

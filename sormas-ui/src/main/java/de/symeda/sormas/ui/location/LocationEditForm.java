@@ -54,6 +54,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -78,6 +79,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+			fluidRowLocs(LocationDto.COUNTRY, "", ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
@@ -194,6 +196,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		tfLongitude.setConverter(stringToAngularLocationConverter);
 		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
+		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
@@ -202,8 +205,28 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
+
+		country.addValueChangeListener(e -> {
+			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
+			if (serverCountryDto == null) {
+				if (countryDto == null) {
+					enableInfrastructureFields(true);
+				} else {
+					enableInfrastructureFields(false);
+					resetInfrastructureFields(region, district, community);
+				}
+			} else {
+				if (countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
+					enableInfrastructureFields(true);
+				} else {
+					enableInfrastructureFields(false);
+					resetInfrastructureFields(region, district, community);
+				}
+			}
+		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -292,11 +315,34 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				facilityDetails.clear();
 			}
 		});
+		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+	}
+
+	private void resetInfrastructureFields(ComboBox region, ComboBox district, ComboBox community) {
+		region.setValue(null);
+		district.setValue(null);
+		community.setValue(null);
+		facility.setValue(null);
+		facilityDetails.setValue(null);
+		facilityType.setValue(null);
+		facilityTypeGroup.setValue(null);
+	}
+
+	private void enableInfrastructureFields(boolean isEnabled) {
+		setEnabled(
+			isEnabled,
+			LocationDto.REGION,
+			LocationDto.DISTRICT,
+			LocationDto.COMMUNITY,
+			LocationDto.FACILITY,
+			LocationDto.FACILITY_DETAILS,
+			LocationDto.FACILITY_TYPE);
+		facilityTypeGroup.setEnabled(isEnabled);
 	}
 
 	private void setOldFacilityValuesIfPossible(

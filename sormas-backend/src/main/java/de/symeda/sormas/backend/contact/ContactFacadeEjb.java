@@ -32,19 +32,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -56,6 +56,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -223,6 +224,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -283,12 +286,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto) {
+	public ContactDto saveContact(@Valid ContactDto dto) {
 		return saveContact(dto, true, true);
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+	public ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return saveContact(dto, handleChanges, handleCaseChanges, true);
 	}
 
@@ -348,7 +351,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			return;
 		}
 
-		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.

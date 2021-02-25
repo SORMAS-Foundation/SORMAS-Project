@@ -29,11 +29,14 @@ import java.util.Properties;
 
 import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.inject.Produces;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
+
+import org.apache.james.mime4j.field.address.Mailbox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -54,6 +57,7 @@ public class MockProducer {
 	private static TimerService timerService = mock(TimerService.class);
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	private static FacadeProvider facadeProvider = new FacadeProviderMock();
 
@@ -90,7 +94,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, managedScheduledExecutorService);
 		wireMocks();
 	}
 
@@ -137,5 +141,10 @@ public class MockProducer {
 	@Produces
 	public static Principal getPrincipal() {
 		return principal;
+	}
+
+	@Produces
+	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
+		return managedScheduledExecutorService;
 	}
 }

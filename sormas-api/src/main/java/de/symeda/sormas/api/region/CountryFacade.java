@@ -26,11 +26,13 @@ public interface CountryFacade {
 
 	void dearchive(String countryUuid);
 
-    List<CountryDto> getAllAfter(Date date);
+	List<CountryDto> getAllAfter(Date date);
 
 	List<CountryDto> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids();
 
 	List<CountryReferenceDto> getAllActiveAsReference();
+
+	CountryReferenceDto getServerCountry();
 }

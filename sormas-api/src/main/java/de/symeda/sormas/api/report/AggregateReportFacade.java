@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface AggregateReportFacade {
@@ -12,7 +13,7 @@ public interface AggregateReportFacade {
 
 	List<AggregateReportDto> getByUuids(List<String> uuids);
 
-	AggregateReportDto saveAggregateReport(AggregateReportDto report);
+	AggregateReportDto saveAggregateReport(@Valid AggregateReportDto report);
 
 	List<String> getAllUuids();
 

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -33,7 +34,7 @@ public interface PathogenTestFacade {
 
 	PathogenTestDto getByUuid(String uuid);
 
-	PathogenTestDto savePathogenTest(PathogenTestDto dto);
+	PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto);
 
 	List<String> getAllActiveUuids();
 

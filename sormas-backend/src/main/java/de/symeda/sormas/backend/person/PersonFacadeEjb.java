@@ -27,15 +27,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -46,6 +46,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,9 +62,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -156,6 +156,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CountryService countryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -189,7 +191,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
@@ -305,7 +306,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
 		return savePerson(source, true);
 	}
 
@@ -337,13 +338,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		if (existingPerson.isEnrolledInExternalJournal()) {
-			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
-			if (!validationResult.isValid()) {
-				throw new ValidationRuntimeException(validationResult.getMessage());
-			}
+			externalJournalService.validateExternalJournalPerson(updatedPerson);
+
 		}
 		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		/**
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.

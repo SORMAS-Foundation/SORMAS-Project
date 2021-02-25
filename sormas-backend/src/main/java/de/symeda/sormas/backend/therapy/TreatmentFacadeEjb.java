@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -115,7 +116,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public TreatmentDto saveTreatment(TreatmentDto source) {
+	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
 

@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
+import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_CASE;
+import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_CONTACT;
+import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.docgeneneration.RootEntityName.ROOT_PERSON;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +29,16 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.docgeneneration.RootEntityName;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -82,11 +90,23 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		Map<String, Object> entities = new HashMap<>();
 		if (rootEntityReference instanceof CaseReferenceDto) {
-			entities.put(RootEntityName.ROOT_CASE, caseFacade.getCaseDataByUuid(rootEntityUuid));
+			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(rootEntityUuid);
+			entities.put(ROOT_CASE, caseDataDto);
+			if (caseDataDto != null) {
+				entities.put(ROOT_PERSON, caseDataDto.getPerson());
+			}
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
-			entities.put(RootEntityName.ROOT_CONTACT, contactFacade.getContactByUuid(rootEntityUuid));
+			ContactDto contactDto = contactFacade.getContactByUuid(rootEntityUuid);
+			entities.put(ROOT_CONTACT, contactDto);
+			if (contactDto != null) {
+				entities.put(ROOT_PERSON, contactDto.getPerson());
+			}
 		} else if (rootEntityReference instanceof EventParticipantReferenceDto) {
-			entities.put(RootEntityName.ROOT_EVENT_PARTICIPANT, eventParticipantFacade.getByUuid(rootEntityUuid));
+			EventParticipantDto eventParticipantDto = eventParticipantFacade.getByUuid(rootEntityUuid);
+			entities.put(ROOT_EVENT_PARTICIPANT, eventParticipantDto);
+			if (eventParticipantDto != null) {
+				entities.put(ROOT_PERSON, eventParticipantDto.getPerson());
+			}
 		} else {
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}

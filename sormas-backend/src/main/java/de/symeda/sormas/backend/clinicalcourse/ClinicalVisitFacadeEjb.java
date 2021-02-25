@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -202,7 +203,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
-	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+	public ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit) {
 
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
 		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());

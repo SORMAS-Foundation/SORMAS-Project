@@ -103,7 +103,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
-			EventCriteria.FREE_TEXT };
+			EventCriteria.FREE_TEXT,
+			EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS };
 	}
 
 	@Override
@@ -118,6 +119,13 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField searchFieldEventParticipants = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS,
+				I18nProperties.getString(Strings.promptEventsSearchFieldEventParticipants),
+				200));
+		searchFieldEventParticipants.setNullRepresentation("");
 	}
 
 	@Override
@@ -263,7 +271,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 		}
-		weekAndDateFilter.setVisible(false);
 
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, dateFilterOption);

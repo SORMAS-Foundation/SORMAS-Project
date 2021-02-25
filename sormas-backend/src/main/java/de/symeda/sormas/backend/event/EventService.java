@@ -568,15 +568,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.between(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom(), eventCriteria.getEventEvolutionDateTo()));
 		} else if (eventCriteria.getEventEvolutionDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.greaterThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom()));
 		} else if (eventCriteria.getEventEvolutionDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
 		}
 		if (eventCriteria.getResponsibleUser() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -584,15 +580,37 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.equal(from.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
 		}
-		if (eventCriteria.getFreeText() != null) {
+		if (StringUtils.isNotEmpty(eventCriteria.getFreeText())) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(from.get(Event.UUID)), textFilter),
 						cb.like(cb.lower(from.get(Event.EVENT_TITLE)), textFilter),
-						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
+						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter),
+						cb.like(cb.lower(from.get(Event.SRC_FIRST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(Event.SRC_LAST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(Event.SRC_EMAIL)), textFilter),
+						cb.like(cb.lower(from.get(Event.SRC_TEL_NO)), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventParticipants())) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
+
+			String[] textFilters = eventCriteria.getFreeTextEventParticipants().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(eventParticipantJoin.get(EventParticipant.UUID)), textFilter),
+						cb.like(cb.lower(personJoin.get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(personJoin.get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(personJoin.get(Person.PHONE)), textFilter),
+						cb.like(cb.lower(personJoin.get(Person.EMAIL_ADDRESS)), textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
@@ -30,7 +31,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface ActionFacade {
 
-	ActionDto saveAction(ActionDto dto);
+	ActionDto saveAction(@Valid ActionDto dto);
 
 	ActionDto getByUuid(String uuid);
 

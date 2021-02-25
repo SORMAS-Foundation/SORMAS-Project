@@ -33,10 +33,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 
 @SuppressWarnings("serial")
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
@@ -117,7 +117,10 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 			}
 		}

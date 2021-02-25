@@ -6497,8 +6497,8 @@ ALTER TABLE cases_history
 INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
 
 -- 2021-02-10 - Make user roles deactivateable #3716
-ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL;
-ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL;
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL default true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (327, 'Make user roles deactivateable #3716');
 
@@ -6612,6 +6612,124 @@ UPDATE cases SET screeningtype = 'HEALTH_SECTOR_EMPLOYEE', caseidentificationsou
 UPDATE cases SET screeningtype = 'EDUCATIONAL_INSTITUTIONS', caseidentificationsource = 'SCREENING' where caseidentificationsource = 'EDUCATIONAL_INSTITUTIONS';
 
 INSERT INTO schema_version (version_number, comment) VALUES (333, 'Case identification source - screening type #3420');
+
+-- 2021-02-16 - Make user roles deactivateable #3716
+-- initial deploy was in schema version 327 but without "default true" statement. This has been installed on most servers
+-- but on some servers which had data in userrolesconfig table the change crashed as we would need to add a default value
+-- in order to make script available in both situations on already installed and on crashed servers the change consists in
+--  a) add "default true" statement to schema version 327 to resolve the servers which are crashing
+--  b) add schema version 334 in order to add "default true" to servers which ran already version 327 and need the default true for future use
+ALTER TABLE userrolesconfig DROP COLUMN IF EXISTS enabled;
+ALTER TABLE userrolesconfig_history DROP COLUMN IF EXISTS enabled;
+
+ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
+ALTER TABLE userrolesconfig_history ADD COLUMN enabled boolean NOT NULL default true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (334, 'Make user roles deactivateable #3716');
+
+-- 2020-02-09 Add indexes #4307
+CREATE INDEX IF NOT EXISTS idx_cases_epid_number ON cases USING gist (epidnumber gist_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases (person_id);
+CREATE INDEX IF NOT EXISTS idx_cases_region_id ON cases (region_id);
+CREATE INDEX IF NOT EXISTS idx_cases_district_id ON cases (district_id);
+CREATE INDEX IF NOT EXISTS idx_cases_disease ON cases (disease);
+
+CREATE INDEX IF NOT EXISTS idx_contact_region_id ON contact (region_id);
+CREATE INDEX IF NOT EXISTS idx_contact_district_id ON contact (district_id);
+CREATE INDEX IF NOT EXISTS idx_contact_case_id ON contact (caze_id);
+
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant (event_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_resultingcase_id ON eventparticipant (resultingcase_id);
+
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcontact_id ON samples (associatedcontact_id);
+CREATE INDEX IF NOT EXISTS idx_samples_associatedcase_id ON samples (associatedcase_id);
+CREATE INDEX IF NOT EXISTS idx_samples_associatedeventparticipant_id ON samples (associatedeventparticipant_id);
+CREATE INDEX IF NOT EXISTS idx_samples_lab_id ON samples (lab_id);
+
+CREATE INDEX IF NOT EXISTS idx_task_contact_id ON task (contact_id);
+CREATE INDEX IF NOT EXISTS idx_task_case_id ON task (caze_id);
+CREATE INDEX IF NOT EXISTS idx_task_event_id ON task (event_id);
+
+CREATE INDEX IF NOT EXISTS idx_visit_person_id ON visit (person_id);
+
+CREATE INDEX IF NOT EXISTS idx_pathogentest_sample_id ON pathogentest (sample_id);
+
+CREATE INDEX IF NOT EXISTS idx_additionaltest_sample_id ON additionaltest (sample_id);
+
+CREATE INDEX IF NOT EXISTS idx_outbreak_district_id ON outbreak (district_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_events_location_id ON events (eventlocation_id);
+
+CREATE INDEX IF NOT EXISTS idx_location_region_id ON location (region_id);
+CREATE INDEX IF NOT EXISTS idx_location_district_id ON location (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_facility_region_id ON facility (region_id);
+CREATE INDEX IF NOT EXISTS idx_facility_district_id ON facility (district_id);
+
+CREATE INDEX IF NOT EXISTS idx_exposures_epidata_id ON exposures (epidata_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_exposures_location_id ON exposures (location_id);
+
+CREATE INDEX IF NOT EXISTS idx_previoushospitalization_hospitalization_id ON previoushospitalization (hospitalization_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (335, '2020-02-09 Add indexes #4307');
+
+-- 2021-02-16 - [SurvNet Interface] Care/accommodation/work in facility #4163
+ALTER TABLE epidata ADD COLUMN activityascasedetailsknown varchar(255);
+ALTER TABLE epidata_history ADD COLUMN activityascasedetailsknown varchar(255);
+
+CREATE TABLE activityascase(
+      id bigint not null,
+      uuid varchar(36) not null unique,
+      changedate timestamp not null,
+      creationdate timestamp not null,
+      epidata_id bigint not null,
+      reportinguser_id bigint,
+      startdate timestamp,
+      enddate timestamp,
+      description text,
+      activityAsCaseType varchar(255) not null,
+      activityAsCaseTypeDetails text,
+      location_id bigint not null,
+      role varchar(255),
+      typeofplace varchar(255),
+      typeofplacedetails text,
+      meansoftransport varchar(255),
+      meansoftransportdetails text,
+      connectionnumber varchar(512),
+      seatnumber varchar(512),
+      workEnvironment varchar(255),
+
+      gatheringtype varchar(255),
+      gatheringdetails text,
+      habitationtype varchar(255),
+      habitationdetails text,
+      typeofanimal varchar(255),
+      typeofanimaldetails text,
+
+      sys_period tstzrange not null,
+      primary key(id)
+);
+
+ALTER TABLE activityascase OWNER TO sormas_user;
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE activityascase ADD CONSTRAINT fk_activityascase_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+
+CREATE TABLE activityascase_history (LIKE activityascase);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'activityascase_history', true);
+ALTER TABLE activityascase_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (336, '[SurvNet Interface] Care/accommodation/work in facility #4163');
+
+-- 2020-02-18 Add Country to location details #2994
+ALTER TABLE location ADD COLUMN country_id bigint;
+ALTER TABLE location_history ADD COLUMN country_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_id) REFERENCES country(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
+
 -- 2020-02-12 [SORMAS 2 SORMAS] Send and receive Events #4348
 ALTER TABLE events ADD COLUMN sormasToSormasOriginInfo_id bigint;
 ALTER TABLE events ADD CONSTRAINT fk_events_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -6627,6 +6745,6 @@ ALTER TABLE sormastosormasshareinfo
     ADD COLUMN witheventparticipants boolean DEFAULT false;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-INSERT INTO schema_version (version_number, comment) VALUES (334, '[SORMAS 2 SORMAS] Send and receive Events #4348');
+INSERT INTO schema_version (version_number, comment) VALUES (338, '[SORMAS 2 SORMAS] Send and receive Events #4348');
 
 -- *** Insert new sql commands BEFORE this line ***

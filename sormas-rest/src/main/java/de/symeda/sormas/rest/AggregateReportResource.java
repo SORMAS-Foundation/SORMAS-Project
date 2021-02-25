@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,7 +40,7 @@ public class AggregateReportResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postAggregateReports(List<AggregateReportDto> dtos) {
+	public List<PushResult> postAggregateReports(@Valid List<AggregateReportDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getAggregateReportFacade()::saveAggregateReport);
 		return result;
 	}
