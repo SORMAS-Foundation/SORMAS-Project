@@ -17,30 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -66,14 +52,11 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -664,95 +647,6 @@ public class ContactController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
-	}
-
-	/**
-	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
-	 * The steps to build that iFrame are:
-	 * 1. Request an authentication token based on the stored client ID and secret
-	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
-	 * 3. The form is automatically submitted and replaced by the iFrame
-	 */
-	public void openSymptomJournalWindow(PersonDto person) {
-		String authToken = FacadeProvider.getExternalJournalFacade().getSymptomJournalAuthToken();
-		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
-			Map<String, String> parameters = new LinkedHashMap<>();
-			parameters.put("token", authToken);
-			parameters.put("uuid", person.getUuid());
-			parameters.put("firstname", person.getFirstName());
-			parameters.put("lastname", person.getLastName());
-			parameters.put("email", person.getEmailAddress());
-			byte[] document = createSymptomJournalForm(formUrl, parameters);
-
-			return new ByteArrayInputStream(document);
-		}, "symptomJournal.html"));
-		frame.setWidth("100%");
-		frame.setHeight("100%");
-
-		Window window = VaadinUiUtil.createPopupWindow();
-		window.setContent(frame);
-		window.setCaption(I18nProperties.getString(Strings.headingPIAAccountCreation));
-		window.setWidth(80, Unit.PERCENTAGE);
-		window.setHeight(80, Unit.PERCENTAGE);
-
-		UI.getCurrent().addWindow(window);
-	}
-
-	/**
-	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
-	 */
-	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
-		Document document;
-		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
-			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), formUrl);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-
-		Element form = document.getElementById("form");
-		form.attr("action", formUrl);
-		Element parametersElement = form.getElementById("parameters");
-
-		inputs.forEach((k, v) -> parametersElement.appendChild(new Element("input").attr("type", "hidden").attr("name", k).attr("value", v)));
-		return document.toString().getBytes(StandardCharsets.UTF_8);
-	}
-
-	private void openPatientDiaryEnrollPage(String personUuid) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		String authToken = FacadeProvider.getExternalJournalFacade().getPatientDiaryAuthToken();
-		url += "/data?q=" + personUuid + "&token=" + authToken;
-		UI.getCurrent().getPage().open(url, "_blank");
-	}
-
-	private void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {
-		VerticalLayout registrationResultLayout = new VerticalLayout();
-		registrationResultLayout.setMargin(true);
-		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
-		errorIcon.setHeight(35, Unit.PIXELS);
-		errorIcon.setWidth(35, Unit.PIXELS);
-		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
-		successIcon.setHeight(35, Unit.PIXELS);
-		successIcon.setWidth(35, Unit.PIXELS);
-		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
-		if (registerResult.isSuccess()) {
-			registrationResultLayout.removeComponent(errorIcon);
-			registrationResultLayout.addComponentAsFirst(successIcon);
-		} else {
-			registrationResultLayout.removeComponent(successIcon);
-			registrationResultLayout.addComponentAsFirst(errorIcon);
-			Label infoLabel = new Label();
-			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			registrationResultLayout.addComponent(infoLabel);
-			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
-		}
-		Label messageLabel = new Label();
-		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		registrationResultLayout.addComponent(messageLabel);
-		messageLabel.setValue(registerResult.getMessage());
-		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
-		popupWindow.addCloseListener(e -> popupWindow.close());
-		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

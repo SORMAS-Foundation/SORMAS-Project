@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <import type="de.symeda.sormas.api.activityascase.ActivityAsCaseType" />
+        <import type="de.symeda.sormas.api.exposure.GatheringType" />
+        <import type="de.symeda.sormas.api.exposure.HabitationType" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.activityascase.ActivityAsCase" />
+        <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:elevation="8dp"
+            android:layout_gravity="top">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+                android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:text="@string/heading_activityAsCase"
+                style="@style/SubHeadingStyle" />
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding"
+                tools:ignore="ExtraText">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_uuid"
+                        app:shortUuidValue="@{data.uuid}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_reportingUser"
+                        app:value="@{data.reportingUser}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_startDate"
+                        app:value="@{data.startDate}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_endDate"
+                        app:value="@{data.endDate}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/activityAsCase_description"
+                    app:value="@{data.description}"
+                    app:maxLines="3"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_activityAsCaseType"
+                        app:value="@{data.activityAsCaseType}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_activityAsCaseTypeDetails"
+                        app:value="@{data.activityAsCaseTypeDetails}"
+                        app:dependencyParentField="@{activityAsCaseActivityAsCaseType}"
+                        app:dependencyParentValue="@{ActivityAsCaseType.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_gatheringType"
+                        app:value="@{data.gatheringType}"
+                        app:dependencyParentField="@{activityAsCaseActivityAsCaseType}"
+                        app:dependencyParentValue="@{ActivityAsCaseType.GATHERING}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_gatheringDetails"
+                        app:value="@{data.gatheringDetails}"
+                        app:dependencyParentField="@{activityAsCaseGatheringType}"
+                        app:dependencyParentValue="@{ActivityAsCaseType.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_habitationType"
+                        app:value="@{data.habitationType}"
+                        app:dependencyParentField="@{activityAsCaseActivityAsCaseType}"
+                        app:dependencyParentValue="@{ActivityAsCaseType.HABITATION}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_habitationDetails"
+                        app:value="@{data.habitationDetails}"
+                        app:dependencyParentField="@{activityAsCaseHabitationType}"
+                        app:dependencyParentValue="@{HabitationType.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/activityAsCase_role"
+                    app:value="@{data.role}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{I18nProperties.getString(Strings.headingLocation)}"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginTop="12dp"
+                    style="@style/SubHeadingCompactStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_typeOfPlace"
+                        app:value="@{data.typeOfPlace}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_typeOfPlaceDetails"
+                        app:value="@{data.typeOfPlaceDetails}"
+                        app:dependencyParentField="@{activityAsCaseTypeOfPlace}"
+                        app:dependencyParentValue="@{TypeOfPlace.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/activityAsCase_workEnvironment"
+                    app:value="@{data.workEnvironment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_meansOfTransport"
+                        app:value="@{data.meansOfTransport}"
+                        app:dependencyParentField="@{activityAsCaseTypeOfPlace}"
+                        app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_meansOfTransportDetails"
+                        app:value="@{data.meansOfTransportDetails}"
+                        app:dependencyParentField="@{activityAsCaseMeansOfTransport}"
+                        app:dependencyParentValue="@{MeansOfTransport.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_connectionNumber"
+                        app:value="@{data.connectionNumber}"
+                        app:dependencyParentField="@{activityAsCaseTypeOfPlace}"
+                        app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/activityAsCase_seatNumber"
+                        app:value="@{data.seatNumber}"
+                        app:dependencyParentField="@{activityAsCaseMeansOfTransport}"
+                        app:dependencyParentValue="@{MeansOfTransport.PLANE}"
+                        app:dependencyParentValue2="@{MeansOfTransport.TRAIN}"
+                        app:dependencyParentValue3="@{MeansOfTransport.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_location"
+                    app:maxLines="3"
+                    app:value="@{data.location}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/button_dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/simple_dialog_button_horizontal_padding"
+                android:layout_marginTop="@dimen/simple_dialog_button_margin"
+                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
+                android:text="@string/action_dismiss"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
+                app:iconStart="@drawable/ic_clear_black_24dp"
+                app:slim="true"
+                app:buttonType="@{ControlButtonType.PRIMARY}" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

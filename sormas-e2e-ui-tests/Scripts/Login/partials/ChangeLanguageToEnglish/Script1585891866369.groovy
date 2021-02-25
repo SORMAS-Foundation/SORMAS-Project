@@ -12,3 +12,4 @@ WebUI.click(findTestObject('Login/SettingsDialog/td_English'))
 
 WebUI.click(findTestObject('ReusableORs/div_Save'))
 
+WebUI.delay(2)

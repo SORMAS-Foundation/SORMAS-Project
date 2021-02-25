@@ -65,8 +65,6 @@ public class TaskGridComponent extends VerticalLayout {
 
 	MenuBar bulkOperationsDropdown;
 
-	private VerticalLayout gridLayout;
-
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
@@ -84,7 +82,7 @@ public class TaskGridComponent extends VerticalLayout {
 		}
 
 		grid = new TaskGrid(criteria);
-		gridLayout = new VerticalLayout();
+		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
 		gridLayout.addComponent(grid);
@@ -107,7 +105,7 @@ public class TaskGridComponent extends VerticalLayout {
 			ViewModelProviders.of(TasksView.class).remove(TaskCriteria.class);
 			tasksView.navigateTo(null, true);
 		});
-		filterForm.addApplyHandler(e -> tasksView.navigateTo(criteria));
+		filterForm.addApplyHandler(e -> grid.reload());
 
 		filterLayout.addComponent(filterForm);
 

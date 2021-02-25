@@ -79,11 +79,11 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_ACTIVITY_AS_CASE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
 
 		table.setCellStyleGenerator(
-			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ActivityAsCaseDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(EDIT_COLUMN_ID)) {
-				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ActivityAsCaseDto.I18N_PREFIX, (String) columnId));
 			}
 		}
 	}

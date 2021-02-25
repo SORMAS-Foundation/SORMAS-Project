@@ -271,7 +271,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 		}
-		weekAndDateFilter.setVisible(false);
 
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, dateFilterOption);
