@@ -70,7 +70,7 @@ public class GridExportStreamResource {
 	}
 
 	private GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
-		String filename = "";
+		String filename = DownloadUtil.createFileNameWithCurrentDate(entityName, ".csv");
 		GridExportStreamSource streamSource = new GridExportStreamSource(grid, excludePropertyIds, includePropertyIds);
 		this.streamResource = new StreamResource(streamSource, filename);
 		this.streamResource.setMIMEType("text/csv");
@@ -81,7 +81,7 @@ public class GridExportStreamResource {
 		return this.streamResource;
 	}
 	
-	private class GridExportStreamSource implements StreamResource.StreamSource {
+	private static class GridExportStreamSource implements StreamResource.StreamSource {
 
 		private Grid<?> grid;
 		private List<String> excludePropertyIds;

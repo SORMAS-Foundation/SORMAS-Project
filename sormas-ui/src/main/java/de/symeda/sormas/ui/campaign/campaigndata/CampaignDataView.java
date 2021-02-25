@@ -158,8 +158,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate(ExportEntityName.CAMPAIGN_DATA, ".csv"), EDIT_BTN_ID);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}

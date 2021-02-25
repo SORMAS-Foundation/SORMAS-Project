@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -198,9 +199,7 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
-
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{

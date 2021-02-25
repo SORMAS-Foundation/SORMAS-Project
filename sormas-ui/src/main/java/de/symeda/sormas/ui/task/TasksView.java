@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -70,10 +71,7 @@ public class TasksView extends AbstractView {
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			addHeaderComponent(basicExportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				taskListComponent.getGrid(),
-				"sormas_tasks_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				TaskGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(taskListComponent.getGrid(), ExportEntityName.TASKS, TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 		}

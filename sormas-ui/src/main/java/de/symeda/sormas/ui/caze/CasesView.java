@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -266,8 +267,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_cases_", ".csv"));
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
