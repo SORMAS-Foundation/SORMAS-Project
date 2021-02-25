@@ -11,6 +11,7 @@ public enum ExportEntityName {
     CASES("entityCases", "cases"),
     COMMUNITIES("entityCommunities", "communities"),
     CONTACTS("entityContacts", "contacts"),
+    CONTACT_FOLLOW_UPS("entityContactFollowUps", "contact follow ups"),
     COUNTRIES("entityCountries", "countries"),
     DISTRICTS("entityDistricts", "districts"),
     EVENTS("entityEvents", "events"),

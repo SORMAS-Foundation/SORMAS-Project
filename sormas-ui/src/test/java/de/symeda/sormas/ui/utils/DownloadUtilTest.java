@@ -84,7 +84,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		}
 
 		StreamResource contactVisitsExport =
-			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), "test_contact_follow_up_export.csv");
+			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
 
 		Assert.assertNotNull(contactVisitsExport);
 		Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());

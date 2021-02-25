@@ -215,8 +215,8 @@ public class ContactsView extends AbstractView {
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
-				StreamResource followUpVisitsExportStreamResource = DownloadUtil
-					.createVisitsExportStreamResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
 
 				addExportButton(
 					followUpVisitsExportStreamResource,

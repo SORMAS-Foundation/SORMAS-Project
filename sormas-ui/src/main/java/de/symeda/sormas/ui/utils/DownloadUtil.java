@@ -451,8 +451,8 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, final String exportFileName) {
-
+	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
 				.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
