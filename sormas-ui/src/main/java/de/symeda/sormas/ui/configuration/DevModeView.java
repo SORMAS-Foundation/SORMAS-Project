@@ -620,6 +620,23 @@ public class DevModeView extends AbstractConfigurationView {
 					});
 				}
 			}
+			if (entity.getClass() == CaseDataDto.class) {
+				if (((CaseDataDto) entity).getQuarantineTo() != null
+					&& ((CaseDataDto) entity).getQuarantineFrom() != null
+					&& ((CaseDataDto) entity).getQuarantineTo().before(((CaseDataDto) entity).getQuarantineFrom())) {
+					Date quarantineTo = ((CaseDataDto) entity).getQuarantineTo();
+					((CaseDataDto) entity).setQuarantineTo(((CaseDataDto) entity).getQuarantineFrom());
+					((CaseDataDto) entity).setQuarantineFrom(quarantineTo);
+				}
+
+				if (((CaseDataDto) entity).getProhibitionToWorkFrom() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil().before(((CaseDataDto) entity).getProhibitionToWorkFrom())) {
+					Date prohibitionToWorkUntil = ((CaseDataDto) entity).getProhibitionToWorkUntil();
+					((CaseDataDto) entity).setProhibitionToWorkUntil(((CaseDataDto) entity).getProhibitionToWorkFrom());
+					((CaseDataDto) entity).setProhibitionToWorkFrom(prohibitionToWorkUntil);
+				}
+			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
