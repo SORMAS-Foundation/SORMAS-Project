@@ -81,4 +81,6 @@ public interface EventFacade {
 	Set<String> getAllSubordinateEventUuids(String eventUuid);
 
 	Set<String> getAllSuperordinateEventUuids(String eventUuid);
+
+    String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
 }

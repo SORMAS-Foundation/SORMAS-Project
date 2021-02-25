@@ -205,6 +205,8 @@ public interface Strings {
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorSurvNetCaseNotOwned = "errorSurvNetCaseNotOwned";
+	String errorSurvNetEventNotOwned = "errorSurvNetEventNotOwned";
+	String errorSurvNetNonClusterEvent = "errorSurvNetNonClusterEvent";
 	String errorSurvNetNonCoronavirusCase = "errorSurvNetNonCoronavirusCase";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
@@ -335,6 +337,7 @@ public interface Strings {
 	String headingEventsArchived = "headingEventsArchived";
 	String headingEventsDearchived = "headingEventsDearchived";
 	String headingEventsDeleted = "headingEventsDeleted";
+	String headingEventsSentToSurvNet = "headingEventsSentToSurvNet";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
 	String headingExposureDetails = "headingExposureDetails";
@@ -695,6 +698,7 @@ public interface Strings {
 	String messageEventsEdited = "messageEventsEdited";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonSurvnet = "messageEventsNotDeletedReasonSurvnet";
+	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";

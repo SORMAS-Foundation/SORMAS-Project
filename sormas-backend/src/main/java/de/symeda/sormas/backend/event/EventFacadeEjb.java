@@ -658,6 +658,12 @@ public class EventFacadeEjb implements EventFacade {
 		return uuids;
 	}
 
+	@Override
+	public String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids) {
+		//TODO: implement after #4348
+		return null;
+	}
+
 	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
 
 		if (event.getSuperordinateEvent() != null) {
@@ -811,7 +817,7 @@ public class EventFacadeEjb implements EventFacade {
 	/**
 	 * Archives all events that have not been changed for a defined amount of days
 	 * 
-	 * @param daysAfterEventsGetsArchived
+	 * @param daysAfterEventGetsArchived
 	 *            defines the amount of days
 	 */
 	@Override
