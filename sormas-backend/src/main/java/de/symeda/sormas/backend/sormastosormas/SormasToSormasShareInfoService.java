@@ -145,13 +145,13 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	public SormasToSormasShareInfo getByEventAndOrganization(String contactUuid, String organizationId) {
+	public SormasToSormasShareInfo getByEventAndOrganization(String eventUuid, String organizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
 		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
 
 		cq.where(
-			cb.equal(from.get(SormasToSormasShareInfo.EVENT).get(Contact.UUID), contactUuid),
+			cb.equal(from.get(SormasToSormasShareInfo.EVENT).get(Contact.UUID), eventUuid),
 			cb.equal(from.get(SormasToSormasShareInfo.ORGANIZATION_ID), organizationId));
 
 		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);

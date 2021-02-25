@@ -84,6 +84,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -94,7 +95,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends CoreAdo {
+public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -1643,12 +1644,14 @@ public class Case extends CoreAdo {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
+	@Override
 	@ManyToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
 		this.sormasToSormasOriginInfo = originInfo;
 	}

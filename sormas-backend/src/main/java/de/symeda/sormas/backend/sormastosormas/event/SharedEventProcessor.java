@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.dataprocessor;
+package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
@@ -36,8 +36,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sormastosormas.ProcessedEventData;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless

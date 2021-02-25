@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
 
@@ -28,6 +29,16 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 	private final T entity;
 	private final BiConsumer<SormasToSormasShareInfo, T> shareInfoAssociatedObjectFn;
 	private final BiFunction<SormasToSormasShareInfoService, String, SormasToSormasShareInfo> shareInfoFindFn;
+
+	public static List<AssociatedEntityWrapper<?>> forContacts(List<Contact> contacts) {
+		return contacts.stream()
+			.map(
+				c -> new AssociatedEntityWrapper<>(
+					c,
+					SormasToSormasShareInfo::setContact,
+					(shareInfoService, organizationId) -> shareInfoService.getByContactAndOrganization(c.getUuid(), organizationId)))
+			.collect(Collectors.toList());
+	}
 
 	public static List<AssociatedEntityWrapper<?>> forEventParticipants(List<EventParticipant> eventParticipants) {
 		return eventParticipants.stream()

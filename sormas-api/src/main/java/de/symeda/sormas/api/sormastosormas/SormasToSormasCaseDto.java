@@ -22,35 +22,26 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class SormasToSormasCaseDto implements Serializable {
+public class SormasToSormasCaseDto extends SormasToSormasDto<CaseDataDto> {
 
 	private static final long serialVersionUID = 1811907980150876134L;
 
 	private PersonDto person;
 
-	private CaseDataDto caze;
-
 	private List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
 
 	private List<SormasToSormasSampleDto> samples;
-
-	private SormasToSormasOriginInfoDto originInfo;
 
 	public SormasToSormasCaseDto() {
 	}
 
 	public SormasToSormasCaseDto(PersonDto person, CaseDataDto caze, SormasToSormasOriginInfoDto originInfo) {
+		super(caze, originInfo);
 		this.person = person;
-		this.caze = caze;
-		this.originInfo = originInfo;
 	}
 
 	public PersonDto getPerson() {
 		return person;
-	}
-
-	public CaseDataDto getCaze() {
-		return caze;
 	}
 
 	public List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContacts() {
@@ -67,14 +58,6 @@ public class SormasToSormasCaseDto implements Serializable {
 
 	public void setSamples(List<SormasToSormasSampleDto> samples) {
 		this.samples = samples;
-	}
-
-	public SormasToSormasOriginInfoDto getOriginInfo() {
-		return originInfo;
-	}
-
-	public void setOriginInfo(SormasToSormasOriginInfoDto originInfo) {
-		this.originInfo = originInfo;
 	}
 
 	public static final class AssociatedContactDto implements Serializable {

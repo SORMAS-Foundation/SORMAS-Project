@@ -285,8 +285,6 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId);
 
-	protected abstract void setAssociatedObjectShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Object t);
-
 	private <T> void saveNewShareInfo(
 		UserReferenceDto sender,
 		SormasToSormasOptionsDto options,

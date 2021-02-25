@@ -41,85 +41,37 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
 	public Response saveSharedCase(SormasToSormasEncryptedDataDto sharedCases) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveSharedCases(sharedCases);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveSharedEntities(sharedCases));
 	}
 
 	@PUT
 	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
 	public Response saveReturnedCase(SormasToSormasEncryptedDataDto sharedCases) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveReturnedCase(sharedCases);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveReturnedEntity(sharedCases));
 	}
 
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_SYNC_ENDPOINT)
 	public Response syncSharedCases(SormasToSormasEncryptedDataDto sharedCases) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveSyncedCases(sharedCases);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveSyncedEntity(sharedCases));
 	}
 
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContacts) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveSharedContacts(sharedContacts);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSharedEntities(sharedContacts));
 	}
 
 	@PUT
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveReturnedContact(SormasToSormasEncryptedDataDto sharedContacts) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveReturnedContact(sharedContacts);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveReturnedEntity(sharedContacts));
 	}
 
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT)
 	public Response syncSharedContacts(SormasToSormasEncryptedDataDto sharedContacts) {
-		try {
-			FacadeProvider.getSormasToSormasFacade().saveSyncedContacts(sharedContacts);
-		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
-		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-
-		return Response.noContent().build();
+		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSyncedEntity(sharedContacts));
 	}
 
 	@POST

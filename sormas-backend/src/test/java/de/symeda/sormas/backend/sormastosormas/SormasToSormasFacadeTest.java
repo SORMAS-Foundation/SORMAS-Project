@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.function.Consumer;
 
 import javax.enterprise.inject.Produces;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -41,8 +44,18 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -96,6 +109,36 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		person.getAddress().setCommunity(rdcf.remoteRdcf.community);
 
 		return person;
+	}
+
+	protected SormasToSormasSampleDto createRemoteSampleDtoWithTests(
+		TestDataCreator.RDCF rdcf,
+		CaseReferenceDto caseRef,
+		ContactReferenceDto contactRef) {
+		UserReferenceDto userRef = UserDto.build().toReference();
+
+		SampleDto sample;
+		if (caseRef != null) {
+			sample = SampleDto.build(userRef, caseRef);
+		} else {
+			sample = SampleDto.build(userRef, contactRef);
+		}
+
+		sample.setLab(rdcf.facility);
+		sample.setSampleDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSampleSource(SampleSource.HUMAN);
+		sample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample.toReference(), userRef);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setTestResultVerified(true);
+		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+
+		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
+		additionalTest.setTestDateTime(new Date());
+
+		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
 	}
 
 	protected SormasToSormasShareInfo createShareInfo(

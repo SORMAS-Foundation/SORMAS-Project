@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.datapersister;
+package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
@@ -28,8 +28,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
-
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -40,7 +38,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.ProcessedEventData;
+import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
+import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
@@ -70,11 +69,11 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedEventData processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, null, (event, eventParticipant) -> {
-			eventParticipant.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-		}, (event, sample) -> {
-			sample.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-		});
+		persistProcessedData(
+			processedData,
+			null,
+			processedDataPersisterHelper::sharedAssociatedEntityCallback,
+			processedDataPersisterHelper::sharedAssociatedEntityCallback);
 	}
 
 	@Override
@@ -82,39 +81,17 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		Exception.class })
 	public void persistReturnedData(ProcessedEventData processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		final MutableBoolean originInfoSaved = new MutableBoolean();
+
+		ReturnedAssociatedEntityCallback callback = processedDataPersisterHelper.createReturnedAssociatedEntityCallback(originInfo);
 
 		persistProcessedData(processedData, event -> {
 			SormasToSormasShareInfo eventShareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), originInfo.getOrganizationId());
 			eventShareInfo.setOwnershipHandedOver(false);
 			shareInfoService.persist(eventShareInfo);
 		}, (event, eventParticipant) -> {
-			SormasToSormasShareInfo eventParticipantShareInfo =
-				shareInfoService.getByEventParticipantAndOrganization(eventParticipant.getUuid(), originInfo.getOrganizationId());
-			if (eventParticipantShareInfo == null) {
-				if (!originInfoSaved.booleanValue()) {
-					oriInfoFacade.saveOriginInfo(originInfo);
-					originInfoSaved.setValue(true);
-				}
-
-				eventParticipant.setSormasToSormasOriginInfo(originInfo);
-			} else {
-				eventParticipantShareInfo.setOwnershipHandedOver(false);
-				shareInfoService.persist(eventParticipantShareInfo);
-			}
+			callback.apply(eventParticipant, shareInfoService::getByEventParticipantAndOrganization);
 		}, (event, sample) -> {
-			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
-			if (sampleShareInfo == null) {
-				if (!originInfoSaved.booleanValue()) {
-					oriInfoFacade.saveOriginInfo(originInfo);
-					originInfoSaved.setValue(true);
-				}
-
-				sample.setSormasToSormasOriginInfo(originInfo);
-			} else {
-				sampleShareInfo.setOwnershipHandedOver(false);
-				shareInfoService.persist(sampleShareInfo);
-			}
+			callback.apply(sample, shareInfoService::getBySampleAndOrganization);
 		});
 	}
 
@@ -130,15 +107,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 			contactOriginInfo.setComment(originInfo.getComment());
 
 			oriInfoFacade.saveOriginInfo(contactOriginInfo);
-		}, (event, eventParticipant) -> {
-			if (eventParticipant.getSormasToSormasOriginInfo() == null) {
-				eventParticipant.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-			}
-		}, (event, sample) -> {
-			if (sample.getSormasToSormasOriginInfo() == null) {
-				sample.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-			}
-		});
+		}, processedDataPersisterHelper::syncedAssociatedEntityCallback, processedDataPersisterHelper::syncedAssociatedEntityCallback);
 	}
 
 	private void persistProcessedData(

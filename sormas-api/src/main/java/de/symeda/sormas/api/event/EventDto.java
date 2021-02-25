@@ -138,6 +138,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean isOwnershipHandedOver;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -511,6 +512,15 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public boolean isOwnershipHandedOver() {
+		return isOwnershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		isOwnershipHandedOver = ownershipHandedOver;
 	}
 
 	public EventReferenceDto toReference() {

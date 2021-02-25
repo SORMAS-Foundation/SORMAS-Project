@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.databuilder;
+package de.symeda.sormas.backend.sormastosormas.caze;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,14 +40,16 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
+import de.symeda.sormas.backend.sormastosormas.ShareData;
+import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class CaseShareDataBuilder
-//implements ShareDataBuilder<Case, CaseShareData> 
-{
+public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSormasCaseDto> {
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -58,7 +60,7 @@ public class CaseShareDataBuilder
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
-	public CaseShareData buildShareData(Case caze, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public ShareData<SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, options);
@@ -66,11 +68,15 @@ public class CaseShareDataBuilder
 
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
-		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
+		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
+		ShareData<SormasToSormasCaseDto> shareData = new ShareData<>(caseData);
+
 		List<Contact> associatedContacts = Collections.emptyList();
 		if (options.isWithAssociatedContacts()) {
 			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
-			shareData.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
+			caseData.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
+
+			shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
 		}
 
 		final List<Sample> samples = new ArrayList<>();
@@ -86,11 +92,12 @@ public class CaseShareDataBuilder
 
 				samples.addAll(contactSamples);
 			});
+
+			caseData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
+			shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 		}
 
-		shareData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-
-		return new CaseShareData(shareData, associatedContacts, samples);
+		return shareData;
 	}
 
 	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {

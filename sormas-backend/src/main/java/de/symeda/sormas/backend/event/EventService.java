@@ -439,6 +439,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Join<Event, Location> address = eventPath.join(Event.EVENT_LOCATION);
 		dateFilter = cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, address.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, eventPath, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 	}

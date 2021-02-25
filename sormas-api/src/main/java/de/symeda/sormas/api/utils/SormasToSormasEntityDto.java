@@ -22,4 +22,6 @@ public interface SormasToSormasEntityDto {
 	SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
 
 	void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
+
+	boolean isOwnershipHandedOver();
 }

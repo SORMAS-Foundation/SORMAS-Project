@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,45 +13,47 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.caze;
 
-import java.io.Serializable;
 import java.util.List;
 
-import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.backend.sormastosormas.ProcessedData;
 
-public class ProcessedContactData implements Serializable {
+public class ProcessedCaseData extends ProcessedData<CaseDataDto> {
 
-	private static final long serialVersionUID = 2582825878321003476L;
+	private static final long serialVersionUID = -437052876440284140L;
 
 	private final PersonDto person;
-	private final ContactDto contact;
+	private final List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
 	private final List<SormasToSormasSampleDto> samples;
-	private final SormasToSormasOriginInfoDto originInfo;
 
-	public ProcessedContactData(PersonDto person, ContactDto contact, List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto originInfo) {
+	public ProcessedCaseData(
+		PersonDto person,
+		CaseDataDto caze,
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
+		List<SormasToSormasSampleDto> samples,
+		SormasToSormasOriginInfoDto originInfo) {
+		super(caze, originInfo);
+
 		this.person = person;
-		this.contact = contact;
+		this.associatedContacts = associatedContacts;
 		this.samples = samples;
-		this.originInfo = originInfo;
 	}
 
 	public PersonDto getPerson() {
 		return person;
 	}
 
-	public ContactDto getContact() {
-		return contact;
+	public List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContacts() {
+		return associatedContacts;
 	}
 
 	public List<SormasToSormasSampleDto> getSamples() {
 		return samples;
-	}
-
-	public SormasToSormasOriginInfoDto getOriginInfo() {
-		return originInfo;
 	}
 }

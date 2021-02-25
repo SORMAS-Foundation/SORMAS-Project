@@ -43,13 +43,9 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.ProcessedEventData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.databuilder.EventShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.datapersister.ProcessedEventDataPersister;
-import de.symeda.sormas.backend.sormastosormas.dataprocessor.SharedEventProcessor;
 
 @Stateless(name = "SormasToSormasEventFacade")
 public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, ProcessedEventData>
@@ -58,36 +54,18 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	public static final String SAVE_SHARED_EVENTS = RESOURCE_PATH + EVENT_ENDPOINT;
 	public static final String SYNC_SHARED_EVENTS = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
 
+	@EJB
 	private EventService eventService;
+	@EJB
 	private EventShareDataBuilder shareDataBuilder;
+	@EJB
 	private SharedEventProcessor sharedEventProcessor;
+	@EJB
 	private ProcessedEventDataPersister processedEventDataPersister;
-
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
-
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
-
-	@EJB
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
-
-	@EJB
-	public void setShareDataBuilder(EventShareDataBuilder shareDataBuilder) {
-		this.shareDataBuilder = shareDataBuilder;
-	}
-
-	@EJB
-	public void setSharedEventProcessor(SharedEventProcessor sharedEventProcessor) {
-		this.sharedEventProcessor = sharedEventProcessor;
-	}
-
-	@EJB
-	public void setProcessedEventDataPersister(ProcessedEventDataPersister processedEventDataPersister) {
-		this.processedEventDataPersister = processedEventDataPersister;
-	}
 
 	public SormasToSormasEventFacadeEjb() {
 		super(SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event);
@@ -145,11 +123,6 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@Override
 	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
 		return shareInfoService.getByEventAndOrganization(entityUuid, organizationId);
-	}
-
-	@Override
-	protected void setAssociatedObjectShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Object t) {
-
 	}
 
 	@Override

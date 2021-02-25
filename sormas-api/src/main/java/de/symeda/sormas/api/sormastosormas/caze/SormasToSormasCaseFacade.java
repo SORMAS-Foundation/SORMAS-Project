@@ -13,14 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.event;
+package de.symeda.sormas.api.sormastosormas.caze;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEventDto;
-import de.symeda.sormas.backend.sormastosormas.ShareData;
+import javax.ejb.Remote;
 
-public class EventShareData extends ShareData<SormasToSormasEventDto> {
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 
-	public EventShareData(SormasToSormasEventDto data) {
-		super(data);
-	}
+@Remote
+public interface SormasToSormasCaseFacade extends SormasToSormasEntityInterface {
 }

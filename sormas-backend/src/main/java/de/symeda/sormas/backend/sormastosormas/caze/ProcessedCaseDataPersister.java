@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.datapersister;
+package de.symeda.sormas.backend.sormastosormas.caze;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
@@ -27,8 +27,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
-
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,8 +37,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
+import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
@@ -60,55 +59,34 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedCaseData processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, null, (caze, contact) -> {
-			contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
-		}, (caze, sample) -> {
-			sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
-		}, true);
+		persistProcessedData(
+			processedData,
+			null,
+			dataPersisterHelper::sharedAssociatedEntityCallback,
+			dataPersisterHelper::sharedAssociatedEntityCallback,
+			true);
 	}
 
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistReturnedData(ProcessedCaseData processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		final MutableBoolean originInfoSaved = new MutableBoolean();
+
+		ReturnedAssociatedEntityCallback callback = dataPersisterHelper.createReturnedAssociatedEntityCallback(originInfo);
 
 		persistProcessedData(processedData, (caze) -> {
 			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
 			shareInfo.setOwnershipHandedOver(false);
 			shareInfoService.persist(shareInfo);
 		}, (caze, contact) -> {
-			SormasToSormasShareInfo contactShareInfo =
-				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
-			if (contactShareInfo == null) {
-				if (!originInfoSaved.booleanValue()) {
-					oriInfoFacade.saveOriginInfo(originInfo);
-					originInfoSaved.setValue(true);
-				}
-
-				contact.setSormasToSormasOriginInfo(originInfo);
-			} else {
-				contactShareInfo.setOwnershipHandedOver(false);
-				shareInfoService.persist(contactShareInfo);
-			}
+			callback.apply(contact, shareInfoService::getByContactAndOrganization);
 		}, (caze, sample) -> {
-			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
-			if (sampleShareInfo == null) {
-				if (!originInfoSaved.booleanValue()) {
-					oriInfoFacade.saveOriginInfo(originInfo);
-					originInfoSaved.setValue(true);
-				}
-
-				sample.setSormasToSormasOriginInfo(originInfo);
-			} else {
-				sampleShareInfo.setOwnershipHandedOver(false);
-				shareInfoService.persist(sampleShareInfo);
-			}
+			callback.apply(sample, shareInfoService::getBySampleAndOrganization);
 		}, false);
 	}
 
@@ -122,16 +100,8 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 			caseOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
 			caseOriginInfo.setComment(originInfo.getComment());
 
-			oriInfoFacade.saveOriginInfo(caseOriginInfo);
-		}, (caze, contact) -> {
-			if (contact.getSormasToSormasOriginInfo() == null) {
-				contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
-			}
-		}, (caze, sample) -> {
-			if (sample.getSormasToSormasOriginInfo() == null) {
-				sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
-			}
-		}, false);
+			originInfoFacade.saveOriginInfo(caseOriginInfo);
+		}, dataPersisterHelper::syncedAssociatedEntityCallback, dataPersisterHelper::syncedAssociatedEntityCallback, false);
 	}
 
 	private void persistProcessedData(
@@ -141,7 +111,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		BiConsumer<CaseDataDto, SampleDto> beforeSaveSample,
 		boolean isCreate)
 		throws SormasToSormasValidationException {
-		CaseDataDto caze = caseData.getCaze();
+		CaseDataDto caze = caseData.getEntity();
 
 		final CaseDataDto savedCase;
 		if (isCreate) {

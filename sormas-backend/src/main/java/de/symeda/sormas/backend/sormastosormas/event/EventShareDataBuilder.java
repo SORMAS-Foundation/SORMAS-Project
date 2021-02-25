@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.databuilder;
+package de.symeda.sormas.backend.sormastosormas.event;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +36,9 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
+import de.symeda.sormas.backend.sormastosormas.ShareData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.event.EventShareData;
+import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -57,14 +58,13 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private SampleService sampleService;
 
 	@Override
-	public EventShareData buildShareData(Event data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public ShareData<SormasToSormasEventDto> buildShareData(Event data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
 		EventDto eventDto = getEventDto(data, pseudonymizer);
 
-		SormasToSormasEventDto entity = new SormasToSormasEventDto(eventDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
-
-		EventShareData eventShareData = new EventShareData(entity);
+		SormasToSormasEventDto eventData = new SormasToSormasEventDto(eventDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
+		ShareData<SormasToSormasEventDto> eventShareData = new ShareData<>(eventData);
 
 		List<EventParticipant> eventParticipants = Collections.emptyList();
 		if (options.isWithEventParticipants()) {
@@ -77,8 +77,8 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 				sampleService.getByEventParticipantUuids(eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList()));
 		}
 
-		entity.setEventParticipants(getEventParticipantDtos(eventParticipants, options, pseudonymizer));
-		entity.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
+		eventData.setEventParticipants(getEventParticipantDtos(eventParticipants, options, pseudonymizer));
+		eventData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
 		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forEventParticipants(eventParticipants));
 		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 

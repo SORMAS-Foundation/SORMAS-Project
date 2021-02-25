@@ -15,39 +15,29 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.io.Serializable;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class SormasToSormasContactDto implements Serializable {
+public class SormasToSormasContactDto extends SormasToSormasDto<ContactDto> {
 
 	private static final long serialVersionUID = 7414547678077858460L;
 
 	private PersonDto person;
 
-	private ContactDto contact;
-
 	private List<SormasToSormasSampleDto> samples;
-
-	private SormasToSormasOriginInfoDto originInfo;
 
 	public SormasToSormasContactDto() {
 	}
 
 	public SormasToSormasContactDto(PersonDto person, ContactDto contact, SormasToSormasOriginInfoDto originInfo) {
+		super(contact, originInfo);
 		this.person = person;
-		this.contact = contact;
-		this.originInfo = originInfo;
 	}
 
 	public PersonDto getPerson() {
 		return person;
-	}
-
-	public ContactDto getContact() {
-		return contact;
 	}
 
 	public List<SormasToSormasSampleDto> getSamples() {
@@ -56,9 +46,5 @@ public class SormasToSormasContactDto implements Serializable {
 
 	public void setSamples(List<SormasToSormasSampleDto> samples) {
 		this.samples = samples;
-	}
-
-	public SormasToSormasOriginInfoDto getOriginInfo() {
-		return originInfo;
 	}
 }

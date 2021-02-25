@@ -27,10 +27,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 
-public class EventParticipantDto extends PseudonymizableDto {
+public class EventParticipantDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
@@ -60,6 +61,7 @@ public class EventParticipantDto extends PseudonymizableDto {
 	private VaccinationInfoDto vaccinationInfo;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean isOwnershipHandedOver;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -163,11 +165,22 @@ public class EventParticipantDto extends PseudonymizableDto {
 		this.vaccinationInfo = vaccinationInfo;
 	}
 
+	@Override
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public boolean isOwnershipHandedOver() {
+		return isOwnershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		isOwnershipHandedOver = ownershipHandedOver;
 	}
 }
