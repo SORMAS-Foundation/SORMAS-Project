@@ -277,7 +277,8 @@ public final class DownloadUtil {
 		return populationDataStreamResource;
 	}
 
-	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
+	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".zip");
 		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, CaseExportType.CASE_MANAGEMENT, null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(

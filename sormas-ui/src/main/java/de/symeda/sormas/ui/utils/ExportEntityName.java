@@ -10,6 +10,7 @@ public enum ExportEntityName {
     BAG_CONTACTS("entityBagContacts", "bag contacts"),
     CAMPAIGN_DATA("entityCampaignData", "campaign data"),
     CASES("entityCases", "cases"),
+    CASE_MANAGEMENT("entityCaseManagement", "case management"),
     CASE_VISITS("entityCaseVisits", "case visits"),
     CLINICAL_VISITS("entityClinicalVisits", "clinical assessments"),
     COMMUNITIES("entityCommunities", "communities"),

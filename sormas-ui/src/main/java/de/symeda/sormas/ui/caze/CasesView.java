@@ -285,8 +285,8 @@ public class CasesView extends AbstractView {
 			}
 
 			if (hasCaseManagementRight) {
-				StreamResource caseManagementExportStreamResource = DownloadUtil
-					.createCaseManagementExportResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
+				StreamResource caseManagementExportStreamResource =
+						DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), ExportEntityName.CASE_MANAGEMENT);
 				addExportButton(
 					caseManagementExportStreamResource,
 					exportPopupButton,
