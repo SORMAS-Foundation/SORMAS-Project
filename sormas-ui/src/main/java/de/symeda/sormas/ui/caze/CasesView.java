@@ -314,7 +314,7 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					createFileNameWithCurrentDate("sormas_samples_", ".csv"),
+					ExportEntityName.SAMPLES,
 					null);
 				addExportButton(
 					sampleExportStreamResource,
@@ -332,7 +332,7 @@ public class CasesView extends AbstractView {
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
 					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
+					ExportEntityName.BAG_CASES,
 					null);
 
 				addExportButton(bagExportResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);

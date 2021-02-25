@@ -41,7 +41,7 @@ public class ContactDownloadUtil {
 			(Integer start, Integer max) -> FacadeProvider.getContactFacade()
 				.getExportList(contactCriteria, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
 			ContactDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CONTACTS, ".csv"),
+			ExportEntityName.CONTACTS,
 			exportConfiguration);
 	}
 

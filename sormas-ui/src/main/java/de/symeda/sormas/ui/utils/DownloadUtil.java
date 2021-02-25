@@ -294,7 +294,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(
@@ -311,7 +311,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(
@@ -331,7 +331,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.CLINICAL_VISITS,
 			null);
 
 		StreamResource caseManagementStreamResource = new StreamResource(() -> {
@@ -530,9 +530,10 @@ public final class DownloadUtil {
 		Enum<?> exportType,
 		CsvStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 		CsvStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
-		String exportFileName,
+		ExportEntityName entityName,
 		ExportConfigurationDto exportConfiguration) {
 
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try {
 				CsvStreamUtils.writeCsvContentToStream(

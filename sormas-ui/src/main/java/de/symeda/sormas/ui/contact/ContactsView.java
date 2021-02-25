@@ -243,7 +243,7 @@ public class ContactsView extends AbstractView {
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
 					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
+					ExportEntityName.BAG_CONTACTS,
 					null);
 
 				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);

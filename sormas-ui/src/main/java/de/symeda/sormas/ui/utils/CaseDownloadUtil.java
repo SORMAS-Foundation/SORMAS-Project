@@ -45,7 +45,7 @@ public class CaseDownloadUtil {
 			(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
 				.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
 			CaseDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CASES, ".csv"),
+			ExportEntityName.CASES,
 			exportConfiguration);
 	}
 

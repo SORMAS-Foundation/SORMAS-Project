@@ -47,6 +47,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
@@ -124,7 +125,7 @@ public class ContactVisitsView extends AbstractContactView {
 					}
 					return caption;
 				},
-				createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"),
+				ExportEntityName.CONTACT_VISITS,
 				null);
 
 			new FileDownloader(exportStreamResource).extend(exportButton);

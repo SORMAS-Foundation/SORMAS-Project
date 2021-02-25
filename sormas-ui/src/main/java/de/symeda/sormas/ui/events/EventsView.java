@@ -186,7 +186,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_", ".csv"),
+						ExportEntityName.EVENTS,
 						null);
 					addExportButton(
 						exportStreamResource,
@@ -213,7 +213,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
+						ExportEntityName.EVENT_ACTIONS,
 						null);
 					addExportButton(
 						exportStreamResource,

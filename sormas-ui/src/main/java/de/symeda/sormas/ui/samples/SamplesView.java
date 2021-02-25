@@ -134,7 +134,7 @@ public class SamplesView extends AbstractView {
 					}
 					return caption;
 				},
-				createFileNameWithCurrentDate("sormas_samples_", ".csv"),
+				ExportEntityName.SAMPLES,
 				null);
 
 			addExportButton(
