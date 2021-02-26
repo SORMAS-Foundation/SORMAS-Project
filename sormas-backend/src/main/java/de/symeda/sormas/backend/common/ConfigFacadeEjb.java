@@ -550,7 +550,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	public boolean isCreateDefaultEntities() {
-		return getBoolean(CREATE_DEFAULT_ENTITIES, true);
+		return getBoolean(CREATE_DEFAULT_ENTITIES, false);
 	}
 
 	public String getDocgenerationNullReplacement() {
