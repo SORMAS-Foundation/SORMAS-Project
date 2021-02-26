@@ -187,7 +187,7 @@ public class Person extends AbstractDomainObject {
 	private String nationalHealthId;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
-	private Set<PersonContactDetails> personContactDetails = new HashSet<>();
+	private Set<PersonContactDetail> personContactDetails = new HashSet<>();
 	private Date changeDateOfEmbeddedLists;
 
 	private SymptomJournalStatus symptomJournalStatus;
@@ -630,12 +630,12 @@ public class Person extends AbstractDomainObject {
 		this.addresses = addresses;
 	}
 
-	@OneToMany(mappedBy = PersonContactDetails.PERSON, fetch = FetchType.LAZY)
-	public Set<PersonContactDetails> getPersonContactDetails() {
+	@OneToMany(mappedBy = PersonContactDetail.PERSON, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<PersonContactDetail> getPersonContactDetails() {
 		return personContactDetails;
 	}
 
-	public void setPersonContactDetails(Set<PersonContactDetails> personContactDetails) {
+	public void setPersonContactDetails(Set<PersonContactDetail> personContactDetails) {
 		this.personContactDetails = personContactDetails;
 	}
 

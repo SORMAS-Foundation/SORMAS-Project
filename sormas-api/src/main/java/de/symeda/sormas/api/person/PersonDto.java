@@ -107,6 +107,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
+	public static final String PERSON_CONTACTS = "personContacts";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
@@ -290,6 +291,7 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private String nationalHealthId;
 	private List<LocationDto> addresses = new ArrayList<>();
+	private List<PersonContactDetailDto> personContacts = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
@@ -693,6 +695,15 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setAddresses(List<LocationDto> addresses) {
 		this.addresses = addresses;
+	}
+
+	@ImportIgnore
+	public List<PersonContactDetailDto> getPersonContacts() {
+		return personContacts;
+	}
+
+	public void setPersonContacts(List<PersonContactDetailDto> personContacts) {
+		this.personContacts = personContacts;
 	}
 
 	public SymptomJournalStatus getSymptomJournalStatus() {

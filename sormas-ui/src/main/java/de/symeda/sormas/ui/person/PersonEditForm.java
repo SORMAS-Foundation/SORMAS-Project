@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
@@ -108,7 +109,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
-	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
@@ -163,7 +163,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.ADDRESSES) +
 
                     loc(CONTACT_INFORMATION_HEADER) +
-                    divsCss(
+					divsCss(
                             VSPACE_3,
 							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
@@ -172,7 +172,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
 									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
-                                    loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
+                                    loc(PersonDto.GENERAL_PRACTITIONER_DETAILS)) +
+					fluidRowLocs(PersonDto.PERSON_CONTACTS);
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -188,7 +189,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.personContext = personContext;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.viewMode = viewMode;
 
 		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
@@ -208,8 +208,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				.add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
-
-		this.viewMode = ViewMode.NORMAL;
 
 		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
@@ -287,6 +285,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
+
+
+		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
+		personContactDetailsField.setId(PersonDto.PERSON_CONTACTS);
+		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACTS);
+		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACTS);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -463,6 +467,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
 		});
+	}
+
+	@Override
+	public void setValue(PersonDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		PersonContactDetailsField field = (PersonContactDetailsField) getFieldGroup().getField(PersonDto.PERSON_CONTACTS);
+		field.setThisPerson(newFieldValue);
 	}
 
 	private void addListenersToInfrastructureFields(

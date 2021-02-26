@@ -1,27 +1,14 @@
-package de.symeda.sormas.backend.person;
+package de.symeda.sormas.api.person;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+public class PersonContactDetailDto extends PseudonymizableDto {
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.person.PersonContactDetailsType;
-import de.symeda.sormas.api.person.PhoneNumberType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+	public static final String I18N_PREFIX = "PersonContactDetail";
 
-@Entity
-@Audited
-public class PersonContactDetails extends AbstractDomainObject {
-
-	public static final String TABLE_NAME = "personcontactdetails";
 	public static final String PERSON = "person";
-	public static final String PRIMARY = "primary";
-	public static final String PERSON_CONTACT_DETAILS_TYPE = "personContactDetailsType";
+	public static final String PRIMARY = "primaryContact";
+	public static final String PERSON_CONTACT_DETAILS_TYPE = "personContactDetailType";
 	public static final String PHONE_NUMBER_TYPE = "phoneNumberType";
 	public static final String DETAILS = "details";
 	public static final String CONTACT_INFORMATION = "contactInformation";
@@ -29,12 +16,12 @@ public class PersonContactDetails extends AbstractDomainObject {
 	public static final String THIRD_PARTY = "thirdParty";
 	public static final String THIRD_PARTY_ROLE = "thirdPartyRole";
 	public static final String THIRD_PARTY_NAME = "thirdPartyName";
-	private static final long serialVersionUID = -9006001699517297107L;
-	private Person person;
+
+	private PersonReferenceDto person;
 
 	private boolean primaryContact;
 
-	private PersonContactDetailsType personContactDetailsType;
+	private PersonContactDetailType personContactDetailType;
 	private PhoneNumberType phoneNumberType;
 	private String details;
 
@@ -45,35 +32,56 @@ public class PersonContactDetails extends AbstractDomainObject {
 	private String thirdPartyRole;
 	private String thirdPartyName;
 
-	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
-	public Person getPerson() {
+	public PersonContactDetailDto() {
+	}
+
+	public PersonContactDetailDto(
+		PersonReferenceDto person,
+		boolean primaryContact,
+		PersonContactDetailType personContactDetailType,
+		PhoneNumberType phoneNumberType,
+		String details,
+		String contactInformation,
+		String additionalInformation,
+		boolean thirdParty,
+		String thirdPartyRole,
+		String thirdPartyName) {
+		this.person = person;
+		this.primaryContact = primaryContact;
+		this.personContactDetailType = personContactDetailType;
+		this.phoneNumberType = phoneNumberType;
+		this.details = details;
+		this.contactInformation = contactInformation;
+		this.additionalInformation = additionalInformation;
+		this.thirdParty = thirdParty;
+		this.thirdPartyRole = thirdPartyRole;
+		this.thirdPartyName = thirdPartyName;
+	}
+
+	public PersonReferenceDto getPerson() {
 		return person;
 	}
 
-	public void setPerson(Person person) {
+	public void setPerson(PersonReferenceDto person) {
 		this.person = person;
 	}
 
-	@Column
 	public boolean isPrimaryContact() {
 		return primaryContact;
 	}
 
-	public void setPrimaryContact(boolean main) {
-		this.primaryContact = main;
+	public void setPrimaryContact(boolean primaryContact) {
+		this.primaryContact = primaryContact;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public PersonContactDetailsType getPersonContactDetailsType() {
-		return personContactDetailsType;
+	public PersonContactDetailType getPersonContactDetailType() {
+		return personContactDetailType;
 	}
 
-	public void setPersonContactDetailsType(PersonContactDetailsType personContactDetailsType) {
-		this.personContactDetailsType = personContactDetailsType;
+	public void setPersonContactDetailType(PersonContactDetailType personContactDetailType) {
+		this.personContactDetailType = personContactDetailType;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public PhoneNumberType getPhoneNumberType() {
 		return phoneNumberType;
 	}
@@ -82,7 +90,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.phoneNumberType = phoneNumberType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
 		return details;
 	}
@@ -91,7 +98,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.details = details;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getContactInformation() {
 		return contactInformation;
 	}
@@ -100,7 +106,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.contactInformation = contactInformation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
@@ -109,7 +114,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.additionalInformation = additionalInformation;
 	}
 
-	@Column
 	public boolean isThirdParty() {
 		return thirdParty;
 	}
@@ -118,7 +122,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.thirdParty = thirdParty;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getThirdPartyRole() {
 		return thirdPartyRole;
 	}
@@ -127,7 +130,6 @@ public class PersonContactDetails extends AbstractDomainObject {
 		this.thirdPartyRole = thirdPartyRole;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getThirdPartyName() {
 		return thirdPartyName;
 	}
