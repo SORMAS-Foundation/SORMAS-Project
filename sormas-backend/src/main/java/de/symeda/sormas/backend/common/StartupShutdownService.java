@@ -314,9 +314,9 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
-			if (!configFacade.isCreateDefaultUsers()) {
-				// return if getCreateDefaultUsers() is false
-				logger.info("Skipping the creation of default users");
+			if (!configFacade.isCreateDefaultEntities()) {
+				// return if isCreateDefaultEntities() is false
+				logger.info("Skipping the creation of default entities");
 				return;
 			}
 
