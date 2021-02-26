@@ -14,7 +14,8 @@ WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Case/input_Case
 
 WebUI.delay(1)
 
-WebUI.waitForElementPresent(findTestObject('Surveillance/CaseView/div_Case Person_tab'), 10)
+WebUI.waitForElementClickable(findTestObject('Surveillance/CaseView/div_Case Person_tab'), 15)
+WebUI.verifyElementVisible(findTestObject('Surveillance/CaseView/div_Case Person_tab'))
 
 WebUI.click(findTestObject('Surveillance/CaseView/div_Case Person_tab'))
 
