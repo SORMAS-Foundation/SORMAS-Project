@@ -27,15 +27,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -156,8 +153,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CountryService countryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@Resource
-	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -319,8 +314,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
-		if (existingPerson != null) {
-			handleExternalJournalPerson(existingPerson, source);
+		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+			externalJournalService.validateExternalJournalPerson(source);
+			externalJournalService.handleExternalJournalPersonUpdate(source.toReference());
 		}
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
@@ -330,25 +326,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		onPersonChanged(existingPerson, person);
 
 		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
-	}
-
-	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		if (existingPerson.isEnrolledInExternalJournal()) {
-			externalJournalService.validateExternalJournalPerson(updatedPerson);
-
-		}
-		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingJournalPerson = getPersonForJournal(existingPerson.getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingJournalPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
