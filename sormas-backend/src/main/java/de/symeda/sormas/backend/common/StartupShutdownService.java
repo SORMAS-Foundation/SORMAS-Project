@@ -197,6 +197,11 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
+		if (!configFacade.isCreateDefaultEntities()) {
+			// return if isCreateDefaultEntities() is false
+			logger.info("Skipping the creation of default infrastructure data");
+			return;
+		}
 
 		// Region
 		Region region = null;
