@@ -283,7 +283,7 @@ Here are some things that you should do to configure the Apache server as a prox
 
 * The server should only publish the ports that are needed. For SORMAS this is port 80 (HTTP) and 443 (HTTPS). In addition you will need the SSH port to access the server for admin purposes.
 * We suggest to use UFW (Uncomplicated Firewall) which provides a simple interface to iptables:
-
+        ```bash
         sudo apt-get install ufw
         sudo ufw default deny incoming
         sudo ufw default allow outgoing
@@ -291,23 +291,23 @@ Here are some things that you should do to configure the Apache server as a prox
         sudo ufw allow http
         sudo ufw allow https
         sudo ufw enable
-
+        ```
 ### Postfix Mail Server
 
 * Install postfix and mailutils:
-
+        ```bash
         apt install aptitude
         aptitude install postfix
         -> choose "satelite system"
         apt install mailutils
-
+        ```
 * Configure your system:
-
+        ```bash
         nano /etc/aliases
         -> add "root: enter-your@support-email-here.com"
         nano /opt/domains/sormas/config/logback.xml
         -> make sure "EMAIL_ERROR" appender is active and sends out to your email address
-
+        ```
 ### Testing the Server Setup
 
 Use SSL Labs to test your server security config: <https://www.ssllabs.com/ssltest>
@@ -320,10 +320,10 @@ This can be conveniently accomplished by executing the R setup script from the S
 
 * If the SORMAS installation has been customized, ``r-setup.sh`` the install paths may have to be adjusted accordingly with a text editor.
 * Execute R setup script:
-
-    chmod +x r-setup.sh
-    ./r-setup.sh
-
+        ```bash
+        chmod +x r-setup.sh
+        ./r-setup.sh
+        ```
 * Follow the instructions of the script.
 
 ## SORMAS to SORMAS Certificate Setup
@@ -343,8 +343,10 @@ Check that the users table does have a corresponding entry. If not, the database
 
 Old servers were set up with a memory size of less than 2048MB. You can change this using the following commands:
 
-    /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
-    /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
-    /opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
+```bash
+/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
+/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
+/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
+```
 
 Alternative: You can edit the settings directly in the domain.xml in the config directory of the SORMAS domain. Just search for ``Xmx`` - there should be two entries that need to be changed.

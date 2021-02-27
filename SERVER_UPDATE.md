@@ -6,14 +6,14 @@ Note: You can skip this step if you've just set up your SORMAS server and have a
 
 * Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
-		```bash
-		cd /root/deploy/sormas
-		SORMAS_VERSION=1.y.z
-		wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
-		unzip sormas_${SORMAS_VERSION}.zip
-		mv deploy/ $(date +%F)
-		rm sormas_${SORMAS_VERSION}.zip
-		```
+	```bash
+	cd /root/deploy/sormas
+	SORMAS_VERSION=1.y.z
+	wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+	unzip sormas_${SORMAS_VERSION}.zip
+	mv deploy/ $(date +%F)
+	rm sormas_${SORMAS_VERSION}.zip
+	```
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
   ``cd /root/deploy/sormas/$(date +%F)``
