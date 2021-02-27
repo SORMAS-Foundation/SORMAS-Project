@@ -29,7 +29,7 @@ jobs:
     # Name the Job
     name: Lint Code Base
     # Set the agent to run on
-    runs-on: ubuntu-latest
+    runs-on: Ubuntu-20.04
 
     ##################
     # Load all steps #
@@ -52,7 +52,7 @@ jobs:
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_BASH: false
           VALIDATE_CSS: false
           VALIDATE_HTML: false
