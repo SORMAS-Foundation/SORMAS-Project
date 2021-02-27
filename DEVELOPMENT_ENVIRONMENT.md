@@ -12,13 +12,14 @@
 - Open the Git Bash and execute the command <code>git config --global branch.development.rebase true</code> (which ensures that rebase is used when pulling rather than merge)
 
 ## Java
-- Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: <https://www.azul.com/downloads/zulu/>
-  * **Linux**: <https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm>
-
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-        sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
-        sudo apt-get update
-        sudo apt-get install zulu11
+- Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
+  * **[Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)**:
+    ```bash
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+    sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
+    sudo apt-get update
+    sudo apt-get install zulu11
+    ```
   - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 
 ## Eclipse
