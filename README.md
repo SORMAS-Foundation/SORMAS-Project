@@ -19,21 +19,23 @@
 
 **SORMAS** (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of infectious diseases and responding to outbreak situations.
 
-#### How Does it Work?
+## FAQ (Frequently Asked Questions)
+
+### How Does it Work?
 You can give SORMAS a try on our demo server at <https://demoversion.sormas-oegd.de>!
 
-#### How Can I Get Involved?
+### How Can I Get Involved?
 Read through our [*Contributing Readme*](CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de or join our [developer chat on Gitter](https://gitter.im/SORMAS-Project) to learn how you can help to drive the development of SORMAS forward and to get development support from our core developers. SORMAS is a community-driven project, and we'd love to have you on board!
 If you want to contribute to the code, please strictly adhere to the [*Development Environment*](DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly. Please also make sure that you've read the [*Development Contributing Guidelines*](CONTRIBUTING.md#development-contributing-guidelines) before you start to develop, and either follow or regularly check our Twitter account <a href="https://twitter.com/SORMASDev" target="_blank">@SORMASDev</a> to stay up to date with our schedule, new releases, guideline changes and other announcements.
 
-#### How Can I Report a Bug or Request a Feature?
+### How Can I Report a Bug or Request a Feature?
 If you want to report a **security issue**, please follow our guideline for [*Responsible Disclosure*](SECURITY.md).
 For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and read the [*Submitting an Issue*](CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
 
-#### Which Browsers and Android Versions Are Supported?
+### Which Browsers and Android Versions Are Supported?
 SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11; see <https://vaadin.com/faq>).
 
-#### Is there a ReST API documentation?
+### Is there a ReST API documentation?
 Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation (e.g. <https://editor.swagger.io/>).
 <br/>
 Runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is also available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``

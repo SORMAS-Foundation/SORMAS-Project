@@ -1,16 +1,25 @@
-
-
 # Installing a SORMAS Server
+
 **Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows.**
 
 ## Content
 - [Installing a SORMAS Server](#installing-a-sormas-server)
   - [Content](#content)
+- [- SORMAS Server](#--sormas-server)
+- [<<<<<<< HEAD](#-head)
   - [Related](#related)
   - [Prerequisites](#prerequisites)
     - [Java 11](#java-11)
+- [* **Linux**:](#-linux)
+      - [Linux](#linux)
+- [* You can check your Java version from the shell/command line using: ``java -version``](#-you-can-check-your-java-version-from-the-shellcommand-line-using-java--version)
+      - [Windows](#windows)
     - [Postgres Database](#postgres-database)
   - [SORMAS Server](#sormas-server)
+- [* Open Git Bash and navigate to the setup sub-directory](#-open-git-bash-and-navigate-to-the-setup-sub-directory)
+    - [Install on Linux](#install-on-linux)
+    - [Install on Windows](#install-on-windows)
+    - [Post-Installation Configuration](#post-installation-configuration)
   - [Keycloak Server](#keycloak-server)
     - [Keycloak as a Docker container](#keycloak-as-a-docker-container)
     - [Keycloak as a standalone installation](#keycloak-as-a-standalone-installation)
@@ -20,6 +29,40 @@
     - [Apache Web Server](#apache-web-server)
     - [Firewall](#firewall)
     - [Postfix Mail Server](#postfix-mail-server)
+      - [Install postfix and mailutils](#install-postfix-and-mailutils)
+      - [Configure your system](#configure-your-system)
+    - [Testing the Server Setup](#testing-the-server-setup)
+  - [R Software Environment](#r-software-environment)
+  - [SORMAS to SORMAS Certificate Setup](#sormas-to-sormas-certificate-setup)
+  - [Troubleshooting](#troubleshooting)
+    - [Problem: Login fails](#problem-login-fails)
+    - [Problem: Server is out of memory](#problem-server-is-out-of-memory)
+<<<<<<< HEAD
+    - [Postgres Database](#postgres-database)
+  - [SORMAS Server](#sormas-server)
+=======
+      - [Linux](#linux)
+      - [Windows](#windows)
+    - [Postgres Database](#postgres-database)
+  - [SORMAS Server](#sormas-server)
+    - [Install on Linux](#install-on-linux)
+    - [Install on Windows](#install-on-windows)
+    - [Post-Installation Configuration](#post-installation-configuration)
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
+  - [Keycloak Server](#keycloak-server)
+    - [Keycloak as a Docker container](#keycloak-as-a-docker-container)
+    - [Keycloak as a standalone installation](#keycloak-as-a-standalone-installation)
+    - [Connect Keycloak to an already running instance of SORMAS](#connect-keycloak-to-an-already-running-instance-of-sormas)
+    - [Keycloak configuration](#keycloak-configuration)
+  - [Web Server Setup](#web-server-setup)
+    - [Apache Web Server](#apache-web-server)
+    - [Firewall](#firewall)
+    - [Postfix Mail Server](#postfix-mail-server)
+<<<<<<< HEAD
+=======
+      - [Install postfix and mailutils](#install-postfix-and-mailutils)
+      - [Configure your system](#configure-your-system)
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
     - [Testing the Server Setup](#testing-the-server-setup)
   - [R Software Environment](#r-software-environment)
   - [SORMAS to SORMAS Certificate Setup](#sormas-to-sormas-certificate-setup)
@@ -36,16 +79,31 @@
 
 ### Java 11
 
+<<<<<<< HEAD
 * Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
   * **[Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)**:
+=======
+Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
+
+#### [Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)
+
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 ```bash
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
 sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
 sudo apt-get update
 sudo apt-get install zulu11
 ```
+<<<<<<< HEAD
   * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
+=======
+
+#### Windows
+
+For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
+You can check your Java version from the shell/command line using: ``java -version``.
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 
 ### Postgres Database
 
@@ -68,6 +126,7 @@ sudo pgxn install temporal_tables
 
 ## SORMAS Server
 
+<<<<<<< HEAD
 * Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
 * **Linux**:
   * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
@@ -84,6 +143,32 @@ sudo pgxn install temporal_tables
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: <https://gitforwindows.org/>
   * Unzip the ZIP archive (e.g. into you download directory)
   * Open Git Bash and navigate to the setup sub-directory
+=======
+Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
+
+### Install on Linux
+
+Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
+
+```bash
+cd /root/deploy/sormas
+SORMAS_VERSION=1.y.z
+wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+unzip sormas_${SORMAS_VERSION}.zip
+mv deploy/ $(date +%F)
+rm sormas_${SORMAS_VERSION}.zip
+chmod +x $(date +%F)/server-setup.sh
+```
+
+### Install on Windows
+
+* Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: <https://gitforwindows.org/>
+* Unzip the ZIP archive (e.g. into you download directory)
+* Open Git Bash and navigate to the setup sub-directory
+
+### Post-Installation Configuration
+
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
@@ -131,13 +216,20 @@ Setting Keycloak up as a standalone installation [Server Installation and Config
 * Update the `sormas-*` clients by generating new secrets for them
 * Update the realm's email settings to allow sending emails to users
 
+<<<<<<< HEAD
 To update the SORMAS Server run the following commands
 
 ```shell script
+=======
+To update the SORMAS Server run the following commands:
+
+```bash
+>>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientSecret --propertyValue=${KEYCLOAK_SORMAS_UI_SECRET} --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientId --propertyValue=sormas-ui --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.scope --propertyValue=openid --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=http://localhost:${KEYCLOAK_PORT}/keycloak/auth/realms/SORMAS --source=domain
+<!-- markdownlint-disable-next-line MD013 -->
 ${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
 ${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
 ```
@@ -170,147 +262,178 @@ More about the default configuration and how to customize can be found here [Key
 **Note: This is not necessary for development systems.** When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the Payara server in the first line.
 Here are some things that you should do to configure the Apache server as a proxy:
 
-* Activate all needed modules:
+Activate all needed modules:
 
-        a2enmod ssl
-        a2enmod rewrite
-        a2enmod proxy
-        a2enmod proxy_http
-        a2enmod headers
-* Create a new site /etc/apache2/sites-available/your.sormas.server.url.conf (e.g. sormas.org.conf)
-* Force SSL secured connections: redirect from http to https:
+```bash
+a2enmod ssl
+a2enmod rewrite
+a2enmod proxy
+a2enmod proxy_http
+a2enmod headers
+```
 
-        <VirtualHost *:80>
-            ServerName your.sormas.server.url
-            RewriteEngine On
-            RewriteCond %{HTTPS} !=on
-            RewriteRule ^/(.*) https://your.sormas.server.url/$1 [R,L]
-        </VirtualHost>
-        <IfModule mod_ssl.c>
-        <VirtualHost *:443>
-            ServerName your.sormas.server.url
-            ...
-        </VirtualHost>
-        </IfModule>
-* Configure logging:
+Create a new site `/etc/apache2/sites-available/your.sormas.server.url.conf` (e.g. sormas.org.conf).
 
-        ErrorLog /var/log/apache2/error.log
-        LogLevel warn
-        LogFormat "%h %l %u %t \"%r\" %>s %b _%D_ \"%{User}i\"  \"%{Connection}i\"  \"%{Referer}i\" \"%{User-agent}i\"" combined_ext
-        CustomLog /var/log/apache2/access.log combined_ext
-* SSL key config:
+Force SSL secured connections: redirect from http to https:
 
-        SSLEngine on
-        SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
-        SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
-        SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
+```xml
+<VirtualHost *:80>
+        ServerName your.sormas.server.url
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/(.*) https://your.sormas.server.url/$1 [R,L]
+</VirtualHost>
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+        ServerName your.sormas.server.url
+        ...
+</VirtualHost>
+</IfModule>
+```
+Configure logging:
 
-        # disable weak ciphers and old TLS/SSL
-        SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
-        SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE$
-        SSLHonorCipherOrder off
-* Add a proxy pass to the local port:
+```text
+ErrorLog /var/log/apache2/error.log
+LogLevel warn
+LogFormat "%h %l %u %t \"%r\" %>s %b _%D_ \"%{User}i\"  \"%{Connection}i\"  \"%{Referer}i\" \"%{User-agent}i\"" combined_ext
+CustomLog /var/log/apache2/access.log combined_ext
+```
 
-        ProxyRequests Off
-        ProxyPass /sormas-ui http://localhost:6080/sormas-ui
-        ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
-        ProxyPass /sormas-rest http://localhost:6080/sormas-rest
-        ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
-* Configure security settings:
+SSL key config:
 
-        Header always set X-Content-Type-Options "nosniff"
-        Header always set X-Xss-Protection "1; mode=block"
-        # Disable Caching
-        Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
-        Header always set Pragma "no-cache"
+```text
+SSLEngine on
+SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
+SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
+SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
 
-        Header always set Content-Security-Policy \
-            "default-src 'none'; \
-            object-src 'self'; \
-            script-src 'self' 'unsafe-inline' 'unsafe-eval'; \
-            connect-src https://fonts.googleapis.com https://fonts.gstatic.com 'self'; \
-            img-src *; \
-            style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; \
-            font-src https://fonts.gstatic.com 'self'; \
-            frame-src 'self'; \
-            worker-src 'self'; \
-            manifest-src 'self'; \
-            frame-ancestors 'self'
+# disable weak ciphers and old TLS/SSL
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE$
+SSLHonorCipherOrder off
+```
 
-        # The Content-Type header was either missing or empty.
-        # Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
-        AddType application/vnd.ms-fontobject    .eot
-        AddType application/x-font-opentype      .otf
-        AddType image/svg+xml                    .svg
-        AddType application/x-font-ttf           .ttf
-        AddType application/font-woff            .woff
-* Activate output compression (very important!):
+Add a proxy pass to the local port:
 
-        <IfModule mod_deflate.c>
-                AddOutputFilterByType DEFLATE text/plain text/html text/xml
-                AddOutputFilterByType DEFLATE text/css text/javascript
-                AddOutputFilterByType DEFLATE application/json
-                AddOutputFilterByType DEFLATE application/xml application/xhtml+xml
-                AddOutputFilterByType DEFLATE application/javascript application/x-javascript
-                DeflateCompressionLevel 1
-        </IfModule></code>
+```text
+ProxyRequests Off
+ProxyPass /sormas-ui http://localhost:6080/sormas-ui
+ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
+ProxyPass /sormas-rest http://localhost:6080/sormas-rest
+ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
+```
 
-* Provide the android apk:
+Configure security settings:
 
-        Options -Indexes
-        AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
+```text
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Xss-Protection "1; mode=block"
+# Disable Caching
+Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
+Header always set Pragma "no-cache"
 
-* For the Apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``):
+Header always set Content-Security-Policy \
+        "default-src 'none'; \
+        object-src 'self'; \
+        script-src 'self' 'unsafe-inline' 'unsafe-eval'; \
+        connect-src https://fonts.googleapis.com https://fonts.gstatic.com 'self'; \
+        img-src *; \
+        style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; \
+        font-src https://fonts.gstatic.com 'self'; \
+        frame-src 'self'; \
+        worker-src 'self'; \
+        manifest-src 'self'; \
+        frame-ancestors 'self'
 
-        ServerTokens Prod
-        ServerSignature Off
-        TraceEnable Off
+# The Content-Type header was either missing or empty.
+# Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
+AddType application/vnd.ms-fontobject    .eot
+AddType application/x-font-opentype      .otf
+AddType image/svg+xml                    .svg
+AddType application/x-font-ttf           .ttf
+AddType application/font-woff            .woff
+```
 
-        Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
-        Header unset X-Frame-Options
-        Header always set X-Frame-Options SAMEORIGIN
-        Header unset Referrer-Policy
-        Header always set Referrer-Policy "same-origin"
-        Header edit Set-Cookie "(?i)^((?:(?!;\s?HttpOnly).)+)$" "$1;HttpOnly"
-        Header edit Set-Cookie "(?i)^((?:(?!;\s?Secure).)+)$" "$1;Secure"
+Activate output compression (very important!):
 
-        Header unset X-Powered-By
-        Header unset Server
+```xml
+<IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/plain text/html text/xml
+        AddOutputFilterByType DEFLATE text/css text/javascript
+        AddOutputFilterByType DEFLATE application/json
+        AddOutputFilterByType DEFLATE application/xml application/xhtml+xml
+        AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+        DeflateCompressionLevel 1
+</IfModule></code>
+```
 
+Provide the android apk:
+
+```java
+Options -Indexes
+AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
+```
+
+For the Apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``):
+
+```conf
+ServerTokens Prod
+ServerSignature Off
+TraceEnable Off
+
+Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
+Header unset X-Frame-Options
+Header always set X-Frame-Options SAMEORIGIN
+Header unset Referrer-Policy
+Header always set Referrer-Policy "same-origin"
+Header edit Set-Cookie "(?i)^((?:(?!;\s?HttpOnly).)+)$" "$1;HttpOnly"
+Header edit Set-Cookie "(?i)^((?:(?!;\s?Secure).)+)$" "$1;Secure"
+
+Header unset X-Powered-By
+Header unset Server
+```
 
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
-        apache2ctl graceful
+```bash
+apache2ctl graceful
+```
 
 ### Firewall
 
 * The server should only publish the ports that are needed. For SORMAS this is port 80 (HTTP) and 443 (HTTPS). In addition you will need the SSH port to access the server for admin purposes.
 * We suggest to use UFW (Uncomplicated Firewall) which provides a simple interface to iptables:
-        ```bash
-        sudo apt-get install ufw
-        sudo ufw default deny incoming
-        sudo ufw default allow outgoing
-        sudo ufw allow ssh
-        sudo ufw allow http
-        sudo ufw allow https
-        sudo ufw enable
-        ```
+
+```bash
+sudo apt-get install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw enable
+```
+
 ### Postfix Mail Server
 
-* Install postfix and mailutils:
-        ```bash
-        apt install aptitude
-        aptitude install postfix
-        -> choose "satelite system"
-        apt install mailutils
-        ```
-* Configure your system:
-        ```bash
-        nano /etc/aliases
-        -> add "root: enter-your@support-email-here.com"
-        nano /opt/domains/sormas/config/logback.xml
-        -> make sure "EMAIL_ERROR" appender is active and sends out to your email address
-        ```
+#### Install postfix and mailutils
+
+```bash
+apt install aptitude
+aptitude install postfix
+-> choose "satelite system"
+apt install mailutils
+```
+
+#### Configure your system
+
+```bash
+nano /etc/aliases
+-> add "root: enter-your@support-email-here.com"
+nano /opt/domains/sormas/config/logback.xml
+-> make sure "EMAIL_ERROR" appender is active and sends out to your email address
+```
+
 ### Testing the Server Setup
 
 Use SSL Labs to test your server security config: <https://www.ssllabs.com/ssltest>
@@ -322,12 +445,12 @@ Then the Rscript executable has to be configured in the ``sormas.properties`` fi
 This can be conveniently accomplished by executing the R setup script from the SORMAS ZIP archive (see [SORMAS Server](#sormas-server)):
 
 * If the SORMAS installation has been customized, ``r-setup.sh`` the install paths may have to be adjusted accordingly with a text editor.
-* Execute R setup script:
-        ```bash
-        chmod +x r-setup.sh
-        ./r-setup.sh
-        ```
-* Follow the instructions of the script.
+* Execute R setup script and follow its instructions.
+
+```bash
+chmod +x r-setup.sh
+./r-setup.sh
+```
 
 ## SORMAS to SORMAS Certificate Setup
 

@@ -109,7 +109,8 @@ Right now, changing these variables unfortunately is not possible from within th
 
 ## Feature Configuration
 Some of the features in SORMAS can be enabled or disabled to further customize the system. Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table.
-There is one entry for every configurable feature in this table, and you can set the value of the *enabled* column to *true* to enable it and *false* to disable it. The *region*, *district*, *disease* and *enddate* columns are currently only applicable for the line listing feature and define the scope in which line listing is used. Line listing is configurable from within the UI and does not need to be manually edited in the database.
+There is one entry for every configurable feature in this table, and you can set the value of the *enabled* column to *true* to enable it and *false* to disable it. The *region*, *district*, *disease* and *enddate* columns are currently only applicable for the line listing feature and define the scope in which line listing is used.
+Line listing is configurable from within the UI and does not need to be manually edited in the database.
 
 **VERY IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited feature configuration.
 
