@@ -15,6 +15,8 @@
 </p>
 <br/>
 
+# SORMAS
+
 **SORMAS** (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of infectious diseases and responding to outbreak situations.
 
 #### How Does it Work?
