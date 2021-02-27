@@ -724,7 +724,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (4, 'Task');
 
 ALTER TABLE task ADD COLUMN priority varchar(255);
 ALTER TABLE task ADD COLUMN suggestedstart timestamp;
-DELETE FROM task;
+TRUNCATE TABLE task;
 
 INSERT INTO schema_version (version_number, comment) VALUES (5, 'Task priority & suggested start');
 
