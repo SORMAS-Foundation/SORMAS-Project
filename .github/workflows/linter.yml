@@ -62,6 +62,7 @@ jobs:
           VALIDATE_R: false
           VALIDATE_RUST_2015: false
           VALIDATE_RUST_2018: false
+          VALIDATE_SQL: false
           VALIDATE_TYPESCRIPT_ES: false
           VALIDATE_TYPESCRIPT_STANDARD: false
           VALIDATE_XML: false

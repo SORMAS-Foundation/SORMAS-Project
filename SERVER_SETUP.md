@@ -4,20 +4,31 @@
 **Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows.**
 
 ## Content
-* [Prerequisites](#prerequisites)
-  * [Java 11](#java-11)
-  * [Postgres Database](#postgres-database)
-* [SORMAS Server](#sormas-server)
-* [Keycloak Server](#keycloak-server)
-* [Web Server Setup](#web-server-setup)
-  * [Apache Web Server](#apache-web-server)
-  * [Firewall](#firewall)
-  * [Postfix Mail Server](#postfix-mail-server)
-  * [Testing the Server Setup](#testing-the-server-setup)
-* [R Software Environment](#r-software-environment)
-* [Troubleshooting](#troubleshooting)
+- [Installing a SORMAS Server](#installing-a-sormas-server)
+  - [Content](#content)
+  - [Related](#related)
+  - [Prerequisites](#prerequisites)
+    - [Java 11](#java-11)
+    - [Postgres Database](#postgres-database)
+  - [SORMAS Server](#sormas-server)
+  - [Keycloak Server](#keycloak-server)
+    - [Keycloak as a Docker container](#keycloak-as-a-docker-container)
+    - [Keycloak as a standalone installation](#keycloak-as-a-standalone-installation)
+    - [Connect Keycloak to an already running instance of SORMAS](#connect-keycloak-to-an-already-running-instance-of-sormas)
+    - [Keycloak configuration](#keycloak-configuration)
+  - [Web Server Setup](#web-server-setup)
+    - [Apache Web Server](#apache-web-server)
+    - [Firewall](#firewall)
+    - [Postfix Mail Server](#postfix-mail-server)
+    - [Testing the Server Setup](#testing-the-server-setup)
+  - [R Software Environment](#r-software-environment)
+  - [SORMAS to SORMAS Certificate Setup](#sormas-to-sormas-certificate-setup)
+  - [Troubleshooting](#troubleshooting)
+    - [Problem: Login fails](#problem-login-fails)
+    - [Problem: Server is out of memory](#problem-server-is-out-of-memory)
 
 ## Related
+
 * [Creating an App for a Demo Server](DEMO_APP.md)
 * [SORMAS Docker Repository](https://github.com/hzi-braunschweig/SORMAS-Docker)
 
@@ -27,7 +38,7 @@
 
 * Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
-        
+
         sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
         sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
         sudo apt-get update
@@ -40,7 +51,7 @@
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
-    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.    
+    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
@@ -48,13 +59,13 @@
         * Check for GCC: ``gcc --version`` and install if missing
         * ``sudo pgxn install temporal_tables``
         * The packages can be removed afterward
-       
-## SORMAS Server    
 
-* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
+## SORMAS Server
+
+* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest
 * **Linux**:
   * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
-        
+
         cd /root/deploy/sormas
         SORMAS_VERSION=1.y.z
         wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
@@ -184,11 +195,11 @@ Here are some things that you should do to configure the Apache server as a prox
         SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
         SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
         SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
-        
+
         # disable weak ciphers and old TLS/SSL
         SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
         SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE$
-        SSLHonorCipherOrder off        
+        SSLHonorCipherOrder off
 * Add a proxy pass to the local port:
 
         ProxyRequests Off
@@ -203,7 +214,7 @@ Here are some things that you should do to configure the Apache server as a prox
         # Disable Caching
         Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
         Header always set Pragma "no-cache"
-        
+
         Header always set Content-Security-Policy \
             "default-src 'none'; \
             object-src 'self'; \
@@ -215,7 +226,7 @@ Here are some things that you should do to configure the Apache server as a prox
             frame-src 'self'; \
             worker-src 'self'; \
             manifest-src 'self'; \
-            frame-ancestors 'self'        
+            frame-ancestors 'self'
 
         # The Content-Type header was either missing or empty.
         # Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
@@ -224,7 +235,7 @@ Here are some things that you should do to configure the Apache server as a prox
         AddType image/svg+xml                    .svg
         AddType application/x-font-ttf           .ttf
         AddType application/font-woff            .woff
-* Activate output compression (very important!): 
+* Activate output compression (very important!):
 
         <IfModule mod_deflate.c>
                 AddOutputFilterByType DEFLATE text/plain text/html text/xml
@@ -256,12 +267,12 @@ Here are some things that you should do to configure the Apache server as a prox
 
         Header unset X-Powered-By
         Header unset Server
-        
-        
+
+
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
         apache2ctl graceful
-        
+
 ### Firewall
 
 * The server should only publish the ports that are needed. For SORMAS this is port 80 (HTTP) and 443 (HTTPS). In addition you will need the SSH port to access the server for admin purposes.
@@ -283,7 +294,7 @@ Here are some things that you should do to configure the Apache server as a prox
         aptitude install postfix
         -> choose "satelite system"
         apt install mailutils
-    
+
 * Configure your system:
 
         nano /etc/aliases
@@ -306,7 +317,7 @@ This can be conveniently accomplished by executing the R setup script from the S
 
     chmod +x r-setup.sh
     ./r-setup.sh
-    
+
 * Follow the instructions of the script.
 
 ## SORMAS to SORMAS Certificate Setup

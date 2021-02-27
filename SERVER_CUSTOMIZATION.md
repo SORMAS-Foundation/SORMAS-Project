@@ -1,10 +1,17 @@
 # Customizing a SORMAS Server
 
 ## Content
-* [Server Configuration](#server-configuration)
-* [Importing Infrastructure Data](#importing-infrastructure-data)
-* [Disease Configuration](#disease-configuration)
-* [Feature Confguration](#feature-configuration)
+- [Customizing a SORMAS Server](#customizing-a-sormas-server)
+  - [Content](#content)
+  - [Server Configuration](#server-configuration)
+    - [Custom login page](#custom-login-page)
+    - [Custom download files in about section](#custom-download-files-in-about-section)
+  - [Importing Infrastructure Data](#importing-infrastructure-data)
+    - [Import](#import)
+    - [Archive](#archive)
+  - [Disease Configuration](#disease-configuration)
+  - [Feature Configuration](#feature-configuration)
+  - [Proxy Settings](#proxy-settings)
 
 ## Server Configuration
 After installing a SORMAS servers, you can customize various configurations that define how SORMAS operates and is set up. This is done in the **sormas.properties** file that you can find in your domain folder. This file contains explanations for every property and also a default value in case you want to revert any changes that you've made.
@@ -22,7 +29,7 @@ The following properties are currently configurable:
 * **File paths** `documents.path`, `temp.path`, `generated.path` and `custom.path`: The folders that SORMAS stores files in, either temporarily during case export or permanently like import templates or documents. Files in temp.path are automatically deleted at midnight. Files in custom.path can be used to customize the login page, e.g. to provide default logins for demo servers or add additional contributors to the right sidebar.
 * **Automatic case classification** `feature.automaticcaseclassification`: Determines whether SORMAS automatically classifies cases based on a number of criteria that are defined in the code.
 * **Email settings** `email.sender.address` and `email.sender.name`: The email address and sender name that should be used when SORMAS is sending out emails, e.g. to notify users about specific events.
-* **SMS settings** `sms.sender.name, sms.auth.key and sms.auth.secret`: Besides emails, SORMAS also supports sending automatic SMS to users at the same time (e.g. when a case has been classified as confirmed). The SMS provider SORMAS is using is the Vonage SMS API (https://www.vonage.com/communications-apis/sms/). If you have an account there, you can use your key and secret here to enable sending out SMS. Leaving these properties empty will disable this feature.
+* **SMS settings** `sms.sender.name, sms.auth.key and sms.auth.secret`: Besides emails, SORMAS also supports sending automatic SMS to users at the same time (e.g. when a case has been classified as confirmed). The SMS provider SORMAS is using is the Vonage SMS API (<https://www.vonage.com/communications-apis/sms/>). If you have an account there, you can use your key and secret here to enable sending out SMS. Leaving these properties empty will disable this feature.
 * **CSV separator** `csv.separator`: The separator that CSV files should use to separate columns. This is depending on your server locale. Most systems should be fine using the default (*,*), but e.g. German systems should be set to use *;*.
 * **Name similarity threshold** `namesimilaritythreshold`: This is used when comparing cases or contacts to find duplicates in the system, either in retrospection or during creation or import. The higher the value, the more restrictive the algorithm, i.e. less potential duplicates will be found. It is suggested to play around with this setting to see which value works for your country and language.
 * **Dev mode** `devmode`: Enabling developer mode will give you access to a tab in the Configuration menu that allows admins to create dummy cases and contacts to quickly fill the database. This is only meant to be used on development or demo systems and should be left disabled for production servers.
@@ -42,8 +49,8 @@ The following properties are currently configurable:
   * keeps the user's password if the user doesn't exist in the External Authentication Provider
   * will not override the user's password if the user already in the External Authentication Provider (matching done by username case insensitive)
   * will only sync active users (inactive users are automatically synchronized when they are activated manually)
-  * is enabled trough a property in sormas.properties `authentication.provider.userSyncAtStartup` (by default is disabled) 
-  
+  * is enabled trough a property in sormas.properties `authentication.provider.userSyncAtStartup` (by default is disabled)
+
 
 ### Custom login page
 When setting up the server a custom file directory is created (most likely `/opt/sormas/custom`). You can adjust the `login*.html` files in that directory to customize the login page.
@@ -75,12 +82,12 @@ SORMAS supports a wide range of diseases, and not all of those might be relevant
 * Whether **contact follow-up is enabled**
 * The **contact follow-up duration**
 
-Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *diseaseconfiguration* table according to your needs. 
+Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *diseaseconfiguration* table according to your needs.
 
 **VERY IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.
 
 ## Feature Configuration
-Some of the features in SORMAS can be enabled or disabled to further customize the system. Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table. There is one entry for every configurable feature in this table, and you can set the value of the *enabled* column to *true* to enable it and *false* to disable it. The *region*, *district*, *disease* and *enddate* columns are currently only applicable for the line listing feature and define the scope in which line listing is used. Line listing is configurable from within the UI and does not need to be manually edited in the database. 
+Some of the features in SORMAS can be enabled or disabled to further customize the system. Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table. There is one entry for every configurable feature in this table, and you can set the value of the *enabled* column to *true* to enable it and *false* to disable it. The *region*, *district*, *disease* and *enddate* columns are currently only applicable for the line listing feature and define the scope in which line listing is used. Line listing is configurable from within the UI and does not need to be manually edited in the database.
 
 **VERY IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited feature configuration.
 

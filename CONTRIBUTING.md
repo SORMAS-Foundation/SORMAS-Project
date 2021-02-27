@@ -88,7 +88,8 @@ The sorting from top to bottom in every column reflects the priority for the pro
 
 The Product Backlog contains the following columns:
 * **Backlog:** Issues that have been identified by the Product Owner to be done in the next sprints. There can be a column for each Scrum Team if it fits the need.
-* **Sprint n:** Contain tickets picked by the Product Owner to be done in the named sprint. Text notes or separate columns are used to separate issues between Scrum Teams. It gives a forecast what might come in the upcoming sprint and it is the starting point for the Sprint Planning. Every ticket the Development Team do not pick into their Sprint Backlog needs to be moved back to the Backlog column or one sprint further.
+* **Sprint n:** Contain tickets picked by the Product Owner to be done in the named sprint. Text notes or separate columns are used to separate issues between Scrum Teams.
+  It gives a forecast what might come in the upcoming sprint and it is the starting point for the Sprint Planning. Every ticket the Development Team do not pick into their Sprint Backlog needs to be moved back to the Backlog column or one sprint further.
 * **Done:** Tickets that are closed (usually resolved within the running sprint) are moved here **automatically**. The sorting does not represent the priority here any more.
 
 

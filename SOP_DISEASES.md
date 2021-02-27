@@ -1,20 +1,25 @@
 # SOP for Adding New Diseases to SORMAS
+
 This file defines the SOP (Standard Operating Procedure) that should be followed when requesting new diseases to be added to the system by the core development team. Answering all the questions asked in this guide will make sure that we will be able to integrate new diseases into SORMAS as quickly as possible.
 
 ## Content
-1. [Download the Data Dictionary](#step-1-download-the-data-dictionary)
-2. [Define Basic Disease Details](#step-2-define-basic-disease-details)
-3. [Define Existing Case Fields](#step-3-define-existing-case-fields)
-4. [Define Existing Person Fields](#step-4-define-existing-person-fields)
-5. [Define the Relevant Symptoms](#step-5-define-the-relevant-symptoms)
-6. [Define the Relevant Epidemiological Data](#step-6-define-the-relevant-epidemiological-data)
-7. [Define Health Conditions](#step-7-define-health-conditions)
-8. [Define New Fields in Other Areas](#step-8-define-new-fields-in-other-areas)
-9. [Provide Case Classification Criteria](#step-9-provide-case-classification-criteria)
-10. [Provide Additional Information](#step-10-provide-additional-information)
-11. [Send Your Disease Definition to the SORMAS Developers](#step-11-send-your-disease-definition-to-the-sormas-developers)
+- [SOP for Adding New Diseases to SORMAS](#sop-for-adding-new-diseases-to-sormas)
+  - [Content](#content)
+  - [Guide](#guide)
+    - [Step 1: Download the Data Dictionary](#step-1-download-the-data-dictionary)
+    - [Step 2: Define Basic Disease Details](#step-2-define-basic-disease-details)
+    - [Step 3: Define Existing Case Fields](#step-3-define-existing-case-fields)
+    - [Step 4: Define Existing Person Fields](#step-4-define-existing-person-fields)
+    - [Step 5: Define the Relevant Symptoms](#step-5-define-the-relevant-symptoms)
+    - [Step 6: Define the Relevant Epidemiological Data](#step-6-define-the-relevant-epidemiological-data)
+    - [Step 7: Define Health Conditions](#step-7-define-health-conditions)
+    - [Step 8: Define New Fields in Other Areas](#step-8-define-new-fields-in-other-areas)
+    - [Step 9: Provide Case Classification Criteria](#step-9-provide-case-classification-criteria)
+    - [Step 10: Provide Additional Information](#step-10-provide-additional-information)
+    - [Step 11: Send Your Disease Definition to the SORMAS Team](#step-11-send-your-disease-definition-to-the-sormas-team)
 
 ## Guide
+
 ### Step 1: Download the Data Dictionary
 Download the latest [Data Dictionary](https://github.com/hzi-braunschweig/SORMAS-Project/raw/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx) from this repository and open it. Please never use a version of the Data Dictionary that you downloaded earlier as it is very likely that its contents have changed in the meantime.
 
@@ -38,7 +43,7 @@ Look through the rows in the first table of the **Case** tab (which has a grey b
 Open the **Person** tab and repeat step 3 for the first table containing the fields that define the details of a person in SORMAS.
 
 ### Step 5: Define the Relevant Symptoms
-Open the **Symptoms** tab which lists all the symptoms that are currently used in SORMAS. This is a very long list and you will have to go through every single row and define whether this symptom should be tracked for your new disease or not. 
+Open the **Symptoms** tab which lists all the symptoms that are currently used in SORMAS. This is a very long list and you will have to go through every single row and define whether this symptom should be tracked for your new disease or not.
 
 It's possible that your new disease uses one or more symptoms that are currently not part of SORMAS. In that case, you need to add a new row for each of these symptoms to the bottom of the table and provide the **name of the symptom** in the *Caption* column.
 
@@ -51,7 +56,7 @@ Open the **Epidemiological data** tab which lists all fields that are used to co
 Open the **Health conditions** tab which contains a list of pre-existing conditions that are not symptoms of the disease, but are still relevant especially for case management purposes in a hospital. Repeat step 3 for all rows in the first table, and add new rows if there are health conditions relevant for your new disease that are not part of SORMAS yet. As always with new fields, make sure to provide all relevant details in the *Description* column.
 
 ### Step 8: Define New Fields in Other Areas
-It is possible that your disease requires further information to be collected that is not supported by SORMAS yet, e.g. new details about the person, specific information about its hospitalization, or even very important fields that should directly go into the case information. You can use the same process you used to define new symptoms, health conditions or epidemiological data fields by opening the tab in question and adding new rows to the topmost table. 
+It is possible that your disease requires further information to be collected that is not supported by SORMAS yet, e.g. new details about the person, specific information about its hospitalization, or even very important fields that should directly go into the case information. You can use the same process you used to define new symptoms, health conditions or epidemiological data fields by opening the tab in question and adding new rows to the topmost table.
 
 ---
 
