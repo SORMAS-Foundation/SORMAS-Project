@@ -37,35 +37,38 @@
 ### Java 11
 
 * Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
-  * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
-
+  * **Linux**: <https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm>
+        ```bash
         sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
         sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
         sudo apt-get update
         sudo apt-get install zulu11
+        ```
   * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
 ### Postgres Database
 
-* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
+* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
-* Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
-    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
-    * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
-        * ``sudo apt-get install libpq-dev``
-        * ``sudo apt-get install postgresql-server-dev-all``
-        * ``sudo apt install pgxnclient``
+* Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
+    * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
+    * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
+        ```bash
+        sudo apt-get install libpq-dev
+        sudo apt-get install postgresql-server-dev-all
+        sudo apt install pgxnclient
+        ```
         * Check for GCC: ``gcc --version`` and install if missing
         * ``sudo pgxn install temporal_tables``
         * The packages can be removed afterward
 
 ## SORMAS Server
 
-* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest
+* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
 * **Linux**:
   * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
-
+        ```bash
         cd /root/deploy/sormas
         SORMAS_VERSION=1.y.z
         wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
@@ -73,8 +76,9 @@
         mv deploy/ $(date +%F)
         rm sormas_${SORMAS_VERSION}.zip
         chmod +x $(date +%F)/server-setup.sh
+        ```
 * **Windows**:
-  * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
+  * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: <https://gitforwindows.org/>
   * Unzip the ZIP archive (e.g. into you download directory)
   * Open Git Bash and navigate to the setup sub-directory
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
@@ -125,6 +129,7 @@ Setting Keycloak up as a standalone installation [Server Installation and Config
 * Update the realm's email settings to allow sending emails to users
 
 To update the SORMAS Server run the following commands
+
 ```shell script
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientSecret --propertyValue=${KEYCLOAK_SORMAS_UI_SECRET} --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientId --propertyValue=sormas-ui --source=domain
@@ -133,6 +138,7 @@ ${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI
 ${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
 ${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
 ```
+
 where:
 * `${ASADMIN}` - represents the location to `${PAYARA_HOME}\bin\asadmin`
 * `${KEYCLOAK_PORT}` - the port on which keycloak will run
@@ -304,7 +310,7 @@ Here are some things that you should do to configure the Apache server as a prox
 
 ### Testing the Server Setup
 
-Use SSL Labs to test your server security config: https://www.ssllabs.com/ssltest
+Use SSL Labs to test your server security config: <https://www.ssllabs.com/ssltest>
 
 ## R Software Environment
 

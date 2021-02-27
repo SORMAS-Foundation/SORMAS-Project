@@ -8,12 +8,12 @@ This guide explains how to:
 * add other servers to the local server list
 * handling self-signed ssl certificates on test systems
 
-### Prerequisites
+## Prerequisites
 
 Java is needed, because the keytool is used for certificate import. <br/>
 See [Installing Java](SERVER_SETUP.md#java-11)
 
-### Using the certificate generation script
+## Using the certificate generation script
 
 1. Run ``bash ./s2s-generate-cert.sh``
 2. If the ``SORMAS2SORMAS_DIR`` environment variable is not available, the script will search for ``/opt/sormas2sormas`` by default.
@@ -58,7 +58,7 @@ If it is not found there, you will be prompted to provide the pat to the *sormas
    More details can be found in the next section.
 8. The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
 
-### Adding a new certificate to the Truststore
+## Adding a new certificate to the Truststore
 
 To enable other SORMAS instances to send and receive data from this instance, their certificate must be added to the
 truststore of this instance. Furthermore, the access data of other instances must be added to the local server

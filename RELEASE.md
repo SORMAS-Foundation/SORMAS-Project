@@ -58,4 +58,5 @@ To use it you need to configure this in your .m2/settings.xml (or pass it as arg
 ### Perform load testing and upload the results
 
 When a release has been done and the new SORMAS version has been deployed to the server that is used for load testing, refer to the [load testing guide](LOAD_TESTING.md) to perform them, ideally multiple times with different amounts of users set in the SimulationConfig.scala file (e.g. 1, 20, 100).
-Navigate to the results folder, rename the folders containing the individual tests (e.g. `SIMULATION-NAME_AMOUNT-OF-USERS_SORMAS-VERSION`) and zip them. Append the resulting archive to the release on GitHub, as well as a PDF file containing an overview of the results (see an earlier release for an example on how to do this; you'll need to open the individual simulations and retrieve the values from the respective index.html files).
+Navigate to the results folder, rename the folders containing the individual tests (e.g. `SIMULATION-NAME_AMOUNT-OF-USERS_SORMAS-VERSION`) and zip them.
+Append the resulting archive to the release on GitHub, as well as a PDF file containing an overview of the results (see an earlier release for an example on how to do this; you'll need to open the individual simulations and retrieve the values from the respective index.html files).

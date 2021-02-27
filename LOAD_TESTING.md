@@ -19,7 +19,9 @@ We have created simulations (which are basically test scenarios) that test the m
 Download the latest [sormas_load_tests.zip](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas_load_tests.zip) file and extract its contents into your Gatling directory.
 
 ## Adjust Simulation Configuration
-Open the ``SimulationConfig.scala`` file in a text editor. Change the default value of the ``serverUrl`` variable to the URL of the server you want to test. If you're using a fresh SORMAS installation, you can leave the ``mobileUsername`` and ``mobilePassword``variables as they are. Otherwise, type in the username and password of a mobile user (most likely a Surveillance Officer) on your system that has access to as many cases as possible.
+Open the ``SimulationConfig.scala`` file in a text editor. Change the default value of the ``serverUrl`` variable to the URL of the server you want to test. If you're using a fresh SORMAS installation, you can leave the ``mobileUsername`` and ``mobilePassword``variables as they are.
+Otherwise, type in the username and password of a mobile user (most likely a Surveillance Officer) on your system that has access to as many cases as possible.
+
 Finally, you can edit the ``numberOfUsers`` variable to determine the number of parallel requests performed when running the tests. Leaving these at 1 is a good idea to find out whether the tests are passing, but to actually load test your server, you want to increase this number to find out how its performing when multiple users are doing costly actions at the same time.
 
 ## Run the Load Tests
