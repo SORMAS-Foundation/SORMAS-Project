@@ -1,4 +1,5 @@
 # Updating a SORMAS Server
+
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
 ## Preparations
@@ -6,14 +7,14 @@ Note: You can skip this step if you've just set up your SORMAS server and have a
 
 * Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
-	```bash
-	cd /root/deploy/sormas
-	SORMAS_VERSION=1.y.z
-	wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
-	unzip sormas_${SORMAS_VERSION}.zip
-	mv deploy/ $(date +%F)
-	rm sormas_${SORMAS_VERSION}.zip
-	```
+    ```bash
+    cd /root/deploy/sormas
+    SORMAS_VERSION=1.y.z
+    wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+    unzip sormas_${SORMAS_VERSION}.zip
+    mv deploy/ $(date +%F)
+    rm sormas_${SORMAS_VERSION}.zip
+    ```
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
   ``cd /root/deploy/sormas/$(date +%F)``
@@ -51,9 +52,9 @@ These are the default users for most user roles, intended to be used on developm
 **Hospital Informant:** HospInf
 **Point of Entry Informant:** PoeInf
 
-# Updating Keycloak
+## Updating Keycloak
 
-## Standalone installation
+### Standalone installation
 
 Upgrading from Keycloak 11 to 12 following the steps from here <https://www.keycloak.org/docs/latest/upgrading/#_upgrading>
 
@@ -68,7 +69,7 @@ Upgrading from Keycloak 11 to 12 following the steps from here <https://www.keyc
 9. While the new installation is stopped, run `${NEW_KEYCLOAK_HOME}/bin/jboss-cli.sh ----file=${NEW_KEYCLOAK_HOME}/bin/migrate-standalone.cli` *(`.bat` for Windows)*
 10. Start the new Keycloak installation from `${NEW_KEYCLOAK_HOME}/bin/standalone.sh` *(`.bat` for Windows)*
 
-## Docker installation
+### Docker installation
 
 The docker installation is automatically upgraded to the latest version specified in the Dockerfile.
 
