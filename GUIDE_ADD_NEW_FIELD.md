@@ -12,9 +12,9 @@ It does **not** explain how to add list fields, new sections or concepts to SORM
 
 ## 0. Preparation (!)
 
-1. Make sure the field is not already in the system. 
-   SORMAS has a lot of data fields and many of them are only used for a few diseases and hidden for other ones. 
-   The best way to make sure is to open the data dictionary and go through the existing fields of all related data sections: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx
+1. Make sure the field is not already in the system.
+   SORMAS has a lot of data fields and many of them are only used for a few diseases and hidden for other ones.
+   The best way to make sure is to open the data dictionary and go through the existing fields of all related data sections: <https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx>
 2. Clearly define the field:
    * Name and description
    * Field type: plain text, pre-defined values (enum), date, time, number
@@ -22,7 +22,7 @@ It does **not** explain how to add list fields, new sections or concepts to SORM
    * Who is supposed to enter the field?
    * Who is supposed to read the field?
 3. [Set up your local development environment](DEVELOPMENT_ENVIRONMENT.md)
-   
+
 ## I. Adding the field to the SORMAS API
 
 The SORMAS API is the heart of the data schema. Accordingly, this is where you have to get started.
@@ -31,7 +31,7 @@ The SORMAS API is the heart of the data schema. Accordingly, this is where you h
 2. Add the field as a private member of the class with a get- and set-method. In addition a static final String to be used as a constant to identify the field.
 3. If the field has pre-defined values add a enum in the package of the class. Have a look at one of the existing enums for reference.
 4. Add the caption to captions.properties and description to description.properties in the project resources. For enums add all values to enum.properties.
-   ```
+   ```.properties
    Symptoms.soreThroat = Sore throat/pharyngitis
    ```
 5. When you made additions/changes on keys in ``captions.properties``, ``strings.properties`` or ``validations.properties`` you have to run ``I18nConstantGenerator`` (run as ... Java Application) to update the corresponding Constants classes.
@@ -50,11 +50,11 @@ Accordingly it's necessary to extend the persistence logic with the new field.
 1. Identify the entity class that matches the API class where the field was added (e.g. Case.java).
 2. Add the field as a private member of the entity class with a get- and set-method.
 3. Add the correct JPA annotation to the get-method (see other fields for examples).
-   ```
-	@Enumerated(EnumType.STRING)
-	public SymptomState getSoreThroat() {
-		return soreThroat;
-	}
+   ```java
+    @Enumerated(EnumType.STRING)
+    public SymptomState getSoreThroat() {
+        return soreThroat;
+    }
    ```
 
 In addition to this the sormas_schema.sql file in sormas-base/sql has to be extended:
@@ -80,7 +80,7 @@ Now we need to make sure data in the new field is exchanged between the backend 
 9. Identify the *FacadeEjb class for the entity (e.g. CaseFacadeEjb).
 10. Extend the toDto and fromDto/fillOrBuildEntity methods to exchange data between the API class and the backend entity class that is persisted.
     ```
-	target.setSoreThroat(source.getSoreThroat());
+    target.setSoreThroat(source.getSoreThroat());
     ```
 Now we need to make sure data in the new field is exported by the detailed export.
 
@@ -145,9 +145,9 @@ SORMAS allows users to upgrade from old app versions. Thus it's necessary to add
 8. Execute the needed SQL using the DAO (database access object) of the entity class. 
    You can mostly use the same SQL used for adding the field to the SORMAS backend. The column name has to match the field name in the entity class (not all lower case).
    ```   
-	getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN soreThroat varchar(255);");
+    getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN soreThroat varchar(255);");
    ```   
-					
+                    
 The SORMAS app has separate fragments used for read and edit activities. Each fragment is split into the xml layout file and the java class containing it's logic.
 
 9. Identify the edit fragment layout xml file where the field needs to be added. E.g. /res/layout/fragment_symptoms_edit_layout.xml

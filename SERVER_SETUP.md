@@ -28,10 +28,10 @@
 * Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
-		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-		sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
-		sudo apt-get update
-		sudo apt-get install zulu11
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+        sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
+        sudo apt-get update
+        sudo apt-get install zulu11
   * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
@@ -40,7 +40,7 @@
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
-    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
+    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.    
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
@@ -48,20 +48,20 @@
         * Check for GCC: ``gcc --version`` and install if missing
         * ``sudo pgxn install temporal_tables``
         * The packages can be removed afterward
-	   
-## SORMAS Server	
+       
+## SORMAS Server    
 
 * Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
   * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
         
-		cd /root/deploy/sormas
-		SORMAS_VERSION=1.y.z
-		wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
-		unzip sormas_${SORMAS_VERSION}.zip
-		mv deploy/ $(date +%F)
-		rm sormas_${SORMAS_VERSION}.zip
-		chmod +x $(date +%F)/server-setup.sh
+        cd /root/deploy/sormas
+        SORMAS_VERSION=1.y.z
+        wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+        unzip sormas_${SORMAS_VERSION}.zip
+        mv deploy/ $(date +%F)
+        rm sormas_${SORMAS_VERSION}.zip
+        chmod +x $(date +%F)/server-setup.sh
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
   * Unzip the ZIP archive (e.g. into you download directory)
@@ -152,26 +152,26 @@ Here are some things that you should do to configure the Apache server as a prox
 
 * Activate all needed modules:
 
-		a2enmod ssl
-		a2enmod rewrite
-		a2enmod proxy
-		a2enmod proxy_http
-		a2enmod headers
+        a2enmod ssl
+        a2enmod rewrite
+        a2enmod proxy
+        a2enmod proxy_http
+        a2enmod headers
 * Create a new site /etc/apache2/sites-available/your.sormas.server.url.conf (e.g. sormas.org.conf)
 * Force SSL secured connections: redirect from http to https:
 
-		<VirtualHost *:80>
-			ServerName your.sormas.server.url
-			RewriteEngine On
-			RewriteCond %{HTTPS} !=on
-			RewriteRule ^/(.*) https://your.sormas.server.url/$1 [R,L]
-		</VirtualHost>
-		<IfModule mod_ssl.c>
-		<VirtualHost *:443>
-			ServerName your.sormas.server.url
-			...
-		</VirtualHost>
-		</IfModule>
+        <VirtualHost *:80>
+            ServerName your.sormas.server.url
+            RewriteEngine On
+            RewriteCond %{HTTPS} !=on
+            RewriteRule ^/(.*) https://your.sormas.server.url/$1 [R,L]
+        </VirtualHost>
+        <IfModule mod_ssl.c>
+        <VirtualHost *:443>
+            ServerName your.sormas.server.url
+            ...
+        </VirtualHost>
+        </IfModule>
 * Configure logging:
 
         ErrorLog /var/log/apache2/error.log
@@ -184,27 +184,27 @@ Here are some things that you should do to configure the Apache server as a prox
         SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
         SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
         SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
-		
+        
         # disable weak ciphers and old TLS/SSL
         SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
         SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE$
-        SSLHonorCipherOrder off		
+        SSLHonorCipherOrder off        
 * Add a proxy pass to the local port:
 
-		ProxyRequests Off
-		ProxyPass /sormas-ui http://localhost:6080/sormas-ui
-		ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
-		ProxyPass /sormas-rest http://localhost:6080/sormas-rest
-		ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
+        ProxyRequests Off
+        ProxyPass /sormas-ui http://localhost:6080/sormas-ui
+        ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
+        ProxyPass /sormas-rest http://localhost:6080/sormas-rest
+        ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
 * Configure security settings:
 
-		Header always set X-Content-Type-Options "nosniff"
-		Header always set X-Xss-Protection "1; mode=block"
-		# Disable Caching
-		Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
-		Header always set Pragma "no-cache"
-		
-		Header always set Content-Security-Policy \
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set X-Xss-Protection "1; mode=block"
+        # Disable Caching
+        Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
+        Header always set Pragma "no-cache"
+        
+        Header always set Content-Security-Policy \
             "default-src 'none'; \
             object-src 'self'; \
             script-src 'self' 'unsafe-inline' 'unsafe-eval'; \
@@ -215,15 +215,15 @@ Here are some things that you should do to configure the Apache server as a prox
             frame-src 'self'; \
             worker-src 'self'; \
             manifest-src 'self'; \
-            frame-ancestors 'self'		
+            frame-ancestors 'self'        
 
-		# The Content-Type header was either missing or empty.
-		# Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
-		AddType application/vnd.ms-fontobject    .eot
-		AddType application/x-font-opentype      .otf
-		AddType image/svg+xml                    .svg
-		AddType application/x-font-ttf           .ttf
-		AddType application/font-woff            .woff
+        # The Content-Type header was either missing or empty.
+        # Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
+        AddType application/vnd.ms-fontobject    .eot
+        AddType application/x-font-opentype      .otf
+        AddType image/svg+xml                    .svg
+        AddType application/x-font-ttf           .ttf
+        AddType application/font-woff            .woff
 * Activate output compression (very important!): 
 
         <IfModule mod_deflate.c>
@@ -238,58 +238,58 @@ Here are some things that you should do to configure the Apache server as a prox
 * Provide the android apk:
 
         Options -Indexes
-		AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
+        AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
 
 * For the Apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``):
 
-		ServerTokens Prod
-		ServerSignature Off
-		TraceEnable Off
+        ServerTokens Prod
+        ServerSignature Off
+        TraceEnable Off
 
-		Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
-		Header unset X-Frame-Options
-		Header always set X-Frame-Options SAMEORIGIN
-		Header unset Referrer-Policy
-		Header always set Referrer-Policy "same-origin"
-		Header edit Set-Cookie "(?i)^((?:(?!;\s?HttpOnly).)+)$" "$1;HttpOnly"
-		Header edit Set-Cookie "(?i)^((?:(?!;\s?Secure).)+)$" "$1;Secure"
+        Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
+        Header unset X-Frame-Options
+        Header always set X-Frame-Options SAMEORIGIN
+        Header unset Referrer-Policy
+        Header always set Referrer-Policy "same-origin"
+        Header edit Set-Cookie "(?i)^((?:(?!;\s?HttpOnly).)+)$" "$1;HttpOnly"
+        Header edit Set-Cookie "(?i)^((?:(?!;\s?Secure).)+)$" "$1;Secure"
 
-		Header unset X-Powered-By
-		Header unset Server
-		
-		
+        Header unset X-Powered-By
+        Header unset Server
+        
+        
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
         apache2ctl graceful
-		
+        
 ### Firewall
 
 * The server should only publish the ports that are needed. For SORMAS this is port 80 (HTTP) and 443 (HTTPS). In addition you will need the SSH port to access the server for admin purposes.
 * We suggest to use UFW (Uncomplicated Firewall) which provides a simple interface to iptables:
 
-		sudo apt-get install ufw
-		sudo ufw default deny incoming
-		sudo ufw default allow outgoing
-		sudo ufw allow ssh
-		sudo ufw allow http
-		sudo ufw allow https
-		sudo ufw enable
+        sudo apt-get install ufw
+        sudo ufw default deny incoming
+        sudo ufw default allow outgoing
+        sudo ufw allow ssh
+        sudo ufw allow http
+        sudo ufw allow https
+        sudo ufw enable
 
 ### Postfix Mail Server
 
 * Install postfix and mailutils:
 
-		apt install aptitude
-		aptitude install postfix
-		-> choose "satelite system"
-		apt install mailutils
-	
+        apt install aptitude
+        aptitude install postfix
+        -> choose "satelite system"
+        apt install mailutils
+    
 * Configure your system:
 
-		nano /etc/aliases
-		-> add "root: enter-your@support-email-here.com"
-		nano /opt/domains/sormas/config/logback.xml
-		-> make sure "EMAIL_ERROR" appender is active and sends out to your email address
+        nano /etc/aliases
+        -> add "root: enter-your@support-email-here.com"
+        nano /opt/domains/sormas/config/logback.xml
+        -> make sure "EMAIL_ERROR" appender is active and sends out to your email address
 
 ### Testing the Server Setup
 
@@ -304,9 +304,9 @@ This can be conveniently accomplished by executing the R setup script from the S
 * If the SORMAS installation has been customized, ``r-setup.sh`` the install paths may have to be adjusted accordingly with a text editor.
 * Execute R setup script:
 
-	chmod +x r-setup.sh
-	./r-setup.sh
-	
+    chmod +x r-setup.sh
+    ./r-setup.sh
+    
 * Follow the instructions of the script.
 
 ## SORMAS to SORMAS Certificate Setup
@@ -326,8 +326,8 @@ Check that the users table does have a corresponding entry. If not, the database
 
 Old servers were set up with a memory size of less than 2048MB. You can change this using the following commands:
 
-	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
-	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
-	/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
+    /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
+    /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
+    /opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
 
 Alternative: You can edit the settings directly in the domain.xml in the config directory of the SORMAS domain. Just search for ``Xmx`` - there should be two entries that need to be changed.

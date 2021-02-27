@@ -65,13 +65,13 @@ If you're interested in participating in the development of SORMAS, you can use 
 * [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
 * [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)
 
-### Development Contributing Guidelines 
+### Development Contributing Guidelines
 
 1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project. To not forget this, use save actions [for your IDE](DEVELOPMENT_ENVIRONMENT.md).
 2. Rules for blank lines (which cannot be enforced by automatic formatting):
     - Use one blank line after method definition (but usually not for one liners like getters/setters or delegation).
-	- Use one blank line to separate statements within a code block from each other when you start a new logical block.
-	- Do not use blank lines after each statement.
+    - Use one blank line to separate statements within a code block from each other when you start a new logical block.
+    - Do not use blank lines after each statement.
     - No blank line after last statement of a block, but closing } with proper intendation in the next line.
     - No blank line between two closing }.
 3. You can use ``//@formatter:off`` and ``//@formatter:on`` to encapsulate a code block where the automated formatting messes up the readability. Try to use this rarely and use proper intendation nevertheless.
@@ -79,11 +79,11 @@ If you're interested in participating in the development of SORMAS, you can use 
     - Separate code and comment: Set the comment before the statement(s) you want to explain.
 5. Each commit should be related to a single issue on Github and have a reference to this issue as well as a short description on what has been done in this commit:
    > #61 - added model to define classification, apply automatic case classification whenever a field value changes
-6. Each pull request should be related to a single issue (if possible). 
+6. Each pull request should be related to a single issue (if possible).
 
 ### SORMAS Product Backlog
 
-The board **Product Backlog** is used to plan, refine and prioritize the tickets for the upcoming sprints. 
+The board **Product Backlog** is used to plan, refine and prioritize the tickets for the upcoming sprints.
 The sorting from top to bottom in every column reflects the priority for the product. The Product Owner is responsible to put tickets into the Backlog and keep the ticket information updated.
 
 The Product Backlog contains the following columns:
@@ -103,7 +103,7 @@ The board **Sprint Backlog** exists for each Scrum Team and is segmented into th
 * **Testing:** Issues that have been reviewed and merged to **development** branch to be tested and verified on a central TEST instance. The ticket status is supposed to be **Closed**.
 * **Done:** Issues that have been resolved, reviewed and satisfy the Definition of Done. The ticket status is supposed to be **Closed**.
 
-The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**. 
+The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**.
 Transitions to **Waiting** and **Review** also need to be done manually. When the developer is done with all work (no code changes or merges needed, milestone is set), the ticket is supposed to be closed to go automatically to **Testing**.
 Approved tickets are supposed to be moved manually from **Testing** to **Done*.
 
