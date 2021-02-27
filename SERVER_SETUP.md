@@ -36,14 +36,14 @@
 
 ### Java 11
 
-* Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
-  * **Linux**: <https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm>
-        ```bash
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-        sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
-        sudo apt-get update
-        sudo apt-get install zulu11
-        ```
+* Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
+  * **[Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)**:
+```bash
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
+sudo apt-get update
+sudo apt-get install zulu11
+```
   * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
@@ -52,16 +52,19 @@
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
-    * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
-    * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
-        ```bash
-        sudo apt-get install libpq-dev
-        sudo apt-get install postgresql-server-dev-all
-        sudo apt install pgxnclient
-        ```
-        * Check for GCC: ``gcc --version`` and install if missing
-        * ``sudo pgxn install temporal_tables``
-        * The packages can be removed afterward
+  * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
+  * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
+
+```bash
+sudo apt-get install libpq-dev
+sudo apt-get install postgresql-server-dev-all
+sudo apt install pgxnclient
+#Check for GCC:
+gcc --version # and install if missing
+sudo pgxn install temporal_tables
+# The packages can be removed afterward
+```
+
 
 ## SORMAS Server
 
