@@ -12,11 +12,16 @@
 	<name>${project.artifactId}</name>
 	<packaging>war</packaging>
 
-	<properties>    
+	<properties>
 		<m2e.jpa.activation>false</m2e.jpa.activation>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>de.aleri</groupId>
+			<artifactId>lab-certificate-generator</artifactId>
+			<version>1.2.0-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -56,15 +61,15 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>popupbutton</artifactId>
 		</dependency>
 
 		<dependency>
-		   <groupId>org.vaadin.addons</groupId>
-		   <artifactId>extended-token-field</artifactId>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>extended-token-field</artifactId>
 		</dependency>
 
 		<dependency>
@@ -78,7 +83,7 @@
 			<artifactId>javaee-api</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sormas-backend</artifactId>
@@ -92,8 +97,8 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-core</artifactId>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
 		</dependency>
 
 		<dependency>
@@ -107,8 +112,8 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.glassfish</groupId>
-		    <artifactId>javax.el</artifactId>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
 		</dependency>
 
 		<dependency>
@@ -125,10 +130,10 @@
 			<groupId>info.novatec</groupId>
 			<artifactId>bean-test</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -192,9 +197,9 @@
 				</configuration>
 				<executions>
 					<execution>
-                    	<configuration>
-                    		<!-- if you don't specify any modules, the plugin will find them -->
-                    	</configuration>
+						<configuration>
+							<!-- if you don't specify any modules, the plugin will find them -->
+						</configuration>
 						<goals>
 							<goal>update-theme</goal>
 							<!-- Comment out compile-theme goal to use on-the-fly theme compilation -->

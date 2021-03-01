@@ -17,11 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -35,7 +47,11 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskIndexDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -134,6 +150,12 @@ public class TaskGridComponent extends VerticalLayout {
 			createAndAddStatusButton(Captions.taskOfficerTasks, OFFICER_TASKS, buttonFilterLayout);
 			Button myTasks = createAndAddStatusButton(Captions.taskMyTasks, MY_TASKS, buttonFilterLayout);
 
+			Button todaySampleCollectionsBtn = ButtonHelper.createButton(Captions.taskOnlySampleCollectionDueToday, e -> {
+				this.filterByTodayDateAndTaskType();
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			buttonFilterLayout.addComponent(todaySampleCollectionsBtn);
+			statusButtons.put(todaySampleCollectionsBtn, I18nProperties.getCaption(Captions.taskOnlySampleCollectionDueToday));
+
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER))
 				&& UserProvider.getCurrent().getUserRoles().size() == 1) {
@@ -173,7 +195,14 @@ public class TaskGridComponent extends VerticalLayout {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getTaskController()
 							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria));
-					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)));
+					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkPrint), VaadinIcons.PRINT, c -> {
+						this.printSelected(this.grid.asMultiSelect().getSelectedItems(), actionButtonsLayout);
+					}),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkMarkAsDone), VaadinIcons.CHECK, c -> {
+						ControllerProvider.getTaskController().markAsDone(this.grid.asMultiSelect().getSelectedItems());
+						tasksView.navigateTo(criteria);
+					}));
 
 				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -184,6 +213,38 @@ public class TaskGridComponent extends VerticalLayout {
 		assigneeFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return assigneeFilterLayout;
+	}
+
+	private void filterByTodayDateAndTaskType() {
+		criteria.assigneeUser(null);
+		criteria.excludeAssigneeUser(null);
+
+		LocalDate localDate = LocalDate.now();
+		LocalDateTime startOfDay = localDate.atStartOfDay();
+		criteria.dueDateBetween(Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant()),
+				Date.from(localDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant()));
+		criteria.taskType(TaskType.SAMPLE_COLLECTION);
+		criteria.taskContext(TaskContext.CASE);
+		criteria.taskStatus(TaskStatus.PENDING);
+
+		tasksView.navigateTo(criteria);
+	}
+
+	private void printSelected(Collection<TaskIndexDto> tasks, AbstractLayout downloadBtnTarget){
+		String path = ControllerProvider.getTaskController().printLabornachweise(tasks);
+
+		String rndBtnId = UUID.randomUUID().toString();
+		Button downloadInvisibleButton = new Button();
+		downloadInvisibleButton.setId(rndBtnId);
+		downloadInvisibleButton.addStyleName("invisible");
+		downloadBtnTarget.addComponent(downloadInvisibleButton);
+		FileDownloader fileDownloader = new FileDownloader(new FileResource(new File(path)));
+		fileDownloader.extend(downloadInvisibleButton);
+
+		//The FileDownloader can not extend the "Download" menu item
+		//That's why we are creating an invisible button and simulate the click event.
+		Page.getCurrent().getJavaScript().execute("document.getElementById('" + rndBtnId + "').click();");
+		removeComponent(downloadInvisibleButton);
 	}
 
 	private void styleGridLayout(VerticalLayout gridLayout) {

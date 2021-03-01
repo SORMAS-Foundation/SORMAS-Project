@@ -30,3 +30,4 @@ bin
 /sormas-cargoserver/.env
 /sormas-cargoserver/custom.env
 /sormas-cargoserver/custom.properties
+*.DS_Store
