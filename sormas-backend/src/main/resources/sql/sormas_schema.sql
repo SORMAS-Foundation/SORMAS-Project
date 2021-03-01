@@ -6730,4 +6730,10 @@ ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_
 
 INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
+-- 2021-02-28 Add optional translation to CampaignDiagramDefinition #4090
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaigndiagramtranslations json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (338, 'Add optional translation to CampaignDiagramDefinition #4090');
+
 -- *** Insert new sql commands BEFORE this line ***
