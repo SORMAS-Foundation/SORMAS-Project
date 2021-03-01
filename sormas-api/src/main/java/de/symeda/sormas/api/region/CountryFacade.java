@@ -14,6 +14,8 @@ public interface CountryFacade {
 
 	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
+	CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities);
+
 	List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CountryCriteria criteria);
@@ -24,11 +26,13 @@ public interface CountryFacade {
 
 	void dearchive(String countryUuid);
 
-    List<CountryDto> getAllAfter(Date date);
+	List<CountryDto> getAllAfter(Date date);
 
 	List<CountryDto> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids();
 
 	List<CountryReferenceDto> getAllActiveAsReference();
+
+	CountryReferenceDto getServerCountry();
 }

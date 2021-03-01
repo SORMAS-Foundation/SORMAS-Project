@@ -6,18 +6,18 @@
    <elementGuidId>d4ba580f-7885-453f-9248-a1c1358093c7</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>BASIC</key>
-         <value>//*[(text() = 'Create a new person' or . = 'Create a new person')]</value>
-      </entry>
-      <entry>
          <key>XPATH</key>
          <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[9]/div/span/label</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//label[(text() = 'Create a new person' or . = 'Create a new person')]</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>

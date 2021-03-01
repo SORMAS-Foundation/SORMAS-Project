@@ -17,24 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
-
-import java.io.Serializable;
-import java.util.Date;
 
 public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -111,7 +112,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
 						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
-						  String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
+						  String eventReportingUserUuid, String eventOfficerUuid, String eventParticipantRegionUuid, String eventParticipantDistrictUuid, String eventUuid) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -132,14 +133,15 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.district = createDistrictReference(districtName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid, eventDistrictUuid);
+		this.district =
+			createDistrictReference(districtName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid, eventParticipantDistrictUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
 		this.sampleDateTime = sampleDateTime;
 		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
-		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName));
+		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName), null);
 		this.sampleMaterial = sampleMaterial;
 		this.samplePurpose = samplePurpose;
 		this.specimenCondition = specimenCondition;
@@ -178,14 +180,22 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 				contactCaseJurisdiction);
 		}
 
-		EventJurisdictionDto eventJurisdiction = null;
+		EventParticipantJurisdictionDto eventParticipantJurisdiction = null;
 		if (associatedEventParticipantUuid != null) {
-			eventJurisdiction =
-				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
+			eventParticipantJurisdiction = new EventParticipantJurisdictionDto(
+				associatedEventParticipantUuid,
+				eventReportingUserUuid,
+				eventParticipantRegionUuid,
+				eventParticipantDistrictUuid,
+				eventUuid);
 		}
 
-		jurisdiction =
-			new SampleJurisdictionDto(reportingUserUuid, associatedCaseJurisdiction, associatedContactJurisdiction, eventJurisdiction, labUuid);
+		jurisdiction = new SampleJurisdictionDto(
+			reportingUserUuid,
+			associatedCaseJurisdiction,
+			associatedContactJurisdiction,
+			eventParticipantJurisdiction,
+			labUuid);
 	}
 
 	private DistrictReferenceDto createDistrictReference(
@@ -197,13 +207,13 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(caseDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(caseDistrictUuid, districtName, null);
 		} else if (contactDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(contactDistrictUuid, districtName, null);
 		} else if (contactCaseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactCaseDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(contactCaseDistrictUuid, districtName, null);
 		} else if (eventDistrictUuid != null) {
-			ref = new DistrictReferenceDto(eventDistrictUuid, districtName);
+			ref = new DistrictReferenceDto(eventDistrictUuid, districtName, null);
 		}
 
 		return ref;
@@ -389,5 +399,16 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateFormatHelper.formatLocalDateTime(sampleDateTime)).append(" - ");
+		sb.append(sampleMaterial);
+		sb.append(" (").append(disease).append(")");
+		if (pathogenTestResult != null) {
+			sb.append(": ").append(pathogenTestResult);
+		}
+		return sb.toString();
 	}
 }

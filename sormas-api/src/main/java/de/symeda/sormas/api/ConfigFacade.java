@@ -85,6 +85,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterSystemEventGetsDeleted();
+
 	GeoLatLon getCountryCenter();
 
 	int getMapZoom();
@@ -109,10 +111,15 @@ public interface ConfigFacade {
 
 	String getAuthenticationProvider();
 
+	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
+
 	boolean isExternalJournalActive();
 
 	int getDashboardMapMarkerLimit();
 
 	boolean isSmsServiceSetUp();
 
+	String getDemisJndiName();
+
+	boolean isAuditorAttributeLoggingEnabled();
 }

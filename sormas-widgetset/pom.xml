@@ -3,7 +3,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.54.0-SNAPSHOT</version>
+        <version>1.58.0-SNAPSHOT</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -36,7 +36,6 @@
 		   <artifactId>extended-token-field</artifactId>
 		</dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -106,5 +105,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

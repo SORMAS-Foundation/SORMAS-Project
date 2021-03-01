@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -32,7 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -116,13 +116,13 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public PrescriptionDto savePrescription(PrescriptionDto prescription) {
+	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
 
 		restorePseudonymizedDto(prescription, existingPrescription, existingPrescriptionDto);
 
-		Prescription entity = fromDto(prescription, existingPrescription);
+		Prescription entity = fromDto(prescription, existingPrescription, true);
 
 		service.ensurePersisted(entity);
 
@@ -206,7 +206,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
 
@@ -294,17 +294,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return reference;
 	}
 
-	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target) {
+	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Prescription();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Prescription::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());

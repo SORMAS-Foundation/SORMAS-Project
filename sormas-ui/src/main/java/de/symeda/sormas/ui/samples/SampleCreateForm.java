@@ -6,11 +6,16 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.vaadin.v7.data.util.converter.StringToFloatConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -30,8 +35,10 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	private static final String HTML_LAYOUT = SAMPLE_COMMON_HTML_LAYOUT
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
+		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, "")
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE)
+		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT_TEXT);
 
 	public SampleCreateForm() {
@@ -46,9 +53,22 @@ public class SampleCreateForm extends AbstractSampleForm {
 		addCommonFields();
 		CheckBox includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
 		ComboBox pathogenTestResultField = addCustomField(PathogenTestDto.TEST_RESULT, PathogenTestResultType.class, ComboBox.class);
+		pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
+		DateField reportDateField;
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			reportDateField = addCustomField(
+				PathogenTestDto.REPORT_DATE,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE),
+				Date.class,
+				DateField.class);
+			FieldHelper.setVisibleWhen(includeTestField, Arrays.asList(reportDateField), Arrays.asList(true), true);
+		}
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
+		TextField cqValueField = addCustomField(PathogenTestDto.CQ_VALUE, Float.class, TextField.class);
+		TextField typingIdField = addCustomField(PathogenTestDto.TYPING_ID, String.class, TextField.class);
+		cqValueField.setConverter(new StringToFloatConverter());
 		DateTimeField testDateField = addCustomField(
 			PathogenTestDto.TEST_DATE_TIME,
 			I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME),
@@ -61,6 +81,9 @@ public class SampleCreateForm extends AbstractSampleForm {
 		addValidators();
 
 		setVisibilities();
+
+		cqValueField.setVisible(false);
+		typingIdField.setVisible(false);
 
 		FieldHelper.setVisibleWhen(
 			includeTestField,
@@ -90,6 +113,24 @@ public class SampleCreateForm extends AbstractSampleForm {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
 
+		pathogenTestResultField.addValueChangeListener(e -> {
+			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
+			PathogenTestType testType = (PathogenTestType) testTypeField.getValue();
+			showCqValueField(cqValueField, testType, testResult);
+		});
+
+		testTypeField.addValueChangeListener(e -> {
+			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
+			PathogenTestResultType testResult = (PathogenTestResultType) pathogenTestResultField.getValue();
+			showCqValueField(cqValueField, testType, testResult);
+			if (testType == PathogenTestType.PCR_RT_PCR || testType == PathogenTestType.DNA_MICROARRAY || testType == PathogenTestType.SEQUENCING) {
+				typingIdField.setVisible(true);
+			} else {
+				typingIdField.setVisible(false);
+				typingIdField.clear();
+			}
+		});
+
 		includeTestField.addValueChangeListener(e -> {
 			final Boolean includeTest = (Boolean) e.getProperty().getValue();
 			if (includeTest) {
@@ -109,6 +150,16 @@ public class SampleCreateForm extends AbstractSampleForm {
 		});
 	}
 
+	private void showCqValueField(TextField cqValueField, PathogenTestType testType, PathogenTestResultType testResult) {
+		if ((testType == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
+			|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+			cqValueField.setVisible(true);
+		} else {
+			cqValueField.setVisible(false);
+			cqValueField.clear();
+		}
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -120,13 +171,21 @@ public class SampleCreateForm extends AbstractSampleForm {
 		final NullableOptionGroup testResultVerified = (NullableOptionGroup) getField(PathogenTestDto.TEST_RESULT_VERIFIED);
 		final ComboBox testTypeField = (ComboBox) getField(PathogenTestDto.TEST_TYPE);
 		final ComboBox testedDiseaseField = (ComboBox) getField(PathogenTestDto.TESTED_DISEASE);
+		final TextField cqValueField = (TextField) getField(PathogenTestDto.CQ_VALUE);
+		final TextField typingIdField = (TextField) getField(PathogenTestDto.TYPING_ID);
 		final DateTimeField testDateField = (DateTimeField) getField(PathogenTestDto.TEST_DATE_TIME);
 		final TextArea testTextField = (TextArea) getField(PathogenTestDto.TEST_RESULT_TEXT);
 
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			final DateField reportDateField = (DateField) getField(PathogenTestDto.REPORT_DATE);
+			reportDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE));
+		}
 		testResult.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
 		testResultVerified.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED));
 		testTypeField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE));
 		testedDiseaseField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE));
+		cqValueField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE));
+		typingIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TYPING_ID));
 		testDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME));
 		testTextField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_TEXT));
 	}

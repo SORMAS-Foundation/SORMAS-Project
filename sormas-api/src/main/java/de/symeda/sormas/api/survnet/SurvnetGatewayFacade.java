@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.survnet;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
+
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -34,4 +37,10 @@ public interface SurvnetGatewayFacade {
 	 * @return http response code of the gateway
 	 */
 	int sendCases(List<String> caseUuids);
+
+	int sendEvents(List<String> eventUuids);
+
+    int deleteCases(List<CaseDataDto> cases);
+
+	int deleteEvents(List<EventDto> events);
 }

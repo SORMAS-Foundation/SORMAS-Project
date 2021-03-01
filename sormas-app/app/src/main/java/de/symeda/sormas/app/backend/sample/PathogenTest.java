@@ -64,6 +64,9 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String testedDiseaseDetails;
 
+	@Column
+	private String typingId;
+
 	@Enumerated(EnumType.STRING)
 	@Column
 	private PathogenTestResultType testResult;
@@ -85,6 +88,9 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	@DatabaseField
 	private Float cqValue;
+
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date reportDate;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility lab;
@@ -125,6 +131,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 
 	public PathogenTestResultType getTestResult() {
@@ -213,6 +227,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 	@Override

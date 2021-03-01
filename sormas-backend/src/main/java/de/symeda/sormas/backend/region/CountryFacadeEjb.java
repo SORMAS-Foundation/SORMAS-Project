@@ -32,6 +32,7 @@ import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -48,6 +49,9 @@ public class CountryFacadeEjb implements CountryFacade {
 	@EJB
 	private UserService userService;
 
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+
 	@Override
 	public CountryDto getCountryByUuid(String uuid) {
 		return toDto(countryService.getByUuid(uuid));
@@ -59,6 +63,11 @@ public class CountryFacadeEjb implements CountryFacade {
 			.stream()
 			.map(CountryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities) {
+		return countryService.getByIsoCode(isoCode, includeArchivedEntities).map(this::toDto).orElse(null);
 	}
 
 	@Override
@@ -140,7 +149,7 @@ public class CountryFacadeEjb implements CountryFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 		}
 
-		country = fillOrBuildEntity(dto, country);
+		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
 		return country.getUuid();
 	}
@@ -167,7 +176,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(entity.getUuid(), I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()));
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
+	}
+
+	public static CountryReferenceDto toReferenceDto(CountryDto entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
 	}
 
 	public CountryDto toDto(Country entity) {
@@ -207,14 +229,8 @@ public class CountryFacadeEjb implements CountryFacade {
 		return dto;
 	}
 
-	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target) {
-
-		if (target == null) {
-			target = new Country();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
@@ -268,6 +284,13 @@ public class CountryFacadeEjb implements CountryFacade {
 			.map(CountryFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(CountryReferenceDto::getCaption))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public CountryReferenceDto getServerCountry() {
+		String countryName = configFacadeEjb.getCountryName();
+		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
+		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}
 
 	// Need to be in the same order as in the constructor

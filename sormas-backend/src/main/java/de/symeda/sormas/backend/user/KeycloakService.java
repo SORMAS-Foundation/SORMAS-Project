@@ -38,12 +38,12 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -57,6 +57,8 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
@@ -181,6 +183,11 @@ public class KeycloakService {
             userUpdateEvent.getExceptionCallback().accept(e.getMessage());
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public void handleUserUpdateEventAsync(@ObservesAsync UserUpdateEvent userUpdateEvent) {
+        logger.debug("Handling userUpdateEvent asynchronously for user {}", userUpdateEvent.getNewUser().getUuid());
+        handleUserUpdateEvent(userUpdateEvent);
     }
 
     /**

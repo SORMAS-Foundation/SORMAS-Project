@@ -21,13 +21,17 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -36,7 +40,10 @@ import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import com.google.common.collect.Sets;
+
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public final class DateHelper {
 
@@ -45,15 +52,19 @@ public final class DateHelper {
 	}
 
 	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	private static final SimpleDateFormat DATE_FORMAT_DOTS = new SimpleDateFormat("dd.MM.yyyy");
-	private static final SimpleDateFormat DATE_FORMAT_HYPHEN = new SimpleDateFormat("dd-MM-yyyy");
+	private static final String DATE_FORMAT = "dd/MM/yyyy";
+	private static final String DATE_FORMAT_DOTS = "dd.MM.yyyy";
+	private static final String DATE_FORMAT_HYPHEN = "dd-MM-yyyy";
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
 
+	private static final Set<String> DATE_FORMAT_SEPARATORS = Sets.newHashSet(".", "/", "-");
+	private static final Pattern DATE_FORMAT_PATTERN = Pattern.compile("^(.*)([\\.\\-/])(.*)([\\.\\-/])(.*)$");
+
 	public static SimpleDateFormat getLocalDateFormat(Language language) {
-		return new SimpleDateFormat(language.getDateFormat());
+		Language formatLanguage = language != null ? language : I18nProperties.getUserLanguage();
+		return new SimpleDateFormat(formatLanguage.getDateFormat());
 	}
 
 	public static String getLocalDatePattern(Language language) {
@@ -141,37 +152,69 @@ public final class DateHelper {
 		}
 	}
 
-	public static Date parseDateWithException(String date) throws ParseException {
-
-		if (date != null) {
-			try {
-				SimpleDateFormat dateFormat = clone(SHORT_DATE_FORMAT);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			try {
-				SimpleDateFormat dateFormat = clone(DATE_FORMAT);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			try {
-				SimpleDateFormat dateFormat = clone(DATE_FORMAT_DOTS);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			// If this fails, an exception is thrown
-			SimpleDateFormat dateFormat = clone(DATE_FORMAT_HYPHEN);
-			dateFormat.setLenient(false);
-			return dateFormat.parse(date);
-		} else {
+	public static Date parseDateWithException(String date, String dateFormat) throws ParseException {
+		if (date == null) {
 			return null;
 		}
+
+		List<String> dateFormats = getAllowedDateFormats(dateFormat);
+
+		for (String format : dateFormats) {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat(format);
+				formatter.setLenient(false);
+				return formatter.parse(date);
+			} catch (ParseException e) {
+				// Try next format
+			}
+		}
+
+		throw new ParseException("Unable to parse date [" + date + "]", 0);
+	}
+
+	public static List<String> getAllowedDateFormats(String defaultFormat) {
+		final List<String> dateFormats = new ArrayList<>();
+
+		Matcher matcher = DATE_FORMAT_PATTERN.matcher(defaultFormat);
+		if (matcher.find()) {
+			final List<String> dateFieldsDefault = new ArrayList<>(Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5)));
+
+			final List<String> dateFieldsYearFormat = new ArrayList<>(dateFieldsDefault.size());
+			for (String dateField : dateFieldsDefault) {
+				if (dateField.toLowerCase().startsWith("y")) {
+					dateFieldsYearFormat.add(dateField.length() == 4 ? dateField.substring(0, 2) : dateField + dateField);
+				} else {
+					dateFieldsYearFormat.add(dateField);
+				}
+			}
+
+			final List<List<String>> dateFields = new ArrayList<>(dateFieldsDefault.size());
+			dateFields.add(dateFieldsDefault);
+			dateFields.add(dateFieldsYearFormat);
+
+			String defaultSeparator = matcher.group(2);
+			for (List<String> fields : dateFields) {
+				dateFormats.add(StringUtils.join(fields, defaultSeparator));
+
+				for (String separator : DATE_FORMAT_SEPARATORS) {
+					if (!separator.equals(defaultSeparator)) {
+						dateFormats.add(StringUtils.join(fields, separator));
+					}
+				}
+			}
+		}
+
+		return dateFormats;
+	}
+
+	public static List<String> getDateFields(String dateOrFOrmat) {
+		Matcher matcher = DATE_FORMAT_PATTERN.matcher(dateOrFOrmat);
+
+		if (!matcher.matches()) {
+			return null;
+		}
+
+		return Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5));
 	}
 
 	public static String formatDateForExport(Date date) {
@@ -1024,7 +1067,7 @@ public final class DateHelper {
 
 	/**
 	 * Redundant to {@link #now()} to propose {@code startTime} as variable name.
-	 * 
+	 *
 	 * @return Current time in milliseconds.
 	 */
 	public static long startTime() {
@@ -1051,5 +1094,63 @@ public final class DateHelper {
 	 */
 	public static long toSeconds(long milliseconds) {
 		return milliseconds / MILLISECONDS_PER_SECOND;
+	}
+
+	/**
+	 * Find the latest date between 2 dates
+	 * @param date1 the first date
+	 * @param date2 the second date
+	 * @return the latest date between 2 dates. If any is null, the other is returned. If both are null, null is returned.
+	 */
+	public static Date getLatestDate(Date date1, Date date2) {
+		if (ObjectUtils.allNotNull(date1, date2)) {
+			if (date1.after(date2)) {
+				return date1;
+			} else {
+				return date2;
+			}
+		} else {
+			return ObjectUtils.firstNonNull(date1, date2);
+		}
+	}
+
+	public static class ParsedDateFormat {
+
+		private String day;
+		private String month;
+		private String year;
+		private String separator;
+
+		public String getDay() {
+			return day;
+		}
+
+		public void setDay(String day) {
+			this.day = day;
+		}
+
+		public String getMonth() {
+			return month;
+		}
+
+		public void setMonth(String month) {
+			this.month = month;
+		}
+
+		public String getYear() {
+			return year;
+		}
+
+		public void setYear(String year) {
+			this.year = year;
+		}
+
+		public String getSeparator() {
+			return separator;
+		}
+
+		public void setSeparator(String separator) {
+			this.separator = separator;
+		}
 	}
 }

@@ -30,13 +30,16 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
@@ -62,8 +65,12 @@ public class Event extends PseudonymizableAdo {
 	public static final String START_DATE = "startDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
+	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
@@ -72,8 +79,13 @@ public class Event extends PseudonymizableAdo {
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String TRAVEL_DATE = "travelDate";
+
+	@DatabaseField
+	private String superordinateEventUuid;
 
 	@Deprecated
 	@DatabaseField
@@ -98,6 +110,9 @@ public class Event extends PseudonymizableAdo {
 	private String externalId;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String eventTitle;
 
 	@Column(length = COLUMN_LENGTH_BIG)
@@ -118,11 +133,32 @@ public class Event extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
 
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date evolutionDate;
+
+	@DatabaseField
+	private String evolutionComment;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location eventLocation;
 
 	@Enumerated(EnumType.STRING)
 	private TypeOfPlace typeOfPlace;
+
+	@Enumerated(EnumType.STRING)
+	private MeansOfTransport meansOfTransport;
+
+	@Column(columnDefinition = "text")
+	private String meansOfTransportDetails;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String connectionNumber;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date travelDate;
+
+	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
 
 	@Enumerated(EnumType.STRING)
 	private EventSourceType srcType;
@@ -160,8 +196,8 @@ public class Event extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private User surveillanceOfficer;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
+	private User responsibleUser;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String typeOfPlaceText;
@@ -172,6 +208,11 @@ public class Event extends PseudonymizableAdo {
 	private Double reportLon;
 	@DatabaseField
 	private Float reportLatLonAccuracy;
+
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown transregionalOutbreak;
+	@Enumerated(EnumType.STRING)
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -219,6 +260,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public String getEventTitle() {
@@ -277,6 +326,22 @@ public class Event extends PseudonymizableAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	public Location getEventLocation() {
 		return eventLocation;
 	}
@@ -291,6 +356,22 @@ public class Event extends PseudonymizableAdo {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	public MeansOfTransport getMeansOfTransport() {
+		return meansOfTransport;
+	}
+
+	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
+		this.meansOfTransport = meansOfTransport;
+	}
+
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
 	public EventSourceType getSrcType() {
@@ -389,12 +470,12 @@ public class Event extends PseudonymizableAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public User getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public String getTypeOfPlaceText() {
@@ -419,6 +500,54 @@ public class Event extends PseudonymizableAdo {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
+	public String getSuperordinateEventUuid() {
+		return superordinateEventUuid;
+	}
+
+	public void setSuperordinateEventUuid(String superordinateEventUuid) {
+		this.superordinateEventUuid = superordinateEventUuid;
+	}
+
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
+	}
+
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Override

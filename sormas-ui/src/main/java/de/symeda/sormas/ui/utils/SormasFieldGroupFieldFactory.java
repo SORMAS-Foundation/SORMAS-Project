@@ -25,11 +25,13 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
+import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
@@ -121,8 +123,12 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
 			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
+			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (VaccinationInfoForm.class.isAssignableFrom(fieldType)) {
+			return (T) new VaccinationInfoForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {

@@ -66,8 +66,6 @@ public class SampleGridComponent extends VerticalLayout {
 	private ComboBox relevanceStatusFilter;
 	private ComboBox sampleTypeFilter;
 
-	private VerticalLayout gridLayout;
-
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
@@ -87,7 +85,7 @@ public class SampleGridComponent extends VerticalLayout {
 			criteria.sampleAssociationType(SampleAssociationType.ALL);
 		}
 		grid = new SampleGrid(criteria);
-		gridLayout = new VerticalLayout();
+		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
@@ -117,9 +115,7 @@ public class SampleGridComponent extends VerticalLayout {
 			samplesView.navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
-				grid.reload();
-			}
+			grid.reload();
 		});
 		filterLayout.addComponent(filterForm);
 
@@ -176,7 +172,7 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(

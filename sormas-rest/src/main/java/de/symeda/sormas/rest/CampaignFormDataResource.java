@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,7 +37,7 @@ public class CampaignFormDataResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCampaignFormData(List<CampaignFormDataDto> dtos) {
+	public List<PushResult> postCampaignFormData(@Valid List<CampaignFormDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCampaignFormDataFacade()::saveCampaignFormData);
 	}
 

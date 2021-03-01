@@ -25,10 +25,12 @@ import de.symeda.sormas.api.utils.SortProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
+import de.symeda.sormas.api.caze.CasePersonDto;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -52,7 +54,7 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCases(List<CaseDataDto> dtos) {
+	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
 	}
 
@@ -72,6 +74,18 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@POST
+	@Path("/getduplicates")
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
+		return FacadeProvider.getCaseFacade().getDuplicates(casePerson);
+	}
+
+	@POST
+	@Path("/getduplicates/{reportDateThreshold}")
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, @PathParam("reportDateThreshold") int reportDateThreshold) {
+		return FacadeProvider.getCaseFacade().getDuplicates(casePerson, reportDateThreshold);
 	}
 
 	///

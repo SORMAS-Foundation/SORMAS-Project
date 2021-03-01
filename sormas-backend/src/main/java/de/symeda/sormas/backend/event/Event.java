@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -37,13 +38,16 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
@@ -59,6 +63,7 @@ public class Event extends CoreAdo {
 	public static final String TABLE_NAME = "events";
 
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -72,8 +77,16 @@ public class Event extends CoreAdo {
 	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
+	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String TRAVEL_DATE = "travelDate";
+	public static final String COMMERCE = "commerce";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -86,12 +99,19 @@ public class Event extends CoreAdo {
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
+	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
+	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+
+	private Event superordinateEvent;
+	private List<Event> subordinateEvents;
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -100,6 +120,7 @@ public class Event extends CoreAdo {
 	private Date eventInvestigationEndDate;
 	private List<EventParticipant> eventPersons;
 	private String externalId;
+	private String externalToken;
 	private String eventTitle;
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
@@ -107,8 +128,15 @@ public class Event extends CoreAdo {
 	private Date endDate;
 	private Date reportDateTime;
 	private User reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
+	private MeansOfTransport meansOfTransport;
+	private String meansOfTransportDetails;
+	private String connectionNumber;
+	private Date travelDate;
+	private WorkEnvironment workEnvironment;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -121,11 +149,13 @@ public class Event extends CoreAdo {
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
-	private User surveillanceOfficer;
+	private User responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private YesNoUnknown transregionalOutbreak;
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private boolean archived;
 
@@ -195,6 +225,15 @@ public class Event extends CoreAdo {
 		this.externalId = externalId;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {
 		return eventTitle;
@@ -260,6 +299,23 @@ public class Event extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getEventLocation() {
 		if (eventLocation == null) {
@@ -279,6 +335,50 @@ public class Event extends CoreAdo {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public MeansOfTransport getMeansOfTransport() {
+		return meansOfTransport;
+	}
+
+	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
+		this.meansOfTransport = meansOfTransport;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -389,13 +489,13 @@ public class Event extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	@ManyToOne
+	public User getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -407,7 +507,7 @@ public class Event extends CoreAdo {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Task.EVENT)
+	@OneToMany(mappedBy = Task.EVENT, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -432,6 +532,24 @@ public class Event extends CoreAdo {
 		this.reportLon = reportLon;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
 	@Column
 	public boolean isArchived() {
 		return archived;
@@ -454,4 +572,21 @@ public class Event extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@ManyToOne
+	public Event getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(Event superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	@OneToMany(mappedBy = Event.SUPERORDINATE_EVENT, fetch = FetchType.LAZY)
+	public List<Event> getSubordinateEvents() {
+		return subordinateEvents;
+	}
+
+	public void setSubordinateEvents(List<Event> subordinateEvents) {
+		this.subordinateEvents = subordinateEvents;
+	}
 }

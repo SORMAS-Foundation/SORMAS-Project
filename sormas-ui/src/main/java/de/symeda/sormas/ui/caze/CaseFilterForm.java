@@ -4,7 +4,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.vaadin.server.Page;
@@ -20,12 +22,15 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -59,20 +64,36 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
-	//@formatter:off
-	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION,
-			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseCriteria.FACILITY_TYPE_GROUP, CaseCriteria.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY,
-			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
-			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO,
-			CaseCriteria.BIRTHDATE_YYYY,
-			CaseCriteria.BIRTHDATE_MM,
-			CaseCriteria.BIRTHDATE_DD)
-			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
-					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
-					CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE,
-					CaseCriteria.WITH_REDUCED_QUARANTINE, CaseCriteria.ONLY_CASES_WITH_EVENTS, CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
-			+ loc(WEEK_AND_DATE_FILTER);
-	//@formatter:on
+	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
+		CaseCriteria.PRESENT_CONDITION,
+		CaseDataDto.REGION,
+		CaseDataDto.DISTRICT,
+		CaseDataDto.COMMUNITY,
+		CaseCriteria.FACILITY_TYPE_GROUP,
+		CaseCriteria.FACILITY_TYPE,
+		CaseDataDto.HEALTH_FACILITY,
+		CaseDataDto.POINT_OF_ENTRY,
+		CaseDataDto.SURVEILLANCE_OFFICER,
+		CaseCriteria.REPORTING_USER_ROLE,
+		CaseCriteria.REPORTING_USER_LIKE,
+		CaseDataDto.QUARANTINE_TO,
+		CaseCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+		CaseCriteria.BIRTHDATE_YYYY,
+		CaseCriteria.BIRTHDATE_MM,
+		CaseCriteria.BIRTHDATE_DD)
+		+ filterLocsCss(
+			"vspace-3",
+			CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
+			CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY,
+			CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
+			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
+			CaseCriteria.WITH_EXTENDED_QUARANTINE,
+			CaseCriteria.WITH_REDUCED_QUARANTINE,
+			CaseCriteria.ONLY_CASES_WITH_EVENTS,
+			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
+		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
 		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
@@ -85,6 +106,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.CASE_ORIGIN,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE,
+			CaseDataDto.DISEASE_VARIANT,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
@@ -103,6 +125,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
+		ComboBox diseaseVariantField = addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
 
 		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
@@ -130,7 +153,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
@@ -173,6 +196,12 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
 					200));
 			followUpUntilTo.removeAllValidators();
+			addField(
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					CaseCriteria.SYMPTOM_JOURNAL_STATUS,
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+					240));
 		}
 
 		addField(
@@ -264,6 +293,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+				I18nProperties.getCaption(Captions.caseFilterOnlyFromOtherInstances),
+				I18nProperties.getDescription(Descriptions.descCaseFilterOnlyFromOtherInstances),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
 		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
@@ -294,7 +332,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		final ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
 		final ComboBox caseOriginField = getField(CaseDataDto.CASE_ORIGIN);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 		final DistrictReferenceDto currentDistrict =
 			user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
 		final CaseOrigin currentCaseOrigin =
@@ -348,7 +386,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				} else {
 					clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField, pointOfEntryField);
 
-					final RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
+					final RegionReferenceDto region = regionField != null ? (RegionReferenceDto) regionField.getValue() : null;
 					addOfficers(officerField, region != null ? region : user.getRegion());
 				}
 			}
@@ -444,6 +482,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					}
 				}
 			}
+			break;
+		}
+		case CaseDataDto.DISEASE: {
+			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);
+			Disease disease = (Disease) event.getProperty().getValue();
+			if (disease == null) {
+				FieldHelper.updateItems(field, Collections.emptyList());
+				FieldHelper.setEnabled(false, field);
+			} else {
+				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+				FieldHelper.updateItems(field, diseaseVariants);
+				FieldHelper.setEnabled(!diseaseVariants.isEmpty(), field);
+			}
 		}
 		}
 	}
@@ -469,10 +520,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-		
+
 		disableFields(districtField, communityField);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 
 		if (user.getRegion() != null) {
 			if (user.getDistrict() == null) {
@@ -584,6 +635,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		} else {
 			birthDateDD.clear();
 			birthDateDD.setEnabled(false);
+		}
+
+		ComboBox diseaseField = getField(CaseDataDto.DISEASE);
+		ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+		Disease disease = (Disease) diseaseField.getValue();
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(!diseaseVariants.isEmpty(), diseaseVariantField);
 		}
 	}
 

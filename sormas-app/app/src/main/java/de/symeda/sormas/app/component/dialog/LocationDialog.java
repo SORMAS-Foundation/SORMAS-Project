@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.component.dialog;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -95,16 +97,33 @@ public class LocationDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+		List<Item> initialCountries = InfrastructureHelper.loadCountries();
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
 		List<Item> facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+		List<Item> facilityTypeList =
+			data.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(data.getFacilityType().getFacilityTypeGroup())) : null;
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
 
+		if (data.getCountry() == null) {
+			String serverCountryName = ConfigProvider.getServerCountryName();
+			for (Item countryItem : initialCountries) {
+				Country country = (Country) countryItem.getValue();
+				if (country != null && serverCountryName != null && serverCountryName.equalsIgnoreCase(country.getName())) {
+					data.setCountry(country);
+					break;
+				}
+			}
+		}
+
 		InfrastructureHelper.initializeFacilityFields(
 			data,
+			this.contentBinding.locationCountry,
+			initialCountries,
+			data.getCountry(),
 			this.contentBinding.locationRegion,
 			initialRegions,
 			data.getRegion(),
@@ -119,7 +138,7 @@ public class LocationDialog extends FormDialog {
 			this.contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
 			this.contentBinding.locationFacilityType,
-			null,
+			facilityTypeList,
 			this.contentBinding.locationFacility,
 			initialFacilities,
 			data.getFacility(),
@@ -167,9 +186,36 @@ public class LocationDialog extends FormDialog {
 		}
 	}
 
+	public void setRequiredFieldsBasedOnCountry() {
+		contentBinding.locationCountry.addValueChangedListener(e -> {
+			Country country = (Country) e.getValue();
+			String serverCountryName = ConfigProvider.getServerCountryName();
+			if (serverCountryName == null) {
+				setRegionAndDistrictRequired(country == null);
+			} else {
+				setRegionAndDistrictRequired(country == null || serverCountryName.equalsIgnoreCase(country.getName()));
+			}
+		});
+	}
+
 	public void setRegionAndDistrictRequired(boolean required) {
 		contentBinding.locationRegion.setRequired(required);
 		contentBinding.locationDistrict.setRequired(required);
+	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		final int visibility = visible ? VISIBLE : GONE;
+		contentBinding.facilityTypeGroup.setVisibility(visibility);
+		contentBinding.locationFacility.setVisibility(visibility);
+		contentBinding.locationFacilityDetails.setVisibility(visibility);
+		contentBinding.locationFacilityType.setVisibility(visibility);
+
+		if (!visible && clearOnHidden) {
+			contentBinding.facilityTypeGroup.setValue(null);
+			contentBinding.locationFacility.setValue(null);
+			contentBinding.locationFacilityDetails.setValue(null);
+			contentBinding.locationFacilityType.setValue(null);
+		}
 	}
 
 	public DialogLocationLayoutBinding getContentBinding() {
@@ -230,12 +276,18 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationAddressType.setValidationCallback(() -> contentBinding.locationAddressType.getValue() != null);
 
 		contentBinding.locationAddressType.addValueChangedListener(e -> {
+			Object locationAddressTypeValue = contentBinding.locationAddressType.getValue();
+			if (locationAddressTypeValue == null || PersonAddressType.HOME.equals(locationAddressTypeValue)) {
+				contentBinding.locationAddressTypeDetails.setVisibility(GONE);
+			} else {
+				contentBinding.locationAddressTypeDetails.setVisibility(View.VISIBLE);
+			}
 			FacilityTypeGroup oldGroup = (FacilityTypeGroup) contentBinding.facilityTypeGroup.getValue();
 			FacilityType oldType = (FacilityType) contentBinding.locationFacilityType.getValue();
 			Facility oldFacility = (Facility) contentBinding.locationFacility.getValue();
 			String oldDetails = contentBinding.locationFacilityDetails.getValue();
 			contentBinding.facilityTypeGroup.setSpinnerData(null);
-			if (PersonAddressType.HOME.equals(contentBinding.locationAddressType.getValue())) {
+			if (PersonAddressType.HOME.equals(locationAddressTypeValue)) {
 				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups()));
 			} else {
 				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.getEnumItems(FacilityTypeGroup.class));
@@ -246,5 +298,4 @@ public class LocationDialog extends FormDialog {
 			contentBinding.locationFacilityDetails.setValue(oldDetails);
 		});
 	}
-
 }

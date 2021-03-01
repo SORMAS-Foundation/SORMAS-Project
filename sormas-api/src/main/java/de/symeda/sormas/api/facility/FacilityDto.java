@@ -37,6 +37,7 @@ public class FacilityDto extends EntityDto {
 	public static final List<String> CONSTANT_FACILITY_UUIDS = Arrays.asList(OTHER_FACILITY_UUID, NONE_FACILITY_UUID);
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
+	public static final String CONFIGURED_FACILITY = "CONFIGURED_FACILITY";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -44,6 +45,7 @@ public class FacilityDto extends EntityDto {
 	public static final String CITY = "city";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String TYPE_GROUP = "typeGroup";
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
@@ -67,10 +69,13 @@ public class FacilityDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
+		String regionExternalId,
 		String districtUuid,
 		String districtName,
+		String districtExternalId,
 		String communityUuid,
 		String communityName,
+		String communityExternalId,
 		String city,
 		Double latitude,
 		Double longitude,
@@ -82,13 +87,13 @@ public class FacilityDto extends EntityDto {
 		this.archived = archived;
 		this.name = name;
 		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName);
+			this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		}
 		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName);
+			this.district = new DistrictReferenceDto(districtUuid, districtName, districtExternalId);
 		}
 		if (communityUuid != null) {
-			this.community = new CommunityReferenceDto(communityUuid, communityName);
+			this.community = new CommunityReferenceDto(communityUuid, communityName, communityExternalId);
 		}
 		this.city = city;
 		this.latitude = latitude;
@@ -183,7 +188,7 @@ public class FacilityDto extends EntityDto {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString());
+		return new FacilityReferenceDto(getUuid(), toString(), externalID);
 	}
 
 	public String getExternalID() {

@@ -201,4 +201,8 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	protected List<T> getEntries() {
 		return entries;
 	}
+
+	public boolean isEmpty(){
+		return entries.isEmpty();
+	}
 }

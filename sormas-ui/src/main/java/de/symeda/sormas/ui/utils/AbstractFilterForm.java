@@ -8,12 +8,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -21,15 +17,14 @@ import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.components.FormActionButtonsComponent;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
@@ -37,14 +32,14 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	public static final String FILTER_ITEM_STYLE = "filter-item";
 
-	private static final String RESET_BUTTON_ID = "reset";
-	protected static final String APPLY_BUTTON_ID = "apply";
-	private static final String EXPAND_COLLAPSE_ID = "expandCollapse";
+	private static final String ACTION_BUTTONS_ID = "actionButtons";
 	private static final String MORE_FILTERS_ID = "moreFilters";
 
 	private CustomLayout moreFiltersLayout;
 	private boolean skipChangeEvents;
 	private boolean hasFilter;
+
+	protected FormActionButtonsComponent formActionButtonsComponent;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
 
@@ -53,32 +48,25 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
 
-		// needed before adding date filters
-		addApplyButton();
-
 		if (hasMoreFilters) {
 			moreFiltersLayout = new CustomLayout();
 			moreFiltersLayout.setTemplateContents(moreFiltersHtmlLayout);
 			moreFiltersLayout.setVisible(false);
 			getContent().addComponent(moreFiltersLayout, MORE_FILTERS_ID);
-
-			addMoreFilters(moreFiltersLayout);
 		}
 
-		addDefaultButtons();
+		formActionButtonsComponent = new FormActionButtonsComponent(moreFiltersLayout);
+		getContent().addComponent(formActionButtonsComponent, ACTION_BUTTONS_ID);
+
+		if (hasMoreFilters) {
+			addMoreFilters(moreFiltersLayout);
+		}
 
 		this.addValueChangeListener(e -> {
 			onChange();
 		});
 
 		addStyleName(CssStyles.FILTER_FORM);
-
-	}
-
-	private void addApplyButton() {
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
-		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
 	}
 
 	public void onChange() {
@@ -87,11 +75,14 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(
-			filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID, APPLY_BUTTON_ID)) + loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + loc(MORE_FILTERS_ID));
 	}
 
 	protected abstract String[] getMainFilterLocators();
+
+	protected UserDto currentUserDto() {
+		return UserProvider.getCurrent().getUser();
+	}
 
 	protected String createMoreFiltersHtmlLayout() {
 		return "";
@@ -99,31 +90,6 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-	}
-
-	protected void addDefaultButtons() {
-
-		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
-		getContent().addComponent(resetButton, RESET_BUTTON_ID);
-
-		if (moreFiltersLayout != null) {
-			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-			Button showHideMoreButton =
-				ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
-					Button showHideButton = e.getButton();
-					boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
-					showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-					showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
-
-					if (isShowMore) {
-						moreFiltersLayout.setVisible(true);
-					} else {
-						moreFiltersLayout.setVisible(false);
-					}
-				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
-
-			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
-		}
 	}
 
 	protected CustomLayout getMoreFiltersContainer() {
@@ -143,21 +109,17 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		String caption = I18nProperties.getPrefixCaption(propertyI18nPrefix, propertyId, field.getCaption());
 		setFieldCaption(field, caption);
 
-		if (TextField.class.isAssignableFrom(field.getClass())) {
-			((TextField) field).addTextChangeListener(e -> field.setValue(e.getText()));
-		}
-
 		field.addValueChangeListener(e -> {
 			onFieldValueChange(propertyId, e);
 		});
 	}
 
 	public void addResetHandler(Button.ClickListener resetHandler) {
-		((Button) getContent().getComponent(RESET_BUTTON_ID)).addClickListener(resetHandler);
+		formActionButtonsComponent.addResetHandler(resetHandler);
 	}
 
 	public void addApplyHandler(Button.ClickListener applyHandler) {
-		((Button) getContent().getComponent(APPLY_BUTTON_ID)).addClickListener(applyHandler);
+		formActionButtonsComponent.addApplyHandler(applyHandler);
 	}
 
 	@Override
@@ -180,7 +142,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
-				moreFiltersLayout.setVisible(hasExpandedFilter);
+				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
 		});
 	}

@@ -108,6 +108,7 @@ public final class RetroProvider {
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
+	private DiseaseVariantFacadeRetro diseaseVariantFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
 	private CampaignFacadeRetro campaignFacadeRetro;
 	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
@@ -195,6 +196,7 @@ public final class RetroProvider {
 		checkCompatibility();
 
 		updateLocale();
+		updateCountryName();
 	}
 
 	public static int getLastConnectionId() {
@@ -219,6 +221,27 @@ public final class RetroProvider {
 			ConfigProvider.setServerLocale(localeStr);
 		} else {
 			throwException(localeResponse);
+		}
+	}
+
+	private void updateCountryName() throws ServerCommunicationException, ServerConnectionException {
+		Response<String> countryNameResponse;
+		infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+		Call<String> countryNameCall = infoFacadeRetro.getCountryName();
+		try {
+			countryNameResponse = countryNameCall.execute();
+		} catch (IOException e) {
+			Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+			// wrap the exception message inside a response object
+			countryNameResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+		}
+
+		if (countryNameResponse.isSuccessful()) {
+			// success - now check compatibility
+			String countryNameStr = countryNameResponse.body();
+			ConfigProvider.setServerCountryName(countryNameStr);
+		} else {
+			throwException(countryNameResponse);
 		}
 	}
 
@@ -757,6 +780,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.diseaseConfigurationFacadeRetro;
+	}
+
+	public static DiseaseVariantFacadeRetro getDiseaseVariantFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.diseaseVariantFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.diseaseVariantFacadeRetro == null) {
+					instance.diseaseVariantFacadeRetro = instance.retrofit.create(DiseaseVariantFacadeRetro.class);
+				}
+			}
+		}
+		return instance.diseaseVariantFacadeRetro;
 	}
 
 	public static FeatureConfigurationFacadeRetro getFeatureConfigurationFacade() throws NoConnectionException {

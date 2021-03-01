@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +25,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.activityascase.ActivityAsCase;
+import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.exposure.Exposure;
@@ -48,29 +50,24 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	@EJB
 	private ExposureService exposureService;
 	@EJB
+	private ActivityAsCaseService activityAsCaseService;
+	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
 	private UserService userService;
 
-	public EpiData fromDto(EpiDataDto source) {
+	public EpiData fromDto(EpiDataDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		EpiData target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new EpiData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		EpiData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), EpiData::new, checkChangeDate);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
+		target.setActivityAsCaseDetailsKnown(source.getActivityAsCaseDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
 		target.setHighTransmissionRiskArea(source.getHighTransmissionRiskArea());
 		target.setLargeOutbreaksArea(source.getLargeOutbreaksArea());
@@ -78,7 +75,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		List<Exposure> exposures = new ArrayList<>();
 		for (ExposureDto exposureDto : source.getExposures()) {
-			Exposure exposure = fromExposureDto(exposureDto);
+			Exposure exposure = fromExposureDto(exposureDto, checkChangeDate);
 			exposure.setEpiData(target);
 			exposures.add(exposure);
 		}
@@ -88,26 +85,28 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.getExposures().clear();
 		target.getExposures().addAll(exposures);
 
+		List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
+		for (ActivityAsCaseDto activityAsCaseDto : source.getActivitiesAsCase()) {
+			ActivityAsCase activityAsCase = fromActivityAsCaseDto(activityAsCaseDto, checkChangeDate);
+			activityAsCase.setEpiData(target);
+			activitiesAsCase.add(activityAsCase);
+		}
+		if (!DataHelper.equal(target.getActivitiesAsCase(), activitiesAsCase)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
+		target.getActivitiesAsCase().clear();
+		target.getActivitiesAsCase().addAll(activitiesAsCase);
+
 		return target;
 	}
 
-	public Exposure fromExposureDto(ExposureDto source) {
+	public Exposure fromExposureDto(ExposureDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		Exposure exposure = exposureService.getByUuid(source.getUuid());
-		if (exposure == null) {
-			exposure = new Exposure();
-			exposure.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				exposure.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		Exposure target = exposure;
-		DtoHelper.validateDto(source, target);
+		Exposure target = DtoHelper.fillOrBuildEntity(source, exposureService.getByUuid(source.getUuid()), Exposure::new, checkChangeDate);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
@@ -133,7 +132,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHandlingAnimals(source.getHandlingAnimals());
 		target.setHandlingSamples(source.getHandlingSamples());
 		target.setIndoors(source.getIndoors());
-		target.setLocation(locationFacade.fromDto(source.getLocation()));
+		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
 		target.setLongFaceToFaceContact(source.getLongFaceToFaceContact());
 		target.setOtherProtectiveMeasures(source.getOtherProtectiveMeasures());
 		target.setProtectiveMeasuresDetails(source.getProtectiveMeasuresDetails());
@@ -152,15 +151,50 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
-		target.setPatientExpositionRole(source.getPatientExpositionRole());
+		target.setExposureRole(source.getExposureRole());
 
-		return exposure;
+		return target;
+	}
+
+	public ActivityAsCase fromActivityAsCaseDto(ActivityAsCaseDto source, boolean checkChangeDate) {
+
+		if (source == null) {
+			return null;
+		}
+
+		ActivityAsCase target =
+			DtoHelper.fillOrBuildEntity(source, activityAsCaseService.getByUuid(source.getUuid()), ActivityAsCase::new, checkChangeDate);
+
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setDescription(source.getDescription());
+		target.setActivityAsCaseType(source.getActivityAsCaseType());
+		target.setActivityAsCaseTypeDetails(source.getActivityAsCaseTypeDetails());
+		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
+		target.setRole(source.getRole());
+
+		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
+
+		target.setGatheringType(source.getGatheringType());
+		target.setGatheringDetails(source.getGatheringDetails());
+		target.setHabitationType(source.getHabitationType());
+		target.setHabitationDetails(source.getHabitationDetails());
+
+		return target;
 	}
 
 	public static EpiDataDto toDto(EpiData epiData) {
@@ -172,11 +206,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		EpiDataDto target = new EpiDataDto();
 		EpiData source = epiData;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
+		target.setActivityAsCaseDetailsKnown(source.getActivityAsCaseDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
 		target.setHighTransmissionRiskArea(source.getHighTransmissionRiskArea());
 		target.setLargeOutbreaksArea(source.getLargeOutbreaksArea());
@@ -189,6 +222,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.setExposures(exposureDtos);
 
+		List<ActivityAsCaseDto> activityAsCaseDtos = new ArrayList<>();
+		for (ActivityAsCase activityAsCase : source.getActivitiesAsCase()) {
+			ActivityAsCaseDto activityAsCaseDto = toActivityAsCaseDto(activityAsCase);
+			activityAsCaseDtos.add(activityAsCaseDto);
+		}
+		target.setActivitiesAsCase(activityAsCaseDtos);
+
 		return target;
 	}
 
@@ -200,9 +240,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		ExposureDto target = new ExposureDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
@@ -247,13 +285,49 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
-		target.setPatientExpositionRole(source.getPatientExpositionRole());
+		target.setExposureRole(source.getExposureRole());
+
+		return target;
+	}
+
+	public static ActivityAsCaseDto toActivityAsCaseDto(ActivityAsCase source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		ActivityAsCaseDto target = new ActivityAsCaseDto();
+
+		DtoHelper.fillDto(target, source);
+
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setDescription(source.getDescription());
+		target.setActivityAsCaseType(source.getActivityAsCaseType());
+		target.setActivityAsCaseTypeDetails(source.getActivityAsCaseTypeDetails());
+		target.setLocation(LocationFacadeEjb.toDto(source.getLocation()));
+		target.setRole(source.getRole());
+
+		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
+
+		target.setGatheringType(source.getGatheringType());
+		target.setGatheringDetails(source.getGatheringDetails());
+		target.setHabitationType(source.getHabitationType());
+		target.setHabitationDetails(source.getHabitationDetails());
 
 		return target;
 	}

@@ -22,6 +22,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -458,7 +460,7 @@ public class LineListingLayout extends VerticalLayout {
 			sex.setId("lineListingSex_" + lineIndex);
 			sex.setItems(Sex.values());
 			sex.setWidth(100, Unit.PIXELS);
-			binder.forField(sex).bind(CaseLineDto.SEX);
+			binder.forField(sex).asRequired().bind(CaseLineDto.SEX);
 			dateOfOnset = new DateField();
 			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
@@ -474,7 +476,7 @@ public class LineListingLayout extends VerticalLayout {
 			});
 
 			addComponent(dateOfReport);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+			if (shouldShowEpidNumber()) {
 				addComponent(epidNumber);
 			}
 			addComponents(
@@ -514,8 +516,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void formatAsFirstLine() {
 
-			setRequiredInicatorsVisibility(true);
-
 			formatAsOtherLine();
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
@@ -542,21 +542,11 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void formatAsOtherLine() {
 
-			setRequiredInicatorsVisibility(false);
-
 			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facility, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		}
-
-		private void setRequiredInicatorsVisibility(boolean visible) {
-
-			dateOfReport.setRequiredIndicatorVisible(visible);
-			facility.setRequiredIndicatorVisible(visible);
-			firstname.setRequiredIndicatorVisible(visible);
-			lastname.setRequiredIndicatorVisible(visible);
 		}
 
 		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
@@ -600,6 +590,13 @@ public class LineListingLayout extends VerticalLayout {
 				tfFacilityDetails.clear();
 				cbFacility.setWidth(324, Unit.PIXELS);
 			}
+		}
+
+		private boolean shouldShowEpidNumber() {
+			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+			return UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
+				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 		}
 
 		public ComboBox<CommunityReferenceDto> getCommunity() {

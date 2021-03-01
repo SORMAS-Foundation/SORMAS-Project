@@ -20,7 +20,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -42,7 +42,7 @@ public class PopulationDataImporter extends DataImporter {
 
 	private final Date collectionDate;
 
-	public PopulationDataImporter(File inputFile, UserReferenceDto currentUser, Date collectionDate) {
+	public PopulationDataImporter(File inputFile, UserDto currentUser, Date collectionDate) {
 		super(inputFile, false, currentUser);
 		this.collectionDate = collectionDate;
 	}

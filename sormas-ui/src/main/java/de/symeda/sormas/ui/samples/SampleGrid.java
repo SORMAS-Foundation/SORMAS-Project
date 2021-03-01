@@ -17,10 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,10 +45,9 @@ import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
@@ -58,7 +63,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -86,7 +91,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
 		setColumns(
-			EDIT_BTN_ID,
+			SampleIndexDto.UUID,
 			SampleIndexDto.LAB_SAMPLE_ID,
 			SampleIndexDto.EPID_NUMBER,
 			SampleIndexDto.ASSOCIATED_CASE,
@@ -110,6 +115,10 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.LAB)).setMaximumWidth(200);
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS)).setSortable(false);
+
+		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.UUID)).setRenderer(new UuidRenderer());
+		addItemClickListener(
+			new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
@@ -141,8 +150,13 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 			}
 		}
-		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+
+		if (!shouldShowEpidNumber()) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
+		}
+
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
@@ -152,7 +166,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
-			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 			}
@@ -164,10 +178,15 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		for (Column<SampleIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
 		}
+	}
+
+	private boolean shouldShowEpidNumber() {
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		return !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}
 
 	public void reload() {

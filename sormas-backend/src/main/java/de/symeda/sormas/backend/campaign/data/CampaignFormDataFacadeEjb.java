@@ -20,7 +20,6 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +42,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -73,8 +73,8 @@ import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.AreaService;
@@ -128,17 +128,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@EJB
 	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacadeEjb;
 
-	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source) {
-		CampaignFormData target = campaignFormDataService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new CampaignFormData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source, boolean checkChangeDate) {
+		CampaignFormData target =
+			DtoHelper.fillOrBuildEntity(source, campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
 
 		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
@@ -173,9 +165,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
-	public CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
+	public CampaignFormDataDto saveCampaignFormData(@Valid CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
 
-		CampaignFormData campaignFormData = fromDto(campaignFormDataDto);
+		CampaignFormData campaignFormData = fromDto(campaignFormDataDto, true);
 		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());
 
 		validate(campaignFormDataDto);
@@ -250,7 +242,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = CriteriaBuilderHelper
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
@@ -294,7 +286,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			communityJoin.get(Community.NAME),
 			root.get(CampaignFormData.FORM_DATE));
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = CriteriaBuilderHelper
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
@@ -443,7 +435,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			List<DistrictReferenceDto> districts = districtService.getAllActiveByRegion(regionService.getByUuid(region.getUuid()))
 				.stream()
-				.map(district1 -> new DistrictReferenceDto(district1.getUuid(), district1.getName()))
+				.map(district1 -> new DistrictReferenceDto(district1.getUuid(), district1.getName(), district1.getExternalID()))
 				.collect(Collectors.toList());
 			if (districts.isEmpty()) {
 				resultData.add(
@@ -514,15 +506,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		for (CampaignDiagramSeries series : diagramSeries) {
 			//@formatter:off
 
-				final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = '" + area.getUuid() + "'" : "";
-				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'" : "";
-				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
-				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() + "'" : "";
-				final String jurisdictionGrouping =
-						district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
-								region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME :
-										area != null ? ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME :
-												", " + Area.TABLE_NAME + "." + Area.UUID + ", " + Area.TABLE_NAME + "." + Area.NAME;
+				final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = :areaUuid" : "";
+				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = :regionUuid" : "";
+				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = :districtUuid" : "";
+				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = :campaignUuid" : "";
 				//@formatter:on
 
 			// SELECT
@@ -556,13 +543,19 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue,");
 			}
 
-			if (district != null) {
-				appendInfrastructureSelection(selectBuilder, Community.TABLE_NAME, Community.NAME);
-			} else if (region != null) {
-				appendInfrastructureSelection(selectBuilder, District.TABLE_NAME, District.NAME);
-			} else if (area != null) {
+			final String jurisdictionGrouping;
+			switch (campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy()) {
+			case REGION:
 				appendInfrastructureSelection(selectBuilder, Region.TABLE_NAME, Region.NAME);
-			} else {
+				break;
+			case DISTRICT:
+				appendInfrastructureSelection(selectBuilder, District.TABLE_NAME, District.NAME);
+				break;
+			case COMMUNITY:
+				appendInfrastructureSelection(selectBuilder, Community.TABLE_NAME, Community.NAME);
+				break;
+			case AREA:
+			default:
 				appendInfrastructureSelection(selectBuilder, Area.TABLE_NAME, Area.NAME);
 			}
 
@@ -625,12 +618,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			// WHERE
 			StringBuilder whereBuilder =
-				new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_ID).append(" = ?0");
+				new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_ID).append(" = :campaignFormMetaId");
 
 			if (series.getFieldId() != null) {
 				whereBuilder.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.ID)
-					.append("' = ?1")
+					.append("' = :campaignFormDataId")
 					.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.VALUE)
 					.append("' IS NOT NULL AND jsonData->>'")
@@ -661,6 +654,21 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					.append("'");
 			}
 
+			switch (campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy()) {
+			case REGION:
+				jurisdictionGrouping = ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
+				break;
+			case DISTRICT:
+				jurisdictionGrouping = ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME;
+				break;
+			case COMMUNITY:
+				jurisdictionGrouping = ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME;
+				break;
+			case AREA:
+			default:
+				jurisdictionGrouping = ", " + Area.TABLE_NAME + "." + Area.UUID + ", " + Area.TABLE_NAME + "." + Area.NAME;
+			}
+
 			groupByBuilder.append(jurisdictionGrouping);
 
 			//@formatter:off
@@ -668,10 +676,22 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 			//@formatter:on
 
-			seriesDataQuery.setParameter(0, series.getFormId());
+			seriesDataQuery.setParameter("campaignFormMetaId", series.getFormId());
+			if (area != null) {
+				seriesDataQuery.setParameter("areaUuid", area.getUuid());
+			}
+			if (region != null) {
+				seriesDataQuery.setParameter("regionUuid", region.getUuid());
+			}
+			if (district != null) {
+				seriesDataQuery.setParameter("districtUuid", district.getUuid());
+			}
+			if (campaign != null) {
+				seriesDataQuery.setParameter("campaignUuid", campaign.getUuid());
+			}
 
 			if (series.getFieldId() != null) {
-				seriesDataQuery.setParameter(1, series.getFieldId());
+				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
 
 			@SuppressWarnings("unchecked")
@@ -705,7 +725,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = CriteriaBuilderHelper
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
@@ -717,7 +737,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData) {
-		DtoHelper.fillDto(existingData, newData, true);
+		DtoHelper.copyDtoValues(existingData, newData, true);
 		saveCampaignFormData(existingData);
 	}
 

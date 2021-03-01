@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,8 +21,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
-
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -34,8 +34,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-
-import java.util.Collections;
+import static org.junit.Assert.fail;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
@@ -207,6 +206,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 			// Modify the SymptomJournalStatus of the original person
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
 			person = entityManager.merge(person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
@@ -265,10 +265,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 			method.invoke(person, propertyValue);
 		} catch (NoSuchMethodException e) {
 			// This probably means that the set method is gone, which may impose changes to the External Journal Interface
-			assertTrue(false);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+			fail();
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}

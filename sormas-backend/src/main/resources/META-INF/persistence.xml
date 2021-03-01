@@ -42,6 +42,7 @@
 		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
+		<class>de.symeda.sormas.backend.disease.DiseaseVariant</class>
 		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
 		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
@@ -59,6 +60,11 @@
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
+		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
+		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
+		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
+		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
+		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
@@ -94,6 +100,9 @@
          	<!-- don't validate on release, otherwise the automatic db update won't work
          	<property name="hibernate.hbm2ddl.auto" value="validate"/>
          	 -->
+			<property name="hibernate.jdbc.batch_size" value="100" />
+			<property name="hibernate.order_inserts" value="true" />
+			<property name="hibernate.order_updates" value="true" />
       	</properties>
 		
 	</persistence-unit>

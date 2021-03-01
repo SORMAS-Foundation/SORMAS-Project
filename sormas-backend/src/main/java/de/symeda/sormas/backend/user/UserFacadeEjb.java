@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,8 +42,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.user.UserSyncResult;
-import de.symeda.sormas.api.utils.PasswordHelper;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -55,7 +52,9 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
+import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -63,6 +62,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
@@ -193,7 +193,7 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
-		User user = fromDto(dto);
+		User user = fromDto(dto, true);
 
 		try {
 			UserRole.validate(user.getUserRoles());
@@ -220,6 +220,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<User> user = cq.from(User.class);
 		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
 		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
+		Join<User, Facility> facility = user.join(User.HEALTH_FACILITY, JoinType.LEFT);
 
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
 		// but not those of others
@@ -255,6 +256,9 @@ public class UserFacadeEjb implements UserFacade {
 					break;
 				case UserDto.ADDRESS:
 					expression = address.get(Location.REGION);
+					break;
+				case UserDto.HEALTH_FACILITY:
+					expression = facility.get(Facility.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -332,23 +336,15 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}
 
-	private User fromDto(UserDto source) {
+	private User fromDto(UserDto source, boolean checkChangeDate) {
 
-		User target = userService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = userService.createUser();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setPhone(source.getPhone());
-		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
 
 		target.setUserName(source.getUserName());
 		target.setUserEmail(source.getUserEmail());

@@ -1,17 +1,19 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
-import de.symeda.sormas.api.campaign.diagram.DiagramType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import org.hibernate.annotations.Type;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.util.List;
+
+import org.hibernate.annotations.Type;
+
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
 @Audited

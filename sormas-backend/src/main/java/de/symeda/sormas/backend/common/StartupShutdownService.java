@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,8 +49,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.utils.PasswordHelper;
-import de.symeda.sormas.backend.user.event.UserUpdateEvent;
+import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +63,10 @@ import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -170,7 +171,7 @@ public class StartupShutdownService {
 
 		facilityService.createConstantFacilities();
 
-		createConstantPointsOfEntry();
+		pointOfEntryService.createConstantPointsOfEntry();
 
 		createDefaultUsers();
 
@@ -179,6 +180,8 @@ public class StartupShutdownService {
 		createOrUpdateSymptomJournalUser();
 
 		createOrUpdatePatientDiaryUser();
+
+		syncUsers();
 
 		upgrade();
 
@@ -301,44 +304,21 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createConstantPointsOfEntry() {
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
-			PointOfEntry otherAirport = new PointOfEntry();
-			otherAirport.setName("OTHER_AIRPORT");
-			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
-			otherAirport.setActive(true);
-			otherAirport.setPointOfEntryType(PointOfEntryType.AIRPORT);
-			pointOfEntryService.persist(otherAirport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
-			PointOfEntry otherSeaport = new PointOfEntry();
-			otherSeaport.setName("OTHER_SEAPORT");
-			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
-			otherSeaport.setActive(true);
-			otherSeaport.setPointOfEntryType(PointOfEntryType.SEAPORT);
-			pointOfEntryService.persist(otherSeaport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
-			PointOfEntry otherGC = new PointOfEntry();
-			otherGC.setName("OTHER_GROUND_CROSSING");
-			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
-			otherGC.setActive(true);
-			otherGC.setPointOfEntryType(PointOfEntryType.GROUND_CROSSING);
-			pointOfEntryService.persist(otherGC);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
-			PointOfEntry otherPoe = new PointOfEntry();
-			otherPoe.setName("OTHER_POE");
-			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
-			otherPoe.setActive(true);
-			otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
-			pointOfEntryService.persist(otherPoe);
-		}
-	}
-
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
+
+			// Create Admin
+			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
+			admin.setUserName("admin");
+			userService.persist(admin);
+			userUpdateEvent.fire(new UserUpdateEvent(admin));
+
+			if (!configFacade.isCreateDefaultUsers()) {
+				// return if getCreateDefaultUsers() is false
+				logger.info("Skipping the creation of default users");
+				return;
+			}
 
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
@@ -349,11 +329,7 @@ public class StartupShutdownService {
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
-			// Create Admin
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			admin.setUserName("admin");
-			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin));
+			logger.info("Create default users");
 
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
@@ -459,7 +435,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -507,6 +483,49 @@ public class StartupShutdownService {
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		}
 
+	}
+
+	/**
+	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * @see AuthProvider#isUserSyncSupported()
+	 * @see AuthProvider#isUserSyncAtStartupEnabled()
+	 */
+	private void syncUsers() {
+
+		AuthProvider authProvider = AuthProvider.getProvider();
+
+		if (!authProvider.isUserSyncSupported()) {
+			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
+			return;
+		}
+
+		if(!authProvider.isUserSyncAtStartupEnabled()) {
+			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
+			return;
+		}
+
+		List<User> users = userService.getAllActive();
+		for (User user : users) {
+			syncUser(user);
+		}
+		logger.info("User synchronization finalized");
+	}
+
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	private void syncUser(User user) {
+		String shortUuid = DataHelper.getShortUuid(user.getUuid());
+		logger.debug("Synchronizing user {}", shortUuid);
+		try {
+
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
+
+			this.userUpdateEvent.fireAsync(event);
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
+		}
 	}
 
 	/**

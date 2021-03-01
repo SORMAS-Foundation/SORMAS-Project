@@ -37,8 +37,9 @@ public class CurrentUserService {
 	 */
 	@Produces
 	@CurrentUserQualifier
-	@RequestScoped
 	@Transactional
+	@RequestScoped
+// FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
 	public CurrentUser getCurrentUser() {
 
 		final String userName = context.getCallerPrincipal().getName();
@@ -58,6 +59,8 @@ public class CurrentUserService {
 
 		if (user != null) {
 			user.getUserRoles().size();
+			// TODO
+			user.getAddress().getAddressType();
 			return new CurrentUser(user);
 		} else {
 			return new CurrentUser(null);

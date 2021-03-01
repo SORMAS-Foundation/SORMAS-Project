@@ -27,6 +27,7 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 
 public class EventParticipantDto extends PseudonymizableDto {
 
@@ -41,6 +42,7 @@ public class EventParticipantDto extends PseudonymizableDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String VACCINATION_INFO = "vaccinationInfo";
 
 	private UserReferenceDto reportingUser;
 	@Required
@@ -54,11 +56,14 @@ public class EventParticipantDto extends PseudonymizableDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 
+	private VaccinationInfoDto vaccinationInfo;
+
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setUuid(DataHelper.createUuid());
 		eventParticipant.setEvent(event);
 		eventParticipant.setReportingUser(reportingUser);
+		eventParticipant.setVaccinationInfo(VaccinationInfoDto.build());
 
 		return eventParticipant;
 	}
@@ -145,5 +150,13 @@ public class EventParticipantDto extends PseudonymizableDto {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public VaccinationInfoDto getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfoDto vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }

@@ -47,8 +47,12 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.ui.location.AccessibleTextField;
+import de.symeda.sormas.ui.location.LocationEditForm;
 
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
@@ -172,11 +176,41 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 
 		dirty = false;
+		addDirtyHandler(fieldGroups);
+	}
+
+	@SuppressWarnings("deprecation")
+	protected void addDirtyHandler(FieldGroup[] fieldGroups) {
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
-				dirty = true;
+				final Object source = ((Field.ValueChangeEvent) ev).getSource();
+				if (source instanceof LocationEditForm) {
+					final LocationEditForm locationEditForm = (LocationEditForm) source;
+					if (atLeastOneFieldModified(
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					}
+				} else if (source instanceof AccessibleTextField) {
+					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
+					if (accessibleTextField.isModified()) {
+						dirty = true;
+					}
+				} else {
+					dirty = true;
+				}
 			})));
 		}
+	}
+
+	private boolean atLeastOneFieldModified(AccessibleTextField... fields) {
+		for (AccessibleTextField field : fields) {
+			if (field.getState().modified) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected Stream<Field<?>> getFieldsStream() {
@@ -273,6 +307,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					discard();
 				}
 			});
+			discardButton.setDescription(I18nProperties.getDescription(Descriptions.discardDescription));
 		}
 
 		return discardButton;
@@ -641,5 +676,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	@Override
 	public boolean isDirty() {
 		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 }

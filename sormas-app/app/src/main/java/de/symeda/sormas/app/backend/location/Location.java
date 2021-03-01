@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -60,6 +61,8 @@ public class Location extends PseudonymizableAdo {
 	@Column
 	private AreaType areaType;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Country country;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -125,6 +128,14 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 
 	public Region getRegion() {

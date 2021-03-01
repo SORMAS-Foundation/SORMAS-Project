@@ -54,6 +54,11 @@
 
                 <requestFocus/>
 
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/pathogenTest_reportDate"
+                    app:value="@={data.reportDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/pathogenTest_testType"
                     app:required="true"
@@ -82,6 +87,15 @@
                     app:dependencyParentValue="@{Disease.OTHER}"
                     app:required="true"
                     app:value="@={data.testedDiseaseDetails}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_typingId"
+                        style="@style/ControlSingleColumnStyle"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.DNA_MICROARRAY}"
+                        app:dependencyParentValue2="@{PathogenTestType.PCR_RT_PCR}"
+                        app:dependencyParentValue3="@{PathogenTestType.SEQUENCING}"
+                        app:value="@={data.typingId}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/pathogenTest_testDateTime"

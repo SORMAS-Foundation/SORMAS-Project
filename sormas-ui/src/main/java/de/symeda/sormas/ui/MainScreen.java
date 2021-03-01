@@ -50,7 +50,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.campaigndata.AbstractCampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
@@ -69,6 +68,8 @@ import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
+import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -87,40 +88,6 @@ public class MainScreen extends HorizontalLayout {
 
 	// Add new views to this set to make sure that the right error page is shown
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
-
-	private static Set<String> initKnownViews() {
-		final Set<String> views = new HashSet<>(
-			Arrays.asList(
-				TasksView.VIEW_NAME,
-				CasesView.VIEW_NAME,
-				ContactsView.VIEW_NAME,
-				EventsView.VIEW_NAME,
-				SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME,
-				CampaignDataView.VIEW_NAME,
-				ReportsView.VIEW_NAME,
-				StatisticsView.VIEW_NAME,
-				UsersView.VIEW_NAME,
-				OutbreaksView.VIEW_NAME,
-				RegionsView.VIEW_NAME,
-				DistrictsView.VIEW_NAME,
-				CommunitiesView.VIEW_NAME,
-				FacilitiesView.VIEW_NAME,
-				PointsOfEntryView.VIEW_NAME,
-				CountriesView.VIEW_NAME));
-
-		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			views.add(SurveillanceDashboardView.VIEW_NAME);
-		}
-		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			views.add(ContactsDashboardView.VIEW_NAME);
-		}
-		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
-			views.add(CampaignDashboardView.VIEW_NAME);
-		}
-
-		return views;
-	}
 
 	private Menu menu;
 
@@ -155,9 +122,7 @@ public class MainScreen extends HorizontalLayout {
 		});
 
 		menu = new Menu(navigator);
-		if (permitted(UserRight.DASHBOARD_VIEW)) {
-			ControllerProvider.getDashboardController().registerViews(navigator);
-		}
+		ControllerProvider.getDashboardController().registerViews(navigator);
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			menu.addView(
 				SurveillanceDashboardView.class,
@@ -209,7 +174,7 @@ public class MainScreen extends HorizontalLayout {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(
 				CampaignDataView.class,
-				AbstractCampaignDataView.ROOT_VIEW_NAME,
+				AbstractCampaignView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
@@ -223,6 +188,10 @@ public class MainScreen extends HorizontalLayout {
 				AbstractStatisticsView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
+		}
+		if (permitted(UserRight.PERSON_VIEW)) {
+			ControllerProvider.getPersonController().registerViews(navigator);
+			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
 		}
 		if (permitted(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
@@ -295,6 +264,42 @@ public class MainScreen extends HorizontalLayout {
 		setSizeFull();
 	}
 
+	private static Set<String> initKnownViews() {
+		final Set<String> views = new HashSet<>(
+			Arrays.asList(
+				TasksView.VIEW_NAME,
+				CasesView.VIEW_NAME,
+				ContactsView.VIEW_NAME,
+				EventsView.VIEW_NAME,
+				SamplesView.VIEW_NAME,
+				CampaignsView.VIEW_NAME,
+				CampaignDataView.VIEW_NAME,
+				ReportsView.VIEW_NAME,
+				StatisticsView.VIEW_NAME,
+				PersonsView.VIEW_NAME,
+				UsersView.VIEW_NAME,
+				OutbreaksView.VIEW_NAME,
+				RegionsView.VIEW_NAME,
+				DistrictsView.VIEW_NAME,
+				CommunitiesView.VIEW_NAME,
+				FacilitiesView.VIEW_NAME,
+				PointsOfEntryView.VIEW_NAME,
+				CountriesView.VIEW_NAME,
+				LabMessagesView.VIEW_NAME));
+
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+			views.add(SurveillanceDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+			views.add(ContactsDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			views.add(CampaignDashboardView.VIEW_NAME);
+		}
+
+		return views;
+	}
+
 	// notify the view menu about view changes so that it can display which view
 	// is currently active
 	ViewChangeListener viewChangeListener = new ViewChangeListener() {
@@ -332,14 +337,12 @@ public class MainScreen extends HorizontalLayout {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				String defaultView;
-				if (permitted(UserRight.DASHBOARD_VIEW)) {
-					if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-						defaultView = SurveillanceDashboardView.VIEW_NAME;
-					} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
-						defaultView = ContactsDashboardView.VIEW_NAME;
-					} else {
-						defaultView = CampaignDashboardView.VIEW_NAME;
-					}
+				if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+					defaultView = SurveillanceDashboardView.VIEW_NAME;
+				} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+					defaultView = ContactsDashboardView.VIEW_NAME;
+				} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+					defaultView = CampaignDashboardView.VIEW_NAME;
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {

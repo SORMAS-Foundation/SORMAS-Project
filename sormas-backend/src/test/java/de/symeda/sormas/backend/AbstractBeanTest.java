@@ -16,6 +16,8 @@ package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
+import de.symeda.sormas.backend.survnet.SurvnetGatewayFacadeEjb;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +43,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
@@ -50,6 +54,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -65,6 +70,7 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
@@ -94,8 +100,9 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
-import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -109,6 +116,7 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.ExportFacadeEjb;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
@@ -136,6 +144,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToS
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
@@ -183,13 +192,15 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
+		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
 
 	@Before
 	public void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
@@ -360,7 +371,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PointOfEntryService.class);
 	}
 
-	public CountryService getCountryService() { return getBean(CountryService.class); }
+	public CountryService getCountryService() {
+		return getBean(CountryService.class);
+	}
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
@@ -485,12 +498,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestService.class);
 	}
 
-	public TemplateEngineService getTemplateEngineService() {
-		return getBean(TemplateEngineService.class);
+	public DocumentTemplateFacade getDocumentTemplateFacade() {
+		return getBean(DocumentTemplateFacadeEjbLocal.class);
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
 		return getBean(QuarantineOrderFacadeEjb.class);
+	}
+
+	public EventDocumentFacade getEventDocumentFacade() {
+		return getBean(EventDocumentFacadeEjb.class);
 	}
 
 	public BAGExportFacade getBAGExportFacade() {
@@ -507,5 +524,17 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DocumentService getDocumentService() {
 		return getBean(DocumentService.class);
+	}
+
+	public ExportFacade getExportFacade() {
+		return getBean(ExportFacadeEjb.ExportFacadeEjbLocal.class);
+	}
+
+	public SystemEventFacade getSystemEventFacade() {
+		return getBean(SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class);
+	}
+
+	public SurvnetGatewayFacade getSurvnetGatewayFacade() {
+		return getBean(SurvnetGatewayFacadeEjb.class);
 	}
 }

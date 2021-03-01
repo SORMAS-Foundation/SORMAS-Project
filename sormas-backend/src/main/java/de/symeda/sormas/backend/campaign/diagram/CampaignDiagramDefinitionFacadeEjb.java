@@ -1,8 +1,6 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -23,7 +21,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 	@Override
 	public CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
 
-		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto);
+		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto, true);
 		service.ensurePersisted(campaignDiagramDefinition);
 		return toDto(campaignDiagramDefinition);
 	}
@@ -48,16 +46,9 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		return toDto(service.getByDiagramId(diagramId));
 	}
 
-	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source) {
-		CampaignDiagramDefinition target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new CampaignDiagramDefinition();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source, boolean checkChangeDate) {
+		CampaignDiagramDefinition target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignDiagramDefinition::new, checkChangeDate);
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());

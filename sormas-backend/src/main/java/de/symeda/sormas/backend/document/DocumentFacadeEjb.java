@@ -15,7 +15,6 @@
 package de.symeda.sormas.backend.document;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +80,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
 		}
 
-		Document document = fromDto(dto);
+		Document document = fromDto(dto, true);
 
 		String storageReference = documentStorageService.save(document, content);
 		try {
@@ -133,16 +132,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	public Document fromDto(DocumentDto source) {
-		Document target = documentService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Document();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+	public Document fromDto(DocumentDto source, boolean checkChangeDate) {
+		Document target = DtoHelper.fillOrBuildEntity(source, documentService.getByUuid(source.getUuid()), Document::new, checkChangeDate);
 
 		target.setUploadingUser(userService.getByReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());

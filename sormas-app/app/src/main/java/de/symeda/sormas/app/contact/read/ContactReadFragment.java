@@ -55,6 +55,8 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 
 	private void setUpFieldVisibilities(FragmentContactReadLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(ContactDto.class, contentBinding.mainContent);
+		// TODO [vaccination info] integrate vaccination info
+//		setFieldVisibilitiesAndAccesses(VaccinationInfoDto.class, contentBinding.vaccinationInfoLayout.mainContent);
 
 		if (record.getResultingCaseUuid() == null || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
 			contentBinding.openResultingCase.setVisibility(GONE);
@@ -81,11 +83,17 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
 			contentBinding.contactExternalID.setVisibility(GONE);
+			contentBinding.contactExternalToken.setVisibility(GONE);
 			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 		}
 
 		contentBinding.contactQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.contactQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
+
+		// TODO [vaccination info] integrate vaccination info
+//		if (!isVisibleAllowed(VaccinationInfoDto.class, contentBinding.vaccinationInfoLayout.vaccinationInfoVaccination)) {
+//			contentBinding.medicalInformationHeader.setVisibility(GONE);
+//		}
 	}
 
 	// Overrides

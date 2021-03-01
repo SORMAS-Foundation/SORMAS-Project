@@ -1,15 +1,17 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -41,12 +43,24 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
+		if (create) {
+			List<CountryReferenceDto> countryItems = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+			CountryReferenceDto defaultCountry = countryItems.stream()
+				.filter(
+					countryReferenceDto -> serverCountryDto != null
+						&& countryReferenceDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()))
+				.findFirst()
+				.orElse(null);
+			entry.setCountry(defaultCountry);
+		}
+
 		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.showAddressType();
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<LocationEditForm> editView =
-			new CommitDiscardWrapperComponent<LocationEditForm>(editForm, true, editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(LocationDto.I18N_PREFIX));
@@ -100,7 +114,9 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		table.setColumnExpandRatio(LocationDto.COMMUNITY, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
 			}
 		}

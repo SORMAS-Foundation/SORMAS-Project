@@ -151,6 +151,9 @@ public class Contact extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
 	@DatabaseField
 	private String resultingCaseUuid;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -241,6 +244,12 @@ public class Contact extends PseudonymizableAdo {
 	@DatabaseField
 	private Date prohibitionToWorkUntil;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District reportingDistrict;
+
+	// TODO [vaccination info] integrate vaccination info
+//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+//	private VaccinationInfo vaccinationInfo;
 
 	public Person getPerson() {
 		return person;
@@ -494,6 +503,14 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public Region getRegion() {
@@ -760,8 +777,8 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
-  
+	}
+
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -817,4 +834,21 @@ public class Contact extends PseudonymizableAdo {
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
+
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
+	}
+
+	// TODO [vaccination info] integrate vaccination info
+//	public VaccinationInfo getVaccinationInfo() {
+//		return vaccinationInfo;
+//	}
+//
+//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+//		this.vaccinationInfo = vaccinationInfo;
+//	}
 }

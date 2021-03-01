@@ -19,19 +19,19 @@ import java.util.function.Consumer;
 
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
-
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -43,9 +43,14 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
 	private ComboBox cbCampaignForm;
+	private ComboBox regionFilter;
+	private ComboBox districtFilter;
+	private ComboBox communityFilter;
 
 	protected CampaignFormDataFilterForm() {
+
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 	}
 
 	@Override
@@ -75,37 +80,34 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			});
 		}
 
-		UserDto user = UserProvider.getCurrent().getUser();
-		if (user.getRegion() == null) {
-			ComboBox cbRegion = addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					CampaignFormDataCriteria.REGION,
-					I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.REGION),
-					200));
-			cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		}
+		regionFilter = addField(
+			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
+		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		if (user.getDistrict() == null) {
-			ComboBox cbDistrict = addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					CampaignFormDataCriteria.DISTRICT,
-					I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.DISTRICT),
-					200));
+		districtFilter = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
+		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
-			if (user.getRegion() != null) {
-				cbDistrict.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-			}
-		}
+		communityFilter = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CampaignFormDataCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
+		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
 
-		if (user.getCommunity() == null) {
-			ComboBox cbCommunity = addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					CampaignFormDataCriteria.COMMUNITY,
-					I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.COMMUNITY),
-					200));
-
-			if (user.getDistrict() != null) {
-				cbCommunity.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+		UserDto user = currentUserDto();
+		final RegionReferenceDto userRegion = user.getRegion();
+		final DistrictReferenceDto userDistrict = user.getDistrict();
+		final CommunityReferenceDto userCommunity = user.getCommunity();
+		if (userRegion != null) {
+			regionFilter.setEnabled(false);
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+			if (userDistrict != null) {
+				districtFilter.setEnabled(false);
+				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
+				if (userCommunity != null) {
+					communityFilter.setEnabled(false);
+				}
 			}
 		}
 	}
@@ -128,59 +130,33 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		super.applyDependenciesOnFieldChange(propertyId, event);
 
-		CampaignFormDataCriteria criteria = getValue();
-
 		switch (propertyId) {
 		case CampaignFormDataDto.REGION:
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
-
-			if (region == null) {
-				clearAndDisableFields(CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY);
+			if (region != null) {
+				districtFilter.removeAllItems();
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 			} else {
-				enableFields(EventCriteria.DISTRICT);
-				clearAndDisableFields(CampaignFormDataCriteria.COMMUNITY);
-				applyRegionFilterDependency(region, EventCriteria.DISTRICT);
+				districtFilter.removeAllItems();
+				districtFilter.clear();
 			}
-
 			break;
 		case CampaignFormDataDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
 
-			if (!DataHelper.equal(district, criteria.getDistrict())) {
-				if (district == null) {
-					clearAndDisableFields(CampaignFormDataCriteria.COMMUNITY);
-				} else {
-					enableFields(CampaignFormDataCriteria.COMMUNITY);
-					applyDistrictDependency(district, CampaignFormDataCriteria.COMMUNITY);
-				}
+			if (district != null) {
+				communityFilter.removeAllItems();
+				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			} else {
+				communityFilter.removeAllItems();
+				communityFilter.clear();
 			}
-
 			break;
 		}
 	}
 
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
-		final ComboBox cbRegion = getField(CampaignFormDataDto.REGION);
-		final ComboBox cbDistrict = getField(CampaignFormDataDto.DISTRICT);
-		final ComboBox cbCommunity = getField(CampaignFormDataDto.COMMUNITY);
-
-		if (cbRegion != null && cbDistrict != null) {
-			RegionReferenceDto region = criteria.getRegion();
-			cbDistrict.setEnabled(region != null);
-			if (region != null) {
-				cbDistrict.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			}
-		}
-
-		if (cbDistrict != null && cbCommunity != null) {
-			DistrictReferenceDto district = criteria.getDistrict();
-			cbCommunity.setEnabled(district != null);
-			if (district != null) {
-				cbCommunity.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			}
-		}
-
 		cbCampaignForm.removeAllItems();
 		if (criteria.getCampaign() != null) {
 			cbCampaignForm

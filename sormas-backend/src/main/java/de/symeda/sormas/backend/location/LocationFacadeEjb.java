@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,6 +28,8 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -42,6 +42,8 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private LocationService locationService;
 	@EJB
+	private CountryService countryService;
+	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -52,26 +54,19 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Location fromDto(LocationDto source) {
+	public Location fromDto(LocationDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		Location target = locationService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Location();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Location target = DtoHelper.fillOrBuildEntity(source, locationService.getByUuid(source.getUuid()), Location::new, checkChangeDate);
 
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
@@ -106,6 +101,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));

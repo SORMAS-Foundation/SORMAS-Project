@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -36,7 +36,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -183,7 +183,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 
-		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit);
+		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit, true);
 
 		service.ensurePersisted(entity);
 
@@ -203,7 +203,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
-	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+	public ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit) {
 
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
 		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
@@ -276,7 +276,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		CaseJoins<ClinicalCourse> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 
@@ -352,19 +352,11 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return target;
 	}
 
-	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target) {
-		if (target == null) {
-			target = new ClinicalVisit();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, ClinicalVisit::new, checkChangeDate);
 
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
+		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());

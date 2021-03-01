@@ -56,6 +56,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setExposureRole(source.getExposureRole());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -96,6 +97,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
@@ -131,6 +133,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setExposureRole(source.getExposureRole());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -168,6 +171,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());

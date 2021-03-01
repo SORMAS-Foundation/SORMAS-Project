@@ -19,12 +19,15 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -39,14 +42,17 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 2194071020732246594L;
 
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
+	public static final String FREE_TEXT_EVENT_PARTICIPANTS = "freeTextEventParticipants";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private UserRole reportingUserRole;
@@ -60,13 +66,22 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date eventDateFrom;
 	private Date eventDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
-	private UserReferenceDto surveillanceOfficer;
+	private Date eventEvolutionDateFrom;
+	private Date eventEvolutionDateTo;
+	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
+	private UserReferenceDto responsibleUser;
 	private String freeText;
+	private String freeTextEventParticipants;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
 	private Boolean userFilterIncluded = true;
 	private TypeOfPlace typeOfPlace;
 	private PersonReferenceDto person;
+	private FacilityType facilityType;
+	private FacilityReferenceDto facility;
+	private EventReferenceDto superordinateEvent;
+	private Set<String> excludedUuids;
+	private Boolean hasNoSuperordinateEvent;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -85,6 +100,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public EventCriteria riskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
+		return this;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -260,17 +288,54 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
-	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public EventCriteria eventEvolutionDateBetween(
+		Date eventEvolutionDateFrom,
+		Date eventEvolutionDateTo,
+		DateFilterOption evolutionDateFilterOption) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
 		return this;
 	}
 
-	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public EventCriteria eventEvolutionDateFrom(Date eventEvolutionDateFrom) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		return this;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public Date getEventEvolutionDateFrom() {
+		return eventEvolutionDateFrom;
+	}
+
+	public EventCriteria eventEvolutionDateTo(Date eventEvolutionDateTo) {
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		return this;
+	}
+
+	public Date getEventEvolutionDateTo() {
+		return eventEvolutionDateTo;
+	}
+
+	public EventCriteria evolutionDateFilterOption(DateFilterOption evolutionDateFilterOption) {
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getEvolutionDateFilterOption() {
+		return evolutionDateFilterOption;
+	}
+
+	public EventCriteria responsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+		return this;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+	}
+
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
 	}
 
 	public EventCriteria freeText(String freeText) {
@@ -287,6 +352,20 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return freeText;
 	}
 
+	public EventCriteria freeTextEventParticipants(String freeTextEventParticipants) {
+		this.freeTextEventParticipants = freeTextEventParticipants;
+		return this;
+	}
+
+	public void setFreeTextEventParticipants(String freeTextEventParticipants) {
+		this.freeTextEventParticipants = freeTextEventParticipants;
+	}
+
+	@IgnoreForUrl
+	public String getFreeTextEventParticipants() {
+		return freeTextEventParticipants;
+	}
+
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
@@ -301,6 +380,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	public EventCriteria typeOfPlace(TypeOfPlace typeOfPlace) {
+		setTypeOfPlace(typeOfPlace);
+		return this;
 	}
 
 	public ActionStatus getActionStatus() {
@@ -327,6 +411,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		switch (dateType) {
 		case EVENT:
 			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		case EVENT_SIGNAL_EVOLUTION:
+			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
 			break;
 		case ACTION:
 			actionChangeDateBetween(dateFrom, dateTo, dateFilterOption);
@@ -376,6 +463,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public enum DateType {
 		EVENT,
+		EVENT_SIGNAL_EVOLUTION,
 		ACTION,
 	}
 
@@ -392,4 +480,71 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public EventCriteria facilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+		return this;
+	}
+
+	public FacilityReferenceDto getFacility() {
+		return facility;
+	}
+
+	public void setFacility(FacilityReferenceDto facility) {
+		this.facility = facility;
+	}
+
+	public EventCriteria facility(FacilityReferenceDto facility) {
+		this.facility = facility;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public EventReferenceDto getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(EventReferenceDto superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	public EventCriteria superordinateEvent(EventReferenceDto superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getExcludedUuids() {
+		return excludedUuids;
+	}
+
+	public void setExcludedUuids(Set<String> excludedUuids) {
+		this.excludedUuids = excludedUuids;
+	}
+
+	public EventCriteria excludedUuids(Set<String> excludedUuids) {
+		this.excludedUuids = excludedUuids;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getHasNoSuperordinateEvent() {
+		return hasNoSuperordinateEvent;
+	}
+
+	public void setHasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
+		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
+	}
+
+	public EventCriteria hasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
+		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
+		return this;
+	}
 }

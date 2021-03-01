@@ -36,6 +36,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -150,6 +151,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
+			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
 
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
@@ -181,7 +183,9 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.UUID,
 				CaseIndexDto.EPID_NUMBER,
 				CaseIndexDto.EXTERNAL_ID,
+				CaseIndexDto.EXTERNAL_TOKEN,
 				DISEASE_SHORT,
+				CaseIndexDto.DISEASE_VARIANT,
 				CaseIndexDto.CASE_CLASSIFICATION,
 				CaseIndexDto.OUTCOME,
 				CaseIndexDto.INVESTIGATION_STATUS),
@@ -196,7 +200,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.QUARANTINE_TO,
 				CaseIndexDto.CREATION_DATE),
-			caseFollowUpEnabled ? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS) : Stream.<String> empty(),
+			caseFollowUpEnabled ? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS,
+					CaseIndexDto.FOLLOW_UP_UNTIL,
+					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
+					NUMBER_OF_VISITS) : Stream.<String> empty(),
 			Stream.of(COLUMN_COMPLETENESS)).flatMap(s -> s);
 	}
 
@@ -229,11 +236,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		}
 
 		if (caseFollowUpEnabled) {
-			if (getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
-				this.getColumn(NUMBER_OF_VISITS).setHidden(true);
-			} else {
-				this.getColumn(NUMBER_OF_VISITS).setHidden(false);
-			}
+			boolean hidden = getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP;
+			this.getColumn(NUMBER_OF_VISITS).setHidden(hidden);
 		}
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {

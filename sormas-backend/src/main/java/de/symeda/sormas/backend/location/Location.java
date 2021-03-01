@@ -41,6 +41,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -55,6 +56,7 @@ public class Location extends AbstractDomainObject {
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
+	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -75,6 +77,7 @@ public class Location extends AbstractDomainObject {
 	private String city;
 	private AreaType areaType;
 
+	private Country country;
 	private Region region;
 	private District district;
 	private Community community;
@@ -120,6 +123,15 @@ public class Location extends AbstractDomainObject {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	@ManyToOne(cascade = {})
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 
 	@ManyToOne(cascade = {})

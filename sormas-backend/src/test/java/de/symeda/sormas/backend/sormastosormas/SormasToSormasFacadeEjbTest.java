@@ -66,9 +66,12 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -102,6 +105,11 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.StartupShutdownService;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -117,6 +125,14 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	private ObjectMapper objectMapper;
 
+	@Override
+	public void init() {
+		super.init();
+
+		getFacilityService().createConstantFacilities();
+		getPointOfEntryService().createConstantPointsOfEntry();
+	}
+
 	@Before
 	public void setUp() {
 		objectMapper = new ObjectMapper();
@@ -128,8 +144,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSaveSharedCase() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+	public void testSaveSharedCaseWithInfrastructureName()
+		throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(false);
 
 		PersonDto person = createPersonDto(rdcf);
 		person.setFirstName("James");
@@ -174,8 +191,85 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSaveSharedPointOfEntryCase() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+	public void testSaveSharedCaseWithInfrastructureExternalId()
+		throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(true);
+
+		PersonDto person = createPersonDto(rdcf);
+		person.setFirstName("James");
+		person.setLastName("Smith");
+
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
+		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.YES);
+		caze.getSymptoms().setAgitation(SymptomState.YES);
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setAnimalContactType(AnimalContactType.TOUCH);
+		caze.getEpiData().getExposures().add(exposure);
+		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
+		caze.getMaternalHistory().setChildrenNumber(2);
+
+		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+
+		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertThat(savedCase, is(notNullValue()));
+		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getHealthFacility(), is(rdcf.localRdcf.facility));
+		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
+		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
+		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
+
+		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
+
+		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
+		assertThat(savedPerson, is(notNullValue()));
+		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedPerson.getAddress().getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedPerson.getFirstName(), is("James"));
+		assertThat(savedPerson.getLastName(), is("Smith"));
+	}
+
+	@Test
+	public void testSaveSharedPointOfEntryCaseWithInfrastructureName()
+		throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(false);
+
+		PersonDto person = createPersonDto(rdcf);
+
+		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
+		caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caze.setRegion(rdcf.remoteRdcf.region);
+		caze.setDistrict(rdcf.remoteRdcf.district);
+		caze.setCommunity(rdcf.remoteRdcf.community);
+		caze.setPointOfEntry(rdcf.remoteRdcf.pointOfEntry);
+		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
+		portHealthInfo.setAirlineName("Test Airline");
+		caze.setPortHealthInfo(portHealthInfo);
+
+		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getPointOfEntry(), is(rdcf.localRdcf.pointOfEntry));
+		assertThat(savedCase.getPortHealthInfo().getAirlineName(), is("Test Airline"));
+	}
+
+	@Test
+	public void testSaveSharedPointOfEntryCaseWithInfrastructureExternalId()
+		throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(true);
 
 		PersonDto person = createPersonDto(rdcf);
 
@@ -203,7 +297,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSaveSharedCaseWithContacts() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+		MappableRdcf rdcf = createRDCF(false);
 		PersonDto person = createPersonDto(rdcf);
 
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
@@ -232,7 +326,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSaveSharedCaseWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+		MappableRdcf rdcf = createRDCF(false);
 		PersonDto person = createPersonDto(rdcf);
 
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
@@ -258,7 +352,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSaveSharedContact() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+		MappableRdcf rdcf = createRDCF(false);
 
 		PersonDto person = createPersonDto(rdcf);
 		person.setFirstName("James");
@@ -292,7 +386,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSaveSharedContactWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+		MappableRdcf rdcf = createRDCF(false);
 		PersonDto person = createPersonDto(rdcf);
 
 		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
@@ -810,8 +904,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSaveReturnedCase() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+	public void testSaveReturnedCase() throws JsonProcessingException, SormasToSormasException {
+		MappableRdcf rdcf = createRDCF(false);
 
 		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
@@ -822,8 +916,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		ContactDto sharedContact = creator.createContact(officer, sharedContactPerson.toReference(), caze);
 		PersonDto newContactPerson = creator.createPerson();
 		ContactDto newContact = creator.createContact(officer, newContactPerson.toReference(), caze);
+		ContactDto newContact2 = creator.createContact(officer, newContactPerson.toReference(), caze);
 		SampleDto sharedSample = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
 		SampleDto newSample = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
+		SampleDto newSample2 = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		getSormasToSormasShareInfoService()
@@ -840,15 +936,20 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
+		originInfo.setOwnershipHandedOver(true);
+
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
 		shareData.setAssociatedContacts(
 			Arrays.asList(
 				new SormasToSormasCaseDto.AssociatedContactDto(sharedContactPerson, sharedContact),
-				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact)));
+				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact),
+				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact2)));
 		shareData.setSamples(
 			Arrays.asList(
 				new SormasToSormasSampleDto(sharedSample, Collections.emptyList(), Collections.emptyList()),
-				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
+				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList()),
+				new SormasToSormasSampleDto(newSample2, Collections.emptyList(), Collections.emptyList())));
 
 		byte[] encryptedData = encryptShareData(shareData);
 
@@ -870,19 +971,25 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(contactShares.get(0).isOwnershipHandedOver(), is(false));
 
 		ContactDto returnedNewContact = getContactFacade().getContactByUuid(newContact.getUuid());
-		assertThat(returnedNewContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+		assertThat(returnedNewContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+
+		ContactDto returnedNewContact2 = getContactFacade().getContactByUuid(newContact.getUuid());
+		assertThat(returnedNewContact2.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 
 		List<SormasToSormasShareInfoDto> sampleShares =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sharedSample.toReference()), 0, 100);
 		assertThat(sampleShares.get(0).isOwnershipHandedOver(), is(false));
 
 		SampleDto returnedNewSample = getSampleFacade().getSampleByUuid(newSample.getUuid());
-		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+
+		SampleDto returnedNewSample2 = getSampleFacade().getSampleByUuid(newSample.getUuid());
+		assertThat(returnedNewSample2.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 	}
 
 	@Test
 	public void testSaveReturnedContact() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF();
+		MappableRdcf rdcf = createRDCF(false);
 
 		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
@@ -929,6 +1036,139 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 	}
 
+	@Test
+	public void testSaveSharedCaseWithUnknownFacility() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(false);
+
+		PersonDto person = createPersonDto(rdcf);
+		person.setFirstName("James");
+		person.setLastName("Smith");
+
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
+		caze.setHealthFacility(new FacilityReferenceDto("unknown", "Unknown facility", "unknown"));
+
+		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+
+		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertThat(savedCase, is(notNullValue()));
+		assertThat(savedCase.getHealthFacility().getUuid(), is(FacilityDto.OTHER_FACILITY_UUID));
+		assertThat(savedCase.getHealthFacilityDetails(), is("Unknown facility"));
+	}
+
+	@Test
+	public void testSaveSharedWithUnknownPoint() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF(false);
+
+		PersonDto person = createPersonDto(rdcf);
+
+		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
+		caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caze.setRegion(rdcf.remoteRdcf.region);
+		caze.setDistrict(rdcf.remoteRdcf.district);
+		caze.setCommunity(rdcf.remoteRdcf.community);
+		caze.setPointOfEntry(new PointOfEntryReferenceDto("unknown", "Unknown POE", PointOfEntryType.AIRPORT, null));
+		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
+		portHealthInfo.setAirlineName("Test Airline");
+		caze.setPortHealthInfo(portHealthInfo);
+
+		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
+		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertThat(savedCase.getPointOfEntry().getUuid(), is(PointOfEntryDto.OTHER_AIRPORT_UUID));
+		assertThat(savedCase.getPointOfEntryDetails(), is("Unknown POE"));
+		assertThat(savedCase.getPortHealthInfo().getAirlineName(), is("Test Airline"));
+	}
+
+	@Test
+	public void testSaveReturnedCaseWithKnownOtherFacility() throws JsonProcessingException, SormasToSormasException {
+		MappableRdcf rdcf = createRDCF(false);
+
+		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, rdcf.localRdcf, c -> {
+			c.setPerson(person.toReference());
+			c.setHealthFacility(getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID).toReference());
+			c.setHealthFacilityDetails("Test HF details");
+		});
+
+		User officerUser = getUserService().getByReferenceDto(officer);
+		getSormasToSormasShareInfoService()
+			.persist(createShareInfo(officerUser, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+
+		caze.setHealthFacilityDetails(rdcf.localRdcf.facility.getCaption());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(caze.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		caze.setChangeDate(calendar.getTime());
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
+		originInfo.setOwnershipHandedOver(true);
+
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
+
+		byte[] encryptedData = encryptShareData(shareData);
+
+		try {
+			getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(returnedCase.getHealthFacility(), is(rdcf.localRdcf.facility));
+		assertThat(returnedCase.getHealthFacilityDetails(), is(nullValue()));
+	}
+
+	@Test
+	public void testSaveReturnedCaseWithKnownOtherPointOfEntry() throws JsonProcessingException, SormasToSormasException {
+		MappableRdcf rdcf = createRDCF(false);
+
+		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, rdcf.localRdcf, c -> {
+			c.setPerson(person.toReference());
+			c.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+			c.setPointOfEntry(new PointOfEntryReferenceDto(PointOfEntryDto.OTHER_SEAPORT_UUID, null, null, null));
+			c.setPointOfEntryDetails("Test Seaport");
+		});
+
+		User officerUser = getUserService().getByReferenceDto(officer);
+		getSormasToSormasShareInfoService()
+			.persist(createShareInfo(officerUser, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+
+		caze.setPointOfEntryDetails(rdcf.localRdcf.pointOfEntry.getCaption());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(caze.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		caze.setChangeDate(calendar.getTime());
+
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
+		originInfo.setOwnershipHandedOver(true);
+
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
+
+		byte[] encryptedData = encryptShareData(shareData);
+
+		try {
+			getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(returnedCase.getPointOfEntry(), is(rdcf.localRdcf.pointOfEntry));
+		assertThat(returnedCase.getPointOfEntryDetails(), is(nullValue()));
+	}
+
 	private PersonDto createPersonDto(MappableRdcf rdcf) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");
@@ -949,21 +1189,52 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		return source;
 	}
 
-	private MappableRdcf createRDCF() {
+	private MappableRdcf createRDCF(boolean withExternalId) {
+
 		String regionName = "Region";
 		String districtName = "District";
 		String communityName = "Community";
 		String facilityName = "Facility";
 		String pointOfEntryName = "Point of Entry";
 
+		String regionExternalId = null;
+		String districtExternalId = null;
+		String communityExternalId = null;
+		String facilityExternalId = null;
+		String pointOfEntryExternalId = null;
+
+		if (withExternalId) {
+			regionExternalId = "RegionExtId";
+			districtExternalId = "DistrictExtId";
+			communityExternalId = "CommunityExtId";
+			facilityExternalId = "FacilityExtId";
+			pointOfEntryExternalId = "Point of EntryExtId";
+		}
+
 		MappableRdcf rdcf = new MappableRdcf();
 		rdcf.remoteRdcf = new RDCF(
-			new RegionReferenceDto(DataHelper.createUuid(), regionName),
-			new DistrictReferenceDto(DataHelper.createUuid(), districtName),
-			new CommunityReferenceDto(DataHelper.createUuid(), communityName),
-			new FacilityReferenceDto(DataHelper.createUuid(), facilityName),
-			new PointOfEntryReferenceDto(DataHelper.createUuid(), pointOfEntryName));
-		rdcf.localRdcf = creator.createRDCF(regionName, districtName, communityName, facilityName, pointOfEntryName);
+			new RegionReferenceDto(DataHelper.createUuid(), withExternalId ? null : regionName, regionExternalId),
+			new DistrictReferenceDto(DataHelper.createUuid(), withExternalId ? null : districtName, districtExternalId),
+			new CommunityReferenceDto(DataHelper.createUuid(), withExternalId ? null : communityName, communityExternalId),
+			new FacilityReferenceDto(DataHelper.createUuid(), withExternalId ? null : facilityName, facilityExternalId),
+			new PointOfEntryReferenceDto(
+				DataHelper.createUuid(),
+				withExternalId ? null : pointOfEntryName,
+				PointOfEntryType.AIRPORT,
+				pointOfEntryExternalId));
+
+		Region region = creator.createRegion(regionName, regionExternalId);
+		District district = creator.createDistrict(districtName, region, districtExternalId);
+		Community community = creator.createCommunity(communityName, district, communityExternalId);
+		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
+		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
+
+		rdcf.localRdcf = new RDCF(
+			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
+			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
+			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
+			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
 
 		return rdcf;
 	}

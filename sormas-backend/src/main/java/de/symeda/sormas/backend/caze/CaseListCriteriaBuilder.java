@@ -29,9 +29,11 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -131,7 +133,7 @@ public class CaseListCriteriaBuilder {
 		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
 					orderExpressionProvider.forProperty(sortProperty, caze, joins)
@@ -152,7 +154,7 @@ public class CaseListCriteriaBuilder {
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -169,9 +171,12 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.UUID),
 			root.get(Case.EPID_NUMBER),
 			root.get(Case.EXTERNAL_ID),
+			root.get(Case.EXTERNAL_TOKEN),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
+			joins.getDiseaseVariant().get(DiseaseVariant.UUID),
+			joins.getDiseaseVariant().get(DiseaseVariant.NAME),
 			root.get(Case.DISEASE_DETAILS),
 			root.get(Case.CASE_CLASSIFICATION),
 			root.get(Case.INVESTIGATION_STATUS),
@@ -201,6 +206,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.COMPLETENESS),
 			root.get(Case.FOLLOW_UP_STATUS),
 			root.get(Case.FOLLOW_UP_UNTIL),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			root.get(Case.CHANGE_DATE),
 			joins.getFacility().get(Facility.ID));
 	}
@@ -212,6 +218,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.UUID:
 		case CaseIndexDto.EPID_NUMBER:
 		case CaseIndexDto.EXTERNAL_ID:
+		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.DISEASE:
 		case CaseIndexDto.DISEASE_DETAILS:
 		case CaseIndexDto.CASE_CLASSIFICATION:
@@ -230,6 +237,7 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPerson().get(Person.LAST_NAME));
 		case CaseIndexDto.PRESENT_CONDITION:
 		case CaseIndexDto.SEX:
+		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDto.AGE_AND_BIRTH_DATE:
 			return Collections.singletonList(joins.getPerson().get(Person.APPROXIMATE_AGE));
@@ -247,6 +255,8 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPointOfEntry().get(PointOfEntry.NAME));
 		case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 			return Collections.singletonList(joins.getSurveillanceOfficer().get(User.UUID));
+		case CaseIndexDto.DISEASE_VARIANT:
+			return Collections.singletonList(joins.getDiseaseVariant().get(DiseaseVariant.NAME));
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}
@@ -290,7 +300,7 @@ public class CaseListCriteriaBuilder {
 		}
 	}
 
-	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins joins) {
+	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins<Case> joins) {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),

@@ -124,8 +124,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			root.get(Community.NAME),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			district.get(District.UUID),
 			district.get(District.NAME),
+			district.get(District.EXTERNAL_ID),
 			root.get(Community.EXTERNAL_ID));
 	}
 
@@ -268,7 +270,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
-		community = fillOrBuildEntity(dto, community);
+		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
 	}
 
@@ -277,7 +279,16 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		return communityService.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
 			.stream()
-			.map(c -> toReferenceDto(c))
+			.map(CommunityFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CommunityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		return communityService.getByExternalId(externalId, includeArchivedEntities)
+			.stream()
+			.map(CommunityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -310,7 +321,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		if (entity == null) {
 			return null;
 		}
-		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString());
+		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}
 
@@ -331,14 +342,9 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return dto;
 	}
 
-	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target) {
+	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Community();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

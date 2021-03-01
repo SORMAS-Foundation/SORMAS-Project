@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class CampaignDashboardDataProvider {
 	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy;
 
 	private final Map<CampaignReferenceDto, List<CampaignDashboardDiagramDto>> campaignDiagramDefinitionsMap = new HashMap<>();
 
@@ -60,7 +62,7 @@ public class CampaignDashboardDataProvider {
 					List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
 						.getDiagramData(
 							campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
-							new CampaignDiagramCriteria(campaign, area, region, district));
+							new CampaignDiagramCriteria(campaign, area, region, district, campaignJurisdictionLevelGroupBy));
 					campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
 					List<CampaignDiagramSeries> campaignSeriesTotal =
 						campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal();
@@ -75,7 +77,7 @@ public class CampaignDashboardDataProvider {
 									.getDiagramDataByAgeGroup(
 										(CampaignDiagramSeries) populationGroup.get(),
 										campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
-										new CampaignDiagramCriteria(campaign, area, region, district));
+										new CampaignDiagramCriteria(campaign, area, region, district, campaignJurisdictionLevelGroupBy));
 								if (formIdOptional.isPresent()) {
 									logger.warn(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)));
 								}
@@ -83,7 +85,7 @@ public class CampaignDashboardDataProvider {
 								percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
 									.getDiagramData(
 										campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal(),
-										new CampaignDiagramCriteria(campaign, area, region, district));
+										new CampaignDiagramCriteria(campaign, area, region, district, campaignJurisdictionLevelGroupBy));
 							}
 							Map<CampaignDashboardTotalsReference, Double> percentageMap = new HashMap<>();
 							for (CampaignDiagramDataDto data : percentageDiagramData) {
@@ -160,6 +162,14 @@ public class CampaignDashboardDataProvider {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public CampaignJurisdictionLevel getCampaignJurisdictionLevelGroupBy() {
+		return campaignJurisdictionLevelGroupBy;
+	}
+
+	public void setCampaignJurisdictionLevelGroupBy(CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
+		this.campaignJurisdictionLevelGroupBy = campaignJurisdictionLevelGroupBy;
 	}
 
 	public Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> getCampaignFormDataMap() {

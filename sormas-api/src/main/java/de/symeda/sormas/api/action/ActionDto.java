@@ -19,6 +19,8 @@
 
 package de.symeda.sormas.api.action;
 
+import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
@@ -26,6 +28,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class ActionDto extends EntityDto {
@@ -41,11 +44,13 @@ public class ActionDto extends EntityDto {
 	public static final String EVENT = "event";
 	public static final String ACTION_CONTEXT = "actionContext";
 	public static final String ACTION_STATUS = "actionStatus";
+	public static final String ACTION_MEASURE = "actionMeasure";
 
 	@Required
 	private ActionContext actionContext;
 	private EventReferenceDto event;
 
+	private ActionMeasure actionMeasure;
 	private ActionPriority priority;
 	@Required
 	private Date date;
@@ -56,15 +61,20 @@ public class ActionDto extends EntityDto {
 	private String title;
 	private String description;
 	private String reply;
-	private UserReferenceDto replyingUser;
+	private UserReferenceDto lastModifiedBy;
 
 	public static ActionDto build(ActionContext context, ReferenceDto entityRef) {
+		return build(context, null, entityRef);
+	}
+
+	public static ActionDto build(ActionContext context, ActionMeasure actionMeasure, ReferenceDto entityRef) {
 
 		ActionDto action = new ActionDto();
 		action.setUuid(DataHelper.createUuid());
 		action.setDate(ActionHelper.getDefaultDate());
 		action.setActionStatus(ActionStatus.PENDING);
 		action.setPriority(ActionPriority.NORMAL);
+		action.setActionMeasure(actionMeasure);
 		action.setActionContext(context);
 		switch (context) {
 		case EVENT:
@@ -131,27 +141,27 @@ public class ActionDto extends EntityDto {
 	}
 
 	public String getDescription() {
-		return description;
+		return cleanHtml(description, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = cleanHtml(description, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public String getReply() {
-		return reply;
+		return cleanHtml(reply, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public void setReply(String reply) {
-		this.reply = reply;
+		this.reply = cleanHtml(reply, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
-	public UserReferenceDto getReplyingUser() {
-		return replyingUser;
+	public UserReferenceDto getLastModifiedBy() {
+		return lastModifiedBy;
 	}
 
-	public void setReplyingUser(UserReferenceDto replyingUser) {
-		this.replyingUser = replyingUser;
+	public void setLastModifiedBy(UserReferenceDto lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 
 	public ActionPriority getPriority() {
@@ -160,6 +170,14 @@ public class ActionDto extends EntityDto {
 
 	public void setPriority(ActionPriority priority) {
 		this.priority = priority;
+	}
+
+	public ActionMeasure getActionMeasure() {
+		return actionMeasure;
+	}
+
+	public void setActionMeasure(ActionMeasure actionMeasure) {
+		this.actionMeasure = actionMeasure;
 	}
 
 	public ReferenceDto getContextReference() {

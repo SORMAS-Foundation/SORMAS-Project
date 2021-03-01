@@ -55,7 +55,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -156,7 +156,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		if (regionUuid != null) {
 			Predicate regionFilter = cb.equal(facility.get(Facility.REGION), regionService.getByUuid(regionUuid));
-			filter = AbstractAdoService.and(cb, filter, regionFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		}
 
 		if (filter != null) {
@@ -178,7 +178,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Predicate filter = facilityService.createChangeDateFilter(cb, facility, date);
 
 		Predicate regionFilter = cb.isNull(facility.get(Facility.REGION));
-		filter = AbstractAdoService.and(cb, filter, regionFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -202,10 +202,13 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			root.get(Facility.NAME),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			district.get(District.UUID),
 			district.get(District.NAME),
+			district.get(District.EXTERNAL_ID),
 			community.get(Community.UUID),
 			community.get(Community.NAME),
+			community.get(Community.EXTERNAL_ID),
 			root.get(Facility.CITY),
 			root.get(Facility.LATITUDE),
 			root.get(Facility.LONGITUDE),
@@ -272,6 +275,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		cq.multiselect(root.get(Facility.UUID), communityJoin.get(Community.UUID));
 
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(e -> (String) e[0], e -> (String) e[1]));
+	}
+
+	@Override
+	public List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities) {
+		return facilityService.getFacilitiesByExternalIdAndType(id, type, includeArchivedEntities)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -352,7 +363,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			return null;
 		}
 
-		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString());
+		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}
 
@@ -401,7 +412,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
 			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -473,7 +484,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
 			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -510,18 +521,13 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			}
 		}
 
-		facility = fillOrBuildEntity(dto, facility);
+		facility = fillOrBuildEntity(dto, facility, true);
 		facilityService.ensurePersisted(facility);
 	}
 
-	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target) {
+	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Facility();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
 
 		target.setName(source.getName());
 

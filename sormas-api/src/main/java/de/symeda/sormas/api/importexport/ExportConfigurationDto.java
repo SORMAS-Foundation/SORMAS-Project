@@ -15,15 +15,18 @@ public class ExportConfigurationDto extends EntityDto {
 	public static final String NAME = "name";
 
 	private String name;
+	private boolean sharedToPublic;
 	private ExportType exportType;
 	private UserReferenceDto user;
 	private Set<String> properties;
 
-	public static ExportConfigurationDto build(UserReferenceDto user) {
+	public static ExportConfigurationDto build(UserReferenceDto user, ExportType exportType) {
 
 		ExportConfigurationDto config = new ExportConfigurationDto();
 		config.setUuid(DataHelper.createUuid());
 		config.setUser(user);
+		config.setExportType(exportType);
+
 		return config;
 	}
 
@@ -33,6 +36,14 @@ public class ExportConfigurationDto extends EntityDto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isSharedToPublic() {
+		return sharedToPublic;
+	}
+
+	public void setSharedToPublic(boolean sharedToPublic) {
+		this.sharedToPublic = sharedToPublic;
 	}
 
 	public ExportType getExportType() {

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -57,7 +58,7 @@ public class ClinicalVisitResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postVisits(List<ClinicalVisitDto> dtos) {
+	public List<PushResult> postVisits(@Valid List<ClinicalVisitDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getClinicalVisitFacade()::saveClinicalVisit);
 		return result;

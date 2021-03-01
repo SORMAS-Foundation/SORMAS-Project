@@ -15,20 +15,18 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
-import java.util.Date;
-import java.util.List;
-
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
@@ -40,14 +38,18 @@ import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,16 +65,21 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
@@ -83,19 +90,22 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	// Enum lists
 
 	private List<Item> caseClassificationList;
+	private List<Item> caseIdentificationSourceList;
+	private List<Item> caseScreeningTypeList;
 	private List<Item> caseOutcomeList;
 	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
+	private List<Item> diseaseVariantList;
 	private List<Item> plagueTypeList;
 	private List<Item> dengueFeverTypeList;
 	private List<Item> humanRabiesTypeList;
 	private List<Item> hospitalWardTypeList;
 	private List<Item> initialRegions;
+	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
 	private List<Item> quarantineList;
-	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> quarantineReasonList;
@@ -103,6 +113,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> covidTestReasonList;
 	private List<Item> contactTracingContactTypeList;
 	private List<Item> infectionSettingList;
+	private List<Item> vaccineList;
+	private List<Item> vaccineManufacturerList;
 
 	// Static methods
 
@@ -130,12 +142,20 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataDistrict.setEnabled(false);
 		}
 
-		// Vaccination date
-		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccination)) {
-			setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
+		// Vaccination
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccineName)) {
+			setVisibleWhen(contentBinding.caseDataVaccineName, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
 		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccineManufacturer)) {
+			setVisibleWhen(contentBinding.caseDataVaccineManufacturer, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
+		}
+
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataSmallpoxVaccinationReceived)) {
-			setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
+			setVisibleWhen(contentBinding.caseDataLastVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccine)) {
+			setVisibleWhen(contentBinding.caseDataVaccine, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
 		}
 
 		// Pregnancy
@@ -185,7 +205,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
-			contentBinding.caseDataReportingType.setVisibility(GONE);
+			contentBinding.caseDataExternalToken.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
@@ -242,6 +262,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
+			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
+		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
@@ -249,6 +274,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			caseClassificationList
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
+		caseIdentificationSourceList = DataUtils.getEnumItems(CaseIdentificationSource.class, true);
+		caseScreeningTypeList = DataUtils.getEnumItems(ScreeningType.class, true);
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
@@ -256,9 +283,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
-		reportingTypeList = DataUtils.getEnumItems(ReportingType.class, true);
 
 		initialRegions = InfrastructureHelper.loadRegions();
+		allDistricts = InfrastructureHelper.loadAllDistricts();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
@@ -270,6 +297,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
 		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 		infectionSettingList = DataUtils.getEnumItems(InfectionSetting.class, true);
+		vaccineList = DataUtils.getEnumItems(Vaccine.class, true);
+		vaccineManufacturerList = DataUtils.getEnumItems(VaccineManufacturer.class, true);
 	}
 
 	@Override
@@ -309,8 +338,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 						new ConfirmationDialog(thisActivity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
 					dlg.setCancelable(false);
 					dlg.setNegativeCallback(() -> contentBinding.caseDataDisease.setValue(currentDisease));
-					dlg.setPositiveCallback(() -> this.currentDisease = null);
+					dlg.setPositiveCallback(() -> {
+						this.currentDisease = null;
+
+						updateDiseaseVariantsField(contentBinding);
+					});
 					dlg.show();
+				} else if (this.currentDisease == null) {
+					// It means the disease were already changed
+					updateDiseaseVariantsField(contentBinding);
 				}
 			}
 		});
@@ -443,7 +479,25 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
 
+		contentBinding.caseDataVaccineName.addValueChangedListener(new ValueChangeListener() {
+
+			private Vaccine currentVaccine = record.getVaccineName();
+
+			@Override
+			public void onChange(ControlPropertyField e) {
+				Vaccine vaccine = (Vaccine) e.getValue();
+
+				if (currentVaccine != vaccine) {
+					contentBinding.caseDataVaccineManufacturer.setValue(vaccine != null ? vaccine.getManufacturer() : null);
+					currentVaccine = vaccine;
+				}
+			}
+		});
+
 		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
+		ValidationHelper
+			.initIntegerValidator(contentBinding.caseDataVaccinationDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
+		ValidationHelper.initDateIntervalValidator(contentBinding.caseDataFirstVaccinationDate, contentBinding.caseDataLastVaccinationDate);
 	}
 
 	@Override
@@ -455,7 +509,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// Initialize ControlSpinnerFields
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
+		contentBinding.caseDataCaseIdentificationSource.initializeSpinner(caseIdentificationSourceList);
+		contentBinding.caseDataScreeningType.initializeSpinner(caseScreeningTypeList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -463,18 +520,19 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
 		contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 		contentBinding.caseDataQuarantine.initializeSpinner(quarantineList);
+		contentBinding.caseDataReportingDistrict.initializeSpinner(allDistricts);
 
 		// Initialize ControlDateFields
 		contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
 		contentBinding.caseDataOutcomeDate.initializeDateField(getFragmentManager());
-		contentBinding.caseDataVaccinationDate.initializeDateField(getFragmentManager());
+		contentBinding.caseDataFirstVaccinationDate.initializeDateField(getFragmentManager());
+		contentBinding.caseDataLastVaccinationDate.initializeDateField(getFragmentManager());
 		contentBinding.caseDataDistrictLevelDate.initializeDateField(getFragmentManager());
 		contentBinding.caseDataQuarantineFrom.initializeDateField(getFragmentManager());
 		contentBinding.caseDataQuarantineTo.initializeDateField(getFragmentManager());
 		contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
-		contentBinding.caseDataReportingType.initializeSpinner(reportingTypeList);
 
 		// Replace classification user field with classified by field when case has been classified automatically
 		if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
@@ -513,9 +571,26 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// end swiss fields
+
 		contentBinding.caseDataInfectionSetting.initializeSpinner(infectionSettingList);
 		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
+
+		// vaccination
+		contentBinding.caseDataVaccineName.initializeSpinner(vaccineList);
+		contentBinding.caseDataVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+
+		// reinfection
+		contentBinding.caseDataPreviousInfectionDate.initializeDateField(getChildFragmentManager());
+	}
+
+	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList.clear();
+		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
+		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
+		contentBinding.caseDataDiseaseVariant.setValue(null);
+		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override

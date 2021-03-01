@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
@@ -8,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -20,12 +23,13 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity
+@Entity(name = "labmessage")
 @Audited
 public class LabMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "labmessage";
 
+	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
@@ -51,7 +55,9 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
+	public static final String TEST_RESULT_TEXT = "testResultText";
 
+	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
@@ -79,7 +85,18 @@ public class LabMessage extends AbstractDomainObject {
 	private String labMessageDetails;
 
 	private boolean processed;
+	private String testResultText;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getMessageDateTime() {
+		return messageDateTime;
+	}
+
+	public void setMessageDateTime(Date messageDateTime) {
+		this.messageDateTime = messageDateTime;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}
@@ -88,6 +105,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.sampleDateTime = sampleDateTime;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSampleReceivedDate() {
 		return sampleReceivedDate;
 	}
@@ -177,6 +195,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.testedDisease = testedDisease;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getTestDateTime() {
 		return testDateTime;
 	}
@@ -221,6 +240,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personSex = personSex;
 	}
 
+	@Column(name = "personbirthdatedd")
 	public Integer getPersonBirthDateDD() {
 		return personBirthDateDD;
 	}
@@ -229,6 +249,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personBirthDateDD = personBirthDateDD;
 	}
 
+	@Column(name = "personbirthdatemm")
 	public Integer getPersonBirthDateMM() {
 		return personBirthDateMM;
 	}
@@ -237,6 +258,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personBirthDateMM = personBirthDateMM;
 	}
 
+	@Column(name = "personbirthdateyyyy")
 	public Integer getPersonBirthDateYYYY() {
 		return personBirthDateYYYY;
 	}
@@ -281,8 +303,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Column
 	public String getLabMessageDetails() {
 		return labMessageDetails;
 	}
@@ -291,11 +312,21 @@ public class LabMessage extends AbstractDomainObject {
 		this.labMessageDetails = labMessageDetails;
 	}
 
+	@Column
 	public boolean isProcessed() {
 		return processed;
 	}
 
 	public void setProcessed(boolean processed) {
 		this.processed = processed;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getTestResultText() {
+		return testResultText;
+	}
+
+	public void setTestResultText(String testResultText) {
+		this.testResultText = testResultText;
 	}
 }

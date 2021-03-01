@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -124,7 +124,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
-	public WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto) {
+	public WeeklyReportDto saveWeeklyReport(@Valid WeeklyReportDto dto) {
 
 		// Don't create a new report if there already is one in the database for the user/epi week combination
 		WeeklyReportDto existingReport = getByEpiWeekAndUser(new EpiWeek(dto.getYear(), dto.getEpiWeek()), dto.getReportingUser());
@@ -135,7 +135,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReport report = fromDto(dto);
+		WeeklyReport report = fromDto(dto, true);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -255,15 +255,10 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return toDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 
-	public WeeklyReport fromDto(@NotNull WeeklyReportDto source) {
+	public WeeklyReport fromDto(@NotNull WeeklyReportDto source, boolean checkChangeDate) {
 
-		WeeklyReport target = weeklyReportService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new WeeklyReport();
-			target.setUuid(source.getUuid());
-			target.setReportDateTime(new Date());
-		}
-		DtoHelper.validateDto(source, target);
+		WeeklyReport target =
+			DtoHelper.fillOrBuildEntity(source, weeklyReportService.getByUuid(source.getUuid()), WeeklyReport::new, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
@@ -277,7 +272,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		List<WeeklyReportEntry> entries = new ArrayList<>();
 		for (WeeklyReportEntryDto entryDto : source.getReportEntries()) {
-			WeeklyReportEntry entry = fromDto(entryDto);
+			WeeklyReportEntry entry = fromDto(entryDto, checkChangeDate);
 			entry.setWeeklyReport(target);
 			entries.add(entry);
 		}
@@ -290,22 +285,14 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return target;
 	}
 
-	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source) {
+	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		WeeklyReportEntry target = weeklyReportEntryService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new WeeklyReportEntry();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		WeeklyReportEntry target =
+			DtoHelper.fillOrBuildEntity(source, weeklyReportEntryService.getByUuid(source.getUuid()), WeeklyReportEntry::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());
@@ -360,9 +347,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		WeeklyReportEntryDto target = new WeeklyReportEntryDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());

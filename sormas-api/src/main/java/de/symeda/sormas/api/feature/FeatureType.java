@@ -54,7 +54,12 @@ public enum FeatureType {
 	OTHER_NOTIFICATIONS(true, true, null),
 	DOCUMENTS(true, false, null),
 	OUTBREAKS(true, true, null),
-	LAB_MESSAGES(true, false, null);
+	LAB_MESSAGES(true, false, null),
+	ASSIGN_TASKS_TO_HIGHER_LEVEL(true, true, null),
+	SURVEILLANCE_REPORTS(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

@@ -33,7 +33,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -69,7 +69,8 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			return null;
 		}
 
-		PointOfEntryReferenceDto ref = new PointOfEntryReferenceDto(entity.getUuid(), entity.toString());
+		PointOfEntryReferenceDto ref =
+			new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
 		return ref;
 	}
 
@@ -122,8 +123,10 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			root.get(PointOfEntry.NAME),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
+			region.get(Region.EXTERNAL_ID),
 			district.get(District.UUID),
 			district.get(District.NAME),
+			district.get(District.EXTERNAL_ID),
 			root.get(PointOfEntry.LATITUDE),
 			root.get(PointOfEntry.LONGITUDE),
 			root.get(PointOfEntry.ACTIVE),
@@ -146,7 +149,18 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
-		return service.getByName(name, districtService.getByReferenceDto(district)).stream().map(p -> toReferenceDto(p)).collect(Collectors.toList());
+		return service.getByName(name, districtService.getByReferenceDto(district))
+			.stream()
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities) {
+		return service.getByExternalId(name, includeArchivedEntities)
+			.stream()
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -163,7 +177,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		validate(dto);
 
-		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry);
+		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
 	}
 
@@ -209,7 +223,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -277,7 +291,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -325,14 +339,9 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
-	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target) {
+	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new PointOfEntry();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setPointOfEntryType(source.getPointOfEntryType());

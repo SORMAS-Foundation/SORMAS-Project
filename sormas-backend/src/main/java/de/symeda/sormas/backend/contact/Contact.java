@@ -68,6 +68,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
@@ -105,6 +106,7 @@ public class Contact extends CoreAdo {
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -142,9 +144,12 @@ public class Contact extends CoreAdo {
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
+	public static final String VACCINATION_INFO = "vaccinationInfo";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -179,6 +184,7 @@ public class Contact extends CoreAdo {
 	private User contactOfficer;
 	private String description;
 	private String externalID;
+	private String externalToken;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -227,6 +233,10 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown prohibitionToWork;
 	private Date prohibitionToWorkFrom;
 	private Date prohibitionToWorkUntil;
+
+	private District reportingDistrict;
+
+	private VaccinationInfo vaccinationInfo;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -543,6 +553,15 @@ public class Contact extends CoreAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	@ManyToOne(cascade = {})
@@ -905,6 +924,15 @@ public class Contact extends CoreAdo {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
+	@ManyToOne
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
@@ -912,5 +940,15 @@ public class Contact extends CoreAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public VaccinationInfo getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }

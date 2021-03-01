@@ -20,6 +20,11 @@ package de.symeda.sormas.ui.samples;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -29,6 +34,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
 
@@ -36,7 +42,7 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private static final String LABORATORY_SAMPLE_HEADING_LOC = "laboratorySampleHeadingLoc";
 
-	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
+	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
 	public SampleEditForm(boolean isPseudonymized) {
 		super(
@@ -64,18 +70,28 @@ public class SampleEditForm extends AbstractSampleForm {
 
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
-			if (FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference())) {
-				getField(SampleDto.PATHOGEN_TEST_RESULT).setRequired(true);
-			} else {
-				getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(false);
-			}
+			fillPathogenTestResult();
 		});
 	}
 
-	public void makePathogenTestResultRequired() {
+	public void fillPathogenTestResult() {
 		ComboBox pathogenTestResultField = (ComboBox) getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT);
-		pathogenTestResultField.setEnabled(true);
-		pathogenTestResultField.setRequired(true);
+
+		boolean hasOnlyPendingPathogenTests = FacadeProvider.getPathogenTestFacade()
+			.getBySampleUuids(Collections.singletonList(getValue().getUuid()))
+			.stream()
+			.allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING);
+
+		Collection<PathogenTestResultType> pathogenTestResultTypes;
+
+		if (hasOnlyPendingPathogenTests) {
+			pathogenTestResultTypes = Arrays.asList(PathogenTestResultType.values());
+		} else {
+			pathogenTestResultTypes =
+				Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList());
+		}
+
+		FieldHelper.updateEnumData(pathogenTestResultField, pathogenTestResultTypes);
 
 		if (pathogenTestResultField.getValue() == null) {
 			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);

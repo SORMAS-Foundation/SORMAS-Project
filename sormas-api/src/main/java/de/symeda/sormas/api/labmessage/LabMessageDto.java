@@ -13,8 +13,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class LabMessageDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "Location";
+	public static final String I18N_PREFIX = "LabMessage";
 
+	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
@@ -40,7 +41,9 @@ public class LabMessageDto extends EntityDto {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
+	public static final String TEST_RESULT_TEXT = "testResultText";
 
+	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
@@ -68,6 +71,15 @@ public class LabMessageDto extends EntityDto {
 	private String labMessageDetails;
 
 	private boolean processed;
+	private String testResultText;
+
+	public Date getMessageDateTime() {
+		return messageDateTime;
+	}
+
+	public void setMessageDateTime(Date messageDateTime) {
+		this.messageDateTime = messageDateTime;
+	}
 
 	public Date getSampleDateTime() {
 		return sampleDateTime;
@@ -267,6 +279,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setProcessed(boolean processed) {
 		this.processed = processed;
+	}
+
+	public String getTestResultText() {
+		return testResultText;
+	}
+
+	public void setTestResultText(String testResultText) {
+		this.testResultText = testResultText;
 	}
 
 	public static LabMessageDto build() {

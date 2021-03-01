@@ -263,7 +263,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		if (entity == null) {
 			return null;
 		}
-		RegionReferenceDto dto = new RegionReferenceDto(entity.getUuid(), entity.toString());
+		RegionReferenceDto dto = new RegionReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}
 
@@ -312,23 +312,26 @@ public class RegionFacadeEjb implements RegionFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
 		}
 
-		region = fillOrBuildEntity(dto, region);
+		region = fillOrBuildEntity(dto, region, true);
 		regionService.ensurePersisted(region);
 	}
 
 	@Override
 	public List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities) {
-		return regionService.getByName(name, includeArchivedEntities).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
+		return regionService.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target) {
+	@Override
+	public List<RegionReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+		return regionService.getByExternalId(externalId, includeArchivedEntities)
+			.stream()
+			.map(RegionFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
 
-		if (target == null) {
-			target = new Region();
-			target.setUuid(source.getUuid());
-		}
+	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
 
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());

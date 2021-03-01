@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -36,7 +37,6 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -50,7 +50,7 @@ import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportEventParticipant() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportEventParticipant() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
@@ -73,9 +73,9 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventReferenceDto eventRef = event.toReference();
 
 		// Successful import of 5 event participant
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_success.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef);
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -83,7 +83,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportEventParticipantSimilarityPick() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportEventParticipantSimilarityPick() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -115,10 +115,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -150,7 +150,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportEventParticipantSimilarityPickEventParticipant()
-		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+			throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -175,10 +175,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: pick event participant
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -208,7 +208,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportEventParticipantSimilarityCreate()
-		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+			throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -239,10 +239,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			rdcf);
 
 		// Person Similarity: create
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -261,7 +261,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportEventParticipantSimilaritySkip() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportEventParticipantSimilaritySkip() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -283,10 +283,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventReferenceDto eventRef = event.toReference();
 
 		// Person Similarity: create
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -301,7 +301,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportEventParticipantComment() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportEventParticipantComment() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -323,9 +323,9 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventReferenceDto eventRef = event.toReference();
 
 		// Successful import of 5 event participant
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_comment_success.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_comment_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef);
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -334,7 +334,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, EventReferenceDto event) {
+		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
 			super(inputFile, hasEntityClassRow, currentUser, event);
 		}
 
@@ -346,7 +346,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			return new OutputStreamWriter(new OutputStream() {
 
 				@Override
-				public void write(int b) throws IOException {
+				public void write(int b) {
 					// Do nothing
 				}
 			});

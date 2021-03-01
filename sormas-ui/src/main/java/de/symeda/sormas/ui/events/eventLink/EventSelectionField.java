@@ -21,6 +21,7 @@
 package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
@@ -34,9 +35,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -55,7 +58,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public static final String SELECT_EVENT = "selectEvent";
 	public static final String CREATE_EVENT = "createEvent";
 
-	private CaseDataDto caseReference;
 	private VerticalLayout mainLayout;
 	private EventSelectionGrid eventGrid;
 	private final String infoPickOrCreateEvent;
@@ -63,28 +65,38 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private RadioButtonGroup<String> rbSelectEvent;
 	private RadioButtonGroup<String> rbCreateEvent;
 	private Consumer<Boolean> selectionChangeCallback;
-	private TextField searchField;
+	private final TextField searchField;
 	private final EventCriteria criteria;
 
-	public EventSelectionField(CaseDataDto caseReference) {
-		this.caseReference = caseReference;
+	public EventSelectionField(Disease disease, String infoPickOrCreateEvent) {
 		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForCase);
+		this.infoPickOrCreateEvent = infoPickOrCreateEvent;
 
 		this.criteria = new EventCriteria();
-		criteria.setDisease(caseReference.getDisease());
+		criteria.setDisease(disease);
 		criteria.setUserFilterIncluded(false);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
 		initializeGrid();
 	}
 
-	public EventSelectionField(ContactDto contact) {
+	public EventSelectionField(EventDto event, Set<String> excludedUuids, boolean selectSuperordinateEvent) {
 		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForContact);
+		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent);
 
 		this.criteria = new EventCriteria();
-		criteria.setDisease(contact.getDisease());
+		criteria.setDisease(event.getDisease());
+		criteria.setExcludedUuids(excludedUuids);
 		criteria.setUserFilterIncluded(false);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		if (!selectSuperordinateEvent) {
+			criteria.eventDateFrom(EventHelper.getStartOrEndDate(event.getStartDate(), event.getEndDate()));
+			// Users are not allowed to select a subordinate event that already has a superordinate event
+			criteria.setHasNoSuperordinateEvent(Boolean.TRUE);
+		} else {
+			criteria.eventDateTo(EventHelper.getStartOrEndDate(event.getStartDate(), event.getEndDate()));
+		}
 
 		initializeGrid();
 	}

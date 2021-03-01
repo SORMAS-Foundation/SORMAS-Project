@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+	private static final String AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP = "authentication.provider.userSyncAtStartup";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
@@ -105,8 +106,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
 
+	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
+	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
+
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+
+	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
@@ -118,12 +124,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
+
+	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -374,6 +384,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public int getDaysAfterSystemEventGetsDeleted() {
+		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
+	}
+
+	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
 	}
@@ -436,6 +451,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		return config;
 	}
 
@@ -476,6 +492,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
+	}
+
+	@Override
+	public boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
+		return getBoolean(AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP, false);
 	}
 
 	@Override
@@ -528,6 +549,19 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
+	public boolean isCreateDefaultUsers() {
+		return getBoolean(CREATE_DEFAULT_USERS, true);
+	}
+
+	public String getDocgenerationNullReplacement() {
+		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
+	}
+
+	@Override
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
@@ -537,6 +571,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
+	@Override
+	public String getDemisJndiName() {
+		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
 }

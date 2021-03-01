@@ -20,14 +20,20 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import java.util.List;
 
 import android.view.View;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -48,6 +54,10 @@ import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
+	private static final String EVENT_ENTITY = "Event";
+	private static final String EVOLUTION_DATE_WITH_STATUS = "eventEvolutionDateWithStatus";
+	private static final String EVOLUTION_COMMENT_WITH_STATUS = "eventEvolutionCommentWithStatus";
+
 	private Event record;
 
 	// Enum lists
@@ -56,7 +66,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> typeOfPlaceList;
 	private List<Item> srcTypeList;
 	private List<Item> srcInstitutionalPartnerTypeList;
+	private List<Item> meansOfTransportList;
+	private List<Item> diseaseTransmissionModeList;
 	private boolean isMultiDayEvent;
+	private List<Item> workEnvironmentList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
 		EventEditFragment fragment = newInstanceWithFieldCheckers(
@@ -79,6 +92,22 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 				openAddressPopup(contentBinding);
 			}
 		});
+
+		contentBinding.eventEventStatus.addValueChangedListener(e -> {
+			EventStatus eventStatus = (EventStatus) e.getValue();
+			// The status will be used to modify the caption of the field
+			// However we don't want to have somthing like "Dropped evolution date"
+			// So let's ignore the DROPPED status and use the EVENT status instead
+			String statusCaption;
+			if (eventStatus == EventStatus.DROPPED) {
+				statusCaption = I18nProperties.getCaption(EVENT_ENTITY);
+			} else {
+				statusCaption = I18nProperties.getEnumCaption(eventStatus);
+			}
+
+			contentBinding.eventEvolutionDate.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+			contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+		});
 	}
 
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
@@ -86,12 +115,22 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRegionAndDistrictRequired(true);
+		locationDialog.setRequiredFieldsBasedOnCountry();
+		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
 				contentBinding.eventEventLocation.setValue(locationClone);
 				record.setEventLocation(locationClone);
+
+				if (FacilityTypeGroup.WORKING_PLACE != locationDialog.getContentBinding().facilityTypeGroup.getValue()) {
+					contentBinding.eventWorkEnvironment.setValue(null);
+					contentBinding.eventWorkEnvironment.setVisibility(View.GONE);
+				} else {
+					contentBinding.eventWorkEnvironment.setVisibility(View.VISIBLE);
+				}
+
 				locationDialog.dismiss();
 			} catch (ValidationException e) {
 				NotificationHelper.showDialogNotification(locationDialog, ERROR, e.getMessage());
@@ -123,6 +162,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
+		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
+		diseaseTransmissionModeList = DataUtils.getEnumItems(DiseaseTransmissionMode.class, true);
+		workEnvironmentList = DataUtils.getEnumItems(WorkEnvironment.class, true);
 	}
 
 	@Override
@@ -144,6 +186,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);
 		contentBinding.eventSrcType.initializeSpinner(srcTypeList);
 		contentBinding.eventSrcInstitutionalPartnerType.initializeSpinner(srcInstitutionalPartnerTypeList);
+		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
+		contentBinding.eventDiseaseTransmissionMode.initializeSpinner(diseaseTransmissionModeList);
+		contentBinding.eventWorkEnvironment.initializeSpinner(workEnvironmentList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
@@ -156,8 +201,21 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.eventTravelDate.initializeDateField(getFragmentManager());
+		contentBinding.eventEvolutionDate.initializeDateField(getFragmentManager());
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
+
+		contentBinding.eventTypeOfPlace.addValueChangedListener(e -> {
+			if (e.getValue() != TypeOfPlace.FACILITY) {
+				contentBinding.eventWorkEnvironment.setValue(null);
+				contentBinding.eventWorkEnvironment.setVisibility(View.GONE);
+			} else {
+				FacilityType facilityType = record.getEventLocation().getFacilityType();
+				contentBinding.eventWorkEnvironment.setVisibility(
+					facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+			}
+		});
 	}
 
 	@Override

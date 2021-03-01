@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -42,7 +43,7 @@ public interface SampleFacade {
 
 	SampleDto getSampleByUuid(String uuid);
 
-	SampleDto saveSample(SampleDto dto);
+	SampleDto saveSample(@Valid SampleDto dto);
 
 	SampleReferenceDto getReferenceByUuid(String uuid);
 
@@ -66,5 +67,9 @@ public interface SampleFacade {
 
 	Boolean isSampleEditAllowed(String sampleUuid);
 
+	List<SampleDto> getByContactUuids(List<String> contactUuids);
+
 	boolean exists(String uuid);
+
+	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 }

@@ -38,7 +38,8 @@ import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
@@ -48,7 +49,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
+public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> {
 
 	@EJB
 	private RegionService regionService;
@@ -68,7 +69,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		Root<WeeklyReport> from = cq.from(getElementClass());
 
 		cq.select(cb.count(from));
-		Predicate filter = and(
+		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
 			createUserFilter(cb, cq, from),
 			cb.equal(from.get(WeeklyReport.HEALTH_FACILITY), facility),
@@ -86,7 +87,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		CriteriaQuery<WeeklyReport> cq = cb.createQuery(getElementClass());
 		Root<WeeklyReport> from = cq.from(getElementClass());
 
-		Predicate filter = and(
+		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
 			createUserFilter(cb, cq, from),
 			cb.equal(from.get(WeeklyReport.HEALTH_FACILITY), facility),
@@ -194,7 +195,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		Optional.ofNullable(orderProperty).map(from::get).map(p -> asc ? cb.asc(p) : cb.desc(p)).ifPresent(cq::orderBy);
 
-		and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
+		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -205,7 +206,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<WeeklyReport> from = cq.from(WeeklyReport.class);
 
-		and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
+		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
 
 		cq.select(cb.count(from));
 
@@ -217,11 +218,11 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		Optional<WeeklyReportCriteria> c = Optional.of(criteria);
 
 		//@formatter:off
-		Optional<Predicate> filter = and(cb,
+		Optional<Predicate> filter = CriteriaBuilderHelper.and(cb,
 				//EpiWeek
 				c.map(WeeklyReportCriteria::getEpiWeek)
 				.map(w ->
-					and(cb,
+					CriteriaBuilderHelper.and(cb,
 						cb.equal(from.get(WeeklyReport.YEAR), w.getYear()),
 						cb.equal(from.get(WeeklyReport.EPI_WEEK), w.getWeek()))
 				),

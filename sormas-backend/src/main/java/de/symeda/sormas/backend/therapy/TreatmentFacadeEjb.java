@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -31,7 +31,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -116,13 +116,13 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public TreatmentDto saveTreatment(TreatmentDto source) {
+	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);
 
-		Treatment entity = fromDto(source, existingTreatment);
+		Treatment entity = fromDto(source, existingTreatment, true);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -197,7 +197,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 
@@ -274,16 +274,9 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return target;
 	}
 
-	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target) {
-		if (target == null) {
-			target = new Treatment();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
+	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
 
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Treatment::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());

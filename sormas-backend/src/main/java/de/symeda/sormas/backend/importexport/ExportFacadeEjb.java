@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +37,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.importexport.ExportConfigurationCriteria;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
@@ -157,7 +159,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	}
 
 	@Override
-	public List<ExportConfigurationDto> getExportConfigurations() {
+	public List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria, boolean isPublic) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -168,16 +170,27 @@ public class ExportFacadeEjb implements ExportFacade {
 		CriteriaQuery<ExportConfiguration> cq = cb.createQuery(ExportConfiguration.class);
 		Root<ExportConfiguration> config = cq.from(ExportConfiguration.class);
 
-		cq.where(cb.equal(config.get(ExportConfiguration.USER), user));
+		Predicate criteriaFilters = buildExportConfigurationCriteriaFilter(criteria, cb, config);
+		Predicate filters;
+		if (isPublic) {
+			filters = CriteriaBuilderHelper.and(
+				cb,
+				criteriaFilters,
+				cb.equal(config.get(ExportConfiguration.SHARED_TO_PUBLIC), true),
+				cb.notEqual(config.get(ExportConfiguration.USER), user));
+		} else {
+			filters = CriteriaBuilderHelper.and(cb, criteriaFilters, cb.equal(config.get(ExportConfiguration.USER), user));
+		}
+		cq.where(filters);
 		cq.orderBy(cb.desc(config.get(ExportConfiguration.CHANGE_DATE)));
 
-		return em.createQuery(cq).getResultList().stream().map(c -> toExportConfigurationDto(c)).collect(Collectors.toList());
+		return em.createQuery(cq).getResultList().stream().map(ExportFacadeEjb::toExportConfigurationDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
 
-		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration);
+		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration, true);
 		exportConfigurationService.ensurePersisted(entity);
 	}
 
@@ -188,20 +201,13 @@ public class ExportFacadeEjb implements ExportFacade {
 		exportConfigurationService.delete(exportConfiguration);
 	}
 
-	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source) {
+	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source, boolean checkChangeDate) {
 
-		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new ExportConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		ExportConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, exportConfigurationService.getByUuid(source.getUuid()), ExportConfiguration::new, checkChangeDate);
 
 		target.setName(source.getName());
+		target.setSharedToPublic(source.isSharedToPublic());
 		target.setUser(userService.getByReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
@@ -219,11 +225,30 @@ public class ExportFacadeEjb implements ExportFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setName(source.getName());
+		target.setSharedToPublic(source.isSharedToPublic());
 		target.setUser(UserFacadeEjb.toReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
 
 		return target;
+	}
+
+	private Predicate buildExportConfigurationCriteriaFilter(
+		ExportConfigurationCriteria criteria,
+		CriteriaBuilder cb,
+		Root<ExportConfiguration> from) {
+
+		Predicate filter = null;
+
+		if (criteria == null) {
+			return filter;
+		}
+
+		if (criteria.getExportType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(ExportConfiguration.EXPORT_TYPE), criteria.getExportType()));
+		}
+
+		return filter;
 	}
 
 	@LocalBean

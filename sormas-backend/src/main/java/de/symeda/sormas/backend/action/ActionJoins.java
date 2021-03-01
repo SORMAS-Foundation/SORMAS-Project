@@ -29,7 +29,7 @@ public class ActionJoins extends AbstractDomainObjectJoins<Action, Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
-	private Join<Action, User> replyingUser;
+	private Join<Action, User> lastModifiedBy;
 
 	public ActionJoins(From<Action, Action> root) {
 		super(root);
@@ -51,11 +51,11 @@ public class ActionJoins extends AbstractDomainObjectJoins<Action, Action> {
 		this.creator = creator;
 	}
 
-	public Join<Action, User> getReplyingUser() {
-		return getOrCreate(creator, Action.REPLYING_USER, JoinType.LEFT, this::setReplyingUser);
+	public Join<Action, User> getLastModifiedBy() {
+		return getOrCreate(creator, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
 	}
 
-	private void setReplyingUser(Join<Action, User> replyingUser) {
-		this.replyingUser = replyingUser;
+	private void setLastModifiedBy(Join<Action, User> lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 }

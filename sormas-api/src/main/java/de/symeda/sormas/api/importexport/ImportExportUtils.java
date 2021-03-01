@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.Order;
 
@@ -41,16 +43,46 @@ public final class ImportExportUtils {
 	public static final String FILE_PREFIX = "sormas";
 	public static final String TEMP_FILE_PREFIX = "sormas_temp";
 
-	public static List<Pair<String, ExportGroupType>> getCaseExportProperties(boolean withFollowUp, boolean withCaseManagement) {
+	public static List<Pair<String, ExportGroupType>> getCaseExportProperties(final boolean withFollowUp, final boolean withCaseManagement) {
+		return getExportProperties(CaseExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType groupType) {
+				if (ExportGroupType.CASE_MANAGEMENT == groupType && !withCaseManagement) {
+					return false;
+				}
+
+				if (ExportGroupType.FOLLOW_UP == groupType && !withFollowUp) {
+					return false;
+				}
+
+				return true;
+			}
+		});
+	}
+
+	public static List<Pair<String, ExportGroupType>> getContactExportProperties() {
+		return getExportProperties(ContactExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		});
+	}
+
+	private static List<Pair<String, ExportGroupType>> getExportProperties(Class<?> exportDtoClass, PropertyTypeFilter filterExportGroup) {
 		List<Method> readMethods = new ArrayList<>();
-		for (Method method : CaseExportDto.class.getDeclaredMethods()) {
+		for (Method method : exportDtoClass.getDeclaredMethods()) {
 			if ((!method.getName().startsWith("get") && !method.getName().startsWith("is")) || !method.isAnnotationPresent(ExportGroup.class)) {
 				continue;
 			}
 			readMethods.add(method);
 		}
 		Collections.sort(readMethods, new Comparator<Method>() {
-			@Override public int compare(Method m1, Method m2) {
+
+			@Override
+			public int compare(Method m1, Method m2) {
 				return Integer.compare(getOrderValue(m1), getOrderValue(m2));
 			}
 		});
@@ -60,20 +92,20 @@ public final class ImportExportUtils {
 		for (Method method : readMethods) {
 			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
 
-			if (ExportGroupType.CASE_MANAGEMENT == groupType && !withCaseManagement) {
+			if (!filterExportGroup.accept(groupType)) {
 				continue;
 			}
-			if (ExportGroupType.FOLLOW_UP == groupType && !withFollowUp) {
-				continue;
-			}
-			String property = method.getAnnotation(ExportProperty.class).value();
+
+			String property = StringUtils.join(method.getAnnotation(ExportProperty.class).value(), ".");
 			if (method.getAnnotation(ExportProperty.class).combined()) {
 				if (!combinedProperties.add(property)) {
 					continue;
 				}
 			}
+
 			properties.add(Pair.createPair(property, groupType));
 		}
+
 		return properties;
 	}
 
@@ -93,5 +125,10 @@ public final class ImportExportUtils {
 			separator = ';';
 		}
 		return separator;
+	}
+
+	public interface PropertyTypeFilter {
+
+		boolean accept(ExportGroupType type);
 	}
 }

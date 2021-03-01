@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.feature;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -179,8 +178,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto = FeatureConfigurationDto.build();
 			configurationDto.setFeatureType(featureType);
 			configurationDto.setDisease(configuration.getDisease());
-			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
-			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid(), null, null));
+			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid(), null, null));
 			configurationDto.setEnabled(configuration.isEnabled());
 		}
 
@@ -188,7 +187,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
 		}
 
-		FeatureConfiguration entity = fromDto(configurationDto);
+		FeatureConfiguration entity = fromDto(configurationDto, true);
 		service.ensurePersisted(entity);
 	}
 
@@ -292,17 +291,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		return target;
 	}
 
-	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source) {
+	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source, boolean checkChangeDate) {
 
-		FeatureConfiguration target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new FeatureConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		FeatureConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), FeatureConfiguration::new, checkChangeDate);
 
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));

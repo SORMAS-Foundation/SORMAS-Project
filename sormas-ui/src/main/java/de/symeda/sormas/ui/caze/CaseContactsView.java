@@ -20,10 +20,9 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.vaadin.event.ShortcutAction;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
@@ -39,23 +38,18 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -67,10 +61,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -259,7 +252,8 @@ public class CaseContactsView extends AbstractCaseView {
 						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					ControllerProvider.getContactController()
+						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}));
 
 			statusFilterLayout.addComponent(bulkOperationsDropdown);
@@ -298,38 +292,10 @@ public class CaseContactsView extends AbstractCaseView {
 			}
 
 			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				new GridExportStreamResource(grid, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				ContactExportDto.class,
-				null,
-				(Integer start, Integer max) -> FacadeProvider.getContactFacade()
-					.getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
-				(propertyId, type) -> {
-					String caption = I18nProperties.getPrefixCaption(
-						ContactExportDto.I18N_PREFIX,
-						propertyId,
-						I18nProperties.getPrefixCaption(
-							ContactDto.I18N_PREFIX,
-							propertyId,
-							I18nProperties.getPrefixCaption(
-								CaseDataDto.I18N_PREFIX,
-								propertyId,
-								I18nProperties.getPrefixCaption(
-									PersonDto.I18N_PREFIX,
-									propertyId,
-									I18nProperties.getPrefixCaption(
-										SymptomsDto.I18N_PREFIX,
-										propertyId,
-										I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-					}
-					return caption;
-				},
-				"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				null);
+			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
 			addExportButton(
 				extendedExportStreamResource,
 				exportButton,
@@ -337,6 +303,13 @@ public class CaseContactsView extends AbstractCaseView {
 				VaadinIcons.FILE_TEXT,
 				Captions.exportDetailed,
 				Descriptions.descDetailedExportButton);
+
+			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomExport);
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
@@ -438,10 +411,10 @@ public class CaseContactsView extends AbstractCaseView {
 	}
 
 	private boolean hasFilters() {
-		return !classificationFilter.isEmpty() ||
-				!regionFilter.isEmpty() ||
-				!districtFilter.isEmpty() ||
-				!officerFilter.isEmpty() ||
-				!searchField.isEmpty();
+		return !classificationFilter.isEmpty()
+			|| !regionFilter.isEmpty()
+			|| !districtFilter.isEmpty()
+			|| !officerFilter.isEmpty()
+			|| !searchField.isEmpty();
 	}
 }

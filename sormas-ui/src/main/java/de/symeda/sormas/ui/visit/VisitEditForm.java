@@ -22,6 +22,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.TextField;
 
@@ -51,6 +55,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	private static final long serialVersionUID = 4265377973842591202L;
 	private static final String CONTACT_PERSON_PHONE_NUMBER_LOC = "contactPersonPhoneNumberLoc";
+	private static final String PHONE_LINK_PREFIX = "tel: ";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)
 		+ fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS)
@@ -108,12 +113,18 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
-		TextField textFieldPhone = new TextField(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
-		textFieldPhone.setWidth(100, Unit.PERCENTAGE);
-		textFieldPhone.setValue(this.person.getPhone());
-		textFieldPhone.setNullRepresentation("");
-		textFieldPhone.setReadOnly(true);
-		getContent().addComponent(textFieldPhone, CONTACT_PERSON_PHONE_NUMBER_LOC);
+
+		VerticalLayout layoutPhoneLink = new VerticalLayout();
+		layoutPhoneLink.setSpacing(false);
+		layoutPhoneLink.setMargin(false);
+		layoutPhoneLink.setWidth(100, Unit.PERCENTAGE);
+		Label labelPhoneLink = new Label((I18nProperties.getCaption(Captions.contactPersonPhoneNumber)));
+		labelPhoneLink.setPrimaryStyleName("v-caption");
+		layoutPhoneLink.addComponent(labelPhoneLink);
+		Link linkPhone = new Link(this.person.getPhone(), new ExternalResource(PHONE_LINK_PREFIX + this.person.getPhone()));
+		linkPhone.setWidth(100, Unit.PERCENTAGE);
+		layoutPhoneLink.addComponent(linkPhone);
+		getContent().addComponent(layoutPhoneLink, CONTACT_PERSON_PHONE_NUMBER_LOC);
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		NullableOptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, NullableOptionGroup.class);

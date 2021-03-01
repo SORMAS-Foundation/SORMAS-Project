@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -40,9 +42,9 @@ public interface ContactFacade {
 
 	Boolean isValidContactUuid(String uuid);
 
-	ContactDto saveContact(ContactDto dto);
+	ContactDto saveContact(@Valid ContactDto dto);
 
-	ContactDto saveContact(ContactDto dto, boolean handleChanges);
+	ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
@@ -70,7 +72,12 @@ public interface ContactFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<ContactExportDto> getExportList(
+		ContactCriteria contactCriteria,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration,
+		Language userLanguage);
 
 	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 

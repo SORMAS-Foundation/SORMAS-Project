@@ -105,6 +105,7 @@
     <string name="action_select">Select</string>
     <string name="action_send">Send</string>
     <string name="action_set_cleared_to_no">Set Cleared to No</string>
+    <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">View classification rules</string>
     <string name="action_submit_report">Submit Weekly Report</string>
     <string name="action_sync">Sync</string>
@@ -376,6 +377,7 @@
     <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="heading_exposure">Exposure</string>
+    <string name="heading_activityAsCase">Activity as Case</string>
 
     <string name="hint_add_to_empty_list">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
