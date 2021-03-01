@@ -24,14 +24,17 @@ import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramTranslations;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
@@ -98,20 +101,20 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		// TODO would be cleaner to extend the HighChart class to provide customizable toggle options
 		JavaScript.getCurrent().addFunction("changeDiagramPercentage_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
 			setShowPercentages(!isShowPercentages());
-			buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+			buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 		});
 
 		JavaScript.getCurrent().addFunction("changeDiagramLabels_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
 			setShowDataLabels(!isShowDataLabels());
-			buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+			buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 		});
 
 		JavaScript.getCurrent().addFunction("changeDiagramChartType_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
 			setShowAsColumnChart(!isShowAsColumnChart());
-			buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+			buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 		});
 
-		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+		buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
 	public void buildDiagramChart(String title, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
@@ -330,9 +333,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					if (totalValue == null) {
 						if (!isCommunityGrouping) {
 							Notification.show(
-								String.format(
-									I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
-									diagramDefinition.getDiagramCaption()),
+								String.format(I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError), getDiagramCaption()),
 								ERROR_MESSAGE);
 						}
 					} else if (totalValue > 0) {
@@ -399,5 +400,22 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowAsColumnChart(boolean showAsColumnChart) {
 		this.showAsColumnChart = showAsColumnChart;
+	}
+
+	public String getDiagramCaption() {
+		String diagramCaption = diagramDefinition.getDiagramCaption();
+		Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+		CampaignDiagramTranslations translations = null;
+		if (userLanguage != null) {
+			translations = diagramDefinition.getCampaignDiagramTranslations()
+				.stream()
+				.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
+				.findFirst()
+				.orElse(null);
+		}
+		if (translations != null) {
+			diagramCaption = translations.getDiagramCaption();
+		}
+		return diagramCaption;
 	}
 }
