@@ -142,6 +142,7 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -1359,6 +1360,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+			cb.or(cb.equal(person.get(Person.SEX), Sex.UNKNOWN), cb.equal(person2.get(Person.SEX), Sex.UNKNOWN)),
 			cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
 		// Birth date filter: only when birth date is filled in for both cases
 		Predicate birthDateFilter = cb.or(
