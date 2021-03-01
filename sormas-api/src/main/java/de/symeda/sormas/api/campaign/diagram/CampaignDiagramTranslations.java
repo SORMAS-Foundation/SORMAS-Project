@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
+
 public class CampaignDiagramTranslations implements Serializable {
 
 	private String languageCode;
 	private String diagramCaption;
-	private List<CampaignDiagramTranslation> translations;
+	private List<TranslationElement> seriesNames;
+	private List<TranslationElement> translations;
 
 	public String getLanguageCode() {
 		return languageCode;
@@ -26,11 +29,19 @@ public class CampaignDiagramTranslations implements Serializable {
 		this.diagramCaption = diagramCaption;
 	}
 
-	public List<CampaignDiagramTranslation> getTranslations() {
+	public List<TranslationElement> getSeriesNames() {
+		return seriesNames;
+	}
+
+	public void setSeriesNames(List<TranslationElement> seriesNames) {
+		this.seriesNames = seriesNames;
+	}
+
+	public List<TranslationElement> getTranslations() {
 		return translations;
 	}
 
-	public void setTranslations(List<CampaignDiagramTranslation> translations) {
+	public void setTranslations(List<TranslationElement> translations) {
 		this.translations = translations;
 	}
 

@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
+import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
@@ -280,6 +281,14 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private String assembleFieldname(final Collection<CampaignDiagramDataDto> values, final CampaignDiagramSeries series, final String defaultValue) {
+		CampaignDiagramTranslations translations = getCampaignDiagramTranslations();
+		if (translations != null && translations.getSeriesNames() != null) {
+			TranslationElement seriesName =
+				translations.getSeriesNames().stream().filter(s -> s.getElementId().equalsIgnoreCase(defaultValue)).findFirst().orElse(null);
+			if (seriesName != null) {
+				return seriesName.getCaption();
+			}
+		}
 		if (series.getCaption() != null && !series.getCaption().isEmpty()) {
 			return series.getCaption();
 		}
@@ -404,6 +413,14 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public String getDiagramCaption() {
 		String diagramCaption = diagramDefinition.getDiagramCaption();
+		CampaignDiagramTranslations translations = getCampaignDiagramTranslations();
+		if (translations != null) {
+			diagramCaption = translations.getDiagramCaption();
+		}
+		return diagramCaption;
+	}
+
+	private CampaignDiagramTranslations getCampaignDiagramTranslations() {
 		Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
 		CampaignDiagramTranslations translations = null;
 		if (userLanguage != null) {
@@ -413,9 +430,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				.findFirst()
 				.orElse(null);
 		}
-		if (translations != null) {
-			diagramCaption = translations.getDiagramCaption();
-		}
-		return diagramCaption;
+		return translations;
 	}
 }

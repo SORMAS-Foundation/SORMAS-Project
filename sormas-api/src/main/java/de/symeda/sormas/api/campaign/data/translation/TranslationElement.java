@@ -1,9 +1,9 @@
-package de.symeda.sormas.api.campaign.diagram;
+package de.symeda.sormas.api.campaign.data.translation;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CampaignDiagramTranslation implements Serializable {
+public class TranslationElement implements Serializable {
 
 	private String elementId;
 	private String caption;
@@ -34,7 +34,7 @@ public class CampaignDiagramTranslation implements Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		CampaignDiagramTranslation that = (CampaignDiagramTranslation) o;
+		TranslationElement that = (TranslationElement) o;
 		return Objects.equals(elementId, that.elementId) && Objects.equals(caption, that.caption);
 	}
 
