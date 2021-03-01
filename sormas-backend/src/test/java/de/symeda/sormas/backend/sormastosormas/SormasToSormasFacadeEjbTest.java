@@ -1360,7 +1360,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Specializes
-	private static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
+	public static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
 
 		static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
 

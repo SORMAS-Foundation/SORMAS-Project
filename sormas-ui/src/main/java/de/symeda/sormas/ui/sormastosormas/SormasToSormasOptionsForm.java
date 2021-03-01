@@ -45,11 +45,22 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private List<String> excludedOrganizationIds;
 
+	private final boolean hasOptions;
+
 	public SormasToSormasOptionsForm(boolean isForCase, List<String> excludedOrganizationIds) {
+		this(isForCase, excludedOrganizationIds, true);
+	}
+
+	public SormasToSormasOptionsForm(boolean hasOptions) {
+		this(false, null, hasOptions);
+	}
+
+	public SormasToSormasOptionsForm(boolean isForCase, List<String> excludedOrganizationIds, boolean hasOptions) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
 		this.forCase = isForCase;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
+		this.hasOptions = hasOptions;
 
 		addFields();
 
@@ -69,21 +80,22 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
 		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
 
-		if (forCase) {
-			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
+		if (hasOptions) {
+			if (forCase) {
+				addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
+			}
+
+			addField(SormasToSormasOptionsDto.WITH_SAMPLES);
+
+			addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+
+			addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
+
+			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
+			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+			comment.setRows(3);
 		}
-
-		addField(SormasToSormasOptionsDto.WITH_SAMPLES);
-
-		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
-
-		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
-
-		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-		pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
-
-		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
-		comment.setRows(3);
 	}
 
 	public void disableOrganization() {

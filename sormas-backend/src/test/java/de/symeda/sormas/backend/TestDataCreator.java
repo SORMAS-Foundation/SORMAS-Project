@@ -69,6 +69,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -1336,6 +1337,18 @@ public class TestDataCreator {
 		systemEvent.setStatus(status);
 		systemEvent.setAdditionalInfo(additionalInfo);
 		return systemEvent;
+	}
+
+	public LabMessageDto createLabMessage(Consumer<LabMessageDto> customSettigns) {
+		LabMessageDto labMessage = LabMessageDto.build();
+
+		if (customSettigns != null) {
+			customSettigns.accept(labMessage);
+		}
+
+		beanTest.getLabMessageFacade().save(labMessage);
+
+		return labMessage;
 	}
 
 	/**

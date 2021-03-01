@@ -23,6 +23,7 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
@@ -50,6 +51,10 @@ public class ValidationHelper {
 
 	public static String buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
 		return buildValidationGroupName(Captions.PathogenTest, pathogenTest);
+	}
+
+	public static String buildLabMessageValidationGroupName(LabMessageDto labMessageDto) {
+		return buildValidationGroupName(Captions.LabMessage, labMessageDto);
 	}
 
 	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, String parentValidationGroup)

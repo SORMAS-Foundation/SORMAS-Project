@@ -97,12 +97,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public void save(LabMessageDto dto) {
+	public LabMessageDto save(LabMessageDto dto) {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
 		labMessage = fromDto(dto, labMessage, true);
 		labMessageService.ensurePersisted(labMessage);
+
+		return toDto(labMessage);
 	}
 
 	public LabMessageDto toDto(LabMessage source) {
@@ -260,6 +262,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
 		return fetchResult;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return labMessageService.exists(uuid);
 	}
 
 	@LocalBean
