@@ -56,11 +56,14 @@ public class CampaignDiagramTranslations implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CampaignDiagramTranslations that = (CampaignDiagramTranslations) o;
-		return Objects.equals(languageCode, that.languageCode) && Objects.equals(stackCaptions, that.stackCaptions);
+		return Objects.equals(languageCode, that.languageCode)
+			&& Objects.equals(diagramCaption, that.diagramCaption)
+			&& Objects.equals(stackCaptions, that.stackCaptions)
+			&& Objects.equals(seriesNames, that.seriesNames);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(languageCode, stackCaptions);
+		return Objects.hash(languageCode, diagramCaption, stackCaptions, seriesNames);
 	}
 }
