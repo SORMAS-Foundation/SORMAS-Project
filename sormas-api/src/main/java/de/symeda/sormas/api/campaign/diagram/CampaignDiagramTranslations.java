@@ -10,8 +10,8 @@ public class CampaignDiagramTranslations implements Serializable {
 
 	private String languageCode;
 	private String diagramCaption;
+	private List<TranslationElement> stackCaptions;
 	private List<TranslationElement> seriesNames;
-	private List<TranslationElement> translations;
 
 	public String getLanguageCode() {
 		return languageCode;
@@ -29,20 +29,20 @@ public class CampaignDiagramTranslations implements Serializable {
 		this.diagramCaption = diagramCaption;
 	}
 
+	public List<TranslationElement> getStackCaptions() {
+		return stackCaptions;
+	}
+
+	public void setStackCaptions(List<TranslationElement> stackCaptions) {
+		this.stackCaptions = stackCaptions;
+	}
+
 	public List<TranslationElement> getSeriesNames() {
 		return seriesNames;
 	}
 
 	public void setSeriesNames(List<TranslationElement> seriesNames) {
 		this.seriesNames = seriesNames;
-	}
-
-	public List<TranslationElement> getTranslations() {
-		return translations;
-	}
-
-	public void setTranslations(List<TranslationElement> translations) {
-		this.translations = translations;
 	}
 
 	/**
@@ -56,11 +56,11 @@ public class CampaignDiagramTranslations implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CampaignDiagramTranslations that = (CampaignDiagramTranslations) o;
-		return Objects.equals(languageCode, that.languageCode) && Objects.equals(translations, that.translations);
+		return Objects.equals(languageCode, that.languageCode) && Objects.equals(stackCaptions, that.stackCaptions);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(languageCode, translations);
+		return Objects.hash(languageCode, stackCaptions);
 	}
 }

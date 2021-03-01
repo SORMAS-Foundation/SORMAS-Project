@@ -266,7 +266,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			if (color != null || stack != null) {
 				hcjs.append("],");
 				if (stack != null) {
-					hcjs.append("stack:'").append(StringEscapeUtils.escapeEcmaScript(stack)).append("'");
+					hcjs.append("stack:'").append(StringEscapeUtils.escapeEcmaScript(getStackCaption(stack))).append("'");
 					hcjs.append(color != null ? "," : "");
 				}
 				if (color != null) {
@@ -418,6 +418,18 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			diagramCaption = translations.getDiagramCaption();
 		}
 		return diagramCaption;
+	}
+
+	private String getStackCaption(String stackName) {
+		CampaignDiagramTranslations translations = getCampaignDiagramTranslations();
+		if (translations != null && translations.getStackCaptions() != null) {
+			TranslationElement stackCaption =
+				translations.getStackCaptions().stream().filter(s -> s.getElementId().equalsIgnoreCase(stackName)).findFirst().orElse(null);
+			if (stackCaption != null) {
+				return stackCaption.getCaption();
+			}
+		}
+		return stackName;
 	}
 
 	private CampaignDiagramTranslations getCampaignDiagramTranslations() {
