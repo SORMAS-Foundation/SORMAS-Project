@@ -177,4 +177,45 @@ public class TaskController {
 				});
 		}
 	}
+
+	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks) {
+		if (selectedTasks.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		// Create a temporary task in order to use the CommitDiscardWrapperComponent
+		TaskBulkEditData bulkEditData = new TaskBulkEditData();
+		BulkTaskDataForm form = new BulkTaskDataForm();
+		form.setValue(bulkEditData);
+		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
+
+		editView.addCommitListener(() -> {
+			TaskBulkEditData updatedBulkEditData = form.getValue();
+			for (TaskIndexDto indexDto : selectedTasks) {
+				TaskDto dto = FacadeProvider.getTaskFacade().getByUuid(indexDto.getUuid());
+				if (form.getPriorityCheckbox().getValue()) {
+					dto.setPriority(updatedBulkEditData.getTaskPriority());
+				}
+				if (form.getReassignedToCheckbox().getValue()) {
+					dto.setAssigneeUser(updatedBulkEditData.getTaskReassignedTo());
+				}
+				if (form.getTaskStatusCheckbox().getValue()){
+					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());
+				}
+
+				FacadeProvider.getTaskFacade().saveTask(dto);
+			}
+			popupWindow.close();
+			Notification.show(I18nProperties.getString(Strings.messageTasksEdited), Type.HUMANIZED_MESSAGE);
+		});
+
+		editView.addDiscardListener(popupWindow::close);
+	}
 }

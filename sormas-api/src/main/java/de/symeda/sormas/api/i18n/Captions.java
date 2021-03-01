@@ -164,6 +164,9 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	String bulkTaskPriority = "bulkTaskPriority";
+	String bulkTaskReassignedTo = "bulkTaskReassignedTo";
+	String bulkTaskStatus = "bulkTaskStatus";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
 	String Campaign_community = "Campaign.community";
