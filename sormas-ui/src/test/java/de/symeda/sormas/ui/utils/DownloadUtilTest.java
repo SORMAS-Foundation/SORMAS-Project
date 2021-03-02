@@ -41,7 +41,6 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -86,8 +85,9 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		StreamResource contactVisitsExport =
 			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
 
+		String expectedFileName = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CONTACT_FOLLOW_UPS, ".csv");
 		Assert.assertNotNull(contactVisitsExport);
-		Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
+		Assert.assertEquals(expectedFileName, contactVisitsExport.getStream().getFileName());
 		InputStream stream = contactVisitsExport.getStream().getStream();
 
 		final String shortDate = DateFormatHelper.formatDate(new Date());

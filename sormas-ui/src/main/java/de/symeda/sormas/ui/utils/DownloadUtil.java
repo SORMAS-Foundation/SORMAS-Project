@@ -17,38 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import com.google.common.base.CharMatcher;
-import de.symeda.sormas.api.importexport.ImportExportUtils;
-import org.slf4j.LoggerFactory;
-
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -66,7 +35,6 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
-
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -98,6 +66,38 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static com.google.common.base.Predicates.or;
 
 public final class DownloadUtil {
 
@@ -634,7 +634,8 @@ public final class DownloadUtil {
 	}
 
 	private static String getProcessedName(String name) {
-		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(Character::isAlphabetic).retainFrom(name);
+		Predicate<Character> predicateMatcher = or(Character::isLetter, Character::isSpaceChar);
+		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(predicateMatcher::test).retainFrom(name);
 		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }
