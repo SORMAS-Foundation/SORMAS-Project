@@ -183,6 +183,7 @@ public interface Strings {
 	String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	String errorInvalidValue = "errorInvalidValue";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
+	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNotRequiredRights = "errorNotRequiredRights";

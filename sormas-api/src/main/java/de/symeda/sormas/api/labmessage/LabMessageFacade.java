@@ -19,7 +19,9 @@ public interface LabMessageFacade {
 
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.
-	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the object.
+	 * 
+	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the
+	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages();
 }

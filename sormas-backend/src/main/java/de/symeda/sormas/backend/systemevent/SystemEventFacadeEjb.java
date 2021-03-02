@@ -41,10 +41,10 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	/**
 	 * 
 	 * @param type
-	 * @return The date of the latest SystemEvent of the specified type with SystemEventStatus == SUCCESS.
+	 * @return the latest SystemEvent of the specified type with SystemEventStatus == SUCCESS.
 	 */
 	@Override
-	public Date getLatestSuccessByType(SystemEventType type) {
+	public SystemEventDto getLatestSuccessByType(SystemEventType type) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
 		Root<SystemEvent> systemEventRoot = cq.from(SystemEvent.class);
@@ -54,7 +54,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 		try {
 			SystemEvent systemEvent = em.createQuery(cq).setMaxResults(1).getSingleResult();
-			return systemEvent.getStartDate();
+			return toDto(systemEvent);
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -69,6 +69,26 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	}
 
+	public void reportSuccess(SystemEventDto systemEvent, String message, Date end) {
+		systemEvent.setAdditionalInfo(message);
+		reportSuccess(systemEvent, end);
+	}
+
+	public void reportSuccess(SystemEventDto systemEvent, Date end) {
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(new Date(DateHelper.now()));
+		saveSystemEvent(systemEvent);
+	}
+
+	public void reportError(SystemEventDto systemEvent, String errorMessage, Date end) {
+		systemEvent.setStatus(SystemEventStatus.ERROR);
+		systemEvent.setAdditionalInfo(errorMessage);
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(new Date(DateHelper.now()));
+		saveSystemEvent(systemEvent);
+	}
+
 	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, SystemEvent::new, checkChangeDate);
@@ -81,6 +101,24 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 		return target;
 
+	}
+
+	public SystemEventDto toDto(SystemEvent source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		SystemEventDto target = new SystemEventDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setType(source.getType());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setStatus(source.getStatus());
+		target.setAdditionalInfo(source.getAdditionalInfo());
+
+		return target;
 	}
 
 	/**

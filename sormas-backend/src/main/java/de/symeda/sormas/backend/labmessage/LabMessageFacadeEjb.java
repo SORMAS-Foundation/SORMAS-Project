@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,8 +21,11 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
@@ -38,6 +43,8 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
@@ -53,6 +60,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private LabMessageService labMessageService;
@@ -214,52 +223,87 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return labMessages;
 	}
 
+	/**
+	 * The creation of the currentSystemEvent is in this method. All the rest is moved to the private fetchAndSaveExternalLabMessage,
+	 * because it shall be done in one transaction. In case of uncaught exceptions, this leaves the systemEvent with status STARTED
+	 * and falls back to standard exception handling.
+	 * 
+	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
+	 */
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages() {
+		SystemEventDto currentSystemEvent = initializeFetchEvent();
+		try {
+			return fetchAndSaveExternalLabMessages(currentSystemEvent);
+		} catch (CannotProceedException e) {
+			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date(DateHelper.now()));
+			return new LabMessageFetchResult(false, e.getMessage());
+		} catch (NamingException e) {
+			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date(DateHelper.now()));
+			return new LabMessageFetchResult(false, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
+		}
+	}
+
+	@Transactional
+	private LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
+		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
+		Date since = initializeLastUpdateDate();
+		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
+		if (externalMessageResult.isSuccess()) {
+			if (externalMessageResult.getValue() != null) {
+				externalMessageResult.getValue().forEach(this::save);
+			}
+			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().toString();
+			systemEventFacade.reportSuccess(currentSystemEvent, new Date(DateHelper.now()));
+			return fetchResult;
+		} else {
+			throw new CannotProceedException(externalMessageResult.getError());
+		}
+	}
+
+	private ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
+		InitialContext ic = new InitialContext();
+		String jndiName = configFacade.getDemisJndiName();
+		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
+		return labResultsFacade.getExternalLabMessages(since);
+	}
+
+	private SystemEventDto initializeFetchEvent() {
 		Date start = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
 		systemEvent.setStartDate(start);
 		systemEventFacade.saveSystemEvent(systemEvent);
+		return systemEvent;
+	}
 
-		Date since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-
-		since = Optional.ofNullable(since).orElse(new Date(0));
-
-		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
-
-		try {
-			InitialContext ic = new InitialContext();
-			String jndiName = configFacade.getDemisJndiName();
-			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			ExternalMessageResult<List<LabMessageDto>> externalMessageResult = labResultsFacade.getExternalLabMessages(since);
-			if (externalMessageResult.isSuccess()) {
-				if (externalMessageResult.getValue() != null) {
-					externalMessageResult.getValue().forEach(this::save);
-				}
-			} else {
-				fetchResult.setSuccess(false);
-				fetchResult.setError(externalMessageResult.getError());
-			}
-		} catch (Exception e) {
-			systemEvent.setStatus(SystemEventStatus.ERROR);
-			systemEvent.setAdditionalInfo(e.getMessage());
-			Date end = new Date(DateHelper.now());
-			systemEvent.setEndDate(end);
-			systemEvent.setChangeDate(end);
-			systemEventFacade.saveSystemEvent(systemEvent);
-			e.printStackTrace();
-			fetchResult.setSuccess(false);
-			fetchResult.setError(e.getMessage());
-			return fetchResult;
+	private Date initializeLastUpdateDate() {
+		SystemEventDto latestSuccess = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
+		Long millis;
+		if (latestSuccess != null) {
+			millis = handleLatestSuccess(latestSuccess);
+		} else {
+			logger.warn("No previous successful attempt to fetch external lab message could be found. Trying to fetch all messages now");
+			millis = 0L;
 		}
-		systemEvent.setStatus(SystemEventStatus.SUCCESS);
-		Date end = new Date(DateHelper.now());
-		systemEvent.setEndDate(end);
-		systemEvent.setChangeDate(end);
-		systemEventFacade.saveSystemEvent(systemEvent);
-		return fetchResult;
+		return new Date(millis);
+	}
+
+	private long handleLatestSuccess(SystemEventDto latestSuccess) {
+		String info = latestSuccess.getAdditionalInfo();
+		if (info != null) {
+			try {
+				//parse last synchronization date
+				return Long.parseLong(info.replace("Last synchronization date: ", ""));
+			} catch (NumberFormatException e) {
+				logger.error("Synchronization date could not be parsed for the last successful lab message retrieval. Falling back to start date.");
+				return latestSuccess.getStartDate().getTime();
+			}
+		} else {
+			logger.warn("Synchronization date could not be found for the last successful lab message retrieval. Falling back to start date.");
+			return latestSuccess.getStartDate().getTime();
+		}
 	}
 
 	@LocalBean
