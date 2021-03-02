@@ -78,14 +78,21 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
 		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 
 		return Arrays.asList(
+			contact.get(Contact.ID),
 			contact.get(Contact.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getPerson().get(Person.SEX),
 			joins.getCaze().get(Case.UUID),
 			contact.get(Contact.DISEASE),
 			contact.get(Contact.DISEASE_DETAILS),
@@ -97,10 +104,12 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.NAME),
 			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
+			contact.get(Contact.CREATION_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.CONTACT_STATUS),
+			contact.get(Contact.COMPLETENESS),
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
@@ -167,9 +176,6 @@ public class ContactListCriteriaBuilder {
 		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
 		List<Selection<?>> selections = Arrays.asList(
-			joins.getPerson().get(Person.SEX),
-			joins.getPerson().get(Person.APPROXIMATE_AGE),
-			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
 			joins.getAddress().get(Location.CITY),
 			joins.getAddress().get(Location.STREET),
 			joins.getAddress().get(Location.HOUSE_NUMBER),

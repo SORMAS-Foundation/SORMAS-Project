@@ -27,6 +27,8 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -145,5 +147,14 @@ public interface ContactFacade {
 		Date from,
 		Date to);
 
-    List<ContactDto> getByPersonUuids(List<String> personUuids);
+	List<ContactDto> getByPersonUuids(List<String> personUuids);
+
+	void mergeContact(String leadUuid, String otherUuid);
+
+	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
+
+	List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String uuid);
+
 }

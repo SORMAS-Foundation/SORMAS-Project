@@ -609,6 +609,8 @@ public interface Captions {
 	String contactActiveContacts = "contactActiveContacts";
 	String contactAllContacts = "contactAllContacts";
 	String contactArchivedContacts = "contactArchivedContacts";
+	String contactBackToDirectory = "contactBackToDirectory";
+	String contactCalculateCompleteness = "contactCalculateCompleteness";
 	String contactCancelFollowUp = "contactCancelFollowUp";
 	String contactCaseContacts = "contactCaseContacts";
 	String contactChangeCase = "contactChangeCase";
@@ -636,13 +638,16 @@ public interface Captions {
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
+	String contactFilterWithDifferentRegion = "contactFilterWithDifferentRegion";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
+	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactNumberOfDuplicatesDetected = "contactNumberOfDuplicatesDetected";
 	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
@@ -650,7 +655,9 @@ public interface Captions {
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOnlyWithSharedEventWithSourceCase = "contactOnlyWithSharedEventWithSourceCase";
 	String contactOnlyWithSourceCaseInGivenEvent = "contactOnlyWithSourceCaseInGivenEvent";
+	String contactOpenCasesGuide = "contactOpenCasesGuide";
 	String contactOpenContactCase = "contactOpenContactCase";
+	String contactOpenMergeGuide = "contactOpenMergeGuide";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
@@ -2130,6 +2137,7 @@ public interface Captions {
 	String View_contacts_archive = "View.contacts.archive";
 	String View_contacts_data = "View.contacts.data";
 	String View_contacts_epidata = "View.contacts.epidata";
+	String View_contacts_merge = "View.contacts.merge";
 	String View_contacts_person = "View.contacts.person";
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";

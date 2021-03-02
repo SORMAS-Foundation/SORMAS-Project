@@ -7216,4 +7216,15 @@ ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIG
 
 INSERT INTO schema_version (version_number, comment) VALUES (365, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
+-- 2021-03-01 Make contacts mergeable #2409
+ALTER TABLE contact ADD COLUMN completeness real;
+ALTER TABLE contact_history ADD COLUMN completeness real;
+
+ALTER TABLE contact ADD COLUMN duplicateof_id bigint;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (366, 'Make contacts mergeable #2409');
+
 -- *** Insert new sql commands BEFORE this line ***
