@@ -26,7 +26,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.12.1</vaadin.version>
+		<vaadin.version>8.12.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
@@ -802,6 +802,12 @@
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>com.github.tomakehurst</groupId>
+				<artifactId>wiremock-standalone</artifactId>
+				<version>2.27.2</version>
+				<scope>test</scope>
+			</dependency>
 			<!-- *** Test dependencies END *** -->
 
 		</dependencies>

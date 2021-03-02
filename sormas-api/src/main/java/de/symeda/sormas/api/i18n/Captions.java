@@ -80,6 +80,7 @@ public interface Captions {
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
+	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
 	String ActivityAsCase_connectionNumber = "ActivityAsCase.connectionNumber";
@@ -97,6 +98,7 @@ public interface Captions {
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";
 	String ActivityAsCase_typeOfPlaceDetails = "ActivityAsCase.typeOfPlaceDetails";
 	String ActivityAsCase_workEnvironment = "ActivityAsCase.workEnvironment";
+	String activityAsCaseFlightNumber = "activityAsCaseFlightNumber";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";

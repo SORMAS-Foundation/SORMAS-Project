@@ -333,12 +333,10 @@ public class ContactsView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!navigateTo(criteria, false)) {
-				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-					((ContactFollowUpGrid) grid).reload();
-				} else {
-					((AbstractContactGrid<?>) grid).reload();
-				}
+			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				((ContactFollowUpGrid) grid).reload();
+			} else {
+				((AbstractContactGrid<?>) grid).reload();
 			}
 		});
 		filterLayout.addComponent(filterForm);
