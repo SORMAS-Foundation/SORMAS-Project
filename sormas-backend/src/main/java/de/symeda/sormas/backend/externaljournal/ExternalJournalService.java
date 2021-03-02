@@ -17,9 +17,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -27,7 +29,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -55,7 +56,9 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationE
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
@@ -85,6 +88,8 @@ public class ExternalJournalService {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	/**
 	 * Retrieves a token used for authenticating in the symptom journal.
@@ -220,14 +225,28 @@ public class ExternalJournalService {
 		return shouldNotify;
 	}
 
+	public void handleExternalJournalPersonUpdate(PersonReferenceDto person) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 * 5 second delay added before notifying of update so that current transaction can complete and
+		 * new data can be retrieved from DB
+		 */
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(person.getUuid());
+		executorService.schedule((Runnable) () -> notifyExternalJournalPersonUpdate(existingPerson), 5, TimeUnit.SECONDS);
+	}
+
 	/**
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
 		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		if (SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus())) {
+		if (detailedExistingPerson.isEnrolledInExternalJournal()) {
 			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
 			return !existingJournalPerson.equals(updatedJournalPerson);
 		}
