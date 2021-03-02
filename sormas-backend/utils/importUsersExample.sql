@@ -50,7 +50,7 @@ DECLARE
     region_id   bigint;
 BEGIN
 
-    inserted_id := (SELECT max(id) FROM users) + 1;
+    inserted_id := nextval('entity_seq');
     salt := gen_salt('md5');
     region_id := (SELECT id FROM region WHERE epidcode = $5);
 -- add here any other infrastructure relation query
