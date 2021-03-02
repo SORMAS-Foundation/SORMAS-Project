@@ -366,7 +366,7 @@
     <string name="heading_reduce_quarantine">Omezit karanténu</string>
     <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="heading_contact_tracing_first_contact">První kontakt s trasováním kontaktu</string>
-    <string name="heading_exposure">Exposure</string>
+    <string name="heading_exposure">Vystavení nákaze</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>

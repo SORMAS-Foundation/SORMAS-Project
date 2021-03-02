@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -436,7 +435,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
