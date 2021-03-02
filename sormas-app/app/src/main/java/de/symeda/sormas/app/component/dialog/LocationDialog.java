@@ -184,6 +184,11 @@ public class LocationDialog extends FormDialog {
 		} else {
 			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
 		}
+
+		if (data.getFacilityType() != null) {
+			contentBinding.locationFacilityType.setValue(data.getFacilityType());
+			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
+		}
 	}
 
 	public void setRequiredFieldsBasedOnCountry() {
