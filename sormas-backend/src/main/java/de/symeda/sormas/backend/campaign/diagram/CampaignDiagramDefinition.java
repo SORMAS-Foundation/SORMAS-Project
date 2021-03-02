@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Lob;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -101,8 +100,9 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 		this.percentageDefault = percentageDefault;
 	}
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
 	public String getCampaignDiagramTranslations() {
 		return campaignDiagramTranslations;
 	}
