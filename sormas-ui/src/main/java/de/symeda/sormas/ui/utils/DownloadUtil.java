@@ -628,7 +628,7 @@ public final class DownloadUtil {
 	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
 		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
 		String processedInstanceName = getProcessedName(instanceName);
-		String processedEntityName = getProcessedName(entityName.getLocalizedName());
+		String processedEntityName = getProcessedName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());
 		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
 	}

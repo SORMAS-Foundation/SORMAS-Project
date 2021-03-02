@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ExportEntityName {
@@ -39,5 +41,12 @@ public enum ExportEntityName {
 
     public String getLocalizedName() {
         return I18nProperties.getString(languageKey, defaultName);
+    }
+
+    public String getLocalizedNameInSystemLanguage() {
+        String systemLocale = FacadeProvider.getConfigFacade().getCountryLocale();
+        Language language = Language.fromLocaleString(systemLocale);
+        String entityName = I18nProperties.getString(language, languageKey);
+        return entityName == null ? defaultName : entityName;
     }
 }
