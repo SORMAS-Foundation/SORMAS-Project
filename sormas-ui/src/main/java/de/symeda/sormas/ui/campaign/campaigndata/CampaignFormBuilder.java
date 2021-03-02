@@ -320,7 +320,7 @@ public class CampaignFormBuilder {
 		}
 	}
 
-	private String get18nCaption(String elementId, String defaultCaption) {
+	public String get18nCaption(String elementId, String defaultCaption) {
 		if (userTranslations != null && userTranslations.containsKey(elementId)) {
 			return userTranslations.get(elementId);
 		}

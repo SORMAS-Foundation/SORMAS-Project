@@ -210,6 +210,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(campaignFormBuilder);
 		expressionProcessor.disableExpressionFieldsForEditing();
+		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);

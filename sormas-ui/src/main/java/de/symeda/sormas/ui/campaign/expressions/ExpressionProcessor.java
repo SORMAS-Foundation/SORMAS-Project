@@ -1,9 +1,14 @@
 package de.symeda.sormas.ui.campaign.expressions;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
@@ -14,6 +19,7 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Field;
 
@@ -50,6 +56,29 @@ public class ExpressionProcessor {
 			.forEach(formElement -> {
 				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
 			});
+	}
+
+	public void configureExpressionFieldsWithTooltip() {
+		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
+		campaignFormBuilder.getFormElements()
+			.stream()
+			.filter(formElement -> formElement.getExpression() != null)
+			.filter(formElement -> fields.get(formElement.getId()) != null)
+			.filter(formElement -> fields.get(formElement.getId()) instanceof AbstractComponent)
+			.forEach(this::buildTooltipDescription);
+	}
+
+	private void buildTooltipDescription(CampaignFormElement formElement) {
+		final Set<String> fieldNamesInExpression = new HashSet<>();
+		final String tooltip = formElement.getExpression();
+		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
+		final AbstractComponent field = (AbstractComponent) fields.get(formElement.getId());
+		campaignFormBuilder.getFormElements().forEach(element -> {
+			if (tooltip.contains(element.getId())) {
+				fieldNamesInExpression.add(campaignFormBuilder.get18nCaption(element.getId(), element.getCaption()));
+			}
+		});
+		field.setDescription(String.format("%s: %s", I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn), StringUtils.join(fieldNamesInExpression, ", ")));
 	}
 
 	private void checkExpression() {
