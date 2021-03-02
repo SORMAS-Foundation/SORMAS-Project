@@ -26,6 +26,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -54,28 +55,10 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 
-		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
-			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-			btnCreatePIAAccount.addClickListener(e -> {
-				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ExternalJournalUtil.openSymptomJournalWindow(contactPerson);
-			});
-			getButtonsLayout().addComponent(btnCreatePIAAccount);
-		}
-
-		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
-			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-			btnClimedoAccount.addClickListener(e -> {
-				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ExternalJournalUtil.onPatientDiaryButtonClick(contactPerson);
-			});
-			getButtonsLayout().addComponent(btnClimedoAccount);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			CaseDataDto contact = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			ExternalJournalUtil.getExternalJournalUiComponent(contactPerson).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
 

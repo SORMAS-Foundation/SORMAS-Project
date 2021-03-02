@@ -4,11 +4,15 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
@@ -29,10 +33,61 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ExternalJournalUtil {
 
 	private final static ExternalJournalFacade externalJournalFacade = FacadeProvider.getExternalJournalFacade();
+
+	/**
+	 * Creates a Component to be added wherever a patient needs to be managed by an external journal.
+	 * If no external journal is enabled with the current settings, an empty optional is returned.
+	 * If the person is not registered in the external journal, a create account/register button is returned
+	 * If the person is registered, a dropdown is returned which contains further options.
+	 * @param person person to be managed by the external journal
+	 * @return Optional containing appropriate Component
+	 */
+	public static Optional<Component> getExternalJournalUiComponent(PersonDto person) {
+		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
+			if (person.isEnrolledInExternalJournal()) {
+				return Optional.of(createPiaOptionsButton(person));
+			} else {
+				return Optional.of(createPiaRegisterButton(person));
+			}
+		}
+		else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
+			if (person.isEnrolledInExternalJournal()) {
+				return Optional.of(createClimedoOptionsButton(person));
+			} else {
+				return Optional.of(createClimedoRegisterButton(person));
+			}
+
+		}
+		return Optional.empty();
+	}
+
+	private static ComboBox createPiaOptionsButton(PersonDto person) {
+		return null;
+	}
+
+
+	private static Button createPiaRegisterButton(PersonDto person) {
+		Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
+		CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
+		btnCreatePIAAccount.addClickListener(e -> ExternalJournalUtil.openSymptomJournalWindow(person));
+		return btnCreatePIAAccount;
+	}
+
+	private static ComboBox createClimedoOptionsButton(PersonDto person) {
+		return null;
+	}
+
+	private static Button createClimedoRegisterButton(PersonDto person) {
+		Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
+		CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
+		btnClimedoAccount.addClickListener(e -> ExternalJournalUtil.onPatientDiaryButtonClick(person));
+		return btnClimedoAccount;
+	}
 
 	/**
 	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.

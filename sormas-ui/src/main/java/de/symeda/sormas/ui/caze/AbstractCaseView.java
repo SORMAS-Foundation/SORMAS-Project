@@ -94,37 +94,17 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		viewModeToggle.setVisible(false);
 		addHeaderComponent(viewModeToggle);
 
-		viewModeToggleListener = (ValueChangeListener) event -> {
+		viewModeToggleListener = event -> {
 			viewConfiguration.setViewMode((ViewMode) event.getProperty().getValue());
 			// refresh
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
 
-		if (caseFollowupEnabled) {
-			if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
-				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-				Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
-				CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-				btnCreatePIAAccount.addClickListener(e -> {
-					CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-					PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-					ExternalJournalUtil.openSymptomJournalWindow(casePerson);
-				});
-				getButtonsLayout().addComponent(btnCreatePIAAccount);
-			}
-
-			if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
-				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-				Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
-				CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-				btnClimedoAccount.addClickListener(e -> {
-					CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-					PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-					ExternalJournalUtil.onPatientDiaryButtonClick(casePerson);
-				});
-				getButtonsLayout().addComponent(btnClimedoAccount);
-			}
+		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+			ExternalJournalUtil.getExternalJournalUiComponent(casePerson).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
 

@@ -194,10 +194,10 @@ public class ExternalJournalService {
 		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
 		if (person.isEnrolledInExternalJournal()) {
 			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
-				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+				if (configFacade.getSymptomJournalConfig().isActive()) {
 					notifySymptomJournal(contact.getPerson().getUuid());
 				}
-				if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+				if (configFacade.getPatientDiaryConfig().isActive()) {
 					notifyPatientDiary(contact.getPerson().getUuid());
 				}
 			}
@@ -215,10 +215,10 @@ public class ExternalJournalService {
 	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
 		if (shouldNotify) {
-			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+			if (configFacade.getSymptomJournalConfig().isActive()) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
@@ -343,10 +343,10 @@ public class ExternalJournalService {
 	}
 
 	public void validateExternalJournalPerson(PersonDto person) {
-		if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+		if (configFacade.getSymptomJournalConfig().isActive()) {
 			//TODO Clarify with Conventic how to verify
 		}
-		if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+		if (configFacade.getPatientDiaryConfig().isActive()) {
 			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());

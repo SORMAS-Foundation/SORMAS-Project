@@ -273,7 +273,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				try {
 					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
