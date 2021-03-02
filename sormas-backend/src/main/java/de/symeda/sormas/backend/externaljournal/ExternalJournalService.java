@@ -237,8 +237,7 @@ public class ExternalJournalService {
 		 * new data can be retrieved from DB
 		 */
 		JournalPersonDto existingPerson = personFacade.getPersonForJournal(person.getUuid());
-		Runnable notify = () -> notifyExternalJournalPersonUpdate(existingPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
+		executorService.schedule((Runnable) () -> notifyExternalJournalPersonUpdate(existingPerson), 5, TimeUnit.SECONDS);
 	}
 
 	/**
