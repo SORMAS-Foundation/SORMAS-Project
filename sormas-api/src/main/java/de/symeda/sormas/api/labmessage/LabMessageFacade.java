@@ -11,7 +11,17 @@ public interface LabMessageFacade {
 
 	void save(LabMessageDto dto);
 
+	/**
+	 * This method is used to check whether a labMessage is marked processed in the database.
+	 * It can be used to check for recent changes.
+	 * 
+	 * @param uuid
+	 *            of the labMessage
+	 * @return true if the labMessage is marked processed in the database, false otherwise.
+	 */
 	LabMessageDto getByUuid(String uuid);
+
+	Boolean isProcessed(String uuid);
 
 	long count(LabMessageCriteria criteria);
 
@@ -19,7 +29,9 @@ public interface LabMessageFacade {
 
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.
-	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the object.
+	 * 
+	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the
+	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages();
 }
