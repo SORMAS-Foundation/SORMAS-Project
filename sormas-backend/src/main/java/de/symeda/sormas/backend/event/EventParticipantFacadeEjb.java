@@ -268,6 +268,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		Subquery<Date> dateSubquery = cq.subquery(Date.class);
+		Root<Sample> subRoot = dateSubquery.from(Sample.class);
+		final Expression<Date> maxSampleDateTime = cb.<Date>greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
@@ -280,10 +285,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			samples.get(Sample.PATHOGEN_TEST_RESULT),
+			samples.get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
-		cq.where(filter);
+		Predicate pathogenTestResultWhereCondition = cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID));
+		if (eventParticipantCriteria.getPathogenTestResult() != null) {
+			pathogenTestResultWhereCondition = CriteriaBuilderHelper
+				.and(cb, filter, pathogenTestResultWhereCondition, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
+		}
+		final Predicate nullOrMaxSampleDateTime = CriteriaBuilderHelper.or(
+			cb,
+			cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)),
+			cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition)));
+		cq.where(CriteriaBuilderHelper.and(cb, nullOrMaxSampleDateTime, filter));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
