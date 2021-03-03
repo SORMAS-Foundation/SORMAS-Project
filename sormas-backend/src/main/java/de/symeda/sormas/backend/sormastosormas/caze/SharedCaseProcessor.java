@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.dataprocessor;
+package de.symeda.sormas.backend.sormastosormas.caze;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
@@ -32,26 +32,23 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.dataprocessor.SharedDataProcessorHelper.InfrastructureData;
+import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper.InfrastructureData;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCaseDto, ProcessedCaseData> {
+public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData> {
 
 	@EJB
 	private UserService userService;
-	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
 
@@ -60,7 +57,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = sharedCase.getPerson();
-		CaseDataDto caze = sharedCase.getCaze();
+		CaseDataDto caze = sharedCase.getEntity();
 		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = sharedCase.getAssociatedContacts();
 		List<SormasToSormasSampleDto> samples = sharedCase.getSamples();
 		SormasToSormasOriginInfoDto originInfo = sharedCase.getOriginInfo();

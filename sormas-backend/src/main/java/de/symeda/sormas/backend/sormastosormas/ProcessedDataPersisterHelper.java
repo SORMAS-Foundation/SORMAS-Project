@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.datapersister;
+package de.symeda.sormas.backend.sormastosormas;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
@@ -21,21 +21,27 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildVali
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 
 @Stateless
 @LocalBean
@@ -47,6 +53,12 @@ public class ProcessedDataPersisterHelper {
 	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
+
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
+
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
 
 	public void persistSamples(List<SormasToSormasSampleDto> samples, Consumer<SampleDto> beforeSaveSample) throws SormasToSormasValidationException {
 
@@ -71,6 +83,54 @@ public class ProcessedDataPersisterHelper {
 					() -> additionalTestFacade.saveAdditionalTest(additionalTest, false),
 					Captions.AdditionalTest,
 					buildValidationGroupName(Captions.AdditionalTest, additionalTest));
+			}
+		}
+	}
+
+	public <T extends SormasToSormasEntityDto, U extends SormasToSormasEntityDto> void sharedAssociatedEntityCallback(U parent, T entity) {
+		entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());
+	}
+
+	public <T extends SormasToSormasEntityDto, U extends SormasToSormasEntityDto> void syncedAssociatedEntityCallback(U parent, T entity) {
+		if (entity.getSormasToSormasOriginInfo() == null) {
+			entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());
+		}
+	}
+
+	public ReturnedAssociatedEntityCallback createReturnedAssociatedEntityCallback(SormasToSormasOriginInfoDto originInfo) {
+		return new ReturnedAssociatedEntityCallback(originInfo, oriInfoFacade, shareInfoService);
+	}
+
+	public static class ReturnedAssociatedEntityCallback {
+
+		private boolean originInfoSaved;
+
+		private final SormasToSormasOriginInfoDto originInfo;
+
+		private final SormasToSormasOriginInfoFacade oriInfoFacade;
+		private final SormasToSormasShareInfoService shareInfoService;
+
+		public ReturnedAssociatedEntityCallback(
+			SormasToSormasOriginInfoDto originInfo,
+			SormasToSormasOriginInfoFacade oriInfoFacade,
+			SormasToSormasShareInfoService shareInfoService) {
+			this.originInfo = originInfo;
+			this.oriInfoFacade = oriInfoFacade;
+			this.shareInfoService = shareInfoService;
+		}
+
+		public <T extends HasUuid & SormasToSormasEntityDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+			SormasToSormasShareInfo shareInfo = findShareInfo.apply(entity.getUuid(), originInfo.getOrganizationId());
+			if (shareInfo == null) {
+				if (!originInfoSaved) {
+					oriInfoFacade.saveOriginInfo(originInfo);
+					originInfoSaved = true;
+				}
+
+				entity.setSormasToSormasOriginInfo(originInfo);
+			} else {
+				shareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(shareInfo);
 			}
 		}
 	}

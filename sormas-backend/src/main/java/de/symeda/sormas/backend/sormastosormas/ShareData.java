@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,29 +13,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.databuilder;
+package de.symeda.sormas.backend.sormastosormas;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
-import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 
-public class ContactShareData {
+public class ShareData<T extends SormasToSormasDto> {
 
-	private final SormasToSormasContactDto contactShareData;
+	private final T dto;
 
-	private final List<Sample> samples;
+	private List<AssociatedEntityWrapper<?>> associatedEntities;
 
-	public ContactShareData(SormasToSormasContactDto contactShareData, List<Sample> samples) {
-		this.contactShareData = contactShareData;
-		this.samples = samples;
+	public ShareData(T dto) {
+		this.dto = dto;
+		this.associatedEntities = new ArrayList<>();
 	}
 
-	public SormasToSormasContactDto getContactShareData() {
-		return contactShareData;
+	public T getDto() {
+		return dto;
 	}
 
-	public List<Sample> getSamples() {
-		return samples;
+	public void addAssociatedEntities(List<AssociatedEntityWrapper<?>> entities) {
+		this.associatedEntities.addAll(entities);
+	}
+
+	public List<AssociatedEntityWrapper<?>> getAssociatedEntities() {
+		return associatedEntities;
 	}
 }
