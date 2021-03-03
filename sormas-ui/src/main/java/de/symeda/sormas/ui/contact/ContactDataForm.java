@@ -285,6 +285,21 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
 
+		quarantineFrom.addValidator(
+			new DateComparisonValidator(
+				quarantineFrom,
+				quarantineTo,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, quarantineFrom.getCaption(), quarantineTo.getCaption())));
+		quarantineTo.addValidator(
+			new DateComparisonValidator(
+				quarantineTo,
+				quarantineFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, quarantineTo.getCaption(), quarantineFrom.getCaption())));
+
 		quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 		CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
 		addField(ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
