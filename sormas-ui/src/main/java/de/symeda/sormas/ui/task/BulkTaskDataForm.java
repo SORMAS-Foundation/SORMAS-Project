@@ -35,6 +35,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -49,25 +50,28 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String REASSIGNED_TO_CHECKBOX = "reassignedToCheckbox";
+	public static final String ASSIGNEE_CHECKBOX = "assigneeCheckbox";
 	public static final String PRORITY_CHECKBOX = "prorityCheckbox";
 	public static final String STATUS_CHECKBOX = "statusCheckbox";
 
-	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, REASSIGNED_TO_CHECKBOX)
-		+ fluidRowLocs(TaskBulkEditData.TASK_REASSIGNED_TO)
+	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, ASSIGNEE_CHECKBOX)
+		+ fluidRowLocs(TaskBulkEditData.TASK_ASSIGNEE)
 		+ fluidRowLocsCss(VSPACE_4, PRORITY_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_PRIORITY)
 		+ fluidRowLocsCss(VSPACE_4, STATUS_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_STATUS);
 
+	private final DistrictReferenceDto district;
+
 	private boolean initialized = false;
 
-	private CheckBox reassignedToCheckbox;
+	private CheckBox assigneeCheckbox;
 	private CheckBox priorityCheckbox;
 	private CheckBox taskStatusCheckbox;
 
-	public BulkTaskDataForm() {
+	public BulkTaskDataForm(DistrictReferenceDto district) {
 		super(TaskBulkEditData.class, TaskDto.I18N_PREFIX);
+		this.district = district;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 		initialized = true;
@@ -99,36 +103,53 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 			priority.setEnabled((boolean) e.getProperty().getValue());
 		});
 
-		reassignedToCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkTaskReassignedTo));
-		getContent().addComponent(reassignedToCheckbox, REASSIGNED_TO_CHECKBOX);
-		ComboBox reassignedTo = addField(TaskBulkEditData.TASK_REASSIGNED_TO, ComboBox.class);
-		reassignedTo.setEnabled(false);
+		assigneeCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkTaskAssignee));
+		getContent().addComponent(assigneeCheckbox, ASSIGNEE_CHECKBOX);
+		ComboBox assignee = addField(TaskBulkEditData.TASK_ASSIGNEE, ComboBox.class);
+		assignee.setEnabled(false);
 		FieldHelper.addSoftRequiredStyleWhen(
-			getFieldGroup(),
-			reassignedToCheckbox,
-			Arrays.asList(TaskBulkEditData.TASK_REASSIGNED_TO),
-			Arrays.asList(true),
-			null);
+				getFieldGroup(),
+				assigneeCheckbox,
+				Arrays.asList(TaskBulkEditData.TASK_ASSIGNEE),
+				Arrays.asList(true),
+				null);
 
 		List<UserReferenceDto> users = getUsers();
 		Map<String, Long> userTaskCounts =
-			FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 		for (UserReferenceDto user : users) {
-			reassignedTo.addItem(user);
+			assignee.addItem(user);
 			Long userTaskCount = userTaskCounts.get(user.getUuid());
-			reassignedTo.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
+			assignee.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
 		}
 
-		reassignedToCheckbox.addValueChangeListener(e -> {
-			reassignedTo.setEnabled((boolean) e.getProperty().getValue());
+		assigneeCheckbox.addValueChangeListener(e -> {
+			assignee.setEnabled((boolean) e.getProperty().getValue());
 		});
+
 	}
 
 	private List<UserReferenceDto> getUsers() {
 		final List<UserReferenceDto> users = new ArrayList<>();
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
-		users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
+		if (district != null) {
+			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
+		} else {
+			users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
+		}
+
+		// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
+		// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
+		// For national users, there is no higher level
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
+				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+
+			List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
+			if (superordinateUsers != null) {
+				users.addAll(superordinateUsers);
+			}
+		}
 
 		// Allow regional users to assign the task to national ones
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
@@ -146,8 +167,8 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		return HTML_LAYOUT;
 	}
 
-	public CheckBox getReassignedToCheckbox() {
-		return reassignedToCheckbox;
+	public CheckBox getAssigneeCheckbox() {
+		return assigneeCheckbox;
 	}
 
 	public CheckBox getPriorityCheckbox() {

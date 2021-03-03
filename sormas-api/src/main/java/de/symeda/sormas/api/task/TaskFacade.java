@@ -62,4 +62,6 @@ public interface TaskFacade {
 	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void sendNewAndDueTaskMessages();
+
+	void updateArchived(List<String> taskUuids, boolean archived);
 }

@@ -18,14 +18,19 @@
 package de.symeda.sormas.ui.task;
 
 import com.vaadin.server.Page;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -41,6 +46,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TaskController {
 
@@ -178,6 +185,26 @@ public class TaskController {
 		}
 	}
 
+	private DistrictReferenceDto getTaskIndexDistrict(TaskIndexDto taskDto) {
+		DistrictReferenceDto district = null;
+		if (taskDto.getCaze() != null) {
+			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
+			district = caseDto.getDistrict();
+		} else if (taskDto.getContact() != null) {
+			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
+			if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
+				district = contactDto.getDistrict();
+			} else {
+				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+				district = caseDto.getDistrict();
+			}
+		} else if (taskDto.getEvent() != null) {
+			EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
+			district = eventDto.getEventLocation().getDistrict();
+		}
+		return district;
+	}
+
 	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks) {
 		if (selectedTasks.size() == 0) {
 			new Notification(
@@ -188,9 +215,21 @@ public class TaskController {
 			return;
 		}
 
+		// Check if tasks with multiple districts have been selected
+		DistrictReferenceDto district = null;
+		for (TaskIndexDto taskIndexDto : selectedTasks) {
+			DistrictReferenceDto taskDistrict = this.getTaskIndexDistrict(taskIndexDto);
+			if (district == null) {
+				district = taskDistrict;
+			} else if (!district.equals(taskDistrict)) {
+				district = null;
+				break;
+			}
+		}
+
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
 		TaskBulkEditData bulkEditData = new TaskBulkEditData();
-		BulkTaskDataForm form = new BulkTaskDataForm();
+		BulkTaskDataForm form = new BulkTaskDataForm(district);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
@@ -203,10 +242,10 @@ public class TaskController {
 				if (form.getPriorityCheckbox().getValue()) {
 					dto.setPriority(updatedBulkEditData.getTaskPriority());
 				}
-				if (form.getReassignedToCheckbox().getValue()) {
-					dto.setAssigneeUser(updatedBulkEditData.getTaskReassignedTo());
+				if (form.getAssigneeCheckbox().getValue()) {
+					dto.setAssigneeUser(updatedBulkEditData.getTaskAssignee());
 				}
-				if (form.getTaskStatusCheckbox().getValue()){
+				if (form.getTaskStatusCheckbox().getValue()) {
 					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());
 				}
 
@@ -217,5 +256,65 @@ public class TaskController {
 		});
 
 		editView.addDiscardListener(popupWindow::close);
+	}
+
+	public void archiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmArchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveTasks), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue()) {
+						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+						FacadeProvider.getTaskFacade().updateArchived(caseUuids, true);
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingTasksArchived),
+							I18nProperties.getString(Strings.messageTasksArchived),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				});
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmDearchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveTasks), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue() == true) {
+						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+						FacadeProvider.getTaskFacade().updateArchived(caseUuids, false);
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingTasksDearchived),
+							I18nProperties.getString(Strings.messageTasksDearchived),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				});
+		}
 	}
 }

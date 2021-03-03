@@ -7092,4 +7092,10 @@ ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DE
 
 INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
 
+-- 2020-03-03 Add archived to task #3430
+ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (356, 'Add archived to task #3430');
+
 -- *** Insert new sql commands BEFORE this line ***

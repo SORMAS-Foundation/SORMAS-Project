@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +27,11 @@ import java.util.Random;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -215,7 +220,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), taskCriteria.getCaze().getUuid()));
@@ -224,7 +230,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
 		}
 		if (taskCriteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
@@ -249,6 +256,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb,
 					filter,
 					cb.or(
+						cb.isTrue(from.get(Task.ARCHIVED)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true))));
@@ -330,17 +338,19 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
 
-		return cb.or(
-			cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-				cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-				cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))));
+		return cb.and(
+			cb.isFalse(from.get(Task.ARCHIVED)),
+			cb.or(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+					cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+					cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+					cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))))));
 	}
 
 	public Task buildTask(User creatorUser) {
@@ -397,5 +407,20 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		return assignee;
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateArchived(List<String> taskUuids, boolean archived) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Task> cu = cb.createCriteriaUpdate(Task.class);
+		Root<Task> root = cu.from(Task.class);
+
+		cu.set(Task.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Task.ARCHIVED), archived);
+
+		cu.where(root.get(Task.UUID).in(taskUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }
