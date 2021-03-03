@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.databuilder;
+package de.symeda.sormas.backend.sormastosormas;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,8 +42,6 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -80,12 +78,16 @@ public class ShareDataBuilderHelper {
 	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
 
+		pseudonymiePerson(options, personDto);
+
+		return personDto;
+	}
+
+	public void pseudonymiePerson(SormasToSormasOptionsDto options, PersonDto personDto) {
 		if (options.isPseudonymizePersonalData() || options.isPseudonymizeSensitiveData()) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
-
-		return personDto;
 	}
 
 	public ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {

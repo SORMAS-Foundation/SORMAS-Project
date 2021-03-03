@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.dataprocessor;
+package de.symeda.sormas.backend.sormastosormas.contact;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
@@ -28,26 +28,27 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
-import de.symeda.sormas.backend.sormastosormas.ProcessedContactData;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
 
 @Stateless
 @LocalBean
-public class SharedContactProcessor implements SharedDataProcessor<SormasToSormasContactDto, ProcessedContactData> {
+public class SharedContactProcessor implements SharedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> {
 
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
 
+	@Override
 	public ProcessedContactData processSharedData(SormasToSormasContactDto sharedContact) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = sharedContact.getPerson();
-		ContactDto contact = sharedContact.getContact();
+		ContactDto contact = sharedContact.getEntity();
 		List<SormasToSormasSampleDto> samples = sharedContact.getSamples();
 		SormasToSormasOriginInfoDto originInfo = sharedContact.getOriginInfo();
 
