@@ -269,7 +269,7 @@ public class CampaignFormBuilder {
 		return Integer.parseInt(colStyle.substring(colStyle.indexOf("-") + 1)) / 12f * 100;
 	}
 
-	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
+	public  <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
@@ -320,7 +320,7 @@ public class CampaignFormBuilder {
 		}
 	}
 
-	private String get18nCaption(String elementId, String defaultCaption) {
+	public String get18nCaption(String elementId, String defaultCaption) {
 		if (userTranslations != null && userTranslations.containsKey(elementId)) {
 			return userTranslations.get(elementId);
 		}
@@ -352,4 +352,11 @@ public class CampaignFormBuilder {
 		});
 	}
 
+	public List<CampaignFormElement> getFormElements() {
+		return formElements;
+	}
+
+	public Map<String, Field<?>> getFields() {
+		return fields;
+	}
 }
