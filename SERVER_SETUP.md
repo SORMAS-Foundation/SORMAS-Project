@@ -5,18 +5,13 @@
 ## Content
 - [Installing a SORMAS Server](#installing-a-sormas-server)
   - [Content](#content)
-- [- SORMAS Server](#--sormas-server)
-- [<<<<<<< HEAD](#-head)
   - [Related](#related)
   - [Prerequisites](#prerequisites)
     - [Java 11](#java-11)
-- [* **Linux**:](#-linux)
       - [Linux](#linux)
-- [* You can check your Java version from the shell/command line using: ``java -version``](#-you-can-check-your-java-version-from-the-shellcommand-line-using-java--version)
       - [Windows](#windows)
     - [Postgres Database](#postgres-database)
   - [SORMAS Server](#sormas-server)
-- [* Open Git Bash and navigate to the setup sub-directory](#-open-git-bash-and-navigate-to-the-setup-sub-directory)
     - [Install on Linux](#install-on-linux)
     - [Install on Windows](#install-on-windows)
     - [Post-Installation Configuration](#post-installation-configuration)
@@ -31,38 +26,6 @@
     - [Postfix Mail Server](#postfix-mail-server)
       - [Install postfix and mailutils](#install-postfix-and-mailutils)
       - [Configure your system](#configure-your-system)
-    - [Testing the Server Setup](#testing-the-server-setup)
-  - [R Software Environment](#r-software-environment)
-  - [SORMAS to SORMAS Certificate Setup](#sormas-to-sormas-certificate-setup)
-  - [Troubleshooting](#troubleshooting)
-    - [Problem: Login fails](#problem-login-fails)
-    - [Problem: Server is out of memory](#problem-server-is-out-of-memory)
-<<<<<<< HEAD
-    - [Postgres Database](#postgres-database)
-  - [SORMAS Server](#sormas-server)
-=======
-      - [Linux](#linux)
-      - [Windows](#windows)
-    - [Postgres Database](#postgres-database)
-  - [SORMAS Server](#sormas-server)
-    - [Install on Linux](#install-on-linux)
-    - [Install on Windows](#install-on-windows)
-    - [Post-Installation Configuration](#post-installation-configuration)
->>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
-  - [Keycloak Server](#keycloak-server)
-    - [Keycloak as a Docker container](#keycloak-as-a-docker-container)
-    - [Keycloak as a standalone installation](#keycloak-as-a-standalone-installation)
-    - [Connect Keycloak to an already running instance of SORMAS](#connect-keycloak-to-an-already-running-instance-of-sormas)
-    - [Keycloak configuration](#keycloak-configuration)
-  - [Web Server Setup](#web-server-setup)
-    - [Apache Web Server](#apache-web-server)
-    - [Firewall](#firewall)
-    - [Postfix Mail Server](#postfix-mail-server)
-<<<<<<< HEAD
-=======
-      - [Install postfix and mailutils](#install-postfix-and-mailutils)
-      - [Configure your system](#configure-your-system)
->>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
     - [Testing the Server Setup](#testing-the-server-setup)
   - [R Software Environment](#r-software-environment)
   - [SORMAS to SORMAS Certificate Setup](#sormas-to-sormas-certificate-setup)
@@ -79,31 +42,21 @@
 
 ### Java 11
 
-<<<<<<< HEAD
-* Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
-  * **[Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)**:
-=======
 Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest using the [Zulu OpenJDK](https://www.azul.com/downloads/zulu/).
 
 #### [Linux](https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm)
 
->>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 ```bash
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
 sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
 sudo apt-get update
 sudo apt-get install zulu11
 ```
-<<<<<<< HEAD
-  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
-* You can check your Java version from the shell/command line using: ``java -version``
-=======
 
 #### Windows
 
 For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 You can check your Java version from the shell/command line using: ``java -version``.
->>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 
 ### Postgres Database
 
@@ -126,24 +79,6 @@ sudo pgxn install temporal_tables
 
 ## SORMAS Server
 
-<<<<<<< HEAD
-* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
-* **Linux**:
-  * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
-        ```bash
-        cd /root/deploy/sormas
-        SORMAS_VERSION=1.y.z
-        wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
-        unzip sormas_${SORMAS_VERSION}.zip
-        mv deploy/ $(date +%F)
-        rm sormas_${SORMAS_VERSION}.zip
-        chmod +x $(date +%F)/server-setup.sh
-        ```
-* **Windows**:
-  * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: <https://gitforwindows.org/>
-  * Unzip the ZIP archive (e.g. into you download directory)
-  * Open Git Bash and navigate to the setup sub-directory
-=======
 Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
 
 ### Install on Linux
@@ -168,7 +103,6 @@ chmod +x $(date +%F)/server-setup.sh
 
 ### Post-Installation Configuration
 
->>>>>>> 6f50394d0 ([#4568] Add reformatted markdown files)
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
