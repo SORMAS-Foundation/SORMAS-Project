@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -198,6 +197,11 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
+		if (!configFacade.isCreateDefaultEntities()) {
+			// return if isCreateDefaultEntities() is false
+			logger.info("Skipping the creation of default infrastructure data");
+			return;
+		}
 
 		// Region
 		Region region = null;
@@ -315,9 +319,9 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
-			if (!configFacade.isCreateDefaultUsers()) {
-				// return if getCreateDefaultUsers() is false
-				logger.info("Skipping the creation of default users");
+			if (!configFacade.isCreateDefaultEntities()) {
+				// return if isCreateDefaultEntities() is false
+				logger.info("Skipping the creation of default entities");
 				return;
 			}
 
@@ -436,7 +440,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",

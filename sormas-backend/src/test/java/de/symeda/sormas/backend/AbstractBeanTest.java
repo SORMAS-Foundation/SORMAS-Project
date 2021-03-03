@@ -69,6 +69,9 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -142,6 +145,9 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -449,6 +455,18 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
+		return getBean(SormasToSormasCaseFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasContactFacade getSormasToSormasContactFacade() {
+		return getBean(SormasToSormasContactFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasEventFacade getSormasToSormasEventFacade() {
+		return getBean(SormasToSormasEventFacadeEjbLocal.class);
 	}
 
 	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {

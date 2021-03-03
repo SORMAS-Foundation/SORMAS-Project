@@ -56,13 +56,14 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class CaseDataDto extends PseudonymizableDto {
+public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 
@@ -1571,10 +1572,12 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
+	@Override
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
@@ -1635,6 +1638,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
+	@Override
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}
