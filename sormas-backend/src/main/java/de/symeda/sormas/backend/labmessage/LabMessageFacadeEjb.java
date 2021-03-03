@@ -268,7 +268,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return labResultsFacade.getExternalLabMessages(since);
 	}
 
-	private SystemEventDto initializeFetchEvent() {
+	protected SystemEventDto initializeFetchEvent() {
 		Date start = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
@@ -278,7 +278,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return systemEvent;
 	}
 
-	private Date initializeLastUpdateDate() {
+	protected Date initializeLastUpdateDate() {
 		SystemEventDto latestSuccess = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 		Long millis;
 		if (latestSuccess != null) {

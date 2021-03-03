@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -17,12 +18,17 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.utils.DateHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
@@ -130,4 +136,46 @@ public class LabMessageFacadeEjbTest {
 		LabMessageDto result = sut.getByUuid(testUuid);
 		assertEquals(sut.toDto(labMessage), result);
 	}
+
+	@Test
+	public void testInitializeUpdateDateWithNoPreviousSuccess() {
+		assertEquals(sut.initializeLastUpdateDate(), new Date(0));
+	}
+
+	@Test
+	public void testInitializeUpdateDateWithPreviousSuccessAndParseableDetails() {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		Date first = new Date(100, 0, 1);
+		Date second = new Date(100, 0, 2);
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
+		systemEvent.setStartDate(second);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(sut.initializeLastUpdateDate(), first);
+	}
+
+	@Test
+	public void testInitializeUpdateDateWithPreviousSuccessAndNotParseableDetails() {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		Date date = new Date(100, 0, 1);
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setAdditionalInfo("The cake is a lie");
+		systemEvent.setStartDate(date);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(sut.initializeLastUpdateDate(), date);
+	}
+
+	@Test
+	public void initializeFetchEventTest() {
+		MockedStatic mock = Mockito.mockStatic(DateHelper.class);
+		mock.when(DateHelper::now).thenReturn(1000L);
+		SystemEventDto systemEventDto = sut.initializeFetchEvent();
+		assertEquals(systemEventDto.getStartDate(), new Date(1000L));
+		assertEquals(systemEventDto.getAdditionalInfo(), null); // must be null for parsing the notification last update date
+		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);
+		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_LAB_MESSAGES);
+	}
+
 }
