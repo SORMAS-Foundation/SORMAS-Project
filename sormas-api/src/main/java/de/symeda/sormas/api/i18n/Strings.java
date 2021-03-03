@@ -106,6 +106,7 @@ public interface Strings {
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
+	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";

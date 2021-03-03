@@ -17,28 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.io.Serializable;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.AreaType;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Order;
 
-public class FacilityDto extends EntityDto {
+public class FacilityExportDto implements Serializable {
 
-	private static final long serialVersionUID = -7987228795475507196L;
+	public static final String I18N_PREFIX = "FacilityExport";
 
-	public static final String I18N_PREFIX = "Facility";
-	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
-	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
-	public static final List<String> CONSTANT_FACILITY_UUIDS = Arrays.asList(OTHER_FACILITY_UUID, NONE_FACILITY_UUID);
-	public static final String OTHER_FACILITY = "OTHER_FACILITY";
-	public static final String NO_FACILITY = "NO_FACILITY";
-	public static final String CONFIGURED_FACILITY = "CONFIGURED_FACILITY";
+	public static final String UUID = "uuid";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -51,14 +39,15 @@ public class FacilityDto extends EntityDto {
 	public static final String AREA_TYPE = "areaType";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
-	public static final String TYPE_GROUP = "typeGroup";
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
+	private String uuid;
 	private String name;
-	private RegionReferenceDto region;
-	private DistrictReferenceDto district;
-	private CommunityReferenceDto community;
+	private FacilityType type;
+	private String region;
+	private String district;
+	private String community;
 	private String city;
 	private String postalCode;
 	private String street;
@@ -67,26 +56,15 @@ public class FacilityDto extends EntityDto {
 	private AreaType areaType;
 	private Double latitude;
 	private Double longitude;
-	private FacilityType type;
-	private boolean publicOwnership;
-	private boolean archived;
 	private String externalID;
 
-	public FacilityDto(
-		Date creationDate,
-		Date changeDate,
+	public FacilityExportDto(
 		String uuid,
-		boolean archived,
 		String name,
-		String regionUuid,
-		String regionName,
-		String regionExternalId,
-		String districtUuid,
-		String districtName,
-		String districtExternalId,
-		String communityUuid,
-		String communityName,
-		String communityExternalId,
+		FacilityType type,
+		String region,
+		String district,
+		String community,
 		String city,
 		String postalCode,
 		String street,
@@ -95,22 +73,14 @@ public class FacilityDto extends EntityDto {
 		AreaType areaType,
 		Double latitude,
 		Double longitude,
-		FacilityType type,
-		boolean publicOwnership,
 		String externalID) {
 
-		super(creationDate, changeDate, uuid);
-		this.archived = archived;
+		this.uuid = uuid;
 		this.name = name;
-		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
-		}
-		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName, districtExternalId);
-		}
-		if (communityUuid != null) {
-			this.community = new CommunityReferenceDto(communityUuid, communityName, communityExternalId);
-		}
+		this.type = type;
+		this.region = region;
+		this.district = district;
+		this.community = community;
 		this.city = city;
 		this.postalCode = postalCode;
 		this.street = street;
@@ -119,15 +89,19 @@ public class FacilityDto extends EntityDto {
 		this.areaType = areaType;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.type = type;
-		this.publicOwnership = publicOwnership;
 		this.externalID = externalID;
 	}
 
-	public FacilityDto() {
-		super();
+	@Order(0)
+	public String getUuid() {
+		return uuid;
 	}
 
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Order(1)
 	public String getName() {
 		return name;
 	}
@@ -136,94 +110,7 @@ public class FacilityDto extends EntityDto {
 		this.name = name;
 	}
 
-	public RegionReferenceDto getRegion() {
-		return region;
-	}
-
-	public void setRegion(RegionReferenceDto region) {
-		this.region = region;
-	}
-
-	public DistrictReferenceDto getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(DistrictReferenceDto district) {
-		this.district = district;
-	}
-
-	public CommunityReferenceDto getCommunity() {
-		return community;
-	}
-
-	public void setCommunity(CommunityReferenceDto community) {
-		this.community = community;
-	}
-
-	public Double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-
-	public Double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public String getHouseNumber() {
-		return houseNumber;
-	}
-
-	public void setHouseNumber(String houseNumber) {
-		this.houseNumber = houseNumber;
-	}
-
-	public String getAdditionalInformation() {
-		return additionalInformation;
-	}
-
-	public void setAdditionalInformation(String additionalInformation) {
-		this.additionalInformation = additionalInformation;
-	}
-
-	public AreaType getAreaType() {
-		return areaType;
-	}
-
-	public void setAreaType(AreaType areaType) {
-		this.areaType = areaType;
-	}
-
+	@Order(2)
 	public FacilityType getType() {
 		return type;
 	}
@@ -232,42 +119,111 @@ public class FacilityDto extends EntityDto {
 		this.type = type;
 	}
 
-	public boolean isPublicOwnership() {
-		return publicOwnership;
+	@Order(3)
+	public String getRegion() {
+		return region;
 	}
 
-	public void setPublicOwnership(boolean publicOwnership) {
-		this.publicOwnership = publicOwnership;
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
-	public boolean isArchived() {
-		return archived;
+	@Order(4)
+	public String getDistrict() {
+		return district;
 	}
 
-	public void setArchived(boolean archived) {
-		this.archived = archived;
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 
-	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString(), externalID);
+	@Order(5)
+	public String getCommunity() {
+		return community;
 	}
 
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
+	@Order(6)
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	@Order(7)
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	@Order(8)
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Order(9)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	@Order(10)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	@Order(11)
+	public AreaType getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
+
+	@Order(12)
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	@Order(13)
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	@Order(14)
 	public String getExternalID() {
 		return externalID;
 	}
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
-	}
-
-	@Override
-	public String toString() {
-		return FacilityHelper.buildFacilityString(getUuid(), name);
-	}
-
-	public static FacilityDto build() {
-		FacilityDto dto = new FacilityDto();
-		dto.setUuid(DataHelper.createUuid());
-		return dto;
 	}
 }

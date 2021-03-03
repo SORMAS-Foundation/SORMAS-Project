@@ -46,7 +46,9 @@ import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityExportDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.facility.FacilityIndexDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -210,6 +212,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			community.get(Community.NAME),
 			community.get(Community.EXTERNAL_ID),
 			root.get(Facility.CITY),
+			root.get(Facility.POSTAL_CODE),
+			root.get(Facility.STREET),
+			root.get(Facility.HOUSE_NUMBER),
+			root.get(Facility.ADDITIONAL_INFORMATION),
+			root.get(Facility.AREA_TYPE),
 			root.get(Facility.LATITUDE),
 			root.get(Facility.LONGITUDE),
 			root.get(Facility.TYPE),
@@ -383,6 +390,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
 		dto.setCity(entity.getCity());
+		dto.setPostalCode(entity.getPostalCode());
+		dto.setStreet(entity.getStreet());
+		dto.setHouseNumber(entity.getHouseNumber());
+		dto.setAdditionalInformation(entity.getAdditionalInformation());
+		dto.setAreaType(entity.getAreaType());
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
@@ -398,10 +410,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<FacilityIndexDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
+		CriteriaQuery<FacilityIndexDto> cq = cb.createQuery(FacilityIndexDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
 		Join<Facility, Region> region = facility.join(Facility.REGION, JoinType.LEFT);
 		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
@@ -457,19 +469,71 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				cb.asc(facility.get(Facility.NAME)));
 		}
 
-		cq.select(facility);
+		cq.multiselect(
+			facility.get(Facility.UUID),
+			facility.get(Facility.NAME),
+			facility.get(Facility.TYPE),
+			region.get(Region.UUID),
+			region.get(Region.NAME),
+			district.get(District.UUID),
+			district.get(District.NAME),
+			community.get(Community.UUID),
+			community.get(Community.NAME),
+			facility.get(Facility.CITY),
+			facility.get(Facility.LATITUDE),
+			facility.get(Facility.LONGITUDE),
+			facility.get(Facility.EXTERNAL_ID));
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		return first != null && max != null
+			? em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList()
+			: em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FacilityExportDto> cq = cb.createQuery(FacilityExportDto.class);
+		Root<Facility> facility = cq.from(Facility.class);
+		Join<Facility, Region> region = facility.join(Facility.REGION, JoinType.LEFT);
+		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
+		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
+
+		cq.multiselect(
+			facility.get(Facility.UUID),
+			facility.get(Facility.NAME),
+			facility.get(Facility.TYPE),
+			region.get(Region.NAME),
+			district.get(District.NAME),
+			community.get(Community.NAME),
+			facility.get(Facility.CITY),
+			facility.get(Facility.POSTAL_CODE),
+			facility.get(Facility.STREET),
+			facility.get(Facility.HOUSE_NUMBER),
+			facility.get(Facility.ADDITIONAL_INFORMATION),
+			facility.get(Facility.AREA_TYPE),
+			facility.get(Facility.LATITUDE),
+			facility.get(Facility.LONGITUDE),
+			facility.get(Facility.EXTERNAL_ID));
+
+		Predicate filter = cb.and(
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
+
+		if (facilityCriteria != null) {
+			Predicate criteriaFilter = facilityService.buildCriteriaFilter(facilityCriteria, cb, facility);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+
+		cq.where(filter);
+		cq.orderBy(
+			cb.asc(region.get(Region.NAME)),
+			cb.asc(district.get(District.NAME)),
+			cb.asc(community.get(Community.NAME)),
+			cb.asc(facility.get(Facility.NAME)));
+
+		return first != null && max != null
+			? em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList()
+			: em.createQuery(cq).getResultList();
 	}
 
 	@Override
@@ -536,6 +600,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 
 		target.setCity(source.getCity());
+		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAreaType(source.getAreaType());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 

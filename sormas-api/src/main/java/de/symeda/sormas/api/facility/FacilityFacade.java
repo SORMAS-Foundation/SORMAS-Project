@@ -32,7 +32,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface FacilityFacade {
 
-	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<FacilityIndexDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
 
 	long count(FacilityCriteria criteria);
 
