@@ -39,7 +39,7 @@ public class ExternalMessageResult<T> implements Serializable {
 	}
 
 	public boolean isSuccess() {
-d		return success;
+		return success;
 	}
 
 	public void setSuccess(boolean success) {

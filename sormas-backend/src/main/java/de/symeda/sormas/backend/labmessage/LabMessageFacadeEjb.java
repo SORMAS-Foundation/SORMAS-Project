@@ -253,8 +253,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			if (externalMessageResult.getValue() != null) {
 				externalMessageResult.getValue().forEach(this::save);
 			}
-			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().toString();
-			systemEventFacade.reportSuccess(currentSystemEvent, new Date(DateHelper.now()));
+			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().getTime();
+			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date(DateHelper.now()));
 			return fetchResult;
 		} else {
 			throw new CannotProceedException(externalMessageResult.getError());

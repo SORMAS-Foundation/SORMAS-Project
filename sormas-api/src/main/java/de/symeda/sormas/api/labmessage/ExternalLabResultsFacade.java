@@ -7,6 +7,11 @@ import java.util.List;
 @Remote
 public interface ExternalLabResultsFacade {
 
+	/**
+	 * 
+	 * @param since
+	 * @return LabMessages that are new or have changed since
+	 */
 	ExternalMessageResult<List<LabMessageDto>> getExternalLabMessages(Date since);
 
 	/**
