@@ -6747,4 +6747,10 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_ev
 
 INSERT INTO schema_version (version_number, comment) VALUES (338, '[SORMAS 2 SORMAS] Send and receive Events #4348');
 
+-- 2021-02-28 Add optional translation to CampaignDiagramDefinition #4090
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaigndiagramtranslations json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add optional translation to CampaignDiagramDefinition #4090');
+
 -- *** Insert new sql commands BEFORE this line ***
