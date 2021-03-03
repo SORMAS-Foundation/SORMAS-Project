@@ -18,12 +18,10 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
@@ -201,7 +199,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-			ExternalJournalUtil.getExternalJournalUiComponent(casePerson).ifPresent(getButtonsLayout()::addComponent);
+			ExternalJournalUtil.getExternalJournalUiButton(casePerson).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
 

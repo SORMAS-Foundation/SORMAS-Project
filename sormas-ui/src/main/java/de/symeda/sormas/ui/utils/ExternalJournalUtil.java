@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
@@ -8,6 +9,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -25,6 +27,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,14 +43,14 @@ public class ExternalJournalUtil {
 	private final static ExternalJournalFacade externalJournalFacade = FacadeProvider.getExternalJournalFacade();
 
 	/**
-	 * Creates a Component to be added wherever a patient needs to be managed by an external journal.
+	 * Creates a Button to be added wherever a patient needs to be managed by an external journal.
 	 * If no external journal is enabled with the current settings, an empty optional is returned.
 	 * If the person is not registered in the external journal, a create account/register button is returned
-	 * If the person is registered, a dropdown is returned which contains further options.
+	 * If the person is registered, a button is returned which opens a popup with further options.
 	 * @param person person to be managed by the external journal
-	 * @return Optional containing appropriate Component
+	 * @return Optional containing appropriate Button
 	 */
-	public static Optional<Component> getExternalJournalUiComponent(PersonDto person) {
+	public static Optional<Button> getExternalJournalUiButton(PersonDto person) {
 		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createPiaOptionsButton(person));
@@ -66,8 +69,17 @@ public class ExternalJournalUtil {
 		return Optional.empty();
 	}
 
-	private static ComboBox createPiaOptionsButton(PersonDto person) {
-		return null;
+	private static Button createPiaOptionsButton(PersonDto person) {
+		VerticalLayout popupLayout = new VerticalLayout();
+		popupLayout.setSpacing(true);
+		popupLayout.setMargin(true);
+		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton("CLIMEDO", popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton("cancel", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton("open", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		popupLayout.addComponent(cancelButton);
+		popupLayout.addComponent(openButton);
+		return ediaryButton;
 	}
 
 
@@ -78,15 +90,17 @@ public class ExternalJournalUtil {
 		return btnCreatePIAAccount;
 	}
 
-	private static ComboBox createClimedoOptionsButton(PersonDto person) {
-		Button btnCancelFollowUp = new Button("cancel");
-		CssStyles.style(btnCancelFollowUp, ValoTheme.BUTTON_PRIMARY);
-		Button btnOpenClimedoPage = new Button("open");
-		CssStyles.style(btnCancelFollowUp, ValoTheme.BUTTON_PRIMARY);
-		ComboBoxWithPlaceholder comboBox = new ComboBoxWithPlaceholder();
-		comboBox.setPlaceholder("climedo");
-		comboBox.addItems(btnCancelFollowUp.getId(), btnOpenClimedoPage.getId());
-		return comboBox;
+	private static Button createClimedoOptionsButton(PersonDto person) {
+		VerticalLayout popupLayout = new VerticalLayout();
+		popupLayout.setSpacing(true);
+		popupLayout.setMargin(true);
+		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton("CLIMEDO", popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton("cancel", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton("open", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		popupLayout.addComponent(cancelButton);
+		popupLayout.addComponent(openButton);
+		return ediaryButton;
 	}
 
 	private static Button createClimedoRegisterButton(PersonDto person) {
