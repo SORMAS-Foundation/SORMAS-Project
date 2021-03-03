@@ -329,6 +329,7 @@
                     app:value="@{data.srcFirstName}"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -337,6 +338,7 @@
                     app:value="@{data.srcLastName}"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     />
 
             </LinearLayout>
@@ -352,6 +354,7 @@
                     app:value="@{data.srcTelNo}"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -360,6 +363,7 @@
                     app:value="@{data.srcEmail}"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     />
 
             </LinearLayout>

@@ -29,6 +29,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
 	public static final String WITH_SAMPLES = "withSamples";
+	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
 
 	private ServerAccessDataReferenceDto organization;
 
@@ -43,6 +44,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean withAssociatedContacts;
 
 	private boolean withSamples;
+
+	private boolean withEventParticipants;
 
 	public ServerAccessDataReferenceDto getOrganization() {
 		return organization;
@@ -98,5 +101,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setWithSamples(boolean withSamples) {
 		this.withSamples = withSamples;
+	}
+
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
 	}
 }

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -36,6 +37,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
@@ -51,6 +53,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -67,6 +70,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -179,12 +183,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 		});
 
-		addField(LocationDto.STREET, TextField.class);
-		addField(LocationDto.HOUSE_NUMBER, TextField.class);
-		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
+		TextField streetField = addField(LocationDto.STREET, TextField.class);
+		TextField houseNumberField = addField(LocationDto.HOUSE_NUMBER, TextField.class);
+		TextField additionalInformationField = addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
 		addField(LocationDto.DETAILS, TextField.class);
-		addField(LocationDto.CITY, TextField.class);
-		addField(LocationDto.POSTAL_CODE, TextField.class);
+		TextField cityField = addField(LocationDto.CITY, TextField.class);
+		TextField postalCodeField = addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
@@ -314,6 +318,59 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				facilityDetails.setRequired(false);
 				facilityDetails.clear();
 			}
+
+			// Fill in the address fields based on the selected facility
+			// We don't want the location form to automatically change even if the facility's address is updated later 
+			// on, so we only trigger it upon a manual change of the facility field
+			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
+			// necessary because isModified() will still return true for a short duration even if we keep the very same 
+			// value because of this field dependencies to other fields and the way updateEnumValues works
+			if (facility.isAttached()) {
+				if (facility.getValue() != null) {
+					FacilityDto facilityDto =
+						FacadeProvider.getFacilityFacade().getByUuid(((FacilityReferenceDto) getField(LocationDto.FACILITY).getValue()).getUuid());
+
+					// Only if the facility's address is set
+					if (StringUtils.isNotEmpty(facilityDto.getCity())
+						|| StringUtils.isNotEmpty(facilityDto.getPostalCode())
+						|| StringUtils.isNotEmpty(facilityDto.getStreet())
+						|| StringUtils.isNotEmpty(facilityDto.getHouseNumber())
+						|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
+						|| facilityDto.getAreaType() != null
+						|| facilityDto.getLatitude() != null
+						|| facilityDto.getLongitude() != null) {
+
+						// Show a confirmation popup if the location's address is already set and different from the facility one
+						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
+							|| (StringUtils.isNotEmpty(postalCodeField.getValue()) && !postalCodeField.getValue().equals(facilityDto.getPostalCode()))
+							|| (StringUtils.isNotEmpty(streetField.getValue()) && !streetField.getValue().equals(facilityDto.getStreet()))
+							|| (StringUtils.isNotEmpty(houseNumberField.getValue())
+								&& !houseNumberField.getValue().equals(facilityDto.getHouseNumber()))
+							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
+								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
+							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
+							|| (tfLatitude.getConvertedValue() != null
+								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
+							|| (tfLongitude.getConvertedValue() != null
+								&& Double.compare((Double) tfLongitude.getConvertedValue(), facilityDto.getLongitude()) != 0)) {
+
+							VaadinUiUtil.showConfirmationPopup(
+								I18nProperties.getString(Strings.headingLocation),
+								new Label(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride)),
+								I18nProperties.getString(Strings.yes),
+								I18nProperties.getString(Strings.no),
+								640,
+								confirmationEvent -> {
+									if (confirmationEvent) {
+										overrideLocationDetailsWithFacilityOnes(facilityDto);
+									}
+								});
+						} else {
+							overrideLocationDetailsWithFacilityOnes(facilityDto);
+						}
+					}
+				}
+			}
 		});
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -343,6 +400,17 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			LocationDto.FACILITY_DETAILS,
 			LocationDto.FACILITY_TYPE);
 		facilityTypeGroup.setEnabled(isEnabled);
+	}
+
+	private void overrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
+		((TextField) getField(LocationDto.CITY)).setValue(facilityDto.getCity());
+		((TextField) getField(LocationDto.POSTAL_CODE)).setValue(facilityDto.getPostalCode());
+		((TextField) getField(LocationDto.STREET)).setValue(facilityDto.getStreet());
+		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
+		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
+		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
+		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
+		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
 
 	private void setOldFacilityValuesIfPossible(

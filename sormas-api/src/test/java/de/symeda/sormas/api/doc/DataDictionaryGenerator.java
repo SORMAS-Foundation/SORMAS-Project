@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.event.EventActionIndexDto;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -92,6 +95,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX);
 		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 		createEntitySheet(workbook, HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
+		createEntitySheet(workbook, SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX);
 		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX);
 		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX);
@@ -107,6 +111,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
+		createEntitySheet(workbook, ActionDto.class, ActionDto.I18N_PREFIX);
 		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX);
 		createEntitySheet(workbook, CountryDto.class, CountryDto.I18N_PREFIX);
 		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX);
