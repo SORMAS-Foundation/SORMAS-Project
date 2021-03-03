@@ -58,7 +58,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
+		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Event);
 		eventValidationErrors.addAll(originInfoErrors);
 
 		ValidationErrors eventErrors = processEventData(event);
@@ -88,7 +88,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 	}
 
 	private ValidationErrors processEventData(EventDto event) {
-		ValidationErrors caseValidationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors();
 
 		event.setReportingUser(userService.getCurrentUser().toReference());
 		event.setResponsibleUser(userService.getCurrentUser().toReference());
@@ -105,14 +105,14 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 				null,
 				null);
 
-		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
 			eventLocation.setRegion(infrastructureData.getRegion());
 			eventLocation.setDistrict(infrastructureData.getDistrict());
 			eventLocation.setCommunity(infrastructureData.getCommunity());
 			eventLocation.setFacility(infrastructureData.getFacility());
 		});
 
-		return caseValidationErrors;
+		return validationErrors;
 	}
 
 	private Map<String, ValidationErrors> processEventParticipants(List<EventParticipantDto> eventParticipants) {

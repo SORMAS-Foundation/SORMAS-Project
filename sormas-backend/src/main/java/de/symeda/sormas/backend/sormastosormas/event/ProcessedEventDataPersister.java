@@ -102,11 +102,11 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
 		persistProcessedData(processedData, (event) -> {
-			SormasToSormasOriginInfoDto contactOriginInfo = event.getSormasToSormasOriginInfo();
-			contactOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
-			contactOriginInfo.setComment(originInfo.getComment());
+			SormasToSormasOriginInfoDto eventOriginInfo = event.getSormasToSormasOriginInfo();
+			eventOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+			eventOriginInfo.setComment(originInfo.getComment());
 
-			oriInfoFacade.saveOriginInfo(contactOriginInfo);
+			oriInfoFacade.saveOriginInfo(eventOriginInfo);
 		}, processedDataPersisterHelper::syncedAssociatedEntityCallback, processedDataPersisterHelper::syncedAssociatedEntityCallback);
 	}
 
