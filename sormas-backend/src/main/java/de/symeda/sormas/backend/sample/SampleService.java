@@ -305,6 +305,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
+		User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
+			return filter;
+		}
+
 		if (criteria != null) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {

@@ -70,6 +70,9 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -308,6 +311,18 @@ public class FacadeProvider {
 
 	public static SormasToSormasFacade getSormasToSormasFacade() {
 		return get().lookupEjbRemote(SormasToSormasFacade.class);
+	}
+
+	public static SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
+		return get().lookupEjbRemote(SormasToSormasCaseFacade.class);
+	}
+
+	public static SormasToSormasContactFacade getSormasToSormasContactFacade() {
+		return get().lookupEjbRemote(SormasToSormasContactFacade.class);
+	}
+
+	public static SormasToSormasEventFacade getSormasToSormasEventFacade() {
+		return get().lookupEjbRemote(SormasToSormasEventFacade.class);
 	}
 
 	public static BAGExportFacade getBAGExportFacade() {
