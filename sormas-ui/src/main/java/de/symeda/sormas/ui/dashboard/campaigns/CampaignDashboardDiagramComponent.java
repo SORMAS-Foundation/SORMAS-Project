@@ -435,7 +435,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private CampaignDiagramTranslations getCampaignDiagramTranslations() {
 		Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
 		CampaignDiagramTranslations translations = null;
-		if (userLanguage != null) {
+		if (userLanguage != null && diagramDefinition.getCampaignDiagramTranslations() != null) {
 			translations = diagramDefinition.getCampaignDiagramTranslations()
 				.stream()
 				.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
