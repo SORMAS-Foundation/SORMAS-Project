@@ -56,19 +56,21 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
-			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			excludedOrganizationIds,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			null);
 	}
 
 	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
-		return new SormasToSormasOptionsForm(Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), excludedOrganizationIds, null);
+		return new SormasToSormasOptionsForm(excludedOrganizationIds, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), null);
 	}
 
 	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
-			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			excludedOrganizationIds,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			(form) -> FieldHelper.setVisibleWhen(
 				form.getFieldGroup(),
 				SormasToSormasOptionsDto.WITH_SAMPLES,
@@ -77,13 +79,18 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				true));
 	}
 
+	public static SormasToSormasOptionsForm withoutOptions() {
+		return new SormasToSormasOptionsForm(null, false, null, null);
+	}
+
 	private SormasToSormasOptionsForm(
-		List<String> customOptions,
 		List<String> excludedOrganizationIds,
+		boolean hasOptions,
+		List<String> customOptions,
 		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
-		this.customOptions = customOptions;
+		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
 		this.customFieldDependencies = customFieldDependencies;
 		this.hasOptions = hasOptions;

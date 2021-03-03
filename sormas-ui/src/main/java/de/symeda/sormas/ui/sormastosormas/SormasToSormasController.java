@@ -138,7 +138,7 @@ public class SormasToSormasController {
 		shareHandleShare((options) -> {
 			FacadeProvider.getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
 			callback.run();
-		}, new SormasToSormasOptionsForm(false), new SormasToSormasOptionsDto());
+		}, SormasToSormasOptionsForm.withoutOptions(), new SormasToSormasOptionsDto());
 	}
 
 	private void shareToSormasFromDetailPage(
