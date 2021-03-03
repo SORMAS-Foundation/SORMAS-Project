@@ -74,9 +74,12 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		// TODO: implement cancel for PIA
+		Button.ClickListener cancelListener = clickEvent -> {};
+		Button.ClickListener openListener = clickEvent -> openSymptomJournalWindow(person);
 		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.piaOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPiaButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPiaButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
@@ -86,7 +89,7 @@ public class ExternalJournalUtil {
 	private static Button createPiaRegisterButton(PersonDto person) {
 		Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.createPiaAccountButton));
 		CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-		btnCreatePIAAccount.addClickListener(e -> ExternalJournalUtil.openSymptomJournalWindow(person));
+		btnCreatePIAAccount.addClickListener(clickEvent -> openSymptomJournalWindow(person));
 		return btnCreatePIAAccount;
 	}
 
@@ -95,9 +98,11 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		Button.ClickListener cancelListener = clickEvent -> cancelClimedoFollowUp(person);
+		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
 		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.climedoOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInClimedoButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInClimedoButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
@@ -106,7 +111,7 @@ public class ExternalJournalUtil {
 	private static Button createClimedoRegisterButton(PersonDto person) {
 		Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.registerInClimedoButton));
 		CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-		btnClimedoAccount.addClickListener(e -> ExternalJournalUtil.onPatientDiaryButtonClick(person));
+		btnClimedoAccount.addClickListener(clickEvent -> enrollPatientInPatientDiary(person));
 		return btnClimedoAccount;
 	}
 
@@ -117,7 +122,7 @@ public class ExternalJournalUtil {
 	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
 	 * 3. The form is automatically submitted and replaced by the iFrame
 	 */
-	public static void openSymptomJournalWindow(PersonDto person) {
+	private static void openSymptomJournalWindow(PersonDto person) {
 		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
 			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
@@ -162,16 +167,13 @@ public class ExternalJournalUtil {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	/**
-	 * If the person is already registered in CLIMEDO, opens the CLIMEDO page corresponding to the person
-	 * Else attempts to register the given person as a new patient in CLIMEDO and displays the result in a popup
-	 */
-	public static void onPatientDiaryButtonClick(PersonDto person) {
-		if (person.isEnrolledInExternalJournal()) {
-			openPatientDiaryPage(person.getUuid());
-		} else {
-			enrollPatientInPatientDiary(person);
-		}
+	private static void cancelClimedoFollowUp(PersonDto personDto) {
+		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.cancelExternalFollowUpPopupTitle),
+				new Label(I18nProperties.getString(Strings.confirmationCancelExternalFollowUpPopup)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				600,
+				result -> {});
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {

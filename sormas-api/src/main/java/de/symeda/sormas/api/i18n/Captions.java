@@ -199,6 +199,7 @@ public interface Captions {
 	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
 	String cancelExternalFollowUpButton = "cancelExternalFollowUpButton";
+	String cancelExternalFollowUpPopupTitle = "cancelExternalFollowUpPopupTitle";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";

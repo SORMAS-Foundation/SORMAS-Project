@@ -65,6 +65,7 @@ public interface Strings {
 	String confirmationArchivePointsOfEntry = "confirmationArchivePointsOfEntry";
 	String confirmationArchiveRegion = "confirmationArchiveRegion";
 	String confirmationArchiveRegions = "confirmationArchiveRegions";
+	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
