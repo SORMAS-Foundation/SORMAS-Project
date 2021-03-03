@@ -245,7 +245,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Transactional
-	private LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
+	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
 		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
 		Date since = initializeLastUpdateDate();
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
@@ -261,7 +261,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
-	private ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
+	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
 		InitialContext ic = new InitialContext();
 		String jndiName = configFacade.getDemisJndiName();
 		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);

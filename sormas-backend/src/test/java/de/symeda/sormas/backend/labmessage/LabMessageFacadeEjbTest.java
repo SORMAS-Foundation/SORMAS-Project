@@ -1,8 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,11 +60,9 @@ public class LabMessageFacadeEjbTest {
 	@Mock
 	private TypedQuery<LabMessageIndexDto> labMessageIndexDtoTypedQuery;
 	@Mock
-
 	private TypedQuery<Long> longTypedQuery;
 	@Mock
 	private Expression<Long> longExpression;
-
 	@Captor
 	private ArgumentCaptor<List<Order>> orderListArgumentCaptor;
 
@@ -105,14 +101,6 @@ public class LabMessageFacadeEjbTest {
 		verify(labMessageIndexDtoCriteriaQuery).orderBy(orderListArgumentCaptor.capture());
 		assertEquals(2, orderListArgumentCaptor.getValue().size());
 		assertEquals(expectedResult, result);
-	}
-
-	@Test
-	public void fetchAndSaveExternalLabMessages() {
-		// since InitialContext is not mockable, it's hard to do any more testing here.
-		sut.fetchAndSaveExternalLabMessages();
-
-		verify(systemEventFacade, times(2)).saveSystemEvent(any(SystemEventDto.class));
 	}
 
 	@Test
