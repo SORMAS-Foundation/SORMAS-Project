@@ -100,12 +100,6 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
-
-		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-			ExternalJournalUtil.getExternalJournalUiComponent(casePerson).ifPresent(getButtonsLayout()::addComponent);
-		}
 	}
 
 	@Override
@@ -204,6 +198,11 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
+
+		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+			ExternalJournalUtil.getExternalJournalUiComponent(casePerson).ifPresent(getButtonsLayout()::addComponent);
+		}
 	}
 
 	@Override

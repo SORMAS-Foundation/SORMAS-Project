@@ -79,7 +79,14 @@ public class ExternalJournalUtil {
 	}
 
 	private static ComboBox createClimedoOptionsButton(PersonDto person) {
-		return null;
+		Button btnCancelFollowUp = new Button("cancel");
+		CssStyles.style(btnCancelFollowUp, ValoTheme.BUTTON_PRIMARY);
+		Button btnOpenClimedoPage = new Button("open");
+		CssStyles.style(btnCancelFollowUp, ValoTheme.BUTTON_PRIMARY);
+		ComboBoxWithPlaceholder comboBox = new ComboBoxWithPlaceholder();
+		comboBox.setPlaceholder("climedo");
+		comboBox.addItems(btnCancelFollowUp.getId(), btnOpenClimedoPage.getId());
+		return comboBox;
 	}
 
 	private static Button createClimedoRegisterButton(PersonDto person) {

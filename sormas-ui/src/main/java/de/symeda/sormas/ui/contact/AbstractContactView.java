@@ -54,12 +54,6 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			CaseDataDto contact = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-			ExternalJournalUtil.getExternalJournalUiComponent(contactPerson).ifPresent(getButtonsLayout()::addComponent);
-		}
 	}
 
 	@Override
@@ -89,6 +83,11 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			ExternalJournalUtil.getExternalJournalUiComponent(contactPerson).ifPresent(getButtonsLayout()::addComponent);
+		}
 	}
 
 	@Override
