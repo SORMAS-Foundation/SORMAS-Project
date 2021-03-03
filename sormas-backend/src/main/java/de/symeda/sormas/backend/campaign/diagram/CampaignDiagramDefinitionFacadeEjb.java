@@ -56,7 +56,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		target.setCampaignDiagramSeries(source.getCampaignDiagramSeries());
 		target.setCampaignSeriesTotal(source.getCampaignSeriesTotal());
 		target.setPercentageDefault(source.isPercentageDefault());
-		target.setCampaignDiagramTranslationsList(source.getCampaignDiagramTranslations());
+		target.setCampaignDiagramTranslations(source.getCampaignDiagramTranslations());
 
 		return target;
 	}
@@ -75,7 +75,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		target.setCampaignDiagramSeries(source.getCampaignDiagramSeries());
 		target.setCampaignSeriesTotal(source.getCampaignSeriesTotal());
 		target.setPercentageDefault(source.isPercentageDefault());
-		target.setCampaignDiagramTranslations(source.getCampaignDiagramTranslationsList());
+		target.setCampaignDiagramTranslations(source.getCampaignDiagramTranslations());
 
 		return target;
 	}
