@@ -29,6 +29,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.backend.importexport.ImportCellData;
+import de.symeda.sormas.backend.importexport.ImportHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -43,7 +47,6 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.caze.caseimport.ImportLineResultDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -151,7 +154,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 		PersonDto person = entities.getPerson();
 
-		if (isPersonSimilarToExisting(person)) {
+		if (personFacade.isPersonSimilarToExisting(person)) {
 			return ImportLineResultDto.duplicateResult(entities);
 		}
 
@@ -687,20 +690,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		}
 
 		return false;
-	}
-
-	private boolean isPersonSimilarToExisting(PersonDto referencePerson) {
-
-		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
-			.lastName(referencePerson.getLastName())
-			.sex(referencePerson.getSex())
-			.birthdateDD(referencePerson.getBirthdateDD())
-			.birthdateMM(referencePerson.getBirthdateMM())
-			.birthdateYYYY(referencePerson.getBirthdateYYYY())
-			.passportNumber(referencePerson.getPassportNumber())
-			.nationalHealthId(referencePerson.getNationalHealthId());
-
-		return personFacade.checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

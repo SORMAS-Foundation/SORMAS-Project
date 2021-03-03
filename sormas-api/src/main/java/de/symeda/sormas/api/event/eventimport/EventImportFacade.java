@@ -17,6 +17,7 @@ package de.symeda.sormas.api.event.eventimport;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 
 @Remote

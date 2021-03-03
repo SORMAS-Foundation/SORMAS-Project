@@ -13,8 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.event.eventimport;
+package de.symeda.sormas.backend.importexport;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -25,6 +27,43 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ImportHelper {
+
+	public static RegionReferenceDto getRegionBasedOnDistrict(
+		String propertyName,
+		CaseDataDto caze,
+		ContactDto contact,
+		PersonDto person,
+		Object currentElement) {
+
+		if (currentElement instanceof CaseDataDto) {
+			return caze.getRegion();
+		} else if (currentElement instanceof ContactDto) {
+			return contact.getRegion();
+		} else {
+			return getPersonRegion(propertyName, person);
+		}
+	}
+
+	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, CaseDataDto caze, PersonDto person, Object currentElement) {
+		if (currentElement instanceof CaseDataDto) {
+			return caze.getDistrict();
+		} else {
+			return getPersonDistrict(propertyName, person);
+		}
+	}
+
+	public static DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(
+		String propertyName,
+		CaseDataDto caze,
+		PersonDto person,
+		Object currentElement) {
+
+		if (currentElement instanceof CaseDataDto) {
+			return DataHelper.Pair.createPair(caze.getDistrict(), caze.getCommunity());
+		} else {
+			return getPersonDistrictAndCommunity(propertyName, person);
+		}
+	}
 
 	public static RegionReferenceDto getRegionBasedOnDistrict(
 		String propertyName,
