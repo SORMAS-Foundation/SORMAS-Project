@@ -17,8 +17,10 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -30,26 +32,58 @@ import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
+	private static final String CUSTOM_OPTIONS_PLACE_HOLDER = "__custom__";
+
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
-		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)
-		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_SAMPLES)
+		+ CUSTOM_OPTIONS_PLACE_HOLDER
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
-	private final boolean forCase;
+	private final List<String> customOptions;
 
 	private List<String> excludedOrganizationIds;
 
-	public SormasToSormasOptionsForm(boolean isForCase, List<String> excludedOrganizationIds) {
+	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
+
+	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(
+			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			excludedOrganizationIds,
+			null);
+	}
+
+	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), excludedOrganizationIds, null);
+	}
+
+	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(
+			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			excludedOrganizationIds,
+			(form) -> FieldHelper.setVisibleWhen(
+				form.getFieldGroup(),
+				SormasToSormasOptionsDto.WITH_SAMPLES,
+				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+				Boolean.TRUE,
+				true));
+	}
+
+	private SormasToSormasOptionsForm(
+		List<String> customOptions,
+		List<String> excludedOrganizationIds,
+		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
-		this.forCase = isForCase;
+		this.customOptions = customOptions;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
+		this.customFieldDependencies = customFieldDependencies;
 
 		addFields();
 
@@ -59,7 +93,9 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		String customLocs = customOptions.stream().map(LayoutUtil::fluidRowLocs).collect(Collectors.joining());
+
+		return HTML_LAYOUT.replace(CUSTOM_OPTIONS_PLACE_HOLDER, customLocs);
 	}
 
 	@Override
@@ -69,11 +105,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
 		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
 
-		if (forCase) {
-			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
-		}
-
-		addField(SormasToSormasOptionsDto.WITH_SAMPLES);
+		addFields(customOptions);
 
 		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
 
@@ -84,6 +116,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 		comment.setRows(3);
+
+		if (customFieldDependencies != null) {
+			customFieldDependencies.accept(this);
+		}
 	}
 
 	public void disableOrganization() {

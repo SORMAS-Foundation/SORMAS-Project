@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -40,7 +39,7 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.CaseData, caze);
 	}
 
-	public static String buildContactValidationGroupName(ContactDto contact) {
+	public static String buildContactValidationGroupName(HasUuid contact) {
 		return buildValidationGroupName(Captions.Contact, contact);
 	}
 
@@ -50,6 +49,14 @@ public class ValidationHelper {
 
 	public static String buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
 		return buildValidationGroupName(Captions.PathogenTest, pathogenTest);
+	}
+
+	public static String buildEventValidationGroupName(HasUuid event) {
+		return buildValidationGroupName(Captions.Event, event);
+	}
+
+	public static String buildEventParticipantValidationGroupName(HasUuid event) {
+		return buildValidationGroupName(Captions.Event, event);
 	}
 
 	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, String parentValidationGroup)

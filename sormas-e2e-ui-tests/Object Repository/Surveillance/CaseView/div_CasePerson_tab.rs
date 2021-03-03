@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>div_Case Person_tab</name>
+   <name>div_CasePerson_tab</name>
    <tag></tag>
    <elementGuidId>7bd43824-ea1b-4456-b0a4-2d17fe70be48</elementGuidId>
    <selectorCollection>
       <entry>
          <key>BASIC</key>
-         <value>//div[@id = 'tab-cases-person' and (text() = 'Case person' or . = 'Case person')]</value>
+         <value>//*[@id = 'tab-cases-person' and (text() = 'Case person' or . = 'Case person')]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
