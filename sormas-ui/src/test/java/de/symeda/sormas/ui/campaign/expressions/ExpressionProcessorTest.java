@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +77,15 @@ public class ExpressionProcessorTest {
 		final TextField field = (TextField) campaignFormBuilder.getFields().get("childrenVaccinatedRecall");
 		field.setValue("xyz");
 		field.setValue("42");
+	}
+
+	@Test
+	public void testConfigureExpressionFieldsWithTooltip() {
+		expressionProcessor.configureExpressionFieldsWithTooltip();
+		final TextField field = (TextField) campaignFormBuilder.getFields().get("childrenLivingInHouses");
+		assertThat(field.getDescription(), is("Calculated based on: Number of < 5 years children vaccinated based on recall"));
+		final TextField fieldRecall = (TextField) campaignFormBuilder.getFields().get("childrenVaccinatedRecall");
+		assertThat(fieldRecall.getDescription(), isEmptyOrNullString());
 	}
 
 	private <D> List<D> createData(final ObjectMapper objectMapper, final InputStream inputStream, Class<D> dataType) throws IOException {

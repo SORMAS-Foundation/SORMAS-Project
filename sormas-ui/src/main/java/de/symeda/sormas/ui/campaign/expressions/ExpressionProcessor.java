@@ -36,6 +36,7 @@ public class ExpressionProcessor {
 
 	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) {
 		this.campaignFormBuilder = campaignFormBuilder;
+		checkExpression();
 	}
 
 	public void disableExpressionFieldsForEditing() {
@@ -114,7 +115,11 @@ public class ExpressionProcessor {
 			try {
 				return Integer.parseInt(value.toString());
 			} catch (NumberFormatException e) {
-				return value;
+				try {
+					return Double.parseDouble(value.toString());
+				} catch (NumberFormatException e1) {
+					return value;
+				}
 			}
 		}
 		return value;
