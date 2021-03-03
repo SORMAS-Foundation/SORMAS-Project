@@ -198,6 +198,7 @@ public interface Captions {
 	String campaignNewCampaign = "campaignNewCampaign";
 	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
+	String cancelExternalFollowUpButton = "cancelExternalFollowUpButton";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -463,6 +464,7 @@ public interface Captions {
 	String caseTransferCases = "caseTransferCases";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
+	String climedoOptionsButton = "climedoOptionsButton";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";
@@ -501,7 +503,6 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
-	String Contact_climedoAccount = "Contact.climedoAccount";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
@@ -589,7 +590,6 @@ public interface Captions {
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
 	String contactCreateNew = "contactCreateNew";
-	String contactCreatePIAAccount = "contactCreatePIAAccount";
 	String contactDetailedOverview = "contactDetailedOverview";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressCommunity = "ContactExport.addressCommunity";
@@ -643,6 +643,7 @@ public interface Captions {
 	String countryActiveCountries = "countryActiveCountries";
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
+	String createPiaAccountButton = "createPiaAccountButton";
 	String creationDate = "creationDate";
 	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
@@ -1255,6 +1256,8 @@ public interface Captions {
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
+	String openInClimedoButton = "openInClimedoButton";
+	String openInPiaButton = "openInPiaButton";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -1366,6 +1369,7 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
+	String piaOptionsButton = "piaOptionsButton";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
@@ -1433,6 +1437,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
+	String registerInClimedoButton = "registerInClimedoButton";
 	String remove = "remove";
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";

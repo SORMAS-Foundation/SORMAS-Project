@@ -74,9 +74,9 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		PopupButton ediaryButton = ButtonHelper.createPopupButton("CLIMEDO", popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton("cancel", x -> {}, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton("open", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.piaOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPiaButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
@@ -84,7 +84,7 @@ public class ExternalJournalUtil {
 
 
 	private static Button createPiaRegisterButton(PersonDto person) {
-		Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
+		Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.createPiaAccountButton));
 		CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 		btnCreatePIAAccount.addClickListener(e -> ExternalJournalUtil.openSymptomJournalWindow(person));
 		return btnCreatePIAAccount;
@@ -95,16 +95,16 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		PopupButton ediaryButton = ButtonHelper.createPopupButton("CLIMEDO", popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton("cancel", x -> {}, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton("open", x -> {}, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.climedoOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInClimedoButton), x -> {}, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
 	}
 
 	private static Button createClimedoRegisterButton(PersonDto person) {
-		Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
+		Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.registerInClimedoButton));
 		CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 		btnClimedoAccount.addClickListener(e -> ExternalJournalUtil.onPatientDiaryButtonClick(person));
 		return btnClimedoAccount;
