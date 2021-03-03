@@ -27,6 +27,7 @@ import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
@@ -58,6 +59,8 @@ import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLoca
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb.EventImportFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
@@ -141,13 +144,13 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(CampaignFacadeEjb.CampaignFacadeEjbLocal.class);
 		} else if (CampaignFormMetaFacade.class == clazz) {
 			return (P) bm.getBean(CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal.class);
-		}else if (CampaignFormDataFacade.class == clazz) {
+		} else if (CampaignFormDataFacade.class == clazz) {
 			return (P) bm.getBean(CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal.class);
-		}
-		if (CaseImportFacade.class == clazz) {
+		} else if (CaseImportFacade.class == clazz) {
 			return (P) bm.getBean(CaseImportFacadeEjbLocal.class);
-		}
-		if (DocumentFacade.class == clazz) {
+		} else if (EventImportFacade.class == clazz) {
+			return (P) bm.getBean(EventImportFacadeEjbLocal.class);
+		} else if (DocumentFacade.class == clazz) {
 			return (P) bm.getBean(DocumentFacadeEjbLocal.class);
 		}
 

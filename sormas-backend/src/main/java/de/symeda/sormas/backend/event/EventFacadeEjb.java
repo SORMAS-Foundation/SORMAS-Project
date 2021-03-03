@@ -241,7 +241,10 @@ public class EventFacadeEjb implements EventFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		cq.where(filter);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
 		cq.select(cb.countDistinct(event));
 		return em.createQuery(cq).getSingleResult();
 	}
