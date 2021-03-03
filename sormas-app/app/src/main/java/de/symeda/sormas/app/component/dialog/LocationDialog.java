@@ -62,6 +62,7 @@ public class LocationDialog extends FormDialog {
 	public static final String TAG = LocationDialog.class.getSimpleName();
 
 	private Location data;
+	private Facility previousFacility;
 	private DialogLocationLayoutBinding contentBinding;
 
 	// Constructor
@@ -86,6 +87,9 @@ public class LocationDialog extends FormDialog {
 			fieldAccessCheckers);
 
 		this.data = location;
+		if (location != null) {
+			this.previousFacility = location.getFacility();
+		}
 	}
 
 	// Overrides
@@ -194,51 +198,63 @@ public class LocationDialog extends FormDialog {
 			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
 		}
 
-        contentBinding.locationFacility.addValueChangedListener(field -> {
-            final Facility facility = (Facility) field.getValue();
-            if (facility != null && (StringUtils.isNotEmpty(facility.getCity())
-                    || StringUtils.isNotEmpty(facility.getPostalCode())
-                    || StringUtils.isNotEmpty(facility.getStreet())
-                    || StringUtils.isNotEmpty(facility.getHouseNumber())
-                    || StringUtils.isNotEmpty(facility.getAdditionalInformation())
-                    || facility.getAreaType() != null
-                    || facility.getLatitude() != null
-                    || facility.getLongitude() != null
-            )) {
-                if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue()) && !contentBinding.locationCity.getValue().equals(facility.getCity()))
-                        || (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue()) && !contentBinding.locationPostalCode.getValue().equals(facility.getPostalCode()))
-                        || (StringUtils.isNotEmpty(contentBinding.locationStreet.getValue()) && !contentBinding.locationStreet.getValue().equals(facility.getStreet()))
-                        || (StringUtils.isNotEmpty(contentBinding.locationHouseNumber.getValue()) && !contentBinding.locationHouseNumber.getValue().equals(facility.getHouseNumber()))
-                        || (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue()) && !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
-                        || (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
-                        || (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue()) && !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
-                        || (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue()) && !Double.valueOf(contentBinding.locationLongitude.getValue()).equals(facility.getLongitude()))) {
-                    ConfirmationDialog confirmationDialog = new ConfirmationDialog(
-                            getActivity(),
-                            R.string.heading_location,
-                            -1,
-                            R.string.yes,
-                            R.string.no);
-                    confirmationDialog.getConfig().setSubHeading(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride));
-                    confirmationDialog.setPositiveCallback(() -> overrideLocationDetailsWithFacilityOnes(facility));
-                    confirmationDialog.show();
-                } else {
-                    overrideLocationDetailsWithFacilityOnes(facility);
-                }
-            }
-        });
-    }
+		contentBinding.locationFacility.addValueChangedListener(field -> {
+			final Facility facility = (Facility) field.getValue();
 
-    private void overrideLocationDetailsWithFacilityOnes(Facility facility) {
-        contentBinding.locationCity.setValue(facility.getCity());
-        contentBinding.locationPostalCode.setValue(facility.getPostalCode());
-        contentBinding.locationStreet.setValue(facility.getStreet());
-        contentBinding.locationHouseNumber.setValue(facility.getHouseNumber());
-        contentBinding.locationAdditionalInformation.setValue(facility.getAdditionalInformation());
-        contentBinding.locationAreaType.setValue(facility.getAreaType());
-        contentBinding.locationLatitude.setDoubleValue(facility.getLatitude());
-        contentBinding.locationLongitude.setDoubleValue(facility.getLongitude());
-    }
+			// Need to check the old value as this listener is executed when initializing the field
+			// field.isDirty() always return true making it not usable in our case
+			if (this.previousFacility != null && this.previousFacility.equals(facility)) {
+				// The field didn't changed
+				return;
+			}
+			this.previousFacility = facility;
+
+			if (facility != null
+				&& (StringUtils.isNotEmpty(facility.getCity())
+					|| StringUtils.isNotEmpty(facility.getPostalCode())
+					|| StringUtils.isNotEmpty(facility.getStreet())
+					|| StringUtils.isNotEmpty(facility.getHouseNumber())
+					|| StringUtils.isNotEmpty(facility.getAdditionalInformation())
+					|| facility.getAreaType() != null
+					|| facility.getLatitude() != null
+					|| facility.getLongitude() != null)) {
+				if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue())
+					&& !contentBinding.locationCity.getValue().equals(facility.getCity()))
+					|| (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue())
+						&& !contentBinding.locationPostalCode.getValue().equals(facility.getPostalCode()))
+					|| (StringUtils.isNotEmpty(contentBinding.locationStreet.getValue())
+						&& !contentBinding.locationStreet.getValue().equals(facility.getStreet()))
+					|| (StringUtils.isNotEmpty(contentBinding.locationHouseNumber.getValue())
+						&& !contentBinding.locationHouseNumber.getValue().equals(facility.getHouseNumber()))
+					|| (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue())
+						&& !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
+					|| (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
+					|| (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue())
+						&& !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
+					|| (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue())
+						&& !Double.valueOf(contentBinding.locationLongitude.getValue()).equals(facility.getLongitude()))) {
+					ConfirmationDialog confirmationDialog =
+						new ConfirmationDialog(getActivity(), R.string.heading_location, -1, R.string.yes, R.string.no);
+					confirmationDialog.getConfig().setSubHeading(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride));
+					confirmationDialog.setPositiveCallback(() -> overrideLocationDetailsWithFacilityOnes(facility));
+					confirmationDialog.show();
+				} else {
+					overrideLocationDetailsWithFacilityOnes(facility);
+				}
+			}
+		});
+	}
+
+	private void overrideLocationDetailsWithFacilityOnes(Facility facility) {
+		contentBinding.locationCity.setValue(facility.getCity());
+		contentBinding.locationPostalCode.setValue(facility.getPostalCode());
+		contentBinding.locationStreet.setValue(facility.getStreet());
+		contentBinding.locationHouseNumber.setValue(facility.getHouseNumber());
+		contentBinding.locationAdditionalInformation.setValue(facility.getAdditionalInformation());
+		contentBinding.locationAreaType.setValue(facility.getAreaType());
+		contentBinding.locationLatitude.setDoubleValue(facility.getLatitude());
+		contentBinding.locationLongitude.setDoubleValue(facility.getLongitude());
+	}
 
 	public void setRequiredFieldsBasedOnCountry() {
 		contentBinding.locationCountry.addValueChangedListener(e -> {
