@@ -1,6 +1,6 @@
-person.firstName,person.lastName,involvementDescription
-Günther,Heinze,description 1
-Peter,Meyer,description 2
-Hans,Flamme,description 3
-Jürgen,Holtmann,description 4
-Petra,Holtmann,description 5
+person.firstName,person.lastName,involvementDescription,region,district
+Günther,Heinze,description 1,Region,District
+Peter,Meyer,description 2,Region,District
+Hans,Flamme,description 3,Region,District
+Jürgen,Holtmann,description 4,Region,District
+Petra,Holtmann,description 5,Region,District
