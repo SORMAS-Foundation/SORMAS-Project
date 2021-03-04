@@ -36,6 +36,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -667,6 +668,24 @@ public class EventFacadeEjb implements EventFacade {
 		return uuids;
 	}
 
+	@Override
+	public String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+
+		cq.select(eventRoot.get(Event.UUID));
+		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
 
 		if (event.getSuperordinateEvent() != null) {
@@ -826,7 +845,7 @@ public class EventFacadeEjb implements EventFacade {
 	/**
 	 * Archives all events that have not been changed for a defined amount of days
 	 * 
-	 * @param daysAfterEventsGetsArchived
+	 * @param daysAfterEventGetsArchived
 	 *            defines the amount of days
 	 */
 	@Override
