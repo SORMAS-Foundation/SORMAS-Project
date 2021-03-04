@@ -12,7 +12,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,6 +51,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.CharsetHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -326,7 +326,7 @@ public abstract class DataImporter {
 	}
 
 	private CSVReader getCSVReader(File inputFile) throws IOException {
-		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		CharsetDecoder decoder = CharsetHelper.getDecoder(inputFile);
 		InputStream inputStream = Files.newInputStream(inputFile.toPath());
 		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
 		Reader reader = new InputStreamReader(bomInputStream, decoder);
