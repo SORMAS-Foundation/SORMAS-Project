@@ -57,6 +57,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -92,6 +93,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
 			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
+			fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
@@ -186,6 +188,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
+
+		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
@@ -310,13 +314,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
-		if (isCreateForm) {
-			locationForm.hideValidationUntilNextCommit();
-		}
+
+		ComboBox countryField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.COUNTRY);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
+
+		if (isCreateForm) {
+			locationForm.hideValidationUntilNextCommit();
+		}
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
@@ -360,7 +367,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			getFieldGroup(),
 			Arrays.asList(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL),
 			EventDto.SRC_TYPE,
-			Collections.singletonList(EventSourceType.HOTLINE_PERSON),
+			Arrays.asList(EventSourceType.HOTLINE_PERSON, EventSourceType.INSTITUTIONAL_PARTNER),
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -372,9 +379,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Collections.singletonList(TypeOfPlace.OTHER), true);
 		setTypeOfPlaceTextRequirement();
-		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
+
+		countryField.addValueChangeListener(e -> {
+			configureInfrastructureFields(locationForm, countryField, regionField, districtField);
+		});
 
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
@@ -424,6 +434,24 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
 			setEnabled(false, EventDto.EXTERNAL_ID);
 			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
+		}
+
+		configureInfrastructureFields(locationForm, countryField, regionField, districtField);
+	}
+
+	private void configureInfrastructureFields(LocationEditForm locationForm, ComboBox countryField, ComboBox regionField, ComboBox districtField) {
+		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+		CountryReferenceDto countryDto = (CountryReferenceDto) countryField.getValue();
+		boolean enabledAndRequired = serverCountryDto == null
+			? countryDto == null
+			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
+
+		locationForm.getField(LocationDto.REGION).setEnabled(enabledAndRequired);
+		locationForm.getField(LocationDto.DISTRICT).setEnabled(enabledAndRequired);
+		locationForm.setFieldsRequirement(enabledAndRequired, LocationDto.REGION, LocationDto.DISTRICT);
+		if (!enabledAndRequired) {
+			regionField.setValue(null);
+			districtField.setValue(null);
 		}
 	}
 

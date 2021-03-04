@@ -20,6 +20,7 @@ public class RootEntityName {
 	public static final String ROOT_CASE = "case";
 	public static final String ROOT_CONTACT = "contact";
 	public static final String ROOT_EVENT_PARTICIPANT = "eventparticipant";
+	public static final String ROOT_PERSON = "person";
 	public static final String ROOT_USER = "user";
 	public static final String ROOT_SAMPLE = "sample";
 	public static final String ROOT_PATHOGEN_TEST = "pathogentest";

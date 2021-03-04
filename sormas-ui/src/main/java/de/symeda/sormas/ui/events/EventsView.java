@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -163,8 +164,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.EVENTS);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
@@ -186,7 +186,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_", ".csv"),
+						ExportEntityName.EVENTS,
 						null);
 					addExportButton(
 						exportStreamResource,
@@ -213,7 +213,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
+						ExportEntityName.EVENT_ACTIONS,
 						null);
 					addExportButton(
 						exportStreamResource,
@@ -295,7 +295,13 @@ public class EventsView extends AbstractView {
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
-		filterForm.addApplyHandler(e -> navigateTo(criteria));
+		filterForm.addApplyHandler(e -> {
+			if (isDefaultViewType()) {
+				((EventGrid) grid).reload();
+			} else {
+				((EventActionsGrid) grid).reload();
+			}
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
@@ -446,7 +452,11 @@ public class EventsView extends AbstractView {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
 						ControllerProvider.getEventController()
 							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.SurvnetGateway_sendShort), VaadinIcons.SHARE, selectedItem -> {
+						ControllerProvider.getEventController()
+							.sendAllSelectedToSurvnet(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");

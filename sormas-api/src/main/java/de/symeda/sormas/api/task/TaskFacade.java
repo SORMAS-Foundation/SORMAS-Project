@@ -23,6 +23,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Remote
 public interface TaskFacade {
 
-	TaskDto saveTask(TaskDto dto);
+	TaskDto saveTask(@Valid TaskDto dto);
 
 	List<TaskDto> getAllActiveTasksAfter(Date date);
 

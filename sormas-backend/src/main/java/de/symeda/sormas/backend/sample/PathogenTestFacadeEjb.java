@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -163,7 +164,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public PathogenTestDto savePathogenTest(PathogenTestDto dto) {
+	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto) {
 		return savePathogenTest(dto, true);
 	}
 
@@ -291,6 +292,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 
 		return target;
 	}
@@ -342,6 +344,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 
 		return target;
 	}

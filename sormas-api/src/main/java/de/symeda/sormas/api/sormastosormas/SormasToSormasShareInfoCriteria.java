@@ -18,6 +18,8 @@ package de.symeda.sormas.api.sormastosormas;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 
 public class SormasToSormasShareInfoCriteria extends BaseCriteria {
@@ -29,6 +31,10 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 	private ContactReferenceDto contact;
 
 	private SampleReferenceDto sample;
+
+	private EventReferenceDto event;
+
+	private EventParticipantReferenceDto eventParticipant;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -56,6 +62,26 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
 	public SormasToSormasShareInfoCriteria sample(SampleReferenceDto sample) {
 		this.sample = sample;
+
+		return this;
+	}
+
+	public EventReferenceDto getEvent() {
+		return event;
+	}
+
+	public SormasToSormasShareInfoCriteria event(EventReferenceDto event) {
+		this.event = event;
+
+		return this;
+	}
+
+	public EventParticipantReferenceDto getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public SormasToSormasShareInfoCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
+		this.eventParticipant = eventParticipant;
 
 		return this;
 	}

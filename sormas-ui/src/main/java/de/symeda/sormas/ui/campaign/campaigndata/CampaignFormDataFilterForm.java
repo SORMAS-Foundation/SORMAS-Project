@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import java.util.function.Consumer;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -50,7 +51,10 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected CampaignFormDataFilterForm() {
 
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
-		CssStyles.style(CssStyles.FORCE_CAPTION, applyButton, resetButton);
+		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
+		formActionButtonsComponent.setSpacing(false);
+		formActionButtonsComponent.setSizeFull();
+		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true));
 	}
 
 	@Override

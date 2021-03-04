@@ -23,12 +23,15 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import javax.validation.constraints.Pattern;
+
 @SuppressWarnings("serial")
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
 
 	@Required
+	@Pattern(regexp = UUID_REGEX)
 	private String uuid;
 	private String caption;
 

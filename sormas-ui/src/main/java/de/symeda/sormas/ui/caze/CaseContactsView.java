@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -291,8 +292,7 @@ public class CaseContactsView extends AbstractCaseView {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
 
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);

@@ -144,6 +144,8 @@ public abstract class DataImporter {
 		Thread importThread = new Thread(() -> {
 			try {
 				currentUI.setPollInterval(300);
+				I18nProperties.setUserLanguage(currentUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
 				ImportResultStatus importResult = runImport();
 

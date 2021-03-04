@@ -40,7 +40,7 @@ public final class I18nProperties {
 	public static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	private static Map<Language, I18nProperties> instances = new HashMap<>();
-	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();
+	private static final ThreadLocal<Language> userLanguage = new ThreadLocal<>();
 
 	private static Language defaultLanguage;
 
@@ -73,9 +73,14 @@ public final class I18nProperties {
 
 	public static Language setUserLanguage(Language language) {
 
+		if (userLanguage.get() != null && language == userLanguage.get()) {
+			return language;
+		}
+
 		if (language == null) {
 			language = getDefaultLanguage();
 		}
+
 		userLanguage.set(language);
 
 		return language;

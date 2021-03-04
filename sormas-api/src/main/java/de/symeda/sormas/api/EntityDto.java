@@ -20,6 +20,8 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -47,6 +49,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	private Date creationDate;
 	private Date changeDate;
 	@Outbreaks
+	@Pattern(regexp = UUID_REGEX)
 	private String uuid;
 
 	protected EntityDto() {

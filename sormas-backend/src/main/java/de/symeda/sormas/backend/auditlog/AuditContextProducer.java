@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.auditlog;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
@@ -28,6 +29,7 @@ import de.symeda.auditlog.api.Auditor;
 import de.symeda.auditlog.api.Current;
 import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Provides the relevant environment for the Auditlog.
@@ -37,6 +39,9 @@ import de.symeda.auditlog.api.UserId;
  */
 @Stateless
 public class AuditContextProducer {
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Resource
 	private SessionContext context;
@@ -57,8 +62,7 @@ public class AuditContextProducer {
 	@Current
 	@TransactionScoped
 	public Auditor provideAuditor() {
-
-		return new Auditor();
+		return new Auditor(configFacade.isAuditorAttributeLoggingEnabled());
 	}
 
 	@Produces

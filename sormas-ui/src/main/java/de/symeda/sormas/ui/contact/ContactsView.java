@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -198,9 +199,7 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
-
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
@@ -216,8 +215,8 @@ public class ContactsView extends AbstractView {
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
-				StreamResource followUpVisitsExportStreamResource = DownloadUtil
-					.createVisitsExportStreamResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
 
 				addExportButton(
 					followUpVisitsExportStreamResource,
@@ -244,7 +243,7 @@ public class ContactsView extends AbstractView {
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
 					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
+					ExportEntityName.BAG_CONTACTS,
 					null);
 
 				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
@@ -333,12 +332,10 @@ public class ContactsView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!navigateTo(criteria, false)) {
-				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-					((ContactFollowUpGrid) grid).reload();
-				} else {
-					((AbstractContactGrid<?>) grid).reload();
-				}
+			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				((ContactFollowUpGrid) grid).reload();
+			} else {
+				((AbstractContactGrid<?>) grid).reload();
 			}
 		});
 		filterLayout.addComponent(filterForm);

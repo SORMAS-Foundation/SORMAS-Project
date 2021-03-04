@@ -3,7 +3,9 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class EventParticipantCriteria extends BaseCriteria implements Serializable {
@@ -15,6 +17,8 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
+	public static final String DISEASE = "disease";
+	public static final String PATHOGENTESTRESULT = "pathogenTestResult";
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
@@ -23,6 +27,8 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Integer birthdateMM;
 	private Integer birthdateDD;
 	private Boolean onlyCountContactsWithSourceCaseInEvent;
+	private Disease disease;
+	private PathogenTestResultType pathogenTestResult;
 
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
@@ -93,5 +99,21 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	public void setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
 		this.onlyCountContactsWithSourceCaseInEvent = onlyCountContactsWithSourceCaseInEvent;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
 	}
 }

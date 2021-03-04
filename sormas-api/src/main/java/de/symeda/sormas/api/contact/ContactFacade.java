@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -41,9 +42,9 @@ public interface ContactFacade {
 
 	Boolean isValidContactUuid(String uuid);
 
-	ContactDto saveContact(ContactDto dto);
+	ContactDto saveContact(@Valid ContactDto dto);
 
-	ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
+	ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 

@@ -367,6 +367,7 @@
     <string name="heading_extend_followup">Estendere il periodo di follow-up</string>
     <string name="heading_contact_tracing_first_contact">Primo contatto con il tracciamento dei contatti</string>
     <string name="heading_exposure">Exposure</string>
+    <string name="heading_activityAsCase">Activity as Case</string>
     <string name="hint_add_to_empty_list">Aggiungi una nuova voce premendo il simbolo \"+\" in alto a destra.</string>
     <string name="hint_clear">Elimina tutto</string>
     <string name="hint_create_pin">Scegli un PIN a quattro cifre che utilizzerai per autenticarti ogni volta che apri l\'app SORMAS.</string>

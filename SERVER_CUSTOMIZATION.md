@@ -17,6 +17,7 @@ The following properties are currently configurable:
 
 * **Default locale** `country.locale`: This is the locale your server is using as long as the user has not overwritten it in their settings. It impacts both the language that SORMAS is displayed in as well as e.g. date formats.
 * **EPID prefix** `country.epidprefix`: SORMAS automatically generates EPID numbers for new cases. This is the prefix your country is using for all of these numbers. Most of the time it will be some sort of country code and should be three characters long.
+* **Country name** `country.name`: Name of the country to pre-fill the country fields for locations and to activate the region, district, etc. fields when this country is selected. Needs to match the name of the country in the database.
 * **Country center/zoom** `country.center.latitude`, `country.center.longitude` and `map.zoom`: These are the geo coordinates of the geographical center of the country or region you're using SORMAS in. Used to set the initial location of the maps used in dashboards and statistics.
 * **App URL** `app.url`: The directory on your server where the mobile .apk file is stored that is used to automatically update the Android app after a new release. You should be able to copy the example given in the properties file and only have to replace the SERVER-NAME placeholder.
 * **File paths** `documents.path`, `temp.path`, `generated.path` and `custom.path`: The folders that SORMAS stores files in, either temporarily during case export or permanently like import templates or documents. Files in temp.path are automatically deleted at midnight. Files in custom.path can be used to customize the login page, e.g. to provide default logins for demo servers or add additional contributors to the right sidebar.
@@ -36,6 +37,14 @@ The following properties are currently configurable:
   * `geocodingServiceUrlTemplate` is the url for searching for address details, `${street}`, `${houseNumber}`, `${postalCode}`, and `${city}` placeholders will be replaced with the actual address fields when searching;
   * `geocodingLongitudeJsonPath` and `geocodingLatitudeJsonPath` are used to obtain the longitude and latitude of the address in the result of the geocoding service request
 * **Authentication Provider**: Allows the user to choose the way of authentication for SORMAS and all it's third party clients. Supported values `SORMAS` (default) and `KEYCLOAK`
+* **Authentication Provider User Sync At Startup**: Enables async user sync when the system boots up. Since the User Sync is mainly needed for an initial sync only, it's recommended to disable/remove this property once an initial sync has be performed. The User Sync will work similarly to the manual user sync:
+  * creates all the missing users in the External Authentication Provider
+  * updates all existing users in the External Authentication Provider
+  * keeps the user's password if the user doesn't exist in the External Authentication Provider
+  * will not override the user's password if the user already in the External Authentication Provider (matching done by username case insensitive)
+  * will only sync active users (inactive users are automatically synchronized when they are activated manually)
+  * is enabled trough a property in sormas.properties `authentication.provider.userSyncAtStartup` (by default is disabled) 
+  
 
 ### Custom login page
 When setting up the server a custom file directory is created (most likely `/opt/sormas/custom`). You can adjust the `login*.html` files in that directory to customize the login page.

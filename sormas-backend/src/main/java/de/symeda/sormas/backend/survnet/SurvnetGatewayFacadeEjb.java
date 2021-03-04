@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.backend.caze.Case;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;

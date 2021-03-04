@@ -57,6 +57,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitCriteria;
@@ -141,6 +142,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Date exposureDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, Exposure.TABLE_NAME);
 		if (exposureDate != null && exposureDate.after(date)) {
 			date = exposureDate;
+		}
+
+		Date activityAsCaseDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, ActivityAsCase.TABLE_NAME);
+		if (activityAsCaseDate != null && activityAsCaseDate.after(date)) {
+			date = activityAsCaseDate;
 		}
 
 		Date therapyDate = DatabaseHelper.getTherapyDao().getLatestChangeDate();

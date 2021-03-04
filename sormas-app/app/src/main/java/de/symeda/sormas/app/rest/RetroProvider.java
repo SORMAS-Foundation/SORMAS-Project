@@ -196,6 +196,7 @@ public final class RetroProvider {
 		checkCompatibility();
 
 		updateLocale();
+		updateCountryName();
 	}
 
 	public static int getLastConnectionId() {
@@ -220,6 +221,27 @@ public final class RetroProvider {
 			ConfigProvider.setServerLocale(localeStr);
 		} else {
 			throwException(localeResponse);
+		}
+	}
+
+	private void updateCountryName() throws ServerCommunicationException, ServerConnectionException {
+		Response<String> countryNameResponse;
+		infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+		Call<String> countryNameCall = infoFacadeRetro.getCountryName();
+		try {
+			countryNameResponse = countryNameCall.execute();
+		} catch (IOException e) {
+			Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+			// wrap the exception message inside a response object
+			countryNameResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+		}
+
+		if (countryNameResponse.isSuccessful()) {
+			// success - now check compatibility
+			String countryNameStr = countryNameResponse.body();
+			ConfigProvider.setServerCountryName(countryNameStr);
+		} else {
+			throwException(countryNameResponse);
 		}
 	}
 

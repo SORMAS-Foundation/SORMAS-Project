@@ -72,6 +72,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 		target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
@@ -108,6 +109,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
 
 		if (source.getLabUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getLabUser().getId());

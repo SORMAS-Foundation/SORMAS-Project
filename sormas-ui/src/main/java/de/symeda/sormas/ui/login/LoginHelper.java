@@ -67,6 +67,7 @@ public final class LoginHelper {
 		if (status == AuthenticationStatus.SUCCESS) {
 			Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
 			I18nProperties.setUserLanguage(userLanguage);
+			FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
 			return true;
 		}
 

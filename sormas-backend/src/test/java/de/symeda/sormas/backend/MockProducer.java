@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.jms.ConnectionFactory;
@@ -55,6 +56,7 @@ public class MockProducer {
 	public static final Properties properties = new Properties();
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
 	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
+	private static final ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -81,7 +83,15 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, SORMAS_TO_SORMAS_REST_CLIENT);
+		reset(
+			sessionContext,
+			principal,
+			topic,
+			connectionFactory,
+			timerService,
+			userTransaction,
+			SORMAS_TO_SORMAS_REST_CLIENT,
+			managedScheduledExecutorService);
 		wireMocks();
 	}
 
@@ -142,5 +152,10 @@ public class MockProducer {
 		public SormasToSormasRestClient sormasToSormasClient() {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
+	}
+
+	@Produces
+	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
+		return managedScheduledExecutorService;
 	}
 }

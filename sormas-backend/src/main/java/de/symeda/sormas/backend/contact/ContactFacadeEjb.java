@@ -32,9 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,6 +53,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -95,7 +93,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -283,12 +280,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto) {
+	public ContactDto saveContact(@Valid ContactDto dto) {
 		return saveContact(dto, true, true);
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+	public ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return saveContact(dto, handleChanges, handleCaseChanges, true);
 	}
 
@@ -300,7 +297,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		validate(dto);
 
 		if (existingContact != null) {
-			handleExternalJournalPerson(dto);
+			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 		}
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
@@ -325,10 +322,16 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
+				StringBuilder sb = new StringBuilder();
+				if (entity.getFollowUpComment() != null) {
+					sb.append(entity.getFollowUpComment()).append(" ");
+				}
 				contactService.cancelFollowUp(
 					entity,
-					I18nProperties
-						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
+					sb.append(
+						I18nProperties
+							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
+						.toString());
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
@@ -340,22 +343,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
-	}
-
-	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(ContactDto updatedContact) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void createInvestigationTask(Contact entity) {
@@ -1199,7 +1186,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		return target;

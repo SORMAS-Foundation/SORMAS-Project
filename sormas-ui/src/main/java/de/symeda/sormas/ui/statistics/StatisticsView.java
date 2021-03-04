@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -434,8 +436,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
 			statisticsCaseGrid.getContainerDataSource(),
 			statisticsCaseGrid.getColumns(),
-			"sormas_statistics",
-			"sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			ExportEntityName.STATISTICS);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 	}
@@ -1038,7 +1039,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (hasMissingPopulationData) {
 					caseIncidencePossible = false;
 					List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
-					missingPopulationDataNames = StringEscapeUtils.escapeEcmaScript(String.join(", ", missingPopulationDataNamesList));
+					missingPopulationDataNames = HtmlHelper.cleanHtml(String.join(", ", missingPopulationDataNamesList));
 				}
 			}
 

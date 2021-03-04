@@ -43,6 +43,7 @@ import org.joda.time.Years;
 import com.google.common.collect.Sets;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public final class DateHelper {
 
@@ -62,7 +63,8 @@ public final class DateHelper {
 	private static final Pattern DATE_FORMAT_PATTERN = Pattern.compile("^(.*)([\\.\\-/])(.*)([\\.\\-/])(.*)$");
 
 	public static SimpleDateFormat getLocalDateFormat(Language language) {
-		return new SimpleDateFormat(language.getDateFormat());
+		Language formatLanguage = language != null ? language : I18nProperties.getUserLanguage();
+		return new SimpleDateFormat(formatLanguage.getDateFormat());
 	}
 
 	public static String getLocalDatePattern(Language language) {

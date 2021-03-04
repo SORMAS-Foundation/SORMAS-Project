@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 
@@ -14,7 +15,7 @@ public interface TreatmentFacade {
 
 	TreatmentDto getTreatmentByUuid(String uuid);
 
-	TreatmentDto saveTreatment(TreatmentDto treatment);
+	TreatmentDto saveTreatment(@Valid TreatmentDto treatment);
 
 	void deleteTreatment(String treatmentUuid);
 

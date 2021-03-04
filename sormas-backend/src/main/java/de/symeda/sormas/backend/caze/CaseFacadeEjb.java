@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
@@ -40,9 +39,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,6 +65,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -138,10 +135,10 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -627,7 +624,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
 				joins.getPersonCitizenship().get(Country.ISO_CODE),
 				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
-				joins.getReportingDistrict().get(District.NAME)
+				joins.getReportingDistrict().get(District.NAME),
+				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
+				caseRoot.get(Case.SCREENING_TYPE)
 				);
 		//@formatter:on
 
@@ -1355,6 +1354,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+			cb.or(cb.equal(person.get(Person.SEX), Sex.UNKNOWN), cb.equal(person2.get(Person.SEX), Sex.UNKNOWN)),
 			cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
 		// Birth date filter: only when birth date is filled in for both cases
 		Predicate birthDateFilter = cb.or(
@@ -1510,7 +1510,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
+	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
 		return saveCase(dto, true, true);
 	}
 
@@ -1635,7 +1635,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		validate(dto);
 
 		if (caze != null) {
-			handleExternalJournalPerson(dto);
+			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 		}
 
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
@@ -1658,22 +1658,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			onCaseChanged(existingCaseDto, caze);
 		}
-	}
-
-	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedCase.getPerson().getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
@@ -2165,6 +2149,15 @@ public class CaseFacadeEjb implements CaseFacade {
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
 			}
+		} else if (existingCase != null
+			&& CaseOutcome.DECEASED == newCase.getOutcome()
+			&& newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
+			&& (newCase.getPerson().getDeathDate() == null
+				? newCase.getOutcomeDate() != null
+				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {
+			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 		}
 	}
 
@@ -2360,6 +2353,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2459,7 +2453,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFollowUpComment(source.getFollowUpComment());
@@ -2531,6 +2524,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
+		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
@@ -2626,12 +2620,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
@@ -3065,14 +3058,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Case
-		fillDto(leadCaseData, otherCaseData, cloning);
+		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
 		// 1.2 Person
 		if (!cloning) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			fillDto(leadPerson, otherPerson, cloning);
+			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
 			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
@@ -3088,7 +3081,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
-				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
+				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);
 			} else {
 				// simply move existing entities to the merge target
@@ -3102,19 +3095,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
-				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
+				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
 				sampleFacade.saveSample(newSample, false, true);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-					fillDto(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
+					DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
 				}
 
 				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
 					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
@@ -3143,7 +3136,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Treatment treatment : treatments) {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.build(leadCaseTherapyReference);
-				fillDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
+				DtoHelper.copyDtoValues(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
 				treatmentFacade.saveTreatment(newTreatment);
 			} else {
 				// simply move existing entities to the merge target
@@ -3158,7 +3151,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Prescription prescription : prescriptions) {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
-				fillDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
+				DtoHelper.copyDtoValues(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
 				prescriptionFacade.savePrescription(newPrescription);
 			} else {
 				// simply move existing entities to the merge target
@@ -3174,7 +3167,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (ClinicalVisit clinicalVisit : clinicalVisits) {
 			if (cloning) {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.build(leadCaseData.getClinicalCourse().toReference(), leadCase.getDisease());
-				fillDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
+				DtoHelper.copyDtoValues(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
 				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
 			} else {
 				// simply move existing entities to the merge target

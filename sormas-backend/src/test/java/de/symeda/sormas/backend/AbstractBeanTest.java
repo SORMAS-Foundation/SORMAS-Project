@@ -56,6 +56,7 @@ import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
+import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -67,6 +68,11 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
+import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -119,6 +125,7 @@ import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLoca
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -140,6 +147,11 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.survnet.SurvnetGatewayFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -449,6 +461,26 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
+		return getBean(SormasToSormasCaseFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasContactFacade getSormasToSormasContactFacade() {
+		return getBean(SormasToSormasContactFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasEventFacade getSormasToSormasEventFacade() {
+		return getBean(SormasToSormasEventFacadeEjbLocal.class);
+	}
+
+	public LabMessageFacade getLabMessageFacade() {
+		return getBean(LabMessageFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
+		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
+	}
+
 	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {
 		return getBean(SormasToSormasShareInfoService.class);
 	}
@@ -529,7 +561,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public SystemEventFacade getSystemEventFacade() {
-		return getBean((SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class));
+		return getBean(SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class);
 	}
 
+	public SurvnetGatewayFacade getSurvnetGatewayFacade() {
+		return getBean(SurvnetGatewayFacadeEjb.class);
+	}
 }

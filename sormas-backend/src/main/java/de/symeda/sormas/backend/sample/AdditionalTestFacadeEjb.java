@@ -10,6 +10,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -53,7 +54,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 
 	@Override
-	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest) {
+	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest) {
 		return saveAdditionalTest(additionalTest, true);
 	}
 
