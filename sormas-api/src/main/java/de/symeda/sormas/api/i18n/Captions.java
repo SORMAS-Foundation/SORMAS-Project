@@ -1286,6 +1286,7 @@ public interface Captions {
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
 	String pathogenTestSelect = "pathogenTestSelect";
+	String patientDiaryCancelError = "patientDiaryCancelError";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String Person = "Person";

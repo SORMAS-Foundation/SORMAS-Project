@@ -169,7 +169,12 @@ public class ExternalJournalUtil {
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				600,
-				confirmed -> {if (confirmed) externalJournalFacade.cancelPatientDiaryFollowUp(personDto);});
+				confirmed -> {if (confirmed) cancelClimedoFollowUp(personDto);});
+	}
+
+	private static void cancelClimedoFollowUp(PersonDto personDto) {
+		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
+		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
@@ -185,7 +190,7 @@ public class ExternalJournalUtil {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
-			showPatientRegisterResultPopup(registerResult);
+			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
 		}
 	}
 
@@ -208,32 +213,32 @@ public class ExternalJournalUtil {
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 	}
 
-	private static void showPatientRegisterResultPopup(PatientDiaryResult registerResult) {
-		VerticalLayout registrationResultLayout = new VerticalLayout();
-		registrationResultLayout.setMargin(true);
+	private static void showPatientDiaryResultPopup(PatientDiaryResult result, String errorMessage) {
+		VerticalLayout resultLayout = new VerticalLayout();
+		resultLayout.setMargin(true);
 		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
 		errorIcon.setHeight(35, Sizeable.Unit.PIXELS);
 		errorIcon.setWidth(35, Sizeable.Unit.PIXELS);
 		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
 		successIcon.setHeight(35, Sizeable.Unit.PIXELS);
 		successIcon.setWidth(35, Sizeable.Unit.PIXELS);
-		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
-		if (registerResult.isSuccess()) {
-			registrationResultLayout.removeComponent(errorIcon);
-			registrationResultLayout.addComponentAsFirst(successIcon);
+		CssStyles.style(resultLayout, CssStyles.ALIGN_CENTER);
+		if (result.isSuccess()) {
+			resultLayout.removeComponent(errorIcon);
+			resultLayout.addComponentAsFirst(successIcon);
 		} else {
-			registrationResultLayout.removeComponent(successIcon);
-			registrationResultLayout.addComponentAsFirst(errorIcon);
+			resultLayout.removeComponent(successIcon);
+			resultLayout.addComponentAsFirst(errorIcon);
 			Label infoLabel = new Label();
 			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			registrationResultLayout.addComponent(infoLabel);
-			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
+			resultLayout.addComponent(infoLabel);
+			infoLabel.setValue(errorMessage);
 		}
 		Label messageLabel = new Label();
 		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		registrationResultLayout.addComponent(messageLabel);
-		messageLabel.setValue(registerResult.getMessage());
-		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
+		resultLayout.addComponent(messageLabel);
+		messageLabel.setValue(result.getMessage());
+		Window popupWindow = VaadinUiUtil.showPopupWindow(resultLayout);
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 	}
