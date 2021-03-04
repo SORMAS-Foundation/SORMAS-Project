@@ -491,6 +491,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
 		}
+		if (eventCriteria.getEventManagementStatus() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_MANAGEMENT_STATUS), eventCriteria.getEventManagementStatus()));
+		}
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
 		}

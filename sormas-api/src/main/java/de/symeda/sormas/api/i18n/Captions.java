@@ -868,6 +868,7 @@ public interface Captions {
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
 	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";
 	String Event_eventLocation = "Event.eventLocation";
+	String Event_eventManagementStatus = "Event.eventManagementStatus";
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";

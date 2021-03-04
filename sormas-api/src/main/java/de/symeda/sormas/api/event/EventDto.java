@@ -45,6 +45,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_TITLE = "eventTitle";
@@ -92,6 +93,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
+	private EventManagementStatus eventManagementStatus;
 	private String externalId;
 	private String externalToken;
 	private String eventTitle;
@@ -521,6 +523,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public EventReferenceDto toReference() {
