@@ -6762,6 +6762,13 @@ ALTER TABLE facility ADD COLUMN areatype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
 
+--2021-02-23 Add event management status to Event #4255
+
+ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add event management status to Event #4255');
+
 -- 2021-03-03 Add a "sampling reason" field in the sample #4555
 ALTER TABLE samples
     ADD COLUMN samplingreason varchar(255),
@@ -6799,6 +6806,6 @@ ALTER TABLE cases_history
     DROP COLUMN covidtestreason,
     DROP COLUMN covidtestreasondetails;
 
-INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add a "sampling reason" field in the sample #4555');
+INSERT INTO schema_version (version_number, comment) VALUES (342, 'Add a "sampling reason" field in the sample #4555');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -868,6 +868,7 @@ public interface Captions {
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
 	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";
 	String Event_eventLocation = "Event.eventLocation";
+	String Event_eventManagementStatus = "Event.eventManagementStatus";
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";
@@ -1259,6 +1260,7 @@ public interface Captions {
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
+	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
@@ -1602,6 +1604,7 @@ public interface Captions {
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasReturn = "sormasToSormasReturn";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
+	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

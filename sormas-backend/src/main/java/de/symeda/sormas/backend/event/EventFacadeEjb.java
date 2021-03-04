@@ -36,6 +36,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -243,6 +244,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -296,6 +298,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
+				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
@@ -492,7 +495,8 @@ public class EventFacadeEjb implements EventFacade {
 			reportingUser.get(User.LAST_NAME),
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
-			responsibleUser.get(User.LAST_NAME));
+			responsibleUser.get(User.LAST_NAME),
+			event.get(Event.EVENT_MANAGEMENT_STATUS));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -667,6 +671,24 @@ public class EventFacadeEjb implements EventFacade {
 		return uuids;
 	}
 
+	@Override
+	public String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+
+		cq.select(eventRoot.get(Event.UUID));
+		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
 
 		if (event.getSuperordinateEvent() != null) {
@@ -718,6 +740,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -813,6 +836,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -826,7 +850,7 @@ public class EventFacadeEjb implements EventFacade {
 	/**
 	 * Archives all events that have not been changed for a defined amount of days
 	 * 
-	 * @param daysAfterEventsGetsArchived
+	 * @param daysAfterEventGetsArchived
 	 *            defines the amount of days
 	 */
 	@Override

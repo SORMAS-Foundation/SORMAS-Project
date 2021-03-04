@@ -107,6 +107,7 @@ public interface Validations {
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
+	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
 	String sormasToSormasReturnCaseNotExists = "sormasToSormasReturnCaseNotExists";
 	String sormasToSormasReturnContactNotExists = "sormasToSormasReturnContactNotExists";

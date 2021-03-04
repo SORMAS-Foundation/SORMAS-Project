@@ -37,6 +37,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
@@ -131,6 +132,13 @@ public class SormasToSormasController {
 			options -> FacadeProvider.getSormasToSormasEventFacade().syncEntity(event.getUuid(), options),
 			SormasToSormasOptionsForm.forEvent(null),
 			shareInfo);
+	}
+
+	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {
+		shareHandleShare((options) -> {
+			FacadeProvider.getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
+			callback.run();
+		}, SormasToSormasOptionsForm.withoutOptions(), new SormasToSormasOptionsDto());
 	}
 
 	private void shareToSormasFromDetailPage(

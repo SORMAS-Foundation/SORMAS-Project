@@ -122,4 +122,6 @@ public interface ConfigFacade {
 	String getDemisJndiName();
 
 	boolean isAuditorAttributeLoggingEnabled();
+
+	int getStepSizeForCsvExport();
 }

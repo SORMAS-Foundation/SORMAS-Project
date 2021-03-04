@@ -322,10 +322,16 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
+				StringBuilder sb = new StringBuilder();
+				if (entity.getFollowUpComment() != null) {
+					sb.append(entity.getFollowUpComment()).append(" ");
+				}
 				contactService.cancelFollowUp(
 					entity,
-					I18nProperties
-						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
+					sb.append(
+						I18nProperties
+							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
+						.toString());
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
