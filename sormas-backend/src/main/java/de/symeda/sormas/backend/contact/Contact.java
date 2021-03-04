@@ -64,6 +64,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
@@ -73,7 +74,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
-public class Contact extends CoreAdo {
+public class Contact extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -860,12 +861,14 @@ public class Contact extends CoreAdo {
 		this.healthConditions = healthConditions;
 	}
 
+	@Override
 	@ManyToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
 		this.sormasToSormasOriginInfo = originInfo;
 	}

@@ -27,6 +27,7 @@ public class EventJurisdictionHelper {
 			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getResponsibleUserUuid())) {
 			return true;
 		}
+
 		return false;
 	}
 

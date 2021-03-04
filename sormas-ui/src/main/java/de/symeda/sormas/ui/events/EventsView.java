@@ -452,7 +452,11 @@ public class EventsView extends AbstractView {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
 						ControllerProvider.getEventController()
 							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.SurvnetGateway_sendShort), VaadinIcons.SHARE, selectedItem -> {
+						ControllerProvider.getEventController()
+							.sendAllSelectedToSurvnet(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");
