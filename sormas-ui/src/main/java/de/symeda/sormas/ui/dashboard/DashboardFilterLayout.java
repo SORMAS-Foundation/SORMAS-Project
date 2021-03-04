@@ -53,11 +53,11 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
-import de.symeda.sormas.ui.dashboard.surveillance.layout.DateTypeSelectorLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.components.datetypeselector.DateTypeSelectorComponent;
 
 @SuppressWarnings("serial")
 public class DashboardFilterLayout extends HorizontalLayout {
@@ -231,15 +231,17 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void createDateTypeSelectorFilter() {
-		DateTypeSelectorLayout dateTypeSelectorLayout = new DateTypeSelectorLayout();
-		dateTypeSelectorLayout.setValue(NewCaseDateType.MOST_RELEVANT);
-		dateTypeSelectorLayout.addValueChangeListener(e -> {
+		DateTypeSelectorComponent dateTypeSelectorComponent =
+			new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
+				.build();
+		dateTypeSelectorComponent.setValue(NewCaseDateType.MOST_RELEVANT);
+		dateTypeSelectorComponent.addValueChangeListener(e -> {
 			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
 			dashboardDataProvider.refreshData();
 			dashboardView.refreshDashboard();
 			((SurveillanceDashboardView) dashboardView).getSurveillanceOverviewLayout().refresh();
 		});
-		addComponent(dateTypeSelectorLayout);
+		addComponent(dateTypeSelectorComponent);
 	}
 
 	private HorizontalLayout createDateFilterButtonsLayout() {
