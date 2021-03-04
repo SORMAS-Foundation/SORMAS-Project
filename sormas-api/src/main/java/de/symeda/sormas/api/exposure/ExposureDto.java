@@ -91,6 +91,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_NAME = "deceasedPersonName";
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
 	public static final String EXPOSURE_ROLE = "exposureRole";
+	public static final String LARGE_ATTENDENCE_NUMBER = "largeAttendenceNumber";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -242,6 +243,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private String deceasedPersonName;
 	@SensitiveData
 	private String deceasedPersonRelation;
+	private YesNoUnknown largeAttendenceNumber;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -659,6 +661,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	public YesNoUnknown getLargeAttendenceNumber() {
+		return largeAttendenceNumber;
+	}
+
+	public void setLargeAttendenceNumber(YesNoUnknown largeAttendenceNumber) {
+		this.largeAttendenceNumber = largeAttendenceNumber;
 	}
 
 	@Override

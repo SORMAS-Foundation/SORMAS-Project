@@ -6753,13 +6753,18 @@ ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslat
 
 INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add optional translation to CampaignDiagramDefinition #4090');
 
--- 2020-12-21 Add facilities' address #4027
+-- 2021-03-03 Add facilities' address #4027
 ALTER TABLE facility ADD COLUMN street varchar(4096);
 ALTER TABLE facility ADD COLUMN housenumber varchar(512);
 ALTER TABLE facility ADD COLUMN additionalinformation varchar(255);
 ALTER TABLE facility ADD COLUMN postalcode varchar(512);
 ALTER TABLE facility ADD COLUMN areatype varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
+INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities address #4027');
 
+-- 2021-03-04 Extend exposure #4549
+ALTER TABLE exposures ADD COLUMN largeattendencenumber varchar(255);
+ALTER TABLE exposures_history ADD COLUMN largeattendencenumber varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (341, 'Extend exposure #4549');
 -- *** Insert new sql commands BEFORE this line ***

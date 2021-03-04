@@ -169,6 +169,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String deceasedPersonName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String deceasedPersonRelation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown largeAttendenceNumber;
 
 	@Override
 	public String getI18nPrefix() {
@@ -589,5 +591,13 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	public YesNoUnknown getLargeAttendenceNumber() {
+		return largeAttendenceNumber;
+	}
+
+	public void setLargeAttendenceNumber(YesNoUnknown largeAttendenceNumber) {
+		this.largeAttendenceNumber = largeAttendenceNumber;
 	}
 }
