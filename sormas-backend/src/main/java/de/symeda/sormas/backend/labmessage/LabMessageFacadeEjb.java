@@ -106,12 +106,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public void save(LabMessageDto dto) {
+	public LabMessageDto save(LabMessageDto dto) {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
 		labMessage = fromDto(dto, labMessage, true);
 		labMessageService.ensurePersisted(labMessage);
+
+		return toDto(labMessage);
 	}
 
 	public LabMessageDto toDto(LabMessage source) {
@@ -304,6 +306,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			logger.warn("Synchronization date could not be found for the last successful lab message retrieval. Falling back to start date.");
 			return latestSuccess.getStartDate().getTime();
 		}
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return labMessageService.exists(uuid);
 	}
 
 	@LocalBean

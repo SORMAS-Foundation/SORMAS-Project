@@ -9,7 +9,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface LabMessageFacade {
 
-	void save(LabMessageDto dto);
+	LabMessageDto save(LabMessageDto dto);
 
 	LabMessageDto getByUuid(String uuid);
 
@@ -24,4 +24,6 @@ public interface LabMessageFacade {
 	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages();
+
+	boolean exists(String uuid);
 }
