@@ -1259,6 +1259,7 @@ public interface Captions {
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
+	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
