@@ -1,15 +1,14 @@
 # Sormas Testing Suite
 
-
-# Integration into Jenkins CI/CD
+## Integration into Jenkins CI/CD
 
 The integration of Katalon Studio in Jenkins is quite simple:
 
-## Prequisites
+### Prequisites
 
 System / OS packages needed to be installed:
 
-- xvfb 
+- xvfb
 - firefox(-esr)
 
 
@@ -27,7 +26,7 @@ In Katalon-Studio open the dialog Window->Command Palette
 
 Select the option "Generate Command for Console Mode"
 
-Copy the String from the field "Katalon API Key" and insert it into the build step from jenkins. 
+Copy the String from the field "Katalon API Key" and insert it into the build step from jenkins.
 
 ### Jenkins Project "GitHub" config
 
@@ -63,7 +62,7 @@ Don't forget to adjust the Post build configuration.
 ![alt text](images/J_config_testing_subfolder.png "Subfolder config")
 
 ## Katalon command line options (useful ones)
-Source: https://docs.katalon.com/katalon-studio/docs/console-mode-execution.html#general-options
+Source: <https://docs.katalon.com/katalon-studio/docs/console-mode-execution.html#general-options>
 
 <table>
    <thead>

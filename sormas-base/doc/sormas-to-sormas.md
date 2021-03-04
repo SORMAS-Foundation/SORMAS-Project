@@ -33,14 +33,14 @@ There are also several options to chose from:
 * Comment: free text
 
 ### Share multiple items
-Sharing multiple items is possible on the directory pages using the *Bulk edit mode* that allows the selection of multiple rows and clicking the *Share* action from *Bulk actions*. 
+Sharing multiple items is possible on the directory pages using the *Bulk edit mode* that allows the selection of multiple rows and clicking the *Share* action from *Bulk actions*.
 
 ## Technical details
 
 Feature setup can be done with the provided scripts:
-* `s2s-generate-cert.sh` is for creating a self signed certificate that will be used for encrypting data before sending to the other instance, and a csv file which contains the necessary data for recognizing and communicating to this server; 
+* `s2s-generate-cert.sh` is for creating a self signed certificate that will be used for encrypting data before sending to the other instance, and a csv file which contains the necessary data for recognizing and communicating to this server;
 this file together with the certificate should be shared with others to set up their system to allow accepting share requests from this server.
-* `s2s-import-to-truststore.sh` is for storing server information and certificate of other instances. This certificate is used when decrypting the date coming from other instances. The certificate is added into a trust store, and the server information is appended to the list of the known servers stored in a csv file.  
+* `s2s-import-to-truststore.sh` is for storing server information and certificate of other instances. This certificate is used when decrypting the date coming from other instances. The certificate is added into a trust store, and the server information is appended to the list of the known servers stored in a csv file.
 
 The certificates are of type X.509 and generated using openssl.
 
@@ -51,4 +51,3 @@ The data is encrypted/decrypted using the *Bouncy Castle Crypto APIs* java libra
 
 ## Setup
 To set up the instances see [SORMAS to SORMAS certificate guide](../../GUIDE_SORMAS2SORMAS_CERTIFICATE.md)
- 

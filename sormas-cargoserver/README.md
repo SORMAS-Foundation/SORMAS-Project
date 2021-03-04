@@ -1,4 +1,4 @@
-## SORMAS development server setup using maven-cargo
+# SORMAS development server setup using maven-cargo
 
 This module installs a local Payara server, deploys the previously built SORMAS artifacts and starts the server.
 
@@ -21,14 +21,17 @@ properties are overwritten. Both `custom.env` and `custom.properties` are exclud
 customizations are protected from accidental commits.
 
 To run the cargo server against an existing database, configure
-```
+
+```env
 SORMAS_POSTGRES_SERVER=<database-server>
 SORMAS_POSTGRES_PORT=<database-port>
 ```
+
 in file `custom.env` and skip the `docker-compose` step in the server setup (see file `custom.env.example`).
 
 To add properties to the generated `sormas.properties`, configure e.g.
-```
+
+```.properties
 custombranding=true
 custombranding.name=<name>
 custombranding.logo.path=<logopath>
@@ -39,49 +42,51 @@ After adjusting the configurations, (re)run `mvn install` and (re)start the serv
 
 ## Build the project
 
-```
+```bash
 (cd sormas-base && mvn install)
 ```
 
 ### Start SORMAS-PostgreSQL docker container
 
-```
+```bash
 (cd sormas-cargoserver && docker-compose up -d)
 ```
 
 ## Start local SORMAS server
 
-```
+```bash
 (cd sormas-cargoserver && mvn cargo:run)
 ```
 
 ## Visit
 
-Once the deployment is completed, you can navigate to `http://localhost:6080/sormas-ui` and login as `admin` with 
+Once the deployment is completed, you can navigate to `http://localhost:6080/sormas-ui` and login as `admin` with
 password `sadmin`.
 
 ## Stop local SORMAS server
 
-```
+```bash
 (cd sormas-cargoserver && mvn cargo:stop)
 ```
 
 ## Stop DB SORMAS-PostgreSQL docker container
 
-```
+```bash
 (cd sormas-cargoserver && docker-compose down)
 ```
 
 ## Remove docker volume (if intended)
 
 The SORMAS-PostgreSQL docker container uses a named docker volume:
-```
+
+```bash
 $ docker volume ls
 DRIVER              VOLUME NAME
 local               sormas-cargoserver_psqldata_cargoserver
 ```
 
 To remove this docker volume:
-```
-$ sudo docker volume rm sormas-cargoserver_psqldata_cargoserver
+
+```bash
+sudo docker volume rm sormas-cargoserver_psqldata_cargoserver
 ```
