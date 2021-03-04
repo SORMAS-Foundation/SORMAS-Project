@@ -636,6 +636,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+		// TODO This is a workaround for transferring the followup comment while converting a contact to a case. This can be removed if the followup for cases is implemented in the mobile app
+		caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 		return caze;
 	}
 
@@ -655,6 +657,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData) {
 		cazeData.setEpiData(contact.getEpiData());
+		cazeData.setFollowUpComment(contact.getFollowUpComment());
 	}
 
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, PersonDto person, Disease eventDisease) {
