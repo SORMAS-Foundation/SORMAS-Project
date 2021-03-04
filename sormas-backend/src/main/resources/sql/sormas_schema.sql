@@ -6767,6 +6767,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilitie
 ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
 ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add event management status to Event #4255');
+INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add event management status to Event #4255');
 
 -- *** Insert new sql commands BEFORE this line ***
