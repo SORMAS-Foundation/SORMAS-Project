@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
 import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -66,6 +67,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 	private HorizontalLayout survNetLayout;
@@ -89,6 +91,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
@@ -141,6 +144,19 @@ public class EventDataView extends AbstractEventView {
 		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(event, sormasToSormasEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
 
 		VerticalLayout shortcutLinksLayout = new VerticalLayout();
 		shortcutLinksLayout.setMargin(false);

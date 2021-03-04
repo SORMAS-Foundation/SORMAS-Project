@@ -351,6 +351,7 @@
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     app:softRequired="true"
                     app:value="@={data.srcFirstName}" />
 
@@ -359,6 +360,7 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     app:softRequired="true"
                     app:value="@={data.srcLastName}" />
 
@@ -374,6 +376,7 @@
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     app:softRequired="true"
                     app:value="@={data.srcTelNo}" />
 
@@ -382,6 +385,7 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventSrcType}"
                     app:dependencyParentValue="@{EventSourceType.HOTLINE_PERSON}"
+                    app:dependencyParentValue2="@{EventSourceType.INSTITUTIONAL_PARTNER}"
                     app:value="@={data.srcEmail}" />
 
             </LinearLayout>
