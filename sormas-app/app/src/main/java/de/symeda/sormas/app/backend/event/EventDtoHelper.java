@@ -119,7 +119,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
 
 		target.setSormasToSormasOriginInfo(
-				sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
@@ -206,6 +206,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
 		}
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setEventManagementStatus(source.getEventManagementStatus());

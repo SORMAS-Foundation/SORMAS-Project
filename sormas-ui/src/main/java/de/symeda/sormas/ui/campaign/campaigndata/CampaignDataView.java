@@ -42,10 +42,10 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormElementImportance;
+import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -239,8 +239,9 @@ public class CampaignDataView extends AbstractCampaignView {
 		if (campaignCombo.getValue() != null) {
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
-				Button campaignFormButton = ButtonHelper
-					.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
+				Button campaignFormButton = ButtonHelper.createButton(
+					campaignForm.toString(),
+					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				newFormLayout.addComponent(campaignFormButton);
 			}
@@ -315,7 +316,7 @@ public class CampaignDataView extends AbstractCampaignView {
 							caption = translations.getTranslations()
 								.stream()
 								.filter(t -> t.getElementId().equals(element.getId()))
-								.map(CampaignFormTranslation::getCaption)
+								.map(TranslationElement::getCaption)
 								.findFirst()
 								.orElse(null);
 						}

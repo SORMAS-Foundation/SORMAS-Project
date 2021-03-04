@@ -1,11 +1,9 @@
-package de.symeda.sormas.api.campaign.form;
+package de.symeda.sormas.api.campaign.data.translation;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CampaignFormTranslation implements Serializable {
-
-	private static final long serialVersionUID = 2230535709979088957L;
+public class TranslationElement implements Serializable {
 
 	private String elementId;
 	private String caption;
@@ -32,11 +30,12 @@ public class CampaignFormTranslation implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		CampaignFormTranslation that = (CampaignFormTranslation) o;
-		return Objects.equals(elementId, that.elementId) &&
-				Objects.equals(caption, that.caption);
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		TranslationElement that = (TranslationElement) o;
+		return Objects.equals(elementId, that.elementId) && Objects.equals(caption, that.caption);
 	}
 
 	@Override

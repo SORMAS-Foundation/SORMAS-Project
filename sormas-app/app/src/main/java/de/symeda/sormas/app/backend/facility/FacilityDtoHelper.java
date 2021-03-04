@@ -169,6 +169,11 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 		target.setRegion(lastRegion);
 
 		target.setCity(source.getCity());
+		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAreaType(source.getAreaType());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 		target.setPublicOwnership(source.isPublicOwnership());

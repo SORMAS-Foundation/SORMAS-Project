@@ -6747,6 +6747,21 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_ev
 
 INSERT INTO schema_version (version_number, comment) VALUES (338, '[SORMAS 2 SORMAS] Send and receive Events #4348');
 
+-- 2021-02-28 Add optional translation to CampaignDiagramDefinition #4090
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaigndiagramtranslations json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add optional translation to CampaignDiagramDefinition #4090');
+
+-- 2020-12-21 Add facilities' address #4027
+ALTER TABLE facility ADD COLUMN street varchar(4096);
+ALTER TABLE facility ADD COLUMN housenumber varchar(512);
+ALTER TABLE facility ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE facility ADD COLUMN postalcode varchar(512);
+ALTER TABLE facility ADD COLUMN areatype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
+
 --2021-02-23 Add event management status to Event #4255
 
 ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);

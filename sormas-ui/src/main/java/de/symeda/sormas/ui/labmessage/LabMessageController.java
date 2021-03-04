@@ -66,15 +66,20 @@ public class LabMessageController {
 
 	}
 
-	public void show(String uuid) {
+	public void show(String uuid, Runnable onShare) {
 
 		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
-
-		LabMessageEditForm form = new LabMessageEditForm(true);
-		form.setWidth(550, Sizeable.Unit.PIXELS);
-		VerticalLayout layout = new VerticalLayout(form);
+		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
-		VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
+
+		Window window = VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
+		LabMessageEditForm form = new LabMessageEditForm(true, newDto.isProcessed(), () -> {
+			window.close();
+			onShare.run();
+		});
+		form.setWidth(550, Sizeable.Unit.PIXELS);
+		layout.addComponent(form);
+
 		form.setValue(newDto);
 	}
 
@@ -465,7 +470,7 @@ public class LabMessageController {
 	}
 
 	private void showFormWithLabMessage(LabMessageDto labMessageDto, CommitDiscardWrapperComponent createComponent, Window window, String heading) {
-		LabMessageEditForm form = new LabMessageEditForm(true);
+		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
 		form.setValue(labMessageDto);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 		HorizontalLayout layout = new HorizontalLayout(form, createComponent);

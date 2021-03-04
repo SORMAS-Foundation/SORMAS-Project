@@ -117,6 +117,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
 
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
 
