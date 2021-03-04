@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -47,6 +48,8 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.stream.Stream;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -102,8 +105,7 @@ public class EventParticipantsView extends AbstractEventView {
 		addHeaderComponent(exportPopupButton);
 
 		{
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.EVENT_PARTICIPANTS);
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 
