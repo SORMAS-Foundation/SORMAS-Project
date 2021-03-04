@@ -66,6 +66,8 @@ public class SampleExportDto implements Serializable {
 	private SampleExportMaterial sampleSampleExportMaterial;
 	private String samplePurpose;
 	private SampleSource sampleSource;
+	private SamplingReason samplingReason;
+	private String samplingReasonDetails;
 	private String lab;
 	private PathogenTestResultType pathogenTestResult;
 	private Boolean pathogenTestingRequested;
@@ -120,6 +122,7 @@ public class SampleExportDto implements Serializable {
 	public SampleExportDto(long id, String uuid, String labSampleId, Date sampleReportDate,String epidNumber, String casePersonFirstName, String casePersonLastName, String contactPersonFirstName, String contactPersonLastName,String eventParticipantFirstName, String eventParticipantLastName,
 						   Disease caseDisease, String caseDiseaseDetails, Disease contactDisease, String contactDiseaseDetails, Disease eventDisease, String eventDiseaseDetails,
 						   Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
+						   SamplingReason samplingReason, String samplingReasonDetails,
 						   SampleSource sampleSource, String laboratory, String laboratoryDetails,
 						   PathogenTestResultType pathogenTestResult, Boolean pathogenTestingRequested, String requestedPathogenTests, String requestedOtherPathogenTests,
 						   Boolean additionalTestingRequested, String requestedAdditionalTests, String requestedOtherAdditionalTests, boolean shipped, Date shipmentDate,
@@ -182,6 +185,8 @@ public class SampleExportDto implements Serializable {
 		if (samplePurpose != null)
 			this.samplePurpose = samplePurpose.toString();
 		this.sampleSource = sampleSource;
+		this.samplingReason = samplingReason;
+		this.samplingReasonDetails = samplingReasonDetails;
 		this.lab = FacilityHelper.buildFacilityString(labUuid, laboratory, laboratoryDetails);
 		this.pathogenTestResult = pathogenTestResult;
 		this.pathogenTestingRequested = pathogenTestingRequested;
@@ -409,6 +414,16 @@ public class SampleExportDto implements Serializable {
 	}
 
 	@Order(14)
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	@Order(15)
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	@Order(16)
 	public String getLab() {
 		return lab;
 	}
@@ -417,7 +432,7 @@ public class SampleExportDto implements Serializable {
 		this.lab = lab;
 	}
 
-	@Order(15)
+	@Order(17)
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
@@ -426,7 +441,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult = pathogenTestResult;
 	}
 
-	@Order(16)
+	@Order(18)
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
 	}
@@ -435,7 +450,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestingRequested = pathogenTestingRequested;
 	}
 
-	@Order(17)
+	@Order(19)
 	public Set<PathogenTestType> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}
@@ -444,7 +459,7 @@ public class SampleExportDto implements Serializable {
 		this.requestedPathogenTests = requestedPathogenTests;
 	}
 
-	@Order(18)
+	@Order(20)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}

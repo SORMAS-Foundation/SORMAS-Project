@@ -545,6 +545,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				sample.get(Sample.SAMPLE_SOURCE),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
