@@ -98,8 +98,6 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.OCCUPATION_TYPE),
 
 			caseJoins.getSymptoms().get(Symptoms.SYMPTOMATIC),
-			caseRoot.get(Case.COVID_TEST_REASON),
-			caseRoot.get(Case.COVID_TEST_REASON_DETAILS),
 			caseJoins.getSymptoms().get(Symptoms.ONSET_DATE),
 
 			activityMappingYn,
@@ -201,6 +199,8 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			if (caseSamples != null && caseSamples.size() > 0) {
 				Sample firstSample = caseSamples.get(0);
 				caze.setSampleDate(firstSample.getSampleDateTime());
+				caze.setPcrReason(firstSample.getSamplingReason());
+				caze.setOtherPcrReason(firstSample.getSamplingReasonDetails());
 
 				List<PathogenTest> sortedTests =
 					firstSample.getPathogenTests().stream().sorted(Comparator.comparing(PathogenTest::getTestDateTime)).collect(Collectors.toList());

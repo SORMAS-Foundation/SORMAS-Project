@@ -19,9 +19,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.QuarantineReason;
+import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
@@ -62,7 +62,7 @@ public class BAGExportCaseDto implements Serializable {
 
 	private YesNoUnknown symptomatic;
 
-	private CovidTestReason pcrReason;
+	private SamplingReason pcrReason;
 	private String otherPcrReason;
 
 	private Date symptomOnsetDate;
@@ -125,7 +125,7 @@ public class BAGExportCaseDto implements Serializable {
 							String phoneNumber, String mobileNumber, String emailAddress,
 							Sex sex, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							OccupationType occupationType,
-							boolean symptomatic, CovidTestReason pcrReason, String otherPcrReason, Date symptomOnsetDate,
+							boolean symptomatic, Date symptomOnsetDate,
 							String activityMappingYn,
 							Date contactTracingContactDate,
 							YesNoUnknown wasInQuarantineBeforeIsolation, QuarantineReason quarantineReasonBeforeIsolation, String quarantineReasonBeforeIsolationDetails,
@@ -150,8 +150,6 @@ public class BAGExportCaseDto implements Serializable {
 		this.birthDate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.occupationType = occupationType;
 		this.symptomatic = symptomatic ? YesNoUnknown.YES : YesNoUnknown.NO;
-		this.pcrReason = pcrReason;
-		this.otherPcrReason = otherPcrReason;
 		this.symptomOnsetDate = symptomOnsetDate;
 		this.activityMappingYn = activityMappingYn;
 		this.contactTracingContactDate = contactTracingContactDate;
@@ -374,11 +372,11 @@ public class BAGExportCaseDto implements Serializable {
 	}
 
 	@Order(51)
-	public CovidTestReason getPcrReason() {
+	public SamplingReason getPcrReason() {
 		return pcrReason;
 	}
 
-	public void setPcrReason(CovidTestReason pcrReason) {
+	public void setPcrReason(SamplingReason pcrReason) {
 		this.pcrReason = pcrReason;
 	}
 

@@ -26,6 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -124,6 +125,17 @@ public class SampleListEntry extends HorizontalLayout {
 			} else {
 				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
 				topLeftLayout.addComponent(labLabel);
+			}
+
+			SamplingReason samplingReason = sample.getSamplingReason();
+			if (samplingReason != null) {
+				String samplingReasonCaption = samplingReason.toString();
+				if (samplingReason == SamplingReason.OTHER_REASON && sample.getSamplingReasonDetails() != null) {
+					samplingReasonCaption = sample.getSamplingReasonDetails();
+				}
+				Label samplingReasonLabel =
+					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
+				topLeftLayout.addComponent(samplingReasonLabel);
 			}
 		}
 
