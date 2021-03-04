@@ -1602,6 +1602,7 @@ public interface Captions {
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasReturn = "sormasToSormasReturn";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
+	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

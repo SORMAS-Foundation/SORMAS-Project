@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,24 +15,14 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-public class SormasToSormasApiConstants {
+import java.util.List;
 
-	public static final String SORMAS_REST_PATH = "/sormas-rest";
+import javax.ejb.Remote;
 
-	public static final String RESOURCE_PATH = "/sormasToSormas";
+@Remote
+public interface SormasToSormasLabMessageFacade {
 
-	public static final String CASE_ENDPOINT = "/cases";
+	void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	public static final String CASE_SYNC_ENDPOINT = "/cases/sync";
-
-	public static final String CONTACT_ENDPOINT = "/contacts";
-
-	public static final String CONTACT_SYNC_ENDPOINT = "/contacts/sync";
-
-	public static final String EVENT_ENDPOINT = "/events";
-
-	public static final String EVENT_SYNC_ENDPOINT = "/events/sync";
-
-	public static final String LAB_MESSAGE_ENDPOINT = "/labmessages";
-
+	void saveLabMessages(SormasToSormasEncryptedDataDto labMessages) throws SormasToSormasValidationException, SormasToSormasException;
 }
