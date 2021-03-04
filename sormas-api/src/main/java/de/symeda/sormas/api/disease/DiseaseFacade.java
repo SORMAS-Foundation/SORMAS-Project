@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -34,5 +35,6 @@ public interface DiseaseFacade {
 		Date from,
 		Date to,
 		Date previousFromDate,
-		Date previousToDate);
+		Date previousToDate,
+		NewCaseDateType newCaseDateType);
 }
