@@ -35,6 +35,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String CASE_COUNT = "caseCount";
 	public static final String DEATH_COUNT = "deathCount";
@@ -63,6 +64,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private EventManagementStatus eventManagementStatus;
 	private long participantCount;
 	private long caseCount;
 	private long deathCount;
@@ -97,6 +99,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
+		EventManagementStatus eventManagementStatus,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -132,6 +135,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
+		this.eventManagementStatus = eventManagementStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -361,6 +365,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public String getAddress() {
 		return getEventLocation().getAddress();
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public EventReferenceDto toReference() {

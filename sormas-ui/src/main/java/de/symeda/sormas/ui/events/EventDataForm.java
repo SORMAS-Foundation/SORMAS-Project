@@ -93,6 +93,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
 			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
+			fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
@@ -187,6 +188,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
+
+		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);

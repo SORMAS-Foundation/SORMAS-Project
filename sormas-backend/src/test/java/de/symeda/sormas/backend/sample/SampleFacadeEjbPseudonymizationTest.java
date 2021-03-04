@@ -298,10 +298,10 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// case samples not yet implemented
 		Optional<SampleDto> active3 = activeSamples.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
-		assertThat(active3.isPresent(), is(false));
+		assertThat(active3.isPresent(), is(true));
 
 		Optional<SampleDto> active4 = activeSamples.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst();
-		assertThat(active4.isPresent(), is(false));
+		assertThat(active4.isPresent(), is(true));
 	}
 
 	@Test
