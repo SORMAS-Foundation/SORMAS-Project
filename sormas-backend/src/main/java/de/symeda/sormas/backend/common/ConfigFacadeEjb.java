@@ -135,6 +135,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 
+	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -560,6 +562,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isAuditorAttributeLoggingEnabled() {
 		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
+	@Override
+	public int getStepSizeForCsvExport() {
+		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
 	@LocalBean
