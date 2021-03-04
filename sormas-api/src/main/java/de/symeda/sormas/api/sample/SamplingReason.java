@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 public enum SamplingReason {
 
@@ -25,11 +27,13 @@ public enum SamplingReason {
 	PROFESSIONAL_REASON,
 	QUARANTINE_REGULATIONS,
 	CONTACT_TO_CASE,
-	SWISS_COVID_APP_NOTIFICATION,
 	PLANNING_TO_TRAVEL,
 	RETURNING_TRAVELER,
 	PERSONAL_REASON,
 	MOVING_RETURNING_RETIREMENT_HOME,
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	SWISS_COVID_APP_NOTIFICATION,
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	QUARANTINE_END,
 	UNKNOWN,
 	OTHER_REASON;

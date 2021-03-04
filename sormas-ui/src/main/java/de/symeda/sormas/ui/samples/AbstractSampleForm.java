@@ -47,6 +47,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -106,11 +107,16 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
     //@formatter:on
 
 	public AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix);
+		super(type, propertyI18nPrefix, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(type, propertyI18nPrefix, true, null, fieldAccessCheckers);
+		super(
+			type,
+			propertyI18nPrefix,
+			true,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			fieldAccessCheckers);
 	}
 
 	protected void addCommonFields() {

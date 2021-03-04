@@ -44,6 +44,7 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -81,7 +82,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			SampleEditFragment.class,
 			null,
 			activityRootData,
-			null,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -166,7 +167,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 		samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
-		samplingReasonList = DataUtils.getEnumItems(SamplingReason.class, true);
+		samplingReasonList = DataUtils.getEnumItems(SamplingReason.class, true, getFieldVisibilityCheckers());
 
 		for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
 			requestedPathogenTests.clear();
