@@ -43,6 +43,7 @@ import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
@@ -128,6 +129,10 @@ public class FacadeProvider {
 
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+
+	public static EventImportFacade getEventImportFacade() {
+		return get().lookupEjbRemote(EventImportFacade.class);
 	}
 
 	public static EventParticipantFacade getEventParticipantFacade() {

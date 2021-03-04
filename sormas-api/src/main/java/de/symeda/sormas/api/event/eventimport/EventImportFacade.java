@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.caseimport;
+package de.symeda.sormas.api.event.eventimport;
 
 import javax.ejb.Remote;
 
@@ -21,23 +21,15 @@ import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 
 @Remote
-public interface CaseImportFacade {
+public interface EventImportFacade {
 
-	ImportLineResultDto<CaseImportEntities> importCaseData(
-		String[] values,
-		String[] entityClasses,
-		String[] entityProperties,
-		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries)
+	ImportLineResultDto<EventImportEntities> importEventData(
+            String[] values,
+            String[] entityClasses,
+            String[] entityProperties,
+            String[][] entityPropertyPaths,
+            boolean ignoreEmptyEntries)
 		throws InvalidColumnException;
 
-	ImportLineResultDto<CaseImportEntities> updateCaseWithImportData(
-		String personUuid,
-		String caseUuid,
-		String[] values,
-		String[] entityClasses,
-		String[][] entityPropertyPaths)
-		throws InvalidColumnException;
-
-	ImportLineResultDto<CaseImportEntities> saveImportedEntities(CaseImportEntities entities);
+	ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities);
 }
