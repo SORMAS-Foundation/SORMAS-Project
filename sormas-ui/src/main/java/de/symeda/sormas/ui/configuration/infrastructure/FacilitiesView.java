@@ -160,7 +160,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 						}
 						return caption;
 					},
-					createFileNameWithCurrentDate("sormas_facilities_", ".csv"),
+					ExportEntityName.FACILITIES,
 					null);
 
 			addExportButton(
@@ -170,7 +170,6 @@ public class FacilitiesView extends AbstractConfigurationView {
 					VaadinIcons.FILE_TEXT,
 					Captions.exportDetailed,
 					Strings.infoDetailedExport);
-		}
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
