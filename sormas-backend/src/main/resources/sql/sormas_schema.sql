@@ -6762,19 +6762,15 @@ ALTER TABLE facility ADD COLUMN areatype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
 
--- 2020-02-19 Add person email, person phone to LabMessage #4106
+-- 2020-03-04 Add person email, person phone, testResultVerified to LabMessage #4106
 ALTER TABLE labmessage ADD COLUMN personphone VARCHAR(255);
 ALTER TABLE labmessage ADD COLUMN personemail VARCHAR(255);
 ALTER TABLE labmessage_history ADD COLUMN personphone VARCHAR(255);
 ALTER TABLE labmessage_history ADD COLUMN personemail VARCHAR(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add person email, person phone to LabMessage #4106');
-
--- 2020-03-04 Add testResultVerified to LabMessage #4106
 ALTER TABLE labmessage ADD COLUMN testresultverified boolean DEFAULT false;
 ALTER TABLE labmessage_history ADD COLUMN testresultverified boolean DEFAULT false;
 UPDATE labmessage SET testresultverified = true;
 
-INSERT INTO schema_version (version_number, comment) VALUES (342, 'Add testResultVerified to LabMessage #4106');
+INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add person email, person phone, testResultVerified to LabMessage #4106');
 
 -- *** Insert new sql commands BEFORE this line ***
