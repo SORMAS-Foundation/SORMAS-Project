@@ -360,7 +360,7 @@ public class ExternalJournalService {
 	 *
 	 * @param person
 	 *            the person to validate
-	 * @return the result of the validation
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
 	 */
 	protected ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
@@ -481,5 +481,35 @@ public class ExternalJournalService {
 			.map(PatientDiaryValidationError::getErrorLanguageKey)
 			.map(I18nProperties::getValidationError)
 			.collect(Collectors.joining("\n"));
+	}
+
+	/** Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	 * Sets the person symptom journal status to DELETED if successful.
+	 *
+	 * @param person
+	 *            the person whose follow-up will be cancelled in the external journal
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
+	 */
+	public PatientDiaryResult deletePatientDiaryPerson(PersonDto person) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
+			Response response = invocationBuilder.delete();
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			boolean success = node.get("success").booleanValue();
+			String message = node.get("message").textValue();
+			if (!success) {
+				logger.warn("Could not cancel follow-up for patient diary person: " + message);
+			} else {
+				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
+				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
+				personFacade.savePerson(person);
+			}
+			return new PatientDiaryResult(success, message);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
+		}
 	}
 }

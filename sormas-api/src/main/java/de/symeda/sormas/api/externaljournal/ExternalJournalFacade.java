@@ -19,5 +19,5 @@ public interface ExternalJournalFacade {
 
 	ExternalJournalValidation validatePatientDiaryPerson(PersonDto person);
 
-
+	PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto personDto);
 }

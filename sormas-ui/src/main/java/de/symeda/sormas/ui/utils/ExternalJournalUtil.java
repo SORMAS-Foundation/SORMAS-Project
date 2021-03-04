@@ -169,10 +169,7 @@ public class ExternalJournalUtil {
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				600,
-				confirmed -> {if (confirmed) cancelClimedoFollowUp(personDto);});
-	}
-
-	private static void cancelClimedoFollowUp(PersonDto personDto) {
+				confirmed -> {if (confirmed) externalJournalFacade.cancelPatientDiaryFollowUp(personDto);});
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {

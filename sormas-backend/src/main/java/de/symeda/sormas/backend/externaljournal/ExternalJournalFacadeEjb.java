@@ -40,4 +40,8 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 		return externalJournalService.validatePatientDiaryPerson(person);
 	}
 
+	@Override
+	public PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto person) {
+		return externalJournalService.deletePatientDiaryPerson(person);
+	}
 }
