@@ -50,9 +50,6 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		filterLayout = new SurveillanceFilterLayout(this, dashboardDataProvider);
 		filterLayout.addDateTypeValueChangeListener(e -> {
 			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
-			dashboardDataProvider.refreshData();
-			refreshDashboard();
-			surveillanceOverviewLayout.refresh();
 		});
 		dashboardLayout.addComponent(filterLayout);
 
