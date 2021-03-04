@@ -1,20 +1,16 @@
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
@@ -24,6 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -98,7 +95,7 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		Button.ClickListener cancelListener = clickEvent -> cancelClimedoFollowUp(person);
+		Button.ClickListener cancelListener = clickEvent -> showCancelFollowupConfirmationPopup(person);
 		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
 		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.climedoOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
 		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
@@ -167,13 +164,16 @@ public class ExternalJournalUtil {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	private static void cancelClimedoFollowUp(PersonDto personDto) {
+	private static void showCancelFollowupConfirmationPopup(PersonDto personDto) {
 		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.cancelExternalFollowUpPopupTitle),
 				new Label(I18nProperties.getString(Strings.confirmationCancelExternalFollowUpPopup)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				600,
-				result -> {});
+				confirmed -> {if (confirmed) cancelClimedoFollowUp(personDto);});
+	}
+
+	private static void cancelClimedoFollowUp(PersonDto personDto) {
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
