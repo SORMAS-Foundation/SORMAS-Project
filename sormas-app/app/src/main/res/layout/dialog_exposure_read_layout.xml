@@ -218,10 +218,10 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/exposure_largeAttendenceNumber"
+                    android:id="@+id/exposure_largeAttendanceNumber"
                     app:dependencyParentField="@{exposureExposureType}"
                     app:dependencyParentValue="@{ExposureType.GATHERING}"
-                    app:value="@{data.largeAttendenceNumber}"
+                    app:value="@{data.largeAttendanceNumber}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

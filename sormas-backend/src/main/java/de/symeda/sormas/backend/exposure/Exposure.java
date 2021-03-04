@@ -125,7 +125,7 @@ public class Exposure extends AbstractDomainObject {
 	private String deceasedPersonRelation;
 
 	// Fields specific to ExposureType.GATHERING
-	private YesNoUnknown largeAttendenceNumber;
+	private YesNoUnknown largeAttendanceNumber;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -604,11 +604,11 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getLargeAttendenceNumber() {
-		return largeAttendenceNumber;
+	public YesNoUnknown getLargeAttendanceNumber() {
+		return largeAttendanceNumber;
 	}
 
-	public void setLargeAttendenceNumber(YesNoUnknown largeAttendenceNumber) {
-		this.largeAttendenceNumber = largeAttendenceNumber;
+	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
+		this.largeAttendanceNumber = largeAttendanceNumber;
 	}
 }

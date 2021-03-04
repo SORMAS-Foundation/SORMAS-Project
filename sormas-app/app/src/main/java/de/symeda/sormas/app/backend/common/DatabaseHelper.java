@@ -2032,7 +2032,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 281:
 				currentVersion = 281;
 
-				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN largeAttendenceNumber varchar(255);");
+				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN largeAttendanceNumber varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;

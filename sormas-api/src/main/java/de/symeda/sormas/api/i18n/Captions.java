@@ -1028,7 +1028,7 @@ public interface Captions {
 	String Exposure_handlingAnimals = "Exposure.handlingAnimals";
 	String Exposure_handlingSamples = "Exposure.handlingSamples";
 	String Exposure_indoors = "Exposure.indoors";
-	String Exposure_largeAttendenceNumber = "Exposure.largeAttendenceNumber";
+	String Exposure_largeAttendanceNumber = "Exposure.largeAttendanceNumber";
 	String Exposure_location = "Exposure.location";
 	String Exposure_longFaceToFaceContact = "Exposure.longFaceToFaceContact";
 	String Exposure_meansOfTransport = "Exposure.meansOfTransport";
