@@ -22,7 +22,6 @@ import java.util.Set;
 
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;

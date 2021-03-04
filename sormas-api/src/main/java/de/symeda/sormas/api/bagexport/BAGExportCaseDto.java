@@ -21,13 +21,13 @@ import java.util.Date;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.QuarantineReason;
-import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 

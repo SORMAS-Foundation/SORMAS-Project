@@ -156,7 +156,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 281;
+	public static final int DATABASE_VERSION = 282;
 
 	private static DatabaseHelper instance = null;
 
@@ -2013,11 +2013,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 279;
 
 				getDao(Event.class)
-						.executeRaw("ALTER TABLE events ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+					.executeRaw("ALTER TABLE events ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN ownershipHandedOver boolean;");
 
 				getDao(EventParticipant.class).executeRaw(
-						"ALTER TABLE eventParticipants ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+					"ALTER TABLE eventParticipants ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
 				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN ownershipHandedOver boolean;");
 
 			case 280:
@@ -2028,6 +2028,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN additionalInformation varchar(255);");
 				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN postalCode varchar(512);");
 				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN areaType varchar(255);");
+
+			case 281:
+				currentVersion = 281;
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplingReason varchar(255);");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplingReasonDetails text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

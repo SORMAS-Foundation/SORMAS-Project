@@ -46,7 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -54,6 +53,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;

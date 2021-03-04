@@ -23,7 +23,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.SamplingReason;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
