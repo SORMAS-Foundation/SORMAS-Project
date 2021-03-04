@@ -14,13 +14,12 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -188,7 +187,7 @@ public class ExternalJournalUtil {
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
-			PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 			showPatientRegisterResultPopup(registerResult);
 		}
 	}
@@ -212,7 +211,7 @@ public class ExternalJournalUtil {
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 	}
 
-	private static void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {
+	private static void showPatientRegisterResultPopup(PatientDiaryResult registerResult) {
 		VerticalLayout registrationResultLayout = new VerticalLayout();
 		registrationResultLayout.setMargin(true);
 		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));

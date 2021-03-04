@@ -51,7 +51,7 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -313,7 +313,7 @@ public class ExternalJournalService {
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person) {
+	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
@@ -329,10 +329,10 @@ public class ExternalJournalService {
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
 				personFacade.savePerson(person);
 			}
-			return new PatientDiaryRegisterResult(success, message);
+			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			return new PatientDiaryRegisterResult(false, e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
 		}
 	}
 
