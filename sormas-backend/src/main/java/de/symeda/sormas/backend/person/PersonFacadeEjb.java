@@ -194,7 +194,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
+			return persons.stream().map(PersonFacadeEjb::toSimilarPersonDto).collect(Collectors.toList());
 		}
 	}
 
@@ -257,7 +257,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(c -> toReferenceDto(c)).orElse(null);
+		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toReferenceDto).orElse(null);
 	}
 
 	@Override
@@ -344,7 +344,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		/**
+		/*
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.
 		 */
@@ -925,7 +925,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
 
-		SimilarPersonDto dto = new SimilarPersonDto(
+		return new SimilarPersonDto(
 			entity.getUuid(),
 			entity.getFirstName(),
 			entity.getLastName(),
@@ -938,7 +938,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getAddress().getCity(),
 			entity.getNationalHealthId(),
 			entity.getPassportNumber());
-		return dto;
 	}
 
 	public static PersonDto toDto(Person source) {
