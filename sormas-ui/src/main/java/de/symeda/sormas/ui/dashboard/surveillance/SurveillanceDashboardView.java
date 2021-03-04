@@ -20,10 +20,11 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.surveillance.components.SurveillanceFilterLayout;
 
 @SuppressWarnings("serial")
 public class SurveillanceDashboardView extends AbstractDashboardView {
@@ -31,7 +32,7 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/surveillance";
 
 	protected DashboardDataProvider dashboardDataProvider;
-	protected DashboardFilterLayout filterLayout;
+	protected SurveillanceFilterLayout filterLayout;
 
 	protected SurveillanceOverviewLayout surveillanceOverviewLayout;
 	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
@@ -46,7 +47,13 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
 			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
-		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		filterLayout = new SurveillanceFilterLayout(this, dashboardDataProvider);
+		filterLayout.addDateTypeValueChangeListener(e -> {
+			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
+			dashboardDataProvider.refreshData();
+			refreshDashboard();
+			surveillanceOverviewLayout.refresh();
+		});
 		dashboardLayout.addComponent(filterLayout);
 
 		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);
@@ -93,9 +100,5 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		//Update disease carousel
 		if (diseaseCarouselLayout != null)
 			diseaseCarouselLayout.refresh();
-	}
-
-	public SurveillanceOverviewLayout getSurveillanceOverviewLayout() {
-		return surveillanceOverviewLayout;
 	}
 }
