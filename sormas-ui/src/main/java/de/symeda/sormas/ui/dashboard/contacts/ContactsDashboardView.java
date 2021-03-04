@@ -102,8 +102,6 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			navigateToDashboardView(e);
 		});
 
-		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
-
 		rowsLayout = new VerticalLayout();
 		rowsLayout.setMargin(false);
 		rowsLayout.setSpacing(false);
