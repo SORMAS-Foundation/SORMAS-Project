@@ -36,6 +36,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setTestedDisease(Disease.CORONAVIRUS);
 		source.setTestDateTime(new Date());
 		source.setTestResult(PathogenTestResultType.NEGATIVE);
+		source.setTestResultVerified(true);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);

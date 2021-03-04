@@ -29,6 +29,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
+	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -59,6 +60,7 @@ public class LabMessageDto extends EntityDto {
 	private Disease testedDisease;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
+	private boolean testResultVerified;
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
@@ -187,6 +189,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setTestResult(PathogenTestResultType testResult) {
 		this.testResult = testResult;
+	}
+
+	public boolean isTestResultVerified() {
+		return testResultVerified;
+	}
+
+	public void setTestResultVerified(boolean testResultVerified) {
+		this.testResultVerified = testResultVerified;
 	}
 
 	public String getPersonFirstName() {
