@@ -109,9 +109,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		}
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
-				&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
-			contentBinding.caseDataExternalToken.setVisibility(GONE);
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
@@ -135,7 +134,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 
-		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)) {
 			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
 		}
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
