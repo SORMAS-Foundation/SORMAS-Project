@@ -157,10 +157,7 @@ public class LabMessageFacadeEjbTest {
 
 	@Test
 	public void initializeFetchEventTest() {
-		MockedStatic mock = Mockito.mockStatic(DateHelper.class);
-		mock.when(DateHelper::now).thenReturn(1000L);
 		SystemEventDto systemEventDto = sut.initializeFetchEvent();
-		assertEquals(systemEventDto.getStartDate(), new Date(1000L));
 		assertEquals(systemEventDto.getAdditionalInfo(), null); // must be null for parsing the notification last update date
 		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);
 		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_LAB_MESSAGES);
