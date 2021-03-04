@@ -90,7 +90,7 @@ If it is not found there, you will be prompted to provide the path to the *sorma
     You must import the SSL certificate of the other server into the ``cacerts.jks`` of your sormas domain.
     * For getting the SSL certificate you can use ``openssl`` <br>
         e.g.
-        ```shell script
+        ```bash
         openssl s_client -showcerts -servername sormas.gesundheitsamt-musterhausen.de -connect sormas.gesundheitsamt-musterhausen.de:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > certificate.cer
         ```
     * To import the SSL certificate you can use ``keytool`` <br>
