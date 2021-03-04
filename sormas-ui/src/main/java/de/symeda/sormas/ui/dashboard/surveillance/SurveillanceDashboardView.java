@@ -20,14 +20,10 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.dashboard.surveillance.layout.DateTypeSelectorLayout;
 
 @SuppressWarnings("serial")
 public class SurveillanceDashboardView extends AbstractDashboardView {
@@ -53,23 +49,12 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
 
-		DateTypeSelectorLayout dateTypeSelectorLayout = new DateTypeSelectorLayout();
-		dateTypeSelectorLayout.setValue(NewCaseDateType.MOST_RELEVANT);
-		dateTypeSelectorLayout.addValueChangeListener(e -> {
-			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
-			dashboardDataProvider.refreshData();
-			refreshDashboard();
-			surveillanceOverviewLayout.refresh();
-		});
-		dashboardLayout.addComponent(dateTypeSelectorLayout);
-
 		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);
 		dashboardSwitcher.addValueChangeListener(e -> {
 			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
 			navigateToDashboardView(e);
 		});
 
-		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoSurveillanceDashboard));
 		dashboardLayout.setSpacing(false);
 
 		//add disease burden and cases
@@ -108,5 +93,9 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		//Update disease carousel
 		if (diseaseCarouselLayout != null)
 			diseaseCarouselLayout.refresh();
+	}
+
+	public SurveillanceOverviewLayout getSurveillanceOverviewLayout() {
+		return surveillanceOverviewLayout;
 	}
 }

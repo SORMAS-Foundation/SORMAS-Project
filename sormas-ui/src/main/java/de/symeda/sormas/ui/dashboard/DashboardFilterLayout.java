@@ -52,6 +52,8 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+import de.symeda.sormas.ui.dashboard.surveillance.layout.DateTypeSelectorLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -201,11 +203,25 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 
-		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setSizeUndefined();
-		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
-		addComponent(infoLabel);
-		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			DateTypeSelectorLayout dateTypeSelectorLayout = new DateTypeSelectorLayout();
+			dateTypeSelectorLayout.setValue(NewCaseDateType.MOST_RELEVANT);
+			dateTypeSelectorLayout.addValueChangeListener(e -> {
+				dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
+				dashboardDataProvider.refreshData();
+				dashboardView.refreshDashboard();
+				((SurveillanceDashboardView) dashboardView).getSurveillanceOverviewLayout().refresh();
+			});
+			addComponent(dateTypeSelectorLayout);
+		}
+
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoLabel.setSizeUndefined();
+			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+			addComponent(infoLabel);
+			setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
+		}
 
 		// Set initial date filter
 		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);
