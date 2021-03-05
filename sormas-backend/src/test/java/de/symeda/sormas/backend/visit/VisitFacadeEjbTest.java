@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -146,7 +147,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		final VisitCriteria visitCriteria = new VisitCriteria();
 		visitCriteria.contact(contactReferenceDto);
 		final List<VisitExportDto> visitsExportList =
-			getVisitFacade().getVisitsExportList(visitCriteria, VisitExportType.CONTACT_VISITS, 0, 10, null);
+			getVisitFacade().getVisitsExportList(visitCriteria, Collections.emptySet(), VisitExportType.CONTACT_VISITS, 0, 10, null);
 
 		assertNotNull(visitsExportList);
 		assertEquals(2, visitsExportList.size());
@@ -170,7 +171,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		final VisitCriteria visitCriteria2 = new VisitCriteria();
 		visitCriteria2.caze(new CaseReferenceDto(caze.getUuid()));
 		final List<VisitExportDto> visitsExportList2 =
-			getVisitFacade().getVisitsExportList(visitCriteria2, VisitExportType.CONTACT_VISITS, 0, 10, null);
+			getVisitFacade().getVisitsExportList(visitCriteria2, Collections.emptySet(), VisitExportType.CONTACT_VISITS, 0, 10, null);
 
 		assertNotNull(visitsExportList2);
 		assertEquals(2, visitsExportList2.size());

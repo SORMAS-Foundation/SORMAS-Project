@@ -83,7 +83,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.event(event.toReference());
 
-		List<EventParticipantExportDto> results = getEventParticipantFacade().getExportList(eventParticipantCriteria, 0, 100, Language.EN);
+		List<EventParticipantExportDto> results = getEventParticipantFacade().getExportList(eventParticipantCriteria, Collections.emptySet(), 0, 100, Language.EN);
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));

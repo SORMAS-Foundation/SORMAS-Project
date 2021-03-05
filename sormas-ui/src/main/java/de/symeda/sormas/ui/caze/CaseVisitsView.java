@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -100,7 +102,13 @@ public class CaseVisitsView extends AbstractCaseView {
 				VisitExportDto.class,
 				VisitExportType.CONTACT_VISITS,
 				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
-					.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+					.getVisitsExportList(
+						grid.getCriteria(),
+						grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet()),
+						VisitExportType.CONTACT_VISITS,
+						start,
+						max,
+						null),
 				(propertyId, type) -> {
 					String caption = findPrefixCaption(
 						propertyId,

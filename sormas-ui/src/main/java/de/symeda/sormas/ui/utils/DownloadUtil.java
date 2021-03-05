@@ -17,6 +17,38 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.CharMatcher;
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
@@ -66,36 +98,8 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static com.google.common.base.Predicates.or;
 
@@ -277,14 +281,17 @@ public final class DownloadUtil {
 		return populationDataStreamResource;
 	}
 
-	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, ExportEntityName entityName) {
+	public static StreamResource createCaseManagementExportResource(
+		CaseCriteria criteria,
+		Supplier<Collection<String>> selectedRows,
+		ExportEntityName entityName) {
 		String exportFileName = createFileNameWithCurrentDate(entityName, ".zip");
-		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, CaseExportType.CASE_MANAGEMENT, null);
+		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, selectedRows, CaseExportType.CASE_MANAGEMENT, null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(
 			PrescriptionExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					PrescriptionExportDto.I18N_PREFIX,
@@ -301,7 +308,7 @@ public final class DownloadUtil {
 		StreamResource treatmentsResource = createCsvExportStreamResource(
 			TreatmentExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					TreatmentExportDto.I18N_PREFIX,
@@ -318,7 +325,7 @@ public final class DownloadUtil {
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(
 			ClinicalVisitExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					ClinicalVisitExportDto.I18N_PREFIX,
@@ -452,7 +459,10 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, ExportEntityName entityName) {
+	public static StreamResource createVisitsExportStreamResource(
+		ContactCriteria contactCriteria,
+		Supplier<Set<String>> selectedRows,
+		ExportEntityName entityName) {
 		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
@@ -485,7 +495,7 @@ public final class DownloadUtil {
 
 				int startIndex = 0;
 				List<VisitSummaryExportDto> exportRows = FacadeProvider.getContactFacade()
-					.getVisitSummaryExportList(contactCriteria, 0, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
+					.getVisitSummaryExportList(contactCriteria, selectedRows.get(), 0, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
 					for (VisitSummaryExportDto exportRow : exportRows) {
@@ -505,7 +515,12 @@ public final class DownloadUtil {
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
 					exportRows = FacadeProvider.getContactFacade()
-						.getVisitSummaryExportList(contactCriteria, startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
+						.getVisitSummaryExportList(
+							contactCriteria,
+							selectedRows.get(),
+							startIndex,
+							DETAILED_EXPORT_STEP_SIZE,
+							I18nProperties.getUserLanguage());
 				}
 			}
 		},

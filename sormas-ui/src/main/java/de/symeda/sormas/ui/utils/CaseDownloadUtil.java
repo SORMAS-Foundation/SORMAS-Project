@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.function.Supplier;
 
 import com.vaadin.server.StreamResource;
 
@@ -35,18 +37,19 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 public class CaseDownloadUtil {
 
 	public static StreamResource createCaseExportResource(
-		CaseCriteria criteria,
-		CaseExportType exportType,
-		ExportConfigurationDto exportConfiguration) {
+			CaseCriteria criteria,
+			Supplier<Collection<String>> selectedRows,
+			CaseExportType exportType,
+			ExportConfigurationDto exportConfiguration) {
 
 		return DownloadUtil.createCsvExportStreamResource(
-			CaseExportDto.class,
-			exportType,
-			(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-				.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
-			CaseDownloadUtil::captionProvider,
-			ExportEntityName.CASES,
-			exportConfiguration);
+				CaseExportDto.class,
+				exportType,
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
+						.getExportList(criteria, selectedRows.get(), exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				CaseDownloadUtil::captionProvider,
+				ExportEntityName.CASES,
+				exportConfiguration);
 	}
 
 	public static String getPropertyCaption(String propertyId) {

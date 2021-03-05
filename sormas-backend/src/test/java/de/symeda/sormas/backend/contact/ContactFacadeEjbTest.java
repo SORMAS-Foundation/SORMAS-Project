@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -958,7 +959,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(visit);
 
 		List<ContactExportDto> results;
-		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -997,7 +998,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
-		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 		assertThat(results, hasSize(1));
 		{
 			ContactExportDto dto = results.get(0);
@@ -1051,7 +1052,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		visit21.getSymptoms().setBackache(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
 
-		final List<VisitSummaryExportDto> results = getContactFacade().getVisitSummaryExportList(null, 0, 100, Language.EN);
+		final List<VisitSummaryExportDto> results = getContactFacade().getVisitSummaryExportList(null, Collections.emptySet(), 0, 100, Language.EN);
 		assertNotNull(results);
 		assertEquals(3, results.size());
 
