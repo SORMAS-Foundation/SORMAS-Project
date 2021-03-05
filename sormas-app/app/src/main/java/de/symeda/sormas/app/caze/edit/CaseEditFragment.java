@@ -15,12 +15,15 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.webkit.WebView;
-
-import androidx.fragment.app.FragmentActivity;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.Date;
 import java.util.List;
+
+import android.webkit.WebView;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -77,9 +80,6 @@ import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
@@ -205,7 +205,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
-			contentBinding.caseDataExternalToken.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
