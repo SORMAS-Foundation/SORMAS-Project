@@ -409,8 +409,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
-		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
-		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
+		((TextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
+		((TextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
 
 	private void setOldFacilityValuesIfPossible(
