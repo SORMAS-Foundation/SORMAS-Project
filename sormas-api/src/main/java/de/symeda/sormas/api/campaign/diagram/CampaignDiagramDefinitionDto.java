@@ -1,10 +1,9 @@
 package de.symeda.sormas.api.campaign.diagram;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.campaign.CampaignDto;
-import de.symeda.sormas.api.utils.DataHelper;
-
 import java.util.List;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class CampaignDiagramDefinitionDto extends EntityDto {
 
@@ -14,6 +13,7 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
 	private boolean percentageDefault;
+	private List<CampaignDiagramTranslations> campaignDiagramTranslations;
 
 	public static CampaignDiagramDefinitionDto build() {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = new CampaignDiagramDefinitionDto();
@@ -67,5 +67,13 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	public void setPercentageDefault(boolean percentageDefault) {
 		this.percentageDefault = percentageDefault;
+	}
+
+	public List<CampaignDiagramTranslations> getCampaignDiagramTranslations() {
+		return campaignDiagramTranslations;
+	}
+
+	public void setCampaignDiagramTranslations(List<CampaignDiagramTranslations> campaignDiagramTranslations) {
+		this.campaignDiagramTranslations = campaignDiagramTranslations;
 	}
 }

@@ -31,6 +31,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -74,7 +78,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			new SormasToSormasShareInfoCriteria().contact(contactRef),
 			contact.getSormasToSormasOriginInfo() == null,
-			Captions.sormasToSormasCaseNotShared,
+			Captions.sormasToSormasContactNotShared,
 			(i) -> ControllerProvider.getSormasToSormasController().syncContact(contact, i));
 
 		initLayout(
@@ -90,10 +94,38 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			new SormasToSormasShareInfoCriteria().sample(sampleRef),
 			sample.getSormasToSormasOriginInfo() == null,
-			Captions.sormasToSormasCaseNotShared,
+			Captions.sormasToSormasSampleNotShared,
 			null);
 
 		initLayout(sample.getSormasToSormasOriginInfo(), sormasToSormasList, null, null);
+	}
+
+	public SormasToSormasListComponent(EventDto event, boolean shareEnabled) {
+		EventReferenceDto eventRef = event.toReference();
+
+		sormasToSormasList = new SormasToSormasList(
+			new SormasToSormasShareInfoCriteria().event(eventRef),
+			event.getSormasToSormasOriginInfo() == null,
+			Captions.sormasToSormasEventNotShared,
+			(i) -> ControllerProvider.getSormasToSormasController().syncEvent(event, i));
+
+		initLayout(
+			event.getSormasToSormasOriginInfo(),
+			sormasToSormasList,
+			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event, this) : null,
+			(e) -> ControllerProvider.getSormasToSormasController().returnEvent(event));
+	}
+
+	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
+		EventParticipantReferenceDto eventParticipantRef = eventParticipant.toReference();
+
+		sormasToSormasList = new SormasToSormasList(
+			new SormasToSormasShareInfoCriteria().eventParticipant(eventParticipantRef),
+			eventParticipant.getSormasToSormasOriginInfo() == null,
+			Captions.sormasToSormasEventParticipantNotShared,
+			null);
+
+		initLayout(eventParticipant.getSormasToSormasOriginInfo(), sormasToSormasList, null, null);
 	}
 
 	private void initLayout(
@@ -187,9 +219,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		private static final long serialVersionUID = 7462585357530141263L;
 
-		public SormasToSormasShareListEntry(
-			SormasToSormasShareInfoDto shareInfo,
-			Consumer<SormasToSormasShareInfoDto> syncListener) {
+		public SormasToSormasShareListEntry(SormasToSormasShareInfoDto shareInfo, Consumer<SormasToSormasShareInfoDto> syncListener) {
 			setMargin(false);
 			setSpacing(true);
 			setWidth(100, Unit.PERCENTAGE);

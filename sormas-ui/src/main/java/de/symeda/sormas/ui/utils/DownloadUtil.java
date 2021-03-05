@@ -17,36 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.slf4j.LoggerFactory;
-
+import com.google.common.base.CharMatcher;
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -64,7 +35,6 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
-
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -96,6 +66,38 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static com.google.common.base.Predicates.or;
 
 public final class DownloadUtil {
 
@@ -138,11 +140,11 @@ public final class DownloadUtil {
 	public static StreamResource createGridExportStreamResource(
 		Indexed container,
 		List<Column> columns,
-		String tempFilePrefix,
-		String fileName,
+		ExportEntityName entityName,
 		String... ignoredPropertyIds) {
 
-		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
+		String fileName = createFileNameWithCurrentDate(entityName, ".csv");
+		return new V7GridExportStreamResource(container, columns, fileName, ignoredPropertyIds);
 	}
 
 	public static StreamResource createFileStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
@@ -275,7 +277,8 @@ public final class DownloadUtil {
 		return populationDataStreamResource;
 	}
 
-	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
+	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".zip");
 		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, CaseExportType.CASE_MANAGEMENT, null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(
@@ -292,7 +295,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(
@@ -309,7 +312,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(
@@ -329,7 +332,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.CLINICAL_VISITS,
 			null);
 
 		StreamResource caseManagementStreamResource = new StreamResource(() -> {
@@ -449,8 +452,8 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, final String exportFileName) {
-
+	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
 				.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
@@ -528,9 +531,10 @@ public final class DownloadUtil {
 		Enum<?> exportType,
 		CsvStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 		CsvStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
-		String exportFileName,
+		ExportEntityName entityName,
 		ExportConfigurationDto exportConfiguration) {
 
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try {
 				CsvStreamUtils.writeCsvContentToStream(
@@ -579,7 +583,7 @@ public final class DownloadUtil {
 				exportTypeSupplier = exportTarget::visitExportTypes;
 
 			}
-			return exportTypeSupplier == null ? false : containsExportType(exportType, exportTypeSupplier);
+			return exportTypeSupplier != null && containsExportType(exportType, exportTypeSupplier);
 		}
 		return false;
 	}
@@ -600,7 +604,7 @@ public final class DownloadUtil {
 	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
 	 * </p>
 	 *
-	 * @param exportButton
+	 * @param exportComponent
 	 * @param closeListener
 	 */
 	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
@@ -621,7 +625,17 @@ public final class DownloadUtil {
 		dialog.addCloseListener(closeListener);
 	}
 
-	public static String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
-		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
+	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
+		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
+		String processedInstanceName = getProcessedName(instanceName);
+		String processedEntityName = getProcessedName(entityName.getLocalizedNameInSystemLanguage());
+		String exportDate = DateHelper.formatDateForExport(new Date());
+		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
+	}
+
+	private static String getProcessedName(String name) {
+		Predicate<Character> predicateMatcher = or(Character::isLetter, Character::isSpaceChar);
+		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(predicateMatcher::test).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }

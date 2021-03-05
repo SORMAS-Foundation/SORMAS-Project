@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -36,12 +38,15 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity
 @Audited
-public class EventParticipant extends CoreAdo {
+public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -53,6 +58,7 @@ public class EventParticipant extends CoreAdo {
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
+	public static final String SAMPLES = "samples";
 
 	private User reportingUser;
 	private Event event;
@@ -63,6 +69,8 @@ public class EventParticipant extends CoreAdo {
 	private Region region;
 	private District district;
 	private VaccinationInfo vaccinationInfo;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -151,5 +159,26 @@ public class EventParticipant extends CoreAdo {
 
 	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
 		this.vaccinationInfo = vaccinationInfo;
+	}
+
+	@Override
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

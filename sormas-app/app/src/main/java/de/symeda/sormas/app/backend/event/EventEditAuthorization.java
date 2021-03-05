@@ -12,18 +12,28 @@ public class EventEditAuthorization {
 	public static boolean isEventEditAllowed(Event event) {
 		User user = ConfigProvider.getUser();
 
-		return EventJurisdictionHelper.isInJurisdictionOrOwned(
-			UserRole.getJurisdictionLevel(user.getUserRoles()),
-			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createEventJurisdictionDto(event));
+		if (event.getSormasToSormasOriginInfo() != null) {
+			return event.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return !event.isOwnershipHandedOver()
+			&& EventJurisdictionHelper.isInJurisdictionOrOwned(
+				UserRole.getJurisdictionLevel(user.getUserRoles()),
+				JurisdictionHelper.createUserJurisdiction(user),
+				JurisdictionHelper.createEventJurisdictionDto(event));
 	}
 
 	public static boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
 		User user = ConfigProvider.getUser();
 
-		return EventParticipantJurisdictionHelper.isInJurisdictionOrOwned(
-			UserRole.getJurisdictionLevel(user.getUserRoles()),
-			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createEventParticipantJurisdictionDto(eventParticipant));
+		if (eventParticipant.getSormasToSormasOriginInfo() != null) {
+			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return !eventParticipant.isOwnershipHandedOver()
+			&& EventParticipantJurisdictionHelper.isInJurisdictionOrOwned(
+				UserRole.getJurisdictionLevel(user.getUserRoles()),
+				JurisdictionHelper.createUserJurisdiction(user),
+				JurisdictionHelper.createEventParticipantJurisdictionDto(eventParticipant));
 	}
 }

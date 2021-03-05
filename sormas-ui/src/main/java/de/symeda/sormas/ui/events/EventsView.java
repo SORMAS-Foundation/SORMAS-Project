@@ -56,17 +56,18 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -150,6 +151,17 @@ public class EventsView extends AbstractView {
 		});
 		addHeaderComponent(eventsViewSwitcher);
 
+
+		if (isDefaultViewType() && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_IMPORT)) {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventImportLayout());
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEvent));
+				popupWindow.addCloseListener(c -> ((EventGrid) grid).reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(importButton);
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
@@ -163,8 +175,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.EVENTS);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
@@ -186,7 +197,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_", ".csv"),
+						ExportEntityName.EVENTS,
 						null);
 					addExportButton(
 						exportStreamResource,
@@ -213,7 +224,7 @@ public class EventsView extends AbstractView {
 							}
 							return caption;
 						},
-						createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
+						ExportEntityName.EVENT_ACTIONS,
 						null);
 					addExportButton(
 						exportStreamResource,
@@ -452,7 +463,11 @@ public class EventsView extends AbstractView {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
 						ControllerProvider.getEventController()
 							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.SurvnetGateway_sendShort), VaadinIcons.SHARE, selectedItem -> {
+						ControllerProvider.getEventController()
+							.sendAllSelectedToSurvnet(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");

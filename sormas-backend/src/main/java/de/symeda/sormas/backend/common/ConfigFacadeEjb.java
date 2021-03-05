@@ -133,7 +133,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 
-	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
+	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
+
+	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -549,8 +551,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
-	public boolean isCreateDefaultUsers() {
-		return getBoolean(CREATE_DEFAULT_USERS, true);
+	public boolean isCreateDefaultEntities() {
+		return getBoolean(CREATE_DEFAULT_ENTITIES, false);
 	}
 
 	public String getDocgenerationNullReplacement() {
@@ -560,6 +562,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isAuditorAttributeLoggingEnabled() {
 		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
+	@Override
+	public int getStepSizeForCsvExport() {
+		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
 	@LocalBean

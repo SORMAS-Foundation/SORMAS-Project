@@ -367,6 +367,7 @@
     <string name="heading_extend_followup">Ampliar período de seguimiento</string>
     <string name="heading_contact_tracing_first_contact">Primer contacto con trazado de contactos</string>
     <string name="heading_exposure">Exposición</string>
+    <string name="heading_activityAsCase">Actividad como caso</string>
     <string name="hint_add_to_empty_list">Añada una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cada vez que abra la aplicación SORMAS.</string>

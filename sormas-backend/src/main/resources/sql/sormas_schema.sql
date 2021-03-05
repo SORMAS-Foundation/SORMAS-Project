@@ -6730,4 +6730,43 @@ ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_
 
 INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
+-- 2020-02-12 [SORMAS 2 SORMAS] Send and receive Events #4348
+ALTER TABLE events ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE events ADD CONSTRAINT fk_events_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE eventparticipant ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN event_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN witheventparticipants boolean DEFAULT false;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (338, '[SORMAS 2 SORMAS] Send and receive Events #4348');
+
+-- 2021-02-28 Add optional translation to CampaignDiagramDefinition #4090
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaigndiagramtranslations json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add optional translation to CampaignDiagramDefinition #4090');
+
+-- 2020-12-21 Add facilities' address #4027
+ALTER TABLE facility ADD COLUMN street varchar(4096);
+ALTER TABLE facility ADD COLUMN housenumber varchar(512);
+ALTER TABLE facility ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE facility ADD COLUMN postalcode varchar(512);
+ALTER TABLE facility ADD COLUMN areatype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
+
+--2021-02-23 Add event management status to Event #4255
+
+ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add event management status to Event #4255');
+
 -- *** Insert new sql commands BEFORE this line ***

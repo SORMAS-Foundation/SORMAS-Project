@@ -47,7 +47,10 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME)
 		+ fluidRowLocs(TYPE_GROUP_LOC, FacilityDto.TYPE)
 		+ fluidRowLocs(FacilityDto.REGION, FacilityDto.DISTRICT)
-		+ fluidRowLocs(FacilityDto.COMMUNITY, FacilityDto.CITY)
+		+ fluidRowLocs(FacilityDto.COMMUNITY)
+		+ fluidRowLocs(FacilityDto.STREET, FacilityDto.HOUSE_NUMBER)
+		+ fluidRowLocs(FacilityDto.ADDITIONAL_INFORMATION, FacilityDto.POSTAL_CODE)
+		+ fluidRowLocs(FacilityDto.AREA_TYPE, FacilityDto.CITY)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
@@ -83,6 +86,11 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
 		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
 		addField(FacilityDto.CITY, TextField.class);
+		addField(FacilityDto.POSTAL_CODE, TextField.class);
+		addField(FacilityDto.STREET, TextField.class);
+		addField(FacilityDto.HOUSE_NUMBER, TextField.class);
+		addField(FacilityDto.ADDITIONAL_INFORMATION, TextField.class);
+		addField(FacilityDto.AREA_TYPE, ComboBox.class);
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
 		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));

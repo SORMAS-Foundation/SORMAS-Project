@@ -37,10 +37,12 @@ import static de.symeda.sormas.api.caze.CaseDataDto.REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.REPORT_DATE;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
+import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -50,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,6 +67,17 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Provider;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -124,6 +138,32 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static final List<String> PERSON_COLUMNS_TO_REMOVE = Arrays.asList(
+		PersonDto.PLACE_OF_BIRTH_COMMUNITY,
+		PersonDto.PLACE_OF_BIRTH_DISTRICT,
+		PersonDto.PLACE_OF_BIRTH_FACILITY,
+		PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS,
+		PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
+		PersonDto.PLACE_OF_BIRTH_REGION,
+		PersonDto.GESTATION_AGE_AT_BIRTH,
+		PersonDto.BIRTH_DATE,
+		PersonDto.BIRTH_DATE_MM,
+		PersonDto.BIRTH_DATE_DD,
+		PersonDto.BIRTH_DATE_YYYY,
+		PersonDto.BIRTH_WEIGHT,
+		PersonDto.PRESENT_CONDITION,
+		PersonDto.DEATH_DATE,
+		PersonDto.DEATH_PLACE_DESCRIPTION,
+		PersonDto.DEATH_PLACE_TYPE,
+		PersonDto.CAUSE_OF_DEATH,
+		PersonDto.CAUSE_OF_DEATH_DETAILS,
+		PersonDto.CAUSE_OF_DEATH_DISEASE,
+		PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS,
+		PersonDto.BURIAL_CONDUCTOR,
+		PersonDto.BURIAL_DATE,
+		PersonDto.BURIAL_PLACE_DESCRIPTION,
+		PersonDto.ADDRESSES);
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -132,8 +172,17 @@ public class ImportFacadeEjb implements ImportFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
+	@EJB
+	private UserService userService;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
+	@EJB
+	private AreaFacadeEjbLocal areaFacade;
+	@EJB
+	private RegionFacadeEjbLocal regionFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
+	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_event_template.csv";
 	private static final String EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_eventparticipant_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
@@ -165,6 +214,27 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateEventImportTemplateFile() throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, EventDto.class, "", separator);
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
+
+		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		importColumns = importColumns.stream()
+			.filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName()))
+			.collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getEventImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
 	public void generateEventParticipantImportTemplateFile() throws IOException {
 
 		createExportDirectoryIfNecessary();
@@ -173,35 +243,12 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
 
-		List<String> columnsToRemove = Arrays.asList(
-			PersonDto.PLACE_OF_BIRTH_COMMUNITY,
-			PersonDto.PLACE_OF_BIRTH_DISTRICT,
-			PersonDto.PLACE_OF_BIRTH_FACILITY,
-			PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS,
-			PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
-			PersonDto.PLACE_OF_BIRTH_REGION,
-			PersonDto.GESTATION_AGE_AT_BIRTH,
-			PersonDto.BIRTH_DATE,
-			PersonDto.BIRTH_DATE_MM,
-			PersonDto.BIRTH_DATE_DD,
-			PersonDto.BIRTH_DATE_YYYY,
-			PersonDto.BIRTH_WEIGHT,
-			PersonDto.PRESENT_CONDITION,
-			PersonDto.DEATH_DATE,
-			PersonDto.DEATH_PLACE_DESCRIPTION,
-			PersonDto.DEATH_PLACE_TYPE,
-			PersonDto.CAUSE_OF_DEATH,
-			PersonDto.CAUSE_OF_DEATH_DETAILS,
-			PersonDto.CAUSE_OF_DEATH_DISEASE,
-			PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS,
-			PersonDto.BURIAL_CONDUCTOR,
-			PersonDto.BURIAL_DATE,
-			PersonDto.BURIAL_PLACE_DESCRIPTION,
-			PersonDto.ADDRESSES);
-		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
+		importColumns = importColumns.stream().filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName())).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
@@ -390,6 +437,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getEventImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(EVENT_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
@@ -662,6 +717,93 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 
 		return content;
+	}
+
+	public boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
+		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+		Class<?> propertyType = pd.getPropertyType();
+
+		if (propertyType.isEnum()) {
+			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Date.class)) {
+			// If the string is smaller than the length of the expected date format, throw an exception
+			if (entry.length() < 10) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+			} else {
+				Language language = userService.getCurrentUser().getLanguage();
+				if (language == null) {
+					language = Language.EN;
+				}
+				pd.getWriteMethod()
+					.invoke(element, DateHelper.parseDateWithException(entry, language.getDateFormat()));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(Integer.class)) {
+			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Double.class)) {
+			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Float.class)) {
+			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
+			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
+			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
+			if (areas.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (areas.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, areas.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
+			List<RegionReferenceDto> region = regionFacade.getByName(entry, false);
+			if (region.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (region.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, region.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
+			UserDto user = userFacade.getByUserName(entry);
+			if (user != null) {
+				pd.getWriteMethod().invoke(element, user.toReference());
+				return true;
+			} else {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			}
+		}
+		if (propertyType.isAssignableFrom(String.class)) {
+			pd.getWriteMethod().invoke(element, entry);
+			return true;
+		}
+
+		return false;
+	}
+
+	public String buildEntityProperty(String[] entityPropertyPath) {
+		return String.join(".", entityPropertyPath);
 	}
 
 	@LocalBean
