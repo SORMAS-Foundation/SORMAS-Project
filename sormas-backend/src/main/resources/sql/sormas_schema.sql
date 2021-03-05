@@ -6756,18 +6756,18 @@ CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personconta
 
 CREATE OR REPLACE FUNCTION migratePersonContacts(_person_id bigint, _personcontactdetailtype varchar,
                                                  _primarycontact boolean, _contactinformation varchar, _additionalformation varchar,
-                                                 _thirdparty boolean, _thirdpartyrole varchar)
+                                                 _thirdparty boolean, _thirdpartyrole varchar, _thirdpartyname varchar)
 RETURNS VOID AS $$
     BEGIN
     INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, phonenumbertype, details, contactinformation, additionalinformation, thirdparty, thirdpartyrole, thirdpartyname)
-    VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), _person_id, _primarycontact, _personcontactdetailtype, '', '', _contactinformation, '', _thirdparty, _thirdpartyrole, '');
+    VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), _person_id, _primarycontact, _personcontactdetailtype, '', '', _contactinformation, _additionalformation, _thirdparty, _thirdpartyrole, _thirdpartyname);
     END;
 $$ LANGUAGE plpgsql;
 
 SELECT migratePersonContacts(id, 'PHONE', true, person.phone, '', false, '', '') from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS FALSE;
 SELECT migratePersonContacts(id, 'EMAIL', true, person.emailaddress,'', false, '', '') from person where (person.emailaddress <> '' and person.emailaddress is not null) IS TRUE;
-SELECT migratePersonContacts(id, 'PHONE', true, person.phone, '',true, '', person.phoneowner) from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS TRUE;
-SELECT migratePersonContacts(id, 'OTHER', true, '', person.generalpractitionerdetails,true, '', '') from person where (person.generalpractitionerdetails <> '' and person.generalpractitionerdetails is not null) IS TRUE;
+SELECT migratePersonContacts(id, 'PHONE', false, person.phone, '',true, '', person.phoneowner) from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS TRUE;
+SELECT migratePersonContacts(id, 'OTHER', false, '', person.generalpractitionerdetails,true, '', '') from person where (person.generalpractitionerdetails <> '' and person.generalpractitionerdetails is not null) IS TRUE;
 
 INSERT INTO schema_version (version_number, comment) VALUES (338, 'Person contact details #2744');
 
