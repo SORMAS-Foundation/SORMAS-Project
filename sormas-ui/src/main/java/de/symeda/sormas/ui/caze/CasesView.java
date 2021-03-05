@@ -267,7 +267,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CASES);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
