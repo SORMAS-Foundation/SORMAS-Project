@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.caseimport;
+package de.symeda.sormas.api.importexport;
 
 import java.io.Serializable;
 
