@@ -179,6 +179,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setEventManagementStatusClass(EventManagementStatus.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
+		EventValidator.initializeEventStartDateValidation(record, contentBinding);
 	}
 
 	@Override
