@@ -1311,10 +1311,17 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto person2 = creator.createPerson().toReference();
 		ContactDto contact2 = getContactFacade().saveContact(creator.createContact(user, person2));
 
-		List<ContactDto> contactsByPerson = getContactFacade().getByPersonUuids(Collections.singletonList(contact1.getPerson().getUuid()));
+		List<ContactDto> contactsByPerson = getContactFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
 
 		assertEquals(1, contactsByPerson.size());
 		assertEquals(contact1.getUuid(), contactsByPerson.get(0).getUuid());
 		assertNotEquals(contact2.getUuid(), contactsByPerson.get(0).getUuid());
+
+		contactsByPerson = getContactFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+
+		assertEquals(2, contactsByPerson.size());
+		assertEquals(contact1.getUuid(), contactsByPerson.get(0).getUuid());
+		assertEquals(contact2.getUuid(), contactsByPerson.get(1).getUuid());
+
 	}
 }

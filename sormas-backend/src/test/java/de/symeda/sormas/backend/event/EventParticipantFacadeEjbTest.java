@@ -122,4 +122,25 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		eps = getEventParticipantFacade().getByEventUuids(Arrays.asList(event1.getUuid(), event2.getUuid()));
 		assertThat(eps, hasSize(3));
 	}
+
+	@Test
+	public void testGetByPersonUuids() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		EventDto event1 = creator.createEvent(user.toReference());
+		EventDto event2 = creator.createEvent(user.toReference());
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
+		creator.createEventParticipant(event2.toReference(), person1, user.toReference());
+
+		List<EventParticipantDto> eps = getEventParticipantFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
+		assertThat(eps, hasSize(2));
+		eps = getEventParticipantFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+		assertThat(eps, hasSize(3));
+	}
 }

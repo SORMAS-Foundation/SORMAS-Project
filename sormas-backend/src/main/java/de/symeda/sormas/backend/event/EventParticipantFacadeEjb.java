@@ -849,4 +849,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		return participants;
 	}
+
+	@Override
+	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
+		return eventParticipantService.getByPersonUuids(personUuids).stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+	}
 }

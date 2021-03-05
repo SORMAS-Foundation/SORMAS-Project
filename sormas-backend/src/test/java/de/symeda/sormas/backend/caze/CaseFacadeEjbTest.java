@@ -1612,10 +1612,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto person2 = creator.createPerson().toReference();
 		CaseDataDto case2 = getCaseFacade().saveCase(creator.createCase(user, person2, rdcf));
 
-		List<CaseDataDto> casesByPerson = getCaseFacade().getByPersonUuids(Collections.singletonList(case1.getPerson().getUuid()));
+		List<CaseDataDto> casesByPerson = getCaseFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
 
 		assertEquals(1, casesByPerson.size());
 		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
 		assertNotEquals(case2.getUuid(), casesByPerson.get(0).getUuid());
+
+		casesByPerson = getCaseFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+
+		assertEquals(2, casesByPerson.size());
+		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
+		assertEquals(case2.getUuid(), casesByPerson.get(1).getUuid());
 	}
 }
