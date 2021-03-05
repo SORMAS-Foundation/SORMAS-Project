@@ -6819,9 +6819,6 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE cases
     DROP COLUMN covidtestreason,
     DROP COLUMN covidtestreasondetails;
-ALTER TABLE cases_history
-    DROP COLUMN covidtestreason,
-    DROP COLUMN covidtestreasondetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
