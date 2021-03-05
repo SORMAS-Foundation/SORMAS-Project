@@ -1351,9 +1351,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return Collections.emptyList();
 		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<Contact> contacts = new LinkedList<>();
-			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
-				contacts.addAll(getContactsByPersonUuids(personUuids));
-			});
+			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(personUuids)));
 			return contacts;
 		} else {
 			return getContactsByPersonUuids(personUuids);

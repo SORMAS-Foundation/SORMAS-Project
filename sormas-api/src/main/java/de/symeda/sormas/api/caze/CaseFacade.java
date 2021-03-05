@@ -209,4 +209,6 @@ public interface CaseFacade {
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
+
+    List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 }
