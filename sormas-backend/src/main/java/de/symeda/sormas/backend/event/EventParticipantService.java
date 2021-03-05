@@ -35,6 +35,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -223,10 +224,30 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		eventUserFilterCriteria.includeUserCaseFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		Predicate filter =
+		Predicate eventFilter =
 			eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
 
-		return filter;
+		// can see participants that are directly assigned to user's jurisdiction
+		final User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		Predicate eventParticipantFilter = null;
+		switch (jurisdictionLevel) {
+		case REGION:
+			if (currentUser.getRegion() != null) {
+				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.REGION), currentUser.getRegion());
+			}
+			break;
+		case DISTRICT:
+			if (currentUser.getDistrict() != null) {
+				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.DISTRICT), currentUser.getDistrict());
+			}
+			break;
+		default:
+			break;
+		}
+
+		return CriteriaBuilderHelper.or(cb, eventFilter, eventParticipantFilter);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {
