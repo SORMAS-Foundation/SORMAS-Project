@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.person.PersonContactDetailType" />
+        <import type="de.symeda.sormas.api.person.PhoneNumberType" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.person.PersonContactDetail" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:id="@+id/main_content">
+
+            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                android:id="@+id/personContactDetail_thirdParty"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.thirdParty}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_thirdPartyRole"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{personContactDetailThirdParty}"
+                app:dependencyParentValue="@{true}"
+                app:value="@{data.thirdPartyRole}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_thirdPartyName"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{personContactDetailThirdParty}"
+                app:dependencyParentValue="@{true}"
+                app:value="@{data.thirdPartyName}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_personContactDetailType"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.personContactDetailType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_phoneNumberType"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{personContactDetailPersonContactDetailType}"
+                app:dependencyParentValue="@{PersonContactDetailType.PHONE}"
+                app:value="@{data.phoneNumberType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_details"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.details}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_contactInformation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.contactInformation}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_additionalInformation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.additionalInformation}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_primaryContact"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.primaryContact}" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

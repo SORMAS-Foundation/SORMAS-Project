@@ -20,6 +20,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -38,6 +39,7 @@ import retrofit2.Call;
 public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 	private LocationDtoHelper locationHelper = new LocationDtoHelper();
+	private PersonContactDetailDtoHelper personContactDetailDtoHelper = new PersonContactDetailDtoHelper();
 
 	@Override
 	protected Class<Person> getAdoClass() {
@@ -133,6 +135,16 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 			}
 		}
 		target.setAddresses(addresses);
+
+		List<PersonContactDetail> personContactDetails = new ArrayList<>();
+		if (!source.getPersonContacts().isEmpty()) {
+			for (PersonContactDetailDto personContactDetailDto : source.getPersonContacts()) {
+				PersonContactDetail personContactDetail = personContactDetailDtoHelper.fillOrCreateFromDto(null, personContactDetailDto);
+				personContactDetail.setPerson(target);
+				personContactDetails.add(personContactDetail);
+			}
+		}
+		target.setPersonContactDetails(personContactDetails);
 
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
@@ -231,6 +243,15 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 			locationDtos.add(locationDto);
 		}
 		target.setAddresses(locationDtos);
+
+		List<PersonContactDetailDto> personContactDetailDtos = new ArrayList<>();
+		// Necessary because the person is synchronized independently
+		DatabaseHelper.getPersonDao().initPersonContactDetails(source);
+		for (PersonContactDetail personContactDetail : source.getPersonContactDetails()) {
+			PersonContactDetailDto personContactDetailDto = personContactDetailDtoHelper.adoToDto(personContactDetail);
+			personContactDetailDtos.add(personContactDetailDto);
+		}
+		target.setPersonContacts(personContactDetailDtos);
 
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());

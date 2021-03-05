@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,25 +39,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
@@ -101,6 +102,8 @@ import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.outbreak.Outbreak;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonContactDetail;
+import de.symeda.sormas.app.backend.person.PersonContactDetailDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
@@ -156,7 +159,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 279;
+	public static final int DATABASE_VERSION = 280;
 
 	private static DatabaseHelper instance = null;
 
@@ -201,6 +204,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, MaternalHistory.class);
 			TableUtils.clearTable(connectionSource, PortHealthInfo.class);
 			TableUtils.clearTable(connectionSource, Person.class);
+			TableUtils.clearTable(connectionSource, PersonContactDetail.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
 			TableUtils.clearTable(connectionSource, Contact.class);
@@ -276,6 +280,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, FeatureConfiguration.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
+			TableUtils.createTable(connectionSource, PersonContactDetail.class);
 			TableUtils.createTable(connectionSource, Case.class);
 			TableUtils.createTable(connectionSource, Symptoms.class);
 			TableUtils.createTable(connectionSource, Therapy.class);
@@ -2010,6 +2015,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
+			case 279:
+				currentVersion = 279;
+				TableUtils.createTable(connectionSource, PersonContactDetail.class);
+				migratePersonContactDetails();
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -2206,6 +2215,65 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
 	}
+	
+	private void migratePersonContactDetails() throws SQLException {
+		GenericRawResults<Object[]> newPersons = getDao(Person.class).queryRaw(
+			"SELECT id, phone, phoneOwner, emailAddress, generalPractitionerDetails FROM person WHERE changeDate = 0 AND snapshot = 0;",
+			new DataType[] {
+				DataType.BIG_INTEGER,
+				DataType.STRING,
+				DataType.STRING,
+				DataType.STRING,
+				DataType.STRING });
+
+		for (Object[] pcd : newPersons) {
+			formatRawResultString(pcd, 1, false);
+			formatRawResultString(pcd, 2, false);
+			formatRawResultString(pcd, 3, false);
+			formatRawResultString(pcd, 4, false);
+			formatRawResultString(pcd, 5, false);
+
+			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+			final String insertPart =
+				"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
+					+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName) ";
+
+			String personId = (String) pcd[1];
+			String phone = (String) pcd[2];
+			String phoneOwner = (String) pcd[3];
+			String emailAddress = (String) pcd[4];
+			String generalPractitionerDetails = (String) pcd[5];
+
+			if (phone != null && phoneOwner == null) {
+				getDao(PersonContactDetail.class).executeRaw(
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "true" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "false" + ", " + ""
+						+ ", " + "" + ");");
+			}
+
+			if (emailAddress != null) {
+				getDao(PersonContactDetail.class).executeRaw(
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "true" + ", " + PersonContactDetailType.EMAIL.name() + ", " + "" + ", " + emailAddress + ", " + "" + ", " + "false" + ", "
+						+ "" + ", " + "" + ");");
+			}
+
+			if (phone != null && phoneOwner != null) {
+				getDao(PersonContactDetail.class).executeRaw(
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "false" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "true" + ", " + ""
+						+ ", " + phoneOwner + ");");
+			}
+
+			if (generalPractitionerDetails != null) {
+				getDao(PersonContactDetail.class).executeRaw(
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "false" + ", " + PersonContactDetailType.OTHER.name() + ", " + "" + ", " + "" + ", " + generalPractitionerDetails + ", "
+						+ "true" + ", " + "" + ", " + "" + ");");
+			}
+
+		}
+	}
 
 	private void migrateEmbeddedEpiDataToExposures() throws SQLException {
 		GenericRawResults<Object[]> newBurials = getDao(EpiData.class).queryRaw(
@@ -2312,6 +2380,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, MaternalHistory.class, true);
 			TableUtils.dropTable(connectionSource, PortHealthInfo.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
+			TableUtils.dropTable(connectionSource, PersonContactDetail.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Country.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
@@ -2381,6 +2450,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new TreatmentDao((Dao<Treatment, Long>) innerDao);
 				} else if (type.equals(Person.class)) {
 					dao = (AbstractAdoDao<ADO>) new PersonDao((Dao<Person, Long>) innerDao);
+				} else if (type.equals(PersonContactDetail.class)) {
+					dao = (AbstractAdoDao<ADO>) new PersonContactDetailDao((Dao<PersonContactDetail, Long>) innerDao);
 				} else if (type.equals(Location.class)) {
 					dao = (AbstractAdoDao<ADO>) new LocationDao((Dao<Location, Long>) innerDao);
 				} else if (type.equals(PointOfEntry.class)) {
@@ -2565,6 +2636,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static LocationDao getLocationDao() {
 		return (LocationDao) getAdoDao(Location.class);
+	}
+
+	public static PersonContactDetailDao getPersonContactDetailDao() {
+		return (PersonContactDetailDao) getAdoDao(PersonContactDetail.class);
 	}
 
 	public static PointOfEntryDao getPointOfEntryDao() {

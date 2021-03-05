@@ -24,6 +24,7 @@ import androidx.databinding.ObservableArrayList;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -55,6 +57,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 	private AbstractDomainObject rootData;
 	private boolean birthDayVisibility = true;
 	private IEntryItemOnClickListener onAddressItemClickListener;
+	private IEntryItemOnClickListener onPersonContactDetailItemClickListener;
 
 	// Instance methods
 
@@ -84,6 +87,14 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 				R.layout.dialog_location_read_layout,
 				item,
 				bindedView -> setFieldAccesses(LocationDto.class, bindedView));
+			infoDialog.show();
+		};
+		onPersonContactDetailItemClickListener = (v, item) -> {
+			InfoDialog infoDialog = new InfoDialog(
+				getContext(),
+				R.layout.dialog_person_contact_detail_read_layout,
+				item,
+				bindedView -> setFieldAccesses(PersonContactDetailDto.class, bindedView));
 			infoDialog.show();
 		};
 	}
@@ -128,6 +139,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		// automatically loaded (because there's no additional queryForId call for person when the
 		// parent data is loaded)
 		DatabaseHelper.getPersonDao().initLocations(record);
+		DatabaseHelper.getPersonDao().initPersonContactDetails(record);
 	}
 
 	@Override
@@ -137,12 +149,20 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		ObservableArrayList<Location> addresses = new ObservableArrayList<>();
 		addresses.addAll(record.getAddresses());
 
+		ObservableArrayList<PersonContactDetail> personContactDetails = new ObservableArrayList<>();
+		personContactDetails.addAll(record.getPersonContactDetails());
+
 		contentBinding.setData(record);
 		initCountryTranslations(contentBinding, record);
 
 		contentBinding.setAddressList(addresses);
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
 		contentBinding.setAddressBindCallback(v -> {
+			setFieldAccesses(LocationDto.class, v);
+		});
+		contentBinding.setPersonContactDetailList(personContactDetails);
+		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
+		contentBinding.setPersonContactDetailBindCallback(v -> {
 			setFieldAccesses(LocationDto.class, v);
 		});
 	}

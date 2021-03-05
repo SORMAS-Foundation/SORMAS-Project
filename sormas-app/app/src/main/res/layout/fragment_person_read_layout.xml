@@ -35,8 +35,11 @@
         <variable name="citizenship" type="String" />
         <variable name="birthDayVisibility" type="Boolean" />
         <variable name="addressList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.location.Location&gt;" />
+        <variable name="personContactDetailList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.PersonContactDetail&gt;" />
         <variable name="addressItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="personContactDetailItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="addressBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
+        <variable name="personContactDetailBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
     <ScrollView
@@ -458,6 +461,51 @@
                     android:id="@+id/person_externalToken"
                     app:value="@{data.externalToken}"
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/personContactDetails_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{personContactDetailList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
+
+                    <TextView
+                        android:id="@+id/personContactDetails_headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_person_contact_detail"
+                        style="@style/SubHeadingCompactStyle" />
+
+                </RelativeLayout>
+
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle"
+                    app:goneIfEmpty="@{addressList}"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:padding="@dimen/rowListItemParentPadding"
+                    app:callback="@{personContactDetailItemClickCallback}"
+                    app:entries="@{personContactDetailList}"
+                    app:layout="@{@layout/row_person_contact_detail_layout}"
+                    app:bindCallback="@{personContactDetailBindCallback}" />
+
             </LinearLayout>
 
         </LinearLayout>
