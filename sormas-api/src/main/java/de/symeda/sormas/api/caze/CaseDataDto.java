@@ -486,9 +486,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
-	@HideForCountriesExcept(countries = {
-		COUNTRY_CODE_GERMANY,
-		COUNTRY_CODE_SWITZERLAND })
 	private String externalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept

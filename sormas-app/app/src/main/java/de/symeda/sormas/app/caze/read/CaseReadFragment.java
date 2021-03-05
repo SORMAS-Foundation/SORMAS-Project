@@ -109,9 +109,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		}
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
-				&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
-			contentBinding.caseDataExternalToken.setVisibility(GONE);
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
