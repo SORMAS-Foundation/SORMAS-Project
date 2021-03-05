@@ -382,6 +382,7 @@ public interface Strings {
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
 	String headingImportedPersonInfo = "headingImportedPersonInfo";
 	String headingImportError = "headingImportError";
+	String headingImportEvent = "headingImportEvent";
 	String headingImportEventParticipant = "headingImportEventParticipant";
 	String headingImportFacilities = "headingImportFacilities";
 	String headingImportFailed = "headingImportFailed";

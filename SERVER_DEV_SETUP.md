@@ -1,6 +1,5 @@
-
-
 # Installing a SORMAS Server for development
+
 **Note: This guide explains how to configure a SORMAS server on Linux and Windows systems for development. Please note that there is no database setup because the script supposes the use of the Docker Postgresql image (see [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker)).**
 
 ## Content
@@ -18,7 +17,7 @@
 ### Java 11
 See [Installing Java](SERVER_SETUP.md#java-11)
 
-SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just 
+SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just
 use Java 8 language features for now.
 
 ### Ant
