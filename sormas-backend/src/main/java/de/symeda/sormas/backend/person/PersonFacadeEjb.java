@@ -407,7 +407,10 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(personJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		final Expression<Object> followUpStatusExpression = cb.selectCase()
+				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
