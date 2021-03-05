@@ -6786,4 +6786,40 @@ UPDATE labmessage SET testresultverified = true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (343, 'Add person email, person phone, testResultVerified to LabMessage #4106');
 
+-- 2021-03-03 Add a "sampling reason" field in the sample #4555
+ALTER TABLE samples
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+ALTER TABLE samples_history
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE latest_sample RECORD;
+        DECLARE _samplingreason text;
+    BEGIN
+        FOR rec IN SELECT id as _caseid, covidtestreason as _covidtestreason, covidtestreasondetails as _covidtestreasondetails
+                   FROM cases WHERE cases.covidtestreason IS NOT NULL
+            LOOP
+                SELECT id as _id FROM samples where associatedcase_id = rec._caseid order by sampledatetime DESC limit 1 INTO latest_sample;
+
+                _samplingreason = CASE WHEN rec._covidtestreason='REQUIREMENT_OF_EMPLOYER' THEN 'PROFESSIONAL_REASON'
+                                       WHEN rec._covidtestreason='DURING_QUARANTINE' THEN 'QUARANTINE_REGULATIONS'
+                                       WHEN rec._covidtestreason='COHORT_SCREENING' THEN 'SCREENING'
+                                       WHEN rec._covidtestreason='OUTBREAK_INVESTIGATION_SCREENING' THEN 'OUTBREAK'
+                                       WHEN rec._covidtestreason='AFTER_CONTACT_TRACING' THEN 'CONTACT_TO_CASE'
+                                       ELSE rec._covidtestreason
+                    END;
+                UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases
+    DROP COLUMN covidtestreason,
+    DROP COLUMN covidtestreasondetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
+
 -- *** Insert new sql commands BEFORE this line ***

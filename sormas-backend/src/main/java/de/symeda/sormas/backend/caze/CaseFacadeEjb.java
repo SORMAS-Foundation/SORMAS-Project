@@ -2462,8 +2462,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFacilityType(source.getFacilityType());
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
@@ -2636,8 +2634,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());

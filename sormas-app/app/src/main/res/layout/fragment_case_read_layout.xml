@@ -605,18 +605,6 @@
                     app:valueFormat="@string/two_strings_with_hyphen_format" />
 
                 <ImageView
-                    android:id="@+id/caseData_covidTestReasonDivider"
-                    style="@style/FullHorizontalDividerStyle"
-                    android:visibility="gone" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_covidTestReason"
-                    style="@style/ControlSingleColumnStyle"
-                    app:appendValue="@{data.covidTestReasonDetails}"
-                    app:value="@{data.covidTestReason}"
-                    app:valueFormat="@string/two_strings_with_hyphen_format" />
-
-                <ImageView
                     android:id="@+id/caseData_contactTracingDivider"
                     style="@style/FullHorizontalDividerStyle"
                     android:visibility="gone" />

@@ -231,8 +231,6 @@ public interface Captions {
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
-	String CaseData_covidTestReason = "CaseData.covidTestReason";
-	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
@@ -1482,6 +1480,8 @@ public interface Captions {
 	String Sample_sampleMaterialText = "Sample.sampleMaterialText";
 	String Sample_samplePurpose = "Sample.samplePurpose";
 	String Sample_sampleSource = "Sample.sampleSource";
+	String Sample_samplingReason = "Sample.samplingReason";
+	String Sample_samplingReasonDetails = "Sample.samplingReasonDetails";
 	String Sample_shipmentDate = "Sample.shipmentDate";
 	String Sample_shipmentDetails = "Sample.shipmentDetails";
 	String Sample_shipped = "Sample.shipped";

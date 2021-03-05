@@ -31,7 +31,6 @@ import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -48,6 +47,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -128,8 +128,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			c -> {
 				c.setCaseIdIsm(123456);
 				c.getSymptoms().setAgitation(SymptomState.YES);
-				c.setCovidTestReason(CovidTestReason.OTHER_REASON);
-				c.setCovidTestReasonDetails("Test reason");
 				c.getSymptoms().setOnsetDate(symptomDate);
 				c.setContactTracingFirstContactDate(contactTracingDate);
 				c.setWasInQuarantineBeforeIsolation(YesNoUnknown.NO);
@@ -153,6 +151,8 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		SampleDto sample = creator.createSample(cazeDto.toReference(), user.toReference(), new Facility(), s -> {
 			s.setSampleDateTime(sampleDate);
+			s.setSamplingReason(SamplingReason.OTHER_REASON);
+			s.setSamplingReasonDetails("Test reason");
 		});
 
 		Date testDate = DateHelper.subtractDays(new Date(), 4);
@@ -202,7 +202,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(firstCase.getSymptomatic(), is(YesNoUnknown.YES));
 
-		assertThat(firstCase.getPcrReason(), is(CovidTestReason.OTHER_REASON));
+		assertThat(firstCase.getPcrReason(), is(SamplingReason.OTHER_REASON));
 		assertThat(firstCase.getOtherPcrReason(), is("Test reason"));
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");

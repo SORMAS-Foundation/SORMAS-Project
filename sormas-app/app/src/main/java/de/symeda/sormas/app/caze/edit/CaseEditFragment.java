@@ -33,7 +33,6 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -110,7 +109,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> facilityTypeGroupList;
 	private List<Item> quarantineReasonList;
 	private List<Item> endOfIsolationReasonList;
-	private List<Item> covidTestReasonList;
 	private List<Item> contactTracingContactTypeList;
 	private List<Item> infectionSettingList;
 	private List<Item> vaccineList;
@@ -293,7 +291,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
 		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
-		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
 		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 		infectionSettingList = DataUtils.getEnumItems(InfectionSetting.class, true);
 		vaccineList = DataUtils.getEnumItems(Vaccine.class, true);
@@ -556,10 +553,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
 		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
 
-		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)) {
-			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
-			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
-		}
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
 			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
 			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);

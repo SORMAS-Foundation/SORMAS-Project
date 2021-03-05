@@ -74,7 +74,6 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -199,7 +198,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
-					fluidRowLocs(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -727,13 +725,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Swiss fields
 		TextField caseIdIsmField = addField(CaseDataDto.CASE_ID_ISM);
 		caseIdIsmField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseIdIsmField.getCaption()));
-		addFields(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			CaseDataDto.COVID_TEST_REASON_DETAILS,
-			CaseDataDto.COVID_TEST_REASON,
-			Arrays.asList(CovidTestReason.OTHER_REASON),
-			true);
 
 		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE)) {
 			Label contactTracingFirstContactHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactTracingFirstContact));

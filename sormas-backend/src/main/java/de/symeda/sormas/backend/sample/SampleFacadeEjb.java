@@ -336,6 +336,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SPECIMEN_CONDITION),
 				joins.getLab().get(Facility.NAME),
 				joins.getReferredSample().get(Sample.UUID),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				caze.get(Case.UUID),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
@@ -543,6 +545,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				sample.get(Sample.SAMPLE_SOURCE),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
@@ -793,6 +797,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -928,6 +934,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
