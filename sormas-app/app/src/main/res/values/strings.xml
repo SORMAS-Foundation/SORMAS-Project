@@ -116,6 +116,7 @@
     <string name="action_save_pathogen_test">Save Pathogen Test</string>
     <string name="action_edit_pathogen_test">Edit Pathogen Test</string>
     <string name="action_submit_case_numbers">Submit Case Numbers</string>
+    <string name="action_sync_lbds">LBDS Synchronization</string>
 
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>

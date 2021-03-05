@@ -91,6 +91,15 @@
                 app:rounded="true" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/synch_lbds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                android:text="@string/action_sync_lbds"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
