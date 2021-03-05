@@ -65,6 +65,12 @@ public class ContactResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/query/persons")
+	public List<ContactDto> getByPersonUuids(List<String> uuids) {
+		return FacadeProvider.getContactFacade().getByPersonUuids(uuids);
+	}
+
+	@POST
 	@Path("/push")
 	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
 

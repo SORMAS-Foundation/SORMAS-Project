@@ -136,4 +136,5 @@ public interface ContactFacade {
 		Date from,
 		Date to);
 
+    List<ContactDto> getByPersonUuids(List<String> personUuids);
 }

@@ -1239,6 +1239,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
+	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
+		return contactService.getByPersonUuids(personUuids).stream().map(ContactFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria) {
 
 		User user = userService.getCurrentUser();
