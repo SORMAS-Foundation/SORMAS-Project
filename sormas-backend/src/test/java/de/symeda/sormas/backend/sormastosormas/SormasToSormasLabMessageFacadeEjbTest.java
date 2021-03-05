@@ -112,7 +112,6 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		labMessage.setTestDateTime(dateValue);
 		labMessage.setTestResult(PathogenTestResultType.PENDING);
 		labMessage.setTestResultVerified(true);
-		labMessage.setTestResultVerified(true);
 		labMessage.setPersonFirstName("James");
 		labMessage.setPersonLastName("Smith");
 		labMessage.setPersonPostalCode("test postal code");

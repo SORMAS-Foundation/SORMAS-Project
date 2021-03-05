@@ -6774,8 +6774,8 @@ ALTER TABLE labmessage ADD COLUMN personphone VARCHAR(255);
 ALTER TABLE labmessage ADD COLUMN personemail VARCHAR(255);
 ALTER TABLE labmessage_history ADD COLUMN personphone VARCHAR(255);
 ALTER TABLE labmessage_history ADD COLUMN personemail VARCHAR(255);
-ALTER TABLE labmessage ADD COLUMN testresultverified boolean DEFAULT false;
-ALTER TABLE labmessage_history ADD COLUMN testresultverified boolean DEFAULT false;
+ALTER TABLE labmessage ADD COLUMN testresultverified boolean;
+ALTER TABLE labmessage_history ADD COLUMN testresultverified boolean;
 UPDATE labmessage SET testresultverified = true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (342, 'Add person email, person phone, testResultVerified to LabMessage #4106');

@@ -74,7 +74,7 @@ public class LabMessage extends AbstractDomainObject {
 	private Disease testedDisease;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
-	private boolean testResultVerified;
+	private Boolean testResultVerified;
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
@@ -220,11 +220,11 @@ public class LabMessage extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean isTestResultVerified() {
+	public Boolean isTestResultVerified() {
 		return testResultVerified;
 	}
 
-	public void setTestResultVerified(boolean testResultVerified) {
+	public void setTestResultVerified(Boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
 	}
 
