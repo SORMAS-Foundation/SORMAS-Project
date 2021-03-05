@@ -12,12 +12,12 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
-public abstract class EpiCurveBuilder {
+public abstract class ContactsEpiCurveBuilder {
 
 	protected final EpiCurveGrouping epiCurveGrouping;
 	protected final StringBuilder hcjs;
 
-	public EpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
+	public ContactsEpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		this.epiCurveGrouping = epiCurveGrouping;
 		hcjs = new StringBuilder();
 	}
@@ -63,12 +63,25 @@ public abstract class EpiCurveBuilder {
 
 		buildEpiCurve(datesGroupedBy, dashboardDataProvider);
 
+		//@formatter:off
 		hcjs.append(
-			"exporting: {\n" + "        buttons: {\n" + "            contextButton: {\n" + "                menuItems: [\n"
-				+ "                    'printChart',\n" + "                    'separator',\n" + "                    'downloadPNG',\n"
-				+ "                    'downloadJPEG',\n" + "                    'downloadPDF',\n" + "                    'downloadSVG',\n"
-				+ "                    'downloadCSV',\n" + "                    'downloadXLS'\n" + "                ]\n" + "            }\n"
-				+ "        }\n" + "    }");
+			"exporting: {\n" + 
+				"        buttons: {\n" + 
+				"            contextButton: {\n" + 
+				"                menuItems: [\n" + 
+				"                    'printChart',\n" + 
+				"                    'separator',\n" + 
+				"                    'downloadPNG',\n" + 
+				"                    'downloadJPEG',\n" + 
+				"                    'downloadPDF',\n" + 
+				"                    'downloadSVG',\n" + 
+				"                    'downloadCSV',\n" + 
+				"                    'downloadXLS'\n" + 
+				"                ]\n" + 
+				"            }\n" + 
+				"        }\n" + 
+				"    }");
+		//@formatter:on
 
 		hcjs.append("};");
 
