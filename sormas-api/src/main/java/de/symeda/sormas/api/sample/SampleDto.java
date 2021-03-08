@@ -93,7 +93,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
-	@Required
+
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	private String labDetails;
