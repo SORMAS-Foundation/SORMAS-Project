@@ -31,8 +31,6 @@ import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
-import de.symeda.sormas.ui.person.PersonContactDetailEditForm;
-import de.symeda.sormas.ui.person.PersonContactDetailsField;
 import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
@@ -107,8 +105,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (PersonContactDetailEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new PersonContactDetailEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (DateTimeField.class.isAssignableFrom(fieldType)) {

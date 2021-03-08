@@ -4,14 +4,23 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -19,8 +28,10 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactDetailDto> {
 
@@ -31,8 +42,17 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 		fluidRowLocs(PersonContactDetailDto.CONTACT_INFORMATION, PersonContactDetailDto.ADDITIONAL_INFORMATION),
 		fluidRowLocs(PersonContactDetailDto.PRIMARY));
 
-	public PersonContactDetailEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+	private List<PersonContactDetailDto> personContactDetailDtos;
+	private BiConsumer consumer;
+
+	public PersonContactDetailEditForm(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		List<PersonContactDetailDto> personContactDetailDtos,
+		BiConsumer<Boolean, PersonContactDetailDto> primaryDuplicateConsumer) {
 		super(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
+		this.personContactDetailDtos = personContactDetailDtos;
+		consumer = primaryDuplicateConsumer;
 	}
 
 	@Override
@@ -103,4 +123,51 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 			}
 		});
 	}
+
+	@Override
+	public void postCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
+		super.postCommit(commitEvent);
+		PersonContactDetailDto personContactDetailDto =
+			(PersonContactDetailDto) ((BeanItem) commitEvent.getFieldBinder().getItemDataSource()).getBean();
+
+		final Predicate<PersonContactDetailDto> sameTypePrimaryPredicate =
+			pcd -> pcd.getPersonContactDetailType() == personContactDetailDto.getPersonContactDetailType()
+				&& personContactDetailDto.getUuid() != pcd.getUuid()
+				&& pcd.isPrimaryContact();
+
+		if (personContactDetailDto.isPrimaryContact()) {
+			Optional<PersonContactDetailDto> optionalPersonContactDetailDto =
+				personContactDetailDtos.stream().filter(sameTypePrimaryPredicate).findFirst();
+			if (optionalPersonContactDetailDto.isPresent()) {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Strings.headingUpdatePersonContactDetail),
+					new Label(I18nProperties.getString(Strings.messagePersonContactDetailPrimaryDuplicate)),
+					popupWindow -> {
+						ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							protected void onConfirm() {
+								consumer.accept(true, optionalPersonContactDetailDto.get());
+								popupWindow.close();
+							}
+
+							@Override
+							protected void onCancel() {
+								consumer.accept(false, null);
+								popupWindow.close();
+							}
+						};
+
+						confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+						confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+
+						return confirmationComponent;
+					},
+					null);
+			}
+		}
+	}
+
 }

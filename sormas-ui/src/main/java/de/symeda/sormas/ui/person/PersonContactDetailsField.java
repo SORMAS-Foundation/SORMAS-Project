@@ -47,7 +47,14 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		PersonContactDetailEditForm editForm = new PersonContactDetailEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		PersonContactDetailEditForm editForm =
+			new PersonContactDetailEditForm(fieldVisibilityCheckers, fieldAccessCheckers, getContainer().getItemIds(), (ok, existingDuplicatePCD) -> {
+				if (ok) {
+					existingDuplicatePCD.setPrimaryContact(false);
+				} else {
+					entry.setPrimaryContact(false);
+				}
+			});
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PersonContactDetailEditForm> editView =
@@ -81,9 +88,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 		});
 		table.addGeneratedColumn(OWNER_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;
-			return personContactDetailDto.isThirdParty()
-				? personContactDetailDto.getThirdPartyName()
-				: thisPerson.toReference().getCaption();
+			return personContactDetailDto.isThirdParty() ? personContactDetailDto.getThirdPartyName() : thisPerson.toReference().getCaption();
 		});
 
 		table.setVisibleColumns(

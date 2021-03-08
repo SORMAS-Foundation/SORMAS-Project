@@ -1362,7 +1362,7 @@ public interface Captions {
 	String PersonContactDetail_owner = "PersonContactDetail.owner";
 	String PersonContactDetail_ownerName = "PersonContactDetail.ownerName";
 	String PersonContactDetail_person = "PersonContactDetail.person";
-	String PersonContactDetail_personContactDetailsType = "PersonContactDetail.personContactDetailsType";
+	String PersonContactDetail_personContactDetailType = "PersonContactDetail.personContactDetailType";
 	String PersonContactDetail_phoneNumberType = "PersonContactDetail.phoneNumberType";
 	String PersonContactDetail_primaryContact = "PersonContactDetail.primaryContact";
 	String PersonContactDetail_thirdParty = "PersonContactDetail.thirdParty";
