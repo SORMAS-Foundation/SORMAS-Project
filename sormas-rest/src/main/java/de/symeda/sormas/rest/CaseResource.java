@@ -19,7 +19,13 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.caze.*;
+
+
+import de.symeda.sormas.api.caze.CaseCriteriaAndSorting;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -30,7 +36,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
-import de.symeda.sormas.api.caze.CasePersonDto;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
