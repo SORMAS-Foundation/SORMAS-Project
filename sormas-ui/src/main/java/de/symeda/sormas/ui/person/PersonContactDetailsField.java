@@ -1,7 +1,10 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
@@ -15,6 +18,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonContactDetailsField extends AbstractTableField<PersonContactDetailDto> {
@@ -47,14 +51,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		PersonContactDetailEditForm editForm =
-			new PersonContactDetailEditForm(fieldVisibilityCheckers, fieldAccessCheckers, getContainer().getItemIds(), (ok, existingDuplicatePCD) -> {
-				if (ok) {
-					existingDuplicatePCD.setPrimaryContact(false);
-				} else {
-					entry.setPrimaryContact(false);
-				}
-			});
+		PersonContactDetailEditForm editForm = new PersonContactDetailEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PersonContactDetailEditForm> editView =
@@ -65,7 +62,47 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
-				commitCallback.accept(editForm.getValue());
+
+				final Predicate<PersonContactDetailDto> sameTypePrimaryPredicate =
+					pcd -> pcd.getPersonContactDetailType() == entry.getPersonContactDetailType()
+						&& entry.getUuid() != pcd.getUuid()
+						&& pcd.isPrimaryContact();
+
+				if (entry.isPrimaryContact()) {
+					Optional<PersonContactDetailDto> optionalPersonContactDetailDto =
+						getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
+					if (optionalPersonContactDetailDto.isPresent()) {
+						VaadinUiUtil.showConfirmationPopup(
+							I18nProperties.getCaption(Strings.headingUpdatePersonContactDetail),
+							new Label(I18nProperties.getString(Strings.messagePersonContactDetailPrimaryDuplicate)),
+							questionWindow -> {
+								ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+									private static final long serialVersionUID = 1L;
+
+									@Override
+									protected void onConfirm() {
+										optionalPersonContactDetailDto.get().setPrimaryContact(false);
+										questionWindow.close();
+									}
+
+									@Override
+									protected void onCancel() {
+										entry.setPrimaryContact(false);
+										questionWindow.close();
+									}
+								};
+
+								confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+								confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+
+								commitCallback.accept(editForm.getValue());
+								fireValueChange(false);
+								return confirmationComponent;
+							},
+							null);
+					}
+				}
 			}
 		});
 
