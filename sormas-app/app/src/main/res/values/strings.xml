@@ -379,6 +379,7 @@
     <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="heading_exposure">Exposure</string>
     <string name="heading_activityAsCase">Activity as Case</string>
+    <string name="heading_update_person_contact_detail">Update person contact detail</string>
 
     <string name="hint_add_to_empty_list">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
@@ -502,6 +503,7 @@
     <string name="message_language_change_unsuccessful">The language could not be changed due to an internal error.</string>
     <string name="message_Event_and_Case_disease_mismatch">The new event to be linked to case has a different disease than case disease </string>
     <string name="message_Event_already_linked_to_Case">The event has already been linked to this case </string>
+    <string name="message_person_contact_detail_primary_duplicate">There already are primary contact details of this type recorded for this person. Do you want to set these contact details as the primary contact details instead?</string>
 
     <string name="notification_channel_tasks_name">New or Updated Tasks</string>
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>

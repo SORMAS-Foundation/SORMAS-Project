@@ -64,6 +64,7 @@ import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
@@ -413,8 +414,32 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetailClone, record, getActivityRootData(), false);
 
 			dialog.setPositiveCallback(() -> {
-				record.getPersonContactDetails().set(record.getPersonContactDetails().indexOf(personContactDetail), personContactDetailClone);
-				updatePersonContactDetails();
+				final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
+				for (PersonContactDetail pcd : personContactDetails) {
+					if (pcd.getPersonContactDetailType() == personContactDetail.getPersonContactDetailType()
+							&& personContactDetail.getUuid() != pcd.getUuid()
+							&& pcd.isPrimaryContact()) {
+
+						final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+								BaseActivity.getActiveActivity(),
+								R.string.heading_update_person_contact_detail,
+								R.string.message_person_contact_detail_primary_duplicate,
+								R.string.yes,
+								R.string.no);
+
+						confirmationDialog.setPositiveCallback(() -> {
+							pcd.setPrimaryContact(false);
+							updatePersonContactDetails();
+						});
+						confirmationDialog.setNegativeCallback(() -> {
+							personContactDetail.setPrimaryContact(false);
+							updatePersonContactDetails();
+						});
+						confirmationDialog.show();
+						break;
+					}
+				}
+				dialog.dismiss();
 			});
 
 			dialog.setDeleteCallback(() -> {
@@ -442,9 +467,41 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			final PersonContactDetail personContactDetail = DatabaseHelper.getPersonContactDetailDao().build();
 			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetail, record, getActivityRootData(), true);
 
-			dialog.setPositiveCallback(() -> addPersonContactDetail(personContactDetail));
 
-			dialog.setDeleteCallback(() -> removePersonContactDetail(personContactDetail));
+			dialog.setPositiveCallback(() -> {
+
+				final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
+				for (PersonContactDetail pcd : personContactDetails) {
+					if (pcd.getPersonContactDetailType() == personContactDetail.getPersonContactDetailType()
+							&& personContactDetail.getUuid() != pcd.getUuid()
+							&& pcd.isPrimaryContact()) {
+
+						final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+								BaseActivity.getActiveActivity(),
+								R.string.heading_update_person_contact_detail,
+								R.string.message_person_contact_detail_primary_duplicate,
+								R.string.yes,
+								R.string.no);
+
+						confirmationDialog.setPositiveCallback(() -> {
+							pcd.setPrimaryContact(false);
+							addPersonContactDetail(personContactDetail);
+						});
+						confirmationDialog.setNegativeCallback(() -> {
+							personContactDetail.setPrimaryContact(false);
+							addPersonContactDetail(personContactDetail);
+						});
+						confirmationDialog.show();
+						break;
+					}
+				}
+				dialog.dismiss();
+			});
+
+			dialog.setDeleteCallback(() -> {
+				removePersonContactDetail(personContactDetail);
+				dialog.dismiss();
+			});
 
 			dialog.show();
 			dialog.configureAsPersonContactDetailDialog(false);
