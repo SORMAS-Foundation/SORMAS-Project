@@ -45,7 +45,7 @@ public class CaseDownloadUtil {
 			(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
 				.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
 			CaseDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_cases_", ".csv"),
+			ExportEntityName.CASES,
 			exportConfiguration);
 	}
 

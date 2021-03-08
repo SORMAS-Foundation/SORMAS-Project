@@ -9,7 +9,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface LabMessageFacade {
 
-	void save(LabMessageDto dto);
+	LabMessageDto save(LabMessageDto dto);
 
 	/**
 	 * This method is used to check whether a labMessage is marked processed in the database.
@@ -34,4 +34,6 @@ public interface LabMessageFacade {
 	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages();
+
+	boolean exists(String uuid);
 }

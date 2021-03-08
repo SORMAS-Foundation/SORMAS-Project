@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.event.eventparticipantimporter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,6 +82,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		List<EventParticipantDto> eventParticipants = eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventRef.getUuid());
+		for (EventParticipantDto eventParticipant : eventParticipants) {
+			assertNotNull(eventParticipant.getRegion());
+			assertNotNull(eventParticipant.getDistrict());
+			assertEquals(eventParticipant.getRegion().getUuid(), rdcf.region.getUuid());
+			assertEquals(eventParticipant.getDistrict().getUuid(), rdcf.district.getUuid());
+		}
 	}
 
 	@Test

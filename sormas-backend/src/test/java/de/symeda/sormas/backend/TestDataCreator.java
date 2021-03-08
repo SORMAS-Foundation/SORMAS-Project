@@ -69,6 +69,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -647,7 +648,7 @@ public class TestDataCreator {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, "Description", reportingUser);
+		return createEventParticipant(event, eventPerson, "Description", reportingUser, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -655,10 +656,23 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser) {
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser,
+		Consumer<EventParticipantDto> customSettings) {
 
 		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
+
+		if (customSettings != null) {
+			customSettings.accept(eventParticipant);
+		}
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
@@ -1220,10 +1234,19 @@ public class TestDataCreator {
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
+		return createFacility(facilityName, region, district, community, null);
+	}
+
+	public FacilityDto createFacility(
+		String facilityName,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community,
+		FacilityType type) {
 
 		FacilityDto facility = FacilityDto.build();
 		facility.setName(facilityName);
-		facility.setType(FacilityType.HOSPITAL);
+		facility.setType(type == null ? FacilityType.HOSPITAL : type);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
@@ -1336,6 +1359,18 @@ public class TestDataCreator {
 		systemEvent.setStatus(status);
 		systemEvent.setAdditionalInfo(additionalInfo);
 		return systemEvent;
+	}
+
+	public LabMessageDto createLabMessage(Consumer<LabMessageDto> customSettigns) {
+		LabMessageDto labMessage = LabMessageDto.build();
+
+		if (customSettigns != null) {
+			customSettigns.accept(labMessage);
+		}
+
+		beanTest.getLabMessageFacade().save(labMessage);
+
+		return labMessage;
 	}
 
 	/**

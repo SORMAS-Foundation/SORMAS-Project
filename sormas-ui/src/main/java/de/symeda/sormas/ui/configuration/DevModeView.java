@@ -69,6 +69,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -577,7 +578,7 @@ public class DevModeView extends AbstractConfigurationView {
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
-		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade()
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
 			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
 
 		long dt = System.nanoTime();
@@ -622,7 +623,7 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
 			// region & facility
-			FacilityDto healthFacility = random(healthFacilities);
+			FacilityIndexDto healthFacility = random(healthFacilities);
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 			caze.setRegion(healthFacility.getRegion());
 			caze.setDistrict(healthFacility.getDistrict());
@@ -806,7 +807,7 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
-		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
 
 		long dt = System.nanoTime();
 
@@ -875,7 +876,7 @@ public class DevModeView extends AbstractConfigurationView {
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 						caze.setRegion(config.getRegion());
 						caze.setDistrict(config.getDistrict());
-						FacilityDto facility = random(healthFacilities);
+						FacilityIndexDto facility = random(healthFacilities);
 						caze.setHealthFacility(facility.toReference());
 						caze.setFacilityType(facility.getType());
 						caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());

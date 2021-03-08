@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -790,5 +792,41 @@ public class EventController {
 		titleLayout.addComponent(eventLabel);
 
 		return titleLayout;
+	}
+
+	public void sendAllSelectedToSurvnet(Set<EventIndexDto> selectedRows, Runnable callback) {
+		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+
+		// Show an error when at least one selected event is not a CLUSTER event
+		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
+		if (nonClusterEvent.isPresent()) {
+			Notification.show(
+					String.format(
+							I18nProperties.getString(Strings.errorSurvNetNonClusterEvent),
+							DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
+							I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
+					"",
+					Type.ERROR_MESSAGE);
+			return;
+		}
+
+		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
+		String ownershipHandedOverUuid = FacadeProvider.getEventFacade().getFirstEventUuidWithOwnershipHandedOver(selectedUuids);
+		if (ownershipHandedOverUuid != null) {
+			Notification.show(
+					String.format(I18nProperties.getString(Strings.errorSurvNetEventNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+					"",
+					Type.ERROR_MESSAGE);
+			return;
+		}
+
+		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.EVENTS, selectedUuids);
+
+		callback.run();
+		new Notification(
+				I18nProperties.getString(Strings.headingEventsSentToSurvNet),
+				I18nProperties.getString(Strings.messageEventsSentToSurvnet),
+				Type.HUMANIZED_MESSAGE,
+				false).show(Page.getCurrent());
 	}
 }

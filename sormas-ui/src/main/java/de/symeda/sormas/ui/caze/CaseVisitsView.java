@@ -46,6 +46,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
@@ -112,7 +113,7 @@ public class CaseVisitsView extends AbstractCaseView {
 					}
 					return caption;
 				},
-				createFileNameWithCurrentDate("sormas_case_visits_", ".csv"),
+				ExportEntityName.CASE_VISITS,
 				null);
 
 			new FileDownloader(exportStreamResource).extend(exportButton);

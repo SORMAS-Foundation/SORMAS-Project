@@ -30,9 +30,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SampleDto extends PseudonymizableDto {
+public class SampleDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -371,14 +372,17 @@ public class SampleDto extends PseudonymizableDto {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
+	@Override
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}

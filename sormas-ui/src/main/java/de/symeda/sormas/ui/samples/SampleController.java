@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -28,7 +29,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -38,6 +38,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -192,7 +193,7 @@ public class SampleController {
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 				Disease testedDisease = pathogenTest.getTestedDisease();
-				if (event.getDisease().equals(testedDisease)) {
+				if (Objects.equals(event.getDisease(), testedDisease)) {
 					newSample.setPathogenTestResult(testResult);
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
@@ -337,7 +338,7 @@ public class SampleController {
 	}
 
 	public void showChangePathogenTestResultWindow(
-		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editComponent,
 		String sampleUuid,
 		PathogenTestResultType newResult,
 		Runnable callback) {

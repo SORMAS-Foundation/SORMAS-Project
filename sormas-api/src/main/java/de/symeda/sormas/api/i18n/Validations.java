@@ -74,6 +74,8 @@ public interface Validations {
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
 	String importErrorInColumn = "importErrorInColumn";
+	String importEventParticipantsPropertyTypeNotAllowed = "importEventParticipantsPropertyTypeNotAllowed";
+	String importEventsPropertyTypeNotAllowed = "importEventsPropertyTypeNotAllowed";
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
@@ -106,9 +108,12 @@ public interface Validations {
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasEventExists = "sormasToSormasEventExists";
+	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
 	String sormasToSormasReturnCaseNotExists = "sormasToSormasReturnCaseNotExists";
 	String sormasToSormasReturnContactNotExists = "sormasToSormasReturnContactNotExists";
+	String sormasToSormasReturnEventNotExists = "sormasToSormasReturnEventNotExists";
 	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
@@ -124,8 +129,12 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";
+	String validEventInvestigationStatus = "validEventInvestigationStatus";
+	String validEventStatus = "validEventStatus";
+	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
+	String validLocation = "validLocation";
 	String validPerson = "validPerson";
 	String validPhoneNumber = "validPhoneNumber";
 	String validPointOfEntry = "validPointOfEntry";

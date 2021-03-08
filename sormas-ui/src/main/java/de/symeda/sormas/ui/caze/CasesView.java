@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -266,8 +267,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_cases_", ".csv"));
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CASES);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
@@ -285,8 +285,8 @@ public class CasesView extends AbstractView {
 			}
 
 			if (hasCaseManagementRight) {
-				StreamResource caseManagementExportStreamResource = DownloadUtil
-					.createCaseManagementExportResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
+				StreamResource caseManagementExportStreamResource =
+						DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), ExportEntityName.CASE_MANAGEMENT);
 				addExportButton(
 					caseManagementExportStreamResource,
 					exportPopupButton,
@@ -314,7 +314,7 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					createFileNameWithCurrentDate("sormas_samples_", ".csv"),
+					ExportEntityName.SAMPLES,
 					null);
 				addExportButton(
 					sampleExportStreamResource,
@@ -332,7 +332,7 @@ public class CasesView extends AbstractView {
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
 					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
+					ExportEntityName.BAG_CASES,
 					null);
 
 				addExportButton(bagExportResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
