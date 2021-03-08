@@ -29,6 +29,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -185,20 +186,20 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a followUpUntilDate has been updated
 	 *
-	 * @param contact
-	 *            a contact assigned to a person already available in the external journal
+	 * @param caze
+	 *            a case assigned to a person already available in the external journal
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+	public void notifyExternalJournalFollowUpUntilUpdate(CaseDataDto caze, Date previousFollowUpUntilDate) {
+		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
 		if (person.isEnrolledInExternalJournal()) {
-			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
+			if (caze.getFollowUpUntil().after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-					notifySymptomJournal(contact.getPerson().getUuid());
+					notifySymptomJournal(caze.getPerson().getUuid());
 				}
 				if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-					notifyPatientDiary(contact.getPerson().getUuid());
+					notifyPatientDiary(caze.getPerson().getUuid());
 				}
 			}
 		}
