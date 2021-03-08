@@ -738,6 +738,13 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
+
+		try {
+			importFacade.generateEventImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create event import template .csv file.");
+		}
+
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {

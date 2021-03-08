@@ -92,6 +92,12 @@ public class SormasToSormasResource {
 		return handleRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveSyncedEntity(sharedEvent));
 	}
 
+	@POST
+	@Path(SormasToSormasApiConstants.LAB_MESSAGE_ENDPOINT)
+	public Response syncSharedLAbMessages(SormasToSormasEncryptedDataDto labMessages) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasLabMessageFacade().saveLabMessages(labMessages));
+	}
+
 	private Response handleRequest(FacadeCall facadeCall) {
 		try {
 			facadeCall.call();

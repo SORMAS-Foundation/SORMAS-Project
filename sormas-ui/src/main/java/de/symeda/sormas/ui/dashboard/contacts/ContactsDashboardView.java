@@ -39,8 +39,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.contacts.components.ContactsFilterLayout;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
@@ -55,7 +55,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private static final int ROW_HEIGHT = 555;
 
 	protected DashboardDataProvider dashboardDataProvider;
-	protected DashboardFilterLayout filterLayout;
+	protected ContactsFilterLayout filterLayout;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
 	protected AbstractEpiCurveComponent epiCurveComponent;
@@ -93,7 +93,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
 
-		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		filterLayout = new ContactsFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
 
 		dashboardSwitcher.setValue(DashboardType.CONTACTS);
@@ -101,8 +101,6 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
 			navigateToDashboardView(e);
 		});
-
-		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
 		rowsLayout = new VerticalLayout();
 		rowsLayout.setMargin(false);

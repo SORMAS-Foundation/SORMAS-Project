@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.ui.customexport;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -39,7 +41,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CustomExportController {
 
-	public void openContactExportWindow(ContactCriteria contactCriteria) {
+	public void openContactExportWindow(ContactCriteria contactCriteria, Supplier<Collection<String>> selectedRows) {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
@@ -47,7 +49,7 @@ public class CustomExportController {
 			ContactDownloadUtil::getPropertyCaption,
 			customExportWindow::close);
 		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, exportConfig), null, true);
+			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true);
 		});
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));

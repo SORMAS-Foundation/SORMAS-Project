@@ -185,9 +185,6 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
-	@HideForCountriesExcept(countries = {
-			COUNTRY_CODE_GERMANY,
-			COUNTRY_CODE_SWITZERLAND })
 	private String externalToken;
 
 	private boolean highPriority;
@@ -562,7 +559,9 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;

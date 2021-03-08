@@ -50,23 +50,27 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private List<String> excludedOrganizationIds;
 
+	private final boolean hasOptions;
+
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
 
 	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
-			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			excludedOrganizationIds,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			null);
 	}
 
 	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
-		return new SormasToSormasOptionsForm(Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), excludedOrganizationIds, null);
+		return new SormasToSormasOptionsForm(excludedOrganizationIds, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), null);
 	}
 
 	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
-			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			excludedOrganizationIds,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
 			(form) -> FieldHelper.setVisibleWhen(
 				form.getFieldGroup(),
 				SormasToSormasOptionsDto.WITH_SAMPLES,
@@ -75,15 +79,21 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				true));
 	}
 
+	public static SormasToSormasOptionsForm withoutOptions() {
+		return new SormasToSormasOptionsForm(null, false, null, null);
+	}
+
 	private SormasToSormasOptionsForm(
-		List<String> customOptions,
 		List<String> excludedOrganizationIds,
+		boolean hasOptions,
+		List<String> customOptions,
 		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
-		this.customOptions = customOptions;
+		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
 		this.customFieldDependencies = customFieldDependencies;
+		this.hasOptions = hasOptions;
 
 		addFields();
 
@@ -105,20 +115,22 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
 		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
 
-		addFields(customOptions);
+		if (hasOptions) {
+			addFields(customOptions);
 
-		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+			addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
 
-		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
+			addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 
-		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-		pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
+			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
 
-		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
-		comment.setRows(3);
+			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+			comment.setRows(3);
 
-		if (customFieldDependencies != null) {
-			customFieldDependencies.accept(this);
+			if (customFieldDependencies != null) {
+				customFieldDependencies.accept(this);
+			}
 		}
 	}
 

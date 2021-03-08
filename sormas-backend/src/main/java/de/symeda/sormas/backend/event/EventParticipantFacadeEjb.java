@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -276,6 +277,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		Subquery<Date> dateSubquery = cq.subquery(Date.class);
+		Root<Sample> subRoot = dateSubquery.from(Sample.class);
+		final Expression<Date> maxSampleDateTime = cb.<Date>greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
@@ -288,10 +294,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			samples.get(Sample.PATHOGEN_TEST_RESULT),
+			samples.get(Sample.SAMPLE_DATE_TIME),
 			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
-		cq.where(filter);
+		Predicate pathogenTestResultWhereCondition = cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID));
+		if (eventParticipantCriteria.getPathogenTestResult() != null) {
+			pathogenTestResultWhereCondition = CriteriaBuilderHelper
+				.and(cb, filter, pathogenTestResultWhereCondition, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
+		}
+		final Predicate nullOrMaxSampleDateTime = CriteriaBuilderHelper.or(
+			cb,
+			cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)),
+			cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition)));
+		cq.where(CriteriaBuilderHelper.and(cb, nullOrMaxSampleDateTime, filter));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -399,6 +416,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public List<EventParticipantExportDto> getExportList(
 		EventParticipantCriteria eventParticipantCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		Language userLanguage) {
@@ -495,6 +513,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			vaccinationInfo.get(VaccinationInfo.VACCINE_ATC_CODE));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
 		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
@@ -832,5 +851,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			null);
 
 		return participants;
+	}
+
+	@Override
+	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
+		return eventParticipantService.getByPersonUuids(personUuids).stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
 	}
 }

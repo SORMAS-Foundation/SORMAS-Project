@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityIndexDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -147,7 +148,7 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 
 		// 0. No sortProperties
-		List<FacilityDto> result = getFacilityFacade().getIndexList(facilityCriteria, null, null, new ArrayList<>());
+		List<FacilityIndexDto> result = getFacilityFacade().getIndexList(facilityCriteria, null, null, new ArrayList<>());
 		assertThat(result, is(empty()));
 
 		List<SortProperty> allSortProperties = new ArrayList<>();

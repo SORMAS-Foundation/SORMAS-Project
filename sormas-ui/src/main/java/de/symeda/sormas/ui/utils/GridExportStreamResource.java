@@ -20,12 +20,16 @@ package de.symeda.sormas.ui.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.opencsv.CSVWriter;
@@ -51,93 +55,95 @@ import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @SuppressWarnings("serial")
-public class GridExportStreamResource extends StreamResource {
+public class GridExportStreamResource {
 
-	public GridExportStreamResource(Grid<?> grid, String filename, String... excludePropertyIds) {
-		this(grid, filename, Arrays.asList(excludePropertyIds), Collections.emptyList());
+	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
+		return new GridExportStreamResource(grid, null, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList()).getStreamResource();
 	}
 
-	public GridExportStreamResource(Grid<?> grid, String filename, List<String> excludePropertyIds, List<String> includePropertyIds) {
+	public static StreamResource createStreamResourceWithSelectedItems(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		String... excludePropertyIds) {
+		return new GridExportStreamResource(grid, getSelectedRows, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList())
+			.getStreamResource();
+	}
 
-		super((StreamSource) () -> {
+	public static StreamResource createStreamResource(
+		Grid<?> grid,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
+		return new GridExportStreamResource(grid, null, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
+	}
 
-			ValueProvider[] columnValueProviders;
-			String[] headerRow;
-			String[] labelsRow;
-			{
-				List<Column> columns = grid.getColumns()
-					.stream()
-					.filter(c -> !c.isHidden() || includePropertyIds.contains(c.getId()))
-					.filter(c -> !excludePropertyIds.contains(c.getId()))
-					.collect(Collectors.toList());
+	private final StreamResource streamResource;
 
-				columnValueProviders = columns.stream().map(Column::getValueProvider).toArray(ValueProvider[]::new);
+	private GridExportStreamResource(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
+		String filename = DownloadUtil.createFileNameWithCurrentDate(entityName, ".csv");
+		GridExportStreamSource streamSource = new GridExportStreamSource(grid, getSelectedRows, excludePropertyIds, includePropertyIds);
+		this.streamResource = new StreamResource(streamSource, filename);
+		this.streamResource.setMIMEType("text/csv");
+		this.streamResource.setCacheTime(0);
+	}
 
-				headerRow = columns.stream().map(Column::getId).toArray(String[]::new);
-				labelsRow = columns.stream().map(Column::getCaption).toArray(String[]::new);
-				labelsRow[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + labelsRow[0];
-			}
+	private StreamResource getStreamResource() {
+		return this.streamResource;
+	}
 
+	private static class GridExportStreamSource implements StreamResource.StreamSource {
+
+		private final Grid<?> grid;
+		private final List<String> excludePropertyIds;
+		private final List<String> includePropertyIds;
+		private final Supplier<Set<?>> getSelectedRows;
+
+		GridExportStreamSource(Grid<?> grid, Supplier<Set<?>> getSelectedRows, List<String> excludePropertyIds, List<String> includePropertyIds) {
+			this.grid = grid;
+			this.excludePropertyIds = excludePropertyIds;
+			this.includePropertyIds = includePropertyIds;
+			this.getSelectedRows = getSelectedRows;
+		}
+
+		@Override
+		public InputStream getStream() {
+			List<Column> columns = getGridColumns();
+			ValueProvider[] columnValueProviders = columns.stream().map(Column::getValueProvider).toArray(ValueProvider[]::new);
+			String[] headerRow = columns.stream().map(Column::getId).toArray(String[]::new);
+			String[] labelsRow = columns.stream().map(Column::getCaption).toArray(String[]::new);
+			labelsRow[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + labelsRow[0];
 			DataProvider<?, ?> dataProvider = grid.getDataProvider();
+			List<QuerySortOrder> sortOrder = getGridSortOrder();
 
-			List<QuerySortOrder> sortOrder = grid.getSortOrder()
-				.stream()
-				.flatMap(
-					gridSortOrder -> grid.getColumns()
-						.stream()
-						.filter(column -> column.getId().equals(gridSortOrder.getSorted().getId()))
-						.findFirst()
-						.get()
-						.getSortOrder(gridSortOrder.getDirection()))
-				.collect(Collectors.toList());
+			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(); CSVWriter writer = createCsvWriter(byteStream)) {
+				writer.writeNext(headerRow);
+				writer.writeNext(labelsRow, false);
 
-			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-				try (CSVWriter writer = CSVUtils.createCSVWriter(
-					new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-					FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				String[] rowValues = new String[columnValueProviders.length];
 
-					writer.writeNext(headerRow);
-					writer.writeNext(labelsRow, false);
+				Set<?> selectedRows = getSelectedRows != null ? getSelectedRows.get() : Collections.emptySet();
 
-					String[] rowValues = new String[columnValueProviders.length];
-
+				if (selectedRows.isEmpty()) {
 					int totalRowCount = dataProvider.size(new Query());
 					for (int i = 0; i < totalRowCount; i += 100) {
 						dataProvider.fetch(new Query(i, 100, sortOrder, null, null)).forEach(row -> {
-							for (int c = 0; c < columnValueProviders.length; c++) {
-								Object value = columnValueProviders[c].apply(row);
-
-								final String valueString;
-								if (value == null) {
-									valueString = "";
-								} else if (value instanceof Date) {
-									valueString = DateFormatHelper.formatLocalDateTime((Date) value);
-								} else if (value instanceof Boolean) {
-									if ((Boolean) value == true) {
-										valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-									} else
-										valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
-								} else if (value instanceof AgeAndBirthDateDto) {
-									AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-									valueString = PersonHelper.getAgeAndBirthdateString(
-										ageAndBirthDate.getAge(),
-										ageAndBirthDate.getAgeType(),
-										ageAndBirthDate.getBirthdateDD(),
-										ageAndBirthDate.getBirthdateMM(),
-										ageAndBirthDate.getBirthdateYYYY(),
-										I18nProperties.getUserLanguage());
-								} else if (value instanceof Label) {
-									valueString = ((Label) value).getValue();
-								} else {
-									valueString = value.toString();
-								}
-								rowValues[c] = valueString;
-							}
-							writer.writeNext(rowValues);
+							writeLine(writer, columnValueProviders, row, rowValues);
 						});
 						writer.flush();
 					}
+				} else {
+					selectedRows.forEach(row -> {
+						writeLine(writer, columnValueProviders, row, rowValues);
+					});
+					writer.flush();
 				}
+
 				return new ByteArrayInputStream(byteStream.toByteArray());
 			} catch (IOException e) {
 				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
@@ -149,8 +155,66 @@ public class GridExportStreamResource extends StreamResource {
 					false).show(Page.getCurrent());
 				return null;
 			}
-		}, filename);
-		setMIMEType("text/csv");
-		setCacheTime(0);
+		}
+
+		private static void writeLine(CSVWriter writer, ValueProvider[] columnValueProviders, Object row, String[] rowValues) {
+			for (int c = 0; c < columnValueProviders.length; c++) {
+				Object value = columnValueProviders[c].apply(row);
+
+				final String valueString;
+				if (value == null) {
+					valueString = "";
+				} else if (value instanceof Date) {
+					valueString = DateFormatHelper.formatLocalDateTime((Date) value);
+				} else if (value instanceof Boolean) {
+					if ((Boolean) value == true) {
+						valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
+					} else
+						valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+				} else if (value instanceof AgeAndBirthDateDto) {
+					AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+					valueString = PersonHelper.getAgeAndBirthdateString(
+						ageAndBirthDate.getAge(),
+						ageAndBirthDate.getAgeType(),
+						ageAndBirthDate.getBirthdateDD(),
+						ageAndBirthDate.getBirthdateMM(),
+						ageAndBirthDate.getBirthdateYYYY(),
+						I18nProperties.getUserLanguage());
+				} else if (value instanceof Label) {
+					valueString = ((Label) value).getValue();
+				} else {
+					valueString = value.toString();
+				}
+				rowValues[c] = valueString;
+			}
+			writer.writeNext(rowValues);
+		}
+
+		private List<Column> getGridColumns() {
+			return grid.getColumns()
+				.stream()
+				.filter(column -> !column.isHidden() || includePropertyIds.contains(column.getId()))
+				.filter(column -> !excludePropertyIds.contains(column.getId()))
+				.collect(Collectors.toList());
+		}
+
+		private List<QuerySortOrder> getGridSortOrder() {
+			return grid.getSortOrder()
+				.stream()
+				.flatMap(
+					gridSortOrder -> grid.getColumns()
+						.stream()
+						.filter(column -> column.getId().equals(gridSortOrder.getSorted().getId()))
+						.findFirst()
+						.get()
+						.getSortOrder(gridSortOrder.getDirection()))
+				.collect(Collectors.toList());
+		}
+
+		private CSVWriter createCsvWriter(ByteArrayOutputStream byteStream) throws UnsupportedEncodingException {
+			return CSVUtils.createCSVWriter(
+				new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
+				FacadeProvider.getConfigFacade().getCsvSeparator());
+		}
 	}
 }

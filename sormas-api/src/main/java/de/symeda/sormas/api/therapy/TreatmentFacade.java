@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.therapy;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -25,5 +26,5 @@ public interface TreatmentFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<TreatmentExportDto> getExportList(CaseCriteria criteria, int first, int max);
+	List<TreatmentExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max);
 }

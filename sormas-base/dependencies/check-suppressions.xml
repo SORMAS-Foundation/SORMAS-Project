@@ -37,6 +37,13 @@
 	<filePath regex="true">.*\bvaadin-sass-compiler\.jar</filePath>
     <cve>CVE-2019-10799</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: https://github.com/tasks/tasks
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-22475</vulnerabilityName>
+  </suppress>
   <!-- *** False positives END *** -->
 
   <!-- *** Not exploitable *** -->

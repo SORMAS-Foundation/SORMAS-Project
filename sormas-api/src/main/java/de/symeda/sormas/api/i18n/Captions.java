@@ -233,8 +233,6 @@ public interface Captions {
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
-	String CaseData_covidTestReason = "CaseData.covidTestReason";
-	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
@@ -869,6 +867,7 @@ public interface Captions {
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
 	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";
 	String Event_eventLocation = "Event.eventLocation";
+	String Event_eventManagementStatus = "Event.eventManagementStatus";
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";
@@ -1029,6 +1028,7 @@ public interface Captions {
 	String Exposure_handlingAnimals = "Exposure.handlingAnimals";
 	String Exposure_handlingSamples = "Exposure.handlingSamples";
 	String Exposure_indoors = "Exposure.indoors";
+	String Exposure_largeAttendanceNumber = "Exposure.largeAttendanceNumber";
 	String Exposure_location = "Exposure.location";
 	String Exposure_longFaceToFaceContact = "Exposure.longFaceToFaceContact";
 	String Exposure_meansOfTransport = "Exposure.meansOfTransport";
@@ -1058,19 +1058,24 @@ public interface Captions {
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
 	String facility = "facility";
+	String Facility_additionalInformation = "Facility.additionalInformation";
 	String Facility_archived = "Facility.archived";
+	String Facility_areaType = "Facility.areaType";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
+	String Facility_houseNumber = "Facility.houseNumber";
 	String Facility_latitude = "Facility.latitude";
 	String Facility_longitude = "Facility.longitude";
 	String Facility_name = "Facility.name";
 	String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
+	String Facility_postalCode = "Facility.postalCode";
 	String Facility_publicOwnership = "Facility.publicOwnership";
 	String Facility_region = "Facility.region";
+	String Facility_street = "Facility.street";
 	String Facility_type = "Facility.type";
 	String Facility_typeGroup = "Facility.typeGroup";
 	String facilityActiveFacilities = "facilityActiveFacilities";
@@ -1255,6 +1260,7 @@ public interface Captions {
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
+	String notTestedYet = "notTestedYet";
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
@@ -1480,6 +1486,8 @@ public interface Captions {
 	String Sample_sampleMaterialText = "Sample.sampleMaterialText";
 	String Sample_samplePurpose = "Sample.samplePurpose";
 	String Sample_sampleSource = "Sample.sampleSource";
+	String Sample_samplingReason = "Sample.samplingReason";
+	String Sample_samplingReasonDetails = "Sample.samplingReasonDetails";
 	String Sample_shipmentDate = "Sample.shipmentDate";
 	String Sample_shipmentDetails = "Sample.shipmentDetails";
 	String Sample_shipped = "Sample.shipped";
@@ -1603,6 +1611,7 @@ public interface Captions {
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasReturn = "sormasToSormasReturn";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
+	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

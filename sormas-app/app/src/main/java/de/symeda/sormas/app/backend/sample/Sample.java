@@ -40,6 +40,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -170,6 +171,11 @@ public class Sample extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedOtherAdditionalTests;
+
+	@Enumerated(EnumType.STRING)
+	private SamplingReason samplingReason;
+	@Column(columnDefinition = "text")
+	private String samplingReasonDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
@@ -514,6 +520,22 @@ public class Sample extends PseudonymizableAdo {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	public void setSamplingReason(SamplingReason samplingReason) {
+		this.samplingReason = samplingReason;
+	}
+
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	public void setSamplingReasonDetails(String samplingReasonDetails) {
+		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {

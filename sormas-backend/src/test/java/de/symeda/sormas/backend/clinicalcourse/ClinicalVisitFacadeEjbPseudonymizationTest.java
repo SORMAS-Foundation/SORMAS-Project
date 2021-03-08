@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -129,7 +130,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		createClinicalVisit(case2);
 
-		List<ClinicalVisitExportDto> exportList = getClinicalVisitFacade().getExportList(new CaseCriteria(), 0, 100);
+		List<ClinicalVisitExportDto> exportList = getClinicalVisitFacade().getExportList(new CaseCriteria(), Collections.emptySet(), 0, 100);
 
 		ClinicalVisitExportDto export1 = exportList.stream().filter(v -> v.getCaseUuid().equals(case1.getUuid())).findFirst().get();
 		assertThat(export1.getCaseName(), is("Confidential"));
@@ -143,7 +144,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testUpdateOutsideJurisdiction(){
+	public void testUpdateOutsideJurisdiction() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		// create contact ro have access to @case1
 		creator.createContact(user2.toReference(), caze.getPerson(), caze);

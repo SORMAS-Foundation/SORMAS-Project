@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.function.Supplier;
 
 import com.vaadin.server.StreamResource;
 
@@ -34,14 +36,17 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 public class ContactDownloadUtil {
 
-	public static StreamResource createContactExportResource(ContactCriteria contactCriteria, ExportConfigurationDto exportConfiguration) {
+	public static StreamResource createContactExportResource(
+		ContactCriteria contactCriteria,
+		Supplier<Collection<String>> selectedRows,
+		ExportConfigurationDto exportConfiguration) {
 		return DownloadUtil.createCsvExportStreamResource(
 			ContactExportDto.class,
 			null,
 			(Integer start, Integer max) -> FacadeProvider.getContactFacade()
-				.getExportList(contactCriteria, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				.getExportList(contactCriteria, selectedRows.get(), start, max, exportConfiguration, I18nProperties.getUserLanguage()),
 			ContactDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_contacts_", ".csv"),
+			ExportEntityName.CONTACTS,
 			exportConfiguration);
 	}
 

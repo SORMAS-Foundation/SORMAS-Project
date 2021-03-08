@@ -207,7 +207,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1);
 		SampleDto sample4 = createContactSample(contact2);
 
-		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), 0, 100);
+		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), Collections.emptySet(), 0, 100);
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
 		assertThat(export1.getSampleAssociatedCase().getFirstName(), is("John"));
 		assertThat(export1.getSampleAssociatedCase().getLastName(), is("Smith"));
@@ -298,10 +298,10 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// case samples not yet implemented
 		Optional<SampleDto> active3 = activeSamples.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
-		assertThat(active3.isPresent(), is(false));
+		assertThat(active3.isPresent(), is(true));
 
 		Optional<SampleDto> active4 = activeSamples.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst();
-		assertThat(active4.isPresent(), is(false));
+		assertThat(active4.isPresent(), is(true));
 	}
 
 	@Test

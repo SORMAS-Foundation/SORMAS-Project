@@ -199,7 +199,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		ContactCriteria contactCriteria = new ContactCriteria();
 		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
-		List<ContactExportDto> exportList = getContactFacade().getExportList(contactCriteria, 0, 100, null, Language.EN);
+		List<ContactExportDto> exportList = getContactFacade().getExportList(contactCriteria, Collections.emptySet(), 0, 100, null, Language.EN);
 
 		ContactExportDto index1 = exportList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));

@@ -48,7 +48,6 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -202,8 +201,6 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
-	public static final String COVID_TEST_REASON = "covidTestReason";
-	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
 	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
@@ -356,8 +353,6 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private List<Contact> convertedContact;
 
 	private Integer caseIdIsm;
-	private CovidTestReason covidTestReason;
-	private String covidTestReasonDetails;
 	private ContactTracingContactType contactTracingFirstContactType;
 	private Date contactTracingFirstContactDate;
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
@@ -1436,24 +1431,6 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setCaseIdIsm(Integer caseIdIsm) {
 		this.caseIdIsm = caseIdIsm;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
