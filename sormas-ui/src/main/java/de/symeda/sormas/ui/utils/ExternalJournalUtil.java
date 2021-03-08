@@ -49,23 +49,23 @@ public class ExternalJournalUtil {
 	public static Optional<Button> getExternalJournalUiButton(PersonDto person) {
 		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
-				return Optional.of(createPiaOptionsButton(person));
+				return Optional.of(createSymptomJournalOptionsButton(person));
 			} else {
-				return Optional.of(createPiaRegisterButton(person));
+				return Optional.of(createSymptomJournalRegisterButton(person));
 			}
 		}
 		else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
-				return Optional.of(createClimedoOptionsButton(person));
+				return Optional.of(createPatientDiaryOptionsButton(person));
 			} else {
-				return Optional.of(createClimedoRegisterButton(person));
+				return Optional.of(createPatientDiaryRegisterButton(person));
 			}
 
 		}
 		return Optional.empty();
 	}
 
-	private static Button createPiaOptionsButton(PersonDto person) {
+	private static Button createSymptomJournalOptionsButton(PersonDto person) {
 		VerticalLayout popupLayout = new VerticalLayout();
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
@@ -73,42 +73,42 @@ public class ExternalJournalUtil {
 		// TODO: implement cancel for PIA
 		Button.ClickListener cancelListener = clickEvent -> {};
 		Button.ClickListener openListener = clickEvent -> openSymptomJournalWindow(person);
-		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.piaOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.symptomJournalOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
 		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPiaButton), openListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInSymptomJournalButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
 	}
 
 
-	private static Button createPiaRegisterButton(PersonDto person) {
-		Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.createPiaAccountButton));
-		CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-		btnCreatePIAAccount.addClickListener(clickEvent -> openSymptomJournalWindow(person));
-		return btnCreatePIAAccount;
+	private static Button createSymptomJournalRegisterButton(PersonDto person) {
+		Button btnCreateSymptomJournalAccount = new Button(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
+		CssStyles.style(btnCreateSymptomJournalAccount, ValoTheme.BUTTON_PRIMARY);
+		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> openSymptomJournalWindow(person));
+		return btnCreateSymptomJournalAccount;
 	}
 
-	private static Button createClimedoOptionsButton(PersonDto person) {
+	private static Button createPatientDiaryOptionsButton(PersonDto person) {
 		VerticalLayout popupLayout = new VerticalLayout();
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		Button.ClickListener cancelListener = clickEvent -> showCancelFollowupConfirmationPopup(person);
 		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
-		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.climedoOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.patientDiaryOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
 		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInClimedoButton), openListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPatientDiaryButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
 	}
 
-	private static Button createClimedoRegisterButton(PersonDto person) {
-		Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.registerInClimedoButton));
-		CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-		btnClimedoAccount.addClickListener(clickEvent -> enrollPatientInPatientDiary(person));
-		return btnClimedoAccount;
+	private static Button createPatientDiaryRegisterButton(PersonDto person) {
+		Button btnPatientDiaryAccount = new Button(I18nProperties.getCaption(Captions.registerInPatientDiaryButton));
+		CssStyles.style(btnPatientDiaryAccount, ValoTheme.BUTTON_PRIMARY);
+		btnPatientDiaryAccount.addClickListener(clickEvent -> enrollPatientInPatientDiary(person));
+		return btnPatientDiaryAccount;
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class ExternalJournalUtil {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setContent(frame);
-		window.setCaption(I18nProperties.getString(Strings.headingPIAAccountCreation));
+		window.setCaption(I18nProperties.getString(Strings.headingSymptomJournalAccountCreation));
 		window.setWidth(80, Sizeable.Unit.PERCENTAGE);
 		window.setHeight(80, Sizeable.Unit.PERCENTAGE);
 
@@ -169,10 +169,10 @@ public class ExternalJournalUtil {
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				600,
-				confirmed -> {if (confirmed) cancelClimedoFollowUp(personDto);});
+				confirmed -> {if (confirmed) cancelPatientDiaryFollowUp(personDto);});
 	}
 
-	private static void cancelClimedoFollowUp(PersonDto personDto) {
+	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
 		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
 	}

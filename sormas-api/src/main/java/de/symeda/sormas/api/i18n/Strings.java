@@ -413,7 +413,6 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
-	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
@@ -444,6 +443,7 @@ public interface Strings {
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
+	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";

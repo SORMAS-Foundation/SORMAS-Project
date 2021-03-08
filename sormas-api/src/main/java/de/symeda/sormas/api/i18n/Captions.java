@@ -465,7 +465,6 @@ public interface Captions {
 	String caseTransferCases = "caseTransferCases";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
-	String climedoOptionsButton = "climedoOptionsButton";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";
@@ -644,7 +643,7 @@ public interface Captions {
 	String countryActiveCountries = "countryActiveCountries";
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
-	String createPiaAccountButton = "createPiaAccountButton";
+	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
 	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
@@ -1257,8 +1256,8 @@ public interface Captions {
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
-	String openInClimedoButton = "openInClimedoButton";
-	String openInPiaButton = "openInPiaButton";
+	String openInPatientDiaryButton = "openInPatientDiaryButton";
+	String openInSymptomJournalButton = "openInSymptomJournalButton";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -1287,6 +1286,7 @@ public interface Captions {
 	String PathogenTests = "PathogenTests";
 	String pathogenTestSelect = "pathogenTestSelect";
 	String patientDiaryCancelError = "patientDiaryCancelError";
+	String patientDiaryOptionsButton = "patientDiaryOptionsButton";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String Person = "Person";
@@ -1371,7 +1371,6 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
-	String piaOptionsButton = "piaOptionsButton";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
@@ -1439,7 +1438,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
-	String registerInClimedoButton = "registerInClimedoButton";
+	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";
@@ -1649,6 +1648,7 @@ public interface Captions {
 	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
 	String SurvnetGateway_title = "SurvnetGateway.title";
 	String SurvnetGateway_unableToSend = "SurvnetGateway.unableToSend";
+	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
