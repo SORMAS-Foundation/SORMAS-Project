@@ -72,9 +72,7 @@ public class TasksView extends AbstractView {
 
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				taskListComponent.getGrid(),
-				() -> taskListComponent.getBulkOperationsDropdown().isVisible()
-					? taskListComponent.getGrid().asMultiSelect().getSelectedItems()
-					: Collections.emptySet(),
+				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
 				ExportEntityName.TASKS,
 				TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
