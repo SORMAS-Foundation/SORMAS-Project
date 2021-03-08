@@ -52,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
@@ -92,7 +94,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import org.apache.commons.lang.StringUtils;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -354,6 +355,12 @@ public class EventFacadeEjb implements EventFacade {
 					expression = location.get(Location.HOUSE_NUMBER);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					break;
+				case EventIndexDto.REPORTING_USER:
+					expression = reportingUser.get(User.FIRST_NAME);
+					break;
+				case EventIndexDto.RESPONSIBLE_USER:
+					expression = responsibleUser.get(User.FIRST_NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -738,7 +745,8 @@ public class EventFacadeEjb implements EventFacade {
 		if (!districtFacade.getDistrictByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
-		if (location.getCommunity() != null && !communityFacade.getByUuid(location.getCommunity().getUuid()).getDistrict().equals(location.getDistrict())) {
+		if (location.getCommunity() != null
+			&& !communityFacade.getByUuid(location.getCommunity().getUuid()).getDistrict().equals(location.getDistrict())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
 		if (location.getFacility() != null) {
