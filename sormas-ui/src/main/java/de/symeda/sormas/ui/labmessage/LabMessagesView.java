@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.labmessage;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -54,12 +53,12 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-				LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
-				if (!fetchResult.isSuccess()) {
-					VaadinUiUtil.showWarningPopup(fetchResult.getError());
-				} else {
-					listComponent.getGrid().reload();
-				}
+			LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
+			if (!fetchResult.isSuccess()) {
+				VaadinUiUtil.showWarningPopup(fetchResult.getError());
+			} else {
+				listComponent.getGrid().reload();
+			}
 		}, ValoTheme.BUTTON_PRIMARY));
 	}
 
