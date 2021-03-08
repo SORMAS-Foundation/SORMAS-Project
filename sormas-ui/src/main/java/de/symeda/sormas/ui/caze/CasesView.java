@@ -279,7 +279,7 @@ public class CasesView extends AbstractView {
 			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
-					() -> bulkOperationsDropdown.isVisible() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
+					() -> isBulkEditAllowed() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
 					ExportEntityName.CASES);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}

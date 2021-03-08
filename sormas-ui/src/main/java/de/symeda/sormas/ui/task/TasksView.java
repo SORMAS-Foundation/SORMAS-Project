@@ -72,7 +72,7 @@ public class TasksView extends AbstractView {
 
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				taskListComponent.getGrid(),
-				() -> taskListComponent.getBulkOperationsDropdown().isVisible()
+				() -> isBulkEditAllowed()
 					? taskListComponent.getGrid().asMultiSelect().getSelectedItems()
 					: Collections.emptySet(),
 				ExportEntityName.TASKS,
@@ -81,7 +81,7 @@ public class TasksView extends AbstractView {
 			fileDownloader.extend(basicExportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isBulkEditAllowed()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
@@ -119,6 +119,10 @@ public class TasksView extends AbstractView {
 
 			addHeaderComponent(createButton);
 		}
+	}
+
+	boolean isBulkEditAllowed() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 	}
 
 	@Override

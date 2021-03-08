@@ -165,7 +165,7 @@ public class TaskGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (tasksView.isBulkEditAllowed()) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(

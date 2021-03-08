@@ -212,7 +212,7 @@ public class ContactsView extends AbstractView {
 			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
-					() -> bulkOperationsDropdown.isVisible() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
+					() -> isBulkEditAllowed() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
 					ExportEntityName.CONTACTS);
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}

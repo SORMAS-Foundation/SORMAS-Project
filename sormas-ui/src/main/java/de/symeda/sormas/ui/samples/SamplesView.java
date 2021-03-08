@@ -155,7 +155,7 @@ public class SamplesView extends AbstractView {
 				Strings.infoDetailedExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
@@ -185,6 +185,11 @@ public class SamplesView extends AbstractView {
 				navigateTo(sampleListComponent.getCriteria());
 			});
 		}
+	}
+
+	private boolean isBulkEditAllowed() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 
 	private Set<String> getSelectedRows() {

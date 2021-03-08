@@ -186,7 +186,7 @@ public class EventsView extends AbstractView {
 			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
-					() -> isDefaultViewType() && bulkOperationsDropdown.isVisible()
+					() -> isDefaultViewType() && isBulkEditAllowed()
 						? this.grid.asMultiSelect().getSelectedItems()
 						: Collections.emptySet(),
 					ExportEntityName.EVENTS);
@@ -460,7 +460,7 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+			if (isBulkEditAllowed()) {
 				EventGrid eventGrid = (EventGrid) grid;
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
@@ -517,6 +517,11 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+	}
+
+	private boolean isBulkEditAllowed() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()
+				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 
 	@Override
