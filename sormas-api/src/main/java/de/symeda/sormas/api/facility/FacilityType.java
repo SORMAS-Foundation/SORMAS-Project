@@ -28,6 +28,7 @@ public enum FacilityType {
 
 	ASSOCIATION(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	BUSINESS(FacilityTypeGroup.WORKING_PLACE, false, false),
+	BAR(FacilityTypeGroup.CATERING_OUTLET, false, false),
 	CAMPSITE(FacilityTypeGroup.ACCOMMODATION, true, false),
 	CANTINE(FacilityTypeGroup.CATERING_OUTLET, false, false),
 	CHILDRENS_DAY_CARE(FacilityTypeGroup.CARE_FACILITY, false, false),
@@ -47,6 +48,7 @@ public enum FacilityType {
 	MASS_ACCOMMODATION(FacilityTypeGroup.ACCOMMODATION, true, false),
 	MILITARY_BARRACKS(FacilityTypeGroup.RESIDENCE, true, false),
 	MOBILE_NURSING_SERVICE(FacilityTypeGroup.CARE_FACILITY, false, false),
+	NIGHT_CLUB(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	OTHER_ACCOMMODATION(FacilityTypeGroup.ACCOMMODATION, true, false),
 	OTHER_CARE_FACILITY(FacilityTypeGroup.CARE_FACILITY, false, false),
 	OTHER_CATERING_OUTLET(FacilityTypeGroup.CATERING_OUTLET, false, false),

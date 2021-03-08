@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			EventActionIndexDto.EVENT_STATUS,
 			EventActionIndexDto.EVENT_RISK_LEVEL,
 			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
+			EventActionIndexDto.EVENT_MANAGEMENT_STATUS,
 			EventActionIndexDto.EVENT_REPORTING_USER,
 			EventActionIndexDto.EVENT_RESPONSIBLE_USER,
 			EventActionIndexDto.ACTION_TITLE,
@@ -122,8 +124,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 	}
 
 	private String createEventEvolutionDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
-		Column<EventActionIndexDto, String> eventDateColumn =
-				grid.addColumn(event -> DateFormatHelper.formatDate(event.getEventEvolutionDate()));
+		Column<EventActionIndexDto, String> eventDateColumn = grid.addColumn(event -> DateFormatHelper.formatDate(event.getEventEvolutionDate()));
 		eventDateColumn.setId(EVENT_EVOLUTION_DATE);
 		eventDateColumn.setSortProperty(EventActionIndexDto.EVENT_EVOLUTION_DATE);
 		eventDateColumn.setSortable(true);

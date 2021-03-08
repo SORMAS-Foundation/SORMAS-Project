@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public interface VisitFacade {
 
 	List<VisitExportDto> getVisitsExportList(
 		VisitCriteria visitCriteria,
+		Collection<String> selectedRows,
 		VisitExportType exportType,
 		int first,
 		int max,

@@ -32,7 +32,6 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -356,10 +355,6 @@ public class Case extends PseudonymizableAdo {
 	private Trimester trimester;
 	@DatabaseField
 	private Integer caseIdIsm;
-	@Enumerated(EnumType.STRING)
-	private CovidTestReason covidTestReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String covidTestReasonDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactTracingContactType contactTracingFirstContactType;
 	@DatabaseField
@@ -1200,22 +1195,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdIsm(Integer caseIdIsm) {
 		this.caseIdIsm = caseIdIsm;
-	}
-
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
 	}
 
 	public ContactTracingContactType getContactTracingFirstContactType() {

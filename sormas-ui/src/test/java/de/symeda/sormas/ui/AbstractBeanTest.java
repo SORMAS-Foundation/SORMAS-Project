@@ -27,6 +27,12 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -118,6 +124,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseImportFacade getCaseImportFacade() {
 		return getBean(CaseImportFacadeEjbLocal.class);
+	}
+
+	public EventFacade getEventFacade() {
+		return getBean(EventFacadeEjbLocal.class);
+	}
+
+	public EventParticipantFacade getEventParticipantFacade() {
+		return getBean(EventParticipantFacadeEjbLocal.class);
 	}
 
 	public CountryFacade getCountryFacade() {

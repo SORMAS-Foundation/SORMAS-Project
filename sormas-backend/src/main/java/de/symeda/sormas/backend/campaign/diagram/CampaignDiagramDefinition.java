@@ -12,6 +12,7 @@ import org.hibernate.annotations.Type;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramTranslations;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -29,6 +30,7 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
 	private boolean percentageDefault;
+	private List<CampaignDiagramTranslations> campaignDiagramTranslations;
 
 	@Column
 	public String getDiagramId() {
@@ -86,5 +88,16 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	public void setPercentageDefault(boolean percentageDefault) {
 		this.percentageDefault = percentageDefault;
+	}
+
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignDiagramTranslations> getCampaignDiagramTranslations() {
+		return campaignDiagramTranslations;
+	}
+
+	public void setCampaignDiagramTranslations(List<CampaignDiagramTranslations> campaignDiagramTranslations) {
+		this.campaignDiagramTranslations = campaignDiagramTranslations;
 	}
 }

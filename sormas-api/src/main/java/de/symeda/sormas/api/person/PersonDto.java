@@ -62,6 +62,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
 
 	public static final String APPROXIMATE_AGE = "approximateAge";
+	public static final String APPROXIMATE_AGE_GROUP = "approximateAgeGroup";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	public static final String APPROXIMATE_AGE_REFERENCE_DATE = "approximateAgeReferenceDate";
 
@@ -731,7 +732,9 @@ public class PersonDto extends PseudonymizableDto {
 		this.externalId = externalId;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;

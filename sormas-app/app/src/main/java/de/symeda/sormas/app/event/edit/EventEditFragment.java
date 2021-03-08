@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
@@ -175,6 +176,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setEventStatusClass(EventStatus.class);
 		contentBinding.setEventInvestigationStatusClass(EventInvestigationStatus.class);
 		contentBinding.setRiskLevelClass(RiskLevel.class);
+		contentBinding.setEventManagementStatusClass(EventManagementStatus.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 	}

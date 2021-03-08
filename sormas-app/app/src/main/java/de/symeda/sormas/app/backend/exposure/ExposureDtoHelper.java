@@ -104,6 +104,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 
 	@Override
@@ -178,5 +179,6 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 }

@@ -95,6 +95,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
+	private SamplingReason samplingReason;
+	private String samplingReasonDetails;
 
 	private SampleJurisdictionDto jurisdiction;
 
@@ -103,6 +105,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 						  String labName, String referredSampleUuid,
+						  SamplingReason samplingReason, String samplingReasonDetails,
 						  String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
@@ -149,6 +152,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.additionalTestingStatus = Boolean.TRUE.equals(additionalTestPerformed)
 			? AdditionalTestingStatus.PERFORMED
 			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
+		this.samplingReason = samplingReason;
+		this.samplingReasonDetails = samplingReasonDetails;
 
 		CaseJurisdictionDto associatedCaseJurisdiction = null;
 		if (associatedCaseUuid != null) {
@@ -395,6 +400,22 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public void setAdditionalTestingStatus(AdditionalTestingStatus additionalTestingStatus) {
 		this.additionalTestingStatus = additionalTestingStatus;
+	}
+
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	public void setSamplingReason(SamplingReason samplingReason) {
+		this.samplingReason = samplingReason;
+	}
+
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	public void setSamplingReasonDetails(String samplingReasonDetails) {
+		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
 	public SampleJurisdictionDto getJurisdiction() {

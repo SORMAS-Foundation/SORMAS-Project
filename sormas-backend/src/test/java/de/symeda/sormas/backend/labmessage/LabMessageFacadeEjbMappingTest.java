@@ -36,6 +36,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setTestedDisease(Disease.CORONAVIRUS);
 		source.setTestDateTime(new Date());
 		source.setTestResult(PathogenTestResultType.NEGATIVE);
+		source.setTestResultVerified(true);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
@@ -46,6 +47,8 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonCity("Person City");
 		source.setPersonStreet("Person Street");
 		source.setPersonHouseNumber("Person House Number");
+		source.setPersonPhone("0123456789");
+		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 
 		LabMessage result = sut.fromDto(source, null, true);
@@ -114,6 +117,8 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonCity("Person City");
 		source.setPersonStreet("Person Street");
 		source.setPersonHouseNumber("Person House Number");
+		source.setPersonPhone("0123456789");
+		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 
 		LabMessageDto result = sut.toDto(source);

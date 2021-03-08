@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -71,10 +70,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -112,7 +111,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -199,7 +197,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
-					fluidRowLocs(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -336,11 +333,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SCREENING_TYPE);
 
 		FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				CaseDataDto.SCREENING_TYPE,
-				CaseDataDto.CASE_IDENTIFICATION_SOURCE,
-				Collections.singletonList(CaseIdentificationSource.SCREENING),
-				true);
+			getFieldGroup(),
+			CaseDataDto.SCREENING_TYPE,
+			CaseDataDto.CASE_IDENTIFICATION_SOURCE,
+			Collections.singletonList(CaseIdentificationSource.SCREENING),
+			true);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
 		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
@@ -356,6 +353,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantine.addValueChangeListener(e -> onValueChange());
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
+
+		quarantineFrom.addValidator(
+			new DateComparisonValidator(
+				quarantineFrom,
+				quarantineTo,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, quarantineFrom.getCaption(), quarantineTo.getCaption())));
+		quarantineTo.addValidator(
+			new DateComparisonValidator(
+				quarantineTo,
+				quarantineFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, quarantineTo.getCaption(), quarantineFrom.getCaption())));
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -374,12 +386,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.NOT_A_CASE_REASON_DETAILS, TextField.class);
 
 			FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					Arrays.asList(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
-							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER),
-					CaseDataDto.CASE_CLASSIFICATION,
-					CaseClassification.NO_CASE,
-					true);
+				getFieldGroup(),
+				Arrays.asList(
+					CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST,
+					CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
+					CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN,
+					CaseDataDto.NOT_A_CASE_REASON_OTHER),
+				CaseDataDto.CASE_CLASSIFICATION,
+				CaseClassification.NO_CASE,
+				true);
 
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.NOT_A_CASE_REASON_DETAILS, CaseDataDto.NOT_A_CASE_REASON_OTHER, true, true);
 		} else {
@@ -609,9 +624,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
-		AccessibleTextField tfReportLat = addField(CaseDataDto.REPORT_LAT, AccessibleTextField.class);
+		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
-		AccessibleTextField tfReportLon = addField(CaseDataDto.REPORT_LON, AccessibleTextField.class);
+		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
@@ -709,13 +724,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Swiss fields
 		TextField caseIdIsmField = addField(CaseDataDto.CASE_ID_ISM);
 		caseIdIsmField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseIdIsmField.getCaption()));
-		addFields(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			CaseDataDto.COVID_TEST_REASON_DETAILS,
-			CaseDataDto.COVID_TEST_REASON,
-			Arrays.asList(CovidTestReason.OTHER_REASON),
-			true);
 
 		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE)) {
 			Label contactTracingFirstContactHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactTracingFirstContact));
