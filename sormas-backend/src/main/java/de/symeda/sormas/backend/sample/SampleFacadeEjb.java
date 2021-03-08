@@ -65,6 +65,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -241,13 +242,15 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Date sampleDateTime = criteria.getSampleDateTime();
-		if (sampleDateTime != null && criteria.getSampleMaterial() != null) {
+		SampleMaterial sampleMaterial = criteria.getSampleMaterial();
+
+		if (sampleDateTime != null && sampleMaterial != null) {
 			Predicate dateAndMaterialFilter = cb.and(
 				cb.between(
 					root.get(Sample.SAMPLE_DATE_TIME),
 					DateHelper.getStartOfDay(DateHelper.subtractDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD)),
 					DateHelper.getEndOfDay(DateHelper.addDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD))),
-				cb.equal(root.get(Sample.SAMPLE_MATERIAL), criteria.getSampleMaterial()));
+				cb.equal(root.get(Sample.SAMPLE_MATERIAL), sampleMaterial));
 
 			similarityFilter = CriteriaBuilderHelper.or(cb, similarityFilter, dateAndMaterialFilter);
 		}
@@ -260,8 +263,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		// TODO - remove when sampleDateTime and sampleMaterial are mapped to LabMessages
-		if (samples.size() == 0 && sampleDateTime == null) {
+		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
 			return getByCriteria(sampleCriteria);
 		}
 
