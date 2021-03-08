@@ -51,7 +51,7 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -194,10 +194,10 @@ public class ExternalJournalService {
 		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
 		if (person.isEnrolledInExternalJournal()) {
 			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
-				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+				if (configFacade.getSymptomJournalConfig().isActive()) {
 					notifySymptomJournal(contact.getPerson().getUuid());
 				}
-				if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+				if (configFacade.getPatientDiaryConfig().isActive()) {
 					notifyPatientDiary(contact.getPerson().getUuid());
 				}
 			}
@@ -215,10 +215,10 @@ public class ExternalJournalService {
 	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
 		if (shouldNotify) {
-			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+			if (configFacade.getSymptomJournalConfig().isActive()) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
@@ -313,7 +313,7 @@ public class ExternalJournalService {
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person) {
+	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
@@ -329,10 +329,10 @@ public class ExternalJournalService {
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
 				personFacade.savePerson(person);
 			}
-			return new PatientDiaryRegisterResult(success, message);
+			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			return new PatientDiaryRegisterResult(false, e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
 		}
 	}
 
@@ -343,10 +343,10 @@ public class ExternalJournalService {
 	}
 
 	public void validateExternalJournalPerson(PersonDto person) {
-		if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+		if (configFacade.getSymptomJournalConfig().isActive()) {
 			//TODO Clarify with Conventic how to verify
 		}
-		if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+		if (configFacade.getPatientDiaryConfig().isActive()) {
 			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
@@ -360,7 +360,7 @@ public class ExternalJournalService {
 	 *
 	 * @param person
 	 *            the person to validate
-	 * @return the result of the validation
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
 	 */
 	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
@@ -481,5 +481,35 @@ public class ExternalJournalService {
 			.map(PatientDiaryValidationError::getErrorLanguageKey)
 			.map(I18nProperties::getValidationError)
 			.collect(Collectors.joining("\n"));
+	}
+
+	/** Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	 * Sets the person symptom journal status to DELETED if successful.
+	 *
+	 * @param person
+	 *            the person whose follow-up will be cancelled in the external journal
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
+	 */
+	public PatientDiaryResult deletePatientDiaryPerson(PersonDto person) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
+			Response response = invocationBuilder.delete();
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			boolean success = node.get("success").booleanValue();
+			String message = node.get("message").textValue();
+			if (!success) {
+				logger.warn("Could not cancel follow-up for patient diary person: " + message);
+			} else {
+				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
+				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
+				personFacade.savePerson(person);
+			}
+			return new PatientDiaryResult(success, message);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
+		}
 	}
 }
