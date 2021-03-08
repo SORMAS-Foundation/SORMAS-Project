@@ -6731,7 +6731,8 @@ ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_
 INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
 -- 2021-03-07 Add Community Referenz to PopulationData entity #4271
-ALTER TABLE populationdata ADD COLUMN community_id bigint AFTER district_id;
+ALTER TABLE populationdata ADD COLUMN community_id bigint;
 ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+ALTER TABLE community ADD COLUMN growthRate real;
 INSERT INTO schema_version (version_number, comment) VALUES (338, 'Add Community Referenz to PopulationData entity #4271');
 -- *** Insert new sql commands BEFORE this line ***

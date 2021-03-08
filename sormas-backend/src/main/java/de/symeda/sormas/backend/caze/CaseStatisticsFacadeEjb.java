@@ -1142,8 +1142,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 		// growth rates to calculate the population
 		selectBuilder.append(" LEFT JOIN ");
-		//FIXME: Restriction on Community won't work since Community has no growthrate
-		if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+		if (communityIds != null || subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
+			selectBuilder.append(Community.TABLE_NAME)
+					.append(" AS growthsource ON growthsource.")
+					.append(Community.ID)
+					.append(" = ")
+					.append(PopulationData.COMMUNITY)
+					.append("_id");
+		} else if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			selectBuilder.append(District.TABLE_NAME)
 				.append(" AS growthsource ON growthsource.")
 				.append(District.ID)

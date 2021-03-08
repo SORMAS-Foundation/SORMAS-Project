@@ -122,6 +122,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			root.get(Community.UUID),
 			root.get(Community.ARCHIVED),
 			root.get(Community.NAME),
+			root.get(Community.GROWTH_RATE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
@@ -152,6 +153,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case Community.NAME:
+				case Community.GROWTH_RATE:
 				case Community.EXTERNAL_ID:
 					expression = community.get(sortProperty.propertyName);
 					break;
@@ -334,6 +336,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setName(entity.getName());
+		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
@@ -347,6 +350,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());
+		target.setGrowthRate(source.getGrowthRate());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());

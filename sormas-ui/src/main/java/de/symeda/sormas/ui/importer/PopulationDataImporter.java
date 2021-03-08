@@ -16,6 +16,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -138,7 +139,11 @@ public class PopulationDataImporter extends DataImporter {
 							// Update the growth rate of the region or district
 							if (!DataHelper.isNullOrEmpty(cellData.value)) {
 								Float growthRate = Float.parseFloat(cellData.value);
-								if (finalDistrict != null) {
+								if (finalCommunity != null) {
+									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
+									communityDto.setGrowthRate(growthRate);
+									FacadeProvider.getCommunityFacade().saveCommunity(communityDto);
+								} else if (finalDistrict != null) {
 									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
 									districtDto.setGrowthRate(growthRate);
 									FacadeProvider.getDistrictFacade().saveDistrict(districtDto);

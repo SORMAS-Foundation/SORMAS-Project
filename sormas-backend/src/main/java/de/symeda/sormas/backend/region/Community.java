@@ -36,10 +36,12 @@ public class Community extends InfrastructureAdo {
 
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
+	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 
 	private String name;
 	private District district;
+	private Float growthRate;
 	private String externalID;
 
 	public String getName() {
@@ -58,6 +60,14 @@ public class Community extends InfrastructureAdo {
 
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	public Float getGrowthRate() {
+		return growthRate;
+	}
+
+	public void setGrowthRate(Float growthRate) {
+		this.growthRate = growthRate;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
