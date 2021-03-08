@@ -50,6 +50,10 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		+ fluidRowLocs(FacilityDto.REGION, FacilityDto.DISTRICT)
 		+ fluidRowLocs(FacilityDto.COMMUNITY, FacilityDto.CITY)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
+		+ fluidRowLocs(FacilityDto.DEPARTMENT, FacilityDto.SECTOR)
+		+ fluidRowLocs(FacilityDto.DR_NAME, FacilityDto.POSTAL_CODE)
+		+ fluidRowLocs(FacilityDto.STREET, FacilityDto.HOUSE_NO)
+		+ fluidRowLocs(FacilityDto.TEL_NO, FacilityDto.FAX_NO)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean create;
@@ -92,10 +96,40 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
+		TextField department = addField(FacilityDto.DEPARTMENT, TextField.class);
+		department.setCaption(I18nProperties.getCaption(Captions.Facility_department));
+
+		TextField sector = addField(FacilityDto.SECTOR, TextField.class);
+		sector.setCaption(I18nProperties.getCaption(Captions.Facility_sector));
+
+		TextField drName = addField(FacilityDto.DR_NAME, TextField.class);
+		drName.setCaption(I18nProperties.getCaption(Captions.Facility_drName));
+
+		TextField postalCode = addField(FacilityDto.POSTAL_CODE, TextField.class);
+		postalCode.setCaption(I18nProperties.getCaption(Captions.Facility_postalCode));
+
+		TextField street = addField(FacilityDto.STREET, TextField.class);
+		street.setCaption(I18nProperties.getCaption(Captions.Facility_street));
+
+		TextField houseNo = addField(FacilityDto.HOUSE_NO, TextField.class);
+		houseNo.setCaption(I18nProperties.getCaption(Captions.Facility_houseNo));
+
+		TextField telNo = addField(FacilityDto.TEL_NO, TextField.class);
+		telNo.setCaption(I18nProperties.getCaption(Captions.Facility_telNo));
+
+		TextField faxNo = addField(FacilityDto.FAX_NO, TextField.class);
+		faxNo.setCaption(I18nProperties.getCaption(Captions.Facility_faxNo));
+
+		setVisible(false, FacilityDto.DEPARTMENT, FacilityDto.SECTOR,
+				FacilityDto.DR_NAME, FacilityDto.POSTAL_CODE,
+				FacilityDto.STREET, FacilityDto.HOUSE_NO, FacilityDto.TEL_NO,
+				FacilityDto.FAX_NO);
+
 		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT);
 
 		typeGroup.addValueChangeListener(e -> {
 			FieldHelper.updateEnumData(type, FacilityType.getTypes((FacilityTypeGroup) typeGroup.getValue()));
+
 		});
 
 		type.addValueChangeListener(e -> {
@@ -108,6 +142,15 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 				district.setEnabled(false);
 				community.setEnabled(false);
 			}
+
+			setVisible(FacilityType.HEALTH_DEPARTMENT.equals(e.getProperty().getValue()), FacilityDto.DEPARTMENT, FacilityDto.SECTOR,
+					FacilityDto.DR_NAME, FacilityDto.POSTAL_CODE,
+					FacilityDto.STREET, FacilityDto.HOUSE_NO, FacilityDto.TEL_NO,
+					FacilityDto.FAX_NO);
+			setRequired(FacilityType.HEALTH_DEPARTMENT.equals(e.getProperty().getValue()), FacilityDto.DEPARTMENT, FacilityDto.SECTOR,
+					FacilityDto.DR_NAME, FacilityDto.POSTAL_CODE,
+					FacilityDto.STREET, FacilityDto.HOUSE_NO, FacilityDto.TEL_NO,
+					FacilityDto.FAX_NO);
 		});
 
 		region.addValueChangeListener(e -> {

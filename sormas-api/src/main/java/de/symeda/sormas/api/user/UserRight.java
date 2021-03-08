@@ -29,6 +29,7 @@ import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.EXTERNAL_LAB_USER;
+import static de.symeda.sormas.api.user.UserRole.FIRE_DEPARTMENT;
 import static de.symeda.sormas.api.user.UserRole.HOSPITAL_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.IMPORT_USER;
 import static de.symeda.sormas.api.user.UserRole.LAB_USER;
@@ -679,6 +680,10 @@ public enum UserRight {
 			EXTERNAL_LAB_USER,
 			EVENT_OFFICER,
 			COMMUNITY_OFFICER
+	),
+	TASK_PRINT_LAB_CERTIFICATE(
+			SURVEILLANCE_SUPERVISOR,
+			FIRE_DEPARTMENT
 	),
 	ACTION_CREATE(
 			ADMIN,

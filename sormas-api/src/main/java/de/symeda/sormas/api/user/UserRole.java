@@ -63,8 +63,8 @@ public enum UserRole
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
 	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
-	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
-
+	BAG_USER(false, false, false, false, JurisdictionLevel.NONE),
+	FIRE_DEPARTMENT(true, false, false, false, JurisdictionLevel.REGION);
 	/*
 	 * Hint for SonarQube issues:
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
@@ -96,6 +96,7 @@ public enum UserRole
 	public static final String _REST_USER = REST_USER.name();
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _BAG_USER = "BAG_USER";
+	public static final String _FIRE_DEPARTMENT = FIRE_DEPARTMENT.name();
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -226,6 +227,9 @@ public enum UserRole
 			break;
 		case BAG_USER:
 			collection.add(BAG_USER);
+			break;
+		case FIRE_DEPARTMENT:
+			collection.add(FIRE_DEPARTMENT);
 			break;
 		default:
 			break;

@@ -6730,4 +6730,67 @@ ALTER TABLE location ADD CONSTRAINT fk_location_country_id FOREIGN KEY (country_
 
 INSERT INTO schema_version (version_number, comment) VALUES (337, 'Add Country to location details #2994');
 
+-- 2020-03-02 Add fields to facility
+ALTER TABLE facility ADD COLUMN department varchar(255);
+ALTER TABLE facility ADD COLUMN sector varchar(255);
+ALTER TABLE facility ADD COLUMN drName varchar(255);
+ALTER TABLE facility ADD COLUMN street varchar(255);
+ALTER TABLE facility ADD COLUMN houseNo varchar(255);
+ALTER TABLE facility ADD COLUMN postalCode varchar(255);
+ALTER TABLE facility ADD COLUMN telNo varchar(255);
+ALTER TABLE facility ADD COLUMN faxNo varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (338, 'Add fields to facility');
+
+-- 2020-03-03 Add fields to task
+ALTER TABLE task ADD COLUMN labCertificateGuid varchar(255);
+ALTER TABLE task ADD COLUMN payerNumber varchar(255);
+ALTER TABLE task ADD COLUMN doctorNumber varchar(255);
+ALTER TABLE task ADD COLUMN operatingFacilityNumber varchar(255);
+ALTER TABLE task ADD COLUMN labNumber varchar(255);
+ALTER TABLE task ADD COLUMN testV boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN selfPaying boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN specialAgreement boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN firstTest boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN nextTest boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN contactPerson boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN coronaApp boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN outbreak boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN outbreakPrevention boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN workingInFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN livingInFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN medicalFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN communityFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN careFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN otherFacility boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN agreedToGdpr boolean DEFAULT false;
+ALTER TABLE task ADD COLUMN specialAgreementCode varchar(255);
+ALTER TABLE task ADD COLUMN healthdepartment_id bigint;
+
+ALTER TABLE task_history ADD COLUMN labCertificateGuid varchar(255);
+ALTER TABLE task_history ADD COLUMN payerNumber varchar(255);
+ALTER TABLE task_history ADD COLUMN doctorNumber varchar(255);
+ALTER TABLE task_history ADD COLUMN operatingFacilityNumber varchar(255);
+ALTER TABLE task_history ADD COLUMN labNumber varchar(255);
+ALTER TABLE task_history ADD COLUMN testV boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN selfPaying boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN specialAgreement boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN firstTest boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN nextTest boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN contactPerson boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN coronaApp boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN outbreak boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN outbreakPrevention boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN workingInFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN livingInFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN medicalFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN communityFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN careFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN otherFacility boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN agreedToGdpr boolean DEFAULT false;
+ALTER TABLE task_history ADD COLUMN specialAgreementCode varchar(255);
+ALTER TABLE task_history ADD COLUMN healthdepartment_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add fields to task');
+
 -- *** Insert new sql commands BEFORE this line ***

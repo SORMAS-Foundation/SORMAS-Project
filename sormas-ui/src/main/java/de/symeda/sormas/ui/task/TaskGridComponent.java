@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +63,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+
+import javax.xml.registry.infomodel.User;
 
 @SuppressWarnings("serial")
 public class TaskGridComponent extends VerticalLayout {
@@ -156,6 +160,12 @@ public class TaskGridComponent extends VerticalLayout {
 			buttonFilterLayout.addComponent(todaySampleCollectionsBtn);
 			statusButtons.put(todaySampleCollectionsBtn, I18nProperties.getCaption(Captions.taskOnlySampleCollectionDueToday));
 
+			Button tomorrowSampleCollectionsBtn = ButtonHelper.createButton(Captions.taskOnlySampleCollectionTomorrow, e -> {
+				this.filterByTomorrowDateAndTaskType();
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			buttonFilterLayout.addComponent(tomorrowSampleCollectionsBtn);
+			statusButtons.put(tomorrowSampleCollectionsBtn, I18nProperties.getCaption(Captions.taskOnlySampleCollectionTomorrow));
+
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER))
 				&& UserProvider.getCurrent().getUserRoles().size() == 1) {
@@ -198,7 +208,7 @@ public class TaskGridComponent extends VerticalLayout {
 					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkPrint), VaadinIcons.PRINT, c -> {
 						this.printSelected(this.grid.asMultiSelect().getSelectedItems(), actionButtonsLayout);
-					}),
+					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_PRINT_LAB_CERTIFICATE)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkMarkAsDone), VaadinIcons.CHECK, c -> {
 						ControllerProvider.getTaskController().markAsDone(this.grid.asMultiSelect().getSelectedItems());
 						tasksView.navigateTo(criteria);
@@ -213,6 +223,23 @@ public class TaskGridComponent extends VerticalLayout {
 		assigneeFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return assigneeFilterLayout;
+	}
+
+
+	private void filterByTomorrowDateAndTaskType() {
+		criteria.assigneeUser(null);
+		criteria.excludeAssigneeUser(null);
+
+		LocalDate localDate = LocalDate.now();
+		localDate = localDate.plus(1, ChronoUnit.DAYS);
+		LocalDateTime startOfDay = localDate.atStartOfDay();
+		criteria.dueDateBetween(Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant()),
+				Date.from(localDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant()));
+		criteria.taskType(TaskType.SAMPLE_COLLECTION);
+		criteria.taskContext(TaskContext.CASE);
+		criteria.taskStatus(TaskStatus.PENDING);
+
+		tasksView.navigateTo(criteria);
 	}
 
 	private void filterByTodayDateAndTaskType() {
