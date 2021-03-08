@@ -1135,8 +1135,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.JURISDICTION) {
 				StatisticsFilterJurisdictionElement filterElement = (StatisticsFilterJurisdictionElement) filterComponent.getFilterElement();
-				if (CollectionUtils.isNotEmpty(filterElement.getSelectedCommunities())
-					|| CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
+				if (CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
 					return true;
 				}
 			}
