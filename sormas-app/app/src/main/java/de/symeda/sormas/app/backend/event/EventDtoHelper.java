@@ -24,6 +24,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -33,6 +34,8 @@ import retrofit2.Call;
 public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 	private LocationDtoHelper locationHelper;
+
+	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
 	public EventDtoHelper() {
 		locationHelper = new LocationDtoHelper();
@@ -115,7 +118,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
 
+		target.setSormasToSormasOriginInfo(
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
 		target.setPseudonymized(source.isPseudonymized());
+		target.setEventManagementStatus(source.getEventManagementStatus());
 	}
 
 	@Override
@@ -195,7 +203,13 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
+		}
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
 		target.setPseudonymized(source.isPseudonymized());
+		target.setEventManagementStatus(source.getEventManagementStatus());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

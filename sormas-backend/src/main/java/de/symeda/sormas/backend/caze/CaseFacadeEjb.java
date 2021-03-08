@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -39,19 +40,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -140,7 +138,6 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -399,8 +396,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private DiseaseVariantService diseaseVariantService;
-	@Resource
-	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -567,6 +562,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -680,6 +676,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caseRoot, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, caseRoot.get(Case.UUID));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -1677,7 +1674,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		validate(dto);
 
 		if (caze != null) {
-			handleExternalJournalPerson(dto);
+			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 		}
 
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
@@ -1700,20 +1697,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			onCaseChanged(existingCaseDto, caze);
 		}
-	}
-
-	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedCase.getPerson().getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
@@ -2528,8 +2511,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFacilityType(source.getFacilityType());
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
@@ -2690,7 +2671,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
@@ -2702,8 +2683,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
@@ -3643,6 +3622,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
+	}
+
+	@Override
+	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
+		return caseService.getByPersonUuids(personUuids).stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@LocalBean

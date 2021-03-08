@@ -27,15 +27,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -49,6 +46,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -156,8 +155,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CountryService countryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@Resource
-	private ManagedScheduledExecutorService executorService;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -319,8 +318,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
-		if (existingPerson != null) {
-			handleExternalJournalPerson(existingPerson, source);
+		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+			externalJournalService.validateExternalJournalPerson(source);
+			externalJournalService.handleExternalJournalPersonUpdate(source.toReference());
 		}
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
@@ -330,25 +330,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		onPersonChanged(existingPerson, person);
 
 		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
-	}
-
-	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		if (existingPerson.isEnrolledInExternalJournal()) {
-			externalJournalService.validateExternalJournalPerson(updatedPerson);
-
-		}
-		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingJournalPerson = getPersonForJournal(existingPerson.getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingJournalPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -1036,6 +1017,20 @@ public class PersonFacadeEjb implements PersonFacade {
 	// needed for tests
 	public void setExternalJournalService(ExternalJournalService externalJournalService) {
 		this.externalJournalService = externalJournalService;
+	}
+
+	public boolean isPersonSimilarToExisting(PersonDto referencePerson) {
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+			.lastName(referencePerson.getLastName())
+			.sex(referencePerson.getSex())
+			.birthdateDD(referencePerson.getBirthdateDD())
+			.birthdateMM(referencePerson.getBirthdateMM())
+			.birthdateYYYY(referencePerson.getBirthdateYYYY())
+			.passportNumber(referencePerson.getPassportNumber())
+			.nationalHealthId(referencePerson.getNationalHealthId());
+
+		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
 
 	@LocalBean

@@ -305,6 +305,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
+		User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
+			return filter;
+		}
+
 		if (criteria != null) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
@@ -498,13 +504,18 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	/**
-	 * Creates a filter that excludes all samples that are either {@link CoreAdo#deleted} or associated with
-	 * cases that are {@link Case#archived}.
+	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
+	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
+	 * {@link EventParticipant#deleted}
 	 */
 	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<Sample> root) {
 
 		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		return cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
+		Join<Sample, Contact> contact = root.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+		Join<Sample, EventParticipant> event = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+		Predicate pred =
+			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+		return cb.and(pred, cb.isFalse(root.get(Sample.DELETED)));
 	}
 
 	/**

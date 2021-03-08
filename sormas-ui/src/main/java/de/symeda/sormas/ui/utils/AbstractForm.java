@@ -86,6 +86,12 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 	}
 
+	protected void addFields(List<String> properties) {
+		for (String property : properties) {
+			addField(property);
+		}
+	}
+
 	public void addFields(FieldConfiguration... properties) {
 		addFields(getContent(), properties);
 	}

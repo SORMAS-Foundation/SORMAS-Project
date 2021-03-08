@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.event.EventParticipantExportDto;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -63,6 +64,16 @@ public final class ImportExportUtils {
 
 	public static List<Pair<String, ExportGroupType>> getContactExportProperties() {
 		return getExportProperties(ContactExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		});
+	}
+
+	public static List<Pair<String, ExportGroupType>> getEventParticipantExportProperties() {
+		return getExportProperties(EventParticipantExportDto.class, new PropertyTypeFilter() {
 
 			@Override
 			public boolean accept(ExportGroupType type) {

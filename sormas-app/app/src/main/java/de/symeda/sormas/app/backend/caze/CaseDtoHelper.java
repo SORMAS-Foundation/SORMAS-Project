@@ -200,8 +200,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setFacilityType(source.getFacilityType());
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
@@ -434,8 +432,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setFacilityType(source.getFacilityType());
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
