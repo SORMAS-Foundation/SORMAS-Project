@@ -3578,6 +3578,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		return getDuplicates(casePerson, 0);
 	}
 
+	@Override
+	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
+		return caseService.getByPersonUuids(personUuids).stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
