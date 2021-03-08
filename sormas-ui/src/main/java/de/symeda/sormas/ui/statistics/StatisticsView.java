@@ -1024,7 +1024,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			caseIncidencePossible = !hasIncidenceIncompatibleFilter() && !visualizationComponent.hasIncidenceIncompatibleGrouping();
 			missingPopulationDataNames = null;
 
-			if (caseIncidencePossible && !visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping()) {
+			if (caseIncidencePossible && !visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping() && !visualizationComponent.hasCommunityGrouping()) {
 				// we don't have a territorial grouping, so the system will sum up the population of all regions.
 				// make sure the user is informed about regions with missing population data
 

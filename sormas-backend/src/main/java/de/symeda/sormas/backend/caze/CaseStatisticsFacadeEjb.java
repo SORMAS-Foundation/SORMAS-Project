@@ -991,6 +991,38 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				entry -> entry);
 		}
 
+		boolean usesCommunitys;
+		List<Long> communityIds;
+		if (CollectionUtils.isNotEmpty(caseCriteria.getCommunities())) {
+			// limit to specific communitys
+
+			communityIds = communityService.getIdsByReferenceDtos(caseCriteria.getCommunities());
+			extendFilterBuilderWithSimpleValue(
+					whereBuilder,
+					filterBuilderParameters,
+					PopulationData.TABLE_NAME,
+					PopulationData.COMMUNITY + "_id",
+					communityIds,
+					entry -> entry);
+			usesCommunitys = true;
+		} else {
+			// limit either to entries with community or to entries without community
+
+			communityIds = null;
+			usesCommunitys = subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY;
+
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.COMMUNITY).append("_id");
+			if (usesCommunitys) {
+				whereBuilder.append(" IS NOT NULL)");
+			} else {
+				// use entry with sum for all community
+				whereBuilder.append(" IS NULL)");
+			}
+		}
+
 		boolean usesDistricts;
 		List<Long> districtIds;
 		if (CollectionUtils.isNotEmpty(caseCriteria.getDistricts())) {
@@ -1015,42 +1047,10 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				whereBuilder.append(" AND ");
 			}
 			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.DISTRICT).append("_id");
-			if (usesDistricts) {
+			if (usesDistricts || usesCommunitys) {
 				whereBuilder.append(" IS NOT NULL)");
 			} else {
 				// use entry with sum for all districts
-				whereBuilder.append(" IS NULL)");
-			}
-		}
-
-		boolean usesCommunitys;
-		List<Long> communityIds;
-		if (CollectionUtils.isNotEmpty(caseCriteria.getCommunities())) {
-			// limit to specific communitys
-
-			communityIds = communityService.getIdsByReferenceDtos(caseCriteria.getCommunities());
-			extendFilterBuilderWithSimpleValue(
-					whereBuilder,
-					filterBuilderParameters,
-					PopulationData.TABLE_NAME,
-					PopulationData.COMMUNITY + "_id",
-					communityIds,
-					entry -> entry);
-			usesCommunitys = true;
-		} else {
-			// limit either to entries with community or to entries without community
-
-			communityIds = null;
-			usesCommunitys= subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY;
-
-			if (whereBuilder.length() > 0) {
-				whereBuilder.append(" AND ");
-			}
-			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.COMMUNITY).append("_id");
-			if (usesCommunitys) {
-				whereBuilder.append(" IS NOT NULL)");
-			} else {
-				// use entry with sum for all community
 				whereBuilder.append(" IS NULL)");
 			}
 		}
@@ -1144,12 +1144,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		selectBuilder.append(" LEFT JOIN ");
 		if (communityIds != null || subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
 			selectBuilder.append(Community.TABLE_NAME)
-					.append(" AS growthsource ON growthsource.")
-					.append(Community.ID)
-					.append(" = ")
-					.append(PopulationData.COMMUNITY)
-					.append("_id");
-		} else if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+				.append(" AS growthsource ON growthsource.")
+				.append(Community.ID)
+				.append(" = ")
+				.append(PopulationData.COMMUNITY)
+				.append("_id");
+		} else if (districtIds != null
+			|| subGroupingA == StatisticsCaseSubAttribute.DISTRICT
+			|| subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			selectBuilder.append(District.TABLE_NAME)
 				.append(" AS growthsource ON growthsource.")
 				.append(District.ID)
@@ -1192,6 +1194,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					return PopulationData.TABLE_NAME + "." + PopulationData.REGION + "_id";
 				case DISTRICT:
 					return PopulationData.TABLE_NAME + "." + PopulationData.DISTRICT + "_id";
+				case COMMUNITY:
+					return PopulationData.TABLE_NAME + "." + PopulationData.COMMUNITY + "_id";
 				default:
 					return null;
 				}
