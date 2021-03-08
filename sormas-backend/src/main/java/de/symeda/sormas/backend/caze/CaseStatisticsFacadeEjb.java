@@ -1023,6 +1023,38 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			}
 		}
 
+		boolean usesCommunitys;
+		List<Long> communityIds;
+		if (CollectionUtils.isNotEmpty(caseCriteria.getCommunities())) {
+			// limit to specific communitys
+
+			communityIds = communityService.getIdsByReferenceDtos(caseCriteria.getCommunities());
+			extendFilterBuilderWithSimpleValue(
+					whereBuilder,
+					filterBuilderParameters,
+					PopulationData.TABLE_NAME,
+					PopulationData.COMMUNITY + "_id",
+					communityIds,
+					entry -> entry);
+			usesCommunitys = true;
+		} else {
+			// limit either to entries with community or to entries without community
+
+			communityIds = null;
+			usesCommunitys= subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY;
+
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.COMMUNITY).append("_id");
+			if (usesCommunitys) {
+				whereBuilder.append(" IS NOT NULL)");
+			} else {
+				// use entry with sum for all community
+				whereBuilder.append(" IS NULL)");
+			}
+		}
+
 		// sex
 		whereBuilder.append(" AND (");
 		if (CollectionUtils.isNotEmpty(caseCriteria.getSexes())) {
@@ -1110,6 +1142,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 		// growth rates to calculate the population
 		selectBuilder.append(" LEFT JOIN ");
+		//FIXME: Restriction on Community won't work since Community has no growthrate
 		if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			selectBuilder.append(District.TABLE_NAME)
 				.append(" AS growthsource ON growthsource.")
