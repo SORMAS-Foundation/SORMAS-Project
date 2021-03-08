@@ -175,7 +175,7 @@ public interface Strings {
 	String entityRegions = "entityRegions";
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
-	String entityStatisics = "entityStatisics";
+	String entityStatistics = "entityStatistics";
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
 	String entityTravel = "entityTravel";
