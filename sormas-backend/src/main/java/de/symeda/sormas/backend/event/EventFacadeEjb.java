@@ -358,9 +358,13 @@ public class EventFacadeEjb implements EventFacade {
 					break;
 				case EventIndexDto.REPORTING_USER:
 					expression = reportingUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = reportingUser.get(User.LAST_NAME);
 					break;
 				case EventIndexDto.RESPONSIBLE_USER:
 					expression = responsibleUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = responsibleUser.get(User.LAST_NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
