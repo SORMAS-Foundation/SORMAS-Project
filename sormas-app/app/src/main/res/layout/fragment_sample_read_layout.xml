@@ -119,6 +119,13 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_samplingReason"
+                    style="@style/ControlSingleColumnStyle"
+                    app:appendValue="@{data.samplingReasonDetails}"
+                    app:value="@{data.samplingReason}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_fieldSampleID"
                     app:value="@{data.fieldSampleID}"
                     style="@style/ControlSingleColumnStyle" />

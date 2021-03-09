@@ -56,6 +56,12 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/query/persons")
+	public List<CaseDataDto> getByPersonUuids(List<String> uuids) {
+		return FacadeProvider.getCaseFacade().getByPersonUuids(uuids);
+	}
+
+	@POST
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);

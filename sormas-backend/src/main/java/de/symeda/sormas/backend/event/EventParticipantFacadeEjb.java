@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -298,7 +299,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
-		Predicate pathogenTestResultWhereCondition = cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID));
+		Predicate pathogenTestResultWhereCondition = cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID));
 		if (eventParticipantCriteria.getPathogenTestResult() != null) {
 			pathogenTestResultWhereCondition = CriteriaBuilderHelper
 				.and(cb, filter, pathogenTestResultWhereCondition, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
@@ -415,6 +416,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public List<EventParticipantExportDto> getExportList(
 		EventParticipantCriteria eventParticipantCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		Language userLanguage) {
@@ -511,6 +513,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			vaccinationInfo.get(VaccinationInfo.VACCINE_ATC_CODE));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
 		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
@@ -848,5 +851,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			null);
 
 		return participants;
+	}
+
+	@Override
+	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
+		return eventParticipantService.getByPersonUuids(personUuids).stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
 	}
 }

@@ -207,7 +207,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1);
 		SampleDto sample4 = createContactSample(contact2);
 
-		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), 0, 100);
+		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), Collections.emptySet(), 0, 100);
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
 		assertThat(export1.getSampleAssociatedCase().getFirstName(), is("John"));
 		assertThat(export1.getSampleAssociatedCase().getLastName(), is("Smith"));

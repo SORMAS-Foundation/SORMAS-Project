@@ -42,6 +42,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -336,6 +337,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SPECIMEN_CONDITION),
 				joins.getLab().get(Facility.NAME),
 				joins.getReferredSample().get(Sample.UUID),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				caze.get(Case.UUID),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
@@ -512,7 +515,12 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
-	private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
+	private List<SampleExportDto> getExportList(
+		SampleCriteria sampleCriteria,
+		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -543,6 +551,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				sample.get(Sample.SAMPLE_SOURCE),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
@@ -626,11 +636,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sample.get(Sample.UUID));
 		} else if (caseCriteria != null) {
 			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		}
 
 		if (filter != null) {
@@ -699,13 +711,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(SampleCriteria criteria, int first, int max) {
-		return getExportList(criteria, null, first, max);
+	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(CaseCriteria criteria, int first, int max) {
-		return getExportList(null, criteria, first, max);
+	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(null,  criteria, selectedRows, first, max);
 	}
 
 	@Override
@@ -793,6 +805,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -928,6 +942,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
