@@ -1138,6 +1138,9 @@ public interface Captions {
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String LabMessage = "LabMessage";
+	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
+	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
+	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
 	String LabMessage_labMessageDetails = "LabMessage.labMessageDetails";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
 	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
@@ -1164,9 +1167,6 @@ public interface Captions {
 	String LabMessage_testLabPostalCode = "LabMessage.testLabPostalCode";
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
-	String labMessageDeleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
-	String labMessageDeleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
-	String labMessageDeleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageProcessed = "labMessageProcessed";

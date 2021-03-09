@@ -669,17 +669,17 @@ public class LabMessageController {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(
-					Captions.labMessageDeleteNewlyCreatedCase,
+					Captions.labMessage_deleteNewlyCreatedCase,
 					e -> FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
-					Captions.labMessageDeleteNewlyCreatedContact,
+					Captions.labMessage_deleteNewlyCreatedContact,
 					e -> FacadeProvider.getContactFacade().deleteContact(sample.getAssociatedContact().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedEventParticipant() != null) {
 				return ButtonHelper.createButton(
-					Captions.labMessageDeleteNewlyCreatedEventParticipant,
+					Captions.labMessage_deleteNewlyCreatedEventParticipant,
 					e -> FacadeProvider.getEventParticipantFacade().deleteEventParticipant(sample.getAssociatedEventParticipant()),
 					ValoTheme.BUTTON_PRIMARY);
 			}
