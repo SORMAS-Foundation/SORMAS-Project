@@ -230,6 +230,7 @@ public interface Captions {
 	String CaseData_clinicianPhone = "CaseData.clinicianPhone";
 	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
+	String CaseData_confirmedCaseClassification = "CaseData.confirmedCaseClassification";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
