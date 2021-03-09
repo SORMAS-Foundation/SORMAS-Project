@@ -48,7 +48,6 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -57,7 +56,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -84,6 +83,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -94,7 +94,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends CoreAdo {
+public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -102,6 +102,7 @@ public class Case extends CoreAdo {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
 	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
 	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
@@ -185,7 +186,6 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String SAMPLES = "samples";
@@ -201,8 +201,6 @@ public class Case extends CoreAdo {
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
-	public static final String COVID_TEST_REASON = "covidTestReason";
-	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
 	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
@@ -233,6 +231,7 @@ public class Case extends CoreAdo {
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
 	private CaseIdentificationSource caseIdentificationSource;
+	private ScreeningType screeningType;
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
@@ -339,8 +338,6 @@ public class Case extends CoreAdo {
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
-	private ReportingType reportingType;
-
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
@@ -356,8 +353,6 @@ public class Case extends CoreAdo {
 	private List<Contact> convertedContact;
 
 	private Integer caseIdIsm;
-	private CovidTestReason covidTestReason;
-	private String covidTestReasonDetails;
 	private ContactTracingContactType contactTracingFirstContactType;
 	private Date contactTracingFirstContactDate;
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
@@ -482,6 +477,15 @@ public class Case extends CoreAdo {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	@ManyToOne(cascade = {})
@@ -1358,15 +1362,6 @@ public class Case extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
-	}
-
-	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPostpartum() {
 		return postpartum;
 	}
@@ -1436,24 +1431,6 @@ public class Case extends CoreAdo {
 
 	public void setCaseIdIsm(Integer caseIdIsm) {
 		this.caseIdIsm = caseIdIsm;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1645,12 +1622,14 @@ public class Case extends CoreAdo {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
+	@Override
 	@ManyToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
 		this.sormasToSormasOriginInfo = originInfo;
 	}

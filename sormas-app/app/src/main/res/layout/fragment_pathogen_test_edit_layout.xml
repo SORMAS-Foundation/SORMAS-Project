@@ -54,6 +54,11 @@
 
                 <requestFocus/>
 
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/pathogenTest_reportDate"
+                    app:value="@={data.reportDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/pathogenTest_testType"
                     app:required="true"

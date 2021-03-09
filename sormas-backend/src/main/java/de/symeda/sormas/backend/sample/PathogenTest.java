@@ -63,6 +63,7 @@ public class PathogenTest extends CoreAdo {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
 	public static final String CQ_VALUE = "cqValue";
+	public static final String REPORT_DATE = "reportDate";
 
 	private Sample sample;
 	private Disease testedDisease;
@@ -80,6 +81,7 @@ public class PathogenTest extends CoreAdo {
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;
 	private Float cqValue;
+	private Date reportDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -231,4 +233,12 @@ public class PathogenTest extends CoreAdo {
 		this.cqValue = cqValue;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
 }

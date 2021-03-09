@@ -32,7 +32,6 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -41,7 +40,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -128,6 +127,9 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private CaseIdentificationSource caseIdentificationSource;
+
+	@Enumerated(EnumType.STRING)
+	private ScreeningType screeningType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User classificationUser;
@@ -348,17 +350,11 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
 	@Enumerated(EnumType.STRING)
-	private ReportingType reportingType;
-	@Enumerated(EnumType.STRING)
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
 	@DatabaseField
 	private Integer caseIdIsm;
-	@Enumerated(EnumType.STRING)
-	private CovidTestReason covidTestReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String covidTestReasonDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactTracingContactType contactTracingFirstContactType;
 	@DatabaseField
@@ -487,6 +483,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public Region getRegion() {
@@ -1161,14 +1165,6 @@ public class Case extends PseudonymizableAdo {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
-	}
-
 	public YesNoUnknown getPostpartum() {
 		return postpartum;
 	}
@@ -1199,22 +1195,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdIsm(Integer caseIdIsm) {
 		this.caseIdIsm = caseIdIsm;
-	}
-
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
 	}
 
 	public ContactTracingContactType getContactTracingFirstContactType() {

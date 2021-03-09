@@ -17,6 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import com.vaadin.server.Page;
+import com.vaadin.ui.UI;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -43,10 +51,12 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -102,14 +112,14 @@ public class EventParticipantsView extends AbstractEventView {
 		addHeaderComponent(exportPopupButton);
 
 		{
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, () -> this.grid.asMultiSelect().getSelectedItems(), ExportEntityName.EVENT_PARTICIPANTS);
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 
 		{
 			StreamResource extendedExportStreamResource =
-				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria());
+				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, null);
 
 			addExportButton(
 				extendedExportStreamResource,
@@ -118,6 +128,32 @@ public class EventParticipantsView extends AbstractEventView {
 				VaadinIcons.FILE_TEXT,
 				Captions.exportDetailed,
 				Descriptions.descDetailedExportButton);
+		}
+
+		{
+			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+				Window customExportWindow = VaadinUiUtil.createPopupWindow();
+
+				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+					ExportType.EVENT_PARTICIPANTS,
+					ImportExportUtils.getEventParticipantExportProperties(),
+					EventParticipantDownloadUtil::getPropertyCaption,
+					customExportWindow::close);
+				customExportsLayout.setExportCallback(
+					(exportConfig) -> Page.getCurrent()
+						.open(
+							EventParticipantDownloadUtil
+								.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, exportConfig),
+							null,
+							true));
+				customExportWindow.setWidth(1024, Unit.PIXELS);
+				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
+				customExportWindow.setContent(customExportsLayout);
+				UI.getCurrent().addWindow(customExportWindow);
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomExport);
 		}
 
 		filterForm = new EventParticipantsFilterForm();
@@ -151,6 +187,10 @@ public class EventParticipantsView extends AbstractEventView {
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
+	}
+
+	private Set<String> getSelectedRows() {
+		return grid.asMultiSelect().getSelectedItems().stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toSet());
 	}
 
 	@Override

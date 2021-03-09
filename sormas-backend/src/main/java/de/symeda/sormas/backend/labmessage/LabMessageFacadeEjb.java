@@ -83,6 +83,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
+		target.setPersonPhone(source.getPersonPhone());
+		target.setPersonEmail(source.getPersonEmail());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestLabCity(source.getTestLabCity());
@@ -90,6 +92,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabName(source.getTestLabName());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
 
@@ -97,12 +100,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public void save(LabMessageDto dto) {
+	public LabMessageDto save(LabMessageDto dto) {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
 		labMessage = fromDto(dto, labMessage, true);
 		labMessageService.ensurePersisted(labMessage);
+
+		return toDto(labMessage);
 	}
 
 	public LabMessageDto toDto(LabMessage source) {
@@ -126,6 +131,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
 		target.setPersonStreet(source.getPersonStreet());
+		target.setPersonPhone(source.getPersonPhone());
+		target.setPersonEmail(source.getPersonEmail());
 		target.setProcessed(source.isProcessed());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
@@ -138,6 +145,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabName(source.getTestLabName());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
 
@@ -260,6 +268,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
 		return fetchResult;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return labMessageService.exists(uuid);
 	}
 
 	@LocalBean

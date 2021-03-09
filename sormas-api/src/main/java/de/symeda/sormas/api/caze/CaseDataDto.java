@@ -56,13 +56,14 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class CaseDataDto extends PseudonymizableDto {
+public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 
@@ -70,6 +71,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String CLASSIFICATION_COMMENT = "classificationComment";
@@ -160,7 +162,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -171,8 +172,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FACILITY_TYPE = "facilityType";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
-	public static final String COVID_TEST_REASON = "covidTestReason";
-	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_TYPE = "contactTracingFirstContactType";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
 	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
@@ -239,7 +238,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private CaseClassification caseClassification;
+	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
+	@HideForCountriesExcept
+	private ScreeningType screeningType;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
 	@Outbreaks
@@ -484,9 +486,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
-	@HideForCountriesExcept(countries = {
-		COUNTRY_CODE_GERMANY,
-		COUNTRY_CODE_SWITZERLAND })
 	private String externalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
@@ -536,8 +535,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
-	@HideForCountriesExcept
-	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
@@ -549,11 +546,6 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
-	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
-	private CovidTestReason covidTestReason;
-	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
-	@SensitiveData
-	private String covidTestReasonDetails;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private ContactTracingContactType contactTracingFirstContactType;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
@@ -634,6 +626,8 @@ public class CaseDataDto extends PseudonymizableDto {
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+		// TODO This is a workaround for transferring the followup comment while converting a contact to a case. This can be removed if the followup for cases is implemented in the mobile app
+		caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 		return caze;
 	}
 
@@ -653,6 +647,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData) {
 		cazeData.setEpiData(contact.getEpiData());
+		cazeData.setFollowUpComment(contact.getFollowUpComment());
 	}
 
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, PersonDto person, Disease eventDisease) {
@@ -717,6 +712,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
 		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
 	}
 
 	public UserReferenceDto getClassificationUser() {
@@ -1426,14 +1429,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
-	}
-
 	public YesNoUnknown getPostpartum() {
 		return postpartum;
 	}
@@ -1498,22 +1493,6 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.caseIdIsm = caseIdIsm;
 	}
 
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
-	}
-
 	public ContactTracingContactType getContactTracingFirstContactType() {
 		return contactTracingFirstContactType;
 	}
@@ -1570,10 +1549,12 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
+	@Override
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
@@ -1634,6 +1615,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
+	@Override
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}

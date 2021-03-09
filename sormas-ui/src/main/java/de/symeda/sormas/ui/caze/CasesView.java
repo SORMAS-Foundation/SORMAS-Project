@@ -21,12 +21,16 @@ import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -221,6 +225,13 @@ public class CasesView extends AbstractView {
 		return config;
 	}
 
+	private Set<String> getSelectedRows() {
+		AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+		return bulkOperationsDropdown.isVisible()
+			? caseGrid.asMultiSelect().getSelectedItems().stream().map(CaseIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
 	private void addCommonCasesOverviewToolbar() {
 		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
@@ -266,14 +277,19 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_cases_", ".csv"));
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+					grid,
+					() -> bulkOperationsDropdown.isVisible() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
+					ExportEntityName.CASES);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
-				StreamResource exportStreamResource =
-					CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, detailedExportConfiguration);
+				StreamResource exportStreamResource = CaseDownloadUtil.createCaseExportResource(
+					grid.getCriteria(),
+					this::getSelectedRows,
+					CaseExportType.CASE_SURVEILLANCE,
+					detailedExportConfiguration);
 
 				addExportButton(
 					exportStreamResource,
@@ -285,8 +301,8 @@ public class CasesView extends AbstractView {
 			}
 
 			if (hasCaseManagementRight) {
-				StreamResource caseManagementExportStreamResource = DownloadUtil
-					.createCaseManagementExportResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
+				StreamResource caseManagementExportStreamResource =
+					DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACTS);
 				addExportButton(
 					caseManagementExportStreamResource,
 					exportPopupButton,
@@ -300,7 +316,8 @@ public class CasesView extends AbstractView {
 				StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(
 					SampleExportDto.class,
 					null,
-					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(grid.getCriteria(), start, max),
+					(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
+						.getExportList(grid.getCriteria(), this.getSelectedRows(), start, max),
 					(propertyId, type) -> {
 						String caption = I18nProperties.findPrefixCaption(
 							propertyId,
@@ -314,7 +331,7 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					createFileNameWithCurrentDate("sormas_samples_", ".csv"),
+					ExportEntityName.SAMPLES,
 					null);
 				addExportButton(
 					sampleExportStreamResource,
@@ -330,9 +347,9 @@ public class CasesView extends AbstractView {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
 					null,
-					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(this.getSelectedRows(), start, max),
 					(propertyId, type) -> propertyId,
-					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
+					ExportEntityName.BAG_CASES,
 					null);
 
 				addExportButton(bagExportResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
@@ -349,7 +366,10 @@ public class CasesView extends AbstractView {
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
-							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
+							.open(
+								CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), this::getSelectedRows, null, exportConfig),
+								null,
+								true));
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
@@ -526,12 +546,10 @@ public class CasesView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!navigateTo(criteria, false)) {
-				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-					((CaseFollowUpGrid) grid).reload();
-				} else {
-					((AbstractCaseGrid<?>) grid).reload();
-				}
+			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				((CaseFollowUpGrid) grid).reload();
+			} else {
+				((AbstractCaseGrid<?>) grid).reload();
 			}
 		});
 		filterLayout.addComponent(filterForm);

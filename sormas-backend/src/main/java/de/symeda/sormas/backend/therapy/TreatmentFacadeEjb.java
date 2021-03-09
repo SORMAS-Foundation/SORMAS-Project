@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.therapy;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -115,7 +117,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public TreatmentDto saveTreatment(TreatmentDto source) {
+	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
 
@@ -167,7 +169,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public List<TreatmentExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+	public List<TreatmentExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TreatmentExportDto> cq = cb.createQuery(TreatmentExportDto.class);
@@ -197,6 +199,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 

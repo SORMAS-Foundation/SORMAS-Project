@@ -63,6 +63,8 @@
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
 		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
+		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
+		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

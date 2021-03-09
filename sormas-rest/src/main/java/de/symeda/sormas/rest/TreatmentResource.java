@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -38,7 +39,7 @@ public class TreatmentResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postTreatments(List<TreatmentDto> dtos) {
+	public List<PushResult> postTreatments(@Valid List<TreatmentDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getTreatmentFacade()::saveTreatment);
 	}
 

@@ -44,7 +44,11 @@ public class SurvnetGateway {
 		//NOOP
 	}
 
-	public static HorizontalLayout addComponentToLayout(CustomLayout targetLayout, DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
+	public static HorizontalLayout addComponentToLayout(
+		CustomLayout targetLayout,
+		DirtyStateComponent editComponent,
+		SurvnetGatewayType gatewayType,
+		Supplier<List<String>> uuids) {
 		if (!FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
 			return null;
 		}
@@ -75,7 +79,7 @@ public class SurvnetGateway {
 		int numberOfEntities = CollectionUtils.size(uuids.get());
 
 		String entityString;
-		if (gatewayType == SurvnetGatewayType.CASES &&  numberOfEntities == 1) {
+		if (gatewayType == SurvnetGatewayType.CASES && numberOfEntities == 1) {
 			entityString = I18nProperties.getString(Strings.entityCase).toLowerCase();
 		} else if (gatewayType == SurvnetGatewayType.CASES) {
 			entityString = I18nProperties.getString(Strings.entityCases).toLowerCase();
@@ -87,22 +91,21 @@ public class SurvnetGateway {
 
 		if (editComponent.isDirty()) {
 			VaadinUiUtil.showSimplePopupWindow(
-					I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
-					String.format(I18nProperties.getString(Strings.SurvnetGateway_unableToSend), entityString)
-					);
+				I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
+				String.format(I18nProperties.getString(Strings.SurvnetGateway_unableToSend), entityString));
 		} else {
 			VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
-					new Label(String.format(I18nProperties.getString(Strings.SurvnetGateway_confirmSend), entityString)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							sendToSurvnet(gatewayType, uuids.get());
-							SormasUI.refreshView();
-						}
-					});
+				I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
+				new Label(String.format(I18nProperties.getString(Strings.SurvnetGateway_confirmSend), entityString)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						sendToSurvnet(gatewayType, uuids.get());
+						SormasUI.refreshView();
+					}
+				});
 		}
 	}
 
@@ -126,6 +129,11 @@ public class SurvnetGateway {
 
 		switch (statusCode) {
 		case HttpServletResponse.SC_OK:
+			// todo introduce string property for bulk sending events
+			type = Notification.Type.HUMANIZED_MESSAGE;
+			message =
+				I18nProperties.getString(uuids.size() <= 1 ? Strings.SurvnetGateway_notificationEntrySent : Strings.notificationCasesSentToSurvNet);
+			break;
 		case HttpServletResponse.SC_NO_CONTENT:
 			type = Notification.Type.HUMANIZED_MESSAGE;
 			message = I18nProperties.getString(Strings.SurvnetGateway_notificationEntrySent);
@@ -146,24 +154,24 @@ public class SurvnetGateway {
 		int statusCode;
 
 		switch (gatewayType) {
-			case CASES:
-				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteCases((List<CaseDataDto>) entities);
-				break;
-			case EVENTS:
-				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteEvents((List<EventDto>) entities);
-				break;
-			default:
-				throw new IllegalArgumentException(gatewayType.toString());
+		case CASES:
+			statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteCases((List<CaseDataDto>) entities);
+			break;
+		case EVENTS:
+			statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteEvents((List<EventDto>) entities);
+			break;
+		default:
+			throw new IllegalArgumentException(gatewayType.toString());
 		}
 
 		switch (statusCode) {
-			case HttpServletResponse.SC_OK:
-			case HttpServletResponse.SC_NO_CONTENT:
-				return true;
-			case HttpServletResponse.SC_BAD_REQUEST:
-			default:
-				logger.warn("Cannot delete entities in SurvNet due to {} response", statusCode);
-				return false;
+		case HttpServletResponse.SC_OK:
+		case HttpServletResponse.SC_NO_CONTENT:
+			return true;
+		case HttpServletResponse.SC_BAD_REQUEST:
+		default:
+			logger.warn("Cannot delete entities in SurvNet due to {} response", statusCode);
+			return false;
 		}
 	}
 

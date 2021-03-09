@@ -21,11 +21,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.survnet.SurvnetGateway;
-import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -67,6 +67,8 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -116,7 +118,8 @@ public class EventController {
 
 		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
-		EventSelectionField eventSelect = new EventSelectionField(caseDataDto);
+		EventSelectionField eventSelect =
+			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase));
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -155,7 +158,8 @@ public class EventController {
 
 	public void selectOrCreateEvent(ContactDto contact) {
 
-		EventSelectionField eventSelect = new EventSelectionField(contact);
+		EventSelectionField eventSelect =
+			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -468,14 +472,16 @@ public class EventController {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					if (!deleteEvent(event)) {
 						Notification.show(
-								String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(event.getUuid())),
-								"",
-								Type.ERROR_MESSAGE);
+							String.format(
+								I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted),
+								DataHelper.getShortUuid(event.getUuid())),
+							"",
+							Type.ERROR_MESSAGE);
 					}
 				} else {
 					VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingEventNotDeleted),
-							I18nProperties.getString(Strings.messageEventsNotDeletedReason));
+						I18nProperties.getString(Strings.headingEventNotDeleted),
+						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent));
@@ -498,7 +504,7 @@ public class EventController {
 
 	private boolean deleteEvent(EventDto event) {
 		boolean deletable = true;
-		if(event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
+		if (event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
 			deletable = SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.EVENTS, Collections.singletonList(event));
 		}
 		if (deletable) {
@@ -555,9 +561,10 @@ public class EventController {
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private EventDto createNewEvent(Disease disease) {
+	public EventDto createNewEvent(Disease disease) {
 		EventDto event = EventDto.build();
 
+		event.getEventLocation().setCountry(FacadeProvider.getCountryFacade().getServerCountry());
 		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		event.setReportingUser(userReference);
@@ -641,43 +648,48 @@ public class EventController {
 						}
 					}
 					if (nonDeletableEventsWithParticipants.length() > 0) {
-						nonDeletableEventsWithParticipants = new StringBuilder(" " + nonDeletableEventsWithParticipants.substring(0, nonDeletableEventsWithParticipants.length() - 2) + ". ");
+						nonDeletableEventsWithParticipants = new StringBuilder(
+							" " + nonDeletableEventsWithParticipants.substring(0, nonDeletableEventsWithParticipants.length() - 2) + ". ");
 					}
 					if (nonDeletableEventsFromSurvnet.length() > 0) {
-						nonDeletableEventsFromSurvnet = new StringBuilder(" " + nonDeletableEventsFromSurvnet.substring(0, nonDeletableEventsFromSurvnet.length() - 2) + ". ");
+						nonDeletableEventsFromSurvnet =
+							new StringBuilder(" " + nonDeletableEventsFromSurvnet.substring(0, nonDeletableEventsFromSurvnet.length() - 2) + ". ");
 					}
 					callback.run();
 					if (countNotDeletedEventsWithParticipants == 0 && countNotDeletedEventsFromSurvnet == 0) {
 						new Notification(
-								I18nProperties.getString(Strings.headingEventsDeleted),
-								I18nProperties.getString(Strings.messageEventsDeleted),
-								Type.HUMANIZED_MESSAGE,
-								false).show(Page.getCurrent());
+							I18nProperties.getString(Strings.headingEventsDeleted),
+							I18nProperties.getString(Strings.messageEventsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					} else {
 						StringBuilder description = new StringBuilder();
 						if (countNotDeletedEventsWithParticipants > 0) {
-							description.append(String.format(
+							description.append(
+								String.format(
 									"%1s <br/> %2s",
 									String.format(
-											I18nProperties.getString(Strings.messageCountEventsNotDeleted),
-											String.format("<b>%s</b>", countNotDeletedEventsWithParticipants),
-											String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsWithParticipants.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReason))).append("<br/> <br/>");
+										I18nProperties.getString(Strings.messageCountEventsNotDeleted),
+										String.format("<b>%s</b>", countNotDeletedEventsWithParticipants),
+										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsWithParticipants.toString()))),
+									I18nProperties.getString(Strings.messageEventsNotDeletedReason)))
+								.append("<br/> <br/>");
 						}
 						if (countNotDeletedEventsFromSurvnet > 0) {
-							description.append(String.format(
+							description.append(
+								String.format(
 									"%1s <br/> %2s",
 									String.format(
-											I18nProperties.getString(Strings.messageCountEventsNotDeletedSurvnet),
-											String.format("<b>%s</b>", countNotDeletedEventsFromSurvnet),
-											String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromSurvnet.toString()))),
+										I18nProperties.getString(Strings.messageCountEventsNotDeletedSurvnet),
+										String.format("<b>%s</b>", countNotDeletedEventsFromSurvnet),
+										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromSurvnet.toString()))),
 									I18nProperties.getString(Strings.messageEventsNotDeletedReasonSurvnet)));
 						}
 
 						Window response = VaadinUiUtil.showSimplePopupWindow(
-								I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
-								description.toString(),
-								ContentMode.HTML);
+							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
+							description.toString(),
+							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);
 					}
 				});
@@ -780,5 +792,41 @@ public class EventController {
 		titleLayout.addComponent(eventLabel);
 
 		return titleLayout;
+	}
+
+	public void sendAllSelectedToSurvnet(Set<EventIndexDto> selectedRows, Runnable callback) {
+		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+
+		// Show an error when at least one selected event is not a CLUSTER event
+		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
+		if (nonClusterEvent.isPresent()) {
+			Notification.show(
+					String.format(
+							I18nProperties.getString(Strings.errorSurvNetNonClusterEvent),
+							DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
+							I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
+					"",
+					Type.ERROR_MESSAGE);
+			return;
+		}
+
+		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
+		String ownershipHandedOverUuid = FacadeProvider.getEventFacade().getFirstEventUuidWithOwnershipHandedOver(selectedUuids);
+		if (ownershipHandedOverUuid != null) {
+			Notification.show(
+					String.format(I18nProperties.getString(Strings.errorSurvNetEventNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+					"",
+					Type.ERROR_MESSAGE);
+			return;
+		}
+
+		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.EVENTS, selectedUuids);
+
+		callback.run();
+		new Notification(
+				I18nProperties.getString(Strings.headingEventsSentToSurvNet),
+				I18nProperties.getString(Strings.messageEventsSentToSurvnet),
+				Type.HUMANIZED_MESSAGE,
+				false).show(Page.getCurrent());
 	}
 }

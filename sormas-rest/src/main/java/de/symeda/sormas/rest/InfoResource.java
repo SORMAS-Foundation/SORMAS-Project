@@ -74,4 +74,10 @@ public class InfoResource {
 	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
 		return InfoProvider.get().isCompatibleToApi(appVersion);
 	}
+
+	@GET
+	@Path("/countryname")
+	public String getCountryName() {
+		return FacadeProvider.getConfigFacade().getCountryName();
+	}
 }

@@ -292,6 +292,7 @@ public class UserController {
 				UserDto changedUser = form.getValue();
 				FacadeProvider.getUserFacade().saveUser(changedUser);
 				I18nProperties.setUserLanguage(changedUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
 				Page.getCurrent().reload();
 				commitOrDiscardCallback.run();
 			}

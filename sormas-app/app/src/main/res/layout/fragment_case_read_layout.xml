@@ -25,6 +25,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.Vaccination" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
@@ -270,11 +271,6 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_reportingType"
-                    app:value="@{data.reportingType}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_reportingDistrict"
                     app:value="@{data.reportingDistrict}"
                     style="@style/ControlSingleColumnStyle" />
@@ -282,6 +278,13 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_caseIdentificationSource"
                     app:value="@{data.caseIdentificationSource}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_screeningType"
+                    app:dependencyParentField="@{caseDataCaseIdentificationSource}"
+                    app:dependencyParentValue="@{CaseIdentificationSource.SCREENING}"
+                    app:value="@{data.screeningType}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -599,18 +602,6 @@
                     style="@style/ControlSingleColumnStyle"
                     app:appendValue="@{data.endOfIsolationReasonDetails}"
                     app:value="@{data.endOfIsolationReason}"
-                    app:valueFormat="@string/two_strings_with_hyphen_format" />
-
-                <ImageView
-                    android:id="@+id/caseData_covidTestReasonDivider"
-                    style="@style/FullHorizontalDividerStyle"
-                    android:visibility="gone" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_covidTestReason"
-                    style="@style/ControlSingleColumnStyle"
-                    app:appendValue="@{data.covidTestReasonDetails}"
-                    app:value="@{data.covidTestReason}"
                     app:valueFormat="@string/two_strings_with_hyphen_format" />
 
                 <ImageView

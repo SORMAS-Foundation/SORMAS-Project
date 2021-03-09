@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +181,8 @@ public class StartupShutdownService {
 
 		createOrUpdatePatientDiaryUser();
 
+		syncUsers();
+
 		upgrade();
 
 		createImportTemplateFiles();
@@ -193,6 +197,11 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
+		if (!configFacade.isCreateDefaultEntities()) {
+			// return if isCreateDefaultEntities() is false
+			logger.info("Skipping the creation of default infrastructure data");
+			return;
+		}
 
 		// Region
 		Region region = null;
@@ -310,9 +319,9 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
-			if (!configFacade.isCreateDefaultUsers()) {
-				// return if getCreateDefaultUsers() is false
-				logger.info("Skipping the creation of default users");
+			if (!configFacade.isCreateDefaultEntities()) {
+				// return if isCreateDefaultEntities() is false
+				logger.info("Skipping the creation of default entities");
 				return;
 			}
 
@@ -431,7 +440,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -479,6 +488,49 @@ public class StartupShutdownService {
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		}
 
+	}
+
+	/**
+	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * @see AuthProvider#isUserSyncSupported()
+	 * @see AuthProvider#isUserSyncAtStartupEnabled()
+	 */
+	private void syncUsers() {
+
+		AuthProvider authProvider = AuthProvider.getProvider();
+
+		if (!authProvider.isUserSyncSupported()) {
+			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
+			return;
+		}
+
+		if(!authProvider.isUserSyncAtStartupEnabled()) {
+			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
+			return;
+		}
+
+		List<User> users = userService.getAllActive();
+		for (User user : users) {
+			syncUser(user);
+		}
+		logger.info("User synchronization finalized");
+	}
+
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	private void syncUser(User user) {
+		String shortUuid = DataHelper.getShortUuid(user.getUuid());
+		logger.debug("Synchronizing user {}", shortUuid);
+		try {
+
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
+
+			this.userUpdateEvent.fireAsync(event);
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
+		}
 	}
 
 	/**
@@ -686,6 +738,13 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
+
+		try {
+			importFacade.generateEventImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create event import template .csv file.");
+		}
+
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {

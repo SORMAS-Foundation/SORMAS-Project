@@ -29,6 +29,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
+	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -37,6 +38,8 @@ public class LabMessageDto extends EntityDto {
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
+	public static final String PERSON_PHONE = "personPhone";
+	public static final String PERSON_EMAIL = "personEmail";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
@@ -57,6 +60,7 @@ public class LabMessageDto extends EntityDto {
 	private Disease testedDisease;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
+	private Boolean testResultVerified;
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
@@ -67,6 +71,8 @@ public class LabMessageDto extends EntityDto {
 	private String personCity;
 	private String personStreet;
 	private String personHouseNumber;
+	private String personPhone;
+	private String personEmail;
 
 	private String labMessageDetails;
 
@@ -185,6 +191,14 @@ public class LabMessageDto extends EntityDto {
 		this.testResult = testResult;
 	}
 
+	public Boolean isTestResultVerified() {
+		return testResultVerified;
+	}
+
+	public void setTestResultVerified(Boolean testResultVerified) {
+		this.testResultVerified = testResultVerified;
+	}
+
 	public String getPersonFirstName() {
 		return personFirstName;
 	}
@@ -263,6 +277,22 @@ public class LabMessageDto extends EntityDto {
 
 	public void setPersonHouseNumber(String personHouseNumber) {
 		this.personHouseNumber = personHouseNumber;
+	}
+
+	public String getPersonPhone() {
+		return personPhone;
+	}
+
+	public void setPersonPhone(String personPhone) {
+		this.personPhone = personPhone;
+	}
+
+	public String getPersonEmail() {
+		return personEmail;
+	}
+
+	public void setPersonEmail(String personEmail) {
+		this.personEmail = personEmail;
 	}
 
 	public String getLabMessageDetails() {

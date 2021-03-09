@@ -367,6 +367,7 @@
     <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="heading_exposure">Exposure</string>
+    <string name="heading_activityAsCase">Activity as Case</string>
     <string name="hint_add_to_empty_list">Lisää uusi merkintä painamalla \"+\" symbolia oikeassa yläkulmassa.</string>
     <string name="hint_clear">Tyhjennä</string>
     <string name="hint_create_pin">Valitse neljänumeroinen PIN jota käytät vahvistamaan itsesi, kun avaat SORMAS-sovelluksen.</string>

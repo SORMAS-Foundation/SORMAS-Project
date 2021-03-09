@@ -38,6 +38,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.WebApplicationException;
@@ -182,6 +183,11 @@ public class KeycloakService {
             userUpdateEvent.getExceptionCallback().accept(e.getMessage());
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public void handleUserUpdateEventAsync(@ObservesAsync UserUpdateEvent userUpdateEvent) {
+        logger.debug("Handling userUpdateEvent asynchronously for user {}", userUpdateEvent.getNewUser().getUuid());
+        handleUserUpdateEvent(userUpdateEvent);
     }
 
     /**

@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
         <import type="de.symeda.sormas.api.sample.SamplePurpose" />
+        <import type="de.symeda.sormas.api.sample.SamplingReason" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="android.view.View" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
@@ -128,6 +129,18 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/sample_samplingReason"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.samplingReason}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/sample_samplingReasonDetails"
+                    app:dependencyParentField="@{sampleSamplingReason}"
+                    app:dependencyParentValue="@{SamplingReason.OTHER_REASON}"
+                    app:value="@={data.samplingReasonDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -176,9 +189,10 @@
                     app:value="@={data.comment}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_pathogenTestResult"
-                    app:value="@{data.pathogenTestResult}"
+                    app:required="true"
+                    app:value="@={data.pathogenTestResult}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

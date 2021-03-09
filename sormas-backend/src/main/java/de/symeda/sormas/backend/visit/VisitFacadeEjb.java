@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -43,8 +44,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -198,7 +201,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public VisitDto saveVisit(VisitDto dto) {
+	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 		final VisitDto existingDto = toDto(existingVisit);
@@ -407,6 +410,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(
 		VisitCriteria visitCriteria,
+		Collection<String> selectedRows,
 		VisitExportType exportType,
 		int first,
 		int max,
@@ -437,6 +441,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			personJoin.get(Person.UUID));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
 		if (filter != null) {
 			cq.where(filter);
 		}

@@ -29,6 +29,7 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -42,11 +43,13 @@ import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
@@ -68,6 +71,10 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -122,6 +129,10 @@ public class FacadeProvider {
 
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+
+	public static EventImportFacade getEventImportFacade() {
+		return get().lookupEjbRemote(EventImportFacade.class);
 	}
 
 	public static EventParticipantFacade getEventParticipantFacade() {
@@ -308,6 +319,22 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SormasToSormasFacade.class);
 	}
 
+	public static SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
+		return get().lookupEjbRemote(SormasToSormasCaseFacade.class);
+	}
+
+	public static SormasToSormasContactFacade getSormasToSormasContactFacade() {
+		return get().lookupEjbRemote(SormasToSormasContactFacade.class);
+	}
+
+	public static SormasToSormasEventFacade getSormasToSormasEventFacade() {
+		return get().lookupEjbRemote(SormasToSormasEventFacade.class);
+	}
+
+	public static SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
+		return get().lookupEjbRemote(SormasToSormasLabMessageFacade.class);
+	}
+
 	public static BAGExportFacade getBAGExportFacade() {
 		return get().lookupEjbRemote(BAGExportFacade.class);
 	}
@@ -360,6 +387,14 @@ public class FacadeProvider {
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public static SurveillanceReportFacade getSurveillanceReportFacade() {
+		return get().lookupEjbRemote(SurveillanceReportFacade.class);
+	}
+
+	public static I18nFacade getI18nFacade() {
+		return get().lookupEjbRemote(I18nFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

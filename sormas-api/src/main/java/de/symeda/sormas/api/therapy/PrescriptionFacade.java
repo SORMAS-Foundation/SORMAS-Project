@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.therapy;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 
@@ -14,7 +16,7 @@ public interface PrescriptionFacade {
 
 	PrescriptionDto getPrescriptionByUuid(String uuid);
 
-	PrescriptionDto savePrescription(PrescriptionDto prescription);
+	PrescriptionDto savePrescription(@Valid PrescriptionDto prescription);
 
 	void deletePrescription(String prescriptionUuid);
 
@@ -24,5 +26,5 @@ public interface PrescriptionFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<PrescriptionExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
+	List<PrescriptionExportDto> getExportList(CaseCriteria caseCriteria, Collection<String> selectedRows, int first, int max);
 }

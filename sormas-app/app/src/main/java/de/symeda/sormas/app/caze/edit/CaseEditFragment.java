@@ -15,12 +15,15 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.webkit.WebView;
-
-import androidx.fragment.app.FragmentActivity;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.Date;
 import java.util.List;
+
+import android.webkit.WebView;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -30,7 +33,6 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -38,7 +40,7 @@ import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -78,9 +80,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
 	public static final String TAG = CaseEditFragment.class.getSimpleName();
@@ -91,6 +90,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private List<Item> caseClassificationList;
 	private List<Item> caseIdentificationSourceList;
+	private List<Item> caseScreeningTypeList;
 	private List<Item> caseOutcomeList;
 	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
@@ -105,12 +105,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
 	private List<Item> quarantineList;
-	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> quarantineReasonList;
 	private List<Item> endOfIsolationReasonList;
-	private List<Item> covidTestReasonList;
 	private List<Item> contactTracingContactTypeList;
 	private List<Item> infectionSettingList;
 	private List<Item> vaccineList;
@@ -205,8 +203,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
-			contentBinding.caseDataExternalToken.setVisibility(GONE);
-			contentBinding.caseDataReportingType.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
@@ -276,6 +272,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
 		caseIdentificationSourceList = DataUtils.getEnumItems(CaseIdentificationSource.class, true);
+		caseScreeningTypeList = DataUtils.getEnumItems(ScreeningType.class, true);
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
@@ -283,7 +280,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
-		reportingTypeList = DataUtils.getEnumItems(ReportingType.class, true);
 
 		initialRegions = InfrastructureHelper.loadRegions();
 		allDistricts = InfrastructureHelper.loadAllDistricts();
@@ -295,7 +291,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
 		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
-		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
 		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 		infectionSettingList = DataUtils.getEnumItems(InfectionSetting.class, true);
 		vaccineList = DataUtils.getEnumItems(Vaccine.class, true);
@@ -513,6 +508,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
 		contentBinding.caseDataCaseIdentificationSource.initializeSpinner(caseIdentificationSourceList);
+		contentBinding.caseDataScreeningType.initializeSpinner(caseScreeningTypeList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -533,7 +529,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
-		contentBinding.caseDataReportingType.initializeSpinner(reportingTypeList);
 
 		// Replace classification user field with classified by field when case has been classified automatically
 		if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
@@ -558,10 +553,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
 		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
 
-		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)) {
-			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
-			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
-		}
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
 			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
 			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);

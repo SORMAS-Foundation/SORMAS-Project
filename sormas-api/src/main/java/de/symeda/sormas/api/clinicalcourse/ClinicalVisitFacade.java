@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.clinicalcourse;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 
@@ -16,7 +18,7 @@ public interface ClinicalVisitFacade {
 
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid);
 
-	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit);
+	ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit);
 
 	void deleteClinicalVisit(String clinicalVisitUuid);
 
@@ -26,5 +28,5 @@ public interface ClinicalVisitFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max);
+	List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max);
 }

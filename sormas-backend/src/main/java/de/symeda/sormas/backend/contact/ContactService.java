@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -43,6 +44,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1341,4 +1344,29 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
+
+	public List<Contact> getByPersonUuids(List<String> personUuids) {
+		if (CollectionUtils.isEmpty(personUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<Contact> contacts = new LinkedList<>();
+			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(personUuids)));
+			return contacts;
+		} else {
+			return getContactsByPersonUuids(personUuids);
+		}
+	}
+
+	private List<Contact> getContactsByPersonUuids(List<String> personUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 }

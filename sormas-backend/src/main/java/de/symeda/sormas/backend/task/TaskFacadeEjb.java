@@ -41,6 +41,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,7 +259,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public TaskDto saveTask(TaskDto dto) {
+	public TaskDto saveTask(@Valid TaskDto dto) {
 
 		Task ado = fromDto(dto, true);
 		taskService.ensurePersisted(ado);

@@ -27,9 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,8 +43,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -61,9 +61,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -111,7 +110,6 @@ import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -157,6 +155,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CountryService countryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -190,7 +190,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
@@ -278,7 +277,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				try {
 					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
@@ -306,7 +305,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
 		return savePerson(source, true);
 	}
 
@@ -319,8 +318,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
-		if (existingPerson != null) {
-			handleExternalJournalPerson(existingPerson, source);
+		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+			externalJournalService.validateExternalJournalPerson(source);
+			externalJournalService.handleExternalJournalPersonUpdate(source.toReference());
 		}
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
@@ -330,28 +330,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		onPersonChanged(existingPerson, person);
 
 		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
-	}
-
-	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		if (existingPerson.isEnrolledInExternalJournal()) {
-			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
-			if (!validationResult.isValid()) {
-				throw new ValidationRuntimeException(validationResult.getMessage());
-			}
-		}
-		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingJournalPerson = getPersonForJournal(existingPerson.getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingJournalPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -392,8 +370,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
@@ -1041,6 +1017,20 @@ public class PersonFacadeEjb implements PersonFacade {
 	// needed for tests
 	public void setExternalJournalService(ExternalJournalService externalJournalService) {
 		this.externalJournalService = externalJournalService;
+	}
+
+	public boolean isPersonSimilarToExisting(PersonDto referencePerson) {
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+			.lastName(referencePerson.getLastName())
+			.sex(referencePerson.getSex())
+			.birthdateDD(referencePerson.getBirthdateDD())
+			.birthdateMM(referencePerson.getBirthdateMM())
+			.birthdateYYYY(referencePerson.getBirthdateYYYY())
+			.passportNumber(referencePerson.getPassportNumber())
+			.nationalHealthId(referencePerson.getNationalHealthId());
+
+		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
 
 	@LocalBean

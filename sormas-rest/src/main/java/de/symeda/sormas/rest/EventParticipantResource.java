@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -71,8 +72,14 @@ public class EventParticipantResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/query/persons")
+	public List<EventParticipantDto> getByPersonUuids(List<String> uuids) {
+		return FacadeProvider.getEventParticipantFacade().getByPersonUuids(uuids);
+	}
+
+	@POST
 	@Path("/push")
-	public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
+	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
 		return result;

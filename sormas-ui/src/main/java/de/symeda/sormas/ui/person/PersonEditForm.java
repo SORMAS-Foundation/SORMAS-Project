@@ -101,6 +101,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
+	private TextField firstNameField;
+	private TextField lastNameField;
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
@@ -226,8 +228,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
 		addField(PersonDto.UUID).setReadOnly(true);
-		addField(PersonDto.FIRST_NAME, TextField.class);
-		addField(PersonDto.LAST_NAME, TextField.class);
+		firstNameField = addField(PersonDto.FIRST_NAME, TextField.class);
+		lastNameField = addField(PersonDto.LAST_NAME, TextField.class);
 
 		addFields(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.OTHER_SALUTATION, PersonDto.SALUTATION, Salutation.OTHER, true);
@@ -379,11 +381,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
 			@SuppressWarnings("unchecked")
 			Field<ApproximateAgeType> ageTypeField = (Field<ApproximateAgeType>) getField(PersonDto.APPROXIMATE_AGE_TYPE);
-			if (e.getProperty().getValue() == null) {
-				ageTypeField.clear();
-			} else {
-				if (ageTypeField.isEmpty()) {
-					ageTypeField.setValue(ApproximateAgeType.YEARS);
+			if (!ageTypeField.isReadOnly()) {
+				if (e.getProperty().getValue() == null) {
+					ageTypeField.clear();
+				} else {
+					if (ageTypeField.isEmpty()) {
+						ageTypeField.setValue(ApproximateAgeType.YEARS);
+					}
 				}
 			}
 		});
@@ -800,6 +804,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
 			burialPlaceDesc.setValue(getValue().getAddress().toString());
 		}
+	}
+
+	public Field getFirstNameField() {
+		return firstNameField;
+	}
+
+	public Field getLastNameField() {
+		return lastNameField;
 	}
 
 	@Override

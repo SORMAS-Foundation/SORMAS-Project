@@ -44,11 +44,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
+	public static final String FREE_TEXT_EVENT_PARTICIPANTS = "freeTextEventParticipants";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -70,6 +72,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
 	private UserReferenceDto responsibleUser;
 	private String freeText;
+	private String freeTextEventParticipants;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
 	private Boolean userFilterIncluded = true;
@@ -80,6 +83,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EventReferenceDto superordinateEvent;
 	private Set<String> excludedUuids;
 	private Boolean hasNoSuperordinateEvent;
+	private EventManagementStatus eventManagementStatus;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -286,7 +290,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
-	public EventCriteria eventEvolutionDateBetween(Date eventEvolutionDateFrom, Date eventEvolutionDateTo, DateFilterOption evolutionDateFilterOption) {
+	public EventCriteria eventEvolutionDateBetween(
+		Date eventEvolutionDateFrom,
+		Date eventEvolutionDateTo,
+		DateFilterOption evolutionDateFilterOption) {
 		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
 		this.eventEvolutionDateTo = eventEvolutionDateTo;
 		this.evolutionDateFilterOption = evolutionDateFilterOption;
@@ -345,6 +352,20 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getFreeText() {
 		return freeText;
+	}
+
+	public EventCriteria freeTextEventParticipants(String freeTextEventParticipants) {
+		this.freeTextEventParticipants = freeTextEventParticipants;
+		return this;
+	}
+
+	public void setFreeTextEventParticipants(String freeTextEventParticipants) {
+		this.freeTextEventParticipants = freeTextEventParticipants;
+	}
+
+	@IgnoreForUrl
+	public String getFreeTextEventParticipants() {
+		return freeTextEventParticipants;
 	}
 
 	public EventSourceType getSrcType() {
@@ -527,5 +548,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria hasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
 		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
 		return this;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 }

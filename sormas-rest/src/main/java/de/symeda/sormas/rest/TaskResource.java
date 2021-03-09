@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -65,7 +66,7 @@ public class TaskResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postTasks(List<TaskDto> dtos) {
+	public List<PushResult> postTasks(@Valid List<TaskDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getTaskFacade()::saveTask);
 		return result;

@@ -17,16 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface EventFacade {
@@ -41,7 +44,7 @@ public interface EventFacade {
 
 	EventDto getEventByUuid(String uuid);
 
-	EventDto saveEvent(@NotNull EventDto dto);
+	EventDto saveEvent(@Valid @NotNull EventDto dto);
 
 	EventReferenceDto getReferenceByUuid(String uuid);
 
@@ -57,7 +60,7 @@ public interface EventFacade {
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max);
+	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 
 	boolean isArchived(String caseUuid);
 
@@ -80,4 +83,8 @@ public interface EventFacade {
 	Set<String> getAllSubordinateEventUuids(String eventUuid);
 
 	Set<String> getAllSuperordinateEventUuids(String eventUuid);
+
+    String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
+
+	void validate(EventDto dto) throws ValidationRuntimeException;
 }

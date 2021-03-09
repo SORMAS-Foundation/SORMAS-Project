@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -63,7 +64,7 @@ public class PersonResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPersons(List<PersonDto> dtos) {
+	public List<PushResult> postPersons(@Valid List<PersonDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getPersonFacade()::savePerson);
 	}
 

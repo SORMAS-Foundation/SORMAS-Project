@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.therapy;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -115,7 +117,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public PrescriptionDto savePrescription(PrescriptionDto prescription) {
+	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
 
@@ -172,7 +174,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public List<PrescriptionExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+	public List<PrescriptionExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PrescriptionExportDto> cq = cb.createQuery(PrescriptionExportDto.class);
@@ -206,6 +208,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
 

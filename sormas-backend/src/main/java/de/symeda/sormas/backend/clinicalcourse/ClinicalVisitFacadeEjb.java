@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -202,7 +204,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
-	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+	public ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit) {
 
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
 		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
@@ -249,7 +251,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
-	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
@@ -276,6 +278,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		CaseJoins<ClinicalCourse> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 

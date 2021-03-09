@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -41,9 +43,9 @@ public interface ContactFacade {
 
 	Boolean isValidContactUuid(String uuid);
 
-	ContactDto saveContact(ContactDto dto);
+	ContactDto saveContact(@Valid ContactDto dto);
 
-	ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
+	ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
@@ -73,12 +75,18 @@ public interface ContactFacade {
 
 	List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		ExportConfigurationDto exportConfiguration,
 		Language userLanguage);
 
-	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<VisitSummaryExportDto> getVisitSummaryExportList(
+		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		Language userLanguage);
 
 	long countMaximumFollowUpDays(ContactCriteria contactCriteria);
 
@@ -135,4 +143,5 @@ public interface ContactFacade {
 		Date from,
 		Date to);
 
+    List<ContactDto> getByPersonUuids(List<String> personUuids);
 }

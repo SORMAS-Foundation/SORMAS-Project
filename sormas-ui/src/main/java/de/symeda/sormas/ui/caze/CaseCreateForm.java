@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Sets;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -203,7 +205,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		facilityType = addField(CaseDataDto.FACILITY_TYPE);
+		facilityType = new ComboBox();
+		facilityType.setId("type");
+		facilityType.setCaption(I18nProperties.getCaption(Captions.facilityType));
+		facilityType.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(facilityType, CaseDataDto.FACILITY_TYPE);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -260,7 +266,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())
+				|| ((facilityOrHome.getValue() instanceof java.util.Set) && TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue()))) {
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}
@@ -312,6 +319,26 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
+		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
+			region.setReadOnly(true);
+			district.setReadOnly(true);
+		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+			region.setReadOnly(true);
+			district.setReadOnly(true);
+			community.setReadOnly(true);
+
+			facilityOrHome.setImmediate(true);
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.FACILITY)); // [FACILITY]
+			facilityOrHome.setReadOnly(true);
+			facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+			facilityTypeGroup.setReadOnly(true);
+			facilityType.setValue(FacilityType.HOSPITAL);
+			facilityType.setReadOnly(true);
+			facility.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
+			facility.setReadOnly(true);
+		}
+
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
@@ -320,10 +347,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					setRequired(false, CaseDataDto.POINT_OF_ENTRY);
 					updateFacilityFields(facility, facilityDetails);
 				} else {
-					facilityOrHome.clear();
 					setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 					setRequired(true, CaseDataDto.POINT_OF_ENTRY);
-					setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					if (userJurisditionLevel != JurisdictionLevel.HEALTH_FACILITY) {
+						facilityOrHome.clear();
+						setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					}
 					updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 				}
 			});

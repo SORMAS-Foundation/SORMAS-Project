@@ -69,7 +69,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		FACILITY_TYPE_GROUP_FILTER,
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
-		EventDto.EVENT_INVESTIGATION_STATUS)
+		EventDto.EVENT_INVESTIGATION_STATUS,
+		EventDto.EVENT_MANAGEMENT_STATUS)
 		+ loc(EVENT_WEEK_AND_DATE_FILTER)
 		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
 		+ loc(ACTION_WEEK_AND_DATE_FILTER);
@@ -103,7 +104,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
-			EventCriteria.FREE_TEXT };
+			EventCriteria.FREE_TEXT,
+			EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS };
 	}
 
 	@Override
@@ -118,6 +120,13 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField searchFieldEventParticipants = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS,
+				I18nProperties.getString(Strings.promptEventsSearchFieldEventParticipants),
+				200));
+		searchFieldEventParticipants.setNullRepresentation("");
 	}
 
 	@Override
@@ -126,7 +135,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration.pixelSized(EventDto.SRC_TYPE, 140),
 			FieldConfiguration.pixelSized(EventDto.TYPE_OF_PLACE, 140),
-			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140));
+			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140),
+			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140));
 
 		ComboBox regionField = addField(
 			moreFiltersContainer,
@@ -263,7 +273,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 		}
-		weekAndDateFilter.setVisible(false);
 
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, dateFilterOption);

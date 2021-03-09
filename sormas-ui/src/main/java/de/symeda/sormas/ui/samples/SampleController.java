@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -37,6 +38,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -171,6 +173,10 @@ public class SampleController {
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
+			if (dateField != null) {
+				pathogenTest.setReportDate(dateField.getValue());
+			}
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
@@ -187,7 +193,7 @@ public class SampleController {
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 				Disease testedDisease = pathogenTest.getTestedDisease();
-				if (event.getDisease().equals(testedDisease)) {
+				if (Objects.equals(event.getDisease(), testedDisease)) {
 					newSample.setPathogenTestResult(testResult);
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
@@ -332,7 +338,7 @@ public class SampleController {
 	}
 
 	public void showChangePathogenTestResultWindow(
-		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editComponent,
 		String sampleUuid,
 		PathogenTestResultType newResult,
 		Runnable callback) {

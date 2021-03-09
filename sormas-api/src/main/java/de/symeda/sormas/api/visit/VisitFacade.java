@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -34,7 +36,7 @@ public interface VisitFacade {
 
 	VisitDto getVisitByUuid(String uuid);
 
-	VisitDto saveVisit(VisitDto dto);
+	VisitDto saveVisit(@Valid VisitDto dto);
 
 	void validate(VisitDto dto);
 
@@ -52,6 +54,7 @@ public interface VisitFacade {
 
 	List<VisitExportDto> getVisitsExportList(
 		VisitCriteria visitCriteria,
+		Collection<String> selectedRows,
 		VisitExportType exportType,
 		int first,
 		int max,

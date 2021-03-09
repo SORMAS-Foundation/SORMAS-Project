@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import android.view.View;
 
@@ -25,9 +27,11 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -57,7 +61,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			PathogenTestEditFragment.class,
 			null,
 			activityRootData,
-			null,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -79,7 +83,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		sample = record.getSample();
 		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, true));
-		testResultList = DataUtils.getEnumItems(PathogenTestResultType.class, true);
+		testResultList = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values())
+			.filter(type -> type != PathogenTestResultType.NOT_DONE)
+			.collect(Collectors.toList()), true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 	}
 
@@ -138,6 +144,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		});
 
 //        // Initialize ControlDateFields
+		contentBinding.pathogenTestReportDate.initializeDateField(getFragmentManager());
 		contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
 
 		if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {

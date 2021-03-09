@@ -18,12 +18,14 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -60,6 +62,7 @@ public interface CaseFacade {
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -68,7 +71,7 @@ public interface CaseFacade {
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -209,4 +212,6 @@ public interface CaseFacade {
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
+
+    List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 }
