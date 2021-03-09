@@ -1775,6 +1775,41 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	/**
+	 * Handles potential changes of related tasks that needs to be done after
+	 * a case has been created/saved
+	 */
+	private void updateTasksOnCaseChanged(Case newCase, CaseDataDto existingCase) {
+		// In case that *any* jurisdiction of the case has been changed, we need to see if we need to reassign related tasks.
+		// Tasks can be assigned to various user roles and users, therefore it is crucial to make sure
+		// that no tasks related to cases are assigned to officers lacking jurisdiction on the case.
+
+		if (existingCase != null) {
+			boolean regionChanged = !existingCase.getRegion().getUuid().equals(newCase.getRegion().getUuid());
+			boolean districtChanged = !existingCase.getDistrict().getUuid().equals(newCase.getDistrict().getUuid());
+
+			boolean communityChanged = existingCase.getCommunity() != null
+				&& newCase.getCommunity() != null
+				&& !newCase.getCommunity().getUuid().equals(existingCase.getCommunity().getUuid());
+
+			boolean facilityChanged = existingCase.getHealthFacility() != null
+				&& newCase.getHealthFacility() != null
+				&& !existingCase.getHealthFacility().getUuid().equals(newCase.getHealthFacility().getUuid());
+
+			if (regionChanged || districtChanged || communityChanged || facilityChanged) {
+				reassignTasksOfCase(newCase, false);
+			}
+
+		}
+
+		// Create a task to search for other cases for new Plague cases
+		if (existingCase == null
+			&& newCase.getDisease() == Disease.PLAGUE
+			&& featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES)) {
+			createActiveSearchForOtherCasesTask(newCase);
+		}
+	}
+
+	/**
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
 	 */
@@ -1864,21 +1899,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		// Re-assign the tasks associated with this case to the new officer (if
-		// selected) or the surveillance supervisor if the facility has changed
-		if (existingCase != null
-			&& newCase.getHealthFacility() != null
-			&& existingCase.getHealthFacility() != null
-			&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
-			reassignTasks(newCase);
-		}
-
-		// Create a task to search for other cases for new Plague cases
-		if (existingCase == null
-			&& newCase.getDisease() == Disease.PLAGUE
-			&& featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES)) {
-			createActiveSearchForOtherCasesTask(newCase);
-		}
+		updateTasksOnCaseChanged(newCase, existingCase);
 
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
@@ -2037,16 +2058,41 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public void reassignTasks(Case caze) {
+	/**
+	 * Reassigns tasks related to `caze`. With `forceReassignment` beeing false, the function will only reassign
+	 * the tasks if the assignees lack jurisdiction on the case. When forced, all tasks will be reassigned.
+	 * @param caze the case which related tasks are reassigned.
+	 * @param forceReassignment force reassignment of case tasks.
+	 */
+	public void reassignTasksOfCase(Case caze, boolean forceReassignment) {
+		// for each task that is related to the case, the task assignee must match the jurisdiction of the case
+		// otherwise we will reassign the task
 		for (Task task : caze.getTasks()) {
 			if (task.getTaskStatus() != TaskStatus.PENDING) {
 				continue;
 			}
+			User taskAsignee = task.getAssigneeUser();
 
-			assignOfficerOrSupervisorToTask(caze, task);
+			boolean regionMismatch = !taskAsignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
+			boolean districtMismatch = !taskAsignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
 
-			taskService.ensurePersisted(task);
+			boolean communityMismatch = taskAsignee.getCommunity() != null
+				&& caze.getCommunity() != null
+				&& !taskAsignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid());
+
+			boolean facilityMismatch = taskAsignee.getHealthFacility() != null
+				&& caze.getHealthFacility() != null
+				&& !taskAsignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid());
+
+			if (forceReassignment || regionMismatch || districtMismatch || communityMismatch || facilityMismatch) {
+				// if there is any mismatch between the jurisdiction of the case and the assigned user,
+				// we need to reassign the tasks
+				assignOfficerOrSupervisorToTask(caze, task);
+				taskService.ensurePersisted(task);
+			}
+
 		}
+
 	}
 
 	private float calculateCompleteness(Case caze) {
