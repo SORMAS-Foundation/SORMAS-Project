@@ -21,6 +21,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
@@ -240,15 +242,20 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		try {
 			InitialContext ic = new InitialContext();
 			String jndiName = configFacade.getDemisJndiName();
-			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			ExternalMessageResult<List<LabMessageDto>> externalMessageResult = labResultsFacade.getExternalLabMessages(since);
-			if (externalMessageResult.isSuccess()) {
-				if (externalMessageResult.getValue() != null) {
-					externalMessageResult.getValue().forEach(this::save);
+			if (jndiName != null) {
+				ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
+				ExternalMessageResult<List<LabMessageDto>> externalMessageResult = labResultsFacade.getExternalLabMessages(since);
+				if (externalMessageResult.isSuccess()) {
+					if (externalMessageResult.getValue() != null) {
+						externalMessageResult.getValue().forEach(this::save);
+					}
+				} else {
+					fetchResult.setSuccess(false);
+					fetchResult.setError(externalMessageResult.getError());
 				}
 			} else {
 				fetchResult.setSuccess(false);
-				fetchResult.setError(externalMessageResult.getError());
+				fetchResult.setError(I18nProperties.getValidationError(Validations.externalMessageConfigError));
 			}
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
