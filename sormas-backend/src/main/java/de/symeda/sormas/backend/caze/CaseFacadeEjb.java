@@ -3070,8 +3070,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
-		// 1.2 Person
-		if (!cloning) {
+		// 1.2 Person - Only merge when the persons have different UUIDs
+		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
