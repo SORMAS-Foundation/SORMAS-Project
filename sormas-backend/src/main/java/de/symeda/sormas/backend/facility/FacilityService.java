@@ -154,6 +154,25 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return facilities;
 	}
 
+	public List<Facility> getAllHealthDepartments() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and(
+				createBasicFilter(cb, from),
+				cb.equal(from.get(Facility.TYPE), FacilityType.HEALTH_DEPARTMENT),
+				cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID)
+		);
+
+		cq.where(filter);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+
+		return facilities;
+	}
+
 	public List<Facility> getFacilitiesByNameAndType(
 		String name,
 		District district,

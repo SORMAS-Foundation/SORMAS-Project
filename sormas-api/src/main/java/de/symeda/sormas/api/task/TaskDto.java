@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.task;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -57,10 +59,10 @@ public class TaskDto extends EntityDto {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 
-	public static final String LABORNACHWEIS = "laborNachweisGuid";
+	public static final String LABCERTIFICATEGUID = "labCertificateGuid";
 	public static final String PAYER_NUMBER = "payerNumber";
 	public static final String DOCTOR_NUMBER = "doctorNumber";
-	public static final String BETRIEBSSTAETTEN_NUMBER = "betriebsstaettenNumber";
+	public static final String OPERATING_FACILITY_NUMBER = "operatingFacilityNumber";
 	public static final String LAB_NUMBER = "labNumber";
 	public static final String TEST_V = "testV";
 	public static final String SELF_PAYING = "selfPaying";
@@ -79,6 +81,7 @@ public class TaskDto extends EntityDto {
 	public static final String OTHER_FACILITY = "otherFacility";
 	public static final String AGREED_TO_GDPR = "agreedToGdpr";
 	public static final String SPECIAL_AGREEMENT_CODE = "specialAgreementCode";
+	public static final String HEALTH_DEPARTMENT = "healthDepartment";
 
 	@Required
 	private TaskContext taskContext;
@@ -114,7 +117,7 @@ public class TaskDto extends EntityDto {
 
 	/* ALERI FIELDS */
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
-	private String laborNachweisGuid;
+	private String labCertificateGuid;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String payerNumber;
@@ -123,7 +126,7 @@ public class TaskDto extends EntityDto {
 	private String doctorNumber;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
-	private String betriebsstaettenNumber;
+	private String operatingFacilityNumber;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String labNumber;
@@ -178,6 +181,8 @@ public class TaskDto extends EntityDto {
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String specialAgreementCode;
+
+	private FacilityReferenceDto healthDepartment;
 
 	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {
 
@@ -364,12 +369,12 @@ public class TaskDto extends EntityDto {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 	
-	public String getLaborNachweisGuid() {
-		return laborNachweisGuid;
+	public String getLabCertificateGuid() {
+		return labCertificateGuid;
 	}
 
-	public void setLaborNachweisGuid(String laborNachweisGuid) {
-		this.laborNachweisGuid = laborNachweisGuid;
+	public void setLabCertificateGuid(String labCertificateGuid) {
+		this.labCertificateGuid = labCertificateGuid;
 	}
 
 	public String getPayerNumber() {
@@ -388,12 +393,12 @@ public class TaskDto extends EntityDto {
 		this.doctorNumber = doctorNumber;
 	}
 
-	public String getBetriebsstaettenNumber() {
-		return betriebsstaettenNumber;
+	public String getOperatingFacilityNumber() {
+		return operatingFacilityNumber;
 	}
 
-	public void setBetriebsstaettenNumber(String betriebsstaettenNumber) {
-		this.betriebsstaettenNumber = betriebsstaettenNumber;
+	public void setOperatingFacilityNumber(String operatingFacilityNumber) {
+		this.operatingFacilityNumber = operatingFacilityNumber;
 	}
 
 	public String getLabNumber() {
@@ -538,5 +543,13 @@ public class TaskDto extends EntityDto {
 
 	public void setSpecialAgreementCode(String specialAgreementCode) {
 		this.specialAgreementCode = specialAgreementCode;
+	}
+
+	public FacilityReferenceDto getHealthDepartment() {
+		return healthDepartment;
+	}
+
+	public void setHealthDepartment(FacilityReferenceDto healthDepartment) {
+		this.healthDepartment = healthDepartment;
 	}
 }

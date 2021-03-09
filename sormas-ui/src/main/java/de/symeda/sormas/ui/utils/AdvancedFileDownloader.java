@@ -93,7 +93,6 @@ public class AdvancedFileDownloader extends FileDownloader {
 
                 @Override
                 public AbstractComponent getExtendedComponet() {
-                    // TODO Auto-generated method stub
                     return this.extendedComponet;
                 }
             };

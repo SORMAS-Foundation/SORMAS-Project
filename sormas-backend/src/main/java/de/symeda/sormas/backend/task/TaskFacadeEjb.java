@@ -43,6 +43,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +137,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private TaskJurisdictionChecker taskJurisdictionChecker;
+	@EJB
+	private FacilityService facilityService;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -197,6 +201,33 @@ public class TaskFacadeEjb implements TaskFacade {
 			target.setEvent(null);
 		}
 
+		target.setLabCertificateGuid(source.getLabCertificateGuid());
+		target.setPayerNumber(source.getPayerNumber());
+		target.setDoctorNumber(source.getDoctorNumber());
+		target.setOperatingFacilityNumber(source.getOperatingFacilityNumber());
+		target.setLabNumber(source.getLabNumber());
+		target.setTestV(source.isTestV());
+		target.setSelfPaying(source.isSelfPaying());
+		target.setSpecialAgreement(source.isSpecialAgreement());
+		target.setFirstTest(source.isFirstTest());
+		target.setNextTest(source.isNextTest());
+		target.setContactPerson(source.isContactPerson());
+		target.setCoronaApp(source.isCoronaApp());
+		target.setOutbreak(source.isOutbreak());
+		target.setOutbreakPrevention(source.isOutbreakPrevention());
+		target.setWorkingInFacility(source.isWorkingInFacility());
+		target.setLivingInFacility(source.isLivingInFacility());
+		target.setMedicalFacility(source.isMedicalFacility());
+		target.setCommunityFacility(source.isCommunityFacility());
+		target.setCareFacility(source.isCareFacility());
+		target.setOtherFacility(source.isOtherFacility());
+		target.setAgreedToGdpr(source.isAgreedToGdpr());
+		target.setSpecialAgreementCode(source.getSpecialAgreementCode());
+
+		if (source.getHealthDepartment() != null){
+			target.setHealthDepartment(facilityService.getByReferenceDto(source.getHealthDepartment()));
+		}
+
 		return target;
 	}
 
@@ -254,6 +285,34 @@ public class TaskFacadeEjb implements TaskFacade {
 					null);
 			}
 		});
+
+		target.setLabCertificateGuid(source.getLabCertificateGuid());
+		target.setPayerNumber(source.getPayerNumber());
+		target.setDoctorNumber(source.getDoctorNumber());
+		target.setOperatingFacilityNumber(source.getOperatingFacilityNumber());
+		target.setLabNumber(source.getLabNumber());
+		target.setTestV(source.isTestV());
+		target.setSelfPaying(source.isSelfPaying());
+		target.setSpecialAgreement(source.isSpecialAgreement());
+		target.setFirstTest(source.isFirstTest());
+		target.setNextTest(source.isNextTest());
+		target.setContactPerson(source.isContactPerson());
+		target.setCoronaApp(source.isCoronaApp());
+		target.setOutbreak(source.isOutbreak());
+		target.setOutbreakPrevention(source.isOutbreakPrevention());
+		target.setWorkingInFacility(source.isWorkingInFacility());
+		target.setLivingInFacility(source.isLivingInFacility());
+		target.setMedicalFacility(source.isMedicalFacility());
+		target.setCommunityFacility(source.isCommunityFacility());
+		target.setCareFacility(source.isCareFacility());
+		target.setOtherFacility(source.isOtherFacility());
+		target.setAgreedToGdpr(source.isAgreedToGdpr());
+		target.setSpecialAgreementCode(source.getSpecialAgreementCode());
+
+		if(source.getHealthDepartment() != null){
+			target.setHealthDepartment(FacilityFacadeEjb.toReferenceDto(source.getHealthDepartment()));
+		}
+
 
 		return target;
 	}

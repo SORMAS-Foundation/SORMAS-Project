@@ -168,6 +168,7 @@ public interface Strings {
 	String entityUser = "entityUser";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
+	String errorBirthDateNotPresent = "errorBirthDateNotPresent";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
@@ -226,6 +227,7 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingBirthDateNotPresent = "headingBirthDateNotPresent";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";

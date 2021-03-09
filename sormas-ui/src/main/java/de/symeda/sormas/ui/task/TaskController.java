@@ -28,6 +28,9 @@ import de.aleri.labcertificategenerator.entity.StaPersonDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -247,8 +250,29 @@ public class TaskController {
 
 	public String generateCovTestPdf(TaskDto task){
 		try {
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(task.getCaze().getUuid());
-			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+			PersonDto person = null;
+
+			if(task.getTaskContext().equals(TaskContext.CASE)){
+				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(task.getCaze().getUuid());
+				person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+			}
+			else if(task.getTaskContext().equals(TaskContext.CONTACT)){
+				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(task.getContact().getUuid());
+				person = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			}
+
+			if(person == null){
+				throw new RuntimeException("Person is null but required for generation");
+			}
+
+			if(person.getBirthdateYYYY() == null || person.getBirthdateMM() == null || person.getBirthdateDD() == null){
+				new Notification(
+						I18nProperties.getString(Strings.headingBirthDateNotPresent),
+						I18nProperties.getString(Strings.errorBirthDateNotPresent),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				return null;
+			}
 
 			StaPersonDto staPerson = new StaPersonDto();
 			staPerson.setVorname(person.getFirstName());
@@ -262,7 +286,7 @@ public class TaskController {
 			staPerson.setDatumGeb(new SimpleDateFormat("dd.MM.yyyy").parse(person.getBirthdateDD() + "." + person.getBirthdateMM() + "." + person.getBirthdateYYYY()));
 			staPerson.setOrt(person.getAddress().getCity());
 			staPerson.setKostentraeger(task.getPayerNumber());
-			staPerson.setBetriebsSt(task.getBetriebsstaettenNumber());
+			staPerson.setBetriebsSt(task.getOperatingFacilityNumber());
 			staPerson.setArztNr(task.getDoctorNumber());
 			staPerson.setAusstellungsDatum(new Date());
 			staPerson.setErsttest(task.isFirstTest());
@@ -277,9 +301,6 @@ public class TaskController {
 			staPerson.setRisikoApp(task.isCoronaApp());
 			staPerson.setZustimmung(task.isAgreedToGdpr());
 			staPerson.setLabNr(task.getLabNumber());
-			//TODO: Woher kommen diese Daten?
-			staPerson.setTitel("Dr.");
-			staPerson.setZusatz("von");
 			staPerson.setKontaktPerson(task.isContactPerson());
 			staPerson.setSelbstzahler(task.isSelfPaying());
 			staPerson.setRegionalziffer(task.getSpecialAgreementCode());
@@ -302,21 +323,20 @@ public class TaskController {
 					staPerson.setGeschlecht("U");
 			}
 
+			FacilityDto healthDepartment = FacadeProvider.getFacilityFacade().getByUuid(task.getHealthDepartment().getUuid());
 			GesundheitsamtDto ga = new GesundheitsamtDto();
-			ga.setOrt("49661 Cloppenburg");
-			ga.setAmt("Cloppenburg");
-			ga.setBereich("Gesundheitsamt");
-			ga.setArzt("Dr. Hans-Jürgen Stanisla");
-			ga.setStr("Eschstr. 29");
-			ga.setPlz("49661");
-			ga.setTel("04471/15-0");
-			ga.setFax("04471/15-330");
+			ga.setOrt(healthDepartment.getPostalCode() + " " + healthDepartment.getCity());
+			ga.setAmt(healthDepartment.getDepartment());
+			ga.setBereich(healthDepartment.getSector());
+			ga.setArzt(healthDepartment.getDrName());
+			ga.setStr(healthDepartment.getStreet() + " " + healthDepartment.getHouseNo());
+			ga.setPlz(healthDepartment.getPostalCode());
+			ga.setTel(healthDepartment.getTelNo());
+			ga.setFax(healthDepartment.getFaxNo());
 
-			String guid = Generator.generateGuid();
+			String guid = task.getLabCertificateGuid();
 
 			String path = FacadeProvider.getConfigFacade().getTempFilesPath() + guid + File.separator;
-
-			//todo: use real guid
 			Generator generator = new Generator(staPerson, ga, guid);
 			generator.savePdf(path + "nachweis.pdf", path);
 			return path + "nachweis.pdf";

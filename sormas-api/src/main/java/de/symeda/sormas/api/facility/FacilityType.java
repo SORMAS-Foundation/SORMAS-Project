@@ -69,7 +69,8 @@ public enum FacilityType {
 	SWIMMING_POOL(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	THEATER(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	UNIVERSITY(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),
-	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false);
+	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false),
+	HEALTH_DEPARTMENT(FacilityTypeGroup.MEDICAL_FACILITY, false, false);
 
 	private static final Map<FacilityTypeGroup, List<FacilityType>> typesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
 	private static final Map<FacilityTypeGroup, List<FacilityType>> accomodationTypesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();

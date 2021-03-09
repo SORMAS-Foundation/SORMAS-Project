@@ -2513,6 +2513,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
+
+
 		return target;
 	}
 

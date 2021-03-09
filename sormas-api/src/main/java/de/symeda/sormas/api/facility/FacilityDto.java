@@ -49,6 +49,15 @@ public class FacilityDto extends EntityDto {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
+	public static final String DEPARTMENT = "department";
+	public static final String SECTOR = "sector";
+	public static final String DR_NAME = "drName";
+	public static final String STREET = "street";
+	public static final String HOUSE_NO = "houseNo";
+	public static final String POSTAL_CODE = "postalCode";
+	public static final String TEL_NO = "telNo";
+	public static final String FAX_NO = "faxNo";
+
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -60,6 +69,15 @@ public class FacilityDto extends EntityDto {
 	private boolean publicOwnership;
 	private boolean archived;
 	private String externalID;
+
+	private String department;
+	private String sector;
+	private String drName;
+	private String street;
+	private String houseNo;
+	private String postalCode;
+	private String telNo;
+	private String faxNo;
 
 	public FacilityDto(
 		Date creationDate,
@@ -197,6 +215,70 @@ public class FacilityDto extends EntityDto {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getSector() {
+		return sector;
+	}
+
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
+
+	public String getDrName() {
+		return drName;
+	}
+
+	public void setDrName(String drName) {
+		this.drName = drName;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public void setHouseNo(String houseNo) {
+		this.houseNo = houseNo;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getTelNo() {
+		return telNo;
+	}
+
+	public void setTelNo(String telNo) {
+		this.telNo = telNo;
+	}
+
+	public String getFaxNo() {
+		return faxNo;
+	}
+
+	public void setFaxNo(String faxNo) {
+		this.faxNo = faxNo;
 	}
 
 	@Override
