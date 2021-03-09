@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -348,7 +349,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			Stream<PersonFollowUpEndDto> caseLatestDates = getCaseLatestFollowUpEndDates(since, forSymptomJournal);
 			Map<String, Optional<PersonFollowUpEndDto>> latestDates = Stream.concat(contactLatestDates, caseLatestDates)
 					.collect(groupingBy(PersonFollowUpEndDto::getPersonUuid,
-						     maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate))));
+							maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate, Comparator.nullsLast(Comparator.naturalOrder())))));
 			return latestDates.values().stream()
 					.filter(Optional::isPresent)
 					.map(Optional::get)
