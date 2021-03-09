@@ -122,8 +122,8 @@
                         style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_confirmedCaseClassification"
-                    app:value="@={caseEditData.confirmedCaseClassification}"
+                    android:id="@+id/caseData_caseConfirmationBasis"
+                    app:value="@={caseEditData.caseConfirmationBasis}"
                     style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField

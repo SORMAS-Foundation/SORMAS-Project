@@ -2047,7 +2047,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean;");
 				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean;");
 				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseconfiguration SET extendedClassification = 0 WHERE disease not in ('CORONAVIRUS', 'MEASLES');");
-				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseconfiguration SET extendedClassificationMulti = 0; WHERE disease not in ('CORONAVIRUS');");
+				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseconfiguration SET extendedClassificationMulti = 0 WHERE disease not in ('CORONAVIRUS');");
 				getDao(DiseaseConfiguration.class)
 					.executeRaw("UPDATE diseaseconfiguration SET extendedClassification = 1 WHERE disease in ('CORONAVIRUS', 'MEASLES');");
 				getDao(DiseaseConfiguration.class)

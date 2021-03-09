@@ -69,12 +69,12 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.ConfirmedCaseClassification;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -145,7 +145,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
-	public static final String CONFIRMED_CASE_CLASSIFICATION = Captions.CaseData_confirmedCaseClassification;
+	public static final String CONFIRMED_CASE_CLASSIFICATION = Captions.CaseData_caseConfirmationBasis;
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -408,8 +408,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			ComboBox clinicalConfirmationCombo = addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			ComboBox epidemiologicalConfirmationCombo = addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			ComboBox laboratoryConfirmationCombo = addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
-			ComboBox confirmedCaseClassificationCombo =
-				addCustomField(CONFIRMED_CASE_CLASSIFICATION, ConfirmedCaseClassification.class, ComboBox.class);
+			ComboBox caseConfirmationBasisCombo = addCustomField(CONFIRMED_CASE_CLASSIFICATION, CaseConfirmationBasis.class, ComboBox.class);
 
 			if (diseaseConfiguration.getExtendedClassificationMulti()) {
 				FieldHelper.setVisibleWhen(
@@ -421,16 +420,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					CaseDataDto.CASE_CLASSIFICATION,
 					CaseClassification.CONFIRMED,
 					true);
-				confirmedCaseClassificationCombo.setVisible(false);
+				caseConfirmationBasisCombo.setVisible(false);
 
 			} else {
-				confirmedCaseClassificationCombo.addValueChangeListener(field -> {
+				caseConfirmationBasisCombo.addValueChangeListener(field -> {
 					clinicalConfirmationCombo.setValue(null);
 					epidemiologicalConfirmationCombo.setValue(null);
 					laboratoryConfirmationCombo.setValue(null);
 
-					if (confirmedCaseClassificationCombo.getValue() != null) {
-						switch ((ConfirmedCaseClassification) confirmedCaseClassificationCombo.getValue()) {
+					if (caseConfirmationBasisCombo.getValue() != null) {
+						switch ((CaseConfirmationBasis) caseConfirmationBasisCombo.getValue()) {
 						case CLINICAL_CONFIRMATION:
 							clinicalConfirmationCombo.setValue(YesNoUnknown.YES);
 							break;
@@ -446,7 +445,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 				FieldHelper.setVisibleWhen(
 					getField(CaseDataDto.CASE_CLASSIFICATION),
-					Collections.singletonList(confirmedCaseClassificationCombo),
+					Collections.singletonList(caseConfirmationBasisCombo),
 					Collections.singletonList(CaseClassification.CONFIRMED),
 					true);
 				clinicalConfirmationCombo.setVisible(false);
@@ -1452,14 +1451,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
 		super.setValue(newFieldValue);
 
-		ComboBox confirmedCaseClassificationCombo = getField(CONFIRMED_CASE_CLASSIFICATION);
+		ComboBox caseConfirmationBasisCombo = getField(CONFIRMED_CASE_CLASSIFICATION);
 
-		if(newFieldValue.getClinicalConfirmation()==YesNoUnknown.YES){
-			confirmedCaseClassificationCombo.setValue(ConfirmedCaseClassification.CLINICAL_CONFIRMATION);
-		}else if (newFieldValue.getEpidemiologicalConfirmation()==YesNoUnknown.YES){
-			confirmedCaseClassificationCombo.setValue(ConfirmedCaseClassification.EPIDEMIOLOGICAL_CONFIRMATION);
-		}else if (newFieldValue.getLaboratoryDiagnosticConfirmation()==YesNoUnknown.YES){
-			confirmedCaseClassificationCombo.setValue(ConfirmedCaseClassification.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
+		} else if (newFieldValue.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
+		} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.

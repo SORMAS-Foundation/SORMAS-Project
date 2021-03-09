@@ -24,9 +24,9 @@ import android.webkit.WebView;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.ConfirmedCaseClassification;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -52,7 +52,7 @@ import de.symeda.sormas.app.util.InfrastructureHelper;
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
 	private Case record;
-	private ConfirmedCaseClassification confirmedCaseClassification;
+	private CaseConfirmationBasis caseConfirmationBasis;
 
 	public static CaseReadFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
@@ -154,24 +154,24 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataConfirmedCaseClassification.setVisibility(GONE);
+					contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
 				} else {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-					contentBinding.caseDataConfirmedCaseClassification.setVisibility(VISIBLE);
+					contentBinding.caseDataCaseConfirmationBasis.setVisibility(VISIBLE);
 				}
 			} else {
 				contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-				contentBinding.caseDataConfirmedCaseClassification.setVisibility(GONE);
+				contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
 			}
 		} else {
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-			contentBinding.caseDataConfirmedCaseClassification.setVisibility(GONE);
+			contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
 		}
 	}
 
@@ -203,11 +203,11 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		contentBinding.setData(record);
 
 		if (record.getClinicalConfirmation() == YesNoUnknown.YES) {
-			contentBinding.setSingleClassification(ConfirmedCaseClassification.CLINICAL_CONFIRMATION);
+			contentBinding.setSingleClassification(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
 		} else if (record.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {
-			contentBinding.setSingleClassification(ConfirmedCaseClassification.EPIDEMIOLOGICAL_CONFIRMATION);
+			contentBinding.setSingleClassification(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
 		} else if (record.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
-			contentBinding.setSingleClassification(ConfirmedCaseClassification.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			contentBinding.setSingleClassification(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
 		}
 	}
 
@@ -251,11 +251,11 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		return R.layout.fragment_case_read_layout;
 	}
 
-	public ConfirmedCaseClassification getConfirmedCaseClassification() {
-		return confirmedCaseClassification;
+	public CaseConfirmationBasis getCaseConfirmationBasis() {
+		return caseConfirmationBasis;
 	}
 
-	public void setConfirmedCaseClassification(ConfirmedCaseClassification confirmedCaseClassification) {
-		this.confirmedCaseClassification = confirmedCaseClassification;
+	public void setCaseConfirmationBasis(CaseConfirmationBasis caseConfirmationBasis) {
+		this.caseConfirmationBasis = caseConfirmationBasis;
 	}
 }

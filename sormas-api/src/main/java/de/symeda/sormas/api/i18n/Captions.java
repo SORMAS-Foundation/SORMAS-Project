@@ -215,6 +215,7 @@ public interface Captions {
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String CaseData_caseConfirmationBasis = "CaseData.caseConfirmationBasis";
 	String CaseData_caseIdentificationSource = "CaseData.caseIdentificationSource";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
@@ -230,7 +231,6 @@ public interface Captions {
 	String CaseData_clinicianPhone = "CaseData.clinicianPhone";
 	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
-	String CaseData_confirmedCaseClassification = "CaseData.confirmedCaseClassification";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
