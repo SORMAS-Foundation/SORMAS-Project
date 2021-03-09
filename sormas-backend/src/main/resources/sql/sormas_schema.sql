@@ -6822,4 +6822,10 @@ ALTER TABLE cases
 
 INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
+-- 2021-03-03 [SurvNet Interface] Add "via DEMIS" to pathogen tests #4562
+ALTER TABLE pathogentest ADD COLUMN vialims boolean DEFAULT false;
+ALTER TABLE pathogentest_history ADD COLUMN vialims boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (345, '[SurvNet Interface] Add "via DEMIS" to pathogen tests #4562');
+
 -- *** Insert new sql commands BEFORE this line ***
