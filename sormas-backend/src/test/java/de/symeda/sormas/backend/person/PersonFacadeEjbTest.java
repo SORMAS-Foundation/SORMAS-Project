@@ -363,27 +363,37 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
 		final CaseDataDto case1 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
 		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
-		final CaseDataDto case3 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
+		final CaseDataDto case3 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
+		final CaseDataDto case4 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
+		final CaseDataDto case5 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
 
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setOverwriteFollowUpUntil(true);
 		case1.setOverwriteFollowUpUntil(true);
 		case2.setOverwriteFollowUpUntil(true);
-		case3.setOverwriteFollowUpUntil(false);
-		case3.setFollowUpUntil(null);
+		case3.setOverwriteFollowUpUntil(true);
+		case4.setOverwriteFollowUpUntil(true);
+		case5.setOverwriteFollowUpUntil(true);
 
 		Date now = new Date();
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 1));
 		case1.setFollowUpUntil(DateHelper.subtractDays(now, 2));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 1));
+
 		case2.setFollowUpUntil(now);
 		case2.setFollowUpStatus(FollowUpStatus.CANCELED);
+		case3.setFollowUpUntil(DateHelper.subtractDays(now, 2));
+
+		case4.setFollowUpStatus(FollowUpStatus.CANCELED);
+		case5.setFollowUpStatus(FollowUpStatus.CANCELED);
 
 		getContactFacade().saveContact(contact1);
 		getContactFacade().saveContact(contact2);
 		getCaseFacade().saveCase(case1);
 		getCaseFacade().saveCase(case2);
 		getCaseFacade().saveCase(case3);
+		getCaseFacade().saveCase(case4);
+		getCaseFacade().saveCase(case5);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -395,11 +405,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		Optional<PersonFollowUpEndDto> result2 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
 		assertTrue(result2.isPresent());
-		assertNull(result2.get().getLatestFollowUpEndDate());
+		assertNotNull(result2.get().getLatestFollowUpEndDate());
+		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), DateHelper.subtractDays(now, 1)));
 
 		Optional<PersonFollowUpEndDto> result3 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person3.getUuid())).findFirst();
 		assertTrue(result3.isPresent());
-		assertNotNull(result3.get().getLatestFollowUpEndDate());
+		assertNull(result3.get().getLatestFollowUpEndDate());
 	}
 
 	@Test

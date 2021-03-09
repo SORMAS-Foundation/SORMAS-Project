@@ -349,7 +349,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			Stream<PersonFollowUpEndDto> caseLatestDates = getCaseLatestFollowUpEndDates(since, forSymptomJournal);
 			Map<String, Optional<PersonFollowUpEndDto>> latestDates = Stream.concat(contactLatestDates, caseLatestDates)
 					.collect(groupingBy(PersonFollowUpEndDto::getPersonUuid,
-							maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate, Comparator.nullsLast(Comparator.naturalOrder())))));
+							maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate, Comparator.nullsFirst(Comparator.naturalOrder())))));
 			return latestDates.values().stream()
 					.filter(Optional::isPresent)
 					.map(Optional::get)
