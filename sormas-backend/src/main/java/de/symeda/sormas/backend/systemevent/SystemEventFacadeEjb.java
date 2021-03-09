@@ -69,23 +69,26 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	}
 
+	@Override
 	public void reportSuccess(SystemEventDto systemEvent, String message, Date end) {
 		systemEvent.setAdditionalInfo(message);
 		reportSuccess(systemEvent, end);
 	}
 
+	@Override
 	public void reportSuccess(SystemEventDto systemEvent, Date end) {
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
 		systemEvent.setEndDate(end);
-		systemEvent.setChangeDate(new Date(DateHelper.now()));
+		systemEvent.setChangeDate(new Date());
 		saveSystemEvent(systemEvent);
 	}
 
+	@Override
 	public void reportError(SystemEventDto systemEvent, String errorMessage, Date end) {
 		systemEvent.setStatus(SystemEventStatus.ERROR);
 		systemEvent.setAdditionalInfo(errorMessage);
 		systemEvent.setEndDate(end);
-		systemEvent.setChangeDate(new Date(DateHelper.now()));
+		systemEvent.setChangeDate(new Date());
 		saveSystemEvent(systemEvent);
 	}
 

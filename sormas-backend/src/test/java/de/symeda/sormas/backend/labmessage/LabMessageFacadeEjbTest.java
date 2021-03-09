@@ -127,7 +127,7 @@ public class LabMessageFacadeEjbTest {
 
 	@Test
 	public void testInitializeUpdateDateWithNoPreviousSuccess() {
-		assertEquals(sut.initializeLastUpdateDate(), new Date(0));
+		assertEquals(sut.findLastUpdateDate(), new Date(0));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class LabMessageFacadeEjbTest {
 		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
 		systemEvent.setStartDate(second);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.initializeLastUpdateDate(), first);
+		assertEquals(sut.findLastUpdateDate(), first);
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class LabMessageFacadeEjbTest {
 		systemEvent.setAdditionalInfo("The cake is a lie");
 		systemEvent.setStartDate(date);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.initializeLastUpdateDate(), date);
+		assertEquals(sut.findLastUpdateDate(), date);
 	}
 
 	@Test

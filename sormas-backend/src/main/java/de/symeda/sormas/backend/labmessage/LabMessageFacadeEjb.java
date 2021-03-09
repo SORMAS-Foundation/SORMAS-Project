@@ -226,7 +226,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	/**
-	 * The creation of the currentSystemEvent is in this method. All the rest is moved to the private fetchAndSaveExternalLabMessage,
+	 * The creation of the currentSystemEvent is in this method. All the rest is outsourced to another method,
 	 * because it shall be done in one transaction. In case of uncaught exceptions, this leaves the systemEvent with status STARTED
 	 * and falls back to standard exception handling.
 	 * 
@@ -249,12 +249,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Transactional
 	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
 		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
-		Date since = initializeLastUpdateDate();
+		Date since = findLastUpdateDate();
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
-			if (externalMessageResult.getValue() != null) {
-				externalMessageResult.getValue().forEach(this::save);
-			}
+			externalMessageResult.getValue().forEach(this::save);
 			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().getTime();
 			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date(DateHelper.now()));
 			return fetchResult;
@@ -280,19 +278,20 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return systemEvent;
 	}
 
-	protected Date initializeLastUpdateDate() {
+	protected Date findLastUpdateDate() {
 		SystemEventDto latestSuccess = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 		Long millis;
 		if (latestSuccess != null) {
-			millis = handleLatestSuccess(latestSuccess);
+			millis = determineLatestSuccessMillis(latestSuccess);
 		} else {
-			logger.warn("No previous successful attempt to fetch external lab message could be found. Trying to fetch all messages now");
+			logger.info(
+				"No previous successful attempt to fetch external lab message could be found. The synchronization date is set to 0 (UNIX milliseconds)");
 			millis = 0L;
 		}
 		return new Date(millis);
 	}
 
-	private long handleLatestSuccess(SystemEventDto latestSuccess) {
+	private long determineLatestSuccessMillis(SystemEventDto latestSuccess) {
 		String info = latestSuccess.getAdditionalInfo();
 		if (info != null) {
 			try {
