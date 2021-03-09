@@ -61,6 +61,12 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	@Column
 	private Integer eventParticipantFollowUpDuration;
 
+	@Column
+	private Boolean extendedClassification;
+
+	@Column
+	private Boolean extendedClassificationMulti;
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -123,6 +129,22 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setEventParticipantFollowUpDuration(Integer eventParticipantFollowUpDuration) {
 		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
+	}
+
+	public Boolean getExtendedClassification() {
+		return extendedClassification;
+	}
+
+	public void setExtendedClassification(Boolean extendedClassification) {
+		this.extendedClassification = extendedClassification;
+	}
+
+	public Boolean getExtendedClassificationMulti() {
+		return extendedClassificationMulti;
+	}
+
+	public void setExtendedClassificationMulti(Boolean extendedClassificationMulti) {
+		this.extendedClassificationMulti = extendedClassificationMulti;
 	}
 
 	@Override

@@ -94,6 +94,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	@Override
 	public void fillInnerFromDto(Case target, CaseDataDto source) {
 
+		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
+		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
+
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -234,6 +238,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 	@Override
 	public void fillInnerFromAdo(CaseDataDto target, Case source) {
+
+		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
+		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
 
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());

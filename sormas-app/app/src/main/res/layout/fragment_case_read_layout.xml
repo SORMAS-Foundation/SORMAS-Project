@@ -34,8 +34,10 @@
         <import type="de.symeda.sormas.api.user.UserRight" />
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
         <import type="de.symeda.sormas.api.caze.CaseClassification" />
+        <import type="de.symeda.sormas.api.caze.ConfirmedCaseClassification" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
+        <variable name="singleClassification" type="de.symeda.sormas.api.caze.ConfirmedCaseClassification" />
     </data>
 
     <ScrollView
@@ -68,6 +70,11 @@
                         android:id="@+id/caseData_laboratoryDiagnosticConfirmation"
                         style="@style/ControlSingleColumnStyle"
                         app:value="@{data.laboratoryDiagnosticConfirmation}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_confirmedCaseClassification"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{singleClassification}"/>
 
                 <LinearLayout
                         android:layout_width="match_parent"

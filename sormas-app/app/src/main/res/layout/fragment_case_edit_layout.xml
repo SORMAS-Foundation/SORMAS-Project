@@ -47,6 +47,7 @@
         <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="caseEditData" type="de.symeda.sormas.app.caze.edit.CaseEditFragment" />
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
         <variable name="trimesterClass" type="Class" />
@@ -119,6 +120,11 @@
                         app:enumClass="@{yesNoUnknownClass}"
                         app:value="@={data.laboratoryDiagnosticConfirmation}"
                         style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_confirmedCaseClassification"
+                    app:value="@={caseEditData.confirmedCaseClassification}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_caseClassification"
