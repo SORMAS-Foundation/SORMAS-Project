@@ -54,13 +54,15 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 
+import javax.naming.CannotProceedException;
+
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
 
 	public static interface CommitListener {
 
-		void onCommit();
+		void onCommit() throws CannotProceedException;
 	}
 
 	public static interface DiscardListener {
@@ -522,7 +524,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private void onCommit() {
 
 		for (CommitListener listener : commitListeners)
-			listener.onCommit();
+			try {
+				listener.onCommit();
+			} catch (CannotProceedException e) {
+				break;
+			}
 	}
 
 	/**

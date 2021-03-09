@@ -1164,6 +1164,9 @@ public interface Captions {
 	String LabMessage_testLabPostalCode = "LabMessage.testLabPostalCode";
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
+	String labMessageDeleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
+	String labMessageDeleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
+	String labMessageDeleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageProcessed = "labMessageProcessed";
