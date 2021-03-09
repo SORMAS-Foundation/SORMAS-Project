@@ -20,7 +20,10 @@ package de.symeda.sormas.ui.statistics;
 import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+
+import javax.validation.constraints.NotNull;
 
 public class StatisticsController {
 
@@ -28,9 +31,9 @@ public class StatisticsController {
 
 	}
 
-	public void registerViews(Navigator navigator) {
+	public void registerViews(@NotNull SormasUI ui, @NotNull Navigator navigator) {
 		navigator.addView(StatisticsView.VIEW_NAME, StatisticsView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			navigator.addView(DatabaseExportView.VIEW_NAME, DatabaseExportView.class);
 		}
 	}

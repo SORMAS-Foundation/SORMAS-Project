@@ -31,6 +31,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -50,14 +51,15 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		setCriteria(criteria);
 		setEagerDataProvider();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
 		}
 
 		addEditColumn(
-			e -> ControllerProvider.getVisitController().editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload()));
+			e -> ControllerProvider.getVisitController().editVisit(ui, e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload()));
 
 		setColumns(
 			EDIT_BTN_ID,

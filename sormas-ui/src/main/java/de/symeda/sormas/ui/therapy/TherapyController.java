@@ -20,6 +20,7 @@ import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -33,11 +34,11 @@ public class TherapyController {
 
 	}
 
-	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
+	public void openPrescriptionCreateForm(SormasUI ui, TherapyReferenceDto therapy, Runnable callback) {
 		PrescriptionForm form = new PrescriptionForm(true, false, false);
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 
@@ -55,13 +56,13 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewPrescription));
 	}
 
-	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
+	public void openPrescriptionEditForm(SormasUI ui, PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
 		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized());
 		form.setValue(prescription);
 
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.PRESCRIPTION_EDIT), form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil
 			.showModalPopupWindow(view, I18nProperties.getString(readOnly ? Strings.entityPrescription : Strings.headingEditPrescription));
 
@@ -83,7 +84,7 @@ public class TherapyController {
 
 		view.addDiscardListener(() -> popupWindow.close());
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
 			view.addDeleteListener(new DeleteListener() {
 
 				@Override
@@ -98,15 +99,15 @@ public class TherapyController {
 		}
 	}
 
-	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
-		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly);
+	public void openPrescriptionEditForm(SormasUI ui, PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
+		openPrescriptionEditForm(ui, new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly);
 	}
 
-	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
+	public void openTreatmentCreateForm(SormasUI ui, TherapyReferenceDto therapy, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true, false);
 		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 
@@ -124,11 +125,11 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
+	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback, boolean treatmentCreate) {
 		TreatmentForm form = new TreatmentForm(true, false);
 		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, treatmentCreate, form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 
@@ -146,13 +147,13 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback) {
+	public void openTreatmentEditForm(SormasUI ui, TreatmentIndexDto treatmentIndex, Runnable callback) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized());
 		form.setValue(treatment);
 
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.TREATMENT_EDIT), form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
 
 		view.addCommitListener(() -> {
@@ -167,7 +168,7 @@ public class TherapyController {
 
 		view.addDiscardListener(popupWindow::close);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.TREATMENT_DELETE)) {
 			view.addDeleteListener(() -> {
 				FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
 				popupWindow.close();
@@ -177,7 +178,7 @@ public class TherapyController {
 
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
-				openPrescriptionEditForm(treatment.getPrescription(), null, true);
+				openPrescriptionEditForm(ui, treatment.getPrescription(), null, true);
 			});
 
 			view.getButtonsPanel().addComponent(openPrescriptionButton, view.getButtonsPanel().getComponentIndex(view.getDiscardButton()));

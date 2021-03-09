@@ -36,9 +36,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -55,7 +54,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		super(viewName);
 
 		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			&& ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 			btnCreatePIAAccount.addClickListener(e -> {
@@ -67,7 +66,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		}
 
 		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			&& ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
 			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 			btnClimedoAccount.addClickListener(e -> {
@@ -83,7 +82,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	public void enter(ViewChangeEvent event) {
 
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)getUI(), event);
 	}
 
 	@Override

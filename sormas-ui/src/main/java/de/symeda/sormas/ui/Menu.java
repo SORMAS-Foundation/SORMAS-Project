@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -63,13 +64,13 @@ public class Menu extends CssLayout {
 	private static final String VALO_MENUITEMS = "valo-menuitems";
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
-	private Navigator navigator;
-	private Map<String, Button> viewButtons = new HashMap<String, Button>();
+	private final Navigator navigator;
+	private final Map<String, Button> viewButtons = new HashMap<String, Button>();
 
-	private CssLayout menuItemsLayout;
-	private CssLayout menuPart;
+	private final CssLayout menuItemsLayout;
+	private final CssLayout menuPart;
 
-	public Menu(Navigator navigator) {
+	public Menu(@NotNull Navigator navigator, @NotNull String userName) {
 
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
@@ -95,7 +96,7 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
-		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		top.addLayoutClickListener(listener -> navigator.navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 
 		// button for toggling the visibility of the menu when on a small screen
@@ -126,7 +127,7 @@ public class Menu extends CssLayout {
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
-			I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+			I18nProperties.getCaption(Captions.actionLogout) + " (" + userName + ")",
 			VaadinIcons.SIGN_OUT,
 			(Command) selectedItem -> LoginHelper.logout());
 

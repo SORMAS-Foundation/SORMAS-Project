@@ -9,6 +9,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -40,14 +41,15 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-
+		SormasUI ui = ((SormasUI)getUI());
+		boolean additionalTestEdit = ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT);
 		List<AdditionalTestDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT)) {
+			if (additionalTestEdit) {
 				listEntry.addEditListener(i, e -> {
-					ControllerProvider.getAdditionalTestController().openEditComponent(additionalTest, AdditionalTestList.this::reload);
+					ControllerProvider.getAdditionalTestController().openEditComponent(ui, additionalTest, AdditionalTestList.this::reload);
 				});
 			}
 			listLayout.addComponent(listEntry);

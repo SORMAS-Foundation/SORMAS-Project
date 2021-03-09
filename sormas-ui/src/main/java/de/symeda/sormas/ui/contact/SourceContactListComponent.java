@@ -37,6 +37,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+import javax.validation.constraints.NotNull;
+
 public class SourceContactListComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = -168334035260718276L;
@@ -44,12 +46,12 @@ public class SourceContactListComponent extends VerticalLayout {
 	private SourceContactList list;
 	private final CaseReferenceDto caseReference;
 
-	public SourceContactListComponent(CaseReferenceDto caseReference) {
+	public SourceContactListComponent(@NotNull final SormasUI ui, CaseReferenceDto caseReference) {
 		this.caseReference = caseReference;
-		createSourceContactListComponent(new SourceContactList(caseReference));
+		createSourceContactListComponent(ui, new SourceContactList(caseReference));
 	}
 
-	private void createSourceContactListComponent(SourceContactList sourceContactList) {
+	private void createSourceContactListComponent(@NotNull final SormasUI ui, SourceContactList sourceContactList) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -68,11 +70,11 @@ public class SourceContactListComponent extends VerticalLayout {
 		sourceContactsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(sourceContactsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(caseReference, true, SormasUI::refreshView),
+				e -> ControllerProvider.getContactController().create(ui, caseReference, true, SormasUI::refreshView),
 				ValoTheme.BUTTON_PRIMARY);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

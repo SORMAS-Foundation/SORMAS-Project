@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze.surveillancereport;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import com.vaadin.icons.VaadinIcons;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -72,11 +74,13 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 	@Override
 	protected void drawDisplayedEntries() {
+		Language userLanguage = ((SormasUI)getUI()).getUserProvider().getUser().getLanguage();
+		boolean hasUserRightCaseEdit = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT);
 		List<SurveillanceReportDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SurveillanceReportDto report = displayedEntries.get(i);
-			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(userLanguage, report);
+			if (hasUserRightCaseEdit) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
@@ -92,9 +96,9 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 		private Button editButton;
 
-		private UiFieldAccessCheckers fieldAccessCheckers;
+		private final UiFieldAccessCheckers fieldAccessCheckers;
 
-		public SurveillanceReportListEntry(SurveillanceReportDto report) {
+		public SurveillanceReportListEntry(@NotNull Language userLanguage, SurveillanceReportDto report) {
 			this.report = report;
 			this.fieldAccessCheckers = UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized());
 
@@ -110,7 +114,6 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			addComponent(mainLayout);
 			setExpandRatio(mainLayout, 1);
 
-			Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
 			mainLayout.addComponent(createRow(null, report.getReportingType(), SurveillanceReportDto.REPORTING_TYPE));
 			mainLayout.addComponent(
 				createRow(

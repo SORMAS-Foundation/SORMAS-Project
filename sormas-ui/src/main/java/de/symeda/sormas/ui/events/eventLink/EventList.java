@@ -38,6 +38,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -54,14 +55,13 @@ public class EventList extends PaginationList<EventIndexDto> {
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 	}
 
-	public EventList(PersonReferenceDto personRef) {
+	public EventList(PersonReferenceDto personRef, boolean eventparticipantDelete) {
 		super(5);
 		eventCriteria.setPerson(personRef);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			UserProvider user = UserProvider.getCurrent();
-			if (personRef != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			if (personRef != null && eventparticipantDelete) {
 				listEntry.addUnlinkEventListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
@@ -76,7 +76,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENT_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
 					ControllerProvider.getEventController()
@@ -108,8 +108,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventListEntry listEntry = new EventListEntry(event);
 
-			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENT_EDIT)) {
+			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENT_EDIT)) {
 				if (addUnlinkEventListener != null) {
 					addUnlinkEventListener.accept(i, listEntry);
 				}

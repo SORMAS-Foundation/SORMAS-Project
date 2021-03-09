@@ -43,6 +43,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -79,7 +80,7 @@ public class UsersView extends AbstractView {
 	private ComboBox districtFilter;
 	private TextField searchField;
 
-	private RowCount rowsCount;
+	private final RowCount rowsCount;
 
 	public UsersView() {
 		super(VIEW_NAME);
@@ -103,11 +104,12 @@ public class UsersView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
+		SormasUI ui = ((SormasUI)getUI());
+		if (ui.getUserProvider().hasUserRight(UserRight.USER_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getUserController().create(),
+				e -> ControllerProvider.getUserController().create(ui),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
@@ -153,7 +155,7 @@ public class UsersView extends AbstractView {
 		});
 		filterLayout.addComponent(userRolesFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(CaseDataDto.REGION);

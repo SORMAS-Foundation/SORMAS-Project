@@ -32,6 +32,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -65,7 +66,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			});
 		setDataProvider(dataProvider);
 
-		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
+		SormasUI ui = ((SormasUI)getUI());
+		addEditColumn(e -> ControllerProvider.getUserController().edit(ui, e));
 
 		setColumns(
 			EDIT_BTN_ID,

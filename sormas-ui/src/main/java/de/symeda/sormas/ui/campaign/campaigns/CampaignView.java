@@ -12,11 +12,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+
+import javax.validation.constraints.NotNull;
 
 public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
@@ -30,9 +33,8 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
 	}
 
 	@Override
@@ -52,14 +54,14 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
 
 		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
-		editComponent = ControllerProvider.getCampaignController().getCampaignComponent(campaignDto, () -> {
+		editComponent = ControllerProvider.getCampaignController().getCampaignComponent(ui, campaignDto, () -> {
 			Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignSaved), campaignDto.getName()), TRAY_NOTIFICATION);
 		});
 		editComponent.setMargin(false);

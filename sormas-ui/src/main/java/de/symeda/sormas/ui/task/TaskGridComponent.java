@@ -39,12 +39,15 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class TaskGridComponent extends VerticalLayout {
@@ -84,7 +87,7 @@ public class TaskGridComponent extends VerticalLayout {
 		grid = new TaskGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(createAssigneeFilterBar());
+		gridLayout.addComponent(createAssigneeFilterBar(((SormasUI)getUI())));
 		gridLayout.addComponent(grid);
 		grid.getDataProvider().addDataProviderListener(e -> updateAssigneeFilterButtons());
 
@@ -112,7 +115,7 @@ public class TaskGridComponent extends VerticalLayout {
 		return filterLayout;
 	}
 
-	public HorizontalLayout createAssigneeFilterBar() {
+	public HorizontalLayout createAssigneeFilterBar(@NotNull SormasUI ui) {
 		HorizontalLayout assigneeFilterLayout = new HorizontalLayout();
 		assigneeFilterLayout.setMargin(false);
 		assigneeFilterLayout.setSpacing(true);
@@ -135,8 +138,8 @@ public class TaskGridComponent extends VerticalLayout {
 			Button myTasks = createAndAddStatusButton(Captions.taskMyTasks, MY_TASKS, buttonFilterLayout);
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
-			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER))
-				&& UserProvider.getCurrent().getUserRoles().size() == 1) {
+			if ((ui.getUserProvider().hasUserRole(UserRole.LAB_USER) || ui.getUserProvider().hasUserRole(UserRole.EXTERNAL_LAB_USER))
+				&& ui.getUserProvider().getUserRoles().size() == 1) {
 				activeStatusButton = myTasks;
 			} else {
 				activeStatusButton = allTasks;
@@ -148,7 +151,7 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
@@ -165,7 +168,7 @@ public class TaskGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -173,7 +176,7 @@ public class TaskGridComponent extends VerticalLayout {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getTaskController()
 							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria));
-					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)));
+					}, ui.getUserProvider().hasUserRight(UserRight.TASK_DELETE)));
 
 				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

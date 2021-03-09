@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -125,6 +126,8 @@ import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import javax.validation.constraints.NotNull;
 
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
@@ -276,7 +279,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (person == null || disease == null) {
 			return;
 		}
-
+		SormasUI ui = ((SormasUI)getUI());
 		Label caseDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseData));
 		caseDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(caseDataHeadingLabel, CASE_DATA_HEADING_LOC);
@@ -597,7 +600,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
-			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
+			setReadOnly(!ui.getUserProvider().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -794,18 +797,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.POINT_OF_ENTRY_DETAILS,
 			CaseDataDto.CASE_ORIGIN);
 
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!ui.getUserProvider().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),
+			!ui.getUserProvider().hasUserRight(UserRight.CASE_INVESTIGATE),
 			CaseDataDto.INVESTIGATION_STATUS,
 			CaseDataDto.INVESTIGATED_DATE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
+			!ui.getUserProvider().hasUserRight(UserRight.CASE_CLASSIFY),
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.OUTCOME_DATE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER),
+			!ui.getUserProvider().hasUserRight(UserRight.CASE_TRANSFER),
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
@@ -1021,7 +1024,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 				FieldHelper.setVisibleWhen(
 					getFieldGroup(),
@@ -1111,7 +1114,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getContent().addComponent(tempLayout, CLASSIFIED_BY_SYSTEM_LOC);
 			}
 
-			updateFollowUpStatusComponents();
+			updateFollowUpStatusComponents(ui);
 
 			setEpidNumberError(epidField, assignNewEpidNumberButton, epidNumberWarningLabel, getValue().getEpidNumber());
 
@@ -1171,7 +1174,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			facilityOrHome.setReadOnly(facilityType.isReadOnly());
 
 			// Hide case origin from port health users
-			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			if (UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 
@@ -1356,7 +1359,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void updateFollowUpStatusComponents() {
+	private void updateFollowUpStatusComponents(@NotNull final SormasUI ui) {
 		if (!caseFollowUpEnabled) {
 			return;
 		}
@@ -1366,7 +1369,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(CaseDataDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (followUpVisible && ui.getUserProvider().hasUserRight(UserRight.CASE_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
@@ -1375,7 +1378,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					statusField1.setReadOnly(false);
 					statusField1.setValue(FollowUpStatus.CANCELED);
 					statusField1.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				});
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
@@ -1385,7 +1388,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					statusField12.setReadOnly(false);
 					statusField12.setValue(FollowUpStatus.LOST);
 					statusField12.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				});
 				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
@@ -1397,7 +1400,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					statusField13.setReadOnly(false);
 					statusField13.setValue(FollowUpStatus.FOLLOW_UP);
 					statusField13.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				}, CssStyles.FORCE_CAPTION);
 				resumeButton.setWidth(100, Unit.PERCENTAGE);
 

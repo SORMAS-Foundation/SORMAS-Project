@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Window;
@@ -166,7 +167,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 		final CommitDiscardWrapperComponent<ActivityAsCaseForm> component = new CommitDiscardWrapperComponent<>(
 			activityAsCaseForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT),
 			activityAsCaseForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
@@ -190,7 +191,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 	@Override
 	protected ActivityAsCaseDto createEntry() {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
 		ActivityAsCaseDto activityAsCase = ActivityAsCaseDto.build(null);
 		activityAsCase.getLocation().setRegion(user.getRegion());
 		activityAsCase.getLocation().setDistrict(user.getDistrict());

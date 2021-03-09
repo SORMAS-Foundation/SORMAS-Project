@@ -34,6 +34,7 @@ import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -149,7 +150,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 
-			UserDto user = UserProvider.getCurrent().getUser();
+			UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
 			boolean creator = user.equals(value.getCreatorUser());
 
 			setVisible(!creating, ActionDto.REPLY);

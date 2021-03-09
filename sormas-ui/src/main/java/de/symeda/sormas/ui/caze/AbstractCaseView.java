@@ -39,6 +39,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -55,6 +56,8 @@ import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
+import javax.validation.constraints.NotNull;
+
 @SuppressWarnings("serial")
 public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceDto> {
 
@@ -70,13 +73,13 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	private final OptionGroup viewModeToggle;
 	private final Property.ValueChangeListener viewModeToggleListener;
 
-	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
+	protected AbstractCaseView(@NotNull SormasUI ui, String viewName, boolean redirectSimpleModeToCaseDataView) {
 		super(viewName);
 		caseFollowupEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
-			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)
+			ViewConfiguration initViewConfiguration = ui.getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)
 				? new ViewConfiguration(ViewMode.NORMAL)
 				: new ViewConfiguration(ViewMode.SIMPLE);
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
@@ -103,7 +106,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (caseFollowupEnabled) {
 			if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
-				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+				&& ui.getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 				Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 				CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 				btnCreatePIAAccount.addClickListener(e -> {
@@ -115,7 +118,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 
 			if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
-				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+				&& ui.getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 				Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
 				CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 				btnClimedoAccount.addClickListener(e -> {
@@ -166,6 +169,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
 
+		SormasUI ui = ((SormasUI)getUI());
 		boolean showExtraMenuEntries = FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.OUTBREAKS)
 			|| !hasOutbreak
 			|| !caze.getDisease().usesSimpleViewForOutbreaks()
@@ -186,7 +190,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
 				&& caze.getPointOfEntry() != null
-				&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				&& ui.getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
@@ -196,7 +200,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
+			if (ui.getUserProvider().hasUserRight(UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
@@ -208,7 +212,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 
 		if (showExtraMenuEntries) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+			if (ui.getUserProvider().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(
@@ -218,7 +222,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 		}
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)
+			&& ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
@@ -228,15 +232,15 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
 		super.enter(event);
 
+		SormasUI ui = (SormasUI)getUI();
 		if (getReference() == null) {
-			UI.getCurrent().getNavigator().navigateTo(getRootViewName());
+			ui.getNavigator().navigateTo(getRootViewName());
 		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else {
-			initView(event.getParameters().trim());
+			initView(ui, event.getParameters().trim());
 		}
 	}
 

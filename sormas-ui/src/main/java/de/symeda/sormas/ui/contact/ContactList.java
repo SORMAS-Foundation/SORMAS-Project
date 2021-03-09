@@ -31,8 +31,11 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class ContactList extends PaginationList<ContactIndexDto> {
@@ -61,18 +64,19 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		SormasUI ui = (SormasUI)getUI();
 		List<ContactIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ContactIndexDto contact = displayedEntries.get(i);
 			ContactListEntry listEntry = new ContactListEntry(contact);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_DELETE)) {
 				listEntry.addDeleteListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getContactController().deleteContact(listEntry.getContact(), this::reload));
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()));

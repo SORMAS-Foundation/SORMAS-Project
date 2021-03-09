@@ -29,6 +29,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
+import javax.validation.constraints.NotNull;
+
 public class CampaignFormDataView extends AbstractCampaignDataView {
 
 	private static final long serialVersionUID = -1890947102041773346L;
@@ -42,7 +44,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
@@ -50,7 +52,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		editComponent = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(
+			.getCampaignFormDataComponent(ui,
 				campaignFormData,
 				campaignFormData.getCampaign(),
 				campaignFormData.getCampaignFormMeta(),

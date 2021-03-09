@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -37,7 +38,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
 import java.util.stream.Stream;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -90,7 +91,7 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 
 		// import
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
@@ -137,7 +138,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.addComponent(filterForm);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -156,7 +157,7 @@ public class EventParticipantsView extends AbstractEventView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		criteria.event(getEventRef());
 
@@ -198,9 +199,10 @@ public class EventParticipantsView extends AbstractEventView {
 		statusFilterLayout.addComponent(statusAll);
 		activeStatusButton = statusAll;
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+		SormasUI ui = ((SormasUI)getUI());
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
+				ControllerProvider.getEventParticipantController().createEventParticipant(ui, this.getEventRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(addButton);

@@ -14,6 +14,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseListComponent extends VerticalLayout {
@@ -24,7 +25,7 @@ public class CaseListComponent extends VerticalLayout {
 		createCaseListComponent(
 			new CaseList(personReferenceDto),
 			I18nProperties.getString(Strings.entityCases),
-			clickEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().person(personReferenceDto)));
+			clickEvent -> ControllerProvider.getCaseController().navigateTo((SormasUI)getUI(), new CaseCriteria().person(personReferenceDto)));
 	}
 
 	private void createCaseListComponent(CaseList caseList, String heading, Button.ClickListener clickListener) {

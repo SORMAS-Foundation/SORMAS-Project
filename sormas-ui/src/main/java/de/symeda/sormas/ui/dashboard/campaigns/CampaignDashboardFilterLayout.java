@@ -26,6 +26,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.checkerframework.checker.units.qual.C;
@@ -45,7 +46,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private OptionGroup campaignPhaseSelector;
 
-	public CampaignDashboardFilterLayout(CampaignDashboardView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
+	public CampaignDashboardFilterLayout(SormasUI ui, CampaignDashboardView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
 
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -62,13 +63,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = ui.getUserProvider().getUser();
 		final CampaignJurisdictionLevel campaignJurisdictionLevel =
 				CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
 		createCampaignFilter();
-		createJurisdictionFilters(campaignJurisdictionLevel);
+		createJurisdictionFilters(ui, campaignJurisdictionLevel);
 
 		campaignPhaseSelector = new OptionGroup();
 		campaignPhaseSelector.setDescription(I18nProperties.getPrefixDescription(CampaignDto.I18N_PREFIX, "campaignPhase"));
@@ -102,8 +103,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void createJurisdictionFilters(CampaignJurisdictionLevel campaignJurisdictionLevel) {
-		final UserDto user = UserProvider.getCurrent().getUser();
+	private void createJurisdictionFilters(SormasUI ui, CampaignJurisdictionLevel campaignJurisdictionLevel) {
+		final UserDto user = ui.getUserProvider().getUser();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final AreaReferenceDto userArea =
 			userRegion != null ? FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea() : null;

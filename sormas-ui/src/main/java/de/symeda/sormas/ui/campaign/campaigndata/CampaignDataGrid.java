@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
@@ -48,7 +49,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 	protected void addDefaultColumns() {
 		addEditColumn(e -> {
-			ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
+			ControllerProvider.getCampaignController().navigateToFormDataView(getUI().getNavigator(), e.getUuid());
 		});
 
 		setColumns(

@@ -21,6 +21,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 
@@ -37,7 +38,7 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)getUI(), event);
 	}
 
 	@Override

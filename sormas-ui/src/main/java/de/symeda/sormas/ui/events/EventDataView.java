@@ -38,7 +38,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -53,6 +53,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import javax.validation.constraints.NotNull;
 
 public class EventDataView extends AbstractEventView {
 
@@ -77,7 +79,7 @@ public class EventDataView extends AbstractEventView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
 
@@ -106,7 +108,7 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
+		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(ui, getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -137,11 +139,11 @@ public class EventDataView extends AbstractEventView {
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
-		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
+		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(ui, event, () -> editComponent.discard());
 		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
+		EventListComponent subordinateEventList = new EventListComponent(ui, event.toReference());
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 
@@ -162,16 +164,16 @@ public class EventDataView extends AbstractEventView {
 		shortcutLinksLayout.setMargin(false);
 		shortcutLinksLayout.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
-				thisEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
+				thisEvent -> ControllerProvider.getCaseController().navigateTo(ui, new CaseCriteria().eventLike(getEventRef().getUuid())),
 				ValoTheme.BUTTON_PRIMARY);
 			shortcutLinksLayout.addComponent(seeEventCasesBtn);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			Button seeEventContactsBtn = ButtonHelper.createButtonWithCaption(
 				"eventLinkToContacts",
 				I18nProperties.getCaption(Captions.eventLinkToContacts),

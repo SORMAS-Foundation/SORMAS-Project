@@ -55,6 +55,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
+import javax.validation.constraints.NotNull;
+
 public class PersonController {
 
 	private PersonFacade personFacade = FacadeProvider.getPersonFacade();
@@ -145,7 +147,8 @@ public class PersonController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, UserRight editUserRight) {
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
+			@NotNull final SormasUI ui, String personUuid, UserRight editUserRight) {
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
 
 		PersonEditForm editForm = new PersonEditForm(personDto.isPseudonymized());
@@ -153,7 +156,7 @@ public class PersonController {
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(editUserRight),
+			ui.getUserProvider().hasUserRight(editUserRight),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -167,6 +170,7 @@ public class PersonController {
 	}
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
+			@NotNull final SormasUI ui,
 		PersonContext personContext,
 		String personUuid,
 		Disease disease,
@@ -180,7 +184,7 @@ public class PersonController {
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(editUserRight),
+			ui.getUserProvider().hasUserRight(editUserRight),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
@@ -50,9 +51,8 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
 	}
 
 	@Override
@@ -65,19 +65,20 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
 
+		SormasUI ui = (SormasUI)getUI();
 		final SampleDto sampleByUuid = FacadeProvider.getSampleFacade().getSampleByUuid(params);
 		final CaseReferenceDto caseRef = sampleByUuid.getAssociatedCase();
-		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (caseRef != null && ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 			menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getString(Strings.entityCase), caseRef.getUuid(), true);
 		}
 
 		final ContactReferenceDto contactRef = sampleByUuid.getAssociatedContact();
-		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (contactRef != null && ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
 
 		EventParticipantReferenceDto eventParticipantRef = sampleByUuid.getAssociatedEventParticipant();
-		if (eventParticipantRef != null && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (eventParticipantRef != null && ui.getUserProvider().hasUserRight(UserRight.EVENT_VIEW)) {
 			menu.addView(
 				EventParticipantDataView.VIEW_NAME,
 				I18nProperties.getString(Strings.entityEventParticipant),

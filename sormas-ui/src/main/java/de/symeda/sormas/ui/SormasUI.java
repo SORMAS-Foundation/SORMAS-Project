@@ -35,6 +35,7 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
+import javax.validation.constraints.NotNull;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -78,11 +79,13 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 	}
 
 	@Override
+	@NotNull
 	public UserProvider getUserProvider() {
 		return userProvider;
 	}
 
 	@Override
+	@NotNull
 	public ViewModelProviders getViewModelProviders() {
 		return viewModelProviders;
 	}

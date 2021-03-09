@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -93,6 +94,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
+
 @SuppressWarnings("serial")
 public class DashboardMapComponent extends VerticalLayout {
 
@@ -149,6 +152,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
+		SormasUI ui = ((SormasUI)getUI());
 
 		setMargin(false);
 		setSpacing(false);
@@ -159,15 +163,14 @@ public class DashboardMapComponent extends VerticalLayout {
 		map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
 
 		{
-
 			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
 
 			final GeoLatLon mapCenter;
-			if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
+			if (ui.getUserProvider().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
 				mapCenter = geoShapeProvider.getCenterOfAllRegions();
 
 			} else {
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = ui.getUserProvider().getUser();
 				if (user.getRegion() != null) {
 					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
 				} else {
@@ -236,7 +239,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		addComponent(mapLayout);
 		setExpandRatio(mapLayout, 1);
 
-		addComponent(createFooter());
+		addComponent(createFooter(ui));
 	}
 
 	private void refreshMap(boolean forced) {
@@ -396,7 +399,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		return mapHeaderLayout;
 	}
 
-	private HorizontalLayout createFooter() {
+	private HorizontalLayout createFooter(@NotNull final SormasUI ui) {
 		HorizontalLayout mapFooterLayout = new HorizontalLayout();
 		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
 		mapFooterLayout.setSpacing(true);
@@ -516,9 +519,9 @@ public class DashboardMapComponent extends VerticalLayout {
 				});
 				layersLayout.addComponent(showEventsCheckBox);
 
-				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+				if (ui.getUserProvider().hasUserRole(UserRole.NATIONAL_USER)
+					|| ui.getUserProvider().hasUserRole(UserRole.NATIONAL_CLINICIAN)
+					|| ui.getUserProvider().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

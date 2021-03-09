@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -78,7 +79,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -168,7 +170,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
@@ -240,7 +242,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			this.getColumn(NUMBER_OF_VISITS).setHidden(hidden);
 		}
 
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
+		if (UserRole.isPortHealthUser(((SormasUI)getUI()).getUserProvider().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 		} else {
 			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY && getColumn(CaseIndexDto.POINT_OF_ENTRY_NAME) != null) {

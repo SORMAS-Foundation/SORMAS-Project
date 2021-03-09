@@ -67,6 +67,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -319,7 +320,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		SormasUI ui = (SormasUI)getUI();
+
+		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(ui.getUserProvider().getUserRoles());
 		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
 			region.setReadOnly(true);
 			district.setReadOnly(true);
@@ -335,11 +338,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityTypeGroup.setReadOnly(true);
 			facilityType.setValue(FacilityType.HOSPITAL);
 			facilityType.setReadOnly(true);
-			facility.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
+			facility.setValue(ui.getUserProvider().getUser().getHealthFacility());
 			facility.setReadOnly(true);
 		}
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
@@ -419,7 +422,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				diseaseField.setValue(defaultDisease);
 			}
 
-			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			if (UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}

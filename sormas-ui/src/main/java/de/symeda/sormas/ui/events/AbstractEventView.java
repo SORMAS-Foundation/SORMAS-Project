@@ -26,6 +26,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
@@ -43,7 +44,7 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 	public void enter(ViewChangeEvent event) {
 
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)getUI(), event);
 	}
 
 	@Override

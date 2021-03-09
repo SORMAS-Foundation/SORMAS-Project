@@ -42,7 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.importer.DocumentReceiver;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -81,7 +81,7 @@ public class DocumentListComponent extends VerticalLayout {
 		documentsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(documentsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(editRight)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(editRight)) {
 			Button uploadButton = buildUploadButton();
 			componentHeader.addComponent(uploadButton);
 			componentHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
@@ -134,7 +134,7 @@ public class DocumentListComponent extends VerticalLayout {
 		res.addComponent(downloadButton);
 		res.setExpandRatio(downloadButton, 0);
 
-		if (UserProvider.getCurrent().hasUserRight(editRight)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(editRight)) {
 			Button deleteButton = buildDeleteButton(document);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);

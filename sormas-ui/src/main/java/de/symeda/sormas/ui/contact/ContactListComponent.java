@@ -34,6 +34,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -75,11 +76,12 @@ public class ContactListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		SormasUI ui = ((SormasUI)getUI());
+		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button createButton = new Button(I18nProperties.getCaption(Captions.contactNewContact));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getContactController().create(eventParticipantRef));
+			createButton.addClickListener(e -> ControllerProvider.getContactController().create(ui, eventParticipantRef));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

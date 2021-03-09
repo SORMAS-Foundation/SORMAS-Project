@@ -42,7 +42,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -58,7 +58,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
 
-		user = UserProvider.getCurrent().getUser();
+		user = ((SormasUI) getUI()).getUserProvider().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
 		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
@@ -81,9 +81,9 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 					public String convertToPresentation(OutbreakRegionConfiguration value, Class<? extends String> targetType, Locale locale)
 						throws ConversionException {
 
-						boolean styleAsButton = UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)
-							|| (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)
-								&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion()));
+						boolean styleAsButton = ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)
+							|| (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)
+								&& DataHelper.equal(((SormasUI) getUI()).getUserProvider().getUser().getRegion(), value.getRegion()));
 						boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size() >= value.getTotalDistricts() / 2.0f;
 
 						String styles;
@@ -179,7 +179,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		// Alter cells with regions and diseases that actually have an outbreak
 		OutbreakCriteria criteria = new OutbreakCriteria().active(true);
-		criteria.disease(UserProvider.getCurrent().getUser().getLimitedDisease());
+		criteria.disease(((SormasUI) getUI()).getUserProvider().getUser().getLimitedDisease());
 		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getActive(criteria);
 
 		for (OutbreakDto outbreak : activeOutbreaks) {
@@ -220,12 +220,12 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Open the outbreak configuration window for the clicked row when
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
-		if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
 			ControllerProvider.getOutbreakController()
 				.openOutbreakConfigurationWindow(
 					(Disease) event.getPropertyId(),
 					(OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
-		} else if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
+		} else if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
 			if (user.getRegion().equals(clickedItem.getItemProperty(REGION).getValue())) {
 				ControllerProvider.getOutbreakController()
 					.openOutbreakConfigurationWindow(

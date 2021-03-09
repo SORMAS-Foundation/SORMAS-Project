@@ -39,6 +39,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
@@ -63,7 +64,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -120,25 +122,25 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		addItemClickListener(
 			new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+		if (ui.getUserProvider().hasUserRole(UserRole.LAB_USER) || ui.getUserProvider().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (!ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (!ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (!ui.getUserProvider().hasUserRight(UserRight.EVENT_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (!ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		}
 

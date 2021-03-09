@@ -30,6 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -162,7 +163,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView =
 			new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
 				editForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+				((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT),
 				editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 

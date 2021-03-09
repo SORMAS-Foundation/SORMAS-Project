@@ -33,6 +33,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
@@ -44,6 +45,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import javax.validation.constraints.NotNull;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
 
@@ -88,11 +91,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
 
 		setHeightUndefined();
@@ -110,13 +113,13 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
 
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(ui, eventParticipantRef.getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
 				EventParticipantEditForm eventParticipantEditForm = (EventParticipantEditForm) editComponent.getWrappedComponent();
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantEditForm.getValue().toReference());
@@ -126,7 +129,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -135,7 +138,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
 				Label infoSample = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
 					ContentMode.HTML);
@@ -147,7 +150,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			VerticalLayout contactsLayout = new VerticalLayout();
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);

@@ -30,6 +30,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -60,16 +61,16 @@ public class ActionList extends PaginationList<ActionDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-
+		boolean hasUserRightActionEdit = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.ACTION_EDIT);
 		List<ActionDto> displayedEntries = getDisplayedEntries();
-
+		SormasUI ui = ((SormasUI)getUI());
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ActionDto action = displayedEntries.get(i);
 			ActionListEntry listEntry = new ActionListEntry(action);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_EDIT)) {
+			if (hasUserRightActionEdit) {
 				listEntry.addEditListener(
 					i,
-					(ClickListener) event -> ControllerProvider.getActionController().edit(listEntry.getAction(), ActionList.this::reload));
+					(ClickListener) event -> ControllerProvider.getActionController().edit(ui, listEntry.getAction(), ActionList.this::reload));
 			}
 			listLayout.addComponent(listEntry);
 		}

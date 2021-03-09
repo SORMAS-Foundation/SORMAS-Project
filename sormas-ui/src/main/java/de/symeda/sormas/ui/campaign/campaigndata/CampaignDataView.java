@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -54,7 +55,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
@@ -62,6 +62,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -79,6 +81,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
+		SormasUI ui = (SormasUI) getUI();
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
@@ -145,7 +148,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -174,7 +177,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
 			newFormButton.setId("new-form");
 
-			createNewFormLayout(newFormLayout);
+			createNewFormLayout(ui, newFormLayout);
 
 			addHeaderComponent(newFormButton);
 		}
@@ -194,7 +197,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormLayout.removeAllComponents();
 			if (!Objects.isNull(campaignCombo.getValue())) {
 				createImportLayout(importFormLayout);
-				createNewFormLayout(newFormLayout);
+				createNewFormLayout(ui, newFormLayout);
 				importCampaignButton.setEnabled(true);
 				newFormButton.setEnabled(true);
 			} else {
@@ -234,14 +237,14 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 	}
 
-	private void createNewFormLayout(VerticalLayout newFormLayout) {
+	private void createNewFormLayout(@NotNull final SormasUI ui, VerticalLayout newFormLayout) {
 
 		if (campaignCombo.getValue() != null) {
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
 				Button campaignFormButton = ButtonHelper.createButton(
 					campaignForm.toString(),
-					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
+					e -> ControllerProvider.getCampaignController().createCampaignDataForm(ui, criteria.getCampaign(), campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				newFormLayout.addComponent(campaignFormButton);
 			}
@@ -265,7 +268,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = ((SormasUI) getUI()).getUserProvider().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
@@ -298,7 +301,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
-				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+				Language userLanguage = ((SormasUI) getUI()).getUserProvider().getUser().getLanguage();
 				CampaignFormTranslations translations = null;
 				if (userLanguage != null) {
 					translations = formMeta.getCampaignFormTranslations()

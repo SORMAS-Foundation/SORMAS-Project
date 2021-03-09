@@ -42,7 +42,7 @@ import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -79,6 +79,7 @@ public class RegionsView extends AbstractConfigurationView {
 	public RegionsView() {
 
 		super(VIEW_NAME);
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(RegionsView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(RegionsView.class).get(RegionCriteria.class);
@@ -96,7 +97,7 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.REGION));
 				window.setCaption(I18nProperties.getString(Strings.headingImportRegions));
@@ -108,7 +109,7 @@ public class RegionsView extends AbstractConfigurationView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
@@ -118,17 +119,17 @@ public class RegionsView extends AbstractConfigurationView {
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createRegion(),
+				e -> ControllerProvider.getInfrastructureController().createRegion(ui),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -161,6 +162,7 @@ public class RegionsView extends AbstractConfigurationView {
 	}
 
 	private HorizontalLayout createFilterBar() {
+		SormasUI ui = (SormasUI) getUI();
 
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
@@ -186,7 +188,7 @@ public class RegionsView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
@@ -202,7 +204,7 @@ public class RegionsView extends AbstractConfigurationView {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {

@@ -29,25 +29,28 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 
 	private final ContactDto contactDto;
 
-	public ContactInfoLayout(ContactDto contactDto, UiFieldAccessCheckers fieldAccessCheckers) {
+	public ContactInfoLayout(@NotNull final SormasUI ui, ContactDto contactDto, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(ContactDto.class, fieldAccessCheckers);
 
 		this.contactDto = contactDto;
 		setSpacing(true);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
-		updateContactInfo();
+		updateContactInfo(ui);
 	}
 
-	private void updateContactInfo() {
+	private void updateContactInfo(@NotNull final SormasUI ui) {
 
 		this.removeAllComponents();
 
@@ -70,7 +73,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 				contactDto.getPerson(),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 
 				final HorizontalLayout ageSexRow = new HorizontalLayout();
 				ageSexRow.setMargin(false);
@@ -104,7 +107,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 		secondColumn.setMargin(false);
 		secondColumn.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 
 			addDescLabel(
 				secondColumn,

@@ -39,6 +39,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -50,18 +51,19 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
+import javax.validation.constraints.NotNull;
+
 public class CaseVisitsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/visits";
 	private static final long serialVersionUID = -4715387348091488461L;
-	private VisitCriteria criteria;
+	private final VisitCriteria criteria;
 
 	private VisitGrid grid;
-	private Button newButton;
 	private DetailSubComponentWrapper gridLayout;
 
-	public CaseVisitsView() {
-		super(VIEW_NAME, false);
+	public CaseVisitsView(@NotNull final SormasUI ui) {
+		super(ui, VIEW_NAME, false);
 		setSizeFull();
 
 		criteria = ViewModelProviders.of(CaseVisitsView.class).get(VisitCriteria.class);
@@ -73,7 +75,8 @@ public class CaseVisitsView extends AbstractCaseView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = ((SormasUI)getUI());
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 				Captions.bulkActions,
@@ -86,7 +89,7 @@ public class CaseVisitsView extends AbstractCaseView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
@@ -119,9 +122,9 @@ public class CaseVisitsView extends AbstractCaseView {
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getVisitController().createVisit(this.getCaseRef(), r -> navigateTo(criteria));
+		if (ui.getUserProvider().hasUserRight(UserRight.VISIT_CREATE)) {
+			Button newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
+				ControllerProvider.getVisitController().createVisit(ui, this.getCaseRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -132,7 +135,7 @@ public class CaseVisitsView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 		criteria.caze(getCaseRef());
 
 		if (grid == null) {

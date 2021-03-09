@@ -52,6 +52,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -255,7 +256,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getNullableValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
 			&& (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));

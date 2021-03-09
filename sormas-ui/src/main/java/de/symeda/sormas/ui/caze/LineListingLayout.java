@@ -44,7 +44,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -159,8 +159,8 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
-			RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		if (UserRole.isSupervisor(((SormasUI) getUI()).getUserProvider().getUserRoles())) {
+			RegionReferenceDto userRegion = ((SormasUI) getUI()).getUserProvider().getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);
 			updateDistricts(userRegion);
@@ -594,7 +594,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private boolean shouldShowEpidNumber() {
 			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
-			return UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
+			return ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 		}

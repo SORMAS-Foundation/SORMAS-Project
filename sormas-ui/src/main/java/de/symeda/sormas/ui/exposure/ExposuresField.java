@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -46,7 +47,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -203,7 +203,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		final CommitDiscardWrapperComponent<ExposureForm> component = new CommitDiscardWrapperComponent<>(
 			exposureForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT),
 			exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
@@ -230,7 +230,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	@Override
 	protected ExposureDto createEntry() {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI) getUI()).getUserProvider().getUser();
 		ExposureDto exposure = ExposureDto.build(null);
 		exposure.getLocation().setRegion(user.getRegion());
 		exposure.getLocation().setDistrict(user.getDistrict());

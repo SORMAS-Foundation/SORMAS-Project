@@ -71,7 +71,7 @@ public class SamplesView extends AbstractView {
 		setSizeFull();
 		addComponent(sampleListComponent);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.LAB_MESSAGES)) {
 			OptionGroup samplesViewSwitcher = new OptionGroup();
 			samplesViewSwitcher.setId("samplesViewSwitcher");
 			CssStyles.style(samplesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
@@ -87,7 +87,7 @@ public class SamplesView extends AbstractView {
 			addHeaderComponent(samplesViewSwitcher);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -146,7 +146,7 @@ public class SamplesView extends AbstractView {
 				Strings.infoDetailedExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 

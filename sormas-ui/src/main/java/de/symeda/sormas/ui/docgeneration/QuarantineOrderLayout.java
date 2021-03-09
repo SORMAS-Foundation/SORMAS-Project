@@ -45,6 +45,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
@@ -129,7 +130,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	protected StreamResource createStreamResource(String templateFile, String filename) {
 		return new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-			UserReferenceDto userReference = UserProvider.getCurrent().getUser().toReference();
+			UserReferenceDto userReference = ((SormasUI) getUI()).getUserProvider().getUser().toReference();
 			SampleReferenceDto sampleReference = sampleSelector.getValue() != null ? sampleSelector.getValue().toReference() : null;
 			PathogenTestReferenceDto pathogenTestReference =
 				pathogenTestSelector.getValue() != null ? pathogenTestSelector.getValue().toReference() : null;

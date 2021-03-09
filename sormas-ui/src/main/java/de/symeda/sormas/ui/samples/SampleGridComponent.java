@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -123,6 +124,8 @@ public class SampleGridComponent extends VerticalLayout {
 	}
 
 	public HorizontalLayout createShipmentFilterBar() {
+		SormasUI ui = ((SormasUI)getUI());
+
 		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
 		shipmentFilterLayout.setMargin(false);
 		shipmentFilterLayout.setSpacing(true);
@@ -155,7 +158,7 @@ public class SampleGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
@@ -172,7 +175,7 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(

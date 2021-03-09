@@ -18,6 +18,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
@@ -33,7 +34,8 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 	public TreatmentGrid(boolean isPseudonymized) {
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI) getUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -72,7 +74,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			}
 
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload);
+				ControllerProvider.getTherapyController().openTreatmentEditForm(ui, (TreatmentIndexDto) e.getItemId(), this::reload);
 			}
 		});
 	}

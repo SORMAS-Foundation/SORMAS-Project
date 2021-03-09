@@ -60,6 +60,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
+
 public class LabMessageController {
 
 	public LabMessageController() {
@@ -83,7 +85,7 @@ public class LabMessageController {
 		form.setValue(newDto);
 	}
 
-	public void process(String uuid) {
+	public void process(@NotNull final SormasUI ui, String uuid) {
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
 		final PersonDto personDto = PersonDto.build();
 		personDto.setFirstName(labMessageDto.getPersonFirstName());
@@ -121,12 +123,13 @@ public class LabMessageController {
 					List<SimilarEventParticipantDto> similarEventParticipants =
 						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 
-					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
+					pickOrCreateEntry(ui, labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
 			}, false);
 	}
 
 	private void pickOrCreateEntry(
+			@NotNull final SormasUI ui,
 		LabMessageDto labMessageDto,
 		List<CaseIndexDto> cases,
 		List<SimilarContactDto> contacts,
@@ -140,11 +143,11 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			SimilarEntriesDto similarEntriesDto = selectField.getValue();
 			if (similarEntriesDto.isNewCase()) {
-				createCase(labMessageDto, person);
+				createCase(ui, labMessageDto, person);
 			} else if (similarEntriesDto.isNewContact()) {
-				createContact(labMessageDto, person);
+				createContact(ui, labMessageDto, person);
 			} else if (similarEntriesDto.isNewEventParticipant()) {
-				pickOrCreateEvent(labMessageDto, person);
+				pickOrCreateEvent(ui, labMessageDto, person);
 			} else if (similarEntriesDto.getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid());
 				SampleCriteria criteria = new SampleCriteria();
@@ -152,9 +155,9 @@ public class LabMessageController {
 				criteria.setDisease(caseDto.getDisease());
 				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Arrays.asList(caseDto.getUuid()));
 				if (samples.isEmpty()) {
-					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseDto.toReference()), labMessageDto);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), caseDto.toReference()), labMessageDto);
 				} else {
-					pickOrCreateSample(caseDto, labMessageDto, samples);
+					pickOrCreateSample(ui, caseDto, labMessageDto, samples);
 				}
 			} else if (similarEntriesDto.getContact() != null) {
 				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid());
@@ -163,9 +166,9 @@ public class LabMessageController {
 				criteria.setDisease(contactDto.getDisease());
 				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByContactUuids(Arrays.asList(contactDto.getUuid()));
 				if (samples.isEmpty()) {
-					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactDto.toReference()), labMessageDto);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), contactDto.toReference()), labMessageDto);
 				} else {
-					pickOrCreateSample(contactDto, labMessageDto, samples);
+					pickOrCreateSample(ui, contactDto, labMessageDto, samples);
 				}
 			} else if (similarEntriesDto.getEventParticipant() != null) {
 				EventParticipantDto eventParticipantDto =
@@ -175,9 +178,9 @@ public class LabMessageController {
 				criteria.setDisease(labMessageDto.getTestedDisease());
 				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByEventParticipantUuids(Arrays.asList(eventParticipantDto.getUuid()));
 				if (samples.isEmpty()) {
-					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantDto.toReference()), labMessageDto);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), eventParticipantDto.toReference()), labMessageDto);
 				} else {
-					pickOrCreateSample(eventParticipantDto, labMessageDto, samples);
+					pickOrCreateSample(ui, eventParticipantDto, labMessageDto, samples);
 				}
 			} else {
 				throw new UnsupportedOperationException();
@@ -192,7 +195,7 @@ public class LabMessageController {
 		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry));
 	}
 
-	private void pickOrCreateEvent(LabMessageDto labMessageDto, PersonDto person) {
+	private void pickOrCreateEvent(@NotNull final SormasUI ui, LabMessageDto labMessageDto, PersonDto person) {
 		EventSelectionField eventSelect =
 			new EventSelectionField(labMessageDto.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage));
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
@@ -211,7 +214,7 @@ public class LabMessageController {
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDtos.contains(selectedEvent)) {
-					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
+					createEventParticipant(ui, FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
 				} else {
 					CommitDiscardWrapperComponent commitDiscardWrapperComponent = new CommitDiscardWrapperComponent(
 						new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
@@ -223,16 +226,16 @@ public class LabMessageController {
 							FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(selectedEvent.getUuid(), person.getUuid());
 						List<SampleDto> samples = FacadeProvider.getSampleFacade().getByEventParticipantUuids(Arrays.asList(participant.getUuid()));
 						if (samples.isEmpty()) {
-							createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), participant), labMessageDto);
+							createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), participant), labMessageDto);
 						} else {
-							pickOrCreateSample(FacadeProvider.getEventParticipantFacade().getByUuid(participant.getUuid()), labMessageDto, samples);
+							pickOrCreateSample(ui, FacadeProvider.getEventParticipantFacade().getByUuid(participant.getUuid()), labMessageDto, samples);
 						}
 					});
-					commitDiscardWrapperComponent.addDiscardListener(() -> pickOrCreateEvent(labMessageDto, person));
+					commitDiscardWrapperComponent.addDiscardListener(() -> pickOrCreateEvent(ui, labMessageDto, person));
 					VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info));
 				}
 			} else {
-				createEvent(labMessageDto, person);
+				createEvent(ui, labMessageDto, person);
 			}
 			window.close();
 		});
@@ -248,14 +251,14 @@ public class LabMessageController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void createEvent(LabMessageDto labMessageDto, PersonDto person) {
+	private void createEvent(@NotNull final SormasUI ui, LabMessageDto labMessageDto, PersonDto person) {
 
 		EventDataForm eventCreateForm = new EventDataForm(true, false);
 		eventCreateForm.setValue(ControllerProvider.getEventController().createNewEvent(labMessageDto.getTestedDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
 			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -265,7 +268,7 @@ public class LabMessageController {
 				FacadeProvider.getEventFacade().saveEvent(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Notification.Type.WARNING_MESSAGE);
 
-				createEventParticipant(dto, labMessageDto, person);
+				createEventParticipant(ui, dto, labMessageDto, person);
 				window.close();
 			}
 		});
@@ -276,15 +279,15 @@ public class LabMessageController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void createEventParticipant(EventDto eventDto, LabMessageDto labMessageDto, PersonDto person) {
-		EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
+	private void createEventParticipant(@NotNull final SormasUI ui, EventDto eventDto, LabMessageDto labMessageDto, PersonDto person) {
+		EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), ui.getUserProvider().getUserReference());
 		eventParticipant.setPerson(person);
 
 		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
+			ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
 			createForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -296,7 +299,7 @@ public class LabMessageController {
 				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().saveEventParticipant(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
-				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), savedDto.toReference()), labMessageDto);
+				createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), savedDto.toReference()), labMessageDto);
 				window.close();
 			}
 		});
@@ -318,7 +321,7 @@ public class LabMessageController {
 		return FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 
-	private void pickOrCreateSample(PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
+	private void pickOrCreateSample(@NotNull final SormasUI ui, PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
 		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -331,16 +334,16 @@ public class LabMessageController {
 			if (sampleDto != null) {
 				List<PathogenTestDto> tests = FacadeProvider.getPathogenTestFacade().getAllBySample(sampleDto.toReference());
 				if (tests.isEmpty()) {
-					createPathogenTest(sampleDto, labMessageDto);
+					createPathogenTest(ui, sampleDto, labMessageDto);
 				} else {
-					pickOrCreateTest(sampleDto, labMessageDto, tests, samples.size());
+					pickOrCreateTest(ui, sampleDto, labMessageDto, tests, samples.size());
 				}
 			} else if (CaseDataDto.class.equals(dto.getClass())) {
-				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((CaseDataDto) dto).toReference()), labMessageDto);
+				createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), ((CaseDataDto) dto).toReference()), labMessageDto);
 			} else if (ContactDto.class.equals(dto.getClass())) {
-				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((ContactDto) dto).toReference()), labMessageDto);
+				createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), ((ContactDto) dto).toReference()), labMessageDto);
 			} else if (EventParticipantDto.class.equals(dto.getClass())) {
-				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((EventParticipantDto) dto).toReference()), labMessageDto);
+				createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), ((EventParticipantDto) dto).toReference()), labMessageDto);
 			}
 			window.close();
 		});
@@ -353,7 +356,7 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample));
 	}
 
-	private void pickOrCreateTest(SampleDto sampleDto, LabMessageDto labMessageDto, List<PathogenTestDto> tests, int caseSampleCount) {
+	private void pickOrCreateTest(@NotNull final SormasUI ui, SampleDto sampleDto, LabMessageDto labMessageDto, List<PathogenTestDto> tests, int caseSampleCount) {
 		PathogenTestSelectionField selectField =
 			new PathogenTestSelectionField(tests, I18nProperties.getString(Strings.infoPickOrCreatePathogenTest));
 
@@ -365,9 +368,9 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			PathogenTestDto testDto = selectField.getValue();
 			if (testDto != null) {
-				editPatogenTest(sampleDto, testDto, caseSampleCount, labMessageDto.getTestedDisease(), labMessageDto);
+				editPatogenTest(ui, sampleDto, testDto, caseSampleCount, labMessageDto.getTestedDisease(), labMessageDto);
 			} else {
-				createPathogenTest(sampleDto, labMessageDto);
+				createPathogenTest(ui, sampleDto, labMessageDto);
 			}
 			window.close();
 		});
@@ -380,7 +383,7 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreatePathogenTest));
 	}
 
-	private void editPatogenTest(SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount, Disease disease, LabMessageDto labMessageDto) {
+	private void editPatogenTest(@NotNull final SormasUI ui, SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount, Disease disease, LabMessageDto labMessageDto) {
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
 			if (pathogenTestDto != null
 				&& pathogenTestDto.getTestResult() != null
@@ -405,7 +408,7 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestEditComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(testDto, caseSampleCount, () -> {
+			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(ui, testDto, caseSampleCount, () -> {
 				finishProcess(labMessageDto);
 				window.close();
 			}, onSavedPathogenTest);
@@ -416,19 +419,19 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, pathogenTestEditComponent, window, I18nProperties.getString(Strings.headingEditPathogenTestResult));
 	}
 
-	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
+	private void createCase(@NotNull final SormasUI ui, LabMessageDto labMessageDto, PersonDto person) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(ui, null, null, null, true);
 
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
-		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		caseDto.setReportingUser(ui.getUserProvider().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessageDto);
-			createSample(
-				SampleDto.build(UserProvider.getCurrent().getUserReference(), caseCreateComponent.getWrappedComponent().getValue().toReference()),
+			createSample(ui,
+				SampleDto.build(ui.getUserProvider().getUserReference(), caseCreateComponent.getWrappedComponent().getValue().toReference()),
 				labMessageDto);
 			window.close();
 		});
@@ -442,20 +445,20 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	private void createContact(LabMessageDto labMessageDto, PersonDto person) {
+	private void createContact(@NotNull final SormasUI ui, LabMessageDto labMessageDto, PersonDto person) {
 		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent =
-			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
+			ControllerProvider.getContactController().getContactCreateComponent(ui, null, false, null, true);
 
 		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
 		contactDto.setPerson(person.toReference());
-		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		contactDto.setReportingUser(ui.getUserProvider().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		contactCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessageDto);
-			createSample(
-				SampleDto.build(UserProvider.getCurrent().getUserReference(), contactCreateComponent.getWrappedComponent().getValue().toReference()),
+			createSample(ui,
+				SampleDto.build(ui.getUserProvider().getUserReference(), contactCreateComponent.getWrappedComponent().getValue().toReference()),
 				labMessageDto);
 			window.close();
 		});
@@ -480,7 +483,7 @@ public class LabMessageController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void createSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
+	private void createSample(@NotNull final SormasUI ui, SampleDto sampleDto, LabMessageDto labMessageDto) {
 		sampleDto.setSampleDateTime(labMessageDto.getSampleDateTime());
 		if (labMessageDto.getSampleReceivedDate() != null) {
 			sampleDto.setReceived(true);
@@ -498,7 +501,7 @@ public class LabMessageController {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> {
+			ControllerProvider.getSampleController().getSampleCreateComponent(ui, sampleDto, () -> {
 			});
 
 		CheckBox checkBox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
@@ -519,7 +522,7 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
-	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
+	private void createPathogenTest(@NotNull final SormasUI ui, SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
 		pathogenTestDto.setTestType(labMessageDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
@@ -529,7 +532,7 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
+			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(ui, sampleDto.toReference(), 0, () -> {
 				window.close();
 				finishProcess(labMessageDto);
 			}, null);

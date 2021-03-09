@@ -37,6 +37,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -138,7 +139,7 @@ public class SampleListEntry extends HorizontalLayout {
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
 			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
 			Label labelAdditionalTests = new Label(
 				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());

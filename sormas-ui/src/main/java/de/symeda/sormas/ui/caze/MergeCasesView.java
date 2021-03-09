@@ -19,6 +19,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -30,21 +31,20 @@ public class MergeCasesView extends AbstractView {
 
 	public static final String VIEW_NAME = CasesView.VIEW_NAME + "/merge";
 
-	private CaseCriteria criteria;
-
-	private MergeCasesGrid grid;
-	private MergeCasesFilterComponent filterComponent;
+	private final MergeCasesGrid grid;
+	private final MergeCasesFilterComponent filterComponent;
 
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 
-		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
+		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
+			SormasUI ui = (SormasUI)getUI();
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
 				.creationDateTo(new Date())
-				.setRegion(UserProvider.getCurrent().getUser().getRegion());
+				.setRegion(ui.getUserProvider().getUser().getRegion());
 		}
 
 		grid = new MergeCasesGrid();

@@ -33,6 +33,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
@@ -48,6 +49,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
@@ -69,12 +72,12 @@ public class CaseDataView extends AbstractCaseView {
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
-	public CaseDataView() {
-		super(VIEW_NAME, false);
+	public CaseDataView(@NotNull final SormasUI ui) {
+		super(ui, VIEW_NAME, false);
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		setHeightUndefined();
 
@@ -106,7 +109,7 @@ public class CaseDataView extends AbstractCaseView {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);
 		//		} else {
-		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(ui, getCaseRef().getUuid(), ViewMode.NORMAL);
 		//		}
 
 		// setSubComponent(editComponent);
@@ -124,14 +127,14 @@ public class CaseDataView extends AbstractCaseView {
 
 		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-		if (isSmsServiceSetUp && externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+		if (isSmsServiceSetUp && externalMessagesEnabled && ui.getUserProvider().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
@@ -141,7 +144,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
 				sampleList.addStyleName(CssStyles.VSPACE_NONE);
 				Label sampleInfo = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
@@ -159,7 +162,7 @@ public class CaseDataView extends AbstractCaseView {
 			eventLayout.setMargin(false);
 			eventLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(getCaseRef());
+			EventListComponent eventList = new EventListComponent(ui, getCaseRef());
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventLayout.addComponent(eventList);
 			layout.addComponent(eventLayout, EVENTS_LOC);

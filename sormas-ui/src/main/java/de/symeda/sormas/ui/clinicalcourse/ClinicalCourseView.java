@@ -36,7 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -44,6 +44,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class ClinicalCourseView extends AbstractCaseView {
@@ -55,14 +57,14 @@ public class ClinicalCourseView extends AbstractCaseView {
 	private ClinicalVisitCriteria clinicalVisitCriteria;
 	private ClinicalVisitGrid clinicalVisitGrid;
 
-	public ClinicalCourseView() {
-
-		super(VIEW_NAME, true);
+	public ClinicalCourseView(@NotNull final SormasUI ui) {
+		super(ui, VIEW_NAME, true);
 
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
 
 	private VerticalLayout createClinicalVisitsHeader() {
+		SormasUI ui = ((SormasUI)getUI());
 
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
 		clinicalVisitsHeader.setMargin(false);
@@ -80,7 +82,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 			headlineRow.setExpandRatio(clinicalVisitsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -99,7 +101,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 			Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
+					.openClinicalVisitCreateForm(ui, clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			headlineRow.addComponent(newClinicalVisitButton);
@@ -124,7 +126,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		// TODO: Remove this once a proper ViewModel system has been introduced
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
@@ -146,7 +148,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
 
-		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid());
+		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(ui, getCaseRef().getUuid());
 		editComponent.setMargin(false);
 		container.addComponent(editComponent);
 

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
@@ -47,6 +48,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import javax.validation.constraints.NotNull;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -69,7 +72,7 @@ public class SampleDataView extends AbstractSampleView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		setHeightUndefined();
 
@@ -112,7 +115,7 @@ public class SampleDataView extends AbstractSampleView {
 			disease = contactDto.getDisease();
 
 			final ContactInfoLayout contactInfoLayout =
-				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
+				new ContactInfoLayout(ui, contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
@@ -135,7 +138,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized());
+		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(ui, getSampleRef().getUuid(), sampleDto.isPseudonymized());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -170,7 +173,7 @@ public class SampleDataView extends AbstractSampleView {
 		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);

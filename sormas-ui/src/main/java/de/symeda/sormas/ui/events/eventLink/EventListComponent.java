@@ -40,15 +40,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+import javax.validation.constraints.NotNull;
+
 public class EventListComponent extends VerticalLayout {
 
-	private EventList list;
-	private Button createButton;
-
-	public EventListComponent(CaseReferenceDto caseRef) {
+	public EventListComponent(@NotNull final SormasUI ui, CaseReferenceDto caseRef) {
 
 		createEventListComponent(new EventList(caseRef), I18nProperties.getString(Strings.entityEvents), e -> {
 
@@ -57,19 +57,19 @@ public class EventListComponent extends VerticalLayout {
 			//check if there are active events in the database
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
+				ControllerProvider.getEventController().selectOrCreateEvent(ui, caseRef);
 			} else {
-				ControllerProvider.getEventController().create(caseRef);
+				ControllerProvider.getEventController().create(ui, caseRef);
 			}
 		});
 
 	}
 
-	public EventListComponent(ContactReferenceDto contactRef) {
+	public EventListComponent(@NotNull final SormasUI ui, ContactReferenceDto contactRef, boolean eventParticipantDelete) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 
-		EventList eventList = new EventList(contact.getPerson());
+		EventList eventList = new EventList(contact.getPerson(), eventParticipantDelete);
 
 		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), e -> {
 
@@ -78,9 +78,9 @@ public class EventListComponent extends VerticalLayout {
 			//check if there are active events in the database
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateEvent(contact);
+				ControllerProvider.getEventController().selectOrCreateEvent(ui, contact);
 			} else {
-				ControllerProvider.getEventController().create(contact);
+				ControllerProvider.getEventController().create(ui, contact);
 			}
 		});
 
@@ -100,16 +100,16 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	public EventListComponent(EventReferenceDto superordinateEvent) {
+	public EventListComponent(@NotNull final SormasUI ui, EventReferenceDto superordinateEvent) {
 
 		EventList eventList = new EventList(superordinateEvent);
 		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), e -> {
 			EventCriteria eventCriteria = new EventCriteria();
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(superordinateEvent);
+				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(ui, superordinateEvent);
 			} else {
-				ControllerProvider.getEventController().createSubordinateEvent(superordinateEvent);
+				ControllerProvider.getEventController().createSubordinateEvent(ui, superordinateEvent);
 			}
 		});
 	}
@@ -125,16 +125,16 @@ public class EventListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = eventList;
-		addComponent(list);
-		list.reload();
+		addComponent(eventList);
+		eventList.reload();
 
 		Label eventLabel = new Label(heading);
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
+		SormasUI ui = (SormasUI)getUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE)) {
+			Button createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(clickListener);

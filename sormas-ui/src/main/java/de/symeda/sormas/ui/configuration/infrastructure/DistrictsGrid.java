@@ -30,6 +30,7 @@ import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -40,14 +41,14 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 	private static final long serialVersionUID = -4437531618828715458L;
 
 	public DistrictsGrid(DistrictCriteria criteria) {
-
 		super(DistrictIndexDto.class);
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(DistrictsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -65,8 +66,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 
 		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(ui, e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

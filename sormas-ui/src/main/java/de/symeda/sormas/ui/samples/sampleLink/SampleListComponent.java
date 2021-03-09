@@ -41,24 +41,26 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class SampleListComponent extends VerticalLayout {
 
 	private SampleList list;
-	private Button createButton;
 
 	public SampleListComponent(ContactReferenceDto contactRef) {
+		SormasUI ui = ((SormasUI)getUI());
 		createSampleListComponent(
 			new SampleList(contactRef),
-			e -> ControllerProvider.getSampleController().create(contactRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(ui, contactRef, () -> SormasUI.refreshView()));
 	}
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
+		SormasUI ui = ((SormasUI)getUI());
 		createSampleListComponent(
 			new SampleList(caseRef),
-			e -> ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(ui, caseRef, () -> SormasUI.refreshView()));
 	}
 
 	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef) {
+		SormasUI ui = ((SormasUI)getUI());
 		createSampleListComponent(
 			new SampleList(eventParticipantRef),
-			e -> ControllerProvider.getSampleController().create(eventParticipantRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(ui, eventParticipantRef, () -> SormasUI.refreshView()));
 	}
 
 	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {
@@ -80,8 +82,8 @@ public class SampleListComponent extends VerticalLayout {
 		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			Button createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(clickListener);

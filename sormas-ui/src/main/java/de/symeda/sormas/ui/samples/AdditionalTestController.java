@@ -13,10 +13,13 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import javax.validation.constraints.NotNull;
 
 public class AdditionalTestController {
 
@@ -30,11 +33,11 @@ public class AdditionalTestController {
 		return facade.getAllBySample(sampleUuid);
 	}
 
-	public void openCreateComponent(String sampleUuid, Runnable callback) {
+	public void openCreateComponent(@NotNull SormasUI ui, String sampleUuid, Runnable callback) {
 		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid), true);
 		form.setValue(AdditionalTestDto.build(FacadeProvider.getSampleFacade().getReferenceByUuid(sampleUuid)));
 		final CommitDiscardWrapperComponent<AdditionalTestForm> component =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE), form.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingCreateAdditionalTest));
 		window.setWidth(form.getWidth() + 90, Unit.PIXELS);
@@ -55,13 +58,13 @@ public class AdditionalTestController {
 		});
 	}
 
-	public void openEditComponent(AdditionalTestDto dto, Runnable callback) {
+	public void openEditComponent(@NotNull final SormasUI ui, AdditionalTestDto dto, Runnable callback) {
 
 		AdditionalTestDto newDto = FacadeProvider.getAdditionalTestFacade().getByUuid(dto.getUuid());
 		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<AdditionalTestForm> component =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT), form.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingEditAdditionalTest));
 		window.setWidth(form.getWidth() + 90, Unit.PIXELS);
@@ -81,7 +84,7 @@ public class AdditionalTestController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_DELETE)) {
 			component.addDeleteListener(() -> {
 				FacadeProvider.getAdditionalTestFacade().deleteAdditionalTest(dto.getUuid());
 				window.close();

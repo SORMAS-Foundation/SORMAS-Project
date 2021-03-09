@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -65,6 +66,8 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
+import javax.validation.constraints.NotNull;
+
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -88,7 +91,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	//@formatter:on
 
 	private UserRight editOrCreateUserRight;
-	private boolean editedFromTaskGrid;
+	private final boolean editedFromTaskGrid;
 
 	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
 
@@ -99,7 +102,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		addValueChangeListener(e -> {
 			updateByTaskContext();
-			updateByCreatingAndAssignee();
+			updateByCreatingAndAssignee(((SormasUI)getUI()));
 		});
 
 		setWidth(680, Unit.PIXELS);
@@ -111,7 +114,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	@Override
 	protected void addFields() {
-
+		SormasUI ui = ((SormasUI)getUI());
 		addField(TaskDto.CAZE, ComboBox.class);
 		addField(TaskDto.EVENT, ComboBox.class);
 		addField(TaskDto.CONTACT, ComboBox.class);
@@ -136,7 +139,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
 		assigneeUser.addValueChangeListener(e -> {
-			updateByCreatingAndAssignee();
+			updateByCreatingAndAssignee(ui);
 			checkIfAssigneeEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue());
 		});
 		assigneeUser.setImmediate(true);
@@ -167,7 +170,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
-			UserDto userDto = UserProvider.getCurrent().getUser();
+			UserDto userDto = ui.getUserProvider().getUser();
 			DistrictReferenceDto district = null;
 			RegionReferenceDto region = null;
 			if (taskDto.getCaze() != null) {
@@ -273,13 +276,13 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		return assigneeMissingInfo;
 	}
 
-	private void updateByCreatingAndAssignee() {
+	private void updateByCreatingAndAssignee(@NotNull final SormasUI ui) {
 
 		TaskDto value = getValue();
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 
-			UserDto user = UserProvider.getCurrent().getUser();
+			UserDto user = ui.getUserProvider().getUser();
 			boolean creator = user.equals(value.getCreatorUser());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
@@ -289,7 +292,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
+			if (ui.getUserProvider().hasUserRight(editOrCreateUserRight)) {
 				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
 				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(

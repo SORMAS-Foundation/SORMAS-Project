@@ -80,11 +80,10 @@ public class EventsView extends AbstractView {
 
 	public static final String VIEW_NAME = "events";
 
-	private EventCriteria criteria;
-	private EventsViewConfiguration viewConfiguration;
+	private final EventCriteria criteria;
+	private final EventsViewConfiguration viewConfiguration;
 
-	private FilteredGrid<?, ?> grid;
-	private Button createButton;
+	private final FilteredGrid<?, ?> grid;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -93,15 +92,12 @@ public class EventsView extends AbstractView {
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
-	private ComboBox contactCountMethod;
-
-	private VerticalLayout gridLayout;
-
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
 
 	public EventsView() {
 		super(VIEW_NAME);
+		SormasUI ui = ((SormasUI)getUI());
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(EventsViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -121,7 +117,7 @@ public class EventsView extends AbstractView {
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
 		}
-		gridLayout = new VerticalLayout();
+		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
@@ -152,7 +148,7 @@ public class EventsView extends AbstractView {
 		addHeaderComponent(eventsViewSwitcher);
 
 
-		if (isDefaultViewType() && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_IMPORT)) {
+		if (isDefaultViewType() && ui.getUserProvider().hasUserRight(UserRight.EVENT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEvent));
@@ -162,7 +158,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -237,7 +233,7 @@ public class EventsView extends AbstractView {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
@@ -266,12 +262,12 @@ public class EventsView extends AbstractView {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = ButtonHelper.createIconButton(
-				Captions.eventNewEvent,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
-				ValoTheme.BUTTON_PRIMARY);
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE)) {
+			Button createButton = ButtonHelper.createIconButton(
+					Captions.eventNewEvent,
+					VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getEventController().create(ui, (CaseReferenceDto) null),
+					ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -351,6 +347,7 @@ public class EventsView extends AbstractView {
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
+		SormasUI ui = ((SormasUI)getUI());
 
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
@@ -414,7 +411,7 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
 				int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
 				if (daysAfterEventGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -445,7 +442,7 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 				EventGrid eventGrid = (EventGrid) grid;
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
@@ -476,7 +473,7 @@ public class EventsView extends AbstractView {
 
 			if (isDefaultViewType()) {
 				// Contact Count Method Dropdown
-				contactCountMethod = new ComboBox();
+				ComboBox contactCountMethod = new ComboBox();
 				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
 				contactCountMethod.addItem(EventContactCountMethod.ALL);
 				contactCountMethod.addItem(EventContactCountMethod.SOURCE_CASE_IN_EVENT);

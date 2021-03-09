@@ -57,7 +57,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 
 	private void buildView(Disease enteredDisease) {
 
-		if (region != null && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
+		if (region != null && ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
 			Button btnBackToNationView = ButtonHelper.createIconButton(Captions.actionBackToNationOverview, VaadinIcons.ARROW_BACKWARD, e -> {
 				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME);
 			}, ValoTheme.BUTTON_PRIMARY);
@@ -186,6 +186,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		super.enter(event);
 		Disease disease = null;
 
+		SormasUI ui = (SormasUI) event.getNavigator().getUI();
 		String[] params = event.getParameters().split("\\?");
 		if (params.length > 0) {
 			String regionUuid = params[0].replaceAll("/", "");
@@ -193,8 +194,8 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			if (params.length > 1) {
 				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
 			}
-		} else if (!UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
-			this.region = UserProvider.getCurrent().getUser().getRegion();
+		} else if (!ui.getUserProvider().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
+			this.region = ui.getUserProvider().getUser().getRegion();
 		}
 
 		contentLayout = new VerticalLayout();

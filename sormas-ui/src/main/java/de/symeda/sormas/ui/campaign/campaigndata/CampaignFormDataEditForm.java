@@ -36,7 +36,7 @@ import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -95,7 +95,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		final UserDto currentUser = ((SormasUI) getUI()).getUserProvider().getUser();
 		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {

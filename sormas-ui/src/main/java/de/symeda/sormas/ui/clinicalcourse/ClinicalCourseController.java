@@ -16,6 +16,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -27,7 +28,7 @@ public class ClinicalCourseController {
 
 	}
 
-	public void openClinicalVisitCreateForm(ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
+	public void openClinicalVisitCreateForm(SormasUI ui, ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(clinicalCourse, caze.getDisease());
@@ -39,7 +40,7 @@ public class ClinicalCourseController {
 		form.setValue(clinicalVisit);
 
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		view.addCommitListener(new CommitListener() {
 
@@ -62,7 +63,7 @@ public class ClinicalCourseController {
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 	}
 
-	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
+	public void openClinicalVisitEditForm(SormasUI ui, ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
 		ClinicalVisitForm form = new ClinicalVisitForm(
@@ -73,7 +74,7 @@ public class ClinicalCourseController {
 		form.setValue(clinicalVisit);
 
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.CLINICAL_VISIT_EDIT), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
 		// Clinical visit form is too big for typical screens
@@ -98,7 +99,7 @@ public class ClinicalCourseController {
 
 		view.addDiscardListener(() -> popupWindow.close());
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CLINICAL_VISIT_DELETE)) {
 			view.addDeleteListener(() -> {
 				FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(clinicalVisit.getUuid());
 				popupWindow.close();

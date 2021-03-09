@@ -29,13 +29,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.contact.SourceContactListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class CaseEpiDataView extends AbstractCaseView {
@@ -47,12 +49,12 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 	private CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent;
 
-	public CaseEpiDataView() {
-		super(VIEW_NAME, true);
+	public CaseEpiDataView(SormasUI ui) {
+		super(ui, VIEW_NAME, true);
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		setHeightUndefined();
 
@@ -70,13 +72,13 @@ public class CaseEpiDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		boolean sourceContactsVisible = UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW);
+		boolean sourceContactsVisible = ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW);
 		VerticalLayout sourceContactsLayout = new VerticalLayout();
 		Consumer<Boolean> sourceContactsToggleCallback = (visible) -> {
 			sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 		};
 
-		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback);
+		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(ui, getCaseRef().getUuid(), sourceContactsToggleCallback);
 		epiDataComponent.setMargin(false);
 		epiDataComponent.setWidth(100, Unit.PERCENTAGE);
 		epiDataComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -87,11 +89,11 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactsLayout.setMargin(false);
 			sourceContactsLayout.setSpacing(false);
 
-			final SourceContactListComponent sourceContactList = new SourceContactListComponent(getCaseRef());
+			final SourceContactListComponent sourceContactList = new SourceContactListComponent(ui, getCaseRef());
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
 				sourceContactList.addStyleName(CssStyles.VSPACE_NONE);
 				Label contactCreationDisclaimer = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewContactDiscardsChanges),

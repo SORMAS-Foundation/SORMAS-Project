@@ -21,6 +21,7 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
@@ -41,7 +42,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -105,9 +107,11 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			if (DOCUMENT_TREATMENT_BTN_ID.equals(e.getPropertyId())) {
 				PrescriptionDto prescription =
 					FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
-				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
+				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription,
+						(Runnable) () -> parentView.reloadTreatmentGrid(),
+						ui.getUserProvider().hasUserRight(UserRight.TREATMENT_CREATE));
 			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
+				ControllerProvider.getTherapyController().openPrescriptionEditForm(ui, (PrescriptionIndexDto) e.getItemId(), this::reload, false);
 			}
 		});
 	}

@@ -37,6 +37,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -44,8 +45,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends VerticalLayout {
 
-	private PathogenTestList list;
-	private Button createButton;
+	private final PathogenTestList list;
 
 	public PathogenTestListComponent(
 		SampleReferenceDto sampleRef,
@@ -65,10 +65,11 @@ public class PathogenTestListComponent extends VerticalLayout {
 		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.pathogenTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
+		SormasUI ui = ((SormasUI)getUI());
+		if (ui.getUserProvider().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			Button createButton = ButtonHelper.createIconButton(Captions.pathogenTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
 				if (createOrEditAllowedCallback.get()) {
-					ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest);
+					ControllerProvider.getPathogenTestController().create(ui, sampleRef, 0, list::reload, onSavedPathogenTest);
 				} else {
 					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 				}

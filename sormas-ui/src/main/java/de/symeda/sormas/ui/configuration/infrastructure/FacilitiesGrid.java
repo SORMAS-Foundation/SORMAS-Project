@@ -30,7 +30,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -40,14 +40,15 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 	private static final long serialVersionUID = 4488941182432777837L;
 
 	public FacilitiesGrid(FacilityCriteria criteria) {
-
 		super(FacilityIndexDto.class);
+		SormasUI ui = (SormasUI)getUI();
+
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(FacilitiesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -66,8 +67,8 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 			FacilityIndexDto.LONGITUDE,
 			FacilityIndexDto.EXTERNAL_ID);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(e.getUuid()));
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(ui, e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

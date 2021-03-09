@@ -13,6 +13,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -44,17 +45,17 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 
 	@Override
 	protected void drawDisplayedEntries() {
+		boolean hasUserRightEventParticipantEdit = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT);
 		List<EventParticipantListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final EventParticipantListEntryDto eventParticipant = displayedEntries.get(i);
 			final EventParticipantListEntry listEntry = new EventParticipantListEntry(eventParticipant);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+			if (hasUserRightEventParticipantEdit) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getEventParticipantController()
 						.navigateToData(listEntry.getEventParticipantListEntryDto().getUuid()));
 			}
-
 			listLayout.addComponent(listEntry);
 		}
 	}
