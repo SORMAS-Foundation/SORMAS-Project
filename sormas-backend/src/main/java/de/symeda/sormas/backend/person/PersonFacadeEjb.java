@@ -380,11 +380,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
+		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
 				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
 				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}
@@ -408,11 +409,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
+		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
 				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
 				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}

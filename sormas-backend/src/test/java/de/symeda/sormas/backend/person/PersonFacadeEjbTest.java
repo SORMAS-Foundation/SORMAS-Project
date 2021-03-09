@@ -359,8 +359,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
 		final PersonDto person3 = creator.createPerson();
+		final PersonDto person4 = creator.createPerson();
 		final ContactDto contact1 = creator.createContact(user.toReference(), person1.toReference());
 		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
+		final ContactDto contact3 = creator.createContact(user.toReference(), person4.toReference());
+		final ContactDto contact4 = creator.createContact(user.toReference(), person4.toReference());
 		final CaseDataDto case1 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
 		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
 		final CaseDataDto case3 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
@@ -374,6 +377,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case3.setOverwriteFollowUpUntil(true);
 		case4.setOverwriteFollowUpUntil(true);
 		case5.setOverwriteFollowUpUntil(true);
+		contact3.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+		contact3.setFollowUpUntil(null);
+		contact4.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 
 		Date now = new Date();
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 1));
@@ -386,9 +392,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		case4.setFollowUpStatus(FollowUpStatus.CANCELED);
 		case5.setFollowUpStatus(FollowUpStatus.CANCELED);
+		contact4.setFollowUpUntil(now);
 
 		getContactFacade().saveContact(contact1);
 		getContactFacade().saveContact(contact2);
+		getContactFacade().saveContact(contact3);
+		getContactFacade().saveContact(contact4);
 		getCaseFacade().saveCase(case1);
 		getCaseFacade().saveCase(case2);
 		getCaseFacade().saveCase(case3);
@@ -397,7 +406,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
-		assertThat(followUpEndDtos, hasSize(3));
+		assertThat(followUpEndDtos, hasSize(4));
 
 		Optional<PersonFollowUpEndDto> result1 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person1.getUuid())).findFirst();
 		assertTrue(result1.isPresent());
