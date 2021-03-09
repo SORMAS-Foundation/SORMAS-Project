@@ -6822,4 +6822,14 @@ ALTER TABLE cases
 
 INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
+-- 2021-03-09 Add fields for intensive care unit to previous hospitalization #4591
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitend timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitend timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (345, 'Add fields for intensive care unit to previous hospitalization #4591');
+
 -- *** Insert new sql commands BEFORE this line ***

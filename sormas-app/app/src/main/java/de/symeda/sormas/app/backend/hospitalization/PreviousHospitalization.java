@@ -90,6 +90,15 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	@Column(columnDefinition = "text")
 	private String otherHospitalizationReason;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown intensiveCareUnit;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date intensiveCareUnitStart;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date intensiveCareUnitEnd;
+
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
@@ -184,6 +193,30 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
 		this.otherHospitalizationReason = otherHospitalizationReason;
+	}
+
+	public YesNoUnknown getIntensiveCareUnit() {
+		return intensiveCareUnit;
+	}
+
+	public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+		this.intensiveCareUnit = intensiveCareUnit;
+	}
+
+	public Date getIntensiveCareUnitStart() {
+		return intensiveCareUnitStart;
+	}
+
+	public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+		this.intensiveCareUnitStart = intensiveCareUnitStart;
+	}
+
+	public Date getIntensiveCareUnitEnd() {
+		return intensiveCareUnitEnd;
+	}
+
+	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
 	}
 
 	@Override

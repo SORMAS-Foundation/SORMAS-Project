@@ -452,6 +452,9 @@ public interface Captions {
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
 	String CasePreviousHospitalization_hospitalizationReason = "CasePreviousHospitalization.hospitalizationReason";
+	String CasePreviousHospitalization_intensiveCareUnit = "CasePreviousHospitalization.intensiveCareUnit";
+	String CasePreviousHospitalization_intensiveCareUnitEnd = "CasePreviousHospitalization.intensiveCareUnitEnd";
+	String CasePreviousHospitalization_intensiveCareUnitStart = "CasePreviousHospitalization.intensiveCareUnitStart";
 	String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
