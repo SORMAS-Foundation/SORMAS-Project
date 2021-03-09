@@ -15,6 +15,7 @@ name: Lint Code Base
 # Start the job on all push #
 #############################
 on:
+  workflow_dispatch:
   push:
     branches-ignore: [master, development]
     # Remove the line above to run when pushing to master
@@ -52,8 +53,7 @@ jobs:
         env:
           DEFAULT_BRANCH: development
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_BASH: false
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_CSS: false
           VALIDATE_HTML: false
           VALIDATE_JAVA: false
