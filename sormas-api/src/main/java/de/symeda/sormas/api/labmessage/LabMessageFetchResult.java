@@ -5,12 +5,14 @@ import java.io.Serializable;
 public class LabMessageFetchResult implements Serializable {
 
     boolean success;
+    boolean newMessages;
     String error;
 
     public LabMessageFetchResult() {}
 
-    public LabMessageFetchResult(boolean success, String error) {
+    public LabMessageFetchResult(boolean success, boolean newMessages, String error) {
         this.success = success;
+        this.newMessages = newMessages;
         this.error = error;
     }
 
@@ -20,6 +22,14 @@ public class LabMessageFetchResult implements Serializable {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public boolean hasNewMessages() {
+        return newMessages;
+    }
+
+    public void setNewMessages(boolean newMessages) {
+        this.newMessages = newMessages;
     }
 
     public String getError() {

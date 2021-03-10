@@ -224,18 +224,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages() {
-		Date start = new Date(DateHelper.now());
+		Date startDate = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(start);
+		systemEvent.setStartDate(startDate);
 		systemEventFacade.saveSystemEvent(systemEvent);
 
 		Date since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 
 		since = Optional.ofNullable(since).orElse(new Date(0));
-
-		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
 
 		try {
 			InitialContext ic = new InitialContext();
@@ -243,31 +241,60 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 			ExternalMessageResult<List<LabMessageDto>> externalMessageResult = labResultsFacade.getExternalLabMessages(since);
 			if (externalMessageResult.isSuccess()) {
-				if (externalMessageResult.getValue() != null) {
-					externalMessageResult.getValue().forEach(this::save);
-				}
+				externalMessageResult.getValue().forEach(this::save);
+				return getSuccessfulFetchResult(startDate, externalMessageResult);
 			} else {
-				fetchResult.setSuccess(false);
-				fetchResult.setError(externalMessageResult.getError());
+				return getUnsuccessfulFetchResultForError(startDate, externalMessageResult.getError());
 			}
 		} catch (Exception e) {
-			systemEvent.setStatus(SystemEventStatus.ERROR);
-			systemEvent.setAdditionalInfo(e.getMessage());
-			Date end = new Date(DateHelper.now());
-			systemEvent.setEndDate(end);
-			systemEvent.setChangeDate(end);
-			systemEventFacade.saveSystemEvent(systemEvent);
-			e.printStackTrace();
-			fetchResult.setSuccess(false);
-			fetchResult.setError(e.getMessage());
-			return fetchResult;
+			return getUnsuccessfulFetchResultForException(startDate, e);
 		}
+	}
+
+	private LabMessageFetchResult getSuccessfulFetchResult(Date startDate, ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
+		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setStartDate(startDate);
 		Date end = new Date(DateHelper.now());
 		systemEvent.setEndDate(end);
 		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
-		return fetchResult;
+		if (isEmptyResult(externalMessageResult)) {
+			return new LabMessageFetchResult(true, false, null);
+		} else {
+			return new LabMessageFetchResult(true, true, null);
+		}
+	}
+
+	private boolean isEmptyResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
+		return externalMessageResult.getValue() == null || externalMessageResult.getValue().isEmpty();
+	}
+
+	private LabMessageFetchResult getUnsuccessfulFetchResultForError(Date startDate, String error) {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setStatus(SystemEventStatus.ERROR);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setStartDate(startDate);
+		Date end = new Date(DateHelper.now());
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(end);
+		systemEventFacade.saveSystemEvent(systemEvent);
+		return new LabMessageFetchResult(false, false, error);
+	}
+
+	private LabMessageFetchResult getUnsuccessfulFetchResultForException(Date startDate, Exception e) {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setStatus(SystemEventStatus.ERROR);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setStartDate(startDate);
+		systemEvent.setAdditionalInfo(e.getMessage());
+		Date end = new Date(DateHelper.now());
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(end);
+		systemEventFacade.saveSystemEvent(systemEvent);
+		e.printStackTrace();
+		return new LabMessageFetchResult(false, false, e.getMessage());
 	}
 
 	@Override
