@@ -69,8 +69,8 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityIndexDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -691,9 +691,13 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
+
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
 			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
@@ -933,7 +937,11 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
-		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
+			.getIndexList(facilityCriteria, 0, (int) (config.getMaxParticipantsPerEvent() * config.getPercentageOfCases() / 100), null);
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
