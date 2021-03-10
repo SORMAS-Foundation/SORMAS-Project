@@ -1787,13 +1787,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			boolean regionChanged = !existingCase.getRegion().getUuid().equals(newCase.getRegion().getUuid());
 			boolean districtChanged = !existingCase.getDistrict().getUuid().equals(newCase.getDistrict().getUuid());
 
-			boolean communityChanged = existingCase.getCommunity() != null
-				&& newCase.getCommunity() != null
-				&& !newCase.getCommunity().getUuid().equals(existingCase.getCommunity().getUuid());
+			// check if infrastructure was changed, added, or removed from the case
 
-			boolean facilityChanged = existingCase.getHealthFacility() != null
+			boolean communityChanged = (existingCase.getCommunity() != null
+				&& newCase.getCommunity() != null
+				&& !newCase.getCommunity().getUuid().equals(existingCase.getCommunity().getUuid()))
+				|| (existingCase.getCommunity() == null && newCase.getCommunity() != null)
+				|| (existingCase.getCommunity() != null && newCase.getCommunity() == null);
+
+			boolean facilityChanged = (existingCase.getHealthFacility() != null
 				&& newCase.getHealthFacility() != null
-				&& !existingCase.getHealthFacility().getUuid().equals(newCase.getHealthFacility().getUuid());
+				&& !existingCase.getHealthFacility().getUuid().equals(newCase.getHealthFacility().getUuid()))
+				|| (existingCase.getHealthFacility() == null && newCase.getHealthFacility() != null)
+				|| (existingCase.getHealthFacility() != null && newCase.getHealthFacility() == null);
 
 			if (regionChanged || districtChanged || communityChanged || facilityChanged) {
 				reassignTasksOfCase(newCase, false);
@@ -2075,23 +2081,35 @@ public class CaseFacadeEjb implements CaseFacade {
 				continue;
 			}
 
-			User taskAsignee = task.getAssigneeUser();
-			boolean mismatch;
+			User taskAssignee = task.getAssigneeUser();
+			boolean mismatch = false;
 
-			if (taskAsignee == null) {
-				// no one is assigned so we skip detailed checks and go directly reassignment.
+			if (taskAssignee == null) {
+				// no one is assigned so we skip detailed checks and go directly to reassignment.
 				mismatch = true;
-			} else {
-				boolean regionMismatch = !taskAsignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
-				boolean districtMismatch = !taskAsignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
+			} else if (!forceReassignment) {
+				boolean regionMismatch = taskAssignee.getRegion() != null
+					&& caze.getRegion() != null
+					&& !taskAssignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
 
-				boolean communityMismatch = taskAsignee.getCommunity() != null
+				boolean districtMismatch = taskAssignee.getDistrict() != null
+					&& caze.getDistrict() != null
+					&& !taskAssignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
+
+				// for community and health facility, the situation where
+				// 1.) the user has a community/facility
+				// 2.) the case does not have a community/facility
+				// also has to count as a mismatch b/c it means the case is no longer associated with their jurisdiction
+
+				boolean communityMismatch = (taskAssignee.getCommunity() != null
 					&& caze.getCommunity() != null
-					&& !taskAsignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid());
+					&& !taskAssignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid()))
+					|| (taskAssignee.getCommunity() != null && caze.getCommunity() == null);
 
-				boolean facilityMismatch = taskAsignee.getHealthFacility() != null
+				boolean facilityMismatch = (taskAssignee.getHealthFacility() != null
 					&& caze.getHealthFacility() != null
-					&& !taskAsignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid());
+					&& !taskAssignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid()))
+					|| (taskAssignee.getHealthFacility() != null && caze.getHealthFacility() == null);
 
 				mismatch = regionMismatch || districtMismatch || communityMismatch || facilityMismatch;
 			}
