@@ -18,6 +18,20 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    CVE is fixed with Keycloak 3.4.2, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2017-12161</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE is fixed with Keycloak 4.0.0, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2018-10912</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     CVE is fixed with Keycloak 10, we use at least version 11
     ]]></notes>
 	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
