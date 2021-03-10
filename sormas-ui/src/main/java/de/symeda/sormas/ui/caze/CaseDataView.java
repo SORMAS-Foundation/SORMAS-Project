@@ -72,7 +72,7 @@ public class CaseDataView extends AbstractCaseView {
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
-	public CaseDataView(@NotNull final SormasUI ui) {
+	public CaseDataView() {
 		super(VIEW_NAME, false);
 	}
 
@@ -127,14 +127,14 @@ public class CaseDataView extends AbstractCaseView {
 
 		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-		if (isSmsServiceSetUp && externalMessagesEnabled && ui.getUserProvider().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+		if (isSmsServiceSetUp && externalMessagesEnabled && hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
@@ -144,7 +144,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (hasUserRight(UserRight.SAMPLE_CREATE)) {
 				sampleList.addStyleName(CssStyles.VSPACE_NONE);
 				Label sampleInfo = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),

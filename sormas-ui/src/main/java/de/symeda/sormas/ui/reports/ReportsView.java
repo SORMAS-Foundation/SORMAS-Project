@@ -60,7 +60,7 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		if (UserRole.getJurisdictionLevel(((SormasUI)getUI()).getUserProvider().getUserRoles()) == JurisdictionLevel.NATION) {
+		if (UserRole.getJurisdictionLevel(sormasUI().getUserProvider().getUserRoles()) == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();
@@ -157,7 +157,7 @@ public class ReportsView extends AbstractView {
 			((WeeklyReportRegionsGrid) grid).reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		} else {
 			((WeeklyReportOfficersGrid) grid)
-				.reload(((SormasUI)getUI()).getUserProvider().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+				.reload(sormasUI().getUserProvider().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		}
 	}
 }

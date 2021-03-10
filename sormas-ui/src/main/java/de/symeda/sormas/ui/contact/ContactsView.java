@@ -118,7 +118,7 @@ public class ContactsView extends AbstractView {
 
 	public ContactsView() {
 		super(VIEW_NAME);
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -361,7 +361,7 @@ public class ContactsView extends AbstractView {
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setMargin(false);
 		statusFilterLayout.setSpacing(true);

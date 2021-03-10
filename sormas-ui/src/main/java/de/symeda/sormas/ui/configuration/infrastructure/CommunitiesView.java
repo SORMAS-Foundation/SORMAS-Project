@@ -85,7 +85,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 	public CommunitiesView() {
 		super(VIEW_NAME);
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 		viewConfiguration = ViewModelProviders.of(CommunitiesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {

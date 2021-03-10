@@ -130,7 +130,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		rowsLayout.addComponent(epiCurveAndMapLayout);
 
 		// add network diagram
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
+		if (hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
 			networkDiagramComponent = Optional.of(FacadeProvider.getConfigFacade())
 				.map(ConfigFacade::getRScriptExecutable)
 				.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
@@ -483,7 +483,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		}
 
 		// Update cases and contacts shown on the map
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
+		if (hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
 			boolean diseaseSelected = dashboardDataProvider.getDisease() != null;
 
 			networkDiagramLayout.get().setVisible(diseaseSelected);

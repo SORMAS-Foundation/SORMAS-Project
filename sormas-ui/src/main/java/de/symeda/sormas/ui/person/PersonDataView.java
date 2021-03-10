@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.person;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -22,8 +24,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
@@ -136,6 +136,6 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect(((SormasUI)getUI()), event);
+		initOrRedirect(sormasUI(), event);
 	}
 }

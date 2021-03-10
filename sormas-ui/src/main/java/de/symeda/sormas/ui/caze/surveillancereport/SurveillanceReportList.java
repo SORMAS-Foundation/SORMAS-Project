@@ -43,7 +43,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -74,8 +73,8 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 	@Override
 	protected void drawDisplayedEntries() {
-		Language userLanguage = ((SormasUI)getUI()).getUserProvider().getUser().getLanguage();
-		boolean hasUserRightCaseEdit = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT);
+		Language userLanguage = ((SormasUI) getUI()).getUserProvider().getUser().getLanguage();
+		boolean hasUserRightCaseEdit = ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT);
 		List<SurveillanceReportDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SurveillanceReportDto report = displayedEntries.get(i);

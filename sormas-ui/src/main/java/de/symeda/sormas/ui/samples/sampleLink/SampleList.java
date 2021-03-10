@@ -75,11 +75,12 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		boolean hasUserRight = ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT);
 		List<SampleIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SampleIndexDto sample = displayedEntries.get(i);
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			if (hasUserRight) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));

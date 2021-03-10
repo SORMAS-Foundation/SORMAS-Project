@@ -85,7 +85,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -104,7 +104,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
+		if (hasUserRight(UserRight.VISIT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
@@ -145,11 +145,11 @@ public class ContactVisitsView extends AbstractContactView {
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.VISIT_CREATE)) {
+		if (hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = ButtonHelper.createIconButton(
 				Captions.visitNewVisit,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getVisitController().createVisit(((SormasUI)getUI()),this.getContactRef(), r -> navigateTo(criteria)),
+				e -> ControllerProvider.getVisitController().createVisit(sormasUI(),this.getContactRef(), r -> navigateTo(criteria)),
 				ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);

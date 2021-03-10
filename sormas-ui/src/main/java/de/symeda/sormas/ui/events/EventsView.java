@@ -109,7 +109,7 @@ public class EventsView extends AbstractView {
 
 	public EventsView() {
 		super(VIEW_NAME);
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(EventsViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -364,7 +364,7 @@ public class EventsView extends AbstractView {
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);

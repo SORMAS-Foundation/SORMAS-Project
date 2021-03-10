@@ -1,53 +1,60 @@
 package de.symeda.sormas.rest.swagger;
 
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.*;
+import de.symeda.sormas.api.utils.Complication;
+import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.media.Schema;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 public class AttributeConverter extends ModelResolver {
-    public static final String XPROP_PREFIX = "x-sormas-";
-    public static final String XPROP_PERSONAL_DATA = XPROP_PREFIX + "personal-data";
-    public static final String XPROP_FOR_COUNTRIES = XPROP_PREFIX + "countries-for";
-    public static final String XPROP_EXCEPT_COUNTRIES = XPROP_PREFIX + "countries-except";
-    public static final String XPROP_DEPENDS_ON = XPROP_PREFIX + "depends-on";
-    public static final String XPROP_DISEASES = XPROP_PREFIX + "diseases";
-    public static final String XPROP_OUTBREAKS = XPROP_PREFIX + "outbreaks";
-    public static final String XPROP_COMPLICATIONS = XPROP_PREFIX + "complications";
 
-    public AttributeConverter(ObjectMapper mapper) {
-        super(mapper);
-    }
+	public static final String XPROP_PREFIX = "x-sormas-";
+	public static final String XPROP_PERSONAL_DATA = XPROP_PREFIX + "personal-data";
+	public static final String XPROP_FOR_COUNTRIES = XPROP_PREFIX + "countries-for";
+	public static final String XPROP_EXCEPT_COUNTRIES = XPROP_PREFIX + "countries-except";
+	public static final String XPROP_DEPENDS_ON = XPROP_PREFIX + "depends-on";
+	public static final String XPROP_DISEASES = XPROP_PREFIX + "diseases";
+	public static final String XPROP_OUTBREAKS = XPROP_PREFIX + "outbreaks";
+	public static final String XPROP_COMPLICATIONS = XPROP_PREFIX + "complications";
 
-    @Override
-    protected void applyBeanValidatorAnnotations(Schema property, Annotation[] annotations, Schema parent) {
-        super.applyBeanValidatorAnnotations(property, annotations, parent);
-        Map<String, Annotation> annos = new HashMap<String, Annotation>();
-        if (annotations != null) {
-            for (Annotation anno : annotations) {
-                annos.put(anno.annotationType().getName(), anno);
-            }
-        }
-        if (parent != null && annos.containsKey("de.symeda.sormas.api.utils.Required")) {
-            addRequiredItem(parent, property.getName());
-        }
-    }
+	public AttributeConverter(ObjectMapper mapper) {
+		super(mapper);
+	}
 
+	@Override
+	protected void applyBeanValidatorAnnotations(Schema property, Annotation[] annotations, Schema parent) {
+		super.applyBeanValidatorAnnotations(property, annotations, parent);
+		Map<String, Annotation> annos = new HashMap<String, Annotation>();
+		if (annotations != null) {
+			for (Annotation anno : annotations) {
+				annos.put(anno.annotationType().getName(), anno);
+			}
+		}
+		if (parent != null && annos.containsKey("de.symeda.sormas.api.utils.Required")) {
+			addRequiredItem(parent, property.getName());
+		}
+	}
 
-    @Override
-    public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext, Iterator<ModelConverter> iterator) {
-        Schema schema = super.resolve(annotatedType, modelConverterContext, iterator);
+	@Override
+	public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext, Iterator<ModelConverter> iterator) {
+		Schema schema = super.resolve(annotatedType, modelConverterContext, iterator);
 
-        //@formatter:off
+		//@formatter:off
         if (schema != null && annotatedType.getCtxAnnotations() != null
                 && annotatedType.isSchemaProperty()) {
 
@@ -90,9 +97,9 @@ public class AttributeConverter extends ModelResolver {
                 }
             }
             //@formatter:on
-        }
+		}
 
-        return schema;
+		return schema;
 
-    }
+	}
 }

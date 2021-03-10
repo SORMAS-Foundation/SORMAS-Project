@@ -80,7 +80,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+		if (hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(contactPerson).ifPresent(getButtonsLayout()::addComponent);
 		}

@@ -195,7 +195,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 		Button generateButton = ButtonHelper.createButton(
 				Captions.devModeGenerateCases,
-				e -> generateCases(((SormasUI)getUI()).getUserProvider().getUserReference()), CssStyles.FORCE_CAPTION);
+				e -> generateCases(sormasUI().getUserProvider().getUserReference()), CssStyles.FORCE_CAPTION);
 		caseOptionsLayout.addComponent(generateButton);
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
@@ -500,8 +500,8 @@ public class DevModeView extends AbstractConfigurationView {
 				// doesn't make sense
 				//				if (parameterType.isAssignableFrom(String.class)) {
 				//					setter.invoke(entity, words[random.nextInt(words.length)]);
-				//				} 
-				//				else 
+				//				}
+				//				else
 				if (parameterType.isAssignableFrom(Date.class)) {
 					setter.invoke(entity, randomDate(referenceDateTime));
 				} else if (parameterType.isEnum()) {
@@ -721,7 +721,7 @@ public class DevModeView extends AbstractConfigurationView {
 				contact.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
 			}
 
-			UserReferenceDto userReference = ((SormasUI)getUI()).getUserProvider().getUserReference();
+			UserReferenceDto userReference = sormasUI().getUserProvider().getUserReference();
 			contact.setReportingUser(userReference);
 			contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
@@ -840,7 +840,7 @@ public class DevModeView extends AbstractConfigurationView {
 			event.setEventDesc("Event generated using DevMode on " + LocalDate.now());
 
 			// report
-			UserReferenceDto userReference = ((SormasUI)getUI()).getUserProvider().getUserReference();
+			UserReferenceDto userReference = sormasUI().getUserProvider().getUserReference();
 			event.setReportingUser(userReference);
 			event.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
@@ -856,7 +856,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// EventParticipants
 			int numParticipants = randomInt(config.getMinParticipantsPerEvent(), config.getMaxParticipantsPerEvent());
 			for (int j = 0; j < numParticipants; j++) {
-				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), ((SormasUI)getUI()).getUserProvider().getUserReference());
+				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), sormasUI().getUserProvider().getUserReference());
 				// person
 				// instead of creating new persons everytime, it would be nice if some persons came of the original database
 				PersonDto person = PersonDto.build();
@@ -873,7 +873,7 @@ public class DevModeView extends AbstractConfigurationView {
 						CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
 						fillEntity(caze, referenceDateTime);
 						caze.setDisease(event.getDisease());
-						caze.setReportingUser(((SormasUI)getUI()).getUserProvider().getUserReference());
+						caze.setReportingUser(sormasUI().getUserProvider().getUserReference());
 						caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 						caze.setRegion(config.getRegion());
@@ -897,7 +897,7 @@ public class DevModeView extends AbstractConfigurationView {
 						ContactDto contact = ContactDto.build(eventParticipant);
 						contact.setDisease(event.getDisease());
 						contact.setCaze(random(cases));
-						contact.setReportingUser(((SormasUI)getUI()).getUserProvider().getUserReference());
+						contact.setReportingUser(sormasUI().getUserProvider().getUserReference());
 						contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 						FacadeProvider.getContactFacade().saveContact(contact);

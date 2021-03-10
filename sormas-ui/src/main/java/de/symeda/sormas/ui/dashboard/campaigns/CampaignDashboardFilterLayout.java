@@ -1,6 +1,9 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
-import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.*;
+import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.AREA;
+import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.COMMUNITY;
+import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.DISTRICT;
+import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.REGION;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -25,11 +28,10 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
-import org.checkerframework.checker.units.qual.C;
+
+;
 
 public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
@@ -65,7 +67,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		final UserDto user = ui.getUserProvider().getUser();
 		final CampaignJurisdictionLevel campaignJurisdictionLevel =
-				CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
+			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
 		createCampaignFilter();
@@ -168,18 +170,18 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
 
 		switch (campaignJurisdictionLevel) {
-			case AREA:
-				campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
-				break;
-			case REGION:
-				campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
-				break;
-			case DISTRICT:
-				campaignJurisdictionGroupByFilter.addItems(DISTRICT, COMMUNITY);
-				break;
-			case COMMUNITY:
-				campaignJurisdictionGroupByFilter.addItems(COMMUNITY);
-				break;
+		case AREA:
+			campaignJurisdictionGroupByFilter.addItems(ui, AREA, REGION, DISTRICT);
+			break;
+		case REGION:
+			campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
+			break;
+		case DISTRICT:
+			campaignJurisdictionGroupByFilter.addItems(DISTRICT, COMMUNITY);
+			break;
+		case COMMUNITY:
+			campaignJurisdictionGroupByFilter.addItems(COMMUNITY);
+			break;
 		}
 
 		campaignJurisdictionGroupByFilter.setValue(getJurisdictionBelow(campaignJurisdictionLevel));
@@ -192,16 +194,16 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		addComponent(campaignJurisdictionGroupByFilter);
 	}
 
-	private CampaignJurisdictionLevel getJurisdictionBelow(CampaignJurisdictionLevel campaignJurisdictionLevel){
+	private CampaignJurisdictionLevel getJurisdictionBelow(CampaignJurisdictionLevel campaignJurisdictionLevel) {
 
 		switch (campaignJurisdictionLevel) {
-			case AREA:
-				return AREA;
-			case REGION:
-				return DISTRICT;
-			case DISTRICT:
-			case COMMUNITY:
-				return COMMUNITY;
+		case AREA:
+			return AREA;
+		case REGION:
+			return DISTRICT;
+		case DISTRICT:
+		case COMMUNITY:
+			return COMMUNITY;
 		}
 		return campaignJurisdictionLevel;
 	}

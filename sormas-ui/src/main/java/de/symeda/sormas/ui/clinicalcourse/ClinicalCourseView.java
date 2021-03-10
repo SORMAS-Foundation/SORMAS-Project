@@ -64,7 +64,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 	}
 
 	private VerticalLayout createClinicalVisitsHeader() {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
 		clinicalVisitsHeader.setMargin(false);

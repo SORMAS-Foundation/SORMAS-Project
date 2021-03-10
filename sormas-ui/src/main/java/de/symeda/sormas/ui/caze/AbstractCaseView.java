@@ -39,7 +39,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
@@ -75,9 +74,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
-			ViewConfiguration initViewConfiguration = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)
-				? new ViewConfiguration(ViewMode.NORMAL)
-				: new ViewConfiguration(ViewMode.SIMPLE);
+			ViewConfiguration initViewConfiguration =
+				hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS) ? new ViewConfiguration(ViewMode.NORMAL) : new ViewConfiguration(ViewMode.SIMPLE);
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 
@@ -151,7 +149,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (!caze.checkIsUnreferredPortHealthCase() && !UserRole.isPortHealthUser(((SormasUI)getUI()).getUserProvider().getUserRoles())) {
+			if (!caze.checkIsUnreferredPortHealthCase() && !UserRole.isPortHealthUser(sormasUI().getUserProvider().getUserRoles())) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
@@ -159,7 +157,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
 				&& caze.getPointOfEntry() != null
-				&& ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				&& hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
@@ -169,7 +167,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.THERAPY_VIEW)
+			if (hasUserRight(UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
@@ -181,7 +179,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 
 		if (showExtraMenuEntries) {
-			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+			if (hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(
@@ -191,14 +189,14 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 		}
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())
-			&& ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)
+			&& hasUserRight(UserRight.CONTACT_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 
-		if (caseFollowupEnabled && ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+		if (caseFollowupEnabled && hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(casePerson).ifPresent(getButtonsLayout()::addComponent);
 		}
@@ -214,7 +212,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else {
-			initView((SormasUI)event.getNavigator().getUI(), event.getParameters().trim());
+			initView((SormasUI) event.getNavigator().getUI(), event.getParameters().trim());
 		}
 	}
 

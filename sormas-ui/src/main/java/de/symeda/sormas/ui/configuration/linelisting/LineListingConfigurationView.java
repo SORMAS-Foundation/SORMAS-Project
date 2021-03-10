@@ -57,7 +57,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 
 	private void buildView(Disease enteredDisease) {
 
-		if (region != null && ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
+		if (region != null && hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
 			Button btnBackToNationView = ButtonHelper.createIconButton(Captions.actionBackToNationOverview, VaadinIcons.ARROW_BACKWARD, e -> {
 				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME);
 			}, ValoTheme.BUTTON_PRIMARY);

@@ -80,8 +80,6 @@ import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-import javax.swing.*;
-
 /**
  * Content of the UI when the user is logged in.
  */
@@ -94,7 +92,7 @@ public class MainScreen extends HorizontalLayout {
 	private final Menu menu;
 
 	public MainScreen(SormasUI ui) {
- 		KNOWN_VIEWS = initKnownViews(ui);
+		KNOWN_VIEWS = initKnownViews(ui);
 
 		CssLayout viewContainer = new CssLayout();
 		viewContainer.setSizeFull();
@@ -150,7 +148,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (permitted(ui, FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
-			ControllerProvider.getCaseController().registerViews(navigator);
+			ControllerProvider.getCaseController().registerViews(ui, navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (permitted(ui, FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {

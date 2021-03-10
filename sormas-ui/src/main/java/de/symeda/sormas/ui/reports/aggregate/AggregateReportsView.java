@@ -71,7 +71,7 @@ public class AggregateReportsView extends AbstractView {
 
 	public AggregateReportsView() {
 		super(VIEW_NAME);
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 		UserDto user = ui.getUserProvider().getUser();
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);

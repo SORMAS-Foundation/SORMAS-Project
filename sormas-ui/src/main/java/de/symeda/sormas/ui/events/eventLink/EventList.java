@@ -39,7 +39,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class EventList extends PaginationList<EventIndexDto> {
@@ -47,6 +46,10 @@ public class EventList extends PaginationList<EventIndexDto> {
 	private final EventCriteria eventCriteria = new EventCriteria();
 	private final Label noEventLabel;
 	private BiConsumer<Integer, EventListEntry> addUnlinkEventListener;
+
+	private boolean hasUserRight(UserRight userRight) {
+		return ((SormasUI) getUI()).getUserProvider().hasUserRight(userRight);
+	}
 
 	public EventList(CaseReferenceDto caseReferenceDto) {
 		super(5);
@@ -76,11 +79,15 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (hasUserRight(UserRight.EVENT_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
 					ControllerProvider.getEventController()
-						.removeSuperordinateEvent(((SormasUI)getUI()), selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
+						.removeSuperordinateEvent(
+							((SormasUI) getUI()),
+							selectedEvent,
+							false,
+							I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
 					reload();
 				});
 			}
@@ -108,13 +115,14 @@ public class EventList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventListEntry listEntry = new EventListEntry(event);
 
-			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (hasUserRight(UserRight.EVENT_EDIT)) {
 				if (addUnlinkEventListener != null) {
 					addUnlinkEventListener.accept(i, listEntry);
 				}
 				listEntry.addEditListener(
 					i,
-					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(((SormasUI)getUI()), listEntry.getEvent().getUuid()));
+					(ClickListener) clickEvent -> ControllerProvider.getEventController()
+						.navigateToData(((SormasUI) getUI()), listEntry.getEvent().getUuid()));
 			}
 			listLayout.addComponent(listEntry);
 		}

@@ -103,7 +103,7 @@ public class UsersView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = sormasUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.USER_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
@@ -147,14 +147,14 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(((SormasUI)getUI()).getUserProvider(), Collections.emptySet()));
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(sormasUI().getUserProvider(), Collections.emptySet()));
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(userRolesFilter);
 
-		UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
+		UserDto user = sormasUI().getUserProvider().getUser();
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(CaseDataDto.REGION);
@@ -221,7 +221,7 @@ public class UsersView extends AbstractView {
 	public void updateFilterComponents() {
 
 		applyingCriteria = true;
-		UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
+		UserDto user = sormasUI().getUserProvider().getUser();
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());

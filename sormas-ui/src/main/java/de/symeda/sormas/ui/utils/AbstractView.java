@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.Objects;
 
+import de.symeda.sormas.api.user.UserRight;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.Navigator;
@@ -53,6 +54,14 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	private final Label viewSubTitleLabel;
 
 	protected boolean applyingCriteria;
+
+	public boolean hasUserRight(UserRight userRight) {
+		return hasUserRight(userRight);
+	}
+
+	public SormasUI sormasUI() {
+		return ((SormasUI)getUI());
+	}
 
 	protected AbstractView(String viewName) {
 		this.viewName = viewName;

@@ -40,7 +40,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsStatistics), params);
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
+		if (hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
 		}
 	}

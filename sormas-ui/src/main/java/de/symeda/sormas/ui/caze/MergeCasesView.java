@@ -20,7 +20,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -41,7 +40,7 @@ public class MergeCasesView extends AbstractView {
 
 		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
-			SormasUI ui = (SormasUI)getUI();
+			SormasUI ui = (SormasUI) getUI();
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
 				.creationDateTo(new Date())
 				.setRegion(ui.getUserProvider().getUser().getRegion());
@@ -84,7 +83,7 @@ public class MergeCasesView extends AbstractView {
 		Button btnBack = ButtonHelper.createIconButton(
 			Captions.caseBackToDirectory,
 			VaadinIcons.ARROW_BACKWARD,
-			e -> ControllerProvider.getCaseController().navigateToIndex(),
+			e -> ControllerProvider.getCaseController().navigateToIndex(sormasUI()),
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
