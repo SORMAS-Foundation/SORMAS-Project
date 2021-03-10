@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.opencsv.CSVWriter;
@@ -56,22 +58,36 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 public class GridExportStreamResource {
 
 	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
-		return new GridExportStreamResource(grid, entityName, excludePropertyIds).getStreamResource();
+		return new GridExportStreamResource(grid, null, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList()).getStreamResource();
 	}
 
-	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
-		return new GridExportStreamResource(grid, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
+	public static StreamResource createStreamResourceWithSelectedItems(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		String... excludePropertyIds) {
+		return new GridExportStreamResource(grid, getSelectedRows, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList())
+			.getStreamResource();
 	}
 
-	private StreamResource streamResource;
-
-	private GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
-		this(grid, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList());
+	public static StreamResource createStreamResource(
+		Grid<?> grid,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
+		return new GridExportStreamResource(grid, null, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
 	}
 
-	private GridExportStreamResource(Grid<?> grid, ExportEntityName entityName, List<String> excludePropertyIds, List<String> includePropertyIds) {
+	private final StreamResource streamResource;
+
+	private GridExportStreamResource(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
 		String filename = DownloadUtil.createFileNameWithCurrentDate(entityName, ".csv");
-		GridExportStreamSource streamSource = new GridExportStreamSource(grid, excludePropertyIds, includePropertyIds);
+		GridExportStreamSource streamSource = new GridExportStreamSource(grid, getSelectedRows, excludePropertyIds, includePropertyIds);
 		this.streamResource = new StreamResource(streamSource, filename);
 		this.streamResource.setMIMEType("text/csv");
 		this.streamResource.setCacheTime(0);
@@ -80,110 +96,125 @@ public class GridExportStreamResource {
 	private StreamResource getStreamResource() {
 		return this.streamResource;
 	}
-	
+
 	private static class GridExportStreamSource implements StreamResource.StreamSource {
 
-		private Grid<?> grid;
-		private List<String> excludePropertyIds;
-		private List<String> includePropertyIds;
+		private final Grid<?> grid;
+		private final List<String> excludePropertyIds;
+		private final List<String> includePropertyIds;
+		private final Supplier<Set<?>> getSelectedRows;
 
-		GridExportStreamSource(Grid<?> grid, List<String> excludePropertyIds, List<String> includePropertyIds) {
+		GridExportStreamSource(Grid<?> grid, Supplier<Set<?>> getSelectedRows, List<String> excludePropertyIds, List<String> includePropertyIds) {
 			this.grid = grid;
 			this.excludePropertyIds = excludePropertyIds;
 			this.includePropertyIds = includePropertyIds;
+			this.getSelectedRows = getSelectedRows;
 		}
-		
+
 		@Override
 		public InputStream getStream() {
 			List<Column> columns = getGridColumns();
 			ValueProvider[] columnValueProviders = columns.stream().map(Column::getValueProvider).toArray(ValueProvider[]::new);
 			String[] headerRow = columns.stream().map(Column::getId).toArray(String[]::new);
-			String[]  labelsRow = columns.stream().map(Column::getCaption).toArray(String[]::new);
+			String[] labelsRow = columns.stream().map(Column::getCaption).toArray(String[]::new);
 			labelsRow[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + labelsRow[0];
 			DataProvider<?, ?> dataProvider = grid.getDataProvider();
 			List<QuerySortOrder> sortOrder = getGridSortOrder();
 
-			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-				 CSVWriter writer = createCsvWriter(byteStream)) {
-					writer.writeNext(headerRow);
-					writer.writeNext(labelsRow, false);
+			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(); CSVWriter writer = createCsvWriter(byteStream)) {
+				writer.writeNext(headerRow);
+				writer.writeNext(labelsRow, false);
 
-					String[] rowValues = new String[columnValueProviders.length];
+				String[] rowValues = new String[columnValueProviders.length];
 
+				Set<?> selectedRows = getSelectedRows != null ? getSelectedRows.get() : Collections.emptySet();
+
+				if (selectedRows.isEmpty()) {
 					int totalRowCount = dataProvider.size(new Query());
 					for (int i = 0; i < totalRowCount; i += 100) {
 						dataProvider.fetch(new Query(i, 100, sortOrder, null, null)).forEach(row -> {
-							for (int c = 0; c < columnValueProviders.length; c++) {
-								Object value = columnValueProviders[c].apply(row);
-
-								final String valueString;
-								if (value == null) {
-									valueString = "";
-								} else if (value instanceof Date) {
-									valueString = DateFormatHelper.formatLocalDateTime((Date) value);
-								} else if (value instanceof Boolean) {
-									if ((Boolean) value) {
-										valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-									} else
-										valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
-								} else if (value instanceof AgeAndBirthDateDto) {
-									AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-									valueString = PersonHelper.getAgeAndBirthdateString(
-											ageAndBirthDate.getAge(),
-											ageAndBirthDate.getAgeType(),
-											ageAndBirthDate.getBirthdateDD(),
-											ageAndBirthDate.getBirthdateMM(),
-											ageAndBirthDate.getBirthdateYYYY(),
-											I18nProperties.getUserLanguage());
-								} else if (value instanceof Label) {
-									valueString = ((Label) value).getValue();
-								} else {
-									valueString = value.toString();
-								}
-								rowValues[c] = valueString;
-							}
-							writer.writeNext(rowValues);
+							writeLine(writer, columnValueProviders, row, rowValues);
 						});
 						writer.flush();
 					}
+				} else {
+					selectedRows.forEach(row -> {
+						writeLine(writer, columnValueProviders, row, rowValues);
+					});
+					writer.flush();
+				}
+
 				return new ByteArrayInputStream(byteStream.toByteArray());
 			} catch (IOException e) {
 				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
 				new Notification(
-						I18nProperties.getString(Strings.headingExportFailed),
-						I18nProperties.getString(Strings.messageExportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+					I18nProperties.getString(Strings.headingExportFailed),
+					I18nProperties.getString(Strings.messageExportFailed),
+					Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 				return null;
 			}
 		}
 
+		private static void writeLine(CSVWriter writer, ValueProvider[] columnValueProviders, Object row, String[] rowValues) {
+			for (int c = 0; c < columnValueProviders.length; c++) {
+				Object value = columnValueProviders[c].apply(row);
+
+				final String valueString;
+				if (value == null) {
+					valueString = "";
+				} else if (value instanceof Date) {
+					valueString = DateFormatHelper.formatLocalDateTime((Date) value);
+				} else if (value instanceof Boolean) {
+					if ((Boolean) value == true) {
+						valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
+					} else
+						valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+				} else if (value instanceof AgeAndBirthDateDto) {
+					AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+					valueString = PersonHelper.getAgeAndBirthdateString(
+						ageAndBirthDate.getAge(),
+						ageAndBirthDate.getAgeType(),
+						ageAndBirthDate.getBirthdateDD(),
+						ageAndBirthDate.getBirthdateMM(),
+						ageAndBirthDate.getBirthdateYYYY(),
+						I18nProperties.getUserLanguage());
+				} else if (value instanceof Label) {
+					valueString = ((Label) value).getValue();
+				} else {
+					valueString = value.toString();
+				}
+				rowValues[c] = valueString;
+			}
+			writer.writeNext(rowValues);
+		}
+
 		private List<Column> getGridColumns() {
 			return grid.getColumns()
-					.stream()
-					.filter(column -> !column.isHidden() || includePropertyIds.contains(column.getId()))
-					.filter(column -> !excludePropertyIds.contains(column.getId()))
-					.collect(Collectors.toList());
+				.stream()
+				.filter(column -> !column.isHidden() || includePropertyIds.contains(column.getId()))
+				.filter(column -> !excludePropertyIds.contains(column.getId()))
+				.collect(Collectors.toList());
 		}
 
 		private List<QuerySortOrder> getGridSortOrder() {
 			return grid.getSortOrder()
-					.stream()
-					.flatMap(
-							gridSortOrder -> grid.getColumns()
-									.stream()
-									.filter(column -> column.getId().equals(gridSortOrder.getSorted().getId()))
-									.findFirst()
-									.get()
-									.getSortOrder(gridSortOrder.getDirection()))
-					.collect(Collectors.toList());
+				.stream()
+				.flatMap(
+					gridSortOrder -> grid.getColumns()
+						.stream()
+						.filter(column -> column.getId().equals(gridSortOrder.getSorted().getId()))
+						.findFirst()
+						.get()
+						.getSortOrder(gridSortOrder.getDirection()))
+				.collect(Collectors.toList());
 		}
 
 		private CSVWriter createCsvWriter(ByteArrayOutputStream byteStream) throws UnsupportedEncodingException {
 			return CSVUtils.createCSVWriter(
-					new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-					FacadeProvider.getConfigFacade().getCsvSeparator());
+				new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
+				FacadeProvider.getConfigFacade().getCsvSeparator());
 		}
 	}
 }

@@ -20,10 +20,12 @@ package de.symeda.sormas.ui.contact;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -66,6 +69,7 @@ import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -104,6 +108,13 @@ public class ContactsView extends AbstractView {
 	private int followUpRangeInterval = 14;
 	private boolean buttonPreviousOrNextClick = false;
 	private Date followUpToDate;
+
+	private Set<String> getSelectedRows() {
+		AbstractContactGrid<?> contactGrid = (AbstractContactGrid<?>) this.grid;
+		return this.viewConfiguration.isInEagerMode()
+			? contactGrid.asMultiSelect().getSelectedItems().stream().map(ContactIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -201,11 +212,15 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+					grid,
+					() -> this.viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
+					ExportEntityName.CONTACTS);
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
-				StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
+				StreamResource extendedExportStreamResource =
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
 
 				addExportButton(
 					extendedExportStreamResource,
@@ -218,7 +233,7 @@ public class ContactsView extends AbstractView {
 
 			if (ui.getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
 				StreamResource followUpVisitsExportStreamResource =
-						DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
+					DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACT_FOLLOW_UPS);
 
 				addExportButton(
 					followUpVisitsExportStreamResource,
@@ -231,7 +246,7 @@ public class ContactsView extends AbstractView {
 
 			{
 				Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-					ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());
+					ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
 				}, ValoTheme.BUTTON_PRIMARY);
 				btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 				btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -243,7 +258,7 @@ public class ContactsView extends AbstractView {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportContactDto.class,
 					null,
-					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(this.getSelectedRows(), start, max),
 					(propertyId, type) -> propertyId,
 					ExportEntityName.BAG_CONTACTS,
 					null);

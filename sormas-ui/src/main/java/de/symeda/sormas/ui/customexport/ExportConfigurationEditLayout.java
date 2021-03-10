@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,8 +46,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportGroupType;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -67,8 +66,7 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 
 	public ExportConfigurationEditLayout(
 		ExportConfigurationDto exportConfiguration,
-		List<Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		Consumer<ExportConfigurationDto> resultCallback,
 		Runnable discardCallback) {
 
@@ -82,7 +80,7 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 
 		addComponent(buildSelectionButtonLayout());
 
-		int totalCheckBoxCount = buildCheckBoxGroups(availableProperties, propertyCaptionProvider);
+		int totalCheckBoxCount = buildCheckBoxGroups(availableProperties);
 
 		groupTypeLabels = new HashMap<>();
 		for (ExportGroupType groupType : checkBoxGroups.keySet()) {
@@ -131,20 +129,20 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 				&& (((SormasUI) getUI()).getUserProvider().getUserReference().equals(this.exportConfiguration.getUser()));
 	}
 
-	private int buildCheckBoxGroups(List<Pair<String, ExportGroupType>> exportExportProperties, Function<String, String> captionProvider) {
+	private int buildCheckBoxGroups(List<ExportPropertyMetaInfo> exportExportProperties) {
 
 		checkBoxGroups = new HashMap<>();
 		checkBoxes = new HashMap<>();
 		int checkBoxCount = 0;
 
-		for (Pair<String, ExportGroupType> pair : exportExportProperties) {
-			ExportGroupType groupType = pair.getElement1();
-			String property = pair.getElement0();
+		for (ExportPropertyMetaInfo meta : exportExportProperties) {
+			ExportGroupType groupType = meta.getExportGroupType();
+			String property = meta.getPropertyId();
 			if (!checkBoxGroups.containsKey(groupType)) {
 				checkBoxGroups.put(groupType, new ArrayList<>());
 			}
 
-			String caption = captionProvider.apply(property);
+			String caption = meta.getCaption();
 			CheckBox cb = new CheckBox(caption);
 
 			if (!CollectionUtils.isEmpty(exportConfiguration.getProperties())) {

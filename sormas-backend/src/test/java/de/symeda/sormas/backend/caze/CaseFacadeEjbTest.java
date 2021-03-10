@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -37,6 +38,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -239,6 +241,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		Assert.assertEquals(
 			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfSexUnknownAndSameBirthDateMatches() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.UNKNOWN, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			1,
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
@@ -633,7 +668,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -693,7 +728,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
@@ -1599,53 +1634,28 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(duplicates, hasSize(2));
 	}
 
+	@Test
+	public void testGetCasesByPersonUuids() {
 
+		UserReferenceDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		RDCF rdcf = creator.createRDCF();
 
-//	@Test
-//	public void testGetSimilarCases() {
-//		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-//		PersonDto cazePerson = creator.createPerson("Case", "Person");
-//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, 
-//				CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
-//		
-//		// 1: Same disease, same region, similar name, report date in range
-//		CaseCriteria caseCriteria = new CaseCriteria()
-//				.disease(caze.getDisease())
-//				.region(caze.getRegion());
-//		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
-//				.firstName("Person")
-//				.lastName("Case")
-//				.caseCriteria(caseCriteria)
-//				.reportDate(new Date());
-//		
-//		assertEquals(1, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 2: Different disease
-//		caseCriteria.disease(Disease.LASSA);
-//		
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 3: Different region
-//		RDCFEntities rdcfDifferent = creator.createRDCFEntities("Other region", "Other district", "Other community", "Other facility");
-//		caseCriteria.disease(Disease.EVD);
-//		caseCriteria.region(new RegionReferenceDto(rdcf.region.getUuid()));
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 4: Non-similar name
-//		caseCriteria.region(caze.getRegion());
-//		criteria.firstName("Different");
-//		criteria.lastName("Name");
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 5: Region date out of range
-//		criteria.firstName("Person");
-//		criteria.lastName("Case");
-//		criteria.reportDate(DateHelper.subtractDays(new Date(), 60));
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//	}
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		CaseDataDto case1 = getCaseFacade().saveCase(creator.createCase(user, person1, rdcf));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		CaseDataDto case2 = getCaseFacade().saveCase(creator.createCase(user, person2, rdcf));
+
+		List<CaseDataDto> casesByPerson = getCaseFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
+
+		assertEquals(1, casesByPerson.size());
+		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
+		assertNotEquals(case2.getUuid(), casesByPerson.get(0).getUuid());
+
+		casesByPerson = getCaseFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+
+		assertEquals(2, casesByPerson.size());
+		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
+		assertEquals(case2.getUuid(), casesByPerson.get(1).getUuid());
+	}
 }

@@ -17,8 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -95,6 +98,13 @@ public class EventsView extends AbstractView {
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
 
+	private Set<String> getSelectedRows() {
+		EventGrid eventGrid = (EventGrid) this.grid;
+		return this.viewConfiguration.isInEagerMode()
+			? eventGrid.asMultiSelect().getSelectedItems().stream().map(EventIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
 	public EventsView() {
 		super(VIEW_NAME);
 		SormasUI ui = ((SormasUI)getUI());
@@ -147,7 +157,6 @@ public class EventsView extends AbstractView {
 		});
 		addHeaderComponent(eventsViewSwitcher);
 
-
 		if (isDefaultViewType() && ui.getUserProvider().hasUserRight(UserRight.EVENT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventImportLayout());
@@ -171,7 +180,12 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.EVENTS);
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+					grid,
+					() -> isDefaultViewType() && this.viewConfiguration.isInEagerMode()
+						? this.grid.asMultiSelect().getSelectedItems()
+						: Collections.emptySet(),
+					ExportEntityName.EVENTS);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
@@ -180,7 +194,8 @@ public class EventsView extends AbstractView {
 					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
 						EventExportDto.class,
 						null,
-						(Integer start, Integer max) -> FacadeProvider.getEventFacade().getExportList((EventCriteria) grid.getCriteria(), start, max),
+						(Integer start, Integer max) -> FacadeProvider.getEventFacade()
+							.getExportList((EventCriteria) grid.getCriteria(), this.getSelectedRows(), start, max),
 						(propertyId, type) -> {
 							String caption = I18nProperties.findPrefixCaption(
 								propertyId,

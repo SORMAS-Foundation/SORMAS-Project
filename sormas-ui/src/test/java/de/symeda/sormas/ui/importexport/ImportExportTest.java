@@ -31,6 +31,7 @@ import java.io.Writer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -136,7 +137,8 @@ public class ImportExportTest extends AbstractBeanTest {
 
 		getPersonFacade().savePerson(person);
 
-		StreamResource exportStreamResource = CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, null);
+		StreamResource exportStreamResource =
+			CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), Collections::emptySet, CaseExportType.CASE_SURVEILLANCE, null);
 
 		List<String[]> rows = getCsvReader(exportStreamResource.getStreamSource().getStream()).readAll();
 
@@ -277,7 +279,7 @@ public class ImportExportTest extends AbstractBeanTest {
 
 		getPersonFacade().savePerson(person);
 
-		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), null);
+		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), Collections::emptySet, null);
 
 		List<String[]> rows = getCsvReader(exportStreamResource.getStreamSource().getStream()).readAll();
 

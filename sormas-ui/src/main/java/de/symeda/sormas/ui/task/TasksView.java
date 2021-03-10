@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.Date;
+import java.util.Collections;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -33,7 +33,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -73,7 +72,11 @@ public class TasksView extends AbstractView {
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			addHeaderComponent(basicExportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(taskListComponent.getGrid(), ExportEntityName.TASKS, TaskGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				taskListComponent.getGrid(),
+				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
+				ExportEntityName.TASKS,
+				TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 		}

@@ -17,9 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -41,8 +43,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -52,6 +54,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -62,6 +65,7 @@ public class SamplesView extends AbstractView {
 
 	private final SampleGridComponent sampleListComponent;
 	private ViewConfiguration viewConfiguration;
+	private Button btnEnterBulkEditMode;
 
 	public SamplesView() {
 		super(VIEW_NAME);
@@ -71,7 +75,7 @@ public class SamplesView extends AbstractView {
 		setSizeFull();
 		addComponent(sampleListComponent);
 
-		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.LAB_MESSAGES)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
 			OptionGroup samplesViewSwitcher = new OptionGroup();
 			samplesViewSwitcher.setId("samplesViewSwitcher");
 			CssStyles.style(samplesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
@@ -87,7 +91,7 @@ public class SamplesView extends AbstractView {
 			addHeaderComponent(samplesViewSwitcher);
 		}
 
-		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -102,8 +106,13 @@ public class SamplesView extends AbstractView {
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 
 			exportLayout.addComponent(basicExportButton);
-
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(sampleListComponent.getGrid(), ExportEntityName.SAMPLES, SampleGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				sampleListComponent.getGrid(),
+				() -> viewConfiguration.isInEagerMode()
+					? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems()
+					: Collections.emptySet(),
+				ExportEntityName.SAMPLES,
+				SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
@@ -111,7 +120,7 @@ public class SamplesView extends AbstractView {
 				SampleExportDto.class,
 				null,
 				(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
-					.getExportList(sampleListComponent.getGrid().getCriteria(), start, max),
+					.getExportList(sampleListComponent.getGrid().getCriteria(), this.getSelectedRows(), start, max),
 				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(
 						SampleExportDto.I18N_PREFIX,
@@ -146,8 +155,8 @@ public class SamplesView extends AbstractView {
 				Strings.infoDetailedExport);
 		}
 
-		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -176,6 +185,12 @@ public class SamplesView extends AbstractView {
 				navigateTo(sampleListComponent.getCriteria());
 			});
 		}
+	}
+
+	private Set<String> getSelectedRows() {
+		return viewConfiguration.isInEagerMode()
+			? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems().stream().map(SampleIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
 	}
 
 	@Override

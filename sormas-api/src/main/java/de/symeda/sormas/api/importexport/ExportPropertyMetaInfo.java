@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,22 +13,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.importexport;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+public class ExportPropertyMetaInfo {
 
-public enum CovidTestReason {
+	private final String propertyId;
 
-	PRESENCE_OF_SYMPTOMS,
-	OUTBREAK_INVESTIGATION_SCREENING,
-	COHORT_SCREENING,
-	REQUIREMENT_OF_EMPLOYER,
-	DURING_QUARANTINE,
-	AFTER_CONTACT_TRACING,
-	SWISS_COVID_APP_NOTIFICATION,
-	OTHER_REASON;
+	private final String caption;
 
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	private final ExportGroupType exportGroupType;
+
+	public ExportPropertyMetaInfo(String propertyId, String caption, ExportGroupType exportGroupType) {
+		this.propertyId = propertyId;
+		this.caption = caption;
+		this.exportGroupType = exportGroupType;
+	}
+
+	public String getPropertyId() {
+		return propertyId;
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public ExportGroupType getExportGroupType() {
+		return exportGroupType;
 	}
 }

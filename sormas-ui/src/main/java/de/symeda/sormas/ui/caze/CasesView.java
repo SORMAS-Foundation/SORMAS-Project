@@ -21,13 +21,14 @@ import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -65,6 +67,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.person.PersonDto;
@@ -72,7 +75,6 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
@@ -89,13 +91,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -144,11 +145,12 @@ public class CasesView extends AbstractView {
 	private Date followUpToDate;
 
 	public CasesView() {
+
 		super(VIEW_NAME);
-		SormasUI ui = ((SormasUI)getUI());
+
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasCaseManagementRight = ui.getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
-		detailedExportConfiguration = buildDetailedExportConfiguration(ui);
+		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
+		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
 			viewConfiguration.setViewType(CasesViewType.DEFAULT);
@@ -206,24 +208,31 @@ public class CasesView extends AbstractView {
 		addHeaderComponent(casesViewSwitcher);
 
 		if (viewConfiguration.getViewType().isCaseOverview()) {
-			addCommonCasesOverviewToolbar(ui);
+			addCommonCasesOverviewToolbar();
 		}
 
 		addComponent(gridLayout);
 	}
 
-	private ExportConfigurationDto buildDetailedExportConfiguration(@NotNull final SormasUI ui) {
-		ExportConfigurationDto config = ExportConfigurationDto.build(ui.getUserProvider().getUserReference(), ExportType.CASE);
+	private ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
 
 		config.setProperties(
-			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, hasCaseManagementRight)
+			ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight)
 				.stream()
-				.map(DataHelper.Pair::getElement0)
+				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
 		return config;
 	}
 
-	private void addCommonCasesOverviewToolbar(@NotNull final SormasUI ui) {
+	private Set<String> getSelectedRows() {
+		AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+		return this.viewConfiguration.isInEagerMode()
+			? caseGrid.asMultiSelect().getSelectedItems().stream().map(CaseIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
+	private void addCommonCasesOverviewToolbar() {
 		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
 		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
@@ -239,7 +248,7 @@ public class CasesView extends AbstractView {
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(openGuideButton);
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
 			{
 				importLayout.setSpacing(true);
@@ -255,7 +264,7 @@ public class CasesView extends AbstractView {
 			addImportButton(importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -268,13 +277,19 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+					grid,
+					() -> this.viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
+					ExportEntityName.CASES);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
-				StreamResource exportStreamResource =
-					CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, detailedExportConfiguration);
+				StreamResource exportStreamResource = CaseDownloadUtil.createCaseExportResource(
+					grid.getCriteria(),
+					this::getSelectedRows,
+					CaseExportType.CASE_SURVEILLANCE,
+					detailedExportConfiguration);
 
 				addExportButton(
 					exportStreamResource,
@@ -287,7 +302,7 @@ public class CasesView extends AbstractView {
 
 			if (hasCaseManagementRight) {
 				StreamResource caseManagementExportStreamResource =
-						DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), ExportEntityName.CASE_MANAGEMENT);
+					DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACTS);
 				addExportButton(
 					caseManagementExportStreamResource,
 					exportPopupButton,
@@ -301,7 +316,8 @@ public class CasesView extends AbstractView {
 				StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(
 					SampleExportDto.class,
 					null,
-					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(grid.getCriteria(), start, max),
+					(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
+						.getExportList(grid.getCriteria(), this.getSelectedRows(), start, max),
 					(propertyId, type) -> {
 						String caption = I18nProperties.findPrefixCaption(
 							propertyId,
@@ -327,11 +343,11 @@ public class CasesView extends AbstractView {
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& ui.getUserProvider().hasUserRight(UserRight.BAG_EXPORT)) {
+				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
 					null,
-					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(this.getSelectedRows(), start, max),
 					(propertyId, type) -> propertyId,
 					ExportEntityName.BAG_CASES,
 					null);
@@ -345,12 +361,14 @@ public class CasesView extends AbstractView {
 
 					ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 						ExportType.CASE,
-						ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, hasCaseManagementRight),
-						CaseDownloadUtil::getPropertyCaption,
+						ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
-							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
+							.open(
+								CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), this::getSelectedRows, null, exportConfig),
+								null,
+								true));
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
@@ -372,7 +390,7 @@ public class CasesView extends AbstractView {
 			}
 		}
 
-		if (isBulkEditAllowed(ui)) {
+		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
 				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
@@ -408,11 +426,11 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CASE_MERGE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.caseMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
-				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(ui),
+				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
 				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
 			moreLayout.addComponent(mergeDuplicatesButton);
@@ -426,11 +444,11 @@ public class CasesView extends AbstractView {
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(searchSpecificCaseButton);
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CASE_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().openLineListingWindow(ui),
+				e -> ControllerProvider.getCaseController().openLineListingWindow(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(lineListingButton);
@@ -438,7 +456,7 @@ public class CasesView extends AbstractView {
 			final Button createButton = ButtonHelper.createIconButton(
 				Captions.caseNewCase,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().create(ui),
+				e -> ControllerProvider.getCaseController().create(),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
@@ -591,13 +609,11 @@ public class CasesView extends AbstractView {
 			statusButtons.put(statusButton, status.toString());
 		}
 
-		SormasUI ui = ((SormasUI)getUI());
-
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -628,8 +644,8 @@ public class CasesView extends AbstractView {
 			if (viewConfiguration.getViewType().isCaseOverview()) {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
-				if (isBulkEditAllowed(ui)) {
-					boolean hasBulkOperationsRight = ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+				if (isBulkEditAllowed()) {
+					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -651,7 +667,7 @@ public class CasesView extends AbstractView {
 					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 					if (isSmsServiceSetUp
 						&& externalMessagesEnabled
-						&& ui.getUserProvider().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.messagesSendSMS),
@@ -749,8 +765,8 @@ public class CasesView extends AbstractView {
 		}
 	}
 
-	private boolean isBulkEditAllowed(@NotNull final SormasUI ui) {
-		return ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+	private boolean isBulkEditAllowed() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
 			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 

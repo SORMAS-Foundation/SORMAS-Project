@@ -21,9 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -36,12 +34,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 
@@ -52,37 +49,13 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
-
-		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
-			&& ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
-			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-			btnCreatePIAAccount.addClickListener(e -> {
-				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ExternalJournalUtil.openSymptomJournalWindow(contactPerson);
-			});
-			getButtonsLayout().addComponent(btnCreatePIAAccount);
-		}
-
-		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
-			&& ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
-			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-			btnClimedoAccount.addClickListener(e -> {
-				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ExternalJournalUtil.onPatientDiaryButtonClick(contactPerson);
-			});
-			getButtonsLayout().addComponent(btnClimedoAccount);
-		}
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 
 		super.enter(event);
-		initOrRedirect((SormasUI)getUI(), event);
+		initOrRedirect(event);
 	}
 
 	@Override
@@ -105,6 +78,11 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			ExternalJournalUtil.getExternalJournalUiButton(contactPerson).ifPresent(getButtonsLayout()::addComponent);
+		}
 	}
 
 	@Override

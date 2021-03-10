@@ -15,9 +15,10 @@
 
 package de.symeda.sormas.ui.customexport;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -30,28 +31,23 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportGroupType;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 @SuppressWarnings("serial")
 public class ExportConfigurationsLayout extends VerticalLayout {
 
 	private Label lblDescription;
 	private Button btnNewExportConfiguration;
-	private Button btnExport;
 	private ExportConfigurationsGrid grid;
 	private ExportConfigurationsGrid gridSharedExportsToPublic;
 
 	public ExportConfigurationsLayout(
 		ExportType exportType,
-		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		Runnable closeCallback) {
 
 		lblDescription = new Label(I18nProperties.getString(Strings.infoCustomExport));
@@ -61,7 +57,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		btnNewExportConfiguration = ButtonHelper.createIconButton(Captions.exportNewExportConfiguration, VaadinIcons.PLUS, e -> {
 			ExportConfigurationDto newConfig = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), exportType);
 			ControllerProvider.getCustomExportController()
-				.openEditExportConfigurationWindow(grid, newConfig, availableProperties, propertyCaptionProvider);
+				.openEditExportConfigurationWindow(grid, newConfig, availableProperties);
 		}, ValoTheme.BUTTON_PRIMARY);
 		addComponent(btnNewExportConfiguration);
 		setComponentAlignment(btnNewExportConfiguration, Alignment.MIDDLE_RIGHT);
@@ -70,7 +66,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		myExportsLabel.addStyleName(H3);
 		addComponent(myExportsLabel);
 
-		grid = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, false);
+		grid = new ExportConfigurationsGrid(exportType, availableProperties, false);
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 
@@ -78,7 +74,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 			new Label(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedExports));
 		sharedExportsLabel.addStyleName(H3);
 
-		gridSharedExportsToPublic = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, true);
+		gridSharedExportsToPublic = new ExportConfigurationsGrid(exportType, availableProperties, true);
 		if (gridSharedExportsToPublic.getNbOfSharedExportsToPublic() > 0) {
 			gridSharedExportsToPublic.setWidth(100, Unit.PERCENTAGE);
 			addComponent(sharedExportsLabel);
@@ -88,10 +84,6 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		Button btnClose = ButtonHelper.createButton(Captions.actionClose, e -> closeCallback.run());
 		addComponent(btnClose);
 		setComponentAlignment(btnClose, Alignment.MIDDLE_RIGHT);
-	}
-
-	public Button getExportButton() {
-		return btnExport;
 	}
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {

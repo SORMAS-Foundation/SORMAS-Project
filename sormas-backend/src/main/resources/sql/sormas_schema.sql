@@ -6762,7 +6762,7 @@ ALTER TABLE facility ADD COLUMN areatype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities address #4027');
 
---2021-02-23 Add event management status to Event #4255
+-- 2021-02-23 Add event management status to Event #4255
 
 ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
 ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
@@ -6774,5 +6774,52 @@ ALTER TABLE exposures ADD COLUMN largeattendancenumber varchar(255);
 ALTER TABLE exposures_history ADD COLUMN largeattendancenumber varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (342, 'Extend exposure #4549');
+
+-- 2021-03-04 Add person email, person phone, testResultVerified to LabMessage #4106
+ALTER TABLE labmessage ADD COLUMN personphone VARCHAR(255);
+ALTER TABLE labmessage ADD COLUMN personemail VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN personphone VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN personemail VARCHAR(255);
+ALTER TABLE labmessage ADD COLUMN testresultverified boolean;
+ALTER TABLE labmessage_history ADD COLUMN testresultverified boolean;
+UPDATE labmessage SET testresultverified = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (343, 'Add person email, person phone, testResultVerified to LabMessage #4106');
+
+-- 2021-03-03 Add a "sampling reason" field in the sample #4555
+ALTER TABLE samples
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+ALTER TABLE samples_history
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE latest_sample RECORD;
+        DECLARE _samplingreason text;
+    BEGIN
+        FOR rec IN SELECT id as _caseid, covidtestreason as _covidtestreason, covidtestreasondetails as _covidtestreasondetails
+                   FROM cases WHERE cases.covidtestreason IS NOT NULL
+            LOOP
+                SELECT id as _id FROM samples where associatedcase_id = rec._caseid order by sampledatetime DESC limit 1 INTO latest_sample;
+
+                _samplingreason = CASE WHEN rec._covidtestreason='REQUIREMENT_OF_EMPLOYER' THEN 'PROFESSIONAL_REASON'
+                                       WHEN rec._covidtestreason='DURING_QUARANTINE' THEN 'QUARANTINE_REGULATIONS'
+                                       WHEN rec._covidtestreason='COHORT_SCREENING' THEN 'SCREENING'
+                                       WHEN rec._covidtestreason='OUTBREAK_INVESTIGATION_SCREENING' THEN 'OUTBREAK'
+                                       WHEN rec._covidtestreason='AFTER_CONTACT_TRACING' THEN 'CONTACT_TO_CASE'
+                                       ELSE rec._covidtestreason
+                    END;
+                UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases
+    DROP COLUMN covidtestreason,
+    DROP COLUMN covidtestreasondetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -26,6 +27,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -39,8 +41,8 @@ import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -51,8 +53,6 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
-
-import javax.validation.constraints.NotNull;
 
 public class ContactVisitsView extends AbstractContactView {
 
@@ -82,8 +82,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		SormasUI ui = ((SormasUI)getUI());
-		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -102,7 +101,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
@@ -116,7 +115,15 @@ public class ContactVisitsView extends AbstractContactView {
 				VisitExportDto.class,
 				VisitExportType.CONTACT_VISITS,
 				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
-					.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+					.getVisitsExportList(
+						grid.getCriteria(),
+						grid.getSelectionModel() instanceof MultiSelectionModelImpl
+							? grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet())
+							: null,
+						VisitExportType.CONTACT_VISITS,
+						start,
+						max,
+						null),
 				(propertyId, type) -> {
 					String caption = findPrefixCaption(
 						propertyId,
@@ -135,9 +142,12 @@ public class ContactVisitsView extends AbstractContactView {
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getVisitController().createVisit(ui, this.getContactRef(), r -> navigateTo(criteria)), ValoTheme.BUTTON_PRIMARY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
+			newButton = ButtonHelper.createIconButton(
+				Captions.visitNewVisit,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)),
+				ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
@@ -163,7 +173,7 @@ public class ContactVisitsView extends AbstractContactView {
 //	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null

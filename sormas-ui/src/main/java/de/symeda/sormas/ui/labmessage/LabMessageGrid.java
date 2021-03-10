@@ -20,7 +20,6 @@ import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.LabMessageStatusRenderer;
@@ -54,10 +53,10 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		setCriteria(criteria);
 
-		addShowColumn(e -> ControllerProvider.getLabMessageController().show(e.getUuid(), this::reload));
+		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
 
 		addComponentColumn(indexDto -> indexDto.isProcessed() ? null : ButtonHelper.createButton(Captions.labMessageProcess, e -> {
-			ControllerProvider.getLabMessageController().process((SormasUI)getUI(), indexDto.getUuid());
+			ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid());
 		}, ValoTheme.BUTTON_PRIMARY)).setId(COLUMN_PROCESS);
 
 		setColumns(

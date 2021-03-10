@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -56,7 +56,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -66,13 +65,12 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import javax.validation.constraints.NotNull;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -99,8 +97,9 @@ public class CaseContactsView extends AbstractCaseView {
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
-	public CaseContactsView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, false);
+	public CaseContactsView() {
+
+		super(VIEW_NAME, false);
 		setSizeFull();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
@@ -120,8 +119,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
-		SormasUI ui = ((SormasUI)getUI());
-		UserDto user = ui.getUserProvider().getUser();
+		UserDto user = UserProvider.getCurrent().getUser();
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
@@ -237,9 +235,8 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 		statusFilterLayout.setExpandRatio(statusFilterLayout.getComponent(statusFilterLayout.getComponentCount() - 1), 1);
 
-		SormasUI ui = ((SormasUI)getUI());
 		// Bulk operation dropdown
-		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -266,7 +263,7 @@ public class CaseContactsView extends AbstractCaseView {
 			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_IMPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil
 					.showPopupWindow(new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
@@ -276,12 +273,12 @@ public class CaseContactsView extends AbstractCaseView {
 
 			statusFilterLayout.addComponent(importButton);
 			statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
-			if (!ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(importButton, 1);
 			}
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -292,14 +289,17 @@ public class CaseContactsView extends AbstractCaseView {
 
 			statusFilterLayout.addComponent(exportButton);
 			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
-
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CONTACTS);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
+				ExportEntityName.CONTACTS);
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
+			StreamResource extendedExportStreamResource =
+				ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
 			addExportButton(
 				extendedExportStreamResource,
 				exportButton,
@@ -309,7 +309,7 @@ public class CaseContactsView extends AbstractCaseView {
 				Descriptions.descDetailedExportButton);
 
 			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());
+				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -324,12 +324,12 @@ public class CaseContactsView extends AbstractCaseView {
 			exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			newButton = ButtonHelper.createIconButtonWithCaption(
 				Captions.contactNewContact,
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(ui, this.getCaseRef()),
+				e -> ControllerProvider.getContactController().create(this.getCaseRef()),
 				ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(newButton);
@@ -341,8 +341,14 @@ public class CaseContactsView extends AbstractCaseView {
 		return statusFilterLayout;
 	}
 
+	private Set<String> getSelectedRows() {
+		return viewConfiguration.isInEagerMode()
+			? this.grid.asMultiSelect().getSelectedItems().stream().map(ContactIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		criteria.caze(getCaseRef());
 
