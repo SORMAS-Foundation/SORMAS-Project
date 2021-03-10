@@ -48,6 +48,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -179,7 +180,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setEventManagementStatusClass(EventManagementStatus.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
-		EventValidator.initializeEventStartDateValidation(record, contentBinding);
+		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 	}
 
 	@Override
