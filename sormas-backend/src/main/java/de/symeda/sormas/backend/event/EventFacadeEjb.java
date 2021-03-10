@@ -52,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
@@ -92,7 +94,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import org.apache.commons.lang.StringUtils;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -962,6 +963,13 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return eventService.exists(uuid);
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
+		return eventService.exists(
+			(cb, eventRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
 	}
 
 	@Override

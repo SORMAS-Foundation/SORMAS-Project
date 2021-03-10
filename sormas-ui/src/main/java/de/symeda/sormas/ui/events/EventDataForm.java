@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
@@ -72,6 +74,7 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
+import de.symeda.sormas.ui.utils.ValidationUtils;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -81,6 +84,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String MULTI_DAY_EVENT_LOC = "eventMultiDay";
 	private static final String INFORMATION_SOURCE_HEADING_LOC = "informationSourceHeadingLoc";
 	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
+	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 
 	private static final String STATUS_CHANGE = "statusChange";
 
@@ -101,6 +105,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
+			fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
 			fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
@@ -179,7 +184,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addFields(EventDto.EXTERNAL_ID);
-		addFields(EventDto.EXTERNAL_TOKEN);
+
+		TextField externalTokenField = addField(EventDto.EXTERNAL_TOKEN);
+		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageEventExternalTokenWarning));
+		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
@@ -437,6 +446,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		}
 
 		configureInfrastructureFields(locationForm, countryField, regionField, districtField);
+
+		addValueChangeListener((e) -> {
+			ValidationUtils.initComponentErrorValidator(
+				externalTokenField,
+				getValue().getExternalToken(),
+				Validations.duplicateExternalToken,
+				externalTokenWarningLabel,
+				(externalToken) -> FacadeProvider.getEventFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
+
+		});
 	}
 
 	private void configureInfrastructureFields(LocationEditForm locationForm, ComboBox countryField, ComboBox regionField, ComboBox districtField) {

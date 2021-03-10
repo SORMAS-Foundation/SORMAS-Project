@@ -79,4 +79,6 @@ public interface PersonFacade {
 	long count(PersonCriteria criteria);
 
     boolean exists(String uuid);
+
+	boolean doesExternalTokenExist(String externalToken, String personUuid);
 }
