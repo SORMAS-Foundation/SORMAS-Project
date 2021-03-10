@@ -804,6 +804,10 @@ public interface Captions {
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
 	String devModeGenerateEvents = "devModeGenerateEvents";
+	String devModeGeneratorSeed = "devModeGeneratorSeed";
+	String devModeLoadDefaultConfig = "devModeLoadDefaultConfig";
+	String devModeLoadPerformanceTestConfig = "devModeLoadPerformanceTestConfig";
+	String devModeUseSeed = "devModeUseSeed";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
