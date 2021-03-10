@@ -55,7 +55,7 @@ public class LabMessagesView extends AbstractView {
 				if (!fetchResult.isSuccess()) {
 					VaadinUiUtil.showWarningPopup(fetchResult.getError());
 				} else if (!fetchResult.hasNewMessages()) {
-					VaadinUiUtil.showSimplePopupWindow("hehe", "no new messages");
+					VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
 				} else {
 					listComponent.getGrid().reload();
 				}
