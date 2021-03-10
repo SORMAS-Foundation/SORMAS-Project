@@ -27,6 +27,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
 	private Integer eventParticipantFollowUpDuration;
+	private Boolean extendedClassification;
+	private Boolean extendedClassificationMulti;
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -105,5 +107,23 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setEventParticipantFollowUpDuration(Integer eventParticipantFollowUpDuration) {
 		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
+	}
+
+	@Column
+	public Boolean getExtendedClassification() {
+		return extendedClassification;
+	}
+
+	public void setExtendedClassification(Boolean extendedClassification) {
+		this.extendedClassification = extendedClassification;
+	}
+
+	@Column
+	public Boolean getExtendedClassificationMulti() {
+		return extendedClassificationMulti;
+	}
+
+	public void setExtendedClassificationMulti(Boolean extendedClassificationMulti) {
+		this.extendedClassificationMulti = extendedClassificationMulti;
 	}
 }
