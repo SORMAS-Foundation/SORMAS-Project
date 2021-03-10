@@ -24,62 +24,62 @@ public enum Disease
 	implements
 	StatisticsGroupingKey {
 
-	AFP(true, true, true, false, 0, true),
-	CHOLERA(true, true, true, true, 5, true),
-	CONGENITAL_RUBELLA(true, true, true, true, 21, true),
-	CSM(true, true, true, false, 10, true),
-	DENGUE(true, true, true, false, 14, true),
-	EVD(true, true, true, true, 21, true),
-	GUINEA_WORM(true, true, true, false, 0, true),
-	LASSA(true, true, true, true, 21, true),
-	MEASLES(true, true, true, false, 21, true),
-	MONKEYPOX(true, true, true, true, 21, true),
-	NEW_INFLUENZA(true, true, true, true, 17, true),
-	PLAGUE(true, true, true, true, 7, true),
-	POLIO(true, true, true, false, 0, true),
-	UNSPECIFIED_VHF(true, true, true, true, 21, true),
-	WEST_NILE_FEVER(true, false, true, false, 0, true),
-	YELLOW_FEVER(true, true, true, false, 6, true),
-	RABIES(true, true, true, true, 6, true),
-	ANTHRAX(true, true, true, false, 0, true),
-	CORONAVIRUS(true, true, true, true, 14, true),
-	PNEUMONIA(true, false, true, false, 0, true),
-	MALARIA(true, false, false, false, 0, true),
-	TYPHOID_FEVER(true, false, false, false, 0, true),
-	ACUTE_VIRAL_HEPATITIS(true, false, false, false, 0, true),
-	NON_NEONATAL_TETANUS(true, false, false, false, 0, true),
-	HIV(true, false, false, false, 0, true),
-	SCHISTOSOMIASIS(true, false, false, false, 0, true),
-	SOIL_TRANSMITTED_HELMINTHS(true, false, false, false, 0, true),
-	TRYPANOSOMIASIS(true, false, false, false, 0, true),
-	DIARRHEA_DEHYDRATION(true, false, false, false, 0, true),
-	DIARRHEA_BLOOD(true, false, false, false, 0, true),
-	SNAKE_BITE(true, false, false, false, 0, true),
-	RUBELLA(true, false, false, false, 0, true),
-	TUBERCULOSIS(true, false, false, false, 0, true),
-	LEPROSY(true, false, false, false, 0, true),
-	LYMPHATIC_FILARIASIS(true, false, false, false, 0, true),
-	BURULI_ULCER(true, false, false, false, 0, true),
-	PERTUSSIS(true, false, false, false, 0, true),
-	NEONATAL_TETANUS(true, false, false, false, 0, true),
-	ONCHOCERCIASIS(true, false, false, false, 0, true),
-	DIPHTERIA(true, false, false, false, 0, true),
-	TRACHOMA(true, false, false, false, 0, true),
-	YAWS_ENDEMIC_SYPHILIS(true, false, false, false, 0, true),
-	MATERNAL_DEATHS(true, false, false, false, 0, true),
-	PERINATAL_DEATHS(true, false, false, false, 0, true),
-	INFLUENZA_A(true, false, true, false, 0, true),
-	INFLUENZA_B(true, false, true, false, 0, true),
-	H_METAPNEUMOVIRUS(true, false, true, false, 0, true),
-	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, 0, true),
-	PARAINFLUENZA_1_4(true, false, true, false, 0, true),
-	ADENOVIRUS(true, false, true, false, 0, true),
-	RHINOVIRUS(true, false, true, false, 0, true),
-	ENTEROVIRUS(true, false, true, false, 0, true),
-	M_PNEUMONIAE(true, false, true, false, 0, true),
-	C_PNEUMONIAE(true, false, true, false, 0, true),
-	OTHER(true, true, true, true, 21, false),
-	UNDEFINED(true, true, true, true, 0, false);
+	AFP(true, true, true, false, 0, true, false, false),
+	CHOLERA(true, true, true, true, 5, true, false, false),
+	CONGENITAL_RUBELLA(true, true, true, true, 21, true, false, false),
+	CSM(true, true, true, false, 10, true, false, false),
+	DENGUE(true, true, true, false, 14, true, false, false),
+	EVD(true, true, true, true, 21, true, false, false),
+	GUINEA_WORM(true, true, true, false, 0, true, false, false),
+	LASSA(true, true, true, true, 21, true, false, false),
+	MEASLES(true, true, true, false, 21, true, true, false),
+	MONKEYPOX(true, true, true, true, 21, true, false, false),
+	NEW_INFLUENZA(true, true, true, true, 17, true, false, false),
+	PLAGUE(true, true, true, true, 7, true, false, false),
+	POLIO(true, true, true, false, 0, true, false, false),
+	UNSPECIFIED_VHF(true, true, true, true, 21, true, false, false),
+	WEST_NILE_FEVER(true, false, true, false, 0, true, false, false),
+	YELLOW_FEVER(true, true, true, false, 6, true, false, false),
+	RABIES(true, true, true, true, 6, true, false, false),
+	ANTHRAX(true, true, true, false, 0, true, false, false),
+	CORONAVIRUS(true, true, true, true, 14, true, true, true),
+	PNEUMONIA(true, false, true, false, 0, true, false, false),
+	MALARIA(true, false, false, false, 0, true, false, false),
+	TYPHOID_FEVER(true, false, false, false, 0, true, false, false),
+	ACUTE_VIRAL_HEPATITIS(true, false, false, false, 0, true, false, false),
+	NON_NEONATAL_TETANUS(true, false, false, false, 0, true, false, false),
+	HIV(true, false, false, false, 0, true, false, false),
+	SCHISTOSOMIASIS(true, false, false, false, 0, true, false, false),
+	SOIL_TRANSMITTED_HELMINTHS(true, false, false, false, 0, true, false, false),
+	TRYPANOSOMIASIS(true, false, false, false, 0, true, false, false),
+	DIARRHEA_DEHYDRATION(true, false, false, false, 0, true, false, false),
+	DIARRHEA_BLOOD(true, false, false, false, 0, true, false, false),
+	SNAKE_BITE(true, false, false, false, 0, true, false, false),
+	RUBELLA(true, false, false, false, 0, true, false, false),
+	TUBERCULOSIS(true, false, false, false, 0, true, false, false),
+	LEPROSY(true, false, false, false, 0, true, false, false),
+	LYMPHATIC_FILARIASIS(true, false, false, false, 0, true, false, false),
+	BURULI_ULCER(true, false, false, false, 0, true, false, false),
+	PERTUSSIS(true, false, false, false, 0, true, false, false),
+	NEONATAL_TETANUS(true, false, false, false, 0, true, false, false),
+	ONCHOCERCIASIS(true, false, false, false, 0, true, false, false),
+	DIPHTERIA(true, false, false, false, 0, true, false, false),
+	TRACHOMA(true, false, false, false, 0, true, false, false),
+	YAWS_ENDEMIC_SYPHILIS(true, false, false, false, 0, true, false, false),
+	MATERNAL_DEATHS(true, false, false, false, 0, true, false, false),
+	PERINATAL_DEATHS(true, false, false, false, 0, true, false, false),
+	INFLUENZA_A(true, false, true, false, 0, true, false, false),
+	INFLUENZA_B(true, false, true, false, 0, true, false, false),
+	H_METAPNEUMOVIRUS(true, false, true, false, 0, true, false, false),
+	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, 0, true, false, false),
+	PARAINFLUENZA_1_4(true, false, true, false, 0, true, false, false),
+	ADENOVIRUS(true, false, true, false, 0, true, false, false),
+	RHINOVIRUS(true, false, true, false, 0, true, false, false),
+	ENTEROVIRUS(true, false, true, false, 0, true, false, false),
+	M_PNEUMONIAE(true, false, true, false, 0, true, false, false),
+	C_PNEUMONIAE(true, false, true, false, 0, true, false, false),
+	OTHER(true, true, true, true, 21, false, false, false),
+	UNDEFINED(true, true, true, true, 0, false, false, false);
 
 	private boolean defaultActive;
 	private boolean defaultPrimary;
@@ -87,8 +87,18 @@ public enum Disease
 	private boolean defaultFollowUpEnabled;
 	private int defaultFollowUpDuration;
 	private boolean variantAllowed;
+	private boolean defaultExtendedClassification;
+	private boolean defaultExtendedClassificationMulti;
 
-	Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration, boolean variantAllowed) {
+	Disease(
+		boolean defaultActive,
+		boolean defaultPrimary,
+		boolean defaultCaseBased,
+		boolean defaultFollowUpEnabled,
+		int defaultFollowUpDuration,
+		boolean variantAllowed,
+		boolean defaultExtendedClassification,
+		boolean defaultExtendedClassificationMulti) {
 
 		this.defaultActive = defaultActive;
 		this.defaultPrimary = defaultPrimary;
@@ -96,6 +106,8 @@ public enum Disease
 		this.defaultFollowUpEnabled = defaultFollowUpEnabled;
 		this.defaultFollowUpDuration = defaultFollowUpDuration;
 		this.variantAllowed = variantAllowed;
+		this.defaultExtendedClassification = defaultExtendedClassification;
+		this.defaultExtendedClassificationMulti = defaultExtendedClassificationMulti;
 	}
 
 	public String toString() {
@@ -146,6 +158,22 @@ public enum Disease
 
 	public boolean isVariantAllowed() {
 		return variantAllowed;
+	}
+
+	public boolean isDefaultExtendedClassification() {
+		return defaultExtendedClassification;
+	}
+
+	public void setDefaultExtendedClassification(boolean defaultExtendedClassification) {
+		this.defaultExtendedClassification = defaultExtendedClassification;
+	}
+
+	public boolean isDefaultExtendedClassificationMulti() {
+		return defaultExtendedClassificationMulti;
+	}
+
+	public void setDefaultExtendedClassificationMulti(boolean defaultExtendedClassificationMulti) {
+		this.defaultExtendedClassificationMulti = defaultExtendedClassificationMulti;
 	}
 
 	@Override

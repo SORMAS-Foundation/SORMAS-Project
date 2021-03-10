@@ -12,6 +12,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -155,6 +156,25 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
+	}
+
+	@Override
+	public Boolean isProcessed(String uuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		Predicate filter = cb.and(cb.equal(from.get(LabMessage.UUID), uuid));
+
+		cq.where(filter);
+		cq.select(from.get(LabMessage.PROCESSED));
+
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 	@Override
