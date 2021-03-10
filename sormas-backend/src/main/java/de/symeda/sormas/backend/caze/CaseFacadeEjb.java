@@ -2061,8 +2061,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	/**
 	 * Reassigns tasks related to `caze`. With `forceReassignment` beeing false, the function will only reassign
 	 * the tasks if the assignees lack jurisdiction on the case. When forced, all tasks will be reassigned.
-	 * @param caze the case which related tasks are reassigned.
-	 * @param forceReassignment force reassignment of case tasks.
+	 * 
+	 * @param caze
+	 *            the case which related tasks are reassigned.
+	 * @param forceReassignment
+	 *            force reassignment of case tasks.
 	 */
 	public void reassignTasksOfCase(Case caze, boolean forceReassignment) {
 		// for each task that is related to the case, the task assignee must match the jurisdiction of the case
@@ -2071,20 +2074,29 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (task.getTaskStatus() != TaskStatus.PENDING) {
 				continue;
 			}
+
 			User taskAsignee = task.getAssigneeUser();
+			boolean mismatch;
 
-			boolean regionMismatch = !taskAsignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
-			boolean districtMismatch = !taskAsignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
+			if (taskAsignee == null) {
+				// no one is assigned so we skip detailed checks and go directly reassignment.
+				mismatch = true;
+			} else {
+				boolean regionMismatch = !taskAsignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
+				boolean districtMismatch = !taskAsignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
 
-			boolean communityMismatch = taskAsignee.getCommunity() != null
-				&& caze.getCommunity() != null
-				&& !taskAsignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid());
+				boolean communityMismatch = taskAsignee.getCommunity() != null
+					&& caze.getCommunity() != null
+					&& !taskAsignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid());
 
-			boolean facilityMismatch = taskAsignee.getHealthFacility() != null
-				&& caze.getHealthFacility() != null
-				&& !taskAsignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid());
+				boolean facilityMismatch = taskAsignee.getHealthFacility() != null
+					&& caze.getHealthFacility() != null
+					&& !taskAsignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid());
 
-			if (forceReassignment || regionMismatch || districtMismatch || communityMismatch || facilityMismatch) {
+				mismatch = regionMismatch || districtMismatch || communityMismatch || facilityMismatch;
+			}
+
+			if (forceReassignment || mismatch) {
 				// if there is any mismatch between the jurisdiction of the case and the assigned user,
 				// we need to reassign the tasks
 				assignOfficerOrSupervisorToTask(caze, task);
