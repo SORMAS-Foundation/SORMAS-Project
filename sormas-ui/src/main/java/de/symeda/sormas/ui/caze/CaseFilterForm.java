@@ -373,14 +373,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					enableFields(communityField, facilityTypeGroupField);
 
 					clearAndDisableFields(facilityField);
-					if (facilityTypeGroupField.getValue() != null && facilityTypeField.getValue() != null) {
-						FieldHelper.updateItems(
-							facilityField,
-							FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(newDistrict, (FacilityType) facilityTypeField.getValue(), true, false));
-						enableFields(facilityField);
-					} else {
-						FieldHelper.updateEnumData(facilityTypeGroupField, FacilityTypeGroup.getAccomodationGroups());
+					if (facilityTypeGroupField != null) {
+						if (facilityTypeGroupField.getValue() != null && facilityTypeField.getValue() != null) {
+							FieldHelper.updateItems(
+								facilityField,
+								FacadeProvider.getFacilityFacade()
+									.getActiveFacilitiesByDistrictAndType(newDistrict, (FacilityType) facilityTypeField.getValue(), true, false));
+							enableFields(facilityField);
+						} else {
+							FieldHelper.updateEnumData(facilityTypeGroupField, FacilityTypeGroup.getAccomodationGroups());
+						}
 					}
 
 					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
@@ -530,73 +532,66 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-		final ComboBox typeGroupField = getField(CaseCriteria.FACILITY_TYPE_GROUP);
-		final ComboBox typeField = getField(CaseCriteria.FACILITY_TYPE);
+		final ComboBox facilityTypeGroupField = getField(CaseCriteria.FACILITY_TYPE_GROUP);
+		final ComboBox facilityTypeField = getField(CaseCriteria.FACILITY_TYPE);
 		final ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
 		final ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
 
 		// Disable all fields
-		districtField.removeAllItems();
-		communityField.removeAllItems();
-		typeGroupField.removeAllItems();
-		typeField.removeAllItems();
-		facilityField.removeAllItems();
-		pointOfEntryField.removeAllItems();
-		disableFields(districtField, communityField, typeGroupField, typeField, facilityField, pointOfEntryField);
+		clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField, pointOfEntryField);
 
 		// Get initial field values according to user and criteria
 		final RegionReferenceDto region = user.getRegion() == null ? criteria.getRegion() : user.getRegion();
 		final DistrictReferenceDto district = user.getDistrict() == null ? criteria.getDistrict() : user.getDistrict();
 		final CommunityReferenceDto community = user.getCommunity() == null ? criteria.getCommunity() : user.getCommunity();
-		final FacilityTypeGroup typeGroup = criteria.getFacilityTypeGroup();
-		final FacilityType type = criteria.getFacilityType();
+		final FacilityTypeGroup facilityTypeGroup = criteria.getFacilityTypeGroup();
+		final FacilityType facilityType = criteria.getFacilityType();
 
 		// district
 		if (region != null) {
 			enableFields(districtField);
 			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			// community
 			if (district != null) {
 				districtField.setValue(district);
+				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				enableFields(communityField);
+				if (community != null) {
+					communityField.setValue(community);
+				}
+			} else {
+				clearAndDisableFields(communityField);
 			}
 		} else {
-			disableFields(districtField);
-		}
-
-		// community
-		if (district != null && community == null) {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			enableFields(communityField, typeGroupField);
-		} else if (district != null && community != null) {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			communityField.setValue(community);
-			enableFields(communityField);
+			clearAndDisableFields(districtField, communityField);
 		}
 
 		// facility
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			facilityField.setValue(user.getHealthFacility());
-			disableFields(typeGroupField, typeField, facilityField);
-		} else if (district != null) {
-			enableFields(typeGroupField);
-			FieldHelper.updateEnumData(typeGroupField, FacilityTypeGroup.getAccomodationGroups());
-			if (typeGroup != null) {
-				typeGroupField.setValue(typeGroup);
-				enableFields(typeField);
-				FieldHelper.updateEnumData(typeField, FacilityType.getAccommodationTypes(typeGroup));
-				if (type != null) {
-					typeField.setValue(type);
+			disableFields(facilityTypeGroupField, facilityTypeField, facilityField);
+		} else if (facilityTypeGroupField != null && district != null) {
+			enableFields(facilityTypeGroupField);
+			FieldHelper.updateEnumData(facilityTypeGroupField, FacilityTypeGroup.getAccomodationGroups());
+			if (facilityTypeGroup != null) {
+				facilityTypeGroupField.setValue(facilityTypeGroup);
+				enableFields(facilityTypeField);
+				FieldHelper.updateEnumData(facilityTypeField, FacilityType.getAccommodationTypes(facilityTypeGroup));
+				if (facilityType != null) {
+					facilityTypeField.setValue(facilityType);
 					enableFields(facilityField);
 					if (community != null) {
 						facilityField
-							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, type, true, false));
+							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
 					} else if (district != null) {
-						facilityField.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, type, true, false));
+						facilityField
+							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
 					}
 				} else {
 					disableFields(facilityField);
 				}
 			} else {
-				disableFields(typeField);
+				disableFields(facilityTypeField);
 			}
 		}
 
@@ -606,13 +601,12 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		// Disable fields according to user & jurisdiction
-
 		if (userJurisdictionLevel == JurisdictionLevel.DISTRICT) {
 			clearAndDisableFields(districtField);
 		} else if (userJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
 			clearAndDisableFields(districtField, communityField);
 		} else if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			clearAndDisableFields(districtField, communityField, typeGroupField, typeField, facilityField);
+			clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
 		getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);

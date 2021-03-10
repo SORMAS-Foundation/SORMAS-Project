@@ -22,7 +22,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -113,23 +112,15 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
 
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(ui, eventParticipantRef.getUuid());
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 
-		if (ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				EventParticipantEditForm eventParticipantEditForm = (EventParticipantEditForm) editComponent.getWrappedComponent();
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantEditForm.getValue().toReference());
-				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEventParticipant));
-		}
-
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -138,7 +129,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
 				Label infoSample = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
 					ContentMode.HTML);
@@ -150,7 +141,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			VerticalLayout contactsLayout = new VerticalLayout();
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
@@ -175,7 +166,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(ui.getUserProvider(), layout, eventParticipantRef);
+		CaseDocumentsComponent.addComponentToLayout(((SormasUI)getUI()).getUserProvider(), layout, eventParticipantRef);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {
