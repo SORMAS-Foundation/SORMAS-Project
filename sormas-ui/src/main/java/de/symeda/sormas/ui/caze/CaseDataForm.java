@@ -145,14 +145,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
-	public static final String CONFIRMED_CASE_CLASSIFICATION = Captions.CaseData_caseConfirmationBasis;
+	private static final String CASE_CONFIRMATION_BASIS = Captions.CaseData_caseConfirmationBasis;
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
+					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
-					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CONFIRMED_CASE_CLASSIFICATION) +
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
 					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_DETAILS) +
@@ -408,7 +408,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			ComboBox clinicalConfirmationCombo = addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			ComboBox epidemiologicalConfirmationCombo = addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			ComboBox laboratoryConfirmationCombo = addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
-			ComboBox caseConfirmationBasisCombo = addCustomField(CONFIRMED_CASE_CLASSIFICATION, CaseConfirmationBasis.class, ComboBox.class);
+			ComboBox caseConfirmationBasisCombo = addCustomField(CASE_CONFIRMATION_BASIS, CaseConfirmationBasis.class, ComboBox.class);
 
 			if (diseaseConfiguration.getExtendedClassificationMulti()) {
 				FieldHelper.setVisibleWhen(
@@ -1451,7 +1451,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
 		super.setValue(newFieldValue);
 
-		ComboBox caseConfirmationBasisCombo = getField(CONFIRMED_CASE_CLASSIFICATION);
+		ComboBox caseConfirmationBasisCombo = getField(CASE_CONFIRMATION_BASIS);
 
 		if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
