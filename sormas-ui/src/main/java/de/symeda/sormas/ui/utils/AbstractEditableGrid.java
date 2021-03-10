@@ -97,6 +97,9 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.getEditor().setBinder(binder);
 		grid.getEditor().setBuffered(true);
 		grid.getEditor().setEnabled(true);
+		grid.getEditor().addSaveListener(e -> {
+			e.getGrid().getDataProvider().refreshAll();
+		});
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setMargin(false);

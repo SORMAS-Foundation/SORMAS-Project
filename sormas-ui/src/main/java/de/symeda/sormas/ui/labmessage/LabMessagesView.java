@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.labmessage;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -48,15 +47,15 @@ public class LabMessagesView extends AbstractView {
 		}
 
 		samplesViewSwitcher.setValue(SamplesViewType.LAB_MESSAGES);
-		samplesViewSwitcher.addValueChangeListener(e -> {
-			SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
-		});
+		samplesViewSwitcher.addValueChangeListener(e -> SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME));
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
 				LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
 				if (!fetchResult.isSuccess()) {
 					VaadinUiUtil.showWarningPopup(fetchResult.getError());
+				} else if (!fetchResult.hasNewMessages()) {
+					VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
 				} else {
 					listComponent.getGrid().reload();
 				}

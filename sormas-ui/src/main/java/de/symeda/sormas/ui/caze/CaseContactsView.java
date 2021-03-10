@@ -17,12 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ExportEntityName;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -66,6 +65,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -291,8 +292,10 @@ public class CaseContactsView extends AbstractCaseView {
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
-			StreamResource streamResource = GridExportStreamResource
-				.createStreamResourceWithSelectedItems(grid, () -> this.grid.asMultiSelect().getSelectedItems(), ExportEntityName.CONTACTS);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
+				ExportEntityName.CONTACTS);
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 			StreamResource extendedExportStreamResource =
@@ -339,7 +342,9 @@ public class CaseContactsView extends AbstractCaseView {
 	}
 
 	private Set<String> getSelectedRows() {
-		return this.grid.asMultiSelect().getSelectedItems().stream().map(ContactIndexDto::getUuid).collect(Collectors.toSet());
+		return viewConfiguration.isInEagerMode()
+			? this.grid.asMultiSelect().getSelectedItems().stream().map(ContactIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
 	}
 
 	@Override

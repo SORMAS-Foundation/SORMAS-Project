@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.importexport;
 
 import static de.symeda.sormas.api.campaign.data.CampaignFormDataDto.FORM_DATE;
@@ -67,17 +65,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Provider;
 
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -89,6 +76,7 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -98,11 +86,14 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -113,6 +104,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryDto;
@@ -123,20 +115,28 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private static final String PERSON_PREFIX = "person.";
 
 	private static final List<String> PERSON_COLUMNS_TO_REMOVE = Arrays.asList(
 		PersonDto.PLACE_OF_BIRTH_COMMUNITY,
@@ -162,7 +162,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		PersonDto.BURIAL_CONDUCTOR,
 		PersonDto.BURIAL_DATE,
 		PersonDto.BURIAL_PLACE_DESCRIPTION,
-		PersonDto.ADDRESSES);
+		PersonDto.ADDRESSES,
+		PersonDto.SYMPTOM_JOURNAL_STATUS);
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -220,16 +221,19 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		char separator = configFacade.getCsvSeparator();
 
+		List<String> columnsToRemove = Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER);
+
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EventDto.class, "", separator);
+		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", columnsToRemove)).collect(Collectors.toList());
+
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
-		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
-		importColumns = importColumns.stream()
-			.filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName()))
-			.collect(Collectors.toList());
+		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator);
+		importColumns =
+			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventImportTemplateFilePath()), importColumns, true);
 	}
@@ -248,7 +252,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
 
-		importColumns = importColumns.stream().filter(column -> !PERSON_COLUMNS_TO_REMOVE.contains(column.getColumnName())).collect(Collectors.toList());
+		importColumns =
+			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
@@ -620,13 +625,13 @@ public class ImportFacadeEjb implements ImportFacade {
 				appendListOfFields(
 					importColumns,
 					field.getType(),
-					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".",
+					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
 					importColumns,
 					PersonDto.class,
-					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".",
+					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
@@ -719,6 +724,17 @@ public class ImportFacadeEjb implements ImportFacade {
 		return content;
 	}
 
+	private boolean keepColumn(ImportColumn column, String prefix, List<String> columnsToExclude) {
+		String columnName = column.getColumnName();
+		for (String columnToExclude : columnsToExclude) {
+			String prefixColumnName = prefix + columnToExclude;
+			if (prefixColumnName.equals(columnName) || columnName.startsWith(prefixColumnName + ".")) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
 		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
 		Class<?> propertyType = pd.getPropertyType();
@@ -737,8 +753,7 @@ public class ImportFacadeEjb implements ImportFacade {
 				if (language == null) {
 					language = Language.EN;
 				}
-				pd.getWriteMethod()
-					.invoke(element, DateHelper.parseDateWithException(entry, language.getDateFormat()));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, language.getDateFormat()));
 				return true;
 			}
 		}

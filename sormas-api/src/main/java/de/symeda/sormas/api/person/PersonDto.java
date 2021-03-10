@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -176,30 +177,38 @@ public class PersonDto extends PseudonymizableDto {
 	private Date approximateAgeReferenceDate;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private RegionReferenceDto placeOfBirthRegion;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private Integer gestationAgeAtBirth;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private Integer birthWeight;
 
 	@Outbreaks
