@@ -30,7 +30,7 @@ public class HospitalizationView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/hospitalization";
 
 	public HospitalizationView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, true);
+		super(VIEW_NAME, true);
 	}
 
 	@Override

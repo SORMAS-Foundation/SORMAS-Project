@@ -65,7 +65,7 @@ public class PersonController {
 	}
 
 	public void registerViews(Navigator navigator) {
-		UserProvider userProvider = UserProvider.getCurrent();
+		UserProvider userProvider = ((SormasUI)navigator.getUI()).getUserProvider();
 		navigator.addView(PersonsView.VIEW_NAME, PersonsView.class);
 		navigator.addView(PersonDataView.VIEW_NAME, PersonDataView.class);
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);

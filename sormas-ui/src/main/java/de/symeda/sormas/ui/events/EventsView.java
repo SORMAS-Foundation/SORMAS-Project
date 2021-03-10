@@ -77,6 +77,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
+
 public class EventsView extends AbstractView {
 
 	private static final long serialVersionUID = -3048977745713631200L;
@@ -291,7 +293,7 @@ public class EventsView extends AbstractView {
 			Button searchSpecificEventButton = ButtonHelper.createIconButton(
 				Captions.eventSearchSpecificEvent,
 				VaadinIcons.SEARCH,
-				e -> buildAndOpenSearchSpecificEventWindow(),
+				e -> buildAndOpenSearchSpecificEventWindow(ui),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(searchSpecificEventButton);
 		}
@@ -329,17 +331,17 @@ public class EventsView extends AbstractView {
 		return filterLayout;
 	}
 
-	private void buildAndOpenSearchSpecificEventWindow() {
+	private void buildAndOpenSearchSpecificEventWindow(@NotNull final SormasUI ui) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getCaption(Captions.eventSearchSpecificEvent));
 		window.setWidth(768, Unit.PIXELS);
 
-		SearchSpecificLayout layout = buildSearchSpecificLayout(window);
+		SearchSpecificLayout layout = buildSearchSpecificLayout(ui, window);
 		window.setContent(layout);
 		UI.getCurrent().addWindow(window);
 	}
 
-	private SearchSpecificLayout buildSearchSpecificLayout(Window window) {
+	private SearchSpecificLayout buildSearchSpecificLayout(@NotNull final SormasUI ui, Window window) {
 
 		String description = I18nProperties.getString(Strings.infoSpecificEventSearch);
 		String confirmCaption = I18nProperties.getCaption(Captions.eventSearchEvent);
@@ -349,7 +351,7 @@ public class EventsView extends AbstractView {
 			String foundEventUuid = FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchField.getValue());
 
 			if (foundEventUuid != null) {
-				ControllerProvider.getEventController().navigateToData(foundEventUuid);
+				ControllerProvider.getEventController().navigateToData(ui, foundEventUuid);
 				window.close();
 			} else {
 				VaadinUiUtil.showSimplePopupWindow(
@@ -462,7 +464,7 @@ public class EventsView extends AbstractView {
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-						ControllerProvider.getEventController().showBulkEventDataEditComponent(eventGrid.asMultiSelect().getSelectedItems());
+						ControllerProvider.getEventController().showBulkEventDataEditComponent(ui, eventGrid.asMultiSelect().getSelectedItems());
 					}),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getEventController()

@@ -175,7 +175,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, eventParticipantRef);
+		CaseDocumentsComponent.addComponentToLayout(ui.getUserProvider(), layout, eventParticipantRef);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {

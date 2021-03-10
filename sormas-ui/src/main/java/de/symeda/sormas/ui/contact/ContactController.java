@@ -553,7 +553,7 @@ public class ContactController {
         }
     }
 
-    public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+    public void cancelFollowUpOfAllSelectedItems(@NotNull SormasUI ui, Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 
         if (selectedRows.size() == 0) {
             new Notification(
@@ -575,7 +575,7 @@ public class ContactController {
                                     ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
                                     contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
                                     contactDto.setFollowUpComment(
-                                            String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
+                                            String.format(I18nProperties.getString(Strings.infoCanceledBy), ui.getUserProvider().getUserName()));
                                     FacadeProvider.getContactFacade().saveContact(contactDto);
                                 }
                             }
@@ -590,7 +590,7 @@ public class ContactController {
         }
     }
 
-    public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+    public void setAllSelectedItemsToLostToFollowUp(@NotNull SormasUI ui, Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
         if (selectedRows.size() == 0) {
             new Notification(
                     I18nProperties.getString(Strings.headingNoContactsSelected),
@@ -611,7 +611,7 @@ public class ContactController {
                                     ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
                                     contactDto.setFollowUpStatus(FollowUpStatus.LOST);
                                     contactDto.setFollowUpComment(
-                                            String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
+                                            String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), ui.getUserProvider().getUserName()));
                                     FacadeProvider.getContactFacade().saveContact(contactDto);
                                 }
                             }

@@ -143,8 +143,9 @@ public class Menu extends CssLayout {
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
+		SormasUI ui = (SormasUI) window.getUI();
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
-			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+			ControllerProvider.getUserController().getUserSettingsComponent(ui, () -> window.close());
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

@@ -284,9 +284,10 @@ public class UserController {
 		return resetPasswordConfirmationComponent;
 	}
 
-	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
+	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(
+			@NotNull final SormasUI ui, @NotNull Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(ui.getUserProvider().getUuid());
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());

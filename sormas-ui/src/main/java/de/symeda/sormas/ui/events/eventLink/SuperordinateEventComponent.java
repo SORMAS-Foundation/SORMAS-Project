@@ -80,7 +80,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 					VaadinIcons.UNLINK,
 					e -> createEventWithConfirmationWindow(
 						() -> ControllerProvider.getEventController()
-							.removeSuperordinateEvent(
+							.removeSuperordinateEvent(ui,
 								subordinateEvent,
 								true,
 								I18nProperties.getString(Strings.messageEventSuperordinateEventUnlinked))),
@@ -92,7 +92,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 					"openSuperordinateEvent",
 					I18nProperties.getCaption(Captions.eventOpenSuperordinateEvent),
 					VaadinIcons.EYE,
-					e -> ControllerProvider.getEventController().navigateToData(subordinateEvent.getSuperordinateEvent().getUuid()),
+					e -> ControllerProvider.getEventController().navigateToData(ui, subordinateEvent.getSuperordinateEvent().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 				btnOpenEvent.setWidthFull();
 				buttonLayout.addComponent(btnOpenEvent);

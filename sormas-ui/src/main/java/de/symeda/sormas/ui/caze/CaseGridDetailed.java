@@ -16,6 +16,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -108,7 +109,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				CaseIndexDetailedDto.LATEST_EVENT_ID,
-				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
+				c -> ControllerProvider.getEventController().navigateToData(((SormasUI)getUI()), c.getLatestEventId())));
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null

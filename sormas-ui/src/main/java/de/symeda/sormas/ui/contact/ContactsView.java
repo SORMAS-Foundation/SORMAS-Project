@@ -440,7 +440,7 @@ public class ContactsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkCancelFollowUp),
 						VaadinIcons.CLOSE,
 						mi -> ControllerProvider.getContactController()
-							.cancelFollowUpOfAllSelectedItems(
+							.cancelFollowUpOfAllSelectedItems(ui,
 								((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(),
 								() -> navigateTo(criteria)),
 						hasBulkOperationsRight),
@@ -448,7 +448,7 @@ public class ContactsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkLostToFollowUp),
 						VaadinIcons.UNLINK,
 						mi -> ControllerProvider.getContactController()
-							.setAllSelectedItemsToLostToFollowUp(
+							.setAllSelectedItemsToLostToFollowUp(ui,
 								((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(),
 								() -> navigateTo(criteria)),
 						hasBulkOperationsRight),

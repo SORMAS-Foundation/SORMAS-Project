@@ -66,7 +66,7 @@ public class CaseVisitsView extends AbstractCaseView {
 	private DetailSubComponentWrapper gridLayout;
 
 	public CaseVisitsView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, false);
+		super(VIEW_NAME, false);
 		setSizeFull();
 
 		criteria = ViewModelProviders.of(CaseVisitsView.class).get(VisitCriteria.class);

@@ -50,7 +50,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 	private CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent;
 
 	public CaseEpiDataView(SormasUI ui) {
-		super(ui, VIEW_NAME, true);
+		super(VIEW_NAME, true);
 	}
 
 	@Override

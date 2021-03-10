@@ -23,13 +23,15 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 
+import javax.validation.constraints.NotNull;
+
 public class UserUiHelper {
 
-	public static Set<UserRole> getAssignableRoles(Set<UserRole> assignedUserRoles) {
+	public static Set<UserRole> getAssignableRoles(@NotNull UserProvider userProvider, Set<UserRole> assignedUserRoles) {
 
 		final Set<UserRole> assignedRoles = assignedUserRoles == null ? Collections.emptySet() : assignedUserRoles;
 
-		Set<UserRole> allRoles = UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles());
+		Set<UserRole> allRoles = UserRole.getAssignableRoles(userProvider.getUserRoles());
 
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			allRoles.remove(UserRole.BAG_USER);

@@ -34,7 +34,7 @@ public class CasePersonView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
 	public CasePersonView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, true);
+		super(VIEW_NAME, true);
 	}
 
 	@Override

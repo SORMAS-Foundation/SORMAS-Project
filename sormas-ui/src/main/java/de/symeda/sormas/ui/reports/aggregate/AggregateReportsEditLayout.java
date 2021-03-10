@@ -34,6 +34,7 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -375,7 +376,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					newReport.setNewCases(newCases);
 					newReport.setPointOfEntry(comboBoxPoe.getValue());
 					newReport.setRegion(comboBoxRegion.getValue());
-					newReport.setReportingUser(UserProvider.getCurrent().getUser().toReference());
+					newReport.setReportingUser(((SormasUI)getUI()).getUserProvider().getUser().toReference());
 					newReport.setYear(comboBoxYear.getValue());
 
 					FacadeProvider.getAggregateReportFacade().saveAggregateReport(newReport);

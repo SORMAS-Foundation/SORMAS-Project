@@ -209,7 +209,7 @@ public class EventController {
 				selectedEvent.setSuperordinateEvent(superordinateEventRef);
 				FacadeProvider.getEventFacade().saveEvent(selectedEvent);
 
-				navigateToData(superordinateEventRef.getUuid());
+				navigateToData(ui, superordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSubordinate), Type.TRAY_NOTIFICATION);
 			} else {
 				createSubordinateEvent(ui, superordinateEventRef);
@@ -237,7 +237,7 @@ public class EventController {
 				subordinateEvent.setSuperordinateEvent(selectedEvent.toReference());
 				FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
 
-				navigateToData(subordinateEventRef.getUuid());
+				navigateToData(ui, subordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSuperordinate), Type.TRAY_NOTIFICATION);
 			} else {
 				createSuperordinateEvent(ui, subordinateEventRef);
@@ -248,12 +248,12 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void removeSuperordinateEvent(EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
+	public void removeSuperordinateEvent(@NotNull final SormasUI ui, EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
 		subordinateEvent.setSuperordinateEvent(null);
 		FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
 
 		if (reloadPage) {
-			navigateToData(subordinateEvent.getUuid());
+			navigateToData(ui, subordinateEvent.getUuid());
 		}
 		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
 	}
@@ -280,7 +280,7 @@ public class EventController {
 		// Create new EventParticipant for this Person
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			EventParticipantDto.buildFromCase(caseRef, personDto, eventReferenceDto, ui.getUserProvider().getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(ui, eventReferenceDto, r -> {
 		}, eventParticipantDto);
 		return false;
@@ -289,27 +289,27 @@ public class EventController {
 	public void createEventParticipantWithContact(@NotNull final SormasUI ui, EventReferenceDto eventReferenceDto, ContactDto contact) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, ui.getUserProvider().getUserReference());
+			EventParticipantDto.buildFromPerson(personDto, eventReferenceDto, ui.getUserProvider().getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(ui, eventReferenceDto, r -> {
 		}, eventParticipantDto);
 	}
 
-	public void navigateToIndex() {
+	public void navigateToIndex(@NotNull SormasUI ui) {
 		String navigationState = EventsView.VIEW_NAME;
-		SormasUI.get().getNavigator().navigateTo(navigationState);
+		ui.getNavigator().navigateTo(navigationState);
 	}
 
-	public void navigateToData(String eventUuid) {
-		navigateToData(eventUuid, false);
+	public void navigateToData(@NotNull SormasUI ui, String eventUuid) {
+		navigateToData(ui,eventUuid, false);
 	}
 
-	public void navigateToData(String eventUuid, boolean openTab) {
+	public void navigateToData(@NotNull SormasUI ui, String eventUuid, boolean openTab) {
 
 		String navigationState = EventDataView.VIEW_NAME + "/" + eventUuid;
 		if (openTab) {
-			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+			ui.getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
 		} else {
-			SormasUI.get().getNavigator().navigateTo(navigationState);
+			ui.getNavigator().navigateTo(navigationState);
 		}
 	}
 
@@ -351,15 +351,15 @@ public class EventController {
 
 		EventDataForm eventCreateForm = new EventDataForm(true, false);
 		if (caseRef != null) {
-			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
+			eventCreateForm.setValue(createNewEvent(ui, caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		} else {
-			eventCreateForm.setValue(createNewEvent(null));
+			eventCreateForm.setValue(createNewEvent(ui, null));
 		}
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
-			eventCreateForm,
-			ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
+				eventCreateForm,
+				ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE),
+				eventCreateForm.getFieldGroup());
 
 		CaseDataDto finalCaseDataDto = caseDataDto;
 		editView.addCommitListener(() -> {
@@ -385,7 +385,7 @@ public class EventController {
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(@NotNull final SormasUI ui, ContactDto contact) {
 
 		EventDataForm eventCreateForm = new EventDataForm(true, false);
-		eventCreateForm.setValue(createNewEvent(contact.getDisease()));
+		eventCreateForm.setValue(createNewEvent(ui, contact.getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
@@ -416,7 +416,7 @@ public class EventController {
 
 		EventDto superOrSubordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superOrSubordinateEventRef.getUuid());
 		EventDataForm form = new EventDataForm(true, false);
-		form.setValue(createNewEvent(superOrSubordinateEvent.getDisease()));
+		form.setValue(createNewEvent(ui, superOrSubordinateEvent.getDisease()));
 		form.getField(EventDto.DISEASE).setReadOnly(true);
 
 		final CommitDiscardWrapperComponent<EventDataForm> component =
@@ -439,7 +439,7 @@ public class EventController {
 					FacadeProvider.getEventFacade().saveEvent(superOrSubordinateEvent);
 				}
 
-				navigateToData(superOrSubordinateEvent.getUuid());
+				navigateToData(ui, superOrSubordinateEvent.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
 			}
 		});
@@ -453,10 +453,10 @@ public class EventController {
 		EventDto event = findEvent(eventUuid);
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
-			eventEditForm,
-			ui.getUserProvider().hasUserRight(UserRight.EVENT_EDIT),
-			eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
+				eventEditForm,
+				ui.getUserProvider().hasUserRight(UserRight.EVENT_EDIT),
+				eventEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
@@ -496,7 +496,7 @@ public class EventController {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
 			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				editView.commit();
-				archiveOrDearchiveEvent(eventUuid, !archived);
+				archiveOrDearchiveEvent(ui, eventUuid, !archived);
 			}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
@@ -518,7 +518,7 @@ public class EventController {
 		return false;
 	}
 
-	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
+	public void showBulkEventDataEditComponent(@NotNull final SormasUI ui, Collection<EventIndexDto> selectedEvents) {
 
 		if (selectedEvents.size() == 0) {
 			new Notification(
@@ -535,7 +535,7 @@ public class EventController {
 		BulkEventDataForm form = new BulkEventDataForm();
 		form.setValue(tempEvent);
 		final CommitDiscardWrapperComponent<BulkEventDataForm> editView =
-			new CommitDiscardWrapperComponent<BulkEventDataForm>(form, form.getFieldGroup());
+				new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEvents));
 
@@ -557,7 +557,7 @@ public class EventController {
 					FacadeProvider.getEventFacade().saveEvent(eventDto);
 				}
 				popupWindow.close();
-				navigateToIndex();
+				navigateToIndex(ui);
 				Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
 			}
 		});
@@ -565,19 +565,19 @@ public class EventController {
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	public EventDto createNewEvent(Disease disease) {
+	public EventDto createNewEvent(@NotNull final SormasUI ui, Disease disease) {
 		EventDto event = EventDto.build();
 
 		event.getEventLocation().setCountry(FacadeProvider.getCountryFacade().getServerCountry());
-		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		event.getEventLocation().setRegion(ui.getUserProvider().getUser().getRegion());
+		UserReferenceDto userReference = ui.getUserProvider().getUserReference();
 		event.setReportingUser(userReference);
 		event.setDisease(disease);
 
 		return event;
 	}
 
-	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
+	private void archiveOrDearchiveEvent(@NotNull final SormasUI ui, String eventUuid, boolean archive) {
 
 		if (archive) {
 			Label contentLabel = new Label(
@@ -597,7 +597,7 @@ public class EventController {
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)),
 							Type.ASSISTIVE_NOTIFICATION);
-						navigateToData(eventUuid);
+						navigateToData(ui, eventUuid);
 					}
 				});
 		} else {
@@ -618,7 +618,7 @@ public class EventController {
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)),
 							Type.ASSISTIVE_NOTIFICATION);
-						navigateToData(eventUuid);
+						navigateToData(ui, eventUuid);
 					}
 				});
 		}

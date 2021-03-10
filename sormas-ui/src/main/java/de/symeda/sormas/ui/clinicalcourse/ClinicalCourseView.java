@@ -58,7 +58,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 	private ClinicalVisitGrid clinicalVisitGrid;
 
 	public ClinicalCourseView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, true);
+		super(VIEW_NAME, true);
 
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}

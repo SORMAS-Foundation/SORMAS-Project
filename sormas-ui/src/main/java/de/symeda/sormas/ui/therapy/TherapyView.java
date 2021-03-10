@@ -71,7 +71,7 @@ public class TherapyView extends AbstractCaseView {
 	private TextField treatmentTextFilter;
 
 	public TherapyView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, false);
+		super(VIEW_NAME, false);
 
 		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);

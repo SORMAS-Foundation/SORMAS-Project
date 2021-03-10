@@ -210,7 +210,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
 		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-			|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()))) {
+			|| (reportingUser != null && ((SormasUI)getUI()).getUserProvider().getUuid().equals(reportingUser.getUuid()))) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
@@ -414,7 +414,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		UserReferenceDto reportingUser = getValue() != null ? getValue().getReportingUser() : null;
 		boolean canEditRequest = showRequestFields
 			&& (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()));
+				|| reportingUser != null && ((SormasUI)getUI()).getUserProvider().getUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
 		boolean canUseAdditionalTests = ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW);
 

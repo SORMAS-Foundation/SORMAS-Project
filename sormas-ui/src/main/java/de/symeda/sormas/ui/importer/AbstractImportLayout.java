@@ -21,6 +21,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -35,7 +36,7 @@ public class AbstractImportLayout extends VerticalLayout {
 	protected final UI currentUI;
 
 	public AbstractImportLayout() {
-		currentUser = UserProvider.getCurrent().getUser();
+		currentUser = ((SormasUI)getUI()).getUserProvider().getUser();
 		currentUI = UI.getCurrent();
 		setSpacing(false);
 		setMargin(true);

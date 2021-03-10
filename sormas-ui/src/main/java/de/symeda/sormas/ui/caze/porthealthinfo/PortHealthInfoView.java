@@ -30,7 +30,7 @@ public class PortHealthInfoView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/porthealthinfo";
 
 	public PortHealthInfoView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, false);
+		super(VIEW_NAME, false);
 	}
 
 	@Override

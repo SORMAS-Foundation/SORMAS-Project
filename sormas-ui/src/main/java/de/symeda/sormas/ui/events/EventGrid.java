@@ -161,7 +161,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
 			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
 
-		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(ui, e.getUuid())));
 	}
 
 	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {

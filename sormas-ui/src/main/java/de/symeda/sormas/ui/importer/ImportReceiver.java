@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

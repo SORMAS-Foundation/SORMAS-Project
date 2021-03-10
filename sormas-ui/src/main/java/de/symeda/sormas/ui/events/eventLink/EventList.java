@@ -80,7 +80,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
 					ControllerProvider.getEventController()
-						.removeSuperordinateEvent(selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
+						.removeSuperordinateEvent(((SormasUI)getUI()), selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
 					reload();
 				});
 			}
@@ -114,7 +114,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 				}
 				listEntry.addEditListener(
 					i,
-					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
+					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(((SormasUI)getUI()), listEntry.getEvent().getUuid()));
 			}
 			listLayout.addComponent(listEntry);
 		}

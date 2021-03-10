@@ -43,6 +43,7 @@ import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -53,6 +54,8 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
+
+import javax.validation.constraints.NotNull;
 
 public class ContactVisitsView extends AbstractContactView {
 
@@ -82,7 +85,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -101,7 +104,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
@@ -142,11 +145,11 @@ public class ContactVisitsView extends AbstractContactView {
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = ButtonHelper.createIconButton(
 				Captions.visitNewVisit,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)),
+				e -> ControllerProvider.getVisitController().createVisit(((SormasUI)getUI()),this.getContactRef(), r -> navigateTo(criteria)),
 				ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -173,7 +176,7 @@ public class ContactVisitsView extends AbstractContactView {
 //	}
 
 	@Override
-	protected void initView(String params) {
+	protected void initView(@NotNull final SormasUI ui, String params) {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null

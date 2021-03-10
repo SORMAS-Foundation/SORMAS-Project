@@ -127,9 +127,9 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
-	private List<MapCaseDto> mapCaseDtos = new ArrayList<>();
-	private List<MapCaseDto> mapAndFacilityCases = new ArrayList<>();
-	private List<MapContactDto> mapContactDtos = new ArrayList<>();
+	private final List<MapCaseDto> mapCaseDtos = new ArrayList<>();
+	private final List<MapCaseDto> mapAndFacilityCases = new ArrayList<>();
+	private final List<MapContactDto> mapContactDtos = new ArrayList<>();
 
 	// Map data
 	private final List<FacilityReferenceDto> markerCaseFacilities = new ArrayList<FacilityReferenceDto>();
@@ -1436,7 +1436,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			break;
 		case EVENTS_GROUP_ID:
 			DashboardEventDto event = markerEvents.get(markerIndex);
-			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
+			ControllerProvider.getEventController().navigateToData((SormasUI)getUI(), event.getUuid(), true);
 			break;
 		}
 	}

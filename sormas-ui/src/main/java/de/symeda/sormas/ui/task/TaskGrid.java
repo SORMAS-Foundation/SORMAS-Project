@@ -55,6 +55,8 @@ import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
+import javax.validation.constraints.NotNull;
+
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
@@ -191,7 +193,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
 		}));
 
-		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));
+		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(ui, e)));
 	}
 
 	public void reload() {
@@ -202,7 +204,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		getDataProvider().refreshAll();
 	}
 
-	private void navigateToData(TaskIndexDto task) {
+	private void navigateToData(@NotNull final SormasUI ui, TaskIndexDto task) {
 
 		switch (task.getTaskContext()) {
 		case CASE:
@@ -212,7 +214,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			ControllerProvider.getContactController().navigateToData(task.getContact().getUuid());
 			return;
 		case EVENT:
-			ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
+			ControllerProvider.getEventController().navigateToData(ui, task.getEvent().getUuid());
 			return;
 		case GENERAL:
 			return;

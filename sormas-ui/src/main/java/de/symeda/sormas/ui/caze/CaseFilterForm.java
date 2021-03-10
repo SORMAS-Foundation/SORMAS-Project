@@ -303,7 +303,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterOnlyFromOtherInstances),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(((SormasUI)getUI()).getUserProvider().getUserRoles());
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,

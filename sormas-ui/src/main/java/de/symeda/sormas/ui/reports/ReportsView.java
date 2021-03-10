@@ -41,6 +41,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -52,15 +53,14 @@ public class ReportsView extends AbstractView {
 
 	public static final String VIEW_NAME = "reports";
 
-	private Grid grid;
-	private VerticalLayout gridLayout;
+	private final Grid grid;
 	private AbstractSelect yearFilter;
 	private AbstractSelect epiWeekFilter;
 
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		if (UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.NATION) {
+		if (UserRole.getJurisdictionLevel(((SormasUI)getUI()).getUserProvider().getUserRoles()) == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();
@@ -68,7 +68,7 @@ public class ReportsView extends AbstractView {
 
 		grid.setHeightMode(HeightMode.UNDEFINED);
 
-		gridLayout = new VerticalLayout();
+		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -157,7 +157,7 @@ public class ReportsView extends AbstractView {
 			((WeeklyReportRegionsGrid) grid).reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		} else {
 			((WeeklyReportOfficersGrid) grid)
-				.reload(UserProvider.getCurrent().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+				.reload(((SormasUI)getUI()).getUserProvider().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		}
 	}
 }

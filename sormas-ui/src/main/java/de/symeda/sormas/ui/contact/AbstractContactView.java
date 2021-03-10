@@ -34,6 +34,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
@@ -55,7 +56,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	public void enter(ViewChangeEvent event) {
 
 		super.enter(event);
-		initOrRedirect(event);
+		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(contactPerson).ifPresent(getButtonsLayout()::addComponent);
 		}

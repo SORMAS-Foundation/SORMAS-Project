@@ -73,7 +73,7 @@ public class CaseDataView extends AbstractCaseView {
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
 	public CaseDataView(@NotNull final SormasUI ui) {
-		super(ui, VIEW_NAME, false);
+		super(VIEW_NAME, false);
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, caze);
+		CaseDocumentsComponent.addComponentToLayout(ui.getUserProvider(), layout, caze);
 
 		setCaseEditPermission(container);
 	}

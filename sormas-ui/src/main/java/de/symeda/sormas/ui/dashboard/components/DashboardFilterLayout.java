@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -62,12 +63,12 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 	protected DashboardDataProvider dashboardDataProvider;
 
 	// Filters
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
+	private final ComboBox regionFilter;
+	private final ComboBox districtFilter;
 	private PopupButton btnCurrentPeriod;
 	private PopupButton btnComparisonPeriod;
-	private Set<Button> dateFilterButtons;
-	private Set<Button> dateComparisonButtons;
+	private final Set<Button> dateFilterButtons;
+	private final Set<Button> dateComparisonButtons;
 
 	// Buttons
 	private Button btnShowCustomPeriod;
@@ -79,8 +80,6 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 	private Button btnPeriodBefore;
 	private Button btnPeriodLastYear;
 	private Button activeComparisonButton;
-	private Button resetButton;
-	private Button applyButton;
 
 	private DateFilterType currentDateFilterType;
 
@@ -107,7 +106,7 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 
 	public void createRegionAndDistrictFilter() {
 		// Region filter
-		if (UserProvider.getCurrent().getUser().getRegion() == null) {
+		if (((SormasUI)getUI()).getUserProvider().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -121,11 +120,11 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 		}
 
 		// District filter
-		if (UserProvider.getCurrent().getUser().getRegion() != null && UserProvider.getCurrent().getUser().getDistrict() == null) {
+		if (((SormasUI)getUI()).getUserProvider().getUser().getRegion() != null && ((SormasUI)getUI()).getUserProvider().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
 			districtFilter
-				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
+				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((SormasUI)getUI()).getUserProvider().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 			});
@@ -138,10 +137,10 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 
 	public void createResetAndApplyButtons() {
 		Button.ClickListener resetListener = e -> dashboardView.navigateTo(null);
-		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, resetListener, CssStyles.BUTTON_FILTER_LIGHT);
+		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, resetListener, CssStyles.BUTTON_FILTER_LIGHT);
 		addComponent(resetButton);
 		Button.ClickListener applyListener = e -> dashboardView.refreshDashboard();
-		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, applyListener, CssStyles.BUTTON_FILTER_LIGHT);
+		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, applyListener, CssStyles.BUTTON_FILTER_LIGHT);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		applyButton.addClickListener(e -> {
 			if (getDateFilterChangeCallback() != null) {

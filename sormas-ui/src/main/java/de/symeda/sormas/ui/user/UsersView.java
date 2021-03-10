@@ -44,7 +44,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -148,7 +147,7 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(((SormasUI)getUI()).getUserProvider(), Collections.emptySet()));
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);
@@ -222,7 +221,7 @@ public class UsersView extends AbstractView {
 	public void updateFilterComponents() {
 
 		applyingCriteria = true;
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI)getUI()).getUserProvider().getUser();
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());

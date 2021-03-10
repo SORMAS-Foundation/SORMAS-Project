@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -308,7 +309,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				null,
 				CHECKBOX_STYLE));
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(((SormasUI)getUI()).getUserProvider().getUserRoles());
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,

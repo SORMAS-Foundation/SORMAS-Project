@@ -149,7 +149,7 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
+		hasCaseManagementRight = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -215,7 +215,7 @@ public class CasesView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
+		ExportConfigurationDto config = ExportConfigurationDto.build(((SormasUI)getUI()).getUserProvider().getUserReference(), ExportType.CASE);
 
 		config.setProperties(
 			ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight)
@@ -248,7 +248,7 @@ public class CasesView extends AbstractView {
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(openGuideButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
 			{
 				importLayout.setSpacing(true);
@@ -264,7 +264,7 @@ public class CasesView extends AbstractView {
 			addImportButton(importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -343,7 +343,7 @@ public class CasesView extends AbstractView {
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				&& ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
 					null,
@@ -426,11 +426,11 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.caseMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
-				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
+				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(((SormasUI)getUI())),
 				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
 			moreLayout.addComponent(mergeDuplicatesButton);
@@ -444,11 +444,11 @@ public class CasesView extends AbstractView {
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(searchSpecificCaseButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_CREATE)) {
 			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().openLineListingWindow(),
+				e -> ControllerProvider.getCaseController().openLineListingWindow(((SormasUI)getUI())),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(lineListingButton);
@@ -456,7 +456,7 @@ public class CasesView extends AbstractView {
 			final Button createButton = ButtonHelper.createIconButton(
 				Captions.caseNewCase,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().create(),
+				e -> ControllerProvider.getCaseController().create(((SormasUI)getUI())),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
@@ -613,7 +613,7 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -645,7 +645,7 @@ public class CasesView extends AbstractView {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -667,7 +667,7 @@ public class CasesView extends AbstractView {
 					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 					if (isSmsServiceSetUp
 						&& externalMessagesEnabled
-						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+						&& ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.messagesSendSMS),
@@ -766,7 +766,7 @@ public class CasesView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+		return ((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
 			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 
