@@ -589,9 +589,16 @@ public class LabMessageController {
 			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> {
 			});
 
-		CheckBox checkBox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
-		checkBox.setValue(Boolean.TRUE);
-		checkBox.setEnabled(false);
+		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
+		includeTestCheckbox.setValue(Boolean.TRUE);
+		includeTestCheckbox.setEnabled(false);
+
+		CheckBox viaLimsCheckbox = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
+		if (viaLimsCheckbox != null) {
+			viaLimsCheckbox.setValue(Boolean.TRUE);
+			viaLimsCheckbox.setEnabled(false);
+		}
+
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(labMessageDto.getTestResult());
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(labMessageDto.getTestType());
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
