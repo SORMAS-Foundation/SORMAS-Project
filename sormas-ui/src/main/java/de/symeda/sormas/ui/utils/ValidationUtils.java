@@ -27,6 +27,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class ValidationUtils {
 
+	private ValidationUtils() {
+	}
+
 	public static void initComponentErrorValidator(
 		TextField field,
 		String initialFieldValue,
