@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.labmessage;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -148,11 +147,6 @@ public class LabMessageController {
 		PersonDto person) {
 		EntrySelectionField selectField = new EntrySelectionField(labMessageDto, cases, contacts, eventParticipants);
 
-		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
-		sampleCriteria.setLabSampleId(labMessageDto.getLabSampleId());
-		sampleCriteria.setSampleDateTime(labMessageDto.getSampleDateTime());
-		sampleCriteria.setSampleMaterial(labMessageDto.getSampleMaterial());
-
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
 		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
@@ -169,7 +163,7 @@ public class LabMessageController {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid());
 				CaseReferenceDto cazeRef = caseDto.toReference();
 
-				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria.caze(cazeRef));
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).caze(cazeRef));
 				if (samples.isEmpty()) {
 					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), cazeRef), labMessageDto);
 				} else {
@@ -179,7 +173,7 @@ public class LabMessageController {
 				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid());
 				ContactReferenceDto contactRef = contactDto.toReference();
 
-				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria.contact(contactRef));
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).contact(contactRef));
 				if (samples.isEmpty()) {
 					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), labMessageDto);
 				} else {
@@ -190,7 +184,8 @@ public class LabMessageController {
 					FacadeProvider.getEventParticipantFacade().getByUuid(similarEntriesDto.getEventParticipant().getUuid());
 				EventParticipantReferenceDto eventParticipantRef = eventParticipantDto.toReference();
 
-				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria.eventParticipant(eventParticipantRef));
+				List<SampleDto> samples =
+					FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(eventParticipantRef));
 				if (samples.isEmpty()) {
 					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), labMessageDto);
 				} else {
@@ -205,6 +200,14 @@ public class LabMessageController {
 		selectionField.getCommitButton().setEnabled(false);
 
 		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry));
+	}
+
+	private SampleSimilarityCriteria createSampleCriteria(LabMessageDto labMessageDto) {
+		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
+		sampleCriteria.setLabSampleId(labMessageDto.getLabSampleId());
+		sampleCriteria.setSampleDateTime(labMessageDto.getSampleDateTime());
+		sampleCriteria.setSampleMaterial(labMessageDto.getSampleMaterial());
+		return sampleCriteria;
 	}
 
 	private void pickOrCreateEvent(LabMessageDto labMessageDto, PersonDto person) {
@@ -237,7 +240,7 @@ public class LabMessageController {
 						EventParticipantReferenceDto participant =
 							FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(selectedEvent.getUuid(), person.getUuid());
 						List<SampleDto> samples =
-							FacadeProvider.getSampleFacade().getByEventParticipantUuids(Collections.singletonList(participant.getUuid()));
+							FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(participant));
 						if (samples.isEmpty()) {
 							createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), participant), labMessageDto);
 						} else {

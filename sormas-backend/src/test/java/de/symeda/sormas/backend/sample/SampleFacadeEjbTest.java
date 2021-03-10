@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -475,14 +476,14 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
 		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
 
-		Date sampleDateTime1 = DateHelper.subtractDays(new Date(), 10);
+		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id");
 			s.setSampleDateTime(sampleDateTime1);
 			s.setSampleMaterial(SampleMaterial.BLOOD);
 		});
 
-		Date sampleDateTime2 = DateHelper.subtractDays(new Date(), 13);
+		Date sampleDateTime2 = DateHelper.parseDate("08.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id_2");
 			s.setSampleDateTime(sampleDateTime2);
