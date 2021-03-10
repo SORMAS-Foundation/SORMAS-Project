@@ -670,6 +670,14 @@ public class LabMessageController {
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}
 
+	/**
+	 * 
+	 * @param component
+	 *            that holds a reference to the current state of processing a labMessage
+	 * @param entityCreated
+	 *            should be true if a Case, Contact or EventParticipant has already been created. This will result in an option to delete
+	 *            that entity again.
+	 */
 	private void showAlreadyProcessedPopup(Component component, boolean entityCreated) {
 		VerticalLayout warningLayout = VaadinUiUtil.createWarningLayout();
 		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
@@ -679,7 +687,7 @@ public class LabMessageController {
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 
-		// If something was saved by the user,
+		// If a case, contact or event participant was saved by the user while processing...
 		if (entityCreated) {
 			Button button = createDeleteEntityButton(component);
 			button.addClickListener(e -> popupWindow.close());
@@ -687,6 +695,13 @@ public class LabMessageController {
 		}
 	}
 
+	/**
+	 * 
+	 * @param component
+	 *            component is expected to not be null, as it should never be null in a correct call of this method. Calling this method
+	 *            with a null component will result in a NPE.
+	 * @return Button to delete the formerly created Case, Contact or EventParticipant entity
+	 */
 	private Button createDeleteEntityButton(Component component) {
 		if (SampleCreateForm.class.equals(component.getClass())) {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
