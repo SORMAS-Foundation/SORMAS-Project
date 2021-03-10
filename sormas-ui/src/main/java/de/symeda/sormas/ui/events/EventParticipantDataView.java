@@ -112,7 +112,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
 
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(
+				ui, eventParticipantRef.getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

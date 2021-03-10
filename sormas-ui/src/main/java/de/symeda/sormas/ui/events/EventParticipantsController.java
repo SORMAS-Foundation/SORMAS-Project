@@ -59,25 +59,30 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
+
 public class EventParticipantsController {
 
 	private final EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
 
-	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
-		return createEventParticipant(eventRef, doneConsumer, eventParticipant);
+	public EventParticipantDto createEventParticipant(
+			@NotNull final SormasUI ui,
+			EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
+		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, ui.getUserProvider().getUserReference());
+		return createEventParticipant(ui, eventRef, doneConsumer, eventParticipant);
 	}
 
 	public EventParticipantDto createEventParticipant(
-		EventReferenceDto eventRef,
+			@NotNull final SormasUI ui,
+			EventReferenceDto eventRef,
 		Consumer<EventParticipantReferenceDto> doneConsumer,
 		EventParticipantDto eventParticipant) {
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
+			ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
 			createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
@@ -120,7 +125,7 @@ public class EventParticipantsController {
 
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-										ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+										ControllerProvider.getEventParticipantController().createEventParticipant(ui, savedDto.getUuid(), doneConsumer);
 									}
 								}
 							},
@@ -128,7 +133,7 @@ public class EventParticipantsController {
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-					ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+					ControllerProvider.getEventParticipantController().createEventParticipant(ui, savedDto.getUuid(), doneConsumer);
 				}
 			}
 		});
@@ -146,20 +151,20 @@ public class EventParticipantsController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
+	public void createEventParticipant(@NotNull final SormasUI ui, String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm =
 			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), false);
 		editForm.setValue(eventParticipant);
 
-		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(editForm, doneConsumer);
+		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(ui, editForm, doneConsumer);
 
 		Window window = VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingEditEventParticipant));
 		// form is too big for typical screens
 		window.setHeight(80, Unit.PERCENTAGE);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			createView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
@@ -208,7 +213,8 @@ public class EventParticipantsController {
 			});
 	}
 
-	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
+	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(
+			@NotNull final SormasUI ui, String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 
@@ -216,9 +222,9 @@ public class EventParticipantsController {
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = createEventParticipantEditCommitWrapper(editForm, null);
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = createEventParticipantEditCommitWrapper(ui, editForm, null);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
@@ -229,11 +235,12 @@ public class EventParticipantsController {
 	}
 
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> createEventParticipantEditCommitWrapper(
-		EventParticipantEditForm editForm,
+			@NotNull final SormasUI ui,
+			EventParticipantEditForm editForm,
 		Consumer<EventParticipantReferenceDto> doneConsumer) {
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT),
+			ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT),
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
@@ -242,7 +249,7 @@ public class EventParticipantsController {
 
 				EventParticipantDto dto = editForm.getValue();
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = ui.getUserProvider().getUser();
 
 				RegionReferenceDto userRegion = user.getRegion();
 				DistrictReferenceDto userDistrict = user.getDistrict();

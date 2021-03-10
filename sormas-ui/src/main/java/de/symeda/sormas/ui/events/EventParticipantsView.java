@@ -244,7 +244,8 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			Button addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getEventParticipantController().createEventParticipant(((SormasUI)getUI()), this.getEventRef(), r -> navigateTo(criteria));
+				ControllerProvider.getEventParticipantController().createEventParticipant(
+						((SormasUI)getUI()), this.getEventRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(addButton);
