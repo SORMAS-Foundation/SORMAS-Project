@@ -122,7 +122,6 @@
                 android:id="@+id/event_startDate"
                 style="@style/ControlFirstOfTwoColumnsStyle"
                 app:softRequired="true"
-                app:allowedDaysInFuture="365"
                 app:value="@={data.startDate}" />
 
             <de.symeda.sormas.app.component.controls.ControlDateField
