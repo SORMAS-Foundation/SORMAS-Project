@@ -1,11 +1,9 @@
 package de.symeda.sormas.ui.labmessage;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import com.vaadin.server.Scrollable;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -16,7 +14,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
