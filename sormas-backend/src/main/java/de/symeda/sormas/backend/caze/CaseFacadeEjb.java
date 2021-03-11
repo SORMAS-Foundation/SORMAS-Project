@@ -2833,6 +2833,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
+		if (epidNumber == null) {
+			return false;
+		}
 
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
@@ -2891,6 +2894,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		query.setMaxResults(1);
 		return !query.getResultList().isEmpty();
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
+		return caseService.exists(
+			(cb, caseRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken), cb.notEqual(caseRoot.get(Case.UUID), caseUuid)));
 	}
 
 	@Override

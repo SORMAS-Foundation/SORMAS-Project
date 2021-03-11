@@ -135,6 +135,8 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
+	boolean doesExternalTokenExist(String externalToken, String caseUuid);
+
 	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
