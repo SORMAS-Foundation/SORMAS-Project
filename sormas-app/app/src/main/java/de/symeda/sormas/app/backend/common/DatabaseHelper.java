@@ -28,6 +28,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -2069,10 +2071,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 286;
 				TableUtils.createTable(connectionSource, PersonContactDetail.class);
 				migratePersonContactDetails();
-				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN phone;");
-				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN phoneowner;");
-				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN emailaddress;");
-				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN generalpractitionerdetails;");
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -2281,11 +2279,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] pcd : newPersons) {
+			formatRawResultString(pcd, 0, false);
 			formatRawResultString(pcd, 1, false);
 			formatRawResultString(pcd, 2, false);
 			formatRawResultString(pcd, 3, false);
 			formatRawResultString(pcd, 4, false);
-			formatRawResultString(pcd, 5, false);
 
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertPart =
@@ -2298,32 +2296,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			String emailAddress = (String) pcd[4];
 			String generalPractitionerDetails = (String) pcd[5];
 
-			if (phone != null && phoneOwner == null) {
+			if (StringUtils.isNotEmpty(phone) && StringUtils.isEmpty(phoneOwner)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 						+ "true" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "false" + ", " + ""
 						+ ", " + "" + ");");
 			}
 
-			if (emailAddress != null) {
+			if (StringUtils.isNotEmpty(emailAddress)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 						+ "true" + ", " + PersonContactDetailType.EMAIL.name() + ", " + "" + ", " + emailAddress + ", " + "" + ", " + "false" + ", "
 						+ "" + ", " + "" + ");");
 			}
 
-			if (phone != null && phoneOwner != null) {
+			if (StringUtils.isNotEmpty(phone ) && StringUtils.isNotEmpty(phoneOwner)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 						+ "false" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "true" + ", " + ""
 						+ ", " + phoneOwner + ");");
 			}
 
-			if (generalPractitionerDetails != null) {
+			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 						+ "false" + ", " + PersonContactDetailType.OTHER.name() + ", " + "" + ", " + "" + ", " + generalPractitionerDetails + ", "
-						+ "true" + ", " + "" + ", " + "" + ");");
+						+ "true" + ", " + generalPractitionerDetails + ", " + "" + ");");
 			}
 
 		}

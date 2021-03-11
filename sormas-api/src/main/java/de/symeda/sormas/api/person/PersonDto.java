@@ -277,7 +277,7 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private String nationalHealthId;
 	private List<LocationDto> addresses = new ArrayList<>();
-	private List<PersonContactDetailDto> personContacts = new ArrayList<>();
+	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
@@ -451,7 +451,7 @@ public class PersonDto extends PseudonymizableDto {
 	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
 		final PersonContactDetailDto pcd =
 			new PersonContactDetailDto(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
-		getPersonContacts().add(pcd);
+		getPersonContactDetails().add(pcd);
 	}
 
 	public String getPhone() {
@@ -471,7 +471,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	private String getPersonContactInformation(PersonContactDetailType personContactDetailType) {
-		for (PersonContactDetailDto pcd : getPersonContacts()) {
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.isPrimaryContact() && pcd.getPersonContactDetailType() == personContactDetailType) {
 				return pcd.getContactInformation();
 			}
@@ -697,12 +697,12 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@ImportIgnore
-	public List<PersonContactDetailDto> getPersonContacts() {
-		return personContacts;
+	public List<PersonContactDetailDto> getPersonContactDetails() {
+		return personContactDetails;
 	}
 
-	public void setPersonContacts(List<PersonContactDetailDto> personContacts) {
-		this.personContacts = personContacts;
+	public void setPersonContactDetails(List<PersonContactDetailDto> personContactDetails) {
+		this.personContactDetails = personContactDetails;
 	}
 
 	public SymptomJournalStatus getSymptomJournalStatus() {

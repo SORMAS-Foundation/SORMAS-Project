@@ -231,6 +231,7 @@
     <string name="caption_visit_time">Time of Visit</string>
     <string name="caption_year">Year</string>
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
+    <string name="caption_this_person">This person</string>
 
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>

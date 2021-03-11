@@ -1381,8 +1381,6 @@ public interface Captions {
 	String PersonContactDetail_additionalInformation = "PersonContactDetail.additionalInformation";
 	String PersonContactDetail_contactInformation = "PersonContactDetail.contactInformation";
 	String PersonContactDetail_details = "PersonContactDetail.details";
-	String PersonContactDetail_owner = "PersonContactDetail.owner";
-	String PersonContactDetail_ownerName = "PersonContactDetail.ownerName";
 	String PersonContactDetail_person = "PersonContactDetail.person";
 	String PersonContactDetail_personContactDetailType = "PersonContactDetail.personContactDetailType";
 	String PersonContactDetail_phoneNumberType = "PersonContactDetail.phoneNumberType";
@@ -1390,7 +1388,9 @@ public interface Captions {
 	String PersonContactDetail_thirdParty = "PersonContactDetail.thirdParty";
 	String PersonContactDetail_thirdPartyName = "PersonContactDetail.thirdPartyName";
 	String PersonContactDetail_thirdPartyRole = "PersonContactDetail.thirdPartyRole";
-	String PersonContactDetail_thisPerson = "PersonContactDetail.thisPerson";
+	String personContactDetailOwner = "personContactDetailOwner";
+	String personContactDetailOwnerName = "personContactDetailOwnerName";
+	String personContactDetailThisPerson = "personContactDetailThisPerson";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
 	String personLinkToCases = "personLinkToCases";

@@ -31,6 +31,6 @@ public class ContactQueryContext<T> extends QueryContext<T, Contact> {
 		} else if (name.equals(PERSON_PHONE_OWNER_SUBQUERY)) {
 			return addSubqueryExpression(PERSON_PHONE_OWNER_SUBQUERY, phoneOwnerSubquery(((ContactJoins) getJoins()).getPerson()));
 		}
-		throw new IllegalArgumentException("No such subquery exression defined!");
+		throw new IllegalArgumentException("No such subquery expression defined!");
 	}
 }

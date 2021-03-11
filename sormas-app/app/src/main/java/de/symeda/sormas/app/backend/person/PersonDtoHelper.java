@@ -132,8 +132,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setAddresses(addresses);
 
 		List<PersonContactDetail> personContactDetails = new ArrayList<>();
-		if (!source.getPersonContacts().isEmpty()) {
-			for (PersonContactDetailDto personContactDetailDto : source.getPersonContacts()) {
+		List<PersonContactDetailDto> personContactDetailDtos = source.getPersonContactDetails();
+		if (!personContactDetailDtos.isEmpty()) {
+			for (PersonContactDetailDto personContactDetailDto : personContactDetailDtos) {
 				PersonContactDetail personContactDetail = personContactDetailDtoHelper.fillOrCreateFromDto(null, personContactDetailDto);
 				personContactDetail.setPerson(target);
 				personContactDetails.add(personContactDetail);
@@ -242,7 +243,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 			PersonContactDetailDto personContactDetailDto = personContactDetailDtoHelper.adoToDto(personContactDetail);
 			personContactDetailDtos.add(personContactDetailDto);
 		}
-		target.setPersonContacts(personContactDetailDtos);
+		target.setPersonContactDetails(personContactDetailDtos);
 
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());

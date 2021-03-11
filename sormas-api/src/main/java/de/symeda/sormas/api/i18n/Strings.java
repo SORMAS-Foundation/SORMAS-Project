@@ -473,7 +473,7 @@ public interface Strings {
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUpdatePassword = "headingUpdatePassword";
-	String headingUpdatePersonContactDetail = "headingUpdatePersonContactDetail";
+	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
 	String headingUserSettings = "headingUserSettings";
@@ -790,7 +790,7 @@ public interface Strings {
 	String messagePersonAddedAsEventParticipant = "messagePersonAddedAsEventParticipant";
 	String messagePersonAlreadyCaseInEvent = "messagePersonAlreadyCaseInEvent";
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
-	String messagePersonContactDetailPrimaryDuplicate = "messagePersonContactDetailPrimaryDuplicate";
+	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";

@@ -25,6 +25,6 @@ public class PersonQueryContext<T> extends QueryContext<T, Person> {
 		} else if (name.equals(PERSON_EMAIL_SUBQUERY)) {
 			return addSubqueryExpression(PERSON_EMAIL_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.EMAIL, getRoot()));
 		}
-		throw new IllegalArgumentException("No such subquery exression defined!");
+		throw new IllegalArgumentException("No such subquery expression defined!");
 	}
 }

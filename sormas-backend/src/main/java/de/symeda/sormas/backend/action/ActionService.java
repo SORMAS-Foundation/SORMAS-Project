@@ -218,11 +218,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		return filter;
 	}
 
-	public Predicate buildEventCriteriaFilter(EventCriteria criteria,ActionQueryContext actionQueryContext) {
+	public Predicate buildEventCriteriaFilter(EventCriteria criteria, ActionQueryContext actionQueryContext) {
 
 		CriteriaBuilder cb = actionQueryContext.getCriteriaBuilder();
 		ActionJoins joins = (ActionJoins) actionQueryContext.getJoins();
-		
+
 		From<Action, Action> action = (From<Action, Action>) joins.getRoot();
 		From<Action, Event> event = joins.getEvent(JoinType.INNER);
 
@@ -250,10 +250,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<EventActionIndexDto> cq = cb.createQuery(EventActionIndexDto.class);
 		final Root<Action> action = cq.from(getElementClass());
-		
+
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
 		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
-		
+
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creatorUser = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);

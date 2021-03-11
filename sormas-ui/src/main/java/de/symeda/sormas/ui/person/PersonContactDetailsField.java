@@ -23,9 +23,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonContactDetailsField extends AbstractTableField<PersonContactDetailDto> {
 
-	private static final String OWNER = Captions.PersonContactDetail_owner;
-	private static final String OWNER_NAME = Captions.PersonContactDetail_ownerName;
-	private static final String THIS_PERSON = Captions.PersonContactDetail_thisPerson;
+	private static final String OWNER = Captions.personContactDetailOwner;
+	private static final String OWNER_NAME = Captions.personContactDetailOwnerName;
+	private static final String THIS_PERSON = Captions.personContactDetailThisPerson;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 	private PersonDto thisPerson;
@@ -73,8 +73,8 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 						getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
 					if (optionalPersonContactDetailDto.isPresent()) {
 						VaadinUiUtil.showConfirmationPopup(
-							I18nProperties.getCaption(Strings.headingUpdatePersonContactDetail),
-							new Label(I18nProperties.getString(Strings.messagePersonContactDetailPrimaryDuplicate)),
+							I18nProperties.getCaption(Strings.headingUpdatePersonContactDetails),
+							new Label(I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate)),
 							questionWindow -> {
 								ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
 

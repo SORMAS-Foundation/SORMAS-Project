@@ -35,6 +35,6 @@ public class CaseQueryContext<T> extends QueryContext<T, Case> {
 				PERSON_PHONE_OWNER_SUBQUERY,
 					phoneOwnerSubquery(((CaseJoins) getJoins()).getPerson()));
 		}
-		throw new IllegalArgumentException("No such subquery exression defined!");
+		throw new IllegalArgumentException("No such subquery expression defined!");
 	}
 }

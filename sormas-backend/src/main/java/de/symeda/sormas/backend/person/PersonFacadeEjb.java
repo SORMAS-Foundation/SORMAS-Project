@@ -576,123 +576,115 @@ public class PersonFacadeEjb implements PersonFacade {
 		return true;
 	}
 
-	@Override
-	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public static PersonDto toDto(Person source) {
 
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-		final Root<Person> person = cq.from(Person.class);
-
-		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-
-		final Subquery<String> phoneSubQuery = cq.subquery(String.class);
-		final Root<PersonContactDetail> phoneRoot = phoneSubQuery.from(PersonContactDetail.class);
-		phoneSubQuery.where(
-			cb.and(
-				cb.equal(phoneRoot.get(PersonContactDetail.PERSON), person),
-				cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY)),
-				cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
-		phoneSubQuery.select(phoneRoot.get(PersonContactDetail.CONTACT_INFORMATION));
-
-		final Subquery<String> emailSubQuery = cq.subquery(String.class);
-		final Root<PersonContactDetail> emailRoot = emailSubQuery.from(PersonContactDetail.class);
-		emailSubQuery.where(
-			cb.and(
-				cb.equal(emailRoot.get(PersonContactDetail.PERSON), person),
-				cb.isTrue(emailRoot.get(PersonContactDetail.PRIMARY)),
-				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
-		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
-
-		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
-
-		cq.multiselect(
-			person.get(Person.UUID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
-			person.get(Person.BIRTHDATE_DD),
-			person.get(Person.BIRTHDATE_MM),
-			person.get(Person.BIRTHDATE_YYYY),
-			person.get(Person.SEX),
-			district.get(District.NAME),
-			location.get(Location.STREET),
-			location.get(Location.HOUSE_NUMBER),
-			location.get(Location.POSTAL_CODE),
-			location.get(Location.CITY),
-			phoneSubQuery.alias(PersonIndexDto.PHONE),
-			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
-			person.get(Person.CHANGE_DATE),
-			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
-
-		Predicate filter = personService.createUserFilter(cb, cq, person);
-		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		if (source == null) {
+			return null;
 		}
 
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.distinct(true);
+		PersonDto target = new PersonDto();
+		DtoHelper.fillDto(target, source);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case PersonIndexDto.UUID:
-				case PersonIndexDto.FIRST_NAME:
-				case PersonIndexDto.LAST_NAME:
-				case PersonIndexDto.SEX:
-					expression = person.get(sortProperty.propertyName);
-					break;
-				case PersonIndexDto.PHONE:
-					expression = cb.literal(15); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
-					break;
-				case PersonIndexDto.EMAIL_ADDRESS:
-					expression = cb.literal(16); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
-					break;
-				case PersonIndexDto.AGE_AND_BIRTH_DATE:
-					expression = person.get(Person.APPROXIMATE_AGE);
-					break;
-				case PersonIndexDto.DISTRICT:
-					expression = district.get(District.NAME);
-					break;
-				case PersonIndexDto.STREET:
-				case PersonIndexDto.HOUSE_NUMBER:
-				case PersonIndexDto.POSTAL_CODE:
-				case PersonIndexDto.CITY:
-					expression = location.get(sortProperty.propertyName);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
+		target.setSex(source.getSex());
+
+		target.setPresentCondition(source.getPresentCondition());
+		target.setBirthdateDD(source.getBirthdateDD());
+		target.setBirthdateMM(source.getBirthdateMM());
+		target.setBirthdateYYYY(source.getBirthdateYYYY());
+
+		if (source.getBirthdateYYYY() != null) {
+
+			// calculate the approximate age based on the birth date
+			// still not sure whether this is a good solution
+
+			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
+				.getApproximateAge(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate());
+			target.setApproximateAge(pair.getElement0());
+			target.setApproximateAgeType(pair.getElement1());
+			target.setApproximateAgeReferenceDate(source.getDeathDate() != null ? source.getDeathDate() : new Date());
+
 		} else {
-			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
+			target.setApproximateAge(source.getApproximateAge());
+			target.setApproximateAgeType(source.getApproximateAgeType());
+			target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 		}
 
-		List<PersonIndexDto> persons;
-		if (first != null && max != null) {
-			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			persons = em.createQuery(cq).getResultList();
+		target.setCauseOfDeath(source.getCauseOfDeath());
+		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
+		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
+		target.setDeathDate(source.getDeathDate());
+		target.setDeathPlaceType(source.getDeathPlaceType());
+		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
+		target.setBurialDate(source.getBurialDate());
+		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
+		target.setBurialConductor(source.getBurialConductor());
+
+		target.setBirthName(source.getBirthName());
+		target.setNickname(source.getNickname());
+		target.setMothersMaidenName(source.getMothersMaidenName());
+
+		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		List<LocationDto> locations = new ArrayList<>();
+		for (Location location : source.getAddresses()) {
+			LocationDto locationDto = LocationFacadeEjb.toDto(location);
+			locations.add(locationDto);
+		}
+		target.setAddresses(locations);
+
+		if (!CollectionUtils.isEmpty(source.getPersonContactDetails())) {
+			target.setPersonContactDetails(source.getPersonContactDetails().stream().map(entity -> {
+				final PersonContactDetailDto personContactDetailDto = new PersonContactDetailDto(
+					source.toReference(),
+					entity.isPrimaryContact(),
+					entity.getPersonContactDetailType(),
+					entity.getPhoneNumberType(),
+					entity.getDetails(),
+					entity.getContactInformation(),
+					entity.getAdditionalInformation(),
+					entity.isThirdParty(),
+					entity.getThirdPartyRole(),
+					entity.getThirdPartyName());
+				DtoHelper.fillDto(personContactDetailDto, entity);
+				return personContactDetailDto;
+			}).collect(Collectors.toList()));
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonIndexDto.class,
-			persons,
-			p -> p.getInJurisdiction(),
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+		target.setEducationType(source.getEducationType());
+		target.setEducationDetails(source.getEducationDetails());
 
-		return persons;
+		target.setOccupationType(source.getOccupationType());
+		target.setOccupationDetails(source.getOccupationDetails());
+		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
+
+		target.setMothersName(source.getMothersName());
+		target.setFathersName(source.getFathersName());
+		target.setNamesOfGuardians(source.getNamesOfGuardians());
+		target.setPlaceOfBirthRegion(RegionFacadeEjb.toReferenceDto(source.getPlaceOfBirthRegion()));
+		target.setPlaceOfBirthDistrict(DistrictFacadeEjb.toReferenceDto(source.getPlaceOfBirthDistrict()));
+		target.setPlaceOfBirthCommunity(CommunityFacadeEjb.toReferenceDto(source.getPlaceOfBirthCommunity()));
+		target.setPlaceOfBirthFacility(FacilityFacadeEjb.toReferenceDto(source.getPlaceOfBirthFacility()));
+		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
+		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
+		target.setBirthWeight(source.getBirthWeight());
+
+		target.setPassportNumber(source.getPassportNumber());
+		target.setNationalHealthId(source.getNationalHealthId());
+		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
+
+		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
+		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
+
+		return target;
 	}
 
 	@Override
@@ -819,115 +811,124 @@ public class PersonFacadeEjb implements PersonFacade {
 		cleanUp(newPerson);
 	}
 
-	public static PersonDto toDto(Person source) {
+	@Override
+	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		if (source == null) {
-			return null;
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+
+		final Subquery<String> phoneSubQuery = cq.subquery(String.class);
+		final Root<PersonContactDetail> phoneRoot = phoneSubQuery.from(PersonContactDetail.class);
+		phoneSubQuery.where(
+			cb.and(
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON), person),
+				cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+		phoneSubQuery.select(phoneRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+
+		final Subquery<String> emailSubQuery = cq.subquery(String.class);
+		final Root<PersonContactDetail> emailRoot = emailSubQuery.from(PersonContactDetail.class);
+		emailSubQuery.where(
+			cb.and(
+				cb.equal(emailRoot.get(PersonContactDetail.PERSON), person),
+				cb.isTrue(emailRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
+		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+
+		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
+
+		// make sure to check the sorting by the multi-select order if you extend the selections here
+		cq.multiselect(
+			person.get(Person.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.APPROXIMATE_AGE),
+			person.get(Person.APPROXIMATE_AGE_TYPE),
+			person.get(Person.BIRTHDATE_DD),
+			person.get(Person.BIRTHDATE_MM),
+			person.get(Person.BIRTHDATE_YYYY),
+			person.get(Person.SEX),
+			district.get(District.NAME),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.POSTAL_CODE),
+			location.get(Location.CITY),
+			phoneSubQuery.alias(PersonIndexDto.PHONE),
+			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
+			person.get(Person.CHANGE_DATE),
+			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
+
+		Predicate filter = personService.createUserFilter(cb, cq, person);
+		if (criteria != null) {
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		PersonDto target = new PersonDto();
-		DtoHelper.fillDto(target, source);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
 
-		target.setFirstName(source.getFirstName());
-		target.setLastName(source.getLastName());
-		target.setSalutation(source.getSalutation());
-		target.setOtherSalutation(source.getOtherSalutation());
-		target.setSex(source.getSex());
-
-		target.setPresentCondition(source.getPresentCondition());
-		target.setBirthdateDD(source.getBirthdateDD());
-		target.setBirthdateMM(source.getBirthdateMM());
-		target.setBirthdateYYYY(source.getBirthdateYYYY());
-
-		if (source.getBirthdateYYYY() != null) {
-
-			// calculate the approximate age based on the birth date
-			// still not sure whether this is a good solution
-
-			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
-				.getApproximateAge(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate());
-			target.setApproximateAge(pair.getElement0());
-			target.setApproximateAgeType(pair.getElement1());
-			target.setApproximateAgeReferenceDate(source.getDeathDate() != null ? source.getDeathDate() : new Date());
-
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case PersonIndexDto.UUID:
+				case PersonIndexDto.FIRST_NAME:
+				case PersonIndexDto.LAST_NAME:
+				case PersonIndexDto.SEX:
+					expression = person.get(sortProperty.propertyName);
+					break;
+				case PersonIndexDto.PHONE:
+					expression = cb.literal(15); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
+					break;
+				case PersonIndexDto.EMAIL_ADDRESS:
+					expression = cb.literal(16); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
+					break;
+				case PersonIndexDto.AGE_AND_BIRTH_DATE:
+					expression = person.get(Person.APPROXIMATE_AGE);
+					break;
+				case PersonIndexDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case PersonIndexDto.STREET:
+				case PersonIndexDto.HOUSE_NUMBER:
+				case PersonIndexDto.POSTAL_CODE:
+				case PersonIndexDto.CITY:
+					expression = location.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
 		} else {
-			target.setApproximateAge(source.getApproximateAge());
-			target.setApproximateAgeType(source.getApproximateAgeType());
-			target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
+			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		target.setCauseOfDeath(source.getCauseOfDeath());
-		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
-		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
-		target.setDeathDate(source.getDeathDate());
-		target.setDeathPlaceType(source.getDeathPlaceType());
-		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
-		target.setBurialDate(source.getBurialDate());
-		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
-		target.setBurialConductor(source.getBurialConductor());
-
-		target.setBirthName(source.getBirthName());
-		target.setNickname(source.getNickname());
-		target.setMothersMaidenName(source.getMothersMaidenName());
-
-		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
-		List<LocationDto> locations = new ArrayList<>();
-		for (Location location : source.getAddresses()) {
-			LocationDto locationDto = LocationFacadeEjb.toDto(location);
-			locations.add(locationDto);
-		}
-		target.setAddresses(locations);
-
-		if (!CollectionUtils.isEmpty(source.getPersonContactDetails())) {
-			target.setPersonContacts(source.getPersonContactDetails().stream().map(entity -> {
-				final PersonContactDetailDto personContactDetailDto = new PersonContactDetailDto(
-					source.toReference(),
-					entity.isPrimaryContact(),
-					entity.getPersonContactDetailType(),
-					entity.getPhoneNumberType(),
-					entity.getDetails(),
-					entity.getContactInformation(),
-					entity.getAdditionalInformation(),
-					entity.isThirdParty(),
-					entity.getThirdPartyRole(),
-					entity.getThirdPartyName());
-				DtoHelper.fillDto(personContactDetailDto, entity);
-				return personContactDetailDto;
-			}).collect(Collectors.toList()));
+		List<PersonIndexDto> persons;
+		if (first != null && max != null) {
+			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			persons = em.createQuery(cq).getResultList();
 		}
 
-		target.setEducationType(source.getEducationType());
-		target.setEducationDetails(source.getEducationDetails());
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			PersonIndexDto.class,
+			persons,
+			p -> p.getInJurisdiction(),
+			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
-		target.setOccupationType(source.getOccupationType());
-		target.setOccupationDetails(source.getOccupationDetails());
-		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
-
-		target.setMothersName(source.getMothersName());
-		target.setFathersName(source.getFathersName());
-		target.setNamesOfGuardians(source.getNamesOfGuardians());
-		target.setPlaceOfBirthRegion(RegionFacadeEjb.toReferenceDto(source.getPlaceOfBirthRegion()));
-		target.setPlaceOfBirthDistrict(DistrictFacadeEjb.toReferenceDto(source.getPlaceOfBirthDistrict()));
-		target.setPlaceOfBirthCommunity(CommunityFacadeEjb.toReferenceDto(source.getPlaceOfBirthCommunity()));
-		target.setPlaceOfBirthFacility(FacilityFacadeEjb.toReferenceDto(source.getPlaceOfBirthFacility()));
-		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
-		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
-		target.setBirthWeight(source.getBirthWeight());
-
-		target.setPassportNumber(source.getPassportNumber());
-		target.setNationalHealthId(source.getNationalHealthId());
-		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
-		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
-
-		target.setHasCovidApp(source.isHasCovidApp());
-		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
-		target.setExternalId(source.getExternalId());
-		target.setExternalToken(source.getExternalToken());
-
-		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
-		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
-
-		return target;
+		return persons;
 	}
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
@@ -949,7 +950,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
 				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
 				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
-				p.getPersonContacts().forEach(pcd -> pseudonymizer.pseudonymizeDto(PersonContactDetailDto.class, pcd, isInJurisdiction, null));
+				p.getPersonContactDetails().forEach(pcd -> pseudonymizer.pseudonymizeDto(PersonContactDetailDto.class, pcd, isInJurisdiction, null));
 			});
 		}
 	}
@@ -967,12 +968,12 @@ public class PersonFacadeEjb implements PersonFacade {
 						l,
 						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
 						isInJurisdiction));
-			source.getPersonContacts()
+			source.getPersonContactDetails()
 				.forEach(
 					pcd -> pseudonymizer.restorePseudonymizedValues(
 						PersonContactDetailDto.class,
 						pcd,
-						existingPerson.getPersonContacts().stream().filter(a -> a.getUuid().equals(pcd.getUuid())).findFirst().orElse(null),
+						existingPerson.getPersonContactDetails().stream().filter(a -> a.getUuid().equals(pcd.getUuid())).findFirst().orElse(null),
 						isInJurisdiction));
 		}
 	}
@@ -1050,7 +1051,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.getAddresses().addAll(locations);
 
 		Person finalTarget = target;
-		target.setPersonContactDetails(source.getPersonContacts().stream().map(dto -> {
+		target.setPersonContactDetails(source.getPersonContactDetails().stream().map(dto -> {
 			PersonContactDetail personContactDetail =
 				DtoHelper.fillOrBuildEntity(dto, personContactDetailService.getByUuid(dto.getUuid()), PersonContactDetail::new, checkChangeDate);
 			personContactDetail.setPerson(finalTarget);

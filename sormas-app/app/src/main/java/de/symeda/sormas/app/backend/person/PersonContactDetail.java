@@ -28,10 +28,9 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PhoneNumberType;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = PersonContactDetail.TABLE_NAME)
 @DatabaseTable(tableName = PersonContactDetail.TABLE_NAME)
@@ -42,7 +41,7 @@ public class PersonContactDetail extends PseudonymizableAdo {
     public static final String I18N_PREFIX = "PersonContactDetail";
 
     public static final String PERSON = "person";
-    public static final String PRIMARY = "primary";
+    public static final String PRIMARY_CONTACT = "primaryContact";
     public static final String PERSON_CONTACT_DETAIL_TYPE = "personContactDetailType";
     public static final String PHONE_NUMBER_TYPE = "phoneNumberType";
     public static final String DETAILS = "details";
@@ -62,23 +61,23 @@ public class PersonContactDetail extends PseudonymizableAdo {
     private PersonContactDetailType personContactDetailType;
     @Enumerated(EnumType.STRING)
     private PhoneNumberType phoneNumberType;
-    @Column(length = COLUMN_LENGTH_DEFAULT)
+    @Column(columnDefinition = "text")
     private String details;
 
-    @Column(length = COLUMN_LENGTH_DEFAULT)
+    @Column(columnDefinition = "text")
     private String contactInformation;
-    @Column(length = COLUMN_LENGTH_DEFAULT)
+    @Column(columnDefinition = "text")
     private String additionalInformation;
 
     @DatabaseField
     private boolean thirdParty;
-    @Column(length = COLUMN_LENGTH_DEFAULT)
+    @Column(columnDefinition = "text")
     private String thirdPartyRole;
-    @Column(length = COLUMN_LENGTH_DEFAULT)
+    @Column(columnDefinition = "text")
     private String thirdPartyName;
 
 	public String getOwner() {
-		return isThirdParty() ? getThirdPartyName() : "This person";
+		return isThirdParty() ? getThirdPartyName() : String.valueOf((R.string.caption_this_person));
 	}
 
 	public String getOwnerName() {

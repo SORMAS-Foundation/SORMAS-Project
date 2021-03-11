@@ -24,14 +24,18 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 
 	private PersonContactDetailType personContactDetailType;
 	private PhoneNumberType phoneNumberType;
+	@SensitiveData
 	private String details;
 
 	@SensitiveData
 	private String contactInformation;
+	@SensitiveData
 	private String additionalInformation;
 
 	private boolean thirdParty;
+	@SensitiveData
 	private String thirdPartyRole;
+	@SensitiveData
 	private String thirdPartyName;
 
 	public PersonContactDetailDto() {

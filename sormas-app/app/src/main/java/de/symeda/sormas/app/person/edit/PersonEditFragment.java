@@ -380,9 +380,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 
 	private ObservableList<PersonContactDetail> getPersonContactDetails() {
-		ObservableArrayList<PersonContactDetail> newAddresses = new ObservableArrayList<>();
-		newAddresses.addAll(record.getPersonContactDetails());
-		return newAddresses;
+		ObservableArrayList<PersonContactDetail> personContactDetails = new ObservableArrayList<>();
+		personContactDetails.addAll(record.getPersonContactDetails());
+		return personContactDetails;
 	}
 
 	private void setFieldVisibilitiesAndAccesses(View view) {

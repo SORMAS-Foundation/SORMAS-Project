@@ -64,15 +64,15 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 
 
 	protected Subquery<String> getPersonContactDetailSubquery(PersonContactDetailType personContactDetailType, From<?, Person> from) {
-		final Subquery<String> phoneSubQuery = query.subquery(String.class);
-		final Root<PersonContactDetail> phoneRoot = phoneSubQuery.from(PersonContactDetail.class);
-		phoneSubQuery.where(
+		final Subquery<String> pcdSubQuery = query.subquery(String.class);
+		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
+		pcdSubQuery.where(
 				criteriaBuilder.and(
-						criteriaBuilder.equal(phoneRoot.get(PersonContactDetail.PERSON), from),
-						criteriaBuilder.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY)),
-						criteriaBuilder.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), personContactDetailType)));
-		phoneSubQuery.select(phoneRoot.get(PersonContactDetail.CONTACT_INFORMATION));
-		return phoneSubQuery;
+						criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
+						criteriaBuilder.isTrue(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+						criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), personContactDetailType)));
+		pcdSubQuery.select(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+		return pcdSubQuery;
 	}
 
 	protected Subquery<Object> phoneOwnerSubquery(From<?, Person> from) {
@@ -82,12 +82,12 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		phoneOwnerSubQuery.where(
 				cb.and(
 						cb.equal(phoneRoot.get(PersonContactDetail.PERSON), from),
-						cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY)),
+						cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
 						cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
 		phoneOwnerSubQuery.select(
 				cb.selectCase()
 						.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
-						.otherwise(cb.literal(Captions.PersonContactDetail_thisPerson)));
+						.otherwise(cb.literal(Captions.personContactDetailThisPerson)));
 		return phoneOwnerSubQuery;
 	}
 }
