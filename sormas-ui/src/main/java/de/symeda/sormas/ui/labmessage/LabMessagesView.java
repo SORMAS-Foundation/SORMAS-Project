@@ -55,7 +55,7 @@ public class LabMessagesView extends AbstractView {
 			LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
 			if (!fetchResult.isSuccess()) {
 				VaadinUiUtil.showWarningPopup(fetchResult.getError());
-			} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessageState())) {
+			} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
 				VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
 			} else {
 				listComponent.getGrid().reload();
