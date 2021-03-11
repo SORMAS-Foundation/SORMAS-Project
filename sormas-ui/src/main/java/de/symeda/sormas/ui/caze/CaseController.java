@@ -211,7 +211,11 @@ public class CaseController {
 					if (updatedContact.getResultingCase() != null) {
 						String caseUuid = updatedContact.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						FacadeProvider.getExternalJournalFacade().notifyExternalJournalFollowUpUntilUpdate(caze, updatedContact.getFollowUpUntil());
+						FacadeProvider.getExternalJournalFacade()
+							.notifyExternalJournalFollowUpUntilUpdate(
+								caze.getPerson().getUuid(),
+								caze.getFollowUpUntil(),
+								updatedContact.getFollowUpUntil());
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -225,7 +229,11 @@ public class CaseController {
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
 				FacadeProvider.getContactFacade().saveContact(updatedContact);
-				FacadeProvider.getExternalJournalFacade().notifyExternalJournalFollowUpUntilUpdate(selectedCase, updatedContact.getFollowUpUntil());
+				FacadeProvider.getExternalJournalFacade()
+					.notifyExternalJournalFollowUpUntilUpdate(
+						selectedCase.getPerson().getUuid(),
+						selectedCase.getFollowUpUntil(),
+						updatedContact.getFollowUpUntil());
 
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}

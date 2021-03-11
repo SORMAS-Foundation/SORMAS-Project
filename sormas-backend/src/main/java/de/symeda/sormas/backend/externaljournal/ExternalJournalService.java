@@ -186,20 +186,22 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a followUpUntilDate has been updated
 	 *
-	 * @param caze
-	 *            a case assigned to a person already available in the external journal
+	 * @param personUuid
+	 *            uuid of person already registered in the external journal
+	 * @param newFollowUpUntilDate
+	 * 			  the updated follow-up end date
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(CaseDataDto caze, Date previousFollowUpUntilDate) {
-		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
+	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
+		PersonDto person = personFacade.getPersonByUuid(personUuid);
 		if (person.isEnrolledInExternalJournal()) {
-			if (caze.getFollowUpUntil().after(previousFollowUpUntilDate)) {
+			if (newFollowUpUntilDate.after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().isActive()) {
-					notifySymptomJournal(caze.getPerson().getUuid());
+					notifySymptomJournal(personUuid);
 				}
 				if (configFacade.getPatientDiaryConfig().isActive()) {
-					notifyPatientDiary(caze.getPerson().getUuid());
+					notifyPatientDiary(personUuid);
 				}
 			}
 		}

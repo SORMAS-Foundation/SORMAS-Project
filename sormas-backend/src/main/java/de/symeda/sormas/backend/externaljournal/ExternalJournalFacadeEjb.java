@@ -47,8 +47,9 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	public PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto person) {
 		return externalJournalService.deletePatientDiaryPerson(person);
 	}
+
 	@Override
-	public void notifyExternalJournalFollowUpUntilUpdate(CaseDataDto caze, Date previousFollowUpUntilDate) {
-		externalJournalService.notifyExternalJournalFollowUpUntilUpdate(caze, previousFollowUpUntilDate);
+	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
+		externalJournalService.notifyExternalJournalFollowUpUntilUpdate(personUuid, newFollowUpUntilDate, previousFollowUpUntilDate);
 	}
 }

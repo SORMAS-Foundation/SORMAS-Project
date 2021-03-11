@@ -24,5 +24,5 @@ public interface ExternalJournalFacade {
 
 	PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto personDto);
 
-	void notifyExternalJournalFollowUpUntilUpdate(CaseDataDto caze, Date previousFollowUpUntilDate);
+	void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate);
 }
