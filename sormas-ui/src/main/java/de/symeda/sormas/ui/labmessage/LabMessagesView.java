@@ -47,18 +47,18 @@ public class LabMessagesView extends AbstractView {
 		}
 
 		samplesViewSwitcher.setValue(SamplesViewType.LAB_MESSAGES);
-		samplesViewSwitcher.addValueChangeListener(e -> {
-			SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
-		});
+		samplesViewSwitcher.addValueChangeListener(e -> SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME));
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-			LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
-			if (!fetchResult.isSuccess()) {
-				VaadinUiUtil.showWarningPopup(fetchResult.getError());
-			} else {
-				listComponent.getGrid().reload();
-			}
+				LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
+				if (!fetchResult.isSuccess()) {
+					VaadinUiUtil.showWarningPopup(fetchResult.getError());
+				} else if (!fetchResult.hasNewMessages()) {
+					VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
+				} else {
+					listComponent.getGrid().reload();
+				}
 		}, ValoTheme.BUTTON_PRIMARY));
 	}
 

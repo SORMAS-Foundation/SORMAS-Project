@@ -255,7 +255,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * The creation of the currentSystemEvent is in this method. All the rest is outsourced to another method,
 	 * because it shall be done in one transaction. In case of uncaught exceptions, this leaves the systemEvent with status STARTED
 	 * and falls back to standard exception handling.
-	 * 
+	 *
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
@@ -299,7 +299,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(start);
+		systemEvent.setStartDate(startDate);
 		systemEventFacade.saveSystemEvent(systemEvent);
 		return systemEvent;
 	}
