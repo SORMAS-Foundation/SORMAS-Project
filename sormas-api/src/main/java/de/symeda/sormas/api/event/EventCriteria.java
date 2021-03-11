@@ -50,6 +50,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -82,6 +83,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EventReferenceDto superordinateEvent;
 	private Set<String> excludedUuids;
 	private Boolean hasNoSuperordinateEvent;
+	private EventManagementStatus eventManagementStatus;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -546,5 +548,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria hasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
 		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
 		return this;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 }

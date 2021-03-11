@@ -34,6 +34,8 @@ public interface ImportFacade {
 	 */
 	void generateCaseImportTemplateFile() throws IOException;
 
+	void generateEventImportTemplateFile() throws IOException;
+
 	void generateEventParticipantImportTemplateFile() throws IOException;
 
 	void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException;
@@ -61,6 +63,8 @@ public interface ImportFacade {
 	void generateContactImportTemplateFile() throws IOException;
 
 	String getCaseImportTemplateFilePath();
+
+	String getEventImportTemplateFilePath();
 
 	String getEventParticipantImportTemplateFilePath();
 

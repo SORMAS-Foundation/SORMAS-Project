@@ -72,6 +72,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -92,6 +93,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private ActionService actionService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public EventService() {
 		super(Event.class);
@@ -437,6 +442,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Join<Event, Location> address = eventPath.join(Event.EVENT_LOCATION);
 		dateFilter = cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, address.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, eventPath, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 	}
@@ -490,6 +496,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventInvestigationStatus() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
+		}
+		if (eventCriteria.getEventManagementStatus() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_MANAGEMENT_STATUS), eventCriteria.getEventManagementStatus()));
 		}
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
@@ -772,5 +782,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		});
 
 		return eventSummaryDetailsList;
+	}
+
+	public boolean isEventEditAllowed(Event event) {
+		if (event.getSormasToSormasOriginInfo() != null) {
+			return event.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
 	}
 }

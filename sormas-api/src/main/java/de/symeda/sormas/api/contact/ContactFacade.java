@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -74,12 +75,18 @@ public interface ContactFacade {
 
 	List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		ExportConfigurationDto exportConfiguration,
 		Language userLanguage);
 
-	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<VisitSummaryExportDto> getVisitSummaryExportList(
+		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		Language userLanguage);
 
 	long countMaximumFollowUpDays(ContactCriteria contactCriteria);
 
@@ -129,6 +136,8 @@ public interface ContactFacade {
 
 	boolean exists(String uuid);
 
+	boolean doesExternalTokenExist(String externalToken, String contactUuid);
+
 	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -136,4 +145,5 @@ public interface ContactFacade {
 		Date from,
 		Date to);
 
+    List<ContactDto> getByPersonUuids(List<String> personUuids);
 }

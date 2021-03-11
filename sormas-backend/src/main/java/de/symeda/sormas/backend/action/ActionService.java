@@ -280,6 +280,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			eventReportingUser.get(User.UUID),
 			eventReportingUser.get(User.FIRST_NAME),
 			eventReportingUser.get(User.LAST_NAME),
@@ -322,6 +323,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_INVESTIGATION_STATUS:
 					expression = event.get(Event.EVENT_INVESTIGATION_STATUS);
+					break;
+				case EventActionIndexDto.EVENT_MANAGEMENT_STATUS:
+					expression = event.get(Event.EVENT_MANAGEMENT_STATUS);
 					break;
 				case EventActionIndexDto.EVENT_EVOLUTION_DATE:
 					expression = event.get(Event.EVOLUTION_DATE);

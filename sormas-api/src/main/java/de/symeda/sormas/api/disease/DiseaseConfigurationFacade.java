@@ -46,4 +46,6 @@ public interface DiseaseConfigurationFacade {
 	Disease getDefaultDisease();
 
 	List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased);
+
+	DiseaseConfigurationDto getDiseaseConfiguration(Disease disease);
 }

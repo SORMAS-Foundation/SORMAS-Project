@@ -22,30 +22,6 @@ import javax.ejb.Remote;
 @Remote
 public interface SormasToSormasFacade {
 
-	void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void saveSharedContacts(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void shareCases(List<String> caseUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void returnCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void returnContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveReturnedCase(SormasToSormasEncryptedDataDto sharedCase) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void saveReturnedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void syncCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveSyncedCases(SormasToSormasEncryptedDataDto sharedCase) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void syncContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveSyncedContacts(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException;
-
 	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
 
 	ServerAccessDataReferenceDto getOrganizationRef(String id);

@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -32,19 +33,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -97,7 +95,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -225,8 +222,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
-	@Resource
-	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -304,7 +299,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		validate(dto);
 
 		if (existingContact != null) {
-			handleExternalJournalPerson(dto);
+			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 		}
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
@@ -329,10 +324,16 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
+				StringBuilder sb = new StringBuilder();
+				if (entity.getFollowUpComment() != null) {
+					sb.append(entity.getFollowUpComment()).append(" ");
+				}
 				contactService.cancelFollowUp(
 					entity,
-					I18nProperties
-						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
+					sb.append(
+						I18nProperties
+							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
+						.toString());
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
@@ -344,21 +345,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
-	}
-
-	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(ContactDto updatedContact) {
-		if (!configFacade.isExternalJournalActive()) {
-			return;
-		}
-
-		/**
-		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
-		 * Changes of related data is assumed to be not yet persisted in the database.
-		 */
-		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
-		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void createInvestigationTask(Contact entity) {
@@ -445,6 +431,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		ExportConfigurationDto exportConfiguration,
@@ -555,6 +542,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
 
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contact.get(Contact.UUID));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -696,7 +684,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
+	public List<VisitSummaryExportDto> getVisitSummaryExportList(
+		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		Language userLanguage) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
@@ -715,11 +708,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 			contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
-		cq.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext),
-				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext),
+			cb.isNotEmpty(contactRoot.get(Contact.VISITS)));
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contactRoot.get(Contact.UUID));
+		cq.where(filter);
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
 		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
@@ -1210,7 +1204,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		return target;
@@ -1260,6 +1254,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
 
 		return dashboardContactsInQuarantine;
+	}
+
+	@Override
+	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
+		return contactService.getByPersonUuids(personUuids).stream().map(ContactFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1625,6 +1624,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return this.contactService.exists(uuid);
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
+		return contactService.exists(
+			(cb, contactRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken), cb.notEqual(contactRoot.get(Contact.UUID), contactUuid)));
 	}
 
 	private boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {

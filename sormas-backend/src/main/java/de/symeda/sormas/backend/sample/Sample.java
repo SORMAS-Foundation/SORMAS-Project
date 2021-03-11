@@ -53,19 +53,21 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
 @Audited
-public class Sample extends CoreAdo {
+public class Sample extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -7196712070188634978L;
 
@@ -104,6 +106,8 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	public static final String PATHOGENTESTS = "pathogenTests";
+	public static final String SAMPLING_REASON = "samplingReason";
+	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -144,6 +148,8 @@ public class Sample extends CoreAdo {
 	private String requestedOtherAdditionalTests;
 	private String requestedPathogenTestsString;
 	private String requestedAdditionalTestsString;
+	private SamplingReason samplingReason;
+	private String samplingReasonDetails;
 
 	private List<PathogenTest> pathogenTests;
 	private List<AdditionalTest> additionalTests;
@@ -520,6 +526,24 @@ public class Sample extends CoreAdo {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	public void setSamplingReason(SamplingReason samplingReason) {
+		this.samplingReason = samplingReason;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	public void setSamplingReasonDetails(String samplingReasonDetails) {
+		this.samplingReasonDetails = samplingReasonDetails;
+	}
+
 	@Override
 	public String toString() {
 		return SampleReferenceDto.buildCaption(
@@ -562,12 +586,14 @@ public class Sample extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@Override
 	@ManyToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}

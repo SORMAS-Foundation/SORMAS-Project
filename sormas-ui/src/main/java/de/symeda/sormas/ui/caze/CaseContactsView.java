@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -54,7 +56,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -64,6 +65,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -290,12 +292,14 @@ public class CaseContactsView extends AbstractCaseView {
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
-
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
+				ExportEntityName.CONTACTS);
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
+			StreamResource extendedExportStreamResource =
+				ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
 			addExportButton(
 				extendedExportStreamResource,
 				exportButton,
@@ -305,7 +309,7 @@ public class CaseContactsView extends AbstractCaseView {
 				Descriptions.descDetailedExportButton);
 
 			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());
+				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -335,6 +339,12 @@ public class CaseContactsView extends AbstractCaseView {
 		statusFilterLayout.addStyleName("top-bar");
 		activeStatusButton = statusAll;
 		return statusFilterLayout;
+	}
+
+	private Set<String> getSelectedRows() {
+		return viewConfiguration.isInEagerMode()
+			? this.grid.asMultiSelect().getSelectedItems().stream().map(ContactIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
 	}
 
 	@Override
