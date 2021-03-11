@@ -5588,6 +5588,7 @@ CREATE TABLE documents (
 
     CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
 );
+ALTER TABLE documents OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
 
