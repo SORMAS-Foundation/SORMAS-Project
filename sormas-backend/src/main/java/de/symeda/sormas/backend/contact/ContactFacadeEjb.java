@@ -59,6 +59,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -449,11 +450,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		ExportConfigurationDto exportConfiguration,
 		Language userLanguage) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
-		Root<Contact> contact = cq.from(Contact.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
+		final Root<Contact> contact = cq.from(Contact.class);
 
-		ContactJoins joins = new ContactJoins(contact);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
+		final ContactJoins<Contact> joins = (ContactJoins) contactQueryContext.getJoins();
 
 		cq.multiselect(
 			Stream.concat(
@@ -514,9 +516,9 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddressFacility().get(Facility.NAME),
 					joins.getAddressFacility().get(Facility.UUID),
 					joins.getAddress().get(Location.FACILITY_DETAILS),
-					joins.getPerson().get(Person.PHONE),
-					joins.getPerson().get(Person.PHONE_OWNER),
-					joins.getPerson().get(Person.EMAIL_ADDRESS),
+					((Expression<String>)contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+					((Expression<String>)contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
+					((Expression<String>)contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY)),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
 					joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
@@ -551,7 +553,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		cq.distinct(true);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -574,7 +576,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
 				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-				ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
+				ContactJoins<Contact> visitContactJoins = new ContactJoins(visitsCqRoot);
 
 				visitsCq.where(
 					CriteriaBuilderHelper
@@ -699,7 +701,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final ContactJoins contactJoins = new ContactJoins(contactRoot);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
+		final ContactJoins contactJoins = (ContactJoins) contactQueryContext.getJoins();
 		final Join<Contact, Person> contactPerson = contactJoins.getPerson();
 
 		cq.multiselect(
@@ -715,7 +718,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.where(
 			CriteriaBuilderHelper.and(
 				cb,
-				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
+				listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
@@ -726,7 +729,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-			ContactJoins joins = new ContactJoins(visitsCqRoot);
+			ContactJoins<Contact> joins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
 				CriteriaBuilderHelper
@@ -773,10 +776,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final ContactJoins joins = new ContactJoins(contactRoot);
+
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
+
+		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		// fixme - why was this added?
 		joins.getVisits();
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, joins);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -803,9 +810,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
-		ContactJoins joins = new ContactJoins(root);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq, joins);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
+
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -831,7 +839,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaQuery<ContactFollowUpDto> cq = cb.createQuery(ContactFollowUpDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
 
-		ContactJoins joins = new ContactJoins(contact);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
+		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
 
 		cq.multiselect(
 			Stream
@@ -852,7 +861,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.toList()));
 
 		// Only use user filter if no restricting case is specified
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -1550,7 +1559,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 
-		ContactJoins joins = new ContactJoins(contactRoot);
+		ContactJoins<Contact> joins = new ContactJoins<>(contactRoot);
 
 		cq.multiselect(
 			Stream

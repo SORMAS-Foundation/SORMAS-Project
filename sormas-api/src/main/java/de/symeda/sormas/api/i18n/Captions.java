@@ -1368,6 +1368,7 @@ public interface Captions {
 	String PersonContactDetail_thirdParty = "PersonContactDetail.thirdParty";
 	String PersonContactDetail_thirdPartyName = "PersonContactDetail.thirdPartyName";
 	String PersonContactDetail_thirdPartyRole = "PersonContactDetail.thirdPartyRole";
+	String PersonContactDetail_thisPerson = "PersonContactDetail.thisPerson";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
 	String personLinkToCases = "personLinkToCases";

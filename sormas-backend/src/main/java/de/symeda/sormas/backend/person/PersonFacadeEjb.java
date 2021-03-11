@@ -46,9 +46,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -72,6 +74,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -214,12 +217,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(root);
+
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter =
 			caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root, joins));
+		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
 		if (filter != null) {
@@ -585,11 +590,33 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-		Root<Person> person = cq.from(Person.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+
+		final Subquery<String> phoneSubQuery = cq.subquery(String.class);
+		final Root<PersonContactDetail> phoneRoot = phoneSubQuery.from(PersonContactDetail.class);
+		phoneSubQuery.where(
+			cb.and(
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON), person),
+				cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY)),
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+		phoneSubQuery.select(phoneRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+
+		final Subquery<String> emailSubQuery = cq.subquery(String.class);
+		final Root<PersonContactDetail> emailRoot = emailSubQuery.from(PersonContactDetail.class);
+		emailSubQuery.where(
+			cb.and(
+				cb.equal(emailRoot.get(PersonContactDetail.PERSON), person),
+				cb.isTrue(emailRoot.get(PersonContactDetail.PRIMARY)),
+				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
+		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+
 		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
 
 		cq.multiselect(
@@ -607,14 +634,14 @@ public class PersonFacadeEjb implements PersonFacade {
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.POSTAL_CODE),
 			location.get(Location.CITY),
-			person.get(Person.PHONE),
-			person.get(Person.EMAIL_ADDRESS),
+			phoneSubQuery,
+			emailSubQuery,
 			person.get(Person.CHANGE_DATE),
 			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -632,9 +659,13 @@ public class PersonFacadeEjb implements PersonFacade {
 				case PersonIndexDto.FIRST_NAME:
 				case PersonIndexDto.LAST_NAME:
 				case PersonIndexDto.SEX:
-				case PersonIndexDto.PHONE:
-				case PersonIndexDto.EMAIL_ADDRESS:
 					expression = person.get(sortProperty.propertyName);
+					break;
+				case PersonIndexDto.PHONE:
+					expression = phoneSubQuery;
+					break;
+				case PersonIndexDto.EMAIL_ADDRESS:
+					expression = emailSubQuery;
 					break;
 				case PersonIndexDto.AGE_AND_BIRTH_DATE:
 					expression = person.get(Person.APPROXIMATE_AGE);
@@ -681,9 +712,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Person> person = cq.from(Person.class);
 
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, cq, cb, person);
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
@@ -841,8 +874,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 		List<LocationDto> locations = new ArrayList<>();
 		for (Location location : source.getAddresses()) {
@@ -886,9 +917,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
 
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
@@ -924,6 +953,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
 				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
 				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
+				p.getPersonContacts().forEach(pcd -> pseudonymizer.pseudonymizeDto(PersonContactDetailDto.class, pcd, isInJurisdiction, null));
 			});
 		}
 	}
@@ -940,6 +970,13 @@ public class PersonFacadeEjb implements PersonFacade {
 						LocationDto.class,
 						l,
 						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+						isInJurisdiction));
+			source.getPersonContacts()
+				.forEach(
+					pcd -> pseudonymizer.restorePseudonymizedValues(
+						PersonContactDetailDto.class,
+						pcd,
+						existingPerson.getPersonContacts().stream().filter(a -> a.getUuid().equals(pcd.getUuid())).findFirst().orElse(null),
 						isInJurisdiction));
 		}
 	}
@@ -1005,8 +1042,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
@@ -1053,9 +1088,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
 
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());

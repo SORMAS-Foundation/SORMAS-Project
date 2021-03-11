@@ -207,7 +207,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -272,7 +272,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -488,7 +488,7 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -811,7 +811,7 @@ public class EventFacadeEjb implements EventFacade {
 	/**
 	 * Archives all events that have not been changed for a defined amount of days
 	 * 
-	 * @param daysAfterEventsGetsArchived
+	 * @param daysAfterEventGetsArchived
 	 *            defines the amount of days
 	 */
 	@Override

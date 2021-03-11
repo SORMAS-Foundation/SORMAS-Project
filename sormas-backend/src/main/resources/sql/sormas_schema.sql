@@ -6751,6 +6751,15 @@ create table personcontactdetail(
 ALTER TABLE personContactDetail
     ADD CONSTRAINT fk_personcontactdetail_person_id FOREIGN KEY (person_id) REFERENCES person(id);
 
+ALTER TABLE personContactDetail ADD COLUMN sys_period tstzrange;
+UPDATE personContactDetail SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE personContactDetail ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE personContactDetail_history (LIKE personContactDetail);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON personContactDetail
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'personContactDetail_history', true);
+ALTER TABLE personContactDetail_history OWNER TO sormas_user;
+
 CREATE INDEX IF NOT EXISTS idx_personcontactdetail_person_id ON personcontactdetail (person_id);
 CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personcontactdetail (primarycontact);
 
@@ -6768,6 +6777,15 @@ SELECT migratePersonContacts(id, 'PHONE', true, person.phone, null, false, null,
 SELECT migratePersonContacts(id, 'EMAIL', true, person.emailaddress,null, false, null, null) from person where (person.emailaddress <> '' and person.emailaddress is not null) IS TRUE;
 SELECT migratePersonContacts(id, 'PHONE', false, person.phone, null,true, null, person.phoneowner) from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS TRUE;
 SELECT migratePersonContacts(id, 'OTHER', false, null, person.generalpractitionerdetails,true, null, null) from person where (person.generalpractitionerdetails <> '' and person.generalpractitionerdetails is not null) IS TRUE;
+
+ALTER TABLE person DROP COLUMN phone;
+ALTER TABLE person DROP COLUMN phoneowner;
+ALTER TABLE person DROP COLUMN emailaddress;
+ALTER TABLE person DROP COLUMN generalpractitionerdetails;
+ALTER TABLE person_history DROP COLUMN phone;
+ALTER TABLE person_history DROP COLUMN phoneowner;
+ALTER TABLE person_history DROP COLUMN emailaddress;
+ALTER TABLE person_history DROP COLUMN generalpractitionerdetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (338, 'Person contact details #2744');
 

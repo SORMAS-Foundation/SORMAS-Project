@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonContactDetailDto extends PseudonymizableDto {
@@ -25,6 +26,7 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 	private PhoneNumberType phoneNumberType;
 	private String details;
 
+	@SensitiveData
 	private String contactInformation;
 	private String additionalInformation;
 

@@ -169,11 +169,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
-                                    loc(PersonDto.GENERAL_PRACTITIONER_DETAILS)) +
-					fluidRowLocs(PersonDto.PERSON_CONTACTS);
+					fluidRowLocs(PersonDto.PERSON_CONTACTS));
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -299,10 +296,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.EDUCATION_TYPE,
 			PersonDto.EDUCATION_DETAILS);
 
-		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
-		addField(PersonDto.PHONE_OWNER, TextField.class);
-		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
-
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
 		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
@@ -330,8 +323,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
-
-		addField(PersonDto.GENERAL_PRACTITIONER_DETAILS, TextField.class);
 
 		// Set requirements that don't need visibility changes and read only status
 
@@ -455,10 +446,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
-
-		phoneNumber.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
-
-		emailAddress.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {

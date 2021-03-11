@@ -21,8 +21,8 @@ public class PersonContactDetail extends AbstractDomainObject {
 	public static final String TABLE_NAME = "personcontactdetail";
 
 	public static final String PERSON = "person";
-	public static final String PRIMARY = "primary";
-	public static final String PERSON_CONTACT_DETAILS_TYPE = "personContactDetailsType";
+	public static final String PRIMARY = "primaryContact";
+	public static final String PERSON_CONTACT_DETAIL_TYPE = "personContactDetailType";
 	public static final String PHONE_NUMBER_TYPE = "phoneNumberType";
 	public static final String DETAILS = "details";
 	public static final String CONTACT_INFORMATION = "contactInformation";

@@ -25,7 +25,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 	private static final String OWNER = Captions.PersonContactDetail_owner;
 	private static final String OWNER_NAME = Captions.PersonContactDetail_ownerName;
-	private static final String THIS_PERSON = "This person";
+	private static final String THIS_PERSON = Captions.PersonContactDetail_thisPerson;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 	private PersonDto thisPerson;
@@ -97,7 +97,6 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 								confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 
 								commitCallback.accept(editForm.getValue());
-								fireValueChange(false);
 								return confirmationComponent;
 							},
 							null);
