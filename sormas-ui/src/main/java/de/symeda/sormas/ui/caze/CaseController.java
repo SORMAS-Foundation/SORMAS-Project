@@ -384,7 +384,7 @@ public class CaseController {
 		ContactDto convertedContact,
 		EventParticipantDto convertedEventParticipant,
 		Disease unrelatedDisease,
-		boolean createdFromLabMesssage) {
+		boolean createdFromLabMessage) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
 		assert (unrelatedDisease == null || convertedEventParticipant == null);
@@ -500,7 +500,7 @@ public class CaseController {
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (!createdFromLabMesssage) {
+					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
 				} else if (convertedEventParticipant != null) {
@@ -520,18 +520,18 @@ public class CaseController {
 								FacadeProvider.getCaseFacade()
 									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
 							}
-							if (!createdFromLabMesssage) {
+							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
 							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
-							if (!createdFromLabMesssage) {
+							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
 						}
 					});
-				} else if (createdFromLabMesssage) {
+				} else if (createdFromLabMessage) {
 					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();

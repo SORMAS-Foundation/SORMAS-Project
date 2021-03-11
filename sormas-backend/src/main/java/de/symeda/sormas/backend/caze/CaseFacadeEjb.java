@@ -1213,7 +1213,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count) {
+	public List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -1226,6 +1226,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
+		cq.orderBy(cb.desc(caze.get(Case.UUID)));
 		cq.select(caze.get(Case.UUID));
 
 		List<String> uuids = em.createQuery(cq).getResultList();
@@ -1233,7 +1234,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 
-		return new Random().ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
+		return randomGenerator.ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(
@@ -2832,6 +2833,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
+		if (epidNumber == null) {
+			return false;
+		}
 
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
@@ -2890,6 +2894,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		query.setMaxResults(1);
 		return !query.getResultList().isEmpty();
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
+		return caseService.exists(
+			(cb, caseRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken), cb.notEqual(caseRoot.get(Case.UUID), caseUuid)));
 	}
 
 	@Override
@@ -3060,8 +3071,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
-		// 1.2 Person
-		if (!cloning) {
+		// 1.2 Person - Only merge when the persons have different UUIDs
+		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);

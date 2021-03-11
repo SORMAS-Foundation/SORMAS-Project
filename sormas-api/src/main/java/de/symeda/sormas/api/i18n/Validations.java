@@ -39,6 +39,7 @@ public interface Validations {
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
+	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
@@ -91,6 +92,7 @@ public interface Validations {
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";
