@@ -8,8 +8,10 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -664,8 +666,21 @@ public class LabMessageController {
 		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
 		form.setValue(labMessageDto);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
-		HorizontalLayout layout = new HorizontalLayout(form, createComponent);
+
+		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
+		horizontalSplitPanel.setFirstComponent(form);
+		horizontalSplitPanel.setSecondComponent(createComponent);
+		horizontalSplitPanel.setSplitPosition(569, Sizeable.Unit.PIXELS); // This is just the position it needs to avoid vertical scroll bars.
+
+		Panel panel = new Panel();
+		panel.setHeightFull();
+		panel.setContent(horizontalSplitPanel);
+
+		HorizontalLayout layout = new HorizontalLayout(panel);
+		layout.setHeightFull();
 		layout.setMargin(true);
+
+		window.setHeightFull();
 		window.setContent(layout);
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
@@ -678,7 +693,7 @@ public class LabMessageController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param component
 	 *            that holds a reference to the current state of processing a labMessage
 	 * @param entityCreated
@@ -703,7 +718,7 @@ public class LabMessageController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param component
 	 *            component is expected to not be null, as it should never be null in a correct call of this method. Calling this method
 	 *            with a null component will result in a NPE.
