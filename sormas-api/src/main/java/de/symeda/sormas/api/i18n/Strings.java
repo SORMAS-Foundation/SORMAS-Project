@@ -198,6 +198,7 @@ public interface Strings {
 	String errorIllegalFilename = "errorIllegalFilename";
 	String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	String errorInvalidValue = "errorInvalidValue";
+	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
