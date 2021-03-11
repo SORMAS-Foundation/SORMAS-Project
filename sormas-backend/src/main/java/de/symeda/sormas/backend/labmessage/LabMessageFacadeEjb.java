@@ -34,6 +34,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -264,24 +265,23 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		try {
 			return fetchAndSaveExternalLabMessages(currentSystemEvent);
 		} catch (CannotProceedException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date(DateHelper.now()));
-			return new LabMessageFetchResult(false, e.getMessage());
+			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, e.getMessage());
 		} catch (NamingException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date(DateHelper.now()));
-			return new LabMessageFetchResult(false, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
+			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
 		}
 	}
 
 	@Transactional
 	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
-		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
 		Date since = findLastUpdateDate();
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
 			externalMessageResult.getValue().forEach(this::save);
 			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().getTime();
-			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date(DateHelper.now()));
-			return fetchResult;
+			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date());
+			return getSuccessfulFetchResult(externalMessageResult);
 		} else {
 			throw new CannotProceedException(externalMessageResult.getError());
 		}
@@ -295,7 +295,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	protected SystemEventDto initializeFetchEvent() {
-		Date start = new Date(DateHelper.now());
+		Date startDate = new Date();
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
@@ -331,6 +331,18 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			logger.warn("Synchronization date could not be found for the last successful lab message retrieval. Falling back to start date.");
 			return latestSuccess.getStartDate().getTime();
 		}
+	}
+
+	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
+		if (isEmptyResult(externalMessageResult)) {
+			return new LabMessageFetchResult(true, NewMessagesState.NO_NEW_MESSAGES, null);
+		} else {
+			return new LabMessageFetchResult(true, NewMessagesState.NEW_MESSAGES, null);
+		}
+	}
+
+	private boolean isEmptyResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
+		return externalMessageResult.getValue() == null || externalMessageResult.getValue().isEmpty();
 	}
 
 	@Override
