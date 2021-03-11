@@ -6836,4 +6836,10 @@ UPDATE diseaseconfiguration SET extendedClassificationMulti = TRUE WHERE disease
 
 INSERT INTO schema_version (version_number, comment) VALUES (345, 'Introduce disease properties to switch between basic and extended classification #4218');
 
+-- 2021-03-03 [SurvNet Interface] Add "via DEMIS" to pathogen tests #4562
+ALTER TABLE pathogentest ADD COLUMN vialims boolean DEFAULT false;
+ALTER TABLE pathogentest_history ADD COLUMN vialims boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (346, '[SurvNet Interface] Add "via DEMIS" to pathogen tests #4562');
+
 -- *** Insert new sql commands BEFORE this line ***

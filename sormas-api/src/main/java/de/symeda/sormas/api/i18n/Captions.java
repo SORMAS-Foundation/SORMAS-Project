@@ -804,6 +804,10 @@ public interface Captions {
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
 	String devModeGenerateEvents = "devModeGenerateEvents";
+	String devModeGeneratorSeed = "devModeGeneratorSeed";
+	String devModeLoadDefaultConfig = "devModeLoadDefaultConfig";
+	String devModeLoadPerformanceTestConfig = "devModeLoadPerformanceTestConfig";
+	String devModeUseSeed = "devModeUseSeed";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -1169,6 +1173,7 @@ public interface Captions {
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
 	String labMessageFetch = "labMessageFetch";
+	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageProcessed = "labMessageProcessed";
 	String labMessageUnprocessed = "labMessageUnprocessed";
@@ -1291,6 +1296,7 @@ public interface Captions {
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	String PathogenTest_typingId = "PathogenTest.typingId";
+	String PathogenTest_viaLims = "PathogenTest.viaLims";
 	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";

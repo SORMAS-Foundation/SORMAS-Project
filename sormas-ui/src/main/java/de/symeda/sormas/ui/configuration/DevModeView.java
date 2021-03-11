@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.ui.SormasUI;
@@ -43,6 +42,7 @@ import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -71,6 +71,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityIndexDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -104,11 +105,21 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static Random randomGenerator;
+
+	private TextField seedField;
+	private CheckBox useManualSeedCheckbox;
+	private static boolean useManualSeed = false;
+	private static long manualSeed = 0;
+
 	private VerticalLayout contentLayout;
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
 	private Binder<EventGenerationConfig> eventGeneratorConfigBinder = new Binder<>();
+	CaseGenerationConfig caseGenerationConfig = new CaseGenerationConfig();
+	ContactGenerationConfig contactGenerationConfig = new ContactGenerationConfig();
+	EventGenerationConfig eventGenerationConfig = new EventGenerationConfig();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -128,11 +139,90 @@ public class DevModeView extends AbstractConfigurationView {
 			new Label(
 				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsContactGeneration),
 				ContentMode.HTML));
+		contentLayout.addComponent(
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsSeedUsage), ContentMode.HTML));
+
+		contentLayout.addComponent(createSeedSettingsLayout());
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 		contentLayout.addComponent(createEventsGeneratorLayout());
 
 		addComponent(contentLayout);
+	}
+
+	private HorizontalLayout createSeedSettingsLayout() {
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
+		verticalLayout.setSpacing(false);
+
+		Label seedLabel = new Label(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
+		seedField = new TextField();
+		seedField.setCaption(I18nProperties.getCaption(Captions.devModeGeneratorSeed));
+		seedField.setValue(Long.toString(manualSeed, 36));
+		seedField.setMaxLength(11);
+		seedField.addValueChangeListener(e -> {
+			try {
+				manualSeed = Long.parseLong(e.getValue(), 36);
+			} catch (NumberFormatException ex) {
+				manualSeed = 0;
+			}
+			seedLabel.setValue(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
+		});
+
+		useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
+		useManualSeedCheckbox.setValue(useManualSeed);
+		useManualSeedCheckbox.addValueChangeListener(e -> {
+			useManualSeed = e.getValue();
+		});
+
+		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
+			seedField.setValue("performance");
+			useManualSeedCheckbox.setValue(true);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadPerformanceTestConfig();
+			caseGenerationConfig.setRegion(region);
+			caseGenerationConfig.setDistrict(district);
+			contactGenerationConfig.loadPerformanceTestConfig();
+			contactGenerationConfig.setRegion(region);
+			contactGenerationConfig.setDistrict(district);
+			eventGenerationConfig.loadPerformanceTestConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
+			useManualSeedCheckbox.setValue(false);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadDefaultConfig();
+			caseGenerationConfig.setRegion(region);
+			contactGenerationConfig.loadDefaultConfig();
+			contactGenerationConfig.setRegion(region);
+			eventGenerationConfig.loadDefaultConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+
+		verticalLayout.addComponent(seedLabel);
+		verticalLayout.addComponent(useManualSeedCheckbox);
+		horizontalLayout.addComponent(seedField);
+		horizontalLayout.addComponent(verticalLayout);
+		horizontalLayout.addComponent(performanceConfigButton);
+		horizontalLayout.addComponent(defaultConfigButton);
+		horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_LEFT);
+
+		return horizontalLayout;
 	}
 
 	private VerticalLayout createCaseGeneratorLayout() {
@@ -200,9 +290,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
 
-		CaseGenerationConfig config = new CaseGenerationConfig();
-		config.setRegion(regions.get(0));
-		caseGeneratorConfigBinder.setBean(config);
+		caseGenerationConfig.setRegion(regions.get(0));
+		caseGeneratorConfigBinder.setBean(caseGenerationConfig);
 
 		return caseGeneratorLayout;
 	}
@@ -294,9 +383,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contactGeneratorLayout.addComponent(contactOptionsSecondLineLayout);
 
-		ContactGenerationConfig config = new ContactGenerationConfig();
-		config.setRegion(regions.get(0));
-		contactGeneratorConfigBinder.setBean(config);
+		contactGenerationConfig.setRegion(regions.get(0));
+		contactGeneratorConfigBinder.setBean(contactGenerationConfig);
 
 		return contactGeneratorLayout;
 	}
@@ -401,11 +489,11 @@ public class DevModeView extends AbstractConfigurationView {
 			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
 		eventOptionsSecondLineLayout.addComponent(percentageOfCasesField);
 
-		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
-		config.setRegion(regions.get(0));
-		config.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(config.getRegion().getUuid()).get(0));
-		eventGeneratorConfigBinder.setBean(config);
+		eventGenerationConfig.setRegion(regions.get(0));
+		eventGenerationConfig
+			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(eventGenerationConfig.getRegion().getUuid()).get(0));
+		eventGeneratorConfigBinder.setBean(eventGenerationConfig);
 
 		return eventGeneratorLayout;
 	}
@@ -458,8 +546,16 @@ public class DevModeView extends AbstractConfigurationView {
 		"Festival",
 		"Carnival" };
 
+	private static void initializeRandomGenerator() {
+		if (useManualSeed) {
+			randomGenerator = new Random(manualSeed);
+		} else {
+			randomGenerator = new Random();
+		}
+	}
+
 	private static Random random() {
-		return ThreadLocalRandom.current();
+		return randomGenerator;
 	}
 
 	private static boolean randomPercent(int p) {
@@ -528,6 +624,23 @@ public class DevModeView extends AbstractConfigurationView {
 					});
 				}
 			}
+			if (entity.getClass() == CaseDataDto.class) {
+				if (((CaseDataDto) entity).getQuarantineTo() != null
+					&& ((CaseDataDto) entity).getQuarantineFrom() != null
+					&& ((CaseDataDto) entity).getQuarantineTo().before(((CaseDataDto) entity).getQuarantineFrom())) {
+					Date quarantineTo = ((CaseDataDto) entity).getQuarantineTo();
+					((CaseDataDto) entity).setQuarantineTo(((CaseDataDto) entity).getQuarantineFrom());
+					((CaseDataDto) entity).setQuarantineFrom(quarantineTo);
+				}
+
+				if (((CaseDataDto) entity).getProhibitionToWorkFrom() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil().before(((CaseDataDto) entity).getProhibitionToWorkFrom())) {
+					Date prohibitionToWorkUntil = ((CaseDataDto) entity).getProhibitionToWorkUntil();
+					((CaseDataDto) entity).setProhibitionToWorkUntil(((CaseDataDto) entity).getProhibitionToWorkFrom());
+					((CaseDataDto) entity).setProhibitionToWorkFrom(prohibitionToWorkUntil);
+				}
+			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
@@ -570,6 +683,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateCases(UserReferenceDto userReference) {
+		initializeRandomGenerator();
 
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 
@@ -580,9 +694,13 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
+
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
 			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
@@ -625,15 +743,24 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
 			// region & facility
-			FacilityIndexDto healthFacility = random(healthFacilities);
-			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-			caze.setRegion(healthFacility.getRegion());
-			caze.setDistrict(healthFacility.getDistrict());
-			caze.setCommunity(healthFacility.getCommunity());
-			caze.setHealthFacility(healthFacility.toReference());
-			caze.setFacilityType(healthFacility.getType());
-			caze.setReportLat(healthFacility.getLatitude());
-			caze.setReportLon(healthFacility.getLongitude());
+			if (healthFacilities.isEmpty() || randomPercent(20)) {
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setHealthFacility(noFacilityRef);
+				caze.setFacilityType(null);
+				caze.setRegion(config.getRegion());
+				caze.setDistrict(config.getDistrict());
+			} else {
+				FacilityIndexDto healthFacility = random(healthFacilities);
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setRegion(healthFacility.getRegion());
+				caze.setDistrict(healthFacility.getDistrict());
+				caze.setCommunity(healthFacility.getCommunity());
+				caze.setHealthFacility(healthFacility.toReference());
+				caze.setFacilityType(healthFacility.getType());
+				caze.setReportLat(healthFacility.getLatitude());
+				caze.setReportLon(healthFacility.getLongitude());
+			}
 
 			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
@@ -647,6 +774,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateContacts() {
+		initializeRandomGenerator();
 
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
@@ -671,7 +799,8 @@ public class DevModeView extends AbstractConfigurationView {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
 					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
-					config.getContactCount() * 2);
+					config.getContactCount() * 2,
+					random());
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
 				return;
@@ -762,7 +891,7 @@ public class DevModeView extends AbstractConfigurationView {
 				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
-					int[] followUpDays = new Random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
+					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates.add(
@@ -793,6 +922,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateEvents() {
+		initializeRandomGenerator();
 
 		EventGenerationConfig config = eventGeneratorConfigBinder.getBean();
 
@@ -809,7 +939,11 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
-		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
+			.getIndexList(facilityCriteria, 0, (int) (config.getMaxParticipantsPerEvent() * config.getPercentageOfCases() / 100), null);
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
@@ -891,7 +1025,8 @@ public class DevModeView extends AbstractConfigurationView {
 					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 						.getRandomCaseReferences(
 							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
-							numParticipants * 2);
+							numParticipants * 2,
+							random());
 					int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
 					for (int k = 0; (k < numContacts && (cases != null)); k++) {
 						ContactDto contact = ContactDto.build(eventParticipant);
@@ -955,12 +1090,34 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class CaseGenerationConfig {
 
-		private int caseCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
+		private int caseCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+
+		CaseGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			caseCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+		}
+
+		public void loadPerformanceTestConfig() {
+			caseCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+		}
 
 		public int getCaseCount() {
 			return caseCount;
@@ -1013,15 +1170,43 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class ContactGenerationConfig {
 
-		private int contactCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private boolean createWithoutSourceCases = false;
-		private boolean createMultipleContactsPerPerson = false;
-		private boolean createWithVisits = false;
+		private int contactCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private boolean createWithoutSourceCases;
+		private boolean createMultipleContactsPerPerson;
+		private boolean createWithVisits;
+
+		ContactGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			contactCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
+
+		public void loadPerformanceTestConfig() {
+			contactCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
 
 		public int getContactCount() {
 			return contactCount;
@@ -1098,17 +1283,49 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class EventGenerationConfig {
 
-		private int eventCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private int minParticipantsPerEvent = 3;
-		private int maxParticipantsPerEvent = 10;
-		private int minContactsPerParticipant = 0;
-		private int maxContactsPerParticipant = 3;
-		private int percentageOfCases = 20;
+		private int eventCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private int minParticipantsPerEvent;
+		private int maxParticipantsPerEvent;
+		private int minContactsPerParticipant;
+		private int maxContactsPerParticipant;
+		private int percentageOfCases;
+
+		EventGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			eventCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 10;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 3;
+			percentageOfCases = 20;
+		}
+
+		public void loadPerformanceTestConfig() {
+			eventCount = 30;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			// region?
+			// district?
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 8;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 2;
+			percentageOfCases = 15;
+		}
 
 		public int getEventCount() {
 			return eventCount;
