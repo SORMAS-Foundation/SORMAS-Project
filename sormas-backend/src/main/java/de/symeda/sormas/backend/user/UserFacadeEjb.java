@@ -17,43 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.ValidationException;
-
-import org.apache.commons.beanutils.BeanUtils;
-
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DefaultUserHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
@@ -83,6 +58,31 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.beanutils.BeanUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -118,6 +118,49 @@ public class UserFacadeEjb implements UserFacade {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+
+	public static UserDto toDto(User source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		UserDto target = new UserDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setActive(source.isActive());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserEmail(source.getUserEmail());
+		target.setPhone(source.getPhone());
+		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
+		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setLimitedDisease(source.getLimitedDisease());
+		target.setLanguage(source.getLanguage());
+		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+
+		source.getUserRoles().size();
+		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		return target;
+	}
+
+	public static UserReferenceDto toReferenceDto(User entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		return dto;
+	}
 
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
@@ -293,49 +336,6 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public static UserDto toDto(User source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		UserDto target = new UserDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setActive(source.isActive());
-		target.setUserName(source.getUserName());
-		target.setFirstName(source.getFirstName());
-		target.setLastName(source.getLastName());
-		target.setUserEmail(source.getUserEmail());
-		target.setPhone(source.getPhone());
-		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
-
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
-		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setLimitedDisease(source.getLimitedDisease());
-		target.setLanguage(source.getLanguage());
-		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
-
-		source.getUserRoles().size();
-		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
-		return target;
-	}
-
-	public static UserReferenceDto toReferenceDto(User entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
-		return dto;
-	}
-
 	private User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
@@ -443,6 +443,31 @@ public class UserFacadeEjb implements UserFacade {
 		this.userUpdateEvent.fire(event);
 
 		return userSyncResult;
+	}
+
+	@Override
+	public List<UserDto> getUsersWithDefaultPassword() {
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getUserRoles().stream().anyMatch(r -> r.hasDefaultRight(UserRight.USER_EDIT))) {
+			// user is allowed to change all passwords
+			// a list of all users with a default password is returned
+			return userService.getAllDefaultUsers()
+				.stream()
+				.filter(user -> DefaultUserHelper.usesDefaultPassword(user.getUserName(), user.getPassword(), user.getSeed()))
+				.map(UserFacadeEjb::toDto)
+				.collect(Collectors.toList());
+
+		} else {
+			// user has only access to himself
+			// the list will include him/her or will be empty
+			if (DefaultUserHelper.isDefaultUser(currentUser.getUserName())
+				&& DefaultUserHelper.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
+				return Collections.singletonList(UserFacadeEjb.toDto(currentUser));
+			} else {
+				return Collections.emptyList();
+			}
+		}
+
 	}
 
 	@LocalBean

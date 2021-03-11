@@ -55,6 +55,8 @@ public interface Captions {
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
+	String actionGenerateNewPassword = "actionGenerateNewPassword";
+	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
@@ -70,6 +72,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
