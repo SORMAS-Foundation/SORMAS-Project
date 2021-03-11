@@ -69,12 +69,12 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -85,6 +85,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -112,7 +113,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -145,13 +145,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
+	private static final String CASE_CONFIRMATION_BASIS = Captions.CaseData_caseConfirmationBasis;
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
+					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
-					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC) +
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
 					fluidRowLocs(CaseDataDto.NOT_A_CASE_REASON_DETAILS) +
@@ -199,7 +200,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
-					fluidRowLocs(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -377,10 +377,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
-			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
-			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
-			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
-
 			//if(cbCaseClassification.getCaption())
 			addField(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CheckBox.class);
 			addField(CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION, CheckBox.class);
@@ -404,6 +400,58 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
+
+		DiseaseConfigurationDto diseaseConfiguration = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+
+		if (diseaseConfiguration.getExtendedClassification()) {
+			ComboBox clinicalConfirmationCombo = addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
+			ComboBox epidemiologicalConfirmationCombo = addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
+			ComboBox laboratoryConfirmationCombo = addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
+			ComboBox caseConfirmationBasisCombo = addCustomField(CASE_CONFIRMATION_BASIS, CaseConfirmationBasis.class, ComboBox.class);
+
+			if (diseaseConfiguration.getExtendedClassificationMulti()) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					Arrays.asList(
+						CaseDataDto.CLINICAL_CONFIRMATION,
+						CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
+						CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION),
+					CaseDataDto.CASE_CLASSIFICATION,
+					CaseClassification.CONFIRMED,
+					true);
+				caseConfirmationBasisCombo.setVisible(false);
+
+			} else {
+				caseConfirmationBasisCombo.addValueChangeListener(field -> {
+					clinicalConfirmationCombo.setValue(null);
+					epidemiologicalConfirmationCombo.setValue(null);
+					laboratoryConfirmationCombo.setValue(null);
+
+					if (caseConfirmationBasisCombo.getValue() != null) {
+						switch ((CaseConfirmationBasis) caseConfirmationBasisCombo.getValue()) {
+						case CLINICAL_CONFIRMATION:
+							clinicalConfirmationCombo.setValue(YesNoUnknown.YES);
+							break;
+						case EPIDEMIOLOGICAL_CONFIRMATION:
+							epidemiologicalConfirmationCombo.setValue(YesNoUnknown.YES);
+							break;
+						case LABORATORY_DIAGNOSTIC_CONFIRMATION:
+							laboratoryConfirmationCombo.setValue(YesNoUnknown.YES);
+							break;
+						}
+					}
+				});
+
+				FieldHelper.setVisibleWhen(
+					getField(CaseDataDto.CASE_CLASSIFICATION),
+					Collections.singletonList(caseConfirmationBasisCombo),
+					Collections.singletonList(CaseClassification.CONFIRMED),
+					true);
+				clinicalConfirmationCombo.setVisible(false);
+				epidemiologicalConfirmationCombo.setVisible(false);
+				laboratoryConfirmationCombo.setVisible(false);
+			}
 		}
 
 		quarantineOrderedVerbally = addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
@@ -627,9 +675,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
-		AccessibleTextField tfReportLat = addField(CaseDataDto.REPORT_LAT, AccessibleTextField.class);
+		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
-		AccessibleTextField tfReportLon = addField(CaseDataDto.REPORT_LON, AccessibleTextField.class);
+		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
@@ -727,13 +775,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Swiss fields
 		TextField caseIdIsmField = addField(CaseDataDto.CASE_ID_ISM);
 		caseIdIsmField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseIdIsmField.getCaption()));
-		addFields(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			CaseDataDto.COVID_TEST_REASON_DETAILS,
-			CaseDataDto.COVID_TEST_REASON,
-			Arrays.asList(CovidTestReason.OTHER_REASON),
-			true);
 
 		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE)) {
 			Label contactTracingFirstContactHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactTracingFirstContact));
@@ -1410,6 +1451,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
 		super.setValue(newFieldValue);
 
+		ComboBox caseConfirmationBasisCombo = getField(CASE_CONFIRMATION_BASIS);
+
+		if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
+		} else if (newFieldValue.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
+		} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
+			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		}
+
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
@@ -1475,6 +1526,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
 		if (epidField != null
 			&& epidField.isVisible()
+			&& StringUtils.isNotEmpty(fieldValue)
 			&& FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(), getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);

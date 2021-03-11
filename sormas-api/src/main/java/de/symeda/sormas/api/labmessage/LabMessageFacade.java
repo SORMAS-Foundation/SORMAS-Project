@@ -13,6 +13,16 @@ public interface LabMessageFacade {
 
 	LabMessageDto getByUuid(String uuid);
 
+	/**
+	 * This method is used to check whether a labMessage is marked processed in the database.
+	 * It can be used to check for recent changes.
+	 *
+	 * @param uuid
+	 *            of the labMessage
+	 * @return true if the labMessage is marked processed in the database, false otherwise.
+	 */
+	Boolean isProcessed(String uuid);
+
 	long count(LabMessageCriteria criteria);
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);

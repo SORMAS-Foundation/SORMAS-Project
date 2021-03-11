@@ -159,6 +159,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 
 		return target;
 	}
@@ -293,6 +294,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 
 		return target;
 	}

@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -153,6 +156,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CountryService countryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -190,7 +195,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
+			return persons.stream().map(PersonFacadeEjb::toSimilarPersonDto).collect(Collectors.toList());
 		}
 	}
 
@@ -253,7 +258,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(c -> toReferenceDto(c)).orElse(null);
+		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toReferenceDto).orElse(null);
 	}
 
 	@Override
@@ -273,7 +278,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				try {
 					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
@@ -348,7 +353,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			Stream<PersonFollowUpEndDto> caseLatestDates = getCaseLatestFollowUpEndDates(since, forSymptomJournal);
 			Map<String, Optional<PersonFollowUpEndDto>> latestDates = Stream.concat(contactLatestDates, caseLatestDates)
 					.collect(groupingBy(PersonFollowUpEndDto::getPersonUuid,
-						     maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate))));
+							maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate, Comparator.nullsFirst(Comparator.naturalOrder())))));
 			return latestDates.values().stream()
 					.filter(Optional::isPresent)
 					.map(Optional::get)
@@ -379,8 +384,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+		final Date minDate = new Date(0);
+		final Expression<Object> followUpStatusExpression = cb.selectCase()
+				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}
@@ -404,8 +413,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(personJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_UNTIL));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
+		final Date minDate = new Date(0);
+		final Expression<Object> followUpStatusExpression = cb.selectCase()
+				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}
@@ -897,7 +910,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
 
-		SimilarPersonDto dto = new SimilarPersonDto(
+		return new SimilarPersonDto(
 			entity.getUuid(),
 			entity.getFirstName(),
 			entity.getLastName(),
@@ -910,7 +923,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getAddress().getCity(),
 			entity.getNationalHealthId(),
 			entity.getPassportNumber());
-		return dto;
 	}
 
 	public static PersonDto toDto(Person source) {
@@ -1013,6 +1025,20 @@ public class PersonFacadeEjb implements PersonFacade {
 	// needed for tests
 	public void setExternalJournalService(ExternalJournalService externalJournalService) {
 		this.externalJournalService = externalJournalService;
+	}
+
+	public boolean isPersonSimilarToExisting(PersonDto referencePerson) {
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+			.lastName(referencePerson.getLastName())
+			.sex(referencePerson.getSex())
+			.birthdateDD(referencePerson.getBirthdateDD())
+			.birthdateMM(referencePerson.getBirthdateMM())
+			.birthdateYYYY(referencePerson.getBirthdateYYYY())
+			.passportNumber(referencePerson.getPassportNumber())
+			.nationalHealthId(referencePerson.getNationalHealthId());
+
+		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
 	}
 
 	@LocalBean

@@ -14,6 +14,7 @@ import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -92,6 +93,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
+		target.setPersonPhone(source.getPersonPhone());
+		target.setPersonEmail(source.getPersonEmail());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestLabCity(source.getTestLabCity());
@@ -99,6 +102,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabName(source.getTestLabName());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
 
@@ -137,6 +141,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
 		target.setPersonStreet(source.getPersonStreet());
+		target.setPersonPhone(source.getPersonPhone());
+		target.setPersonEmail(source.getPersonEmail());
 		target.setProcessed(source.isProcessed());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
@@ -149,6 +155,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabName(source.getTestLabName());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
 
@@ -158,6 +165,25 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
+	}
+
+	@Override
+	public Boolean isProcessed(String uuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		Predicate filter = cb.and(cb.equal(from.get(LabMessage.UUID), uuid));
+
+		cq.where(filter);
+		cq.select(from.get(LabMessage.PROCESSED));
+
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 	@Override

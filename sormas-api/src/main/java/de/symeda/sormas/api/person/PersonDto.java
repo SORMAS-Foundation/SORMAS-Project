@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -62,6 +63,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
 
 	public static final String APPROXIMATE_AGE = "approximateAge";
+	public static final String APPROXIMATE_AGE_GROUP = "approximateAgeGroup";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	public static final String APPROXIMATE_AGE_REFERENCE_DATE = "approximateAgeReferenceDate";
 
@@ -175,30 +177,38 @@ public class PersonDto extends PseudonymizableDto {
 	private Date approximateAgeReferenceDate;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private RegionReferenceDto placeOfBirthRegion;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	@SensitiveData
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private Integer gestationAgeAtBirth;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@HideForCountries
 	private Integer birthWeight;
 
 	@Outbreaks
@@ -731,7 +741,9 @@ public class PersonDto extends PseudonymizableDto {
 		this.externalId = externalId;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;

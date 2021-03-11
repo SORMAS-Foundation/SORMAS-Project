@@ -57,6 +57,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -136,45 +137,39 @@ public class FacilitiesView extends AbstractConfigurationView {
 			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			// Basic export
-
-			StreamResource basicExportStreamResource = new GridExportStreamResource(
-				grid,
-				"sormas_facilities",
-				createFileNameWithCurrentDate("sormas_facilities_", ".csv"),
-				FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource basicExportStreamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
-				basicExportStreamResource,
-				exportPopupButton,
-				exportLayout,
-				VaadinIcons.TABLE,
-				Captions.exportBasic,
-				Strings.infoBasicExport);
+					basicExportStreamResource,
+					exportPopupButton,
+					exportLayout,
+					VaadinIcons.TABLE,
+					Captions.exportBasic,
+					Strings.infoBasicExport);
 
 			// Detailed export
 
 			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				FacilityExportDto.class,
-				null,
-				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
-				(propertyId, type) -> {
-					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-					}
-					return caption;
-				},
-				createFileNameWithCurrentDate("sormas_facilities_", ".csv"),
-				null);
+					FacilityExportDto.class,
+					null,
+					(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+					(propertyId, type) -> {
+						String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					ExportEntityName.FACILITIES,
+					null);
 
 			addExportButton(
-				detailedExportStreamResource,
-				exportPopupButton,
-				exportLayout,
-				VaadinIcons.FILE_TEXT,
-				Captions.exportDetailed,
-				Strings.infoDetailedExport);
+					detailedExportStreamResource,
+					exportPopupButton,
+					exportLayout,
+					VaadinIcons.FILE_TEXT,
+					Captions.exportDetailed,
+					Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {

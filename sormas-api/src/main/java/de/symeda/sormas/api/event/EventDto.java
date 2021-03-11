@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.event;
 
 import java.util.Date;
@@ -45,6 +43,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_TITLE = "eventTitle";
@@ -83,6 +82,8 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -92,6 +93,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
+	private EventManagementStatus eventManagementStatus;
 	private String externalId;
 	private String externalToken;
 	private String eventTitle;
@@ -138,7 +140,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean isOwnershipHandedOver;
+	private boolean ownershipHandedOver;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -516,11 +518,19 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	@Override
 	public boolean isOwnershipHandedOver() {
-		return isOwnershipHandedOver;
+		return ownershipHandedOver;
 	}
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		isOwnershipHandedOver = ownershipHandedOver;
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public EventReferenceDto toReference() {
