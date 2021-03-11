@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PhoneNumberType;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.R;
@@ -32,9 +33,13 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.component.dialog.FormDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPersonContactDetailEditLayoutBinding;
+import de.symeda.sormas.app.epidata.ExposureDialog;
 import de.symeda.sormas.app.util.DataUtils;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class PersonContactDetailDialog extends FormDialog {
@@ -94,6 +99,20 @@ public class PersonContactDetailDialog extends FormDialog {
 		if (showDeleteButton) {
 			getDeleteButton().setVisibility(View.VISIBLE);
 		}
+	}
+
+	@Override
+	protected void onPositiveClick() {
+		setLiveValidationDisabled(false);
+		try {
+			FragmentValidator.validate(getContext(), contentBinding);
+		} catch (ValidationException e) {
+			NotificationHelper.showDialogNotification(PersonContactDetailDialog.this, ERROR, e.getMessage());
+			return;
+		}
+
+		super.setCloseOnPositiveButtonClick(true);
+		super.onPositiveClick();
 	}
 
 	@Override

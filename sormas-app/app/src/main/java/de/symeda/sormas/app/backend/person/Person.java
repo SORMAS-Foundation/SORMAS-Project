@@ -125,12 +125,6 @@ public class Person extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String phone;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String phoneOwner;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String emailAddress;
 
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
@@ -170,8 +164,6 @@ public class Person extends PseudonymizableAdo {
 	@Enumerated
 	private ArmedForcesRelationType armedForcesRelationType;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String generalPractitionerDetails;
 	@Column
 	private String passportNumber;
 	@Column
@@ -301,21 +293,6 @@ public class Person extends PseudonymizableAdo {
 		this.address = address;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getPhoneOwner() {
-		return phoneOwner;
-	}
-
-	public void setPhoneOwner(String phoneOwner) {
-		this.phoneOwner = phoneOwner;
-	}
 
 	public Sex getSex() {
 		return sex;
@@ -544,22 +521,6 @@ public class Person extends PseudonymizableAdo {
 
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
-	}
-
-	public String getGeneralPractitionerDetails() {
-		return generalPractitionerDetails;
-	}
-
-	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
-		this.generalPractitionerDetails = generalPractitionerDetails;
-	}
-
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
 	}
 
 	public String getPassportNumber() {

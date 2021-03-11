@@ -83,21 +83,14 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 
 		addFieldListeners(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE, e -> {
 			final Field<?> contactInformationField = getFieldGroup().getField(PersonContactDetailDto.CONTACT_INFORMATION);
-			PersonContactDetailType value = (PersonContactDetailType) e.getProperty().getValue();
+			final PersonContactDetailType value = (PersonContactDetailType) e.getProperty().getValue();
+			for (Validator validator : contactInformationField.getValidators()) {
+				contactInformationField.removeValidator(validator);
+			}
 			if (value == PersonContactDetailType.PHONE) {
-				for (Validator validator : contactInformationField.getValidators()) {
-					if (validator instanceof EmailValidator) {
-						contactInformationField.removeValidator(validator);
-					}
-				}
 				contactInformationField.addValidator(
 					new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, contactInformationField.getCaption())));
 			} else if (value == PersonContactDetailType.EMAIL) {
-				for (Validator validator : contactInformationField.getValidators()) {
-					if (validator instanceof PhoneNumberValidator) {
-						contactInformationField.removeValidator(validator);
-					}
-				}
 				contactInformationField.addValidator(
 					new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, contactInformationField.getCaption())));
 			}

@@ -2019,6 +2019,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 279;
 				TableUtils.createTable(connectionSource, PersonContactDetail.class);
 				migratePersonContactDetails();
+				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN phone;");
+				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN phoneowner;");
+				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN emailaddress;");
+				getDao(Person.class).executeRaw("ALTER TABLE person DROP COLUMN generalpractitionerdetails;");
 				// ATTENTION: break should only be done after last version
 				break;
 

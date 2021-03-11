@@ -87,7 +87,7 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		phoneOwnerSubQuery.select(
 				cb.selectCase()
 						.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
-						.otherwise(cb.literal(Captions.personContactDetailsThisPerson)));
+						.otherwise(cb.literal(Captions.PersonContactDetail_thisPerson)));
 		return phoneOwnerSubQuery;
 	}
 }

@@ -96,12 +96,12 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 								confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 								confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 
-								commitCallback.accept(editForm.getValue());
 								return confirmationComponent;
 							},
 							null);
 					}
 				}
+				commitCallback.accept(editForm.getValue());
 			}
 		});
 

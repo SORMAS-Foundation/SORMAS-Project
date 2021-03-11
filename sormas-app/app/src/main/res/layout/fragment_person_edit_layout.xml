@@ -523,33 +523,9 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/person_namesOfGuardians"
-                android:nextFocusForward="@+id/person_phone"
+                android:nextFocusForward="@+id/person_birthCountry"
                 app:value="@={data.namesOfGuardians}"
                 app:imeOptions="actionNext"
-                style="@style/ControlSingleColumnStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/person_phone"
-                    android:nextFocusForward="@+id/person_phoneOwner"
-                    app:value="@={data.phone}"
-                    app:imeOptions="actionNext"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/person_phoneOwner"
-                    app:value="@={data.phoneOwner}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
-            </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/person_emailAddress"
-                app:value="@={data.emailAddress}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
@@ -570,17 +546,6 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/person_generalPractitionerDetails"
-                app:value="@={data.generalPractitionerDetails}"
-                app:inputType="textMultiLine"
-                app:textAlignment="gravity"
-                app:gravity="top|start"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:textArea="true"
-                style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

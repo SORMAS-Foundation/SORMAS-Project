@@ -85,9 +85,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
-
 		target.setPresentCondition(source.getPresentCondition());
 		target.setDeathDate(source.getDeathDate());
 
@@ -118,8 +115,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 
@@ -177,8 +172,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
 
 		target.setCauseOfDeath(source.getCauseOfDeath());
 		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
@@ -227,8 +220,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 
