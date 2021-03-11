@@ -634,8 +634,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.POSTAL_CODE),
 			location.get(Location.CITY),
-			phoneSubQuery,
-			emailSubQuery,
+			phoneSubQuery.alias(PersonIndexDto.PHONE),
+			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
 			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
 
@@ -662,10 +662,10 @@ public class PersonFacadeEjb implements PersonFacade {
 					expression = person.get(sortProperty.propertyName);
 					break;
 				case PersonIndexDto.PHONE:
-					expression = phoneSubQuery;
+					expression = cb.literal(15); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
 					break;
 				case PersonIndexDto.EMAIL_ADDRESS:
-					expression = emailSubQuery;
+					expression = cb.literal(16); // order in the multiselect - Postgres limitation - needed to make sure it uses the same expression for ordering
 					break;
 				case PersonIndexDto.AGE_AND_BIRTH_DATE:
 					expression = person.get(Person.APPROXIMATE_AGE);
