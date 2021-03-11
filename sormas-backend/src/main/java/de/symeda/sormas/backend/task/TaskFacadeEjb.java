@@ -743,7 +743,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (task.getTaskContext() == TaskContext.CONTACT && task.getContact() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingContactLink));
 		}
-		if (task.getTaskContext() == TaskContext.EVENT && task.getContact() == null) {
+		if (task.getTaskContext() == TaskContext.EVENT && task.getEvent() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingEventLink));
 		}
 	}
