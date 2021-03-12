@@ -1390,6 +1390,7 @@ public interface Captions {
 	String PersonContactDetail_thirdPartyRole = "PersonContactDetail.thirdPartyRole";
 	String personContactDetailOwner = "personContactDetailOwner";
 	String personContactDetailOwnerName = "personContactDetailOwnerName";
+	String personContactDetailThirdParty = "personContactDetailThirdParty";
 	String personContactDetailThisPerson = "personContactDetailThisPerson";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";

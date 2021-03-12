@@ -2296,11 +2296,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			String emailAddress = (String) pcd[4];
 			String generalPractitionerDetails = (String) pcd[5];
 
-			if (StringUtils.isNotEmpty(phone) && StringUtils.isEmpty(phoneOwner)) {
+			if (StringUtils.isNotEmpty(phone)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "true" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "false" + ", " + ""
-						+ ", " + "" + ");");
+						+ (StringUtils.isEmpty(phoneOwner) ? "true" : "false") + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "false" + ", " + ""
+						+ ", " + (StringUtils.isEmpty(phoneOwner) ? "" : phoneOwner) + ");");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
@@ -2310,20 +2310,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "" + ", " + "" + ");");
 			}
 
-			if (StringUtils.isNotEmpty(phone ) && StringUtils.isNotEmpty(phoneOwner)) {
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "false" + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "true" + ", " + ""
-						+ ", " + phoneOwner + ");");
-			}
-
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
 					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 						+ "false" + ", " + PersonContactDetailType.OTHER.name() + ", " + "" + ", " + "" + ", " + generalPractitionerDetails + ", "
 						+ "true" + ", " + generalPractitionerDetails + ", " + "" + ");");
 			}
-
 		}
 	}
 

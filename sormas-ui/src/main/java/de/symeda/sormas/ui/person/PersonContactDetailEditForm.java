@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
@@ -43,7 +44,7 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
-		addField(PersonContactDetailDto.THIRD_PARTY, CheckBox.class);
+		addField(PersonContactDetailDto.THIRD_PARTY, CheckBox.class).setCaption(Captions.personContactDetailThirdParty);
 		addField(PersonContactDetailDto.THIRD_PARTY_ROLE, TextField.class);
 		addField(PersonContactDetailDto.THIRD_PARTY_NAME, TextField.class);
 		addField(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE);

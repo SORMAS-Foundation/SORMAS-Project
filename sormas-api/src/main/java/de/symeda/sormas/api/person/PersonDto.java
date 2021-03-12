@@ -449,6 +449,11 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
+		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
+			if (contactDetailDto.getPersonContactDetailType() == personContactDetailType && contactDetailDto.isPrimaryContact()) {
+				contactDetailDto.setPrimaryContact(false);
+			}
+		}
 		final PersonContactDetailDto pcd =
 			new PersonContactDetailDto(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
 		getPersonContactDetails().add(pcd);
