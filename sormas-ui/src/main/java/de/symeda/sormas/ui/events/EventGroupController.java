@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -28,6 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventGroupDto;
+import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -37,12 +39,69 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventGroupController {
+
+	public EventGroupDto create(EventReferenceDto event) {
+		CommitDiscardWrapperComponent<EventGroupDataForm> eventCreateComponent = getEventGroupCreateComponent(event);
+		EventGroupDto eventGroupDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEventGroup));
+		return eventGroupDto;
+	}
+
+	public void selectOrCreate(EventReferenceDto eventReference) {
+		EventGroupSelectionField selectionField = new EventGroupSelectionField();
+		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventGroupSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
+			if (selectedEventGroup != null) {
+				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, selectedEventGroup.toReference());
+
+				SormasUI.refreshView();
+
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
+			} else {
+				create(eventReference);
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEventGroup));
+	}
+
+	public EventGroupDto createNewEventGroup() {
+		return EventGroupDto.build();
+	}
+
+	public CommitDiscardWrapperComponent<EventGroupDataForm> getEventGroupCreateComponent(EventReferenceDto eventReference) {
+		EventGroupDataForm createForm = new EventGroupDataForm(true);
+		createForm.setValue(createNewEventGroup());
+
+		final CommitDiscardWrapperComponent<EventGroupDataForm> editView = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			createForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				EventGroupDto dto = createForm.getValue();
+				dto = FacadeProvider.getEventGroupFacade().saveEventGroup(dto);
+				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, dto.toReference());
+				Notification.show(I18nProperties.getString(Strings.messageEventGroupCreated), Type.WARNING_MESSAGE);
+
+				SormasUI.refreshView();
+			}
+		});
+
+		return editView;
+	}
 
 	public void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
 		FacadeProvider.getEventGroupFacade().unlinkEventGroup(eventReference, eventGroupReference);

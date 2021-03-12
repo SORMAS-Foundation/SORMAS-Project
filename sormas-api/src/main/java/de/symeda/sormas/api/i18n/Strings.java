@@ -184,6 +184,7 @@ public interface Strings {
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
+	String entityEventGroups = "entityEventGroups";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
@@ -334,6 +335,7 @@ public interface Strings {
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEvent = "headingCreateNewEvent";
+	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
 	String headingCreateNewFacility = "headingCreateNewFacility";
 	String headingCreateNewPerson = "headingCreateNewPerson";
@@ -479,6 +481,7 @@ public interface Strings {
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
+	String headingPickOrCreateEventGroup = "headingPickOrCreateEventGroup";
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
@@ -602,6 +605,7 @@ public interface Strings {
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCase = "infoNoSourceCase";
@@ -613,6 +617,7 @@ public interface Strings {
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
 	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
+	String infoPickOrCreateEventGroupForEvent = "infoPickOrCreateEventGroupForEvent";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
@@ -767,6 +772,7 @@ public interface Strings {
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventExternalTokenWarning = "messageEventExternalTokenWarning";
 	String messageEventGroupArchived = "messageEventGroupArchived";
+	String messageEventGroupCreated = "messageEventGroupCreated";
 	String messageEventGroupDearchived = "messageEventGroupDearchived";
 	String messageEventGroupSaved = "messageEventGroupSaved";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
@@ -999,6 +1005,8 @@ public interface Strings {
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
 	String promptEventEvolutionDateFrom = "promptEventEvolutionDateFrom";
 	String promptEventEvolutionDateTo = "promptEventEvolutionDateTo";
+	String promptEventGroupSearchField = "promptEventGroupSearchField";
+	String promptEventGroupSearchFieldEvent = "promptEventGroupSearchFieldEvent";
 	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
 	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
 	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
