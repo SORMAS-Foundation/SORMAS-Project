@@ -1,6 +1,10 @@
 package de.symeda.sormas.backend.common;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.ARRAY_AGG;
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.ARRAY_TO_STRING;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -62,21 +66,20 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		return joins;
 	}
 
-
 	protected Subquery<String> getPersonContactDetailSubquery(PersonContactDetailType personContactDetailType, From<?, Person> from) {
 		final Subquery<String> pcdSubQuery = query.subquery(String.class);
 		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
 		pcdSubQuery.where(
-				criteriaBuilder.and(
-						criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
-						criteriaBuilder.isTrue(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
-						criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), personContactDetailType)));
+			criteriaBuilder.and(
+				criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
+				criteriaBuilder.isTrue(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), personContactDetailType)));
 		pcdSubQuery.select(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION));
 		return pcdSubQuery;
 	}
 
-	protected Subquery<Object> getPersonOtherContactDetailsSubQuery(From<?, Person> from) {
-		final Subquery<Object> pcdSubQuery = getQuery().subquery(Object.class);
+	protected Subquery<String> getPersonOtherContactDetailsSubQuery(From<?, Person> from) {
+		final Subquery<String> pcdSubQuery = getQuery().subquery(String.class);
 		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
 		CriteriaBuilder cb = getCriteriaBuilder();
 		pcdSubQuery.where(
@@ -90,10 +93,11 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		final Expression<String> infoWithType = cb.concat(
 			cb.concat(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION), " ("),
 			cb.concat(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), ")"));
-		pcdSubQuery.select(
-			cb.selectCase()
-				.when(cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER), infoWithTypeOther)
-				.otherwise(infoWithType));
+		final Expression<Object> otherContactDetailsExpression = cb.selectCase()
+			.when(cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER), infoWithTypeOther)
+			.otherwise(infoWithType);
+		pcdSubQuery
+			.select(cb.function(ARRAY_TO_STRING, String.class, cb.function(ARRAY_AGG, List.class, otherContactDetailsExpression), cb.literal(", ")));
 		return pcdSubQuery;
 	}
 
@@ -102,14 +106,14 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		final Root<PersonContactDetail> phoneRoot = phoneOwnerSubQuery.from(PersonContactDetail.class);
 		CriteriaBuilder cb = getCriteriaBuilder();
 		phoneOwnerSubQuery.where(
-				cb.and(
-						cb.equal(phoneRoot.get(PersonContactDetail.PERSON), from),
-						cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
-						cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+			cb.and(
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON), from),
+				cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
 		phoneOwnerSubQuery.select(
-				cb.selectCase()
-						.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
-						.otherwise(cb.literal(Captions.personContactDetailThisPerson)));
+			cb.selectCase()
+				.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
+				.otherwise(cb.literal(Captions.personContactDetailThisPerson)));
 		return phoneOwnerSubQuery;
 	}
 }
