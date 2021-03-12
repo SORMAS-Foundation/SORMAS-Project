@@ -178,33 +178,34 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	protected Stream<String> getGridColumns() {
 
-		return Stream.of(
-			Stream.of(
-				CaseIndexDto.UUID,
-				CaseIndexDto.EPID_NUMBER,
-				CaseIndexDto.EXTERNAL_ID,
-				CaseIndexDto.EXTERNAL_TOKEN,
-				DISEASE_SHORT,
-				CaseIndexDto.DISEASE_VARIANT,
-				CaseIndexDto.CASE_CLASSIFICATION,
-				CaseIndexDto.OUTCOME,
-				CaseIndexDto.INVESTIGATION_STATUS),
-			getPersonColumns(),
-			getEventColumns(),
-			getSymptomsColumns(),
-			getSampleColumns(),
-			Stream.of(
-				CaseIndexDto.DISTRICT_NAME,
-				CaseIndexDto.HEALTH_FACILITY_NAME,
-				CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE,
-				CaseIndexDto.QUARANTINE_TO,
-				CaseIndexDto.CREATION_DATE),
-			caseFollowUpEnabled ? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS,
-					CaseIndexDto.FOLLOW_UP_UNTIL,
-					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-					NUMBER_OF_VISITS) : Stream.<String> empty(),
-			Stream.of(COLUMN_COMPLETENESS)).flatMap(s -> s);
+		return Stream
+			.of(
+				Stream.of(
+					CaseIndexDto.UUID,
+					CaseIndexDto.EPID_NUMBER,
+					CaseIndexDto.EXTERNAL_ID,
+					CaseIndexDto.EXTERNAL_TOKEN,
+					DISEASE_SHORT,
+					CaseIndexDto.DISEASE_VARIANT,
+					CaseIndexDto.CASE_CLASSIFICATION,
+					CaseIndexDto.OUTCOME,
+					CaseIndexDto.INVESTIGATION_STATUS),
+				getPersonColumns(),
+				getEventColumns(),
+				getSymptomsColumns(),
+				getSampleColumns(),
+				Stream.of(
+					CaseIndexDto.DISTRICT_NAME,
+					CaseIndexDto.HEALTH_FACILITY_NAME,
+					CaseIndexDto.POINT_OF_ENTRY_NAME,
+					CaseIndexDto.REPORT_DATE,
+					CaseIndexDto.QUARANTINE_TO,
+					CaseIndexDto.CREATION_DATE),
+				caseFollowUpEnabled
+					? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, ContactIndexDto.SYMPTOM_JOURNAL_STATUS, NUMBER_OF_VISITS)
+					: Stream.<String> empty(),
+				Stream.of(COLUMN_COMPLETENESS))
+			.flatMap(s -> s);
 	}
 
 	protected Stream<String> getPersonColumns() {
@@ -250,8 +251,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			}
 		}
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
-		if (viewConfiguration.isInEagerMode()) {
+		if (ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
