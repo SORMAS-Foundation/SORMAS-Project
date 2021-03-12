@@ -61,6 +61,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -75,6 +76,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -105,6 +107,8 @@ public class EventFacadeEjb implements EventFacade {
 	private UserService userService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private EventGroupService eventGroupService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -704,6 +708,19 @@ public class EventFacadeEjb implements EventFacade {
 		addSuperordinateEventToSet(event, uuids);
 
 		return uuids;
+	}
+
+	@Override
+	public Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid) {
+		EventGroup eventGroup = eventGroupService.getByUuid(eventGroupUuid);
+		if (eventGroup == null) {
+			return Collections.emptySet();
+		}
+
+		return eventGroup.getEvents()
+			.stream()
+			.map(Event::getUuid)
+			.collect(Collectors.toSet());
 	}
 
 	@Override

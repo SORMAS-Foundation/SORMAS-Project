@@ -984,6 +984,7 @@ public interface Captions {
 	String eventNoDisease = "eventNoDisease";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
+	String eventNoEventLinkedToEventGroup = "eventNoEventLinkedToEventGroup";
 	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
 	String eventOpenSuperordinateEvent = "eventOpenSuperordinateEvent";
 	String EventParticipant = "EventParticipant";

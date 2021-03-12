@@ -81,6 +81,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private FacilityType facilityType;
 	private FacilityReferenceDto facility;
 	private EventReferenceDto superordinateEvent;
+	private EventGroupReferenceDto eventGroup;
 	private Set<String> excludedUuids;
 	private Boolean hasNoSuperordinateEvent;
 	private EventManagementStatus eventManagementStatus;
@@ -519,6 +520,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public EventCriteria superordinateEvent(EventReferenceDto superordinateEvent) {
 		this.superordinateEvent = superordinateEvent;
+		return this;
+	}
+
+	public EventGroupReferenceDto getEventGroup() {
+		return eventGroup;
+	}
+
+	public void setEventGroup(EventGroupReferenceDto eventGroup) {
+		this.eventGroup = eventGroup;
+	}
+
+	public EventCriteria eventGroup(EventGroupReferenceDto eventGroup) {
+		this.eventGroup = eventGroup;
 		return this;
 	}
 

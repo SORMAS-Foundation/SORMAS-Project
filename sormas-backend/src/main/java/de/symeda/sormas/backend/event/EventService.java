@@ -698,6 +698,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.equal(from.get(Event.SUPERORDINATE_EVENT).get(AbstractDomainObject.UUID), eventCriteria.getSuperordinateEvent().getUuid()));
 		}
+		if (eventCriteria.getEventGroup() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(from.join(Event.EVENT_GROUPS).get(EventGroup.UUID), eventCriteria.getEventGroup().getUuid()));
+		}
 		if (CollectionUtils.isNotEmpty(eventCriteria.getExcludedUuids())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(from.get(AbstractDomainObject.UUID).in(eventCriteria.getExcludedUuids())));
 		}

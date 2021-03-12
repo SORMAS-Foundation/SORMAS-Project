@@ -86,6 +86,8 @@ public interface EventFacade {
 
 	Set<String> getAllSuperordinateEventUuids(String eventUuid);
 
+	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
+
     String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
 
 	void validate(EventDto dto) throws ValidationRuntimeException;

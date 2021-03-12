@@ -58,6 +58,7 @@ public interface Strings {
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
+	String confirmationArchiveEventGroup = "confirmationArchiveEventGroup";
 	String confirmationArchiveEvents = "confirmationArchiveEvents";
 	String confirmationArchiveFacilities = "confirmationArchiveFacilities";
 	String confirmationArchiveFacility = "confirmationArchiveFacility";
@@ -87,6 +88,7 @@ public interface Strings {
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
+	String confirmationDearchiveEventGroup = "confirmationDearchiveEventGroup";
 	String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	String confirmationDearchiveFacilities = "confirmationDearchiveFacilities";
 	String confirmationDearchiveFacility = "confirmationDearchiveFacility";
@@ -181,6 +183,7 @@ public interface Strings {
 	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
+	String entityEventGroup = "entityEventGroup";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
@@ -274,6 +277,7 @@ public interface Strings {
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
+	String headingArchiveEventGroup = "headingArchiveEventGroup";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
@@ -347,6 +351,7 @@ public interface Strings {
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveEvent = "headingDearchiveEvent";
+	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
@@ -380,6 +385,7 @@ public interface Strings {
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
+	String headingEventGroupData = "headingEventGroupData";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -760,8 +766,12 @@ public interface Strings {
 	String messageEventCreated = "messageEventCreated";
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventExternalTokenWarning = "messageEventExternalTokenWarning";
+	String messageEventGroupArchived = "messageEventGroupArchived";
+	String messageEventGroupDearchived = "messageEventGroupDearchived";
+	String messageEventGroupSaved = "messageEventGroupSaved";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
+	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
@@ -779,6 +789,7 @@ public interface Strings {
 	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
+	String messageEventToEventGroupUnlinked = "messageEventToEventGroupUnlinked";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
