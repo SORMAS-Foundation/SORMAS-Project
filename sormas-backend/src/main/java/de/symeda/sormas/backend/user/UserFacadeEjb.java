@@ -139,7 +139,6 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
 		JurisdictionLevel superordinateJurisdiction =
 			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
-		System.out.println("Superordinatelevel: " + superordinateJurisdiction.toString());
 
 		List<User> superiorUsersList;
 
