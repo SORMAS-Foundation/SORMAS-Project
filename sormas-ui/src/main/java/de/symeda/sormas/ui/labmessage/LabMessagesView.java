@@ -10,6 +10,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
+import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -51,14 +52,14 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-				LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
-				if (!fetchResult.isSuccess()) {
-					VaadinUiUtil.showWarningPopup(fetchResult.getError());
-				} else if (!fetchResult.hasNewMessages()) {
-					VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
-				} else {
-					listComponent.getGrid().reload();
-				}
+			LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
+			if (!fetchResult.isSuccess()) {
+				VaadinUiUtil.showWarningPopup(fetchResult.getError());
+			} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
+				VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.labMessageNoNewMessages));
+			} else {
+				listComponent.getGrid().reload();
+			}
 		}, ValoTheme.BUTTON_PRIMARY));
 	}
 

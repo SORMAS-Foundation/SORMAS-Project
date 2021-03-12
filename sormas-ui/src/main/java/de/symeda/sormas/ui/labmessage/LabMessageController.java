@@ -1,18 +1,16 @@
 package de.symeda.sormas.ui.labmessage;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-
-import javax.naming.CannotProceedException;
-import javax.validation.constraints.NotNull;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -26,8 +24,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -50,13 +50,14 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
@@ -72,6 +73,9 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import javax.naming.CannotProceedException;
+import javax.validation.constraints.NotNull;
 
 public class LabMessageController {
 
@@ -96,7 +100,7 @@ public class LabMessageController {
 		form.setValue(newDto);
 	}
 
-	public void processLabMessage(@NotNull final SormasUI ui, String labMessageUuid) {
+	public void processLabMessage(SormasUI ui, String labMessageUuid) {
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		final PersonDto personDto = buildPerson(labMessageDto);
 
@@ -166,6 +170,7 @@ public class LabMessageController {
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
 		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+
 		selectionField.addCommitListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
 				showAlreadyProcessedPopup(null, false);
@@ -180,40 +185,33 @@ public class LabMessageController {
 				pickOrCreateEvent(ui, labMessageDto, person);
 			} else if (similarEntriesDto.getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid());
-				SampleCriteria criteria = new SampleCriteria();
-				criteria.caze(caseDto.toReference());
-				criteria.setDisease(caseDto.getDisease());
-				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseDto.getUuid()));
+				CaseReferenceDto cazeRef = caseDto.toReference();
+
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).caze(cazeRef));
 				if (samples.isEmpty()) {
-					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), caseDto.toReference()), labMessageDto, false);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), cazeRef), labMessageDto, false);
 				} else {
 					pickOrCreateSample(ui, caseDto, labMessageDto, samples);
 				}
 			} else if (similarEntriesDto.getContact() != null) {
 				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid());
-				SampleCriteria criteria = new SampleCriteria();
-				criteria.contact(contactDto.toReference());
-				criteria.setDisease(contactDto.getDisease());
-				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(contactDto.getUuid()));
+				ContactReferenceDto contactRef = contactDto.toReference();
+
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).contact(contactRef));
 				if (samples.isEmpty()) {
-					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), contactDto.toReference()), labMessageDto, false);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), contactRef), labMessageDto, false);
 				} else {
 					pickOrCreateSample(ui, contactDto, labMessageDto, samples);
 				}
 			} else if (similarEntriesDto.getEventParticipant() != null) {
 				EventParticipantDto eventParticipantDto =
 					FacadeProvider.getEventParticipantFacade().getByUuid(similarEntriesDto.getEventParticipant().getUuid());
-				SampleCriteria criteria = new SampleCriteria();
-				criteria.eventParticipant(eventParticipantDto.toReference());
-				criteria.setDisease(labMessageDto.getTestedDisease());
+				EventParticipantReferenceDto eventParticipantRef = eventParticipantDto.toReference();
+
 				List<SampleDto> samples =
-					FacadeProvider.getSampleFacade().getByEventParticipantUuids(Collections.singletonList(eventParticipantDto.getUuid()));
+					FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(eventParticipantRef));
 				if (samples.isEmpty()) {
-					createSample(
-						ui,
-						SampleDto.build(ui.getUserProvider().getUserReference(), eventParticipantDto.toReference()),
-						labMessageDto,
-						false);
+					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), eventParticipantRef), labMessageDto, false);
 				} else {
 					pickOrCreateSample(ui, eventParticipantDto, labMessageDto, samples);
 				}
@@ -226,6 +224,14 @@ public class LabMessageController {
 		selectionField.getCommitButton().setEnabled(false);
 
 		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry));
+	}
+
+	private SampleSimilarityCriteria createSampleCriteria(LabMessageDto labMessageDto) {
+		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
+		sampleCriteria.setLabSampleId(labMessageDto.getLabSampleId());
+		sampleCriteria.setSampleDateTime(labMessageDto.getSampleDateTime());
+		sampleCriteria.setSampleMaterial(labMessageDto.getSampleMaterial());
+		return sampleCriteria;
 	}
 
 	private void pickOrCreateEvent(@NotNull final SormasUI ui, LabMessageDto labMessageDto, PersonDto person) {
@@ -258,7 +264,7 @@ public class LabMessageController {
 						EventParticipantReferenceDto participant =
 							FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(selectedEvent.getUuid(), person.getUuid());
 						List<SampleDto> samples =
-							FacadeProvider.getSampleFacade().getByEventParticipantUuids(Collections.singletonList(participant.getUuid()));
+							FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(participant));
 						if (samples.isEmpty()) {
 							createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), participant), labMessageDto, false);
 						} else {
@@ -689,8 +695,21 @@ public class LabMessageController {
 		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
 		form.setValue(labMessageDto);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
-		HorizontalLayout layout = new HorizontalLayout(form, createComponent);
+
+		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
+		horizontalSplitPanel.setFirstComponent(form);
+		horizontalSplitPanel.setSecondComponent(createComponent);
+		horizontalSplitPanel.setSplitPosition(569, Sizeable.Unit.PIXELS); // This is just the position it needs to avoid vertical scroll bars.
+
+		Panel panel = new Panel();
+		panel.setHeightFull();
+		panel.setContent(horizontalSplitPanel);
+
+		HorizontalLayout layout = new HorizontalLayout(panel);
+		layout.setHeightFull();
 		layout.setMargin(true);
+
+		window.setHeightFull();
 		window.setContent(layout);
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
@@ -703,7 +722,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 * 
 	 * @param component
 	 *            that holds a reference to the current state of processing a labMessage
 	 * @param entityCreated
@@ -728,7 +746,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 * 
 	 * @param component
 	 *            component is expected to not be null, as it should never be null in a correct call of this method. Calling this method
 	 *            with a null component will result in a NPE.

@@ -5588,6 +5588,7 @@ CREATE TABLE documents (
 
     CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
 );
+ALTER TABLE documents OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
 
@@ -6823,8 +6824,8 @@ ALTER TABLE cases
 INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
 -- 2021-03-03 Introduce disease properties to switch between basic and extended classification #4218
-ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean;
-ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean;
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean DEFAULT false;
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean DEFAULT false;
 
 ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassification boolean;
 ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassificationMulti boolean;
