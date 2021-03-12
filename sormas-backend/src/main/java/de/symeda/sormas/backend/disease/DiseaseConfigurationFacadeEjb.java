@@ -217,6 +217,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setFollowUpDuration(source.getFollowUpDuration());
 		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setExtendedClassification(source.getExtendedClassification());
+		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 
 		return target;
 	}
@@ -234,6 +236,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setFollowUpDuration(source.getFollowUpDuration());
 		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setExtendedClassification(source.getExtendedClassification());
+		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 
 		return target;
 	}

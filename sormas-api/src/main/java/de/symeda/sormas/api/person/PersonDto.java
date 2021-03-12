@@ -316,8 +316,10 @@ public class PersonDto extends PseudonymizableDto {
 	private String externalToken;
 
 	@HideForCountriesExcept
+	@SensitiveData
 	private CountryReferenceDto birthCountry;
 	@HideForCountriesExcept
+	@SensitiveData
 	private CountryReferenceDto citizenship;
 
 	public Integer getBirthdateDD() {

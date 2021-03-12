@@ -668,7 +668,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -728,7 +729,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> result =
+			cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());

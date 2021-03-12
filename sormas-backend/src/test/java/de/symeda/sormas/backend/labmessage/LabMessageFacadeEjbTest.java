@@ -1,12 +1,11 @@
 package de.symeda.sormas.backend.labmessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -17,12 +16,17 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.utils.DateHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
@@ -56,11 +60,9 @@ public class LabMessageFacadeEjbTest {
 	@Mock
 	private TypedQuery<LabMessageIndexDto> labMessageIndexDtoTypedQuery;
 	@Mock
-
 	private TypedQuery<Long> longTypedQuery;
 	@Mock
 	private Expression<Long> longExpression;
-
 	@Captor
 	private ArgumentCaptor<List<Order>> orderListArgumentCaptor;
 
@@ -102,14 +104,6 @@ public class LabMessageFacadeEjbTest {
 	}
 
 	@Test
-	public void fetchAndSaveExternalLabMessages() {
-		// since InitialContext is not mockable, it's hard to do any more testing here.
-		sut.fetchAndSaveExternalLabMessages();
-
-		verify(systemEventFacade, times(2)).saveSystemEvent(any(SystemEventDto.class));
-	}
-
-	@Test
 	public void save() {
 		LabMessageDto labMessageDto = new LabMessageDto();
 		String testUuid = "Test UUID";
@@ -130,4 +124,43 @@ public class LabMessageFacadeEjbTest {
 		LabMessageDto result = sut.getByUuid(testUuid);
 		assertEquals(sut.toDto(labMessage), result);
 	}
+
+	@Test
+	public void testInitializeUpdateDateWithNoPreviousSuccess() {
+		assertEquals(sut.findLastUpdateDate(), new Date(0));
+	}
+
+	@Test
+	public void testInitializeUpdateDateWithPreviousSuccessAndParseableDetails() {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		Date first = new Date(100, 0, 1);
+		Date second = new Date(100, 0, 2);
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
+		systemEvent.setStartDate(second);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(sut.findLastUpdateDate(), first);
+	}
+
+	@Test
+	public void testInitializeUpdateDateWithPreviousSuccessAndNotParseableDetails() {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		Date date = new Date(100, 0, 1);
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setAdditionalInfo("The cake is a lie");
+		systemEvent.setStartDate(date);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(sut.findLastUpdateDate(), date);
+	}
+
+	@Test
+	public void initializeFetchEventTest() {
+		SystemEventDto systemEventDto = sut.initializeFetchEvent();
+		assertEquals(systemEventDto.getAdditionalInfo(), null); // must be null for parsing the notification last update date
+		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);
+		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_LAB_MESSAGES);
+	}
+
 }
