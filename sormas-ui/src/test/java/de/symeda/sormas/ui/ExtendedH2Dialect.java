@@ -11,6 +11,9 @@ public class ExtendedH2Dialect extends H2Dialect {
 	public final static String ARRAY_AGG = "array_agg";
 	public final static String UNACCENT = "unaccent";
 	public final static String ILIKE = "ilike";
+	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
+	public final static String WINDOW_COUNT = "window_count";
+
 
 	public ExtendedH2Dialect() {
 		super();
@@ -22,5 +25,16 @@ public class ExtendedH2Dialect extends H2Dialect {
 
 		// UNACCENT function is not available in H2 database, so let's just make sure it won't fail on tests
 		registerFunction(UNACCENT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "?1"));
+
+		registerFunction(
+			WINDOW_FIRST_VALUE_DESC,
+			new SQLFunctionTemplate(
+				StandardBasicTypes.STRING,
+				"FIRST_VALUE(?1) OVER (PARTITION BY ?2 ORDER BY ?3 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+		registerFunction(
+			WINDOW_COUNT,
+			new SQLFunctionTemplate(
+				StandardBasicTypes.LONG,
+				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
 	}
 }

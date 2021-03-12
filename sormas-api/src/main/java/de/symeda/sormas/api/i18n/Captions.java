@@ -985,6 +985,7 @@ public interface Captions {
 	String EventGroup_uuid = "EventGroup.uuid";
 	String eventGroupListEvents = "eventGroupListEvents";
 	String eventGroups = "eventGroups";
+	String eventGroupsSeveral = "eventGroupsSeveral";
 	String eventLinkToCases = "eventLinkToCases";
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventLinkToEventsWithinTheSameFacility = "eventLinkToEventsWithinTheSameFacility";

@@ -61,7 +61,8 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventGroupCriteria;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -76,7 +77,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -398,7 +398,9 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> deathCounts = new HashMap<>();
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
-		if (indexList != null) {
+		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
+		if (indexList != null && !indexList.isEmpty()) {
+			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
@@ -408,7 +410,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate isInIndexlist = epRoot.get(EventParticipant.EVENT)
 				.get(AbstractDomainObject.UUID)
-				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+				.in(eventUuids);
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -436,7 +438,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
 			isInIndexlist = epRoot.get(EventParticipant.EVENT)
 				.get(AbstractDomainObject.UUID)
-				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+				.in(eventUuids);
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -459,6 +461,37 @@ public class EventFacadeEjb implements EventFacade {
 					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
 			}
+
+			// Get latest EventGroup with EventGroup count
+			CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+			Root<Event> eventRoot = latestEventCQ.from(Event.class);
+			Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+			notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
+			isInIndexlist = eventRoot.get(Event.UUID).in(eventUuids);
+			latestEventCQ.where(notDeleted, isInIndexlist);
+			latestEventCQ.multiselect(
+				eventRoot.get(Event.UUID),
+				CriteriaBuilderHelper.windowFirstValueDesc(
+					cb,
+					eventGroupJoin.get(EventGroup.UUID),
+					eventRoot.get(Event.UUID),
+					eventGroupJoin.get(EventGroup.CREATION_DATE)),
+				CriteriaBuilderHelper.windowFirstValueDesc(
+					cb,
+					eventGroupJoin.get(EventGroup.NAME),
+					eventRoot.get(Event.UUID),
+					eventGroupJoin.get(EventGroup.CREATION_DATE)),
+				CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+
+			objectQueryList = em.createQuery(latestEventCQ).getResultList();
+
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+					EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
+					eventGroupsByEventId.put((String) r[0], eventGroups);
+				});
+			}
 		}
 
 		if (indexList != null) {
@@ -468,6 +501,7 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
 				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
+				Optional.ofNullable(eventGroupsByEventId.get(eventDto.getUuid())).ifPresent(eventDto::setEventGroups);
 			}
 		}
 
@@ -560,8 +594,10 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> deathCounts = new HashMap<>();
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
+		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
 		if (exportList != null) {
 			List<Object[]> objectQueryList = null;
+			List<String> eventUuids = exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList());
 
 			// Participant, Case and Death Count
 			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
@@ -570,7 +606,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate isInExportlist = epRoot.get(EventParticipant.EVENT)
 				.get(AbstractDomainObject.UUID)
-				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
+				.in(eventUuids);
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -598,7 +634,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
 			isInExportlist = epRoot.get(EventParticipant.EVENT)
 				.get(AbstractDomainObject.UUID)
-				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
+				.in(eventUuids);
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -621,6 +657,37 @@ public class EventFacadeEjb implements EventFacade {
 					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
 			}
+
+			// Get latest EventGroup with EventGroup count
+			CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+			Root<Event> eventRoot = latestEventCQ.from(Event.class);
+			Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+			notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
+			isInExportlist = eventRoot.get(Event.UUID).in(eventUuids);
+			latestEventCQ.where(notDeleted, isInExportlist);
+			latestEventCQ.multiselect(
+				eventRoot.get(Event.UUID),
+				CriteriaBuilderHelper.windowFirstValueDesc(
+					cb,
+					eventGroupJoin.get(EventGroup.UUID),
+					eventRoot.get(Event.UUID),
+					eventGroupJoin.get(EventGroup.CREATION_DATE)),
+				CriteriaBuilderHelper.windowFirstValueDesc(
+					cb,
+					eventGroupJoin.get(EventGroup.NAME),
+					eventRoot.get(Event.UUID),
+					eventGroupJoin.get(EventGroup.CREATION_DATE)),
+				CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+
+			objectQueryList = em.createQuery(latestEventCQ).getResultList();
+
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+					EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
+					eventGroupsByEventId.put((String) r[0], eventGroups);
+				});
+			}
 		}
 
 		if (exportList != null) {
@@ -630,6 +697,7 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
 				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
+				Optional.ofNullable(eventGroupsByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setEventGroups);
 			}
 		}
 

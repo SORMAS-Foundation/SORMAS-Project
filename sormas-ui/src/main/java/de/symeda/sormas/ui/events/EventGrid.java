@@ -29,12 +29,14 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.events.groups.EventGroupsValueProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
@@ -118,6 +121,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				createEventEvolutionDateColumn(this),
 				DISEASE_SHORT,
 				EventIndexDto.EVENT_TITLE,
+				EventIndexDto.EVENT_GROUPS,
 				EventIndexDto.REGION,
 				EventIndexDto.DISTRICT,
 				EventIndexDto.COMMUNITY,
@@ -145,6 +149,18 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
+		Column<EventIndexDto, EventGroupsIndexDto> eventGroupsColumn = (Column<EventIndexDto, EventGroupsIndexDto>) getColumn(EventIndexDto.EVENT_GROUPS);
+		eventGroupsColumn.setSortable(false);
+		eventGroupsColumn.setRenderer(new EventGroupsValueProvider(), new HtmlRenderer());
+
+		addItemClickListener(e -> {
+			if (e.getColumn() != null && EventIndexDto.EVENT_GROUPS.equals(e.getColumn().getId())) {
+				EventGroupsIndexDto eventGroups = e.getItem().getEventGroups();
+				if (eventGroups != null && eventGroups.getEventGroup() != null) {
+					ControllerProvider.getEventGroupController().navigateToData(eventGroups.getEventGroup().getUuid());
+				}
+			}
+		});
 
 		setContactCountMethod(EventContactCountMethod.ALL); // Count all contacts by default
 
