@@ -25,6 +25,7 @@ import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.task.TaskJurisdictionDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
@@ -261,5 +262,24 @@ public class JurisdictionHelper {
 		}
 
 		return eventParticipantJurisdiction;
+	}
+
+	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
+		switch (jurisdition) {
+		case NATION:
+			return JurisdictionLevel.NONE;
+		case REGION:
+			return JurisdictionLevel.NATION;
+		case DISTRICT:
+			return JurisdictionLevel.REGION;
+		case COMMUNITY:
+		case POINT_OF_ENTRY:
+		case HEALTH_FACILITY:
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+			return JurisdictionLevel.DISTRICT;
+		default:
+			return JurisdictionLevel.NONE;
+		}
 	}
 }

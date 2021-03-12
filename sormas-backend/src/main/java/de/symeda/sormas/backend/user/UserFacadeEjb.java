@@ -46,6 +46,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
@@ -82,6 +83,7 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "UserFacade")
@@ -127,6 +129,51 @@ public class UserFacadeEjb implements UserFacade {
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	/*
+	 * Get all users with the next higher jurisdiction, whose location contains the current users location
+	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
+	 */
+	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
+		JurisdictionLevel superordinateJurisdiction =
+			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
+		System.out.println("Superordinatelevel: " + superordinateJurisdiction.toString());
+
+		List<User> superiorUsersList;
+
+		switch (superordinateJurisdiction) {
+		case NATION:
+			return null;
+		case REGION:
+			superiorUsersList = userService.getAllByRegionAndUserRoles(
+				regionService.getByReferenceDto(user.getRegion()),
+				UserRole.getWithJurisdictionLevels(superordinateJurisdiction).toArray(new UserRole[] {}));
+			break;
+		case DISTRICT:
+			// if user is assigned to a facility, but that facility is not assigned to a district, show no superordinate users. Else, show users of the district (and community) in which the facility is located
+
+			District district = null;
+			List<UserRole> superordinateRoles = UserRole.getWithJurisdictionLevels(superordinateJurisdiction);
+			if (user.getDistrict() != null) {
+				district = districtService.getByReferenceDto(user.getDistrict());
+			} else if (user.getHealthFacility() != null) {
+				district = facilityService.getByReferenceDto(user.getHealthFacility()).getDistrict();
+				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
+			} else if (user.getLaboratory() != null) {
+				district = facilityService.getByReferenceDto(user.getLaboratory()).getDistrict();
+				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
+			}
+
+			superiorUsersList =
+				(district == null) ? null : userService.getAllByDistrict(district, false, superordinateRoles.toArray(new UserRole[] {}));
+			break;
+		default:
+			superiorUsersList = null;
+		}
+
+		return superiorUsersList == null ? null : superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
