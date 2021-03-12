@@ -419,7 +419,7 @@ public class CasesView extends AbstractView {
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				this.filterForm.enableSearchAndReportingUser();
-				navigateTo(criteria);
+				((AbstractCaseGrid<?>) grid).reload();
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 
