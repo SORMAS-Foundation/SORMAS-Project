@@ -27,8 +27,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 @SuppressWarnings("serial")
 public class CaseGrid extends AbstractCaseGrid<CaseIndexDto> {
 
-	public CaseGrid(CaseCriteria criteria) {
-		super(CaseIndexDto.class, criteria);
+	public CaseGrid(CaseCriteria criteria, boolean isInEagerMode) {
+		super(CaseIndexDto.class, criteria, isInEagerMode);
 	}
 
 	@Override

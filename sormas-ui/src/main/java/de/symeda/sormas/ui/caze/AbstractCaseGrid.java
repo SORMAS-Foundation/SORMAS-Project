@@ -52,13 +52,11 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends FilteredGrid<IndexDto, CaseCriteria> {
@@ -69,14 +67,14 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	private final boolean caseFollowUpEnabled;
 
-	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
+	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria, boolean isInEagerMode) {
 
 		super(beanType);
 		setSizeFull();
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
-		setInEagerMode(viewConfiguration.isInEagerMode());
+		//ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
+		setInEagerMode(isInEagerMode);
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
@@ -251,7 +249,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			}
 		}
 
-		if (ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+		if (isInEagerMode()) {
 			setEagerDataProvider();
 		}
 

@@ -165,7 +165,9 @@ public class CasesView extends AbstractView {
 			grid = new CaseFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
-			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
+			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType())
+				? new CaseGridDetailed(criteria, viewConfiguration.isInEagerMode())
+				: new CaseGrid(criteria, viewConfiguration.isInEagerMode());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -415,10 +417,10 @@ public class CasesView extends AbstractView {
 
 			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
 				bulkOperationsDropdown.setVisible(false);
-				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				this.filterForm.enableSearchAndReportingUser();
+				grid.setInEagerMode(false);
 				((AbstractCaseGrid<?>) grid).reload();
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
@@ -519,10 +521,10 @@ public class CasesView extends AbstractView {
 
 	private void enterBulkEditMode() {
 		bulkOperationsDropdown.setVisible(true);
-		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
 		filterForm.disableSearchAndReportingUser();
+		grid.setInEagerMode(true);
 		((AbstractCaseGrid<?>) grid).reload();
 	}
 
