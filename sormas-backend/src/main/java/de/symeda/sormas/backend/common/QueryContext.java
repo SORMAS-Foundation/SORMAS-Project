@@ -75,6 +75,28 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		return pcdSubQuery;
 	}
 
+	protected Subquery<Object> getPersonOtherContactDetailsSubQuery(From<?, Person> from) {
+		final Subquery<Object> pcdSubQuery = getQuery().subquery(Object.class);
+		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
+		CriteriaBuilder cb = getCriteriaBuilder();
+		pcdSubQuery.where(
+			cb.and(
+				cb.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
+				cb.or(
+					cb.isFalse(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+					cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER))));
+		final Expression<String> infoWithTypeOther = cb
+			.concat(cb.concat(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION), " ("), cb.concat(pcdRoot.get(PersonContactDetail.DETAILS), ")"));
+		final Expression<String> infoWithType = cb.concat(
+			cb.concat(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION), " ("),
+			cb.concat(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), ")"));
+		pcdSubQuery.select(
+			cb.selectCase()
+				.when(cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER), infoWithTypeOther)
+				.otherwise(infoWithType));
+		return pcdSubQuery;
+	}
+
 	protected Subquery<Object> phoneOwnerSubquery(From<?, Person> from) {
 		final Subquery<Object> phoneOwnerSubQuery = getQuery().subquery(Object.class);
 		final Root<PersonContactDetail> phoneRoot = phoneOwnerSubQuery.from(PersonContactDetail.class);

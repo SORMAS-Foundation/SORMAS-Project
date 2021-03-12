@@ -26,10 +26,10 @@
     <data>
 
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
-
         <import type="de.symeda.sormas.api.person.PersonContactDetailType" />
-
         <import type="de.symeda.sormas.api.person.PhoneNumberType" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
 
         <variable
             name="data"
@@ -51,6 +51,7 @@
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/personContactDetail_thirdParty"
+                android:text="@{I18nProperties.getString(Captions.personContactDetailThirdParty)}"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.thirdParty}" />
 

@@ -32,6 +32,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -463,8 +464,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
 							BaseActivity.getActiveActivity(),
-							R.string.heading_update_person_contact_detail,
-							R.string.message_person_contact_detail_primary_duplicate,
+							I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
+							I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate),
 							R.string.yes,
 							R.string.no);
 

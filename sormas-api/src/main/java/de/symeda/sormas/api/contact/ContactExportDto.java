@@ -17,11 +17,13 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -30,9 +32,11 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -139,6 +143,8 @@ public class ContactExportDto implements Serializable {
 	private String phoneOwner;
 	@SensitiveData
 	private String emailAddress;
+	@SensitiveData
+	private String otherContactDetails;
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
@@ -218,7 +224,7 @@ public class ContactExportDto implements Serializable {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
+							String phone, String phoneOwner, String emailAddress, String otherContactDetails, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
 							// vaccination info
@@ -289,6 +295,10 @@ public class ContactExportDto implements Serializable {
 		this.phone = phone;
 		this.phoneOwner = phoneOwner;
 		this.emailAddress = emailAddress;
+//		for (String otherContactDetail : otherContactDetails) {
+//			this.otherContactDetails += this.otherContactDetails.equals("") ? otherContactDetail : ", " + otherContactDetail;
+//		}
+		this.otherContactDetails = otherContactDetails;
 		this.occupationType = occupationType;
 		this.occupationDetails = occupationDetails;
 		this.armedForcesRelationType = armedForcesRelationType;
@@ -1118,6 +1128,15 @@ public class ContactExportDto implements Serializable {
 		return externalToken;
 	}
 
+	@Order(118)
+	@ExportProperty({
+			ContactDto.PERSON,
+			PersonDto.OTHER_CONTACT_DETAILS })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getOtherContactDetails() {
+		return otherContactDetails;
+	}
+
 	public void setEventCount(Long eventCount) {
 		this.eventCount = eventCount;
 	}
@@ -1276,5 +1295,9 @@ public class ContactExportDto implements Serializable {
 
 	public void setFacility(String facility) {
 		this.facility = facility;
+	}
+
+	public void setOtherContactDetails(String otherContactDetails) {
+		this.otherContactDetails = otherContactDetails;
 	}
 }

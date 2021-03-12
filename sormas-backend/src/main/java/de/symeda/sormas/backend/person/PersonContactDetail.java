@@ -109,7 +109,7 @@ public class PersonContactDetail extends AbstractDomainObject {
 		this.phoneNumberType = phoneNumberType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getDetails() {
 		return details;
 	}
@@ -118,7 +118,7 @@ public class PersonContactDetail extends AbstractDomainObject {
 		this.details = details;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getContactInformation() {
 		return contactInformation;
 	}
@@ -127,7 +127,7 @@ public class PersonContactDetail extends AbstractDomainObject {
 		this.contactInformation = contactInformation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
@@ -145,7 +145,7 @@ public class PersonContactDetail extends AbstractDomainObject {
 		this.thirdParty = thirdParty;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getThirdPartyRole() {
 		return thirdPartyRole;
 	}
@@ -154,7 +154,7 @@ public class PersonContactDetail extends AbstractDomainObject {
 		this.thirdPartyRole = thirdPartyRole;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getThirdPartyName() {
 		return thirdPartyName;
 	}

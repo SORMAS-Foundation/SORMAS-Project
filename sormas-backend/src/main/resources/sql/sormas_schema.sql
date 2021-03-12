@@ -6853,20 +6853,19 @@ create table personcontactdetail(
      primarycontact boolean DEFAULT false,
      personcontactdetailtype varchar(255),
      phonenumbertype varchar(255),
-     details varchar(512),
-     contactInformation varchar(255),
-     additionalInformation varchar(512),
+     details text,
+     contactInformation text,
+     additionalInformation text,
      thirdParty boolean DEFAULT false,
-     thirdPartyRole varchar(512),
-     thirdPartyName varchar(512)
+     thirdPartyRole text,
+     thirdPartyName text
 );
+ALTER TABLE personcontactdetail OWNER TO sormas_user;
 
 ALTER TABLE personcontactdetail
     ADD CONSTRAINT fk_personcontactdetail_person_id FOREIGN KEY (person_id) REFERENCES person(id);
 
 ALTER TABLE personcontactdetail ADD COLUMN sys_period tstzrange;
-UPDATE personcontactdetail SET sys_period=tstzrange(creationdate, null);
-ALTER TABLE personcontactdetail ALTER COLUMN sys_period SET NOT NULL;
 CREATE TABLE personcontactdetail_history (LIKE personcontactdetail);
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE OR DELETE ON personcontactdetail

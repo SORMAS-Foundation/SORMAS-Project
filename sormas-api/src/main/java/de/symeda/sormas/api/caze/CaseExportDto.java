@@ -62,6 +62,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A DTO class that contains the properties that are exported during a detailed case export. These
@@ -212,6 +213,8 @@ public class CaseExportDto implements Serializable {
 	private String phoneOwner;
 	@SensitiveData
 	private String emailAddress;
+	@SensitiveData
+	private String otherContactDetails;
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
@@ -319,7 +322,7 @@ public class CaseExportDto implements Serializable {
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String facility, String facilityUuid, String facilityDetails,
-						 String phone, String phoneOwner, String emailAddress, EducationType educationType, String educationDetails,
+						 String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 // vaccination info
@@ -411,6 +414,10 @@ public class CaseExportDto implements Serializable {
 		this.phone = phone;
 		this.phoneOwner = phoneOwner;
 		this.emailAddress = emailAddress;
+//		for (String otherContactDetail : otherContactDetails) {
+//			this.otherContactDetails += this.otherContactDetails.equals("") ? otherContactDetail : ", " + otherContactDetail;
+//		}
+		this.otherContactDetails = otherContactDetails;
 		this.educationType = educationType;
 		this.educationDetails = educationDetails;
 		this.occupationType = occupationType;
@@ -1974,6 +1981,19 @@ public class CaseExportDto implements Serializable {
 		return screeningType;
 	}
 
+	@Order(171)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+			CaseDataDto.PERSON,
+			PersonDto.OTHER_CONTACT_DETAILS })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getOtherContactDetails() {
+		return otherContactDetails;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -2283,5 +2303,9 @@ public class CaseExportDto implements Serializable {
 
 	public void setScreeningType(ScreeningType screeningType) {
 		this.screeningType = screeningType;
+	}
+
+	public void setOtherContactDetails(String otherContactDetails) {
+		this.otherContactDetails = otherContactDetails;
 	}
 }

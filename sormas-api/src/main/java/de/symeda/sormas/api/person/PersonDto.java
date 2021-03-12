@@ -94,6 +94,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OTHER_CONTACT_DETAILS = "otherContactDetails";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 	public static final String PERSON_CONTACTS = "personContacts";

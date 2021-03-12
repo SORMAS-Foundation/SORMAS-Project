@@ -120,7 +120,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 		table.addGeneratedColumn(OWNER, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;
-			return personContactDetailDto.isThirdParty() ? personContactDetailDto.getThirdPartyRole() : THIS_PERSON;
+			return personContactDetailDto.isThirdParty() ? personContactDetailDto.getThirdPartyRole() : I18nProperties.getCaption(THIS_PERSON);
 		});
 		table.addGeneratedColumn(OWNER_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;

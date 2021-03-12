@@ -36,7 +36,6 @@ import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPersonContactDetailEditLayoutBinding;
-import de.symeda.sormas.app.epidata.ExposureDialog;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -82,17 +81,6 @@ public class PersonContactDetailDialog extends FormDialog {
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		contentBinding.personContactDetailPersonContactDetailType.initializeSpinner(DataUtils.getEnumItems(PersonContactDetailType.class, false));
 		contentBinding.personContactDetailPhoneNumberType.initializeSpinner(DataUtils.getEnumItems(PhoneNumberType.class, true));
-
-		contentBinding.personContactDetailThirdParty.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailThirdPartyRole.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailThirdPartyName.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailPersonContactDetailType.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailPhoneNumberType.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailDetails.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailContactInformation.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailAdditionalInformation.setVisibility(View.VISIBLE);
-		contentBinding.personContactDetailPrimaryContact.setVisibility(View.VISIBLE);
-
 	}
 
 	public void configureAsPersonContactDetailDialog(boolean showDeleteButton) {
