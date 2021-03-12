@@ -25,6 +25,9 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -39,15 +42,12 @@ import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
@@ -291,6 +291,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
 		InitialContext ic = new InitialContext();
 		String jndiName = configFacade.getDemisJndiName();
+
+		if (jndiName == null) {
+			throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
+		}
+
 		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 		return labResultsFacade.getExternalLabMessages(since);
 	}
