@@ -26,8 +26,8 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	private static final String LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT = "latestSampleDateTimeAndSampleCount";
 
-	public CaseGridDetailed(CaseCriteria criteria, boolean isInEagerMode) {
-		super(CaseIndexDetailedDto.class, criteria, isInEagerMode);
+	public CaseGridDetailed(CaseCriteria criteria) {
+		super(CaseIndexDetailedDto.class, criteria);
 	}
 
 	@Override
