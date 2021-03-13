@@ -50,7 +50,7 @@ jobs:
         env:
           DEFAULT_BRANCH: development
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_CSS: false
           VALIDATE_HTML: false
           VALIDATE_JAVA: false
