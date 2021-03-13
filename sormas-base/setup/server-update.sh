@@ -50,7 +50,8 @@ CONTINUOUS_DELIVERY=no
 CONF_FILE=$(dirname "$0")/server-update.conf
 if test -f "$CONF_FILE"; then
 	echo "Read-in system dependent configuration ..."
-	source "$CONF_FILE"
+	# shellcheck disable=SC1090
+	source "$CONF_FILE" 
 fi
 
 echo "# SORMAS SERVER UPDATE"
