@@ -16,9 +16,6 @@ name: Lint Code Base
 #############################
 on:
   workflow_dispatch:
-  push:
-    branches-ignore: [master, development]
-    # Remove the line above to run when pushing to master
   pull_request:
     branches: [development]
 

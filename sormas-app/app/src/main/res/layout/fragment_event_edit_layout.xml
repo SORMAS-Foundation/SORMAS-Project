@@ -130,6 +130,7 @@
                 app:dependencyParentField="@{eventMultiDayEvent}"
                 app:dependencyParentValue="@{true}"
                 app:softRequired="true"
+                app:allowedDaysInFuture="365"
                 app:value="@={data.endDate}" />
         </LinearLayout>
 

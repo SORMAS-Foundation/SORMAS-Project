@@ -19,12 +19,14 @@ package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -60,6 +64,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -463,5 +468,84 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(samples, hasSize(3));
 		assertThat(samples, contains(sample, sample2, sample3));
+	}
+
+	@Test
+	public void testGetSimilarSamples() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
+
+		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
+		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID("case_sample_id");
+			s.setSampleDateTime(sampleDateTime1);
+			s.setSampleMaterial(SampleMaterial.BLOOD);
+		});
+
+		Date sampleDateTime2 = DateHelper.parseDate("08.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
+		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID("case_sample_id_2");
+			s.setSampleDateTime(sampleDateTime2);
+			s.setSampleMaterial(SampleMaterial.BLOOD);
+		});
+
+		ContactReferenceDto contact = creator.createContact(officer.toReference(), creator.createPerson().toReference()).toReference();
+		SampleDto contactSample =
+			creator.createSample(contact, sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(officer.toReference()).toReference(), creator.createPerson(), officer.toReference());
+		SampleDto eventParticipantSample = creator
+			.createSample(eventParticipant.toReference(), sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		SampleSimilarityCriteria criteria = new SampleSimilarityCriteria();
+		criteria.caze(caze.toReference());
+
+		criteria.setLabSampleId("case_sample_id");
+		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(1));
+
+		// should return all samples for unknown lab sample id and missing date and material
+		criteria.setLabSampleId("unknown_id");
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(2));
+
+		criteria.setLabSampleId(null);
+		criteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime2, 1));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(2));
+
+		criteria.setSampleDateTime(DateHelper.subtractDays(sampleDateTime2, 1));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(1));
+
+		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime1, 3));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
+
+		criteria.setSampleDateTime(DateHelper.subtractDays(sampleDateTime2, 3));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
+
+		// contact samples
+		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().contact(contact);
+		contactSampleCriteria.setSampleDateTime(sampleDateTime1);
+		contactSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		List<SampleDto> contactSimilarSamples = getSampleFacade().getSimilarSamples(contactSampleCriteria);
+		MatcherAssert.assertThat(contactSimilarSamples, hasSize(1));
+		MatcherAssert.assertThat(contactSimilarSamples.get(0).getUuid(), is(contactSample.getUuid()));
+
+		// event participant samples
+		SampleSimilarityCriteria eventParticipantSampleCriteria = new SampleSimilarityCriteria().eventParticipant(eventParticipant.toReference());
+		eventParticipantSampleCriteria.setSampleDateTime(sampleDateTime1);
+		eventParticipantSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		List<SampleDto> eventParticipantSimilarSamples = getSampleFacade().getSimilarSamples(eventParticipantSampleCriteria);
+		MatcherAssert.assertThat(eventParticipantSimilarSamples, hasSize(1));
+		MatcherAssert.assertThat(eventParticipantSimilarSamples.get(0).getUuid(), is(eventParticipantSample.getUuid()));
 	}
 }

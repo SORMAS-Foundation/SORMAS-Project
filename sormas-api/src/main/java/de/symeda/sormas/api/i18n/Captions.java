@@ -215,6 +215,7 @@ public interface Captions {
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String CaseData_caseConfirmationBasis = "CaseData.caseConfirmationBasis";
 	String CaseData_caseIdentificationSource = "CaseData.caseIdentificationSource";
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
@@ -803,6 +804,10 @@ public interface Captions {
 	String devModeGenerateCases = "devModeGenerateCases";
 	String devModeGenerateContacts = "devModeGenerateContacts";
 	String devModeGenerateEvents = "devModeGenerateEvents";
+	String devModeGeneratorSeed = "devModeGeneratorSeed";
+	String devModeLoadDefaultConfig = "devModeLoadDefaultConfig";
+	String devModeLoadPerformanceTestConfig = "devModeLoadPerformanceTestConfig";
+	String devModeUseSeed = "devModeUseSeed";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -1138,6 +1143,9 @@ public interface Captions {
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String LabMessage = "LabMessage";
+	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
+	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
+	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
 	String LabMessage_labMessageDetails = "LabMessage.labMessageDetails";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
 	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
@@ -1165,6 +1173,7 @@ public interface Captions {
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
 	String labMessageFetch = "labMessageFetch";
+	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageProcessed = "labMessageProcessed";
 	String labMessageUnprocessed = "labMessageUnprocessed";
@@ -1287,6 +1296,7 @@ public interface Captions {
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	String PathogenTest_typingId = "PathogenTest.typingId";
+	String PathogenTest_viaLims = "PathogenTest.viaLims";
 	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
