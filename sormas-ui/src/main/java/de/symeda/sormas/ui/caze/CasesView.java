@@ -519,13 +519,11 @@ public class CasesView extends AbstractView {
 
 	private void enterBulkEditMode() {
 		bulkOperationsDropdown.setVisible(true);
-		viewConfiguration.setInEagerMode(true);
+		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
 		filterForm.disableSearchAndReportingUser();
-		AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
-		caseGrid.setEagerDataProvider();
-		caseGrid.reload();
+		((AbstractCaseGrid<?>) grid).reload();
 	}
 
 	public VerticalLayout createFilterBar() {
