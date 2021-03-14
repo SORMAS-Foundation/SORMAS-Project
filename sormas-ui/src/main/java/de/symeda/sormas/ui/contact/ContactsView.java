@@ -297,11 +297,10 @@ public class ContactsView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
-				viewConfiguration.setInEagerMode(true);
+				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				filterForm.setSearchFieldEnabled(false);
-				((AbstractContactGrid<?>) grid).setEagerDataProvider();
 				((AbstractContactGrid<?>) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
