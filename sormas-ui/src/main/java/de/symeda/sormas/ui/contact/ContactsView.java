@@ -305,7 +305,7 @@ public class ContactsView extends AbstractView {
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				filterForm.setSearchFieldEnabled(true);

@@ -415,7 +415,7 @@ public class CasesView extends AbstractView {
 
 			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
 				bulkOperationsDropdown.setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				this.filterForm.enableSearchAndReportingUser();
