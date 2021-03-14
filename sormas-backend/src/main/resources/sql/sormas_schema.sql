@@ -6824,16 +6824,16 @@ ALTER TABLE cases
 INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
 
 -- 2021-03-03 Introduce disease properties to switch between basic and extended classification #4218
-ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean DEFAULT false;
-ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean DEFAULT false;
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean NOT NULL DEFAULT false;
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean NOT NULL DEFAULT false;
 
 ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassification boolean;
 ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassificationMulti boolean;
 
 UPDATE diseaseconfiguration SET extendedClassification = false WHERE disease not in ('CORONAVIRUS', 'MEASLES');
 UPDATE diseaseconfiguration SET extendedClassificationMulti = false WHERE disease not in ('CORONAVIRUS');
-UPDATE diseaseconfiguration SET extendedClassification = TRUE WHERE disease in ('CORONAVIRUS', 'MEASLES');
-UPDATE diseaseconfiguration SET extendedClassificationMulti = TRUE WHERE disease in ('CORONAVIRUS');
+UPDATE diseaseconfiguration SET extendedClassification = true WHERE disease in ('CORONAVIRUS', 'MEASLES');
+UPDATE diseaseconfiguration SET extendedClassificationMulti = true WHERE disease in ('CORONAVIRUS');
 
 INSERT INTO schema_version (version_number, comment) VALUES (345, 'Introduce disease properties to switch between basic and extended classification #4218');
 

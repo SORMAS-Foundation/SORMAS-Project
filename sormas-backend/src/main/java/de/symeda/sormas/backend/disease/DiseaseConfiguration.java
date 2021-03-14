@@ -44,6 +44,17 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+		if (disease != Disease.CORONAVIRUS && disease != Disease.MEASLES) {
+			this.extendedClassification = false;
+		} else {
+			this.extendedClassification = true;
+		}
+
+		if (disease != Disease.CORONAVIRUS) {
+			this.extendedClassificationMulti = false;
+		} else {
+			this.extendedClassificationMulti = true;
+		}
 	}
 
 	@Column
