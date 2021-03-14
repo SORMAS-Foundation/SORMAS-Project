@@ -27,6 +27,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -116,7 +117,9 @@ public class ContactVisitsView extends AbstractContactView {
 				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
 					.getVisitsExportList(
 						grid.getCriteria(),
-						this.grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet()),
+						grid.getSelectionModel() instanceof MultiSelectionModelImpl
+							? grid.asMultiSelect().getSelectedItems().stream().map(VisitIndexDto::getUuid).collect(Collectors.toSet())
+							: null,
 						VisitExportType.CONTACT_VISITS,
 						start,
 						max,

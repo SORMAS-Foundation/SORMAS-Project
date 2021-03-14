@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -73,6 +72,7 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -105,7 +105,7 @@ public class EventsView extends AbstractView {
 
 	private Set<String> getSelectedRows() {
 		EventGrid eventGrid = (EventGrid) this.grid;
-		return bulkOperationsDropdown.isVisible()
+		return this.viewConfiguration.isInEagerMode()
 			? eventGrid.asMultiSelect().getSelectedItems().stream().map(EventIndexDto::getUuid).collect(Collectors.toSet())
 			: Collections.emptySet();
 	}
@@ -186,7 +186,7 @@ public class EventsView extends AbstractView {
 			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 					grid,
-					() -> isDefaultViewType() && bulkOperationsDropdown.isVisible()
+					() -> isDefaultViewType() && this.viewConfiguration.isInEagerMode()
 						? this.grid.asMultiSelect().getSelectedItems()
 						: Collections.emptySet(),
 					ExportEntityName.EVENTS);

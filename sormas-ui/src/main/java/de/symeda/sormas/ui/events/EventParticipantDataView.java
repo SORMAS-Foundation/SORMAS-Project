@@ -22,7 +22,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -115,14 +114,6 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				EventParticipantEditForm eventParticipantEditForm = (EventParticipantEditForm) editComponent.getWrappedComponent();
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantEditForm.getValue().toReference());
-				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEventParticipant));
-		}
 
 		layout.addComponent(editComponent, EDIT_LOC);
 

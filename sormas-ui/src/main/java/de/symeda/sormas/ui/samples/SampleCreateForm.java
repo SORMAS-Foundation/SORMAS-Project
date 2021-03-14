@@ -4,6 +4,7 @@ import static de.symeda.sormas.api.i18n.I18nProperties.getPrefixCaption;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import com.vaadin.v7.data.util.converter.StringToFloatConverter;
@@ -35,7 +36,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	private static final String HTML_LAYOUT = SAMPLE_COMMON_HTML_LAYOUT
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
-		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, "")
+		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE)
 		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
@@ -62,7 +63,10 @@ public class SampleCreateForm extends AbstractSampleForm {
 				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE),
 				Date.class,
 				DateField.class);
-			FieldHelper.setVisibleWhen(includeTestField, Arrays.asList(reportDateField), Arrays.asList(true), true);
+
+			CheckBox viaLimsField = addCustomField(PathogenTestDto.VIA_LIMS, Boolean.class, CheckBox.class);
+
+			FieldHelper.setVisibleWhen(includeTestField, Arrays.asList(reportDateField, viaLimsField), Collections.singletonList(true), true);
 		}
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
@@ -177,8 +181,11 @@ public class SampleCreateForm extends AbstractSampleForm {
 		final TextArea testTextField = (TextArea) getField(PathogenTestDto.TEST_RESULT_TEXT);
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			final DateField reportDateField = (DateField) getField(PathogenTestDto.REPORT_DATE);
+			final DateField reportDateField = getField(PathogenTestDto.REPORT_DATE);
 			reportDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE));
+
+			final CheckBox viaLimsField = getField(PathogenTestDto.VIA_LIMS);
+			viaLimsField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.VIA_LIMS));
 		}
 		testResult.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
 		testResultVerified.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED));

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -134,6 +135,8 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
+	boolean doesExternalTokenExist(String externalToken, String caseUuid);
+
 	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
@@ -156,7 +159,7 @@ public interface CaseFacade {
 	 */
 	void updateArchived(List<String> caseUuids, boolean archived);
 
-	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
 	boolean isCaseEditAllowed(String caseUuid);
 

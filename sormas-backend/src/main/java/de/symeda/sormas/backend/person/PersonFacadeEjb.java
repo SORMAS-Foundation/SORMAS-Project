@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -113,6 +112,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -194,7 +194,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
+			return persons.stream().map(PersonFacadeEjb::toSimilarPersonDto).collect(Collectors.toList());
 		}
 	}
 
@@ -257,7 +257,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(c -> toReferenceDto(c)).orElse(null);
+		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toReferenceDto).orElse(null);
 	}
 
 	@Override
@@ -352,7 +352,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			Stream<PersonFollowUpEndDto> caseLatestDates = getCaseLatestFollowUpEndDates(since, forSymptomJournal);
 			Map<String, Optional<PersonFollowUpEndDto>> latestDates = Stream.concat(contactLatestDates, caseLatestDates)
 					.collect(groupingBy(PersonFollowUpEndDto::getPersonUuid,
-						     maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate))));
+							maxBy(comparing(PersonFollowUpEndDto::getLatestFollowUpEndDate, Comparator.nullsFirst(Comparator.naturalOrder())))));
 			return latestDates.values().stream()
 					.filter(Optional::isPresent)
 					.map(Optional::get)
@@ -383,8 +383,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+		final Date minDate = new Date(0);
+		final Expression<Object> followUpStatusExpression = cb.selectCase()
+				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}
@@ -408,8 +412,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(personJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_UNTIL));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(caseRoot.get(Case.FOLLOW_UP_UNTIL)));
+		final Date minDate = new Date(0);
+		final Expression<Object> followUpStatusExpression = cb.selectCase()
+				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 
 		return em.createQuery(cq).getResultList().stream().distinct();
 	}
@@ -675,6 +683,13 @@ public class PersonFacadeEjb implements PersonFacade {
 		return personService.exists(uuid);
 	}
 
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String personUuid) {
+		return personService.exists(
+			(cb, personRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
+	}
+
 	/**
 	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
 	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
@@ -901,7 +916,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
 
-		SimilarPersonDto dto = new SimilarPersonDto(
+		return new SimilarPersonDto(
 			entity.getUuid(),
 			entity.getFirstName(),
 			entity.getLastName(),
@@ -914,7 +929,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getAddress().getCity(),
 			entity.getNationalHealthId(),
 			entity.getPassportNumber());
-		return dto;
 	}
 
 	public static PersonDto toDto(Person source) {
