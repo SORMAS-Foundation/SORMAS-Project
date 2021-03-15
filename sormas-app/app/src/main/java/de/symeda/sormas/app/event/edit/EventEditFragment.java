@@ -28,8 +28,12 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.InfectionPathCertainty;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -38,11 +42,13 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -72,13 +78,17 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> diseaseTransmissionModeList;
 	private boolean isMultiDayEvent;
 	private List<Item> workEnvironmentList;
+	private List<Item> humanTransmissionModeList;
+	private List<Item> parenteralTransmissionModeList;
+	private List<Item> medicallyAssociatedTransmissionModeList;
+	private List<Item> infectionPathCertaintyList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
 		EventEditFragment fragment = newInstanceWithFieldCheckers(
 			EventEditFragment.class,
 			null,
 			activityRootData,
-			new FieldVisibilityCheckers(),
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 
 		fragment.isMultiDayEvent = activityRootData.getEndDate() != null;
@@ -167,6 +177,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
 		diseaseTransmissionModeList = DataUtils.getEnumItems(DiseaseTransmissionMode.class, true);
 		workEnvironmentList = DataUtils.getEnumItems(WorkEnvironment.class, true);
+		humanTransmissionModeList = DataUtils.getEnumItems(HumanTransmissionMode.class, true);
+		parenteralTransmissionModeList = DataUtils.getEnumItems(ParenteralTransmissionMode.class, true);
+		medicallyAssociatedTransmissionModeList = DataUtils.getEnumItems(MedicallyAssociatedTransmissionMode.class, true);
+		infectionPathCertaintyList = DataUtils.getEnumItems(InfectionPathCertainty.class, true);
 	}
 
 	@Override
@@ -193,6 +207,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
 		contentBinding.eventDiseaseTransmissionMode.initializeSpinner(diseaseTransmissionModeList);
 		contentBinding.eventWorkEnvironment.initializeSpinner(workEnvironmentList);
+		contentBinding.eventHumanTransmissionMode.initializeSpinner(humanTransmissionModeList);
+		contentBinding.eventParenteralTransmissionMode.initializeSpinner(parenteralTransmissionModeList);
+		contentBinding.eventMedicallyAssociatedTransmissionMode.initializeSpinner(medicallyAssociatedTransmissionModeList);
+		contentBinding.eventInfectionPathCertainty.initializeSpinner(infectionPathCertaintyList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
@@ -220,6 +238,28 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 					facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
 			}
 		});
+
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventInfectionPathCertainty)) {
+			setVisibleWhen(contentBinding.eventInfectionPathCertainty, contentBinding.eventNosocomial, YesNoUnknown.YES);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventHumanTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventHumanTransmissionMode,
+				contentBinding.eventDiseaseTransmissionMode,
+				DiseaseTransmissionMode.HUMAN_TO_HUMAN);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventParenteralTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventParenteralTransmissionMode,
+				contentBinding.eventHumanTransmissionMode,
+				HumanTransmissionMode.PARENTERAL);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventMedicallyAssociatedTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventMedicallyAssociatedTransmissionMode,
+				contentBinding.eventParenteralTransmissionMode,
+				ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
+		}
 	}
 
 	@Override

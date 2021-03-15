@@ -162,7 +162,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 287;
+	public static final int DATABASE_VERSION = 289;
 
 	private static DatabaseHelper instance = null;
 
@@ -2070,6 +2070,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 286:
 				currentVersion = 286;
+
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN infectionPathCertainty varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN humanTransmissionMode varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN parenteralTransmissionMode varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN medicallyAssociatedTransmissionMode varchar(255);");
+
+			case 287:
+				currentVersion = 287;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN internalId text;");
+
+			case 288:
+				currentVersion = 288;
 				TableUtils.createTable(connectionSource, PersonContactDetail.class);
 				migratePersonContactDetails();
 				// ATTENTION: break should only be done after last version

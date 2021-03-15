@@ -38,8 +38,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -56,7 +57,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless
 @LocalBean
@@ -238,33 +238,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
 		// can see the participants of all accessible events
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		Predicate eventFilter =
-			eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
-
-		// can see participants that are directly assigned to user's jurisdiction
-		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-
-		Predicate eventParticipantFilter = null;
-		switch (jurisdictionLevel) {
-		case REGION:
-			if (currentUser.getRegion() != null) {
-				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.REGION), currentUser.getRegion());
-			}
-			break;
-		case DISTRICT:
-			if (currentUser.getDistrict() != null) {
-				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.DISTRICT), currentUser.getDistrict());
-			}
-			break;
-		default:
-			break;
-		}
-
-		return CriteriaBuilderHelper.or(cb, eventFilter, eventParticipantFilter);
+		return eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {
@@ -316,7 +293,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Join<EventParticipant, Event> event = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
 		Predicate filter =
@@ -405,7 +382,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return Collections.emptyList();
 		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<EventParticipant> eventParticipants = new LinkedList<>();
-			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(personUuids)));
+			IterableHelper.executeBatched(
+				personUuids,
+				ModelConstants.PARAMETER_LIMIT,
+				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(personUuids)));
 			return eventParticipants;
 		} else {
 			return getEventParticipantsByPersonUuids(personUuids);

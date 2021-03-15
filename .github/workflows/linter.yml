@@ -15,9 +15,7 @@ name: Lint Code Base
 # Start the job on all push #
 #############################
 on:
-  push:
-    branches-ignore: [master, development]
-    # Remove the line above to run when pushing to master
+  workflow_dispatch:
   pull_request:
     branches: [development]
 
