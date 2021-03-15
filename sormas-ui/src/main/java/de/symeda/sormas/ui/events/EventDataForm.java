@@ -105,6 +105,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
+			fluidRowLocs(EventDto.INTERNALID, "") +
 			fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
@@ -189,6 +190,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageEventExternalTokenWarning));
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
+
+		addField(EventDto.INTERNALID);
 
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);

@@ -6843,4 +6843,10 @@ ALTER TABLE pathogentest_history ADD COLUMN vialims boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (346, '[SurvNet Interface] Add "via DEMIS" to pathogen tests #4562');
 
+-- 2021-03-12 [SurvNet Interface] Events > Add new field "Internal ID" #4668
+ALTER TABLE events ADD COLUMN internalid text;
+ALTER TABLE events_history ADD COLUMN internalid text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (347, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
+
 -- *** Insert new sql commands BEFORE this line ***

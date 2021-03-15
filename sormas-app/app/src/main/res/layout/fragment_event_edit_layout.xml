@@ -231,6 +231,11 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_internalId"
+                app:value="@={data.internalId}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

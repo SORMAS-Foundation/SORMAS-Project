@@ -831,6 +831,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setInternalId(source.getInternalId());
+
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
@@ -926,6 +928,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInternalId(source.getInternalId());
+
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 

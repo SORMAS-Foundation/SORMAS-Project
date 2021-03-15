@@ -124,6 +124,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setInternalId(source.getInternalId());
 	}
 
 	@Override
@@ -210,6 +211,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setInternalId(source.getInternalId());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

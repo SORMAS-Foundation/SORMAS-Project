@@ -225,6 +225,9 @@ public class Event extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private EventManagementStatus eventManagementStatus;
 
+	@Column(columnDefinition = "text")
+	private String internalId;
+
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
@@ -601,5 +604,13 @@ public class Event extends PseudonymizableAdo {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }

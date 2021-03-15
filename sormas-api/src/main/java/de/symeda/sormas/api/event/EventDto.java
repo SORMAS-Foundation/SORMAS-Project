@@ -23,6 +23,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -84,6 +85,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String INTERNALID = "internalId";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -141,6 +143,9 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
+
+	@HideForCountriesExcept
+	private String internalId;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -531,6 +536,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 
 	public EventReferenceDto toReference() {
