@@ -6800,11 +6800,9 @@ DO $$
         DECLARE latest_sample RECORD;
         DECLARE _samplingreason text;
     BEGIN
-        FOR rec IN SELECT id as _caseid, covidtestreason as _covidtestreason, covidtestreasondetails as _covidtestreasondetails
+        FOR rec IN SELECT id as _caseid, covidtestreason as _covidtestreason, covidtestreasondetails as _covidtestreasondetails, reportdate as _reportdate, reportinguser_id as _reportinguser_id
                    FROM cases WHERE cases.covidtestreason IS NOT NULL
             LOOP
-                SELECT id as _id FROM samples where associatedcase_id = rec._caseid order by sampledatetime DESC limit 1 INTO latest_sample;
-
                 _samplingreason = CASE WHEN rec._covidtestreason='REQUIREMENT_OF_EMPLOYER' THEN 'PROFESSIONAL_REASON'
                                        WHEN rec._covidtestreason='DURING_QUARANTINE' THEN 'QUARANTINE_REGULATIONS'
                                        WHEN rec._covidtestreason='COHORT_SCREENING' THEN 'SCREENING'
@@ -6812,7 +6810,24 @@ DO $$
                                        WHEN rec._covidtestreason='AFTER_CONTACT_TRACING' THEN 'CONTACT_TO_CASE'
                                        ELSE rec._covidtestreason
                     END;
-                UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
+
+                SELECT id as _id FROM samples where associatedcase_id = rec._caseid and deleted = false order by sampledatetime DESC limit 1 INTO latest_sample;
+
+                IF latest_sample IS NULL THEN
+                    INSERT INTO samples (id, uuid, creationdate, changedate, associatedcase_id, samplepurpose, sampledatetime, reportdatetime, reportinguser_id, samplematerial, samplematerialtext, comment,
+                                         deleted, shipped, received,
+                                         samplingreason, samplingreasondetails)
+                    values (nextval('entity_seq'),
+                            overlay(overlay(overlay(
+                                                    substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                                                    placing '-' from 7) placing '-' from 14) placing '-' from 21),
+                            now(), now(),
+                            rec._caseid, 'INTERNAL', rec._reportdate, rec._reportdate, rec._reportinguser_id, 'OTHER', 'Unknown', '[System] Automatically generated sample due to covid test reason migration',
+                            false, false, false,
+                            _samplingreason, rec._covidtestreasondetails);
+                ELSE
+                    UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
+                END IF;
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
