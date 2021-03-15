@@ -1366,6 +1366,7 @@ public interface Captions {
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
 	String Person_other_occupationDetails = "Person.other.occupationDetails";
+	String Person_otherContactDetails = "Person.otherContactDetails";
 	String Person_otherSalutation = "Person.otherSalutation";
 	String Person_passportNumber = "Person.passportNumber";
 	String Person_phone = "Person.phone";

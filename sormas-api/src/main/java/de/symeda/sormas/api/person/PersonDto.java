@@ -97,7 +97,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String OTHER_CONTACT_DETAILS = "otherContactDetails";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
-	public static final String PERSON_CONTACTS = "personContacts";
+	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String HAS_COVID_APP = "hasCovidApp";
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";

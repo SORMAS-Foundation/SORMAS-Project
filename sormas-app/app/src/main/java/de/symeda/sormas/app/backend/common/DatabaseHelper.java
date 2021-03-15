@@ -2309,10 +2309,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			String generalPractitionerDetails = (String) pcd[4];
 
 			if (StringUtils.isNotEmpty(phone)) {
+				boolean phoneOwnerEmpty = StringUtils.isEmpty(phoneOwner);
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ (StringUtils.isEmpty(phoneOwner) ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + "0" + ", " + "null"
-								+ ", " + (StringUtils.isEmpty(phoneOwner) ? "null" : phoneOwner) + ", " + "0);");
+								+ (phoneOwnerEmpty ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + (phoneOwnerEmpty ? "0" : "1") + ", " + "null"
+								+ ", " + (phoneOwnerEmpty ? "null" : phoneOwner) + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {

@@ -44,7 +44,7 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
-		addField(PersonContactDetailDto.THIRD_PARTY, CheckBox.class).setCaption(Captions.personContactDetailThirdParty);
+		addField(PersonContactDetailDto.THIRD_PARTY, CheckBox.class).setCaption(I18nProperties.getCaption(Captions.personContactDetailThirdParty));
 		addField(PersonContactDetailDto.THIRD_PARTY_ROLE, TextField.class);
 		addField(PersonContactDetailDto.THIRD_PARTY_NAME, TextField.class);
 		addField(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE);

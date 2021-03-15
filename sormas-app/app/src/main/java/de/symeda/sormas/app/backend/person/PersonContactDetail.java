@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PhoneNumberType;
@@ -77,7 +78,7 @@ public class PersonContactDetail extends PseudonymizableAdo {
     private String thirdPartyName;
 
 	public String getOwner() {
-		return isThirdParty() ? getThirdPartyName() : I18nProperties.getCaption(this.getI18nPrefix() + "." + THIRD_PARTY);
+		return isThirdParty() ? getThirdPartyName() : I18nProperties.getCaption(Captions.personContactDetailThisPerson);
 	}
 
 	public String getOwnerName() {

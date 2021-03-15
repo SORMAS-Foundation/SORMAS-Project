@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -85,7 +84,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -172,7 +170,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
-					fluidRowLocs(PersonDto.PERSON_CONTACTS));
+					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS));
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -287,9 +285,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 
 		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
-		personContactDetailsField.setId(PersonDto.PERSON_CONTACTS);
-		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACTS);
-		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACTS);
+		personContactDetailsField.setId(PersonDto.PERSON_CONTACT_DETAILS);
+		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
+		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -474,7 +472,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	@Override
 	public void setValue(PersonDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-		PersonContactDetailsField field = (PersonContactDetailsField) getFieldGroup().getField(PersonDto.PERSON_CONTACTS);
+		PersonContactDetailsField field = (PersonContactDetailsField) getFieldGroup().getField(PersonDto.PERSON_CONTACT_DETAILS);
 		field.setThisPerson(newFieldValue);
 	}
 
