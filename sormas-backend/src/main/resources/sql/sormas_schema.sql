@@ -6816,7 +6816,7 @@ DO $$
                 IF latest_sample IS NULL THEN
                     INSERT INTO samples (id, uuid, creationdate, changedate, associatedcase_id, samplepurpose, sampledatetime, reportdatetime, reportinguser_id, samplematerial, samplematerialtext, comment,
                                          deleted, shipped, received,
-                                         samplingreason)
+                                         samplingreason, samplingreasondetails)
                     values (nextval('entity_seq'),
                             overlay(overlay(overlay(
                                                     substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
@@ -6824,7 +6824,7 @@ DO $$
                             now(), now(),
                             rec._caseid, 'INTERNAL', rec._reportdate, rec._reportdate, rec._reportinguser_id, 'OTHER', 'Unknown', '[System] Automatically generated sample due to covid test reason migration',
                             false, false, false,
-                            _samplingreason);
+                            _samplingreason, rec._covidtestreasondetails);
                 ELSE
                     UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
                 END IF;
