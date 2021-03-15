@@ -85,7 +85,7 @@ public enum FacilityType {
 	DISABLED_PERSON_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
 	CARE_RECIPIENT_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
 	VISITING_AMBULATORY_AID(FacilityTypeGroup.CARE_FACILITY, false, false),
-	AFTER_SCHOOL(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),;
+	AFTER_SCHOOL(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false);
 
 	private static final Map<FacilityTypeGroup, List<FacilityType>> typesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
 	private static final Map<FacilityTypeGroup, List<FacilityType>> accomodationTypesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
