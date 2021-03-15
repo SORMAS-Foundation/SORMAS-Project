@@ -25,7 +25,7 @@
 
         <import type="de.symeda.sormas.api.person.PhoneNumberType" />
 
-        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />\
 
         <import type="de.symeda.sormas.api.i18n.Captions" />
 
@@ -47,16 +47,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:padding="@dimen/rowListItemPadding"
+        android:orientation="vertical"
         android:background="@drawable/selector_list_section_row_background"
         android:elevation="2dp"
-        android:onClickListener="@{(view) -> callback.onClick(view, data)}"
-        android:orientation="vertical"
-        android:padding="@dimen/rowListItemPadding">
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}">
 
         <de.symeda.sormas.app.component.controls.ControlCheckBoxField
             android:id="@+id/personContactDetail_primaryContact"
-            style="@style/ControlSingleColumnStyle"
-            app:value="@{data.primaryContact}" />
+            app:value="@{data.primaryContact}"
+            style="@style/ControlSingleColumnStyle"/>
 
         <LinearLayout
             android:layout_width="match_parent"

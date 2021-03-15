@@ -35,10 +35,10 @@
         <variable name="citizenship" type="String" />
         <variable name="birthDayVisibility" type="Boolean" />
         <variable name="addressList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.location.Location&gt;" />
-        <variable name="personContactDetailList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.PersonContactDetail&gt;" />
         <variable name="addressItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
-        <variable name="personContactDetailItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="addressBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
+        <variable name="personContactDetailList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.PersonContactDetail&gt;" />
+        <variable name="personContactDetailItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="personContactDetailBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
@@ -463,7 +463,7 @@
 
                 <ImageView
                     style="@style/FullHorizontalDividerStyle"
-                    app:goneIfEmpty="@{addressList}"/>
+                    app:goneIfEmpty="@{personContactDetailList}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

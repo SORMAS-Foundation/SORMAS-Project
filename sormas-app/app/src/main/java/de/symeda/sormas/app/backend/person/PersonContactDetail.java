@@ -51,7 +51,7 @@ public class PersonContactDetail extends PseudonymizableAdo {
     public static final String THIRD_PARTY_ROLE = "thirdPartyRole";
     public static final String THIRD_PARTY_NAME = "thirdPartyName";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Person person;
 
     @DatabaseField

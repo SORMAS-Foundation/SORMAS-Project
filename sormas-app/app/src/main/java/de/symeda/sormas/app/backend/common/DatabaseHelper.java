@@ -2288,7 +2288,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertPart =
 					"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
-							+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName) ";
+							+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName, snapshot) ";
 
 			BigInteger personId = (BigInteger) pcd[0];
 			String phone = (String) pcd[1];
@@ -2300,21 +2300,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 								+ (StringUtils.isEmpty(phoneOwner) ? "\'true\'" : "\'false\'") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + "\'false\'" + ", " + "null"
-								+ ", " + (StringUtils.isEmpty(phoneOwner) ? "null" : phoneOwner) + ");");
+								+ ", " + (StringUtils.isEmpty(phoneOwner) ? "null" : phoneOwner) + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 								+ "\'true\'" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "\'false\'" + ", "
-								+ "null" + ", " + "null" + ");");
+								+ "null" + ", " + "null" + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
 								+ "\'false\'" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails + ", "
-								+ "\'true\'" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ");");
+								+ "\'true\'" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
 			}
 		}
 	}
