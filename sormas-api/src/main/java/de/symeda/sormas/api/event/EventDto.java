@@ -23,6 +23,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -84,6 +85,10 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
+	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
+	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
+	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -138,6 +143,15 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private Float reportLatLonAccuracy;
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
+
+	@HideForCountriesExcept
+	private InfectionPathCertainty infectionPathCertainty;
+	@HideForCountriesExcept
+	private HumanTransmissionMode humanTransmissionMode;
+	@HideForCountriesExcept
+	private ParenteralTransmissionMode parenteralTransmissionMode;
+	@HideForCountriesExcept
+	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
@@ -504,6 +518,38 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setSuperordinateEvent(EventReferenceDto superordinateEvent) {
 		this.superordinateEvent = superordinateEvent;
+	}
+
+	public InfectionPathCertainty getInfectionPathCertainty() {
+		return infectionPathCertainty;
+	}
+
+	public void setInfectionPathCertainty(InfectionPathCertainty infectionPathCertainty) {
+		this.infectionPathCertainty = infectionPathCertainty;
+	}
+
+	public HumanTransmissionMode getHumanTransmissionMode() {
+		return humanTransmissionMode;
+	}
+
+	public void setHumanTransmissionMode(HumanTransmissionMode humanTransmissionMode) {
+		this.humanTransmissionMode = humanTransmissionMode;
+	}
+
+	public ParenteralTransmissionMode getParenteralTransmissionMode() {
+		return parenteralTransmissionMode;
+	}
+
+	public void setParenteralTransmissionMode(ParenteralTransmissionMode parenteralTransmissionMode) {
+		this.parenteralTransmissionMode = parenteralTransmissionMode;
+	}
+
+	public MedicallyAssociatedTransmissionMode getMedicallyAssociatedTransmissionMode() {
+		return medicallyAssociatedTransmissionMode;
+	}
+
+	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
+		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
 	}
 
 	@Override

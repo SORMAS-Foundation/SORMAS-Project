@@ -124,6 +124,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setEventManagementStatus(source.getEventManagementStatus());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
 	}
 
 	@Override
@@ -209,7 +214,13 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
+
 		target.setEventManagementStatus(source.getEventManagementStatus());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {
