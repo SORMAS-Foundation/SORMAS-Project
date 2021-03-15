@@ -74,7 +74,7 @@ public enum FacilityType {
 	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	AMBULATORY_SURGERY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	DIALYSIS_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
-	DAY_HOSPITAL(FacilityTypeGroup.MEDICAL_FACILITY, true, false),
+	DAY_HOSPITAL(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	MATERNITY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, true),
 	MEDICAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	DENTAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
