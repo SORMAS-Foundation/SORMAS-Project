@@ -31,6 +31,7 @@ import com.j256.ormlite.table.TableUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2270,16 +2271,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private void migratePersonContactDetails() throws SQLException {
 		GenericRawResults<Object[]> newPersons = getDao(Person.class).queryRaw(
-			"SELECT id, phone, phoneOwner, emailAddress, generalPractitionerDetails FROM person WHERE changeDate = 0 AND snapshot = 0;",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.STRING });
+				"SELECT id, phone, phoneOwner, emailAddress, generalPractitionerDetails FROM person WHERE changeDate = 0 AND snapshot = 0;",
+				new DataType[]{
+						DataType.BIG_INTEGER,
+						DataType.STRING,
+						DataType.STRING,
+						DataType.STRING,
+						DataType.STRING});
 
 		for (Object[] pcd : newPersons) {
-			formatRawResultString(pcd, 0, false);
 			formatRawResultString(pcd, 1, false);
 			formatRawResultString(pcd, 2, false);
 			formatRawResultString(pcd, 3, false);
@@ -2287,34 +2287,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertPart =
-				"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
-					+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName) ";
+					"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
+							+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName) ";
 
-			String personId = (String) pcd[1];
-			String phone = (String) pcd[2];
-			String phoneOwner = (String) pcd[3];
-			String emailAddress = (String) pcd[4];
-			String generalPractitionerDetails = (String) pcd[5];
+			BigInteger personId = (BigInteger) pcd[0];
+			String phone = (String) pcd[1];
+			String phoneOwner = (String) pcd[2];
+			String emailAddress = (String) pcd[3];
+			String generalPractitionerDetails = (String) pcd[4];
 
 			if (StringUtils.isNotEmpty(phone)) {
 				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ (StringUtils.isEmpty(phoneOwner) ? "true" : "false") + ", " + PersonContactDetailType.PHONE.name() + ", " + "" + ", " + phone + ", " + "" + ", " + "false" + ", " + ""
-						+ ", " + (StringUtils.isEmpty(phoneOwner) ? "" : phoneOwner) + ");");
+						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+								+ (StringUtils.isEmpty(phoneOwner) ? "\'true\'" : "\'false\'") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + "\'false\'" + ", " + "null"
+								+ ", " + (StringUtils.isEmpty(phoneOwner) ? "null" : phoneOwner) + ");");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
 				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "true" + ", " + PersonContactDetailType.EMAIL.name() + ", " + "" + ", " + emailAddress + ", " + "" + ", " + "false" + ", "
-						+ "" + ", " + "" + ");");
+						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+								+ "\'true\'" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "\'false\'" + ", "
+								+ "null" + ", " + "null" + ");");
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "false" + ", " + PersonContactDetailType.OTHER.name() + ", " + "" + ", " + "" + ", " + generalPractitionerDetails + ", "
-						+ "true" + ", " + generalPractitionerDetails + ", " + "" + ");");
+						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+								+ "\'false\'" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails + ", "
+								+ "\'true\'" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ");");
 			}
 		}
 	}

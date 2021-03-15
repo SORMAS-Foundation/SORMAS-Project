@@ -163,7 +163,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		contentBinding.setPersonContactDetailList(personContactDetails);
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
 		contentBinding.setPersonContactDetailBindCallback(v -> {
-			setFieldAccesses(LocationDto.class, v);
+			setFieldAccesses(PersonContactDetailDto.class, v);
 		});
 	}
 
