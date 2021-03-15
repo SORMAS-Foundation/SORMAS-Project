@@ -89,6 +89,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
+	public static final String INTERNALID = "internalId";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -155,6 +156,9 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
+
+	@HideForCountriesExcept
+	private String internalId;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -577,6 +581,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 
 	public EventReferenceDto toReference() {

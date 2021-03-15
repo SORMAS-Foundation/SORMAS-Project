@@ -129,6 +129,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalId(source.getInternalId());
 	}
 
 	@Override
@@ -221,6 +223,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalId(source.getInternalId());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

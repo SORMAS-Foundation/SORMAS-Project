@@ -6873,4 +6873,10 @@ ALTER TABLE events_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (347, '[SurvNet Interface] Add additional fields to event clusters #4720');
 
+-- 2021-03-12 [SurvNet Interface] Events > Add new field "Internal ID" #4668
+ALTER TABLE events ADD COLUMN internalid text;
+ALTER TABLE events_history ADD COLUMN internalid text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
+
 -- *** Insert new sql commands BEFORE this line ***
