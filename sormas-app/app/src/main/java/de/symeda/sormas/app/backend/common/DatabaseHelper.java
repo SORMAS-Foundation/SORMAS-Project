@@ -2311,22 +2311,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (StringUtils.isNotEmpty(phone)) {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ (StringUtils.isEmpty(phoneOwner) ? "\'true\'" : "\'false\'") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + "\'false\'" + ", " + "null"
+								+ (StringUtils.isEmpty(phoneOwner) ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + "0" + ", " + "null"
 								+ ", " + (StringUtils.isEmpty(phoneOwner) ? "null" : phoneOwner) + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ "\'true\'" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "\'false\'" + ", "
+								+ "1" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "0" + ", "
 								+ "null" + ", " + "null" + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
 						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ "\'false\'" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails + ", "
-								+ "\'true\'" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
+								+ "0" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails + ", "
+								+ "1" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
 			}
 		}
 	}
