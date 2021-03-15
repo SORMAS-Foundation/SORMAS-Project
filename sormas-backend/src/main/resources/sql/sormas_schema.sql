@@ -6843,4 +6843,10 @@ ALTER TABLE pathogentest_history ADD COLUMN vialims boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (346, '[SurvNet Interface] Add "via DEMIS" to pathogen tests #4562');
 
+-- 2021-03-15 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
+ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (347, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+
 -- *** Insert new sql commands BEFORE this line ***

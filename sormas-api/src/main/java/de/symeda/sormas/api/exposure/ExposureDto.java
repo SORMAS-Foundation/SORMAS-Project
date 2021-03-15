@@ -41,6 +41,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "Exposure";
 
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String PROBABLE_INFECTION_ENVIRONMENT = "probableInfectionEnvironment";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String DESCRIPTION = "description";
@@ -95,6 +96,8 @@ public class ExposureDto extends PseudonymizableDto {
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
+	@HideForCountriesExcept
+	private boolean probableInfectionEnvironment;
 	private Date startDate;
 	private Date endDate;
 	@SensitiveData
@@ -261,6 +264,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	public Date getStartDate() {

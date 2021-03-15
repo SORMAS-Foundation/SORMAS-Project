@@ -141,6 +141,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setShortDistance(source.getShortDistance());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
@@ -276,6 +277,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setShortDistance(source.getShortDistance());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
