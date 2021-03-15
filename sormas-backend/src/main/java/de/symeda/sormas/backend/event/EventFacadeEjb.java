@@ -831,6 +831,11 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
 		target.setInternalId(source.getInternalId());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
@@ -929,6 +934,11 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+		
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));

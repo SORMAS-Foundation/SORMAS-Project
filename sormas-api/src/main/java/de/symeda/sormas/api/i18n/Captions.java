@@ -882,13 +882,17 @@ public interface Captions {
 	String Event_evolutionDate = "Event.evolutionDate";
 	String Event_externalId = "Event.externalId";
 	String Event_externalToken = "Event.externalToken";
+	String Event_humanTransmissionMode = "Event.humanTransmissionMode";
+	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
 	String Event_internalId = "Event.internalId";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
+	String Event_medicallyAssociatedTransmissionMode = "Event.medicallyAssociatedTransmissionMode";
 	String Event_multiDayEvent = "Event.multiDayEvent";
 	String Event_nosocomial = "Event.nosocomial";
 	String Event_numberOfPendingTasks = "Event.numberOfPendingTasks";
+	String Event_parenteralTransmissionMode = "Event.parenteralTransmissionMode";
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";

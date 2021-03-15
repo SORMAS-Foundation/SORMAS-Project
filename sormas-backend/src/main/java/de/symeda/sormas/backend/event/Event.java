@@ -46,8 +46,12 @@ import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.InfectionPathCertainty;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -117,6 +121,11 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
 
+	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
+	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
+	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
+	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
+
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Event superordinateEvent;
@@ -170,6 +179,11 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	private EventManagementStatus eventManagementStatus;
 
 	private boolean archived;
+
+	private InfectionPathCertainty infectionPathCertainty;
+	private HumanTransmissionMode humanTransmissionMode;
+	private ParenteralTransmissionMode parenteralTransmissionMode;
+	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
 	private List<Task> tasks;
 
@@ -611,6 +625,42 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public void setSubordinateEvents(List<Event> subordinateEvents) {
 		this.subordinateEvents = subordinateEvents;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionPathCertainty getInfectionPathCertainty() {
+		return infectionPathCertainty;
+	}
+
+	public void setInfectionPathCertainty(InfectionPathCertainty infectionPathCertainty) {
+		this.infectionPathCertainty = infectionPathCertainty;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HumanTransmissionMode getHumanTransmissionMode() {
+		return humanTransmissionMode;
+	}
+
+	public void setHumanTransmissionMode(HumanTransmissionMode humanTransmissionMode) {
+		this.humanTransmissionMode = humanTransmissionMode;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ParenteralTransmissionMode getParenteralTransmissionMode() {
+		return parenteralTransmissionMode;
+	}
+
+	public void setParenteralTransmissionMode(ParenteralTransmissionMode parenteralTransmissionMode) {
+		this.parenteralTransmissionMode = parenteralTransmissionMode;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public MedicallyAssociatedTransmissionMode getMedicallyAssociatedTransmissionMode() {
+		return medicallyAssociatedTransmissionMode;
+	}
+
+	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
+		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL)
