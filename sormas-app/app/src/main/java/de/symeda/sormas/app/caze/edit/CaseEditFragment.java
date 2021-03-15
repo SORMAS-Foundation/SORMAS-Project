@@ -224,9 +224,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private void updateCaseConfirmationVisibility(FragmentCaseEditLayoutBinding contentBinding) {
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			DiseaseConfiguration diseaseConfiguration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
-			if (diseaseConfiguration.getExtendedClassification()) {
-				if (diseaseConfiguration.getExtendedClassificationMulti()) {
+			Disease disease = record.getDisease():
+			boolean extendedCalssification = DiseaseConfigurationCache.usesExtendedClassification(disease);
+
+			if (extendedCalssification) {
+				boolean extendedCalssificationMulti = DiseaseConfigurationCache.usesExtendedCalssificationMulti(disease);
+				if (extendedCalssificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
@@ -356,10 +359,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				updateCaseConfirmationVisibility(getContentBinding());
 
 				if (caseClassification == CaseClassification.CONFIRMED) {
-					DiseaseConfiguration diseaseConfiguration =
-						DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
-					if (diseaseConfiguration.getExtendedClassification()) {
-						if (!diseaseConfiguration.getExtendedClassificationMulti()) {
+					boolean extendedCalssification = DiseaseConfigurationCache.usesExtendedClassification(disease);
+					if (extendedCalssification) {
+						boolean extendedCalssificationMulti = DiseaseConfigurationCache.usesExtendedClassificationMulti(disease);
+						if (!extendedCalssificationMulti) {
 							if (getContentBinding().caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
 								getContentBinding().caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
 							} else if (getContentBinding().caseDataEpidemiologicalConfirmation.getValue() == YesNoUnknown.YES) {
