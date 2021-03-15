@@ -883,6 +883,7 @@ public interface Captions {
 	String Event_externalId = "Event.externalId";
 	String Event_externalToken = "Event.externalToken";
 	String Event_informationSource = "Event.informationSource";
+	String Event_internalId = "Event.internalId";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
 	String Event_multiDayEvent = "Event.multiDayEvent";
