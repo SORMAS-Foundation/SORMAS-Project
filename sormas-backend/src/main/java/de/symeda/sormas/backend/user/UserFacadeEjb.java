@@ -160,9 +160,6 @@ public class UserFacadeEjb implements UserFacade {
 			} else if (user.getHealthFacility() != null) {
 				district = facilityService.getByReferenceDto(user.getHealthFacility()).getDistrict();
 				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
-			} else if (user.getLaboratory() != null) {
-				district = facilityService.getByReferenceDto(user.getLaboratory()).getDistrict();
-				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
 			}
 
 			superiorUsersList =

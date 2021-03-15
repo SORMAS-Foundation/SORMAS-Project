@@ -275,9 +275,9 @@ public class JurisdictionHelper {
 		case COMMUNITY:
 		case POINT_OF_ENTRY:
 		case HEALTH_FACILITY:
+			return JurisdictionLevel.DISTRICT;
 		case LABORATORY:
 		case EXTERNAL_LABORATORY:
-			return JurisdictionLevel.DISTRICT;
 		default:
 			return JurisdictionLevel.NONE;
 		}
