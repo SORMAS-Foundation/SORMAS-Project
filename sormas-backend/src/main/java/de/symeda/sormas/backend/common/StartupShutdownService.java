@@ -492,6 +492,7 @@ public class StartupShutdownService {
 
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * 
 	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
@@ -504,7 +505,7 @@ public class StartupShutdownService {
 			return;
 		}
 
-		if(!authProvider.isUserSyncAtStartupEnabled()) {
+		if (!authProvider.isUserSyncAtStartupEnabled()) {
 			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
 			return;
 		}
@@ -753,9 +754,8 @@ public class StartupShutdownService {
 	}
 
 	private void createMissingDiseaseConfigurations() {
-
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);

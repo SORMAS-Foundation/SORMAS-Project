@@ -32,7 +32,12 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
+
 		configuration.setDisease(disease);
+		configuration.setExtendedClassification(disease.isDefaultExtendedClassification());
+		configuration.setExtendedClassificationMulti(disease.isDefaultExtendedClassificationMulti());
+
+		// Note: all other fields not explicitly set are null!
 		return configuration;
 	}
 
