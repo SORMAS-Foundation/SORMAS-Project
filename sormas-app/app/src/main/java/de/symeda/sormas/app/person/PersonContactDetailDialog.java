@@ -81,6 +81,23 @@ public class PersonContactDetailDialog extends FormDialog {
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		contentBinding.personContactDetailPersonContactDetailType.initializeSpinner(DataUtils.getEnumItems(PersonContactDetailType.class, false));
 		contentBinding.personContactDetailPhoneNumberType.initializeSpinner(DataUtils.getEnumItems(PhoneNumberType.class, true));
+
+		contentBinding.personContactDetailPersonContactDetailType.addValueChangedListener(e -> {
+			if (e.getValue() != PersonContactDetailType.OTHER && (data.getPhoneNumberType() == null || data.getPhoneNumberType() != PhoneNumberType.OTHER)) {
+				contentBinding.personContactDetailDetails.setValue(null);
+				contentBinding.personContactDetailDetails.setVisibility(View.GONE);
+			} else {
+				contentBinding.personContactDetailDetails.setVisibility(View.VISIBLE);
+			}
+		});
+		contentBinding.personContactDetailPhoneNumberType.addValueChangedListener(e -> {
+			if (e.getValue() != PhoneNumberType.OTHER && (data.getPersonContactDetailType() == null || data.getPersonContactDetailType() != PersonContactDetailType.OTHER)) {
+				contentBinding.personContactDetailDetails.setValue(null);
+				contentBinding.personContactDetailDetails.setVisibility(View.GONE);
+			} else {
+				contentBinding.personContactDetailDetails.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 
 	public void configureAsPersonContactDetailDialog(boolean showDeleteButton) {
