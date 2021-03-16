@@ -50,18 +50,17 @@ public class CharsetHelper {
 	}
 
 	public static CharsetDecoder getDecoder(File inputFile) {
-		Charset charset = detectCharset(inputFile);
-		return charset != null ? charset.newDecoder() : StandardCharsets.UTF_8.newDecoder();
+		return detectCharset(inputFile).newDecoder();
 	}
 
 	public static boolean isCharsetUTF8(File inputFile) {
-		try (InputStream inputStream = Files.newInputStream(inputFile.toPath())) {
+		try (InputStream inputStream = Files.newInputStream(inputFile.toPath());
 			BOMInputStream bomInputStream = new BOMInputStream(inputStream);
+			Reader reader = new InputStreamReader(bomInputStream, StandardCharsets.UTF_8.newDecoder());
+			BufferedReader bufferedReader = new BufferedReader(reader)) {
 			if (bomInputStream.hasBOM()) {
 				return true;
 			}
-			Reader reader = new InputStreamReader(bomInputStream, StandardCharsets.UTF_8.newDecoder());
-			BufferedReader bufferedReader = new BufferedReader(reader);
 			while (bufferedReader.readLine() != null);
 			return true;
 		} catch (IOException e) {
@@ -70,19 +69,17 @@ public class CharsetHelper {
 	}
 
 	public static boolean isCharsetIso8859_1(File inputFile) {
-		try (InputStream inputStream = Files.newInputStream(inputFile.toPath())) {
+		try (InputStream inputStream = Files.newInputStream(inputFile.toPath());
 			Reader reader = new InputStreamReader(inputStream, StandardCharsets.ISO_8859_1.newDecoder());
-			BufferedReader bufferedReader = new BufferedReader(reader);
-			while (true) {
-				String line = bufferedReader.readLine();
-				if (line != null) {
-					if (isMisreadUtf8Line(line)) {
-						return false;
-					}
-				} else {
-					break;
+			BufferedReader bufferedReader = new BufferedReader(reader)) {
+			String line;
+			do {
+				line = bufferedReader.readLine();
+				if (line != null && isMisreadUtf8Line(line)) {
+					return false;
 				}
 			}
+			while (line != null);
 			return true;
 		} catch (IOException e) {
 			return false;
