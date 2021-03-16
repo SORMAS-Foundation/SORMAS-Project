@@ -25,9 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.webkit.WebView;
-
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -638,7 +636,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		if (record.getHealthFacility() == null) {
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
