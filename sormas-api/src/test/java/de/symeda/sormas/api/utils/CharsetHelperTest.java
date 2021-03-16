@@ -69,5 +69,7 @@ public class CharsetHelperTest {
 				assertTrue(CharsetHelper.isMisreadUtf8Line("Some text with " + line + "in it."));
 			}
 		}
+		assertFalse(CharsetHelper.isMisreadUtf8Line("Some text without any of those sequences"));
+		assertFalse(CharsetHelper.isMisreadUtf8Line("Some text with special characters äöüß"));
 	}
 }
