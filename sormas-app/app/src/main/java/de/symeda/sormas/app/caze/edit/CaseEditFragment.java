@@ -224,11 +224,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
 			Disease disease = record.getDisease();
-			boolean extendedCalssification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
 
-			if (extendedCalssification) {
-				boolean extendedCalssificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
-				if (extendedCalssificationMulti) {
+			if (extendedClassification) {
+				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+				if (extendedClassificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
