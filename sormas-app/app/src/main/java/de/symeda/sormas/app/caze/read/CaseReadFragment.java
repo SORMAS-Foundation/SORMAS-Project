@@ -146,11 +146,14 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 	}
 
 	private void updateCaseConfirmationFields(FragmentCaseReadLayoutBinding contentBinding) {
-		DiseaseConfiguration diseaseConfiguration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			if (diseaseConfiguration.getExtendedClassification()) {
-				if (diseaseConfiguration.getExtendedClassificationMulti()) {
+			Disease disease = record.getDisease();
+			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+
+			if (extendedClassification) {
+				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+				if (extendedClassificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
