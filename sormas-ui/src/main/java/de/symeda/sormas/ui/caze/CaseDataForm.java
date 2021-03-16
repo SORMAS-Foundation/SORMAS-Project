@@ -87,7 +87,6 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -413,15 +412,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
 
-		DiseaseConfigurationDto diseaseConfiguration = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+		boolean extendedClassification = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassification(disease);
 
-		if (diseaseConfiguration.getExtendedClassification()) {
+		if (extendedClassification) {
 			ComboBox clinicalConfirmationCombo = addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			ComboBox epidemiologicalConfirmationCombo = addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			ComboBox laboratoryConfirmationCombo = addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
 			ComboBox caseConfirmationBasisCombo = addCustomField(CASE_CONFIRMATION_BASIS, CaseConfirmationBasis.class, ComboBox.class);
 
-			if (diseaseConfiguration.getExtendedClassificationMulti()) {
+			boolean extendedClassificationMulti = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassificationMulti(disease);
+
+			if (extendedClassificationMulti) {
 				FieldHelper.setVisibleWhen(
 					getFieldGroup(),
 					Arrays.asList(

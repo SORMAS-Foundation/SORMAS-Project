@@ -186,6 +186,11 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/contact_internalId"
+                app:value="@{data.internalId}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -223,6 +228,40 @@
                     app:dependencyParentField="@{eventEventStatus}"
                     app:dependencyParentValue="@{EventStatus.CLUSTER}"
                     app:value="@{data.nosocomial}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_humanTransmissionMode"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.humanTransmissionMode}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_infectionPathCertainty"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.infectionPathCertainty}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_parenteralTransmissionMode"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.parenteralTransmissionMode}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_medicallyAssociatedTransmissionMode"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.medicallyAssociatedTransmissionMode}" />
 
             </LinearLayout>
 

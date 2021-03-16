@@ -45,6 +45,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -70,8 +71,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
-		setInEagerMode(viewConfiguration.isInEagerMode() && ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode() && ((SormasUI)(getUI())).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
 			setCriteria(criteria);
@@ -115,9 +116,9 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 		if (tasksFeatureEnabled) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
-					entry -> String.format(
-							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-							FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
+				entry -> String.format(
+					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+					FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
 			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 			pendingTasksColumn.setSortable(false);
 		}
@@ -156,24 +157,25 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 
-		return Stream.of(
-			Stream.of(
-				ContactIndexDto.UUID,
-				ContactIndexDto.EXTERNAL_ID,
-				ContactIndexDto.EXTERNAL_TOKEN,
-				DISEASE_SHORT,
-				ContactIndexDto.CONTACT_CLASSIFICATION,
-				ContactIndexDto.CONTACT_STATUS),
-			getPersonColumns(),
-			getEventColumns(),
-			Stream.of(
-				ContactIndexDto.CONTACT_CATEGORY,
-				ContactIndexDto.CONTACT_PROXIMITY,
-				ContactIndexDto.FOLLOW_UP_STATUS,
-				ContactIndexDto.FOLLOW_UP_UNTIL,
-				ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-				NUMBER_OF_VISITS),
-			Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
+		return Stream
+			.of(
+				Stream.of(
+					ContactIndexDto.UUID,
+					ContactIndexDto.EXTERNAL_ID,
+					ContactIndexDto.EXTERNAL_TOKEN,
+					DISEASE_SHORT,
+					ContactIndexDto.CONTACT_CLASSIFICATION,
+					ContactIndexDto.CONTACT_STATUS),
+				getPersonColumns(),
+				getEventColumns(),
+				Stream.of(
+					ContactIndexDto.CONTACT_CATEGORY,
+					ContactIndexDto.CONTACT_PROXIMITY,
+					ContactIndexDto.FOLLOW_UP_STATUS,
+					ContactIndexDto.FOLLOW_UP_UNTIL,
+					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
+					NUMBER_OF_VISITS),
+				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
 			.flatMap(s -> s);
 	}
 
@@ -197,9 +199,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
-		@SuppressWarnings("unchecked")
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
-		if (viewConfiguration.isInEagerMode()) {
+		if (ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
