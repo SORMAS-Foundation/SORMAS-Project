@@ -18,7 +18,9 @@
 package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -202,22 +204,35 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
-		Event event = eventService.getByUuid(eventReference.getUuid());
+		linkEventsToGroup(Collections.singletonList(eventReference), eventGroupReference);
+	}
 
-		// Check that the event group is not already related to this event
-		if (event.getEventGroups() != null && event.getEventGroups().stream().anyMatch(group -> group.getUuid().equals(eventGroupReference.getUuid()))) {
+	@Override
+	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
+		if (eventReferences == null || eventReferences.isEmpty()) {
 			return;
 		}
 
-		EventGroup eventGroupToAdd = eventGroupService.getByUuid(eventGroupReference.getUuid());
-		List<EventGroup> groups = new ArrayList<>();
-		if (event.getEventGroups() != null) {
-			groups.addAll(event.getEventGroups());
-		}
-		groups.add(eventGroupToAdd);
-		event.setEventGroups(groups);
+		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+		List<Event> events = eventService.getByUuids(eventUuids);
 
-		eventService.ensurePersisted(event);
+		EventGroup eventGroupToAdd = eventGroupService.getByUuid(eventGroupReference.getUuid());
+
+		for (Event event : events) {
+			// Check that the event group is not already related to this event
+			if (event.getEventGroups() != null && event.getEventGroups().stream().anyMatch(group -> group.getUuid().equals(eventGroupReference.getUuid()))) {
+				continue;
+			}
+
+			List<EventGroup> groups = new ArrayList<>();
+			if (event.getEventGroups() != null) {
+				groups.addAll(event.getEventGroups());
+			}
+			groups.add(eventGroupToAdd);
+			event.setEventGroups(groups);
+
+			eventService.ensurePersisted(event);
+		}
 	}
 
 	@Override

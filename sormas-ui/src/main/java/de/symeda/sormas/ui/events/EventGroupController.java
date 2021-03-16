@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -31,6 +37,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -48,13 +55,21 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class EventGroupController {
 
 	public EventGroupDto create(EventReferenceDto event) {
-		CommitDiscardWrapperComponent<EventGroupDataForm> eventCreateComponent = getEventGroupCreateComponent(event);
+		return create(Collections.singletonList(event), null);
+	}
+
+	public EventGroupDto create(List<EventReferenceDto> events, Runnable callback) {
+		CommitDiscardWrapperComponent<EventGroupDataForm> eventCreateComponent = getEventGroupCreateComponent(events, callback);
 		EventGroupDto eventGroupDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEventGroup));
 		return eventGroupDto;
 	}
 
 	public void selectOrCreate(EventReferenceDto eventReference) {
+		selectOrCreate(Collections.singletonList(eventReference), null);
+	}
+
+	public void selectOrCreate(List<EventReferenceDto> eventReferences, Runnable callback) {
 		EventGroupSelectionField selectionField = new EventGroupSelectionField();
 		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
 
@@ -62,13 +77,17 @@ public class EventGroupController {
 		component.addCommitListener(() -> {
 			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
 			if (selectedEventGroup != null) {
-				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, selectedEventGroup.toReference());
-
-				SormasUI.refreshView();
+				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
 
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
+
+				if (callback != null) {
+					callback.run();
+				} else {
+					SormasUI.refreshView();
+				}
 			} else {
-				create(eventReference);
+				create(eventReferences, callback);
 			}
 		});
 
@@ -80,7 +99,7 @@ public class EventGroupController {
 		return EventGroupDto.build();
 	}
 
-	public CommitDiscardWrapperComponent<EventGroupDataForm> getEventGroupCreateComponent(EventReferenceDto eventReference) {
+	public CommitDiscardWrapperComponent<EventGroupDataForm> getEventGroupCreateComponent(List<EventReferenceDto> eventReferences, Runnable callback) {
 		EventGroupDataForm createForm = new EventGroupDataForm(true);
 		createForm.setValue(createNewEventGroup());
 
@@ -93,10 +112,14 @@ public class EventGroupController {
 			if (!createForm.getFieldGroup().isModified()) {
 				EventGroupDto dto = createForm.getValue();
 				dto = FacadeProvider.getEventGroupFacade().saveEventGroup(dto);
-				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, dto.toReference());
+				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, dto.toReference());
 				Notification.show(I18nProperties.getString(Strings.messageEventGroupCreated), Type.WARNING_MESSAGE);
 
-				SormasUI.refreshView();
+				if (callback != null) {
+					callback.run();
+				} else {
+					SormasUI.refreshView();
+				}
 			}
 		});
 
@@ -221,5 +244,19 @@ public class EventGroupController {
 					}
 				});
 		}
+	}
+
+	public void linkAllToGroup(Set<EventIndexDto> selectedItems, Runnable callback) {
+		if (selectedItems.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventsSelected),
+				I18nProperties.getString(Strings.messageNoEventsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
+		selectOrCreate(eventReferences, callback);
 	}
 }

@@ -479,6 +479,10 @@ public class EventsView extends AbstractView {
 						ControllerProvider.getEventController()
 							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionGroupEvent), VaadinIcons.FILE_TREE, selectedItem -> {
+						ControllerProvider.getEventGroupController()
+							.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,

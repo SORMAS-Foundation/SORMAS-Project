@@ -58,6 +58,7 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
 	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
+	String actionGroupEvent = "actionGroupEvent";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllContinents = "actionImportAllContinents";

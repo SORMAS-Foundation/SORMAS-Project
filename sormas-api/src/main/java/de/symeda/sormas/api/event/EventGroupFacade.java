@@ -45,6 +45,8 @@ public interface EventGroupFacade {
 
     void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
+    void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
+
     void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
     void deleteEventGroup(String uuid);
