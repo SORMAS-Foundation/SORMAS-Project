@@ -836,6 +836,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
 
+		target.setInternalId(source.getInternalId());
+
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
@@ -936,6 +938,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+		
+		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));

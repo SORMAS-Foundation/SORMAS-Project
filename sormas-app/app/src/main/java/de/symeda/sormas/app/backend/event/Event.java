@@ -238,6 +238,8 @@ public class Event extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
+	@Column(columnDefinition = "text")
+	private String internalId;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -647,5 +649,13 @@ public class Event extends PseudonymizableAdo {
 
 	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
 		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }

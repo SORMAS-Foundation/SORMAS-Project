@@ -187,6 +187,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	private List<Task> tasks;
 
+	private String internalId;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public EventStatus getEventStatus() {
@@ -678,5 +680,14 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }

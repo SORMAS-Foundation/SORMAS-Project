@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.login;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -35,7 +33,7 @@ import com.vaadin.server.VaadinSession;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.ui.utils.UserRightsException;
+import de.symeda.sormas.api.user.UserRole;
 
 public final class LoginHelper {
 
@@ -43,7 +41,7 @@ public final class LoginHelper {
 		// Hide Utility Class Constructor
 	}
 
-	public static boolean login(String username, String password) throws UserRightsException {
+	public static boolean login(String username, String password) {
 
 		if (username == null || username.isEmpty()) {
 			return false;
@@ -65,6 +63,14 @@ public final class LoginHelper {
 			authentication);
 
 		if (status == AuthenticationStatus.SUCCESS) {
+			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
+				try {
+					VaadinServletService.getCurrentServletRequest().logout();
+				} catch (ServletException e) {
+					// just do not crash
+				}
+				return false;
+			}
 			Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
 			I18nProperties.setUserLanguage(userLanguage);
 			FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
