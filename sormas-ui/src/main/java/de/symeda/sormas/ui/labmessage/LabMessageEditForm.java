@@ -7,6 +7,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 
@@ -50,9 +51,9 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	protected void addFields() {
 		addFields(LabMessageDto.UUID, LabMessageDto.MESSAGE_DATE_TIME);
 		labMessageDetails = new Label();
-		labMessageDetails.setContentMode(ContentMode.HTML);
-		getContent().addComponent(labMessageDetails, LabMessageDto.LAB_MESSAGE_DETAILS);
-
+		Panel detailsPanel = new Panel(labMessageDetails);
+		detailsPanel.setWidth(550, Unit.PIXELS);
+		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
 
 	private void addShareButton(Runnable shareCallback) {
@@ -68,13 +69,17 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	}
 
 	@Override
-	public void setValue(LabMessageDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-		ExternalMessageResult<String> externalMessageResult = FacadeProvider.getExternalLabResultsFacade().convertToHTML(newFieldValue);
-		if (externalMessageResult.isSuccess()) {
-			labMessageDetails.setValue(externalMessageResult.getValue());
+	public void setValue(LabMessageDto labMessage) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(labMessage);
+		ExternalMessageResult<String> htmlConversionResult = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessage);
+		if (htmlConversionResult.isSuccess()) {
+			labMessageDetails.setValue(htmlConversionResult.getValue());
+			labMessageDetails.setContentMode(ContentMode.HTML);
 		} else {
-			VaadinUiUtil.showWarningPopup(externalMessageResult.getError());
+			String unformattedXml = labMessage.getLabMessageDetails();
+			this.labMessageDetails.setValue(unformattedXml);
+			this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
+			VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
 		}
 		getFieldGroup().setReadOnly(readOnly);
 	}
