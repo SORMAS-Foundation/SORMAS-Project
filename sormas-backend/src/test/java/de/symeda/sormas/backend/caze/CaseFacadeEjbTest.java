@@ -40,6 +40,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -667,6 +670,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
+		final String primaryPhone = "0000444888";
+		final String primaryEmail = "primary@email.com";
+		cazePerson.setPhone(primaryPhone);
+		cazePerson.setEmailAddress(primaryEmail);
+
+		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.PHONE, PhoneNumberType.LANDLINE, "", "0265590500", "", false, "", ""));
+		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.EMAIL, null, "", "secondary@email.com", "", false, "", ""));
+		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
+
+		getPersonFacade().savePerson(cazePerson);
+
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
@@ -682,6 +696,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 //		assertNotNull(exportDto.getSampleLab1());
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
+		assertEquals(primaryPhone, exportDto.getPhone());
+		assertEquals(primaryEmail, exportDto.getEmailAddress());
+		final String otherContactDetails = exportDto.getOtherContactDetails();
+		assertTrue(otherContactDetails.contains("0265590500 (PHONE)"));
+		assertTrue(otherContactDetails.contains("secondary@email.com (EMAIL)"));
+		assertTrue(otherContactDetails.contains("personSkype (SkypeID)"));
 	}
 
 	/**
