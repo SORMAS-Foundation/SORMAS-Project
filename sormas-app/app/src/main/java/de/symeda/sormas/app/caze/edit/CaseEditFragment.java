@@ -71,7 +71,6 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -224,9 +223,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private void updateCaseConfirmationVisibility(FragmentCaseEditLayoutBinding contentBinding) {
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			DiseaseConfiguration diseaseConfiguration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
-			if (diseaseConfiguration.getExtendedClassification()) {
-				if (diseaseConfiguration.getExtendedClassificationMulti()) {
+			Disease disease = record.getDisease();
+			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+
+			if (extendedClassification) {
+				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+				if (extendedClassificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
@@ -356,10 +358,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				updateCaseConfirmationVisibility(getContentBinding());
 
 				if (caseClassification == CaseClassification.CONFIRMED) {
-					DiseaseConfiguration diseaseConfiguration =
-						DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
-					if (diseaseConfiguration.getExtendedClassification()) {
-						if (!diseaseConfiguration.getExtendedClassificationMulti()) {
+					boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
+					if (extendedClassification) {
+						boolean extendedClassificationMulti =
+							DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
+						if (!extendedClassificationMulti) {
 							if (getContentBinding().caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
 								getContentBinding().caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
 							} else if (getContentBinding().caseDataEpidemiologicalConfirmation.getValue() == YesNoUnknown.YES) {
