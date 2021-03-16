@@ -358,11 +358,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				updateCaseConfirmationVisibility(getContentBinding());
 
 				if (caseClassification == CaseClassification.CONFIRMED) {
-					boolean extendedCalssification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
-					if (extendedCalssification) {
-						boolean extendedCalssificationMulti =
+					boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
+					if (extendedClassification) {
+						boolean extendedClassificationMulti =
 							DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
-						if (!extendedCalssificationMulti) {
+						if (!extendedClassificationMulti) {
 							if (getContentBinding().caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
 								getContentBinding().caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
 							} else if (getContentBinding().caseDataEpidemiologicalConfirmation.getValue() == YesNoUnknown.YES) {
