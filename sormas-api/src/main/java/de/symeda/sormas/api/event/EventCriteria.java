@@ -45,6 +45,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
 	public static final String FREE_TEXT_EVENT_PARTICIPANTS = "freeTextEventParticipants";
+	public static final String FREE_TEXT_EVENT_GROUPS = "freeTextEventGroups";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -73,6 +74,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private UserReferenceDto responsibleUser;
 	private String freeText;
 	private String freeTextEventParticipants;
+	private String freeTextEventGroups;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
 	private Boolean userFilterIncluded = true;
@@ -367,6 +369,20 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getFreeTextEventParticipants() {
 		return freeTextEventParticipants;
+	}
+
+	public EventCriteria freeTextEventGroups(String freeTextEventGroups) {
+		this.freeTextEventGroups = freeTextEventGroups;
+		return this;
+	}
+
+	public void setFreeTextEventGroups(String freeTextEventGroups) {
+		this.freeTextEventGroups = freeTextEventGroups;
+	}
+
+	@IgnoreForUrl
+	public String getFreeTextEventGroups() {
+		return freeTextEventGroups;
 	}
 
 	public EventSourceType getSrcType() {

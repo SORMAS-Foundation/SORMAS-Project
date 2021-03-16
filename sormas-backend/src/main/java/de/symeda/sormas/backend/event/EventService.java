@@ -660,6 +660,21 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
+		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventGroups())) {
+			Join<Event, EventGroup> eventGroupJoin = from.join(Event.EVENT_GROUPS, JoinType.LEFT);
+
+			String[] textFilters = eventCriteria.getFreeTextEventGroups().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(eventGroupJoin.get(EventGroup.UUID)), textFilter),
+						cb.like(cb.lower(eventGroupJoin.get(EventGroup.NAME)), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+				}
+			}
+		}
+
 		if (eventCriteria.getSrcType() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
 		}
