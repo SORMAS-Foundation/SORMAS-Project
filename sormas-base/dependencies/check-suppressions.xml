@@ -4,6 +4,13 @@
   <!-- *** False positives *** -->
   <suppress>
     <notes><![CDATA[
+    Addresses another software: https://github.com/google/guava
+    ]]></notes>
+	<filePath regex="true">.*\failureaccess.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     We are using newer Gradle version 5.4.1
     ]]></notes>
 	<filePath regex="true">.*\bgradle-wrapper.*\.jar</filePath>
