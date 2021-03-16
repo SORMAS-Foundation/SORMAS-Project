@@ -129,7 +129,7 @@ public class DevModeView extends AbstractConfigurationView {
 	CaseGenerationConfig caseGenerationConfig = new CaseGenerationConfig();
 	ContactGenerationConfig contactGenerationConfig = new ContactGenerationConfig();
 	EventGenerationConfig eventGenerationConfig = new EventGenerationConfig();
-	SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+	static SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -965,9 +965,9 @@ public class DevModeView extends AbstractConfigurationView {
 				config.getSampleCount() * 2,
 				random());
 
-		CaseReferenceDto caseReference = random(cases);
-
 		for (int i = 0; i < config.getSampleCount(); i++) {
+
+			CaseReferenceDto caseReference = random(cases);
 
 			List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 			Disease disease = config.getDisease();
@@ -975,34 +975,24 @@ public class DevModeView extends AbstractConfigurationView {
 				disease = random(diseases);
 			}
 
-			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
-
 			LocalDateTime referenceDateTime =
 				getReferenceDateTime(i, config.getSampleCount(), baseOffset, config.getDisease(), config.getStartDate(), daysBetween);
 
 			SampleDto sample = SampleDto.build(user, caseReference);
 
-			// set Purpose of the Sample - External Lab testing / internal(in-house) testing.
 			sample.setSamplePurpose(config.getSamplePurpose());
 
-			// set Date Sample was collected.
 			Date date = java.util.Date.from(referenceDateTime.toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 			sample.setSampleDateTime(date);
 
-			// set Type Of Sample SampleMaterial.BLOOD, etc.
 			sample.setSampleMaterial(config.getSampleMaterial());
 
-			// set Field Sample ID
 			sample.setFieldSampleID(UUID.randomUUID().toString());
 
-			// comment
 			sample.setComment(random(sampleComments));
 
-			// set Laboratory
 			sample.setLab(config.getLaboratory());
 
-			//pathogen tests only if checkbox is checked.
 			if (config.isRequestPathogenTestsToBePerformed()) {
 				Set set = new HashSet<PathogenTestType>();
 				int until = randomInt(1, PathogenTestType.values().length);
@@ -1013,7 +1003,6 @@ public class DevModeView extends AbstractConfigurationView {
 				sample.setRequestedPathogenTests(set);
 			}
 
-			//additional tests only if checkbox is checked.
 			if (config.isRequestAdditionalTestsToBePerformed()) {
 				Set set = new HashSet<AdditionalTestType>();
 				int until = randomInt(1, AdditionalTestType.values().length);
@@ -1024,14 +1013,12 @@ public class DevModeView extends AbstractConfigurationView {
 				sample.setRequestedAdditionalTests(set);
 			}
 
-			//send/dispatched.
 			if (config.isSendDispatch()) {
 				sample.setShipped(true);
 				sample.setShipmentDate(date);
 				sample.setShipmentDetails(random(sampleShipmentDetails));
 			}
 
-			//received
 			if (config.isReceived()) {
 				sample.setReceived(true);
 				sample.setReceivedDate(date);
@@ -1705,30 +1692,30 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class SampleGenerationConfig {
 
-		private int sampleCount;
-		private SamplePurpose samplePurpose;
-		private LocalDate startDate;
-		private LocalDate endDate;
-		private SampleMaterial sampleMaterial;
-		private String sampleMaterialText;
-		private FacilityReferenceDto laboratory;
+		private static int sampleCount;
+		private static SamplePurpose samplePurpose;
+		private static LocalDate startDate;
+		private static LocalDate endDate;
+		private static SampleMaterial sampleMaterial;
+		private static String sampleMaterialText;
+		private static FacilityReferenceDto laboratory;
 
-		private boolean externalLabOrInternalInHouseTesting = false;
-		private boolean requestPathogenTestsToBePerformed = false;
-		private boolean requestAdditionalTestsToBePerformed = false;
-		private boolean sendDispatch = false;
-		private boolean received = false;
-		private String comment;
+		private static boolean externalLabOrInternalInHouseTesting = false;
+		private static boolean requestPathogenTestsToBePerformed = false;
+		private static boolean requestAdditionalTestsToBePerformed = false;
+		private static boolean sendDispatch = false;
+		private static boolean received = false;
+		private static String comment;
 
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
+		private static Disease disease;
+		private static RegionReferenceDto region;
+		private static DistrictReferenceDto district;
 
 		SampleGenerationConfig() {
 			loadDefaultConfig();
 		}
 
-		public void loadDefaultConfig() {
+		public static void loadDefaultConfig() {
 			sampleCount = 10;
 			startDate = LocalDate.now().minusDays(90);
 			endDate = LocalDate.now();
@@ -1739,7 +1726,7 @@ public class DevModeView extends AbstractConfigurationView {
 			sampleMaterial = SampleMaterial.BLOOD;
 		}
 
-		public void loadPerformanceTestConfig() {
+		public static void loadPerformanceTestConfig() {
 			sampleCount = 50;
 			startDate = LocalDate.now().minusDays(90);
 			endDate = LocalDate.now();
