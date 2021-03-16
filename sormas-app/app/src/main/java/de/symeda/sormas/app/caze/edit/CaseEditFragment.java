@@ -71,7 +71,6 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -224,11 +223,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private void updateCaseConfirmationVisibility(FragmentCaseEditLayoutBinding contentBinding) {
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			Disease disease = record.getDisease():
-			boolean extendedCalssification = DiseaseConfigurationCache.usesExtendedClassification(disease);
+			Disease disease = record.getDisease();
+			boolean extendedCalssification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
 
 			if (extendedCalssification) {
-				boolean extendedCalssificationMulti = DiseaseConfigurationCache.usesExtendedCalssificationMulti(disease);
+				boolean extendedCalssificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
 				if (extendedCalssificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
@@ -359,9 +358,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				updateCaseConfirmationVisibility(getContentBinding());
 
 				if (caseClassification == CaseClassification.CONFIRMED) {
-					boolean extendedCalssification = DiseaseConfigurationCache.usesExtendedClassification(disease);
+					boolean extendedCalssification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(record.getDisease());
 					if (extendedCalssification) {
-						boolean extendedCalssificationMulti = DiseaseConfigurationCache.usesExtendedClassificationMulti(disease);
+						boolean extendedCalssificationMulti =
+							DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(record.getDisease());
 						if (!extendedCalssificationMulti) {
 							if (getContentBinding().caseDataClinicalConfirmation.getValue() == YesNoUnknown.YES) {
 								getContentBinding().caseDataCaseConfirmationBasis.setValue(CLINICAL_CONFIRMATION);
