@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.v7.ui.ComboBox;
@@ -97,11 +98,12 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		addField(PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 
 		intensiveCareUnit = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
-		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
 		intensiveCareUnitStart = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 
 		healthFacility.setImmediate(true);
 
@@ -222,13 +224,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		} else {
 			setReadOnly(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT);
 		}
-	}
-
-	private void setDateFieldVisibilties() {
-
-		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getNullableValue());
-		intensiveCareUnitStart.setVisible(visible);
-		intensiveCareUnitEnd.setVisible(visible);
 	}
 
 	@Override
