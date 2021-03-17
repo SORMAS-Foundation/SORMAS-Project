@@ -80,6 +80,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -98,6 +99,7 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -147,6 +149,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private GeocodingService geocodingService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -385,8 +389,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+			.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
@@ -414,8 +418,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+			.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 
@@ -688,6 +692,35 @@ public class PersonFacadeEjb implements PersonFacade {
 		return personService.exists(
 			(cb, personRoot) -> CriteriaBuilderHelper
 				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
+	}
+
+	@Override
+	public long setMissingGeoCoordinates() {
+		long changedPersons = 0;
+
+		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
+		List<Person> personsList = personService.getByUuids(indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
+
+		for (Person person : personsList) {
+
+			if (person.getAddress() != null && (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null)) {
+				try {
+					GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
+					if (latLon != null) {
+						person.getAddress().setLatitude(latLon.getLat());
+						person.getAddress().setLongitude(latLon.getLon());
+						changedPersons++;
+					}
+				} catch (Exception e) {
+					// This exception might be called when an invalid addess was entered, resulting in a server timeou
+					e.printStackTrace();
+				}
+			}
+		}
+
+		System.out.println("Changed " + changedPersons + "/" + personsList.size() + " person coordinates.");
+
+		return changedPersons;
 	}
 
 	/**

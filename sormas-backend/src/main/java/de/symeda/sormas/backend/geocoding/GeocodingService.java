@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.ejb.EJB;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -46,6 +48,7 @@ import com.nimbusds.jose.util.StandardCharset;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ClientHelper;
 
 @Stateless
@@ -64,6 +67,18 @@ public class GeocodingService {
 
 	public boolean isEnabled() {
 		return configFacade.getGeocodingServiceUrlTemplate() != null;
+	}
+
+	public GeoLatLon getLatLon(Location location) {
+
+		String street = Objects.toString(location.getStreet(), "");
+		String houseNumber = Objects.toString(location.getHouseNumber(), "");
+		String city = Objects.toString(location.getCity(), "");
+		String postalCode = Objects.toString(location.getPostalCode(), "");
+		if (StringUtils.isNotBlank(street) && (StringUtils.isNotBlank(city) || StringUtils.isNotBlank(postalCode))) {
+			return getLatLon(new LocationQuery(houseNumber, street, postalCode, city));
+		}
+		return null;
 	}
 
 	public GeoLatLon getLatLon(LocationQuery query) {

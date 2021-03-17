@@ -2,14 +2,17 @@ package de.symeda.sormas.ui.person;
 
 import java.util.HashMap;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonAssociation;
@@ -20,6 +23,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonsView extends AbstractView {
 
@@ -48,6 +52,23 @@ public class PersonsView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
+
+		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
+			Button setMissingCoordinatesButton = ButtonHelper.createIconButton("Set Missing Coordinates", VaadinIcons.MAP_MARKER, e -> {
+				VaadinUiUtil.showConfirmationPopup(
+					"Caption",
+					new Label(
+						"This will set geocoordinates for every person with an address but no coordinates. Please be aware that this might take several minutes to complete. Persons with existing coordinates are unaffected."),
+					"Proceed",
+					"Cancel",
+					640,
+					confirmed -> {
+						long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates();
+						Notification.show("Changed Persons", "Changed " + changedPersons + " Persons", Notification.Type.TRAY_NOTIFICATION);
+					});
+			}, ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(setMissingCoordinatesButton);
+		}
 
 		grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
 

@@ -74,11 +74,13 @@ public interface PersonFacade {
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
-    List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer offset, Integer limit, List<SortProperty> sortProperties);
+	List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer offset, Integer limit, List<SortProperty> sortProperties);
 
 	long count(PersonCriteria criteria);
 
-    boolean exists(String uuid);
+	boolean exists(String uuid);
 
 	boolean doesExternalTokenExist(String externalToken, String personUuid);
+
+	long setMissingGeoCoordinates();
 }
