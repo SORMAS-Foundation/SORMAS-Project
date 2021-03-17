@@ -44,6 +44,8 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 
+	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
+
 	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
