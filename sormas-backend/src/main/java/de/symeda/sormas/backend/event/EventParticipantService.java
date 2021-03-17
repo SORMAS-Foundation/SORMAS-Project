@@ -373,7 +373,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			IterableHelper.executeBatched(
 				personUuids,
 				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(personUuids)));
+				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
 			return eventParticipants;
 		} else {
 			return getEventParticipantsByPersonUuids(personUuids);
