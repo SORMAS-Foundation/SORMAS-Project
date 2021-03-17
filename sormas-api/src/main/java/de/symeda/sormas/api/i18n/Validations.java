@@ -41,6 +41,7 @@ public interface Validations {
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
+	String epiDataMultipleInfectionEnvironments = "epiDataMultipleInfectionEnvironments";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";

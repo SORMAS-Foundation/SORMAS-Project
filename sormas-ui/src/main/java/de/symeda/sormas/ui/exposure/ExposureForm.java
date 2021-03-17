@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -35,7 +36,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -69,8 +72,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_BURIAL_DETAILS_HEADING = "locBurialDetailsHeading";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER) +
+	private static final String UUID_REPORTING_USER = fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER);
+	private static final String OTHER_STANDARD_FIELDS =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
 			loc(ExposureDto.DESCRIPTION) +
 			fluidRow(
@@ -208,6 +211,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addFields(
 			ExposureDto.UUID,
 			ExposureDto.REPORTING_USER,
+			ExposureDto.PROBABLE_INFECTION_ENVIRONMENT,
 			ExposureDto.START_DATE,
 			ExposureDto.END_DATE,
 			ExposureDto.EXPOSURE_TYPE,
@@ -346,7 +350,15 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		//@formatter:off
+		String HTML_LAYOUT = UUID_REPORTING_USER;
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
+					(epiDataParentClass == CaseDataDto.class && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()
+							? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckPropableInfoectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
+		}
+		//@formatter:on
+		return HTML_LAYOUT + OTHER_STANDARD_FIELDS;
 	}
 
 }

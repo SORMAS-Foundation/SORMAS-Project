@@ -21,6 +21,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -176,6 +182,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			|| isModifiedObject(oldEntry.getTypeOfPlaceDetails(), newEntry.getTypeOfPlaceDetails())
 			|| isModifiedObject(oldEntry.getStartDate(), newEntry.getStartDate())
 			|| isModifiedObject(oldEntry.getEndDate(), newEntry.getEndDate())
+			|| isModifiedObject(oldEntry.isProbableInfectionEnvironment(), newEntry.isProbableInfectionEnvironment())
 			|| isModifiedObject(oldEntry.getRiskArea(), newEntry.getRiskArea())
 			|| isModifiedObject(oldEntry.getLocation(), newEntry.getLocation())
 			|| isModifiedObject(oldEntry.getDescription(), newEntry.getDescription())
@@ -206,6 +213,16 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
+		component.addCommitListener(() -> {
+			if (entry.isProbableInfectionEnvironment()) {
+				for (ExposureDto exposure : getValue()) {
+					if (exposure.isProbableInfectionEnvironment() && !exposure.getUuid().equals(entry.getUuid())) {
+						showMultipleInfectionEnvironmentsPopup(entry);
+						break;
+					}
+				}
+			}
+		});
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityExposure));
 		popupWindow.setHeight(90, Unit.PERCENTAGE);
@@ -266,5 +283,43 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		} else {
 			getAddButton().setVisible(true);
 		}
+	}
+
+	private void showMultipleInfectionEnvironmentsPopup(ExposureDto entry) {
+		VerticalLayout warningLayout = VaadinUiUtil.createWarningLayout();
+		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
+		com.vaadin.ui.Label infoLabel = new com.vaadin.ui.Label(I18nProperties.getValidationError(Validations.epiDataMultipleInfectionEnvironments));
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		warningLayout.addComponent(infoLabel);
+		ConfirmationComponent yesNo = VaadinUiUtil.buildYesNoConfirmationComponent();
+		yesNo.getConfirmButton().addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				popupWindow.close();
+				for (ExposureDto exposure : getValue()) {
+					if (exposure.isProbableInfectionEnvironment() && !exposure.getUuid().equals(entry.getUuid())) {
+						exposure.setProbableInfectionEnvironment(false);
+					}
+				}
+			}
+		});
+
+		yesNo.getCancelButton().addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				popupWindow.close();
+				entry.setProbableInfectionEnvironment(false);
+			}
+		});
+
+		warningLayout.addComponent(yesNo);
+		popupWindow.setWidth(800, Sizeable.Unit.PIXELS);
+		popupWindow.setClosable(false);
 	}
 }

@@ -502,6 +502,7 @@ public interface Strings {
 	String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
+	String infoCheckPropableInfoectionEnvironment = "infoCheckPropableInfoectionEnvironment";
 	String infoCompletenessMerge = "infoCompletenessMerge";
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
