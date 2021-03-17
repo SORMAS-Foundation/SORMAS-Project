@@ -54,6 +54,7 @@ import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -67,6 +68,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -262,6 +264,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	public TaskDto saveTask(@Valid TaskDto dto) {
 
 		Task ado = fromDto(dto, true);
+
+		validate(dto);
+
 		taskService.ensurePersisted(ado);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 
@@ -725,6 +730,19 @@ public class TaskFacadeEjb implements TaskFacade {
 							task.getAssigneeUser().getUuid()));
 				}
 			}
+		}
+	}
+
+	private void validate(TaskDto task) throws ValidationRuntimeException {
+
+		if (task.getTaskContext() == TaskContext.CASE && task.getCaze() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingCaseLink));
+		}
+		if (task.getTaskContext() == TaskContext.CONTACT && task.getContact() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingContactLink));
+		}
+		if (task.getTaskContext() == TaskContext.EVENT && task.getEvent() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingEventLink));
 		}
 	}
 
