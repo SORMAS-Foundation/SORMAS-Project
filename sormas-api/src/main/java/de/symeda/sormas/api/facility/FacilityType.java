@@ -71,7 +71,21 @@ public enum FacilityType {
 	SWIMMING_POOL(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	THEATER(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	UNIVERSITY(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),
-	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false);
+	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false),
+	AMBULATORY_SURGERY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DIALYSIS_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DAY_HOSPITAL(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	MATERNITY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, true),
+	MEDICAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DENTAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	OTHER_MEDICAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DIAGNOSTIC_PREVENTATIVE_THERAPEUTIC_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, false),
+	EMERGENCY_MEDICAL_SERVICES(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	ELDERLY_CARE_FACILITY(FacilityTypeGroup.CARE_FACILITY, true, false),
+	DISABLED_PERSON_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
+	CARE_RECIPIENT_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
+	VISITING_AMBULATORY_AID(FacilityTypeGroup.CARE_FACILITY, false, false),
+	AFTER_SCHOOL(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false);
 
 	private static final Map<FacilityTypeGroup, List<FacilityType>> typesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
 	private static final Map<FacilityTypeGroup, List<FacilityType>> accomodationTypesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
