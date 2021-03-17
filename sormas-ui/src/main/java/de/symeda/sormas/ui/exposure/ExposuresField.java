@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -63,6 +65,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
+	private static final String COLUMN_PROBABLE_INFECTION_ENVIRONMENT = ExposureDto.PROBABLE_INFECTION_ENVIRONMENT;
 	private static final String COLUMN_TYPE_OF_PLACE = ExposureDto.TYPE_OF_PLACE;
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_ADDRESS = Captions.address;
@@ -90,6 +93,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
+				COLUMN_PROBABLE_INFECTION_ENVIRONMENT,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
@@ -116,8 +120,11 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			String exposureString =
 				ExposureType.OTHER != exposure.getExposureType() ? exposure.getExposureType().toString() : exposure.getExposureTypeDetails();
 
+			if (exposure.getRiskArea() == YesNoUnknown.YES || exposure.isProbableInfectionEnvironment())
+				exposureString = "<b>" + exposureString + "</b>";
+
 			if (exposure.getRiskArea() == YesNoUnknown.YES) {
-				exposureString = VaadinIcons.INFO_CIRCLE.getHtml() + " <b>" + exposureString + "</b>";
+				exposureString = VaadinIcons.INFO_CIRCLE.getHtml() + " " + exposureString;
 			}
 
 			Label exposureTypeLabel = new Label(exposureString, ContentMode.HTML);
@@ -129,6 +136,14 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			return exposureTypeLabel;
 		});
 
+		table.addGeneratedColumn(COLUMN_PROBABLE_INFECTION_ENVIRONMENT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			ExposureDto exposure = (ExposureDto) itemId;
+			String exposureString = exposure.isProbableInfectionEnvironment() ? I18nProperties.getString(Strings.yes) : "";
+
+			Label infectionEnvironmentLabel = new Label(exposureString, ContentMode.HTML);
+
+			return infectionEnvironmentLabel;
+		});
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return exposure.getTypeOfPlace() != null
@@ -304,6 +319,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 						exposure.setProbableInfectionEnvironment(false);
 					}
 				}
+				getTable().refreshRowCache();
 			}
 		});
 
@@ -315,6 +331,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			public void buttonClick(Button.ClickEvent event) {
 				popupWindow.close();
 				entry.setProbableInfectionEnvironment(false);
+				getTable().refreshRowCache();
 			}
 		});
 
