@@ -35,6 +35,12 @@ public class EventGroupCriteria extends BaseCriteria implements Serializable {
 
 	public static final String EVENT = "event";
 
+	public static final String FREE_TEXT = "freeText";
+	public static final String FREE_TEXT_EVENT = "freeTextEvent";
+	public static final String DISTRICT = "district";
+	public static final String REGION = "region";
+	public static final String COMMUNITY = "community";
+
 	private EventReferenceDto event;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;

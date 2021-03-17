@@ -970,8 +970,11 @@ public interface Captions {
 	String EventActionExport_eventDate = "EventActionExport.eventDate";
 	String eventActionsView = "eventActionsView";
 	String eventActiveEvents = "eventActiveEvents";
+	String eventActiveGroups = "eventActiveGroups";
 	String eventAllEvents = "eventAllEvents";
+	String eventAllGroups = "eventAllGroups";
 	String eventArchivedEvents = "eventArchivedEvents";
+	String eventArchivedGroups = "eventArchivedGroups";
 	String eventDefaultView = "eventDefaultView";
 	String eventEditEvent = "eventEditEvent";
 	String eventEditEventGroup = "eventEditEventGroup";
@@ -987,6 +990,7 @@ public interface Captions {
 	String eventGroupListEvents = "eventGroupListEvents";
 	String eventGroups = "eventGroups";
 	String eventGroupsSeveral = "eventGroupsSeveral";
+	String eventGroupsView = "eventGroupsView";
 	String eventLinkToCases = "eventLinkToCases";
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventLinkToEventsWithinTheSameFacility = "eventLinkToEventsWithinTheSameFacility";
@@ -2101,6 +2105,7 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_groups = "View.groups";
 	String View_persons = "View.persons";
 	String View_persons_data = "View.persons.data";
 	String View_reports = "View.reports";
