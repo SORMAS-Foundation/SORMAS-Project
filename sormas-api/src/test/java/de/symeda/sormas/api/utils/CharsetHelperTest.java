@@ -21,8 +21,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
@@ -63,7 +64,7 @@ public class CharsetHelperTest {
 	@Test
 	public void misreadUTFSequencesAreRecognized() throws IOException, URISyntaxException {
 		File file = new File(getClass().getClassLoader().getResource("utf8sequences.txt").toURI());
-		try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.ISO_8859_1))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				assertTrue(CharsetHelper.isMisreadUtf8Line("Some text with " + line + "in it."));
