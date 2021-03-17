@@ -156,7 +156,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 284;
+	public static final int DATABASE_VERSION = 288;
 
 	private static DatabaseHelper instance = null;
 
@@ -2040,6 +2040,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 283;
 				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplingReason varchar(255);");
 				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplingReasonDetails text;");
+
+			case 284:
+				currentVersion = 284;
+
+				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean;");
+				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean;");
+				getDao(DiseaseConfiguration.class)
+					.executeRaw("UPDATE diseaseconfiguration SET extendedClassification = 0 WHERE disease not in ('CORONAVIRUS', 'MEASLES');");
+				getDao(DiseaseConfiguration.class)
+					.executeRaw("UPDATE diseaseconfiguration SET extendedClassificationMulti = 0 WHERE disease not in ('CORONAVIRUS');");
+				getDao(DiseaseConfiguration.class)
+					.executeRaw("UPDATE diseaseconfiguration SET extendedClassification = 1 WHERE disease in ('CORONAVIRUS', 'MEASLES');");
+				getDao(DiseaseConfiguration.class)
+					.executeRaw("UPDATE diseaseconfiguration SET extendedClassificationMulti = 1 WHERE disease in ('CORONAVIRUS');");
+				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseconfiguration SET changeDate = 0;");
+
+			case 285:
+				currentVersion = 285;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN viaLims boolean DEFAULT false;");
+
+			case 286:
+				currentVersion = 286;
+
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN infectionPathCertainty varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN humanTransmissionMode varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN parenteralTransmissionMode varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN medicallyAssociatedTransmissionMode varchar(255);");
+
+			case 287:
+				currentVersion = 287;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN internalId text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

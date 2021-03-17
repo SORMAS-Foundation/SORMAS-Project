@@ -38,6 +38,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
@@ -173,10 +174,17 @@ public class SampleController {
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+
 			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
 			if (dateField != null) {
 				pathogenTest.setReportDate(dateField.getValue());
 			}
+
+			CheckBox viaLimsField = createForm.getField(PathogenTestDto.VIA_LIMS);
+			if (viaLimsField != null) {
+				pathogenTest.setViaLims(viaLimsField.getValue());
+			}
+
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());

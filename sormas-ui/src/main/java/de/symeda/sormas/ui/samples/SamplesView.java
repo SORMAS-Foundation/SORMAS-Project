@@ -22,9 +22,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.ui.utils.ExportEntityName;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -46,6 +43,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -56,6 +54,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -108,7 +108,7 @@ public class SamplesView extends AbstractView {
 			exportLayout.addComponent(basicExportButton);
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				sampleListComponent.getGrid(),
-				() -> !btnEnterBulkEditMode.isVisible()
+				() -> viewConfiguration.isInEagerMode()
 					? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems()
 					: Collections.emptySet(),
 				ExportEntityName.SAMPLES,
@@ -188,7 +188,7 @@ public class SamplesView extends AbstractView {
 	}
 
 	private Set<String> getSelectedRows() {
-		return !btnEnterBulkEditMode.isVisible()
+		return viewConfiguration.isInEagerMode()
 			? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems().stream().map(SampleIndexDto::getUuid).collect(Collectors.toSet())
 			: Collections.emptySet();
 	}

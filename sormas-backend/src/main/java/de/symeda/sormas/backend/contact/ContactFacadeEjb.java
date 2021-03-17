@@ -1617,6 +1617,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		return this.contactService.exists(uuid);
 	}
 
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
+		return contactService.exists(
+			(cb, contactRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken), cb.notEqual(contactRoot.get(Contact.UUID), contactUuid)));
+	}
+
 	private boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {
 		return exportConfiguration == null || !Collections.disjoint(exportConfiguration.getProperties(), Arrays.asList(fields));
 	}
