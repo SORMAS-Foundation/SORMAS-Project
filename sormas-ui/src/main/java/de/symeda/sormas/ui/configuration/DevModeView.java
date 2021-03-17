@@ -129,7 +129,7 @@ public class DevModeView extends AbstractConfigurationView {
 	CaseGenerationConfig caseGenerationConfig = new CaseGenerationConfig();
 	ContactGenerationConfig contactGenerationConfig = new ContactGenerationConfig();
 	EventGenerationConfig eventGenerationConfig = new EventGenerationConfig();
-	static SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+	static SampleGenerationConfig sampleGenerationConfig = SampleGenerationConfig.getDefaultConfig();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -202,7 +202,7 @@ public class DevModeView extends AbstractConfigurationView {
 			eventGenerationConfig.loadPerformanceTestConfig();
 			eventGenerationConfig.setRegion(region);
 			eventGenerationConfig.setDistrict(district);
-			sampleGenerationConfig.loadPerformanceTestConfig();
+			sampleGenerationConfig = SampleGenerationConfig.getPerformanceTestConfig();
 			sampleGenerationConfig.setRegion(region);
 			sampleGenerationConfig.setDistrict(district);
 
@@ -223,7 +223,7 @@ public class DevModeView extends AbstractConfigurationView {
 			eventGenerationConfig.loadDefaultConfig();
 			eventGenerationConfig.setRegion(region);
 			eventGenerationConfig.setDistrict(district);
-			sampleGenerationConfig.loadDefaultConfig();
+			sampleGenerationConfig = SampleGenerationConfig.getDefaultConfig();
 			sampleGenerationConfig.setRegion(region);
 			sampleGenerationConfig.setDistrict(district);
 
@@ -1692,50 +1692,53 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class SampleGenerationConfig {
 
-		private static int sampleCount;
-		private static SamplePurpose samplePurpose;
-		private static LocalDate startDate;
-		private static LocalDate endDate;
-		private static SampleMaterial sampleMaterial;
-		private static String sampleMaterialText;
-		private static FacilityReferenceDto laboratory;
+		private int sampleCount;
+		private SamplePurpose samplePurpose;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private SampleMaterial sampleMaterial;
+		private String sampleMaterialText;
+		private FacilityReferenceDto laboratory;
 
-		private static boolean externalLabOrInternalInHouseTesting = false;
-		private static boolean requestPathogenTestsToBePerformed = false;
-		private static boolean requestAdditionalTestsToBePerformed = false;
-		private static boolean sendDispatch = false;
-		private static boolean received = false;
-		private static String comment;
+		private boolean externalLabOrInternalInHouseTesting = false;
+		private boolean requestPathogenTestsToBePerformed = false;
+		private boolean requestAdditionalTestsToBePerformed = false;
+		private boolean sendDispatch = false;
+		private boolean received = false;
+		private String comment;
 
-		private static Disease disease;
-		private static RegionReferenceDto region;
-		private static DistrictReferenceDto district;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
 
-		SampleGenerationConfig() {
-			loadDefaultConfig();
+		private SampleGenerationConfig() {
 		}
 
-		public static void loadDefaultConfig() {
-			sampleCount = 10;
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = null;
-			region = null;
-			district = null;
-			samplePurpose = SamplePurpose.INTERNAL;
-			sampleMaterial = SampleMaterial.BLOOD;
+		public static SampleGenerationConfig getDefaultConfig() {
+			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+			sampleGenerationConfig.sampleCount = 10;
+			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+			sampleGenerationConfig.endDate = LocalDate.now();
+			sampleGenerationConfig.disease = null;
+			sampleGenerationConfig.region = null;
+			sampleGenerationConfig.district = null;
+			sampleGenerationConfig.samplePurpose = SamplePurpose.INTERNAL;
+			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+			return sampleGenerationConfig;
 		}
 
-		public static void loadPerformanceTestConfig() {
-			sampleCount = 50;
-			startDate = LocalDate.now().minusDays(90);
-			endDate = LocalDate.now();
-			disease = Disease.CORONAVIRUS;
-			region = null;
-			district = null;
-			samplePurpose = SamplePurpose.EXTERNAL;
-			sampleMaterial = SampleMaterial.BLOOD;
-			laboratory = FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false).get(0);
+		public static SampleGenerationConfig getPerformanceTestConfig() {
+			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+			sampleGenerationConfig.sampleCount = 50;
+			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+			sampleGenerationConfig.endDate = LocalDate.now();
+			sampleGenerationConfig.disease = Disease.CORONAVIRUS;
+			sampleGenerationConfig.region = null;
+			sampleGenerationConfig.district = null;
+			sampleGenerationConfig.samplePurpose = SamplePurpose.EXTERNAL;
+			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+			sampleGenerationConfig.laboratory = FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false).get(0);
+			return sampleGenerationConfig;
 		}
 
 		public SamplePurpose getSamplePurpose() {
