@@ -4,29 +4,40 @@ import java.io.Serializable;
 
 public class LabMessageFetchResult implements Serializable {
 
-    boolean success;
-    String error;
+	boolean success;
+	NewMessagesState newMessagesState;
+	String error;
 
-    public LabMessageFetchResult() {}
+	public LabMessageFetchResult() {
+	}
 
-    public LabMessageFetchResult(boolean success, String error) {
-        this.success = success;
-        this.error = error;
-    }
+	public LabMessageFetchResult(boolean success, NewMessagesState newMessagesState, String error) {
+		this.success = success;
+		this.newMessagesState = newMessagesState;
+		this.error = error;
+	}
 
-    public boolean isSuccess() {
-        return success;
-    }
+	public boolean isSuccess() {
+		return success;
+	}
 
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
 
-    public String getError() {
-        return error;
-    }
+	public NewMessagesState getNewMessagesState() {
+		return newMessagesState;
+	}
 
-    public void setError(String error) {
-        this.error = error;
-    }
+	public void setNewMessagesState(NewMessagesState newMessagesState) {
+		this.newMessagesState = newMessagesState;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
 }

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
@@ -61,17 +64,25 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
@@ -102,6 +113,12 @@ public class EventFacadeEjb implements EventFacade {
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -221,7 +238,10 @@ public class EventFacadeEjb implements EventFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		cq.where(filter);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
 		cq.select(cb.countDistinct(event));
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -336,6 +356,16 @@ public class EventFacadeEjb implements EventFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = location.get(Location.ADDITIONAL_INFORMATION);
 					break;
+				case EventIndexDto.REPORTING_USER:
+					expression = reportingUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = reportingUser.get(User.LAST_NAME);
+					break;
+				case EventIndexDto.RESPONSIBLE_USER:
+					expression = responsibleUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = responsibleUser.get(User.LAST_NAME);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
@@ -438,7 +468,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max) {
+	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -504,6 +534,7 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
@@ -689,6 +720,60 @@ public class EventFacadeEjb implements EventFacade {
 		}
 	}
 
+	@Override
+	public void validate(EventDto event) throws ValidationRuntimeException {
+
+		// Check whether any required field that does not have a not null constraint in
+		// the database is empty
+		if (event.getEventStatus() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventStatus));
+		}
+		if (event.getEventInvestigationStatus() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventInvestigationStatus));
+		}
+		if (StringUtils.isEmpty(event.getEventTitle())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validEventTitle));
+		}
+
+		LocationDto location = event.getEventLocation();
+		if (location == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validLocation));
+		}
+		if (location.getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+		if (location.getDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+		// Check whether there are any infrastructure errors
+		if (!districtFacade.getDistrictByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
+		}
+		if (location.getCommunity() != null
+			&& !communityFacade.getByUuid(location.getCommunity().getUuid()).getDistrict().equals(location.getDistrict())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
+		}
+		if (location.getFacility() != null) {
+			FacilityDto facility = facilityFacade.getByUuid(location.getFacility().getUuid());
+
+			if (location.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(location.getFacility().getUuid())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+			}
+			if (location.getFacilityType() != null && !location.getFacilityType().equals(facility.getType())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+			}
+			if (location.getCommunity() == null && facility.getDistrict() != null && !facility.getDistrict().equals(location.getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
+			}
+			if (location.getCommunity() != null && facility.getCommunity() != null && !location.getCommunity().equals(facility.getCommunity())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInCommunity));
+			}
+			if (facility.getRegion() != null && !location.getRegion().equals(facility.getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
+			}
+		}
+	}
+
 	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
 
 		if (event.getSuperordinateEvent() != null) {
@@ -745,6 +830,13 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalId(source.getInternalId());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
@@ -841,6 +933,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+		
+		target.setInternalId(source.getInternalId());
+
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
@@ -889,6 +989,13 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return eventService.exists(uuid);
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
+		return eventService.exists(
+			(cb, eventRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -124,6 +125,17 @@ public class SampleListEntry extends HorizontalLayout {
 			} else {
 				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
 				topLeftLayout.addComponent(labLabel);
+			}
+
+			SamplingReason samplingReason = sample.getSamplingReason();
+			if (samplingReason != null) {
+				String samplingReasonCaption = samplingReason.toString();
+				if (samplingReason == SamplingReason.OTHER_REASON && sample.getSamplingReasonDetails() != null) {
+					samplingReasonCaption = sample.getSamplingReasonDetails();
+				}
+				Label samplingReasonLabel =
+					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
+				topLeftLayout.addComponent(samplingReasonLabel);
 			}
 		}
 

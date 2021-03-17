@@ -3,7 +3,9 @@ package de.symeda.sormas.ui.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -83,7 +85,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		}
 
 		StreamResource contactVisitsExport =
-			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), ExportEntityName.CONTACT_FOLLOW_UPS);
+			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), Collections::emptySet, ExportEntityName.CONTACT_FOLLOW_UPS);
 
 		String expectedFileName = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CONTACT_FOLLOW_UPS, ".csv");
 		Assert.assertNotNull(contactVisitsExport);

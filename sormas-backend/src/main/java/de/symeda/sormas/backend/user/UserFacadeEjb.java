@@ -412,7 +412,7 @@ public class UserFacadeEjb implements UserFacade {
 			c.setSurveillanceOfficer(null);
 			caseFacade.setResponsibleSurveillanceOfficer(c);
 			caseService.ensurePersisted(c);
-			caseFacade.reassignTasks(c);
+			caseFacade.reassignTasksOfCase(c, true);
 		});
 
 		CriteriaQuery<Contact> contactQuery = cb.createQuery(Contact.class);

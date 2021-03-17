@@ -18,9 +18,11 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -60,6 +62,7 @@ public interface CaseFacade {
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -132,6 +135,8 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
+	boolean doesExternalTokenExist(String externalToken, String caseUuid);
+
 	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
@@ -154,7 +159,7 @@ public interface CaseFacade {
 	 */
 	void updateArchived(List<String> caseUuids, boolean archived);
 
-	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
 	boolean isCaseEditAllowed(String caseUuid);
 
@@ -209,4 +214,6 @@ public interface CaseFacade {
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
+
+    List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 }

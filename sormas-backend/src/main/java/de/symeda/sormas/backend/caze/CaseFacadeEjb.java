@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -525,6 +526,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -638,6 +640,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caseRoot, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, caseRoot.get(Case.UUID));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -1210,7 +1213,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count) {
+	public List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -1223,6 +1226,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
+		cq.orderBy(cb.desc(caze.get(Case.UUID)));
 		cq.select(caze.get(Case.UUID));
 
 		List<String> uuids = em.createQuery(cq).getResultList();
@@ -1230,7 +1234,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 
-		return new Random().ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
+		return randomGenerator.ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(
@@ -1772,6 +1776,47 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	/**
+	 * Handles potential changes of related tasks that needs to be done after
+	 * a case has been created/saved
+	 */
+	private void updateTasksOnCaseChanged(Case newCase, CaseDataDto existingCase) {
+		// In case that *any* jurisdiction of the case has been changed, we need to see if we need to reassign related tasks.
+		// Tasks can be assigned to various user roles and users, therefore it is crucial to make sure
+		// that no tasks related to cases are assigned to officers lacking jurisdiction on the case.
+
+		if (existingCase != null) {
+			boolean regionChanged = !existingCase.getRegion().getUuid().equals(newCase.getRegion().getUuid());
+			boolean districtChanged = !existingCase.getDistrict().getUuid().equals(newCase.getDistrict().getUuid());
+
+			// check if infrastructure was changed, added, or removed from the case
+
+			boolean communityChanged = (existingCase.getCommunity() != null
+				&& newCase.getCommunity() != null
+				&& !newCase.getCommunity().getUuid().equals(existingCase.getCommunity().getUuid()))
+				|| (existingCase.getCommunity() == null && newCase.getCommunity() != null)
+				|| (existingCase.getCommunity() != null && newCase.getCommunity() == null);
+
+			boolean facilityChanged = (existingCase.getHealthFacility() != null
+				&& newCase.getHealthFacility() != null
+				&& !existingCase.getHealthFacility().getUuid().equals(newCase.getHealthFacility().getUuid()))
+				|| (existingCase.getHealthFacility() == null && newCase.getHealthFacility() != null)
+				|| (existingCase.getHealthFacility() != null && newCase.getHealthFacility() == null);
+
+			if (regionChanged || districtChanged || communityChanged || facilityChanged) {
+				reassignTasksOfCase(newCase, false);
+			}
+
+		}
+
+		// Create a task to search for other cases for new Plague cases
+		if (existingCase == null
+			&& newCase.getDisease() == Disease.PLAGUE
+			&& featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES)) {
+			createActiveSearchForOtherCasesTask(newCase);
+		}
+	}
+
+	/**
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
 	 */
@@ -1861,21 +1906,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		// Re-assign the tasks associated with this case to the new officer (if
-		// selected) or the surveillance supervisor if the facility has changed
-		if (existingCase != null
-			&& newCase.getHealthFacility() != null
-			&& existingCase.getHealthFacility() != null
-			&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
-			reassignTasks(newCase);
-		}
-
-		// Create a task to search for other cases for new Plague cases
-		if (existingCase == null
-			&& newCase.getDisease() == Disease.PLAGUE
-			&& featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES)) {
-			createActiveSearchForOtherCasesTask(newCase);
-		}
+		updateTasksOnCaseChanged(newCase, existingCase);
 
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
@@ -2034,16 +2065,65 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public void reassignTasks(Case caze) {
+	/**
+	 * Reassigns tasks related to `caze`. With `forceReassignment` beeing false, the function will only reassign
+	 * the tasks if the assignees lack jurisdiction on the case. When forced, all tasks will be reassigned.
+	 * 
+	 * @param caze
+	 *            the case which related tasks are reassigned.
+	 * @param forceReassignment
+	 *            force reassignment of case tasks.
+	 */
+	public void reassignTasksOfCase(Case caze, boolean forceReassignment) {
+		// for each task that is related to the case, the task assignee must match the jurisdiction of the case
+		// otherwise we will reassign the task
 		for (Task task : caze.getTasks()) {
 			if (task.getTaskStatus() != TaskStatus.PENDING) {
 				continue;
 			}
 
-			assignOfficerOrSupervisorToTask(caze, task);
+			User taskAssignee = task.getAssigneeUser();
+			boolean mismatch = false;
 
-			taskService.ensurePersisted(task);
+			if (taskAssignee == null) {
+				// no one is assigned so we skip detailed checks and go directly to reassignment.
+				mismatch = true;
+			} else if (!forceReassignment) {
+				boolean regionMismatch = taskAssignee.getRegion() != null
+					&& caze.getRegion() != null
+					&& !taskAssignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
+
+				boolean districtMismatch = taskAssignee.getDistrict() != null
+					&& caze.getDistrict() != null
+					&& !taskAssignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
+
+				// for community and health facility, the situation where
+				// 1.) the user has a community/facility
+				// 2.) the case does not have a community/facility
+				// also has to count as a mismatch b/c it means the case is no longer associated with their jurisdiction
+
+				boolean communityMismatch = (taskAssignee.getCommunity() != null
+					&& caze.getCommunity() != null
+					&& !taskAssignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid()))
+					|| (taskAssignee.getCommunity() != null && caze.getCommunity() == null);
+
+				boolean facilityMismatch = (taskAssignee.getHealthFacility() != null
+					&& caze.getHealthFacility() != null
+					&& !taskAssignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid()))
+					|| (taskAssignee.getHealthFacility() != null && caze.getHealthFacility() == null);
+
+				mismatch = regionMismatch || districtMismatch || communityMismatch || facilityMismatch;
+			}
+
+			if (forceReassignment || mismatch) {
+				// if there is any mismatch between the jurisdiction of the case and the assigned user,
+				// we need to reassign the tasks
+				assignOfficerOrSupervisorToTask(caze, task);
+				taskService.ensurePersisted(task);
+			}
+
 		}
+
 	}
 
 	private float calculateCompleteness(Case caze) {
@@ -2462,8 +2542,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFacilityType(source.getFacilityType());
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
@@ -2636,8 +2714,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		target.setCaseIdIsm(source.getCaseIdIsm());
-		target.setCovidTestReason(source.getCovidTestReason());
-		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
@@ -2833,6 +2909,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
+		if (epidNumber == null) {
+			return false;
+		}
 
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
@@ -2891,6 +2970,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		query.setMaxResults(1);
 		return !query.getResultList().isEmpty();
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
+		return caseService.exists(
+			(cb, caseRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken), cb.notEqual(caseRoot.get(Case.UUID), caseUuid)));
 	}
 
 	@Override
@@ -3061,8 +3147,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
-		// 1.2 Person
-		if (!cloning) {
+		// 1.2 Person - Only merge when the persons have different UUIDs
+		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
@@ -3577,6 +3663,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
+	}
+
+	@Override
+	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
+		return caseService.getByPersonUuids(personUuids).stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@LocalBean

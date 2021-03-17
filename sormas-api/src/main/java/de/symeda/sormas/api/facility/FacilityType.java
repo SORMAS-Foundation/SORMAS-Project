@@ -28,6 +28,7 @@ public enum FacilityType {
 
 	ASSOCIATION(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	BUSINESS(FacilityTypeGroup.WORKING_PLACE, false, false),
+	BAR(FacilityTypeGroup.CATERING_OUTLET, false, false),
 	CAMPSITE(FacilityTypeGroup.ACCOMMODATION, true, false),
 	CANTINE(FacilityTypeGroup.CATERING_OUTLET, false, false),
 	CHILDRENS_DAY_CARE(FacilityTypeGroup.CARE_FACILITY, false, false),
@@ -47,6 +48,7 @@ public enum FacilityType {
 	MASS_ACCOMMODATION(FacilityTypeGroup.ACCOMMODATION, true, false),
 	MILITARY_BARRACKS(FacilityTypeGroup.RESIDENCE, true, false),
 	MOBILE_NURSING_SERVICE(FacilityTypeGroup.CARE_FACILITY, false, false),
+	NIGHT_CLUB(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	OTHER_ACCOMMODATION(FacilityTypeGroup.ACCOMMODATION, true, false),
 	OTHER_CARE_FACILITY(FacilityTypeGroup.CARE_FACILITY, false, false),
 	OTHER_CATERING_OUTLET(FacilityTypeGroup.CATERING_OUTLET, false, false),
@@ -69,7 +71,21 @@ public enum FacilityType {
 	SWIMMING_POOL(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	THEATER(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	UNIVERSITY(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),
-	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false);
+	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false),
+	AMBULATORY_SURGERY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DIALYSIS_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DAY_HOSPITAL(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	MATERNITY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, true),
+	MEDICAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DENTAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	OTHER_MEDICAL_PRACTICE(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	DIAGNOSTIC_PREVENTATIVE_THERAPEUTIC_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, false),
+	EMERGENCY_MEDICAL_SERVICES(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
+	ELDERLY_CARE_FACILITY(FacilityTypeGroup.CARE_FACILITY, true, false),
+	DISABLED_PERSON_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
+	CARE_RECIPIENT_HABITATION(FacilityTypeGroup.CARE_FACILITY, true, false),
+	VISITING_AMBULATORY_AID(FacilityTypeGroup.CARE_FACILITY, false, false),
+	AFTER_SCHOOL(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false);
 
 	private static final Map<FacilityTypeGroup, List<FacilityType>> typesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
 	private static final Map<FacilityTypeGroup, List<FacilityType>> accomodationTypesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();

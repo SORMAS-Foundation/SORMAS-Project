@@ -29,6 +29,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -70,13 +71,14 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Date from,
 		Date to,
 		Date previousFrom,
-		Date previousTo) {
+		Date previousTo,
+		NewCaseDateType newCaseDateType) {
 
 		//diseases
 		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
 
 		//new cases
-		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, null).region(regionRef).district(districtRef);
+		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, newCaseDateType).region(regionRef).district(districtRef);
 
 		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 
@@ -100,7 +102,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
 
 		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
+		caseCriteria.newCaseDateBetween(previousFrom, previousTo, newCaseDateType);
 		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 
 		//build diseasesBurden

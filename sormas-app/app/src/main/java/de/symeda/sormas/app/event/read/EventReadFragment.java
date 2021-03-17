@@ -18,13 +18,17 @@ package de.symeda.sormas.app.event.read;
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -47,7 +51,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 			EventReadFragment.class,
 			null,
 			activityRootData,
-			new FieldVisibilityCheckers(),
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -95,6 +99,29 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 
 		contentBinding.exposureWorkEnvironment
 			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventInfectionPathCertainty)) {
+			setVisibleWhen(contentBinding.eventInfectionPathCertainty, contentBinding.eventNosocomial, YesNoUnknown.YES);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventHumanTransmissionMode)) {
+			setVisibleWhen(
+					contentBinding.eventHumanTransmissionMode,
+					contentBinding.eventDiseaseTransmissionMode,
+					DiseaseTransmissionMode.HUMAN_TO_HUMAN);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventParenteralTransmissionMode)) {
+			setVisibleWhen(
+					contentBinding.eventParenteralTransmissionMode,
+					contentBinding.eventHumanTransmissionMode,
+					HumanTransmissionMode.PARENTERAL);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventMedicallyAssociatedTransmissionMode)) {
+			setVisibleWhen(
+					contentBinding.eventMedicallyAssociatedTransmissionMode,
+					contentBinding.eventParenteralTransmissionMode,
+					ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
+		}
+
 
 	}
 

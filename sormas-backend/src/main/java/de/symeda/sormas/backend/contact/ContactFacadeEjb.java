@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -429,6 +430,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
 		int first,
 		int max,
 		ExportConfigurationDto exportConfiguration,
@@ -538,6 +540,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contact.get(Contact.UUID));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -679,7 +682,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
+	public List<VisitSummaryExportDto> getVisitSummaryExportList(
+		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		Language userLanguage) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
@@ -697,11 +705,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 			contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
-		cq.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
-				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
+			cb.isNotEmpty(contactRoot.get(Contact.VISITS)));
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contactRoot.get(Contact.UUID));
+		cq.where(filter);
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
 		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
@@ -1239,6 +1248,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
+	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
+		return contactService.getByPersonUuids(personUuids).stream().map(ContactFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria) {
 
 		User user = userService.getCurrentUser();
@@ -1601,6 +1615,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return this.contactService.exists(uuid);
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
+		return contactService.exists(
+			(cb, contactRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken), cb.notEqual(contactRoot.get(Contact.UUID), contactUuid)));
 	}
 
 	private boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {

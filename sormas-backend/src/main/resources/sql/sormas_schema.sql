@@ -5588,6 +5588,7 @@ CREATE TABLE documents (
 
     CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
 );
+ALTER TABLE documents OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
 
@@ -6753,20 +6754,129 @@ ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaigndiagramtranslat
 
 INSERT INTO schema_version (version_number, comment) VALUES (339, 'Add optional translation to CampaignDiagramDefinition #4090');
 
--- 2020-12-21 Add facilities' address #4027
+-- 2021-03-03 Add facilities' address #4027
 ALTER TABLE facility ADD COLUMN street varchar(4096);
 ALTER TABLE facility ADD COLUMN housenumber varchar(512);
 ALTER TABLE facility ADD COLUMN additionalinformation varchar(255);
 ALTER TABLE facility ADD COLUMN postalcode varchar(512);
 ALTER TABLE facility ADD COLUMN areatype varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities'' address #4027');
+INSERT INTO schema_version (version_number, comment) VALUES (340, 'Add facilities address #4027');
 
---2021-02-23 Add event management status to Event #4255
+-- 2021-02-23 Add event management status to Event #4255
 
 ALTER TABLE events ADD COLUMN eventmanagementstatus varchar(255);
 ALTER TABLE events_history ADD COLUMN eventmanagementstatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (341, 'Add event management status to Event #4255');
+
+-- 2021-03-04 Extend exposure #4549
+ALTER TABLE exposures ADD COLUMN largeattendancenumber varchar(255);
+ALTER TABLE exposures_history ADD COLUMN largeattendancenumber varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (342, 'Extend exposure #4549');
+
+-- 2021-03-04 Add person email, person phone, testResultVerified to LabMessage #4106
+ALTER TABLE labmessage ADD COLUMN personphone VARCHAR(255);
+ALTER TABLE labmessage ADD COLUMN personemail VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN personphone VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN personemail VARCHAR(255);
+ALTER TABLE labmessage ADD COLUMN testresultverified boolean;
+ALTER TABLE labmessage_history ADD COLUMN testresultverified boolean;
+UPDATE labmessage SET testresultverified = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (343, 'Add person email, person phone, testResultVerified to LabMessage #4106');
+
+-- 2021-03-03 Add a "sampling reason" field in the sample #4555
+ALTER TABLE samples
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+ALTER TABLE samples_history
+    ADD COLUMN samplingreason varchar(255),
+    ADD COLUMN samplingreasondetails text;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE latest_sample RECORD;
+        DECLARE _samplingreason text;
+    BEGIN
+        FOR rec IN SELECT id as _caseid, covidtestreason as _covidtestreason, covidtestreasondetails as _covidtestreasondetails, reportdate as _reportdate, reportinguser_id as _reportinguser_id
+                   FROM cases WHERE cases.covidtestreason IS NOT NULL
+            LOOP
+                _samplingreason = CASE WHEN rec._covidtestreason='REQUIREMENT_OF_EMPLOYER' THEN 'PROFESSIONAL_REASON'
+                                       WHEN rec._covidtestreason='DURING_QUARANTINE' THEN 'QUARANTINE_REGULATIONS'
+                                       WHEN rec._covidtestreason='COHORT_SCREENING' THEN 'SCREENING'
+                                       WHEN rec._covidtestreason='OUTBREAK_INVESTIGATION_SCREENING' THEN 'OUTBREAK'
+                                       WHEN rec._covidtestreason='AFTER_CONTACT_TRACING' THEN 'CONTACT_TO_CASE'
+                                       ELSE rec._covidtestreason
+                    END;
+
+                SELECT id as _id FROM samples where associatedcase_id = rec._caseid and deleted = false order by sampledatetime DESC limit 1 INTO latest_sample;
+
+                IF latest_sample IS NULL THEN
+                    INSERT INTO samples (id, uuid, creationdate, changedate, associatedcase_id, samplepurpose, sampledatetime, reportdatetime, reportinguser_id, samplematerial, samplematerialtext, comment,
+                                         deleted, shipped, received,
+                                         samplingreason, samplingreasondetails)
+                    values (nextval('entity_seq'),
+                            overlay(overlay(overlay(
+                                                    substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                                                    placing '-' from 7) placing '-' from 14) placing '-' from 21),
+                            now(), now(),
+                            rec._caseid, 'INTERNAL', rec._reportdate, rec._reportdate, rec._reportinguser_id, 'OTHER', 'Unknown', '[System] Automatically generated sample due to covid test reason migration',
+                            false, false, false,
+                            _samplingreason, rec._covidtestreasondetails);
+                ELSE
+                    UPDATE samples set samplingreason = _samplingreason, samplingreasondetails = rec._covidtestreasondetails where id = latest_sample._id;
+                END IF;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases
+    DROP COLUMN covidtestreason,
+    DROP COLUMN covidtestreasondetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (344, 'Add a "sampling reason" field in the sample #4555');
+
+-- 2021-03-03 Introduce disease properties to switch between basic and extended classification #4218
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassification boolean DEFAULT false;
+ALTER TABLE diseaseconfiguration ADD COLUMN extendedClassificationMulti boolean DEFAULT false;
+
+ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassification boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN extendedClassificationMulti boolean;
+
+UPDATE diseaseconfiguration SET extendedClassification = false WHERE disease not in ('CORONAVIRUS', 'MEASLES');
+UPDATE diseaseconfiguration SET extendedClassificationMulti = false WHERE disease not in ('CORONAVIRUS');
+UPDATE diseaseconfiguration SET extendedClassification = TRUE WHERE disease in ('CORONAVIRUS', 'MEASLES');
+UPDATE diseaseconfiguration SET extendedClassificationMulti = TRUE WHERE disease in ('CORONAVIRUS');
+
+INSERT INTO schema_version (version_number, comment) VALUES (345, 'Introduce disease properties to switch between basic and extended classification #4218');
+
+-- 2021-03-03 [SurvNet Interface] Add "via DEMIS" to pathogen tests #4562
+ALTER TABLE pathogentest ADD COLUMN vialims boolean DEFAULT false;
+ALTER TABLE pathogentest_history ADD COLUMN vialims boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (346, '[SurvNet Interface] Add "via DEMIS" to pathogen tests #4562');
+
+-- 2021-03-11 [SurvNet Interface] Add additional fields to event clusters #4720
+ALTER TABLE events
+    ADD COLUMN infectionpathcertainty varchar(255),
+    ADD COLUMN humantransmissionmode varchar(255),
+    ADD COLUMN parenteraltransmissionmode varchar(255),
+    ADD COLUMN medicallyassociatedtransmissionmode varchar(255);
+
+ALTER TABLE events_history
+    ADD COLUMN infectionpathcertainty varchar(255),
+    ADD COLUMN humantransmissionmode varchar(255),
+    ADD COLUMN parenteraltransmissionmode varchar(255),
+    ADD COLUMN medicallyassociatedtransmissionmode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (347, '[SurvNet Interface] Add additional fields to event clusters #4720');
+
+-- 2021-03-12 [SurvNet Interface] Events > Add new field "Internal ID" #4668
+ALTER TABLE events ADD COLUMN internalid text;
+ALTER TABLE events_history ADD COLUMN internalid text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -70,6 +73,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityIndexDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -81,6 +85,12 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -103,11 +113,23 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static Random randomGenerator;
+
+	private TextField seedField;
+	private CheckBox useManualSeedCheckbox;
+	private static boolean useManualSeed = false;
+	private static long manualSeed = 0;
+
 	private VerticalLayout contentLayout;
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
 	private Binder<EventGenerationConfig> eventGeneratorConfigBinder = new Binder<>();
+	private Binder<SampleGenerationConfig> sampleGeneratorConfigBinder = new Binder<>();
+	CaseGenerationConfig caseGenerationConfig = new CaseGenerationConfig();
+	ContactGenerationConfig contactGenerationConfig = new ContactGenerationConfig();
+	EventGenerationConfig eventGenerationConfig = new EventGenerationConfig();
+	static SampleGenerationConfig sampleGenerationConfig = SampleGenerationConfig.getDefaultConfig();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -127,11 +149,99 @@ public class DevModeView extends AbstractConfigurationView {
 			new Label(
 				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsContactGeneration),
 				ContentMode.HTML));
+		contentLayout.addComponent(
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptionsSeedUsage), ContentMode.HTML));
+
+		contentLayout.addComponent(createSeedSettingsLayout());
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 		contentLayout.addComponent(createEventsGeneratorLayout());
+		contentLayout.addComponent(createSamplesGeneratorLayout());
 
 		addComponent(contentLayout);
+	}
+
+	private HorizontalLayout createSeedSettingsLayout() {
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
+		verticalLayout.setSpacing(false);
+
+		Label seedLabel = new Label(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
+		seedField = new TextField();
+		seedField.setCaption(I18nProperties.getCaption(Captions.devModeGeneratorSeed));
+		seedField.setValue(Long.toString(manualSeed, 36));
+		seedField.setMaxLength(11);
+		seedField.addValueChangeListener(e -> {
+			try {
+				manualSeed = Long.parseLong(e.getValue(), 36);
+			} catch (NumberFormatException ex) {
+				manualSeed = 0;
+			}
+			seedLabel.setValue(I18nProperties.getString(Strings.labelActualLongSeed) + " " + manualSeed);
+		});
+
+		useManualSeedCheckbox = new CheckBox(I18nProperties.getCaption(Captions.devModeUseSeed));
+		useManualSeedCheckbox.setValue(useManualSeed);
+		useManualSeedCheckbox.addValueChangeListener(e -> {
+			useManualSeed = e.getValue();
+		});
+
+		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
+			seedField.setValue("performance");
+			useManualSeedCheckbox.setValue(true);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadPerformanceTestConfig();
+			caseGenerationConfig.setRegion(region);
+			caseGenerationConfig.setDistrict(district);
+			contactGenerationConfig.loadPerformanceTestConfig();
+			contactGenerationConfig.setRegion(region);
+			contactGenerationConfig.setDistrict(district);
+			eventGenerationConfig.loadPerformanceTestConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+			sampleGenerationConfig = SampleGenerationConfig.getPerformanceTestConfig();
+			sampleGenerationConfig.setRegion(region);
+			sampleGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+			sampleGeneratorConfigBinder.readBean(sampleGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
+			useManualSeedCheckbox.setValue(false);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+
+			caseGenerationConfig.loadDefaultConfig();
+			caseGenerationConfig.setRegion(region);
+			contactGenerationConfig.loadDefaultConfig();
+			contactGenerationConfig.setRegion(region);
+			eventGenerationConfig.loadDefaultConfig();
+			eventGenerationConfig.setRegion(region);
+			eventGenerationConfig.setDistrict(district);
+			sampleGenerationConfig = SampleGenerationConfig.getDefaultConfig();
+			sampleGenerationConfig.setRegion(region);
+			sampleGenerationConfig.setDistrict(district);
+
+			caseGeneratorConfigBinder.readBean(caseGenerationConfig);
+			contactGeneratorConfigBinder.readBean(contactGenerationConfig);
+			eventGeneratorConfigBinder.readBean(eventGenerationConfig);
+			sampleGeneratorConfigBinder.readBean(sampleGenerationConfig);
+		}, CssStyles.FORCE_CAPTION);
+
+		verticalLayout.addComponent(seedLabel);
+		verticalLayout.addComponent(useManualSeedCheckbox);
+		horizontalLayout.addComponent(seedField);
+		horizontalLayout.addComponent(verticalLayout);
+		horizontalLayout.addComponent(performanceConfigButton);
+		horizontalLayout.addComponent(defaultConfigButton);
+		horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_LEFT);
+
+		return horizontalLayout;
 	}
 
 	private VerticalLayout createCaseGeneratorLayout() {
@@ -197,9 +307,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
 
-		CaseGenerationConfig config = new CaseGenerationConfig();
-		config.setRegion(regions.get(0));
-		caseGeneratorConfigBinder.setBean(config);
+		caseGenerationConfig.setRegion(regions.get(0));
+		caseGeneratorConfigBinder.setBean(caseGenerationConfig);
 
 		return caseGeneratorLayout;
 	}
@@ -291,9 +400,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contactGeneratorLayout.addComponent(contactOptionsSecondLineLayout);
 
-		ContactGenerationConfig config = new ContactGenerationConfig();
-		config.setRegion(regions.get(0));
-		contactGeneratorConfigBinder.setBean(config);
+		contactGenerationConfig.setRegion(regions.get(0));
+		contactGeneratorConfigBinder.setBean(contactGenerationConfig);
 
 		return contactGeneratorLayout;
 	}
@@ -398,13 +506,151 @@ public class DevModeView extends AbstractConfigurationView {
 			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
 		eventOptionsSecondLineLayout.addComponent(percentageOfCasesField);
 
-		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
-		config.setRegion(regions.get(0));
-		config.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(config.getRegion().getUuid()).get(0));
-		eventGeneratorConfigBinder.setBean(config);
+		eventGenerationConfig.setRegion(regions.get(0));
+		eventGenerationConfig
+			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(eventGenerationConfig.getRegion().getUuid()).get(0));
+		eventGeneratorConfigBinder.setBean(eventGenerationConfig);
 
 		return eventGeneratorLayout;
+	}
+
+	private VerticalLayout createSamplesGeneratorLayout() {
+		VerticalLayout sampleGeneratorLayout = new VerticalLayout();
+		sampleGeneratorLayout.setMargin(false);
+		sampleGeneratorLayout.setSpacing(false);
+
+		Label heading = new Label(I18nProperties.getCaption(Captions.devModeGenerateSamples));
+		CssStyles.style(heading, CssStyles.H2);
+		sampleGeneratorLayout.addComponent(heading);
+
+		HorizontalLayout sampleOptionsFirstLineLayout = new HorizontalLayout();
+
+		TextField sampleCountField = new TextField();
+		sampleCountField.setCaption(I18nProperties.getCaption(Captions.devModeSampleCount));
+		sampleGeneratorConfigBinder.forField(sampleCountField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(SampleGenerationConfig::getSampleCount, SampleGenerationConfig::setSampleCount);
+		sampleOptionsFirstLineLayout.addComponent(sampleCountField);
+
+		DateField startDateField = new DateField();
+		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeSampleStartDate));
+		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
+		startDateField.setLenient(true);
+		sampleGeneratorConfigBinder.bind(startDateField, SampleGenerationConfig::getStartDate, SampleGenerationConfig::setStartDate);
+		sampleOptionsFirstLineLayout.addComponent(startDateField);
+
+		DateField endDateField = new DateField();
+		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeSampleEndDate));
+		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
+		endDateField.setLenient(true);
+		sampleGeneratorConfigBinder.bind(endDateField, SampleGenerationConfig::getEndDate, SampleGenerationConfig::setEndDate);
+		sampleOptionsFirstLineLayout.addComponent(endDateField);
+
+		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeSampleDisease));
+		sampleGeneratorConfigBinder.bind(diseaseField, SampleGenerationConfig::getDisease, SampleGenerationConfig::setDisease);
+		diseaseField.setRequiredIndicatorVisible(true);
+		sampleOptionsFirstLineLayout.addComponent(diseaseField);
+
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		ComboBox<RegionReferenceDto> regionField = new ComboBox<>(null, regions);
+		regionField.setCaption(I18nProperties.getCaption(Captions.devModeSampleRegion));
+		sampleGeneratorConfigBinder.bind(regionField, SampleGenerationConfig::getRegion, SampleGenerationConfig::setRegion);
+		sampleOptionsFirstLineLayout.addComponent(regionField);
+
+		ComboBox<DistrictReferenceDto> districtField = new ComboBox<>();
+		districtField.setCaption(I18nProperties.getCaption(Captions.devModeSampleDistrict));
+		sampleGeneratorConfigBinder.bind(districtField, SampleGenerationConfig::getDistrict, SampleGenerationConfig::setDistrict);
+		sampleOptionsFirstLineLayout.addComponent(districtField);
+
+		regionField.addValueChangeListener(event -> {
+			RegionReferenceDto region = event.getValue();
+			if (region != null) {
+				districtField.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			} else {
+				districtField.setItems(new ArrayList<DistrictReferenceDto>());
+			}
+		});
+
+		Button generateButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeGenerateSamples), e -> generateSamples(), CssStyles.FORCE_CAPTION);
+		sampleOptionsFirstLineLayout.addComponent(generateButton);
+
+		sampleGeneratorLayout.addComponent(sampleOptionsFirstLineLayout);
+
+		HorizontalLayout sampleOptionsSecondLineLayout = new HorizontalLayout();
+
+		ComboBox<SampleMaterial> sampleMaterial = new ComboBox(null, Arrays.asList(SampleMaterial.values()));
+		sampleMaterial.setCaption(I18nProperties.getCaption(Captions.devModeSampleMaterial));
+		sampleGeneratorConfigBinder.bind(sampleMaterial, SampleGenerationConfig::getSampleMaterial, SampleGenerationConfig::setSampleMaterial);
+		sampleMaterial.setRequiredIndicatorVisible(true);
+		sampleOptionsSecondLineLayout.addComponent(sampleMaterial);
+
+		ComboBox<FacilityReferenceDto> laboratory = new ComboBox(null, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
+		laboratory.setCaption(I18nProperties.getCaption(Captions.devModeSampleLaboratory));
+		sampleGeneratorConfigBinder.bind(laboratory, SampleGenerationConfig::getLaboratory, SampleGenerationConfig::setLaboratory);
+		laboratory.setRequiredIndicatorVisible(true);
+		sampleOptionsSecondLineLayout.addComponent(laboratory);
+
+		sampleGeneratorLayout.addComponent(sampleOptionsSecondLineLayout);
+
+		HorizontalLayout sampleOptionsThirdLineLayout = new HorizontalLayout();
+
+		CheckBox externalLabTesting = new CheckBox(I18nProperties.getCaption(Captions.devModeSampleExternalLabTesting));
+		sampleGeneratorConfigBinder.bind(
+			externalLabTesting,
+			SampleGenerationConfig::isExternalLabOrInternalInHouseTesting,
+			SampleGenerationConfig::setExternalLabOrInternalInHouseTesting);
+		externalLabTesting.setValue(true);
+		sampleOptionsThirdLineLayout.addComponent(externalLabTesting);
+
+		CheckBox requestPathogenTestsToBePerformed = new CheckBox(I18nProperties.getCaption(Captions.devModeSamplePathogenTestsToBePerformed));
+		sampleGeneratorConfigBinder.bind(
+			requestPathogenTestsToBePerformed,
+			SampleGenerationConfig::isRequestPathogenTestsToBePerformed,
+			SampleGenerationConfig::setRequestPathogenTestsToBePerformed);
+		sampleOptionsThirdLineLayout.addComponent(requestPathogenTestsToBePerformed);
+
+		CheckBox requestAdditionalTestsToBePerformed = new CheckBox(I18nProperties.getCaption(Captions.devModeSampleAdditionalTestsToBePerformed));
+		sampleGeneratorConfigBinder.bind(
+			requestAdditionalTestsToBePerformed,
+			SampleGenerationConfig::isRequestAdditionalTestsToBePerformed,
+			SampleGenerationConfig::setRequestAdditionalTestsToBePerformed);
+		sampleOptionsThirdLineLayout.addComponent(requestAdditionalTestsToBePerformed);
+
+		CheckBox sendDispatch = new CheckBox(I18nProperties.getCaption(Captions.devModeSampleSendDispatch));
+		sampleGeneratorConfigBinder.bind(sendDispatch, SampleGenerationConfig::isSendDispatch, SampleGenerationConfig::setSendDispatch);
+		sampleOptionsThirdLineLayout.addComponent(sendDispatch);
+
+		CheckBox received = new CheckBox(I18nProperties.getCaption(Captions.devModeSampleReceived));
+		sampleGeneratorConfigBinder.bind(received, SampleGenerationConfig::isReceived, SampleGenerationConfig::setReceived);
+		sampleOptionsThirdLineLayout.addComponent(received);
+
+		externalLabTesting.addValueChangeListener(event -> {
+			if (externalLabTesting.getValue()) {
+				requestPathogenTestsToBePerformed.setVisible(true);
+				sendDispatch.setVisible(true);
+				received.setVisible(true);
+				laboratory.setVisible(true);
+				sampleGenerationConfig.setSamplePurpose(SamplePurpose.EXTERNAL);
+			} else {
+				requestPathogenTestsToBePerformed.setVisible(false);
+				sendDispatch.setVisible(false);
+				received.setVisible(false);
+				laboratory.setVisible(false);
+				sampleGenerationConfig.setSamplePurpose(SamplePurpose.INTERNAL);
+			}
+		});
+
+		sampleGeneratorLayout.addComponent(sampleOptionsThirdLineLayout);
+
+		sampleGenerationConfig.setRegion(regions.get(0));
+		sampleGenerationConfig
+			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(sampleGenerationConfig.getRegion().getUuid()).get(0));
+		sampleGeneratorConfigBinder.setBean(sampleGenerationConfig);
+
+		return sampleGeneratorLayout;
 	}
 
 	private final String[] maleFirstNames = new String[] {
@@ -454,9 +700,31 @@ public class DevModeView extends AbstractConfigurationView {
 		"Tournament",
 		"Festival",
 		"Carnival" };
+	private final String[] sampleComments = new String[] {
+		"Very expensive test",
+		"Urgent need to have the results",
+		"This is a repeated test",
+		"Repeated test after 1 day",
+		"Repeated test after 1 week",
+		"-" };
+	private final String[] sampleShipmentDetails = new String[] {
+		"Dispatch is required within 1 week",
+		"Dispatch is required within 2 weeks",
+		"Dispatch is required within 1 months",
+		"Dispatch is required by the end of a day",
+		"Dispatch is very urgent",
+		"-" };
+
+	private static void initializeRandomGenerator() {
+		if (useManualSeed) {
+			randomGenerator = new Random(manualSeed);
+		} else {
+			randomGenerator = new Random();
+		}
+	}
 
 	private static Random random() {
-		return ThreadLocalRandom.current();
+		return randomGenerator;
 	}
 
 	private static boolean randomPercent(int p) {
@@ -497,8 +765,8 @@ public class DevModeView extends AbstractConfigurationView {
 				// doesn't make sense
 				//				if (parameterType.isAssignableFrom(String.class)) {
 				//					setter.invoke(entity, words[random.nextInt(words.length)]);
-				//				} 
-				//				else 
+				//				}
+				//				else
 				if (parameterType.isAssignableFrom(Date.class)) {
 					setter.invoke(entity, randomDate(referenceDateTime));
 				} else if (parameterType.isEnum()) {
@@ -523,6 +791,23 @@ public class DevModeView extends AbstractConfigurationView {
 							throw new RuntimeException(e.getMessage(), e);
 						}
 					});
+				}
+			}
+			if (entity.getClass() == CaseDataDto.class) {
+				if (((CaseDataDto) entity).getQuarantineTo() != null
+					&& ((CaseDataDto) entity).getQuarantineFrom() != null
+					&& ((CaseDataDto) entity).getQuarantineTo().before(((CaseDataDto) entity).getQuarantineFrom())) {
+					Date quarantineTo = ((CaseDataDto) entity).getQuarantineTo();
+					((CaseDataDto) entity).setQuarantineTo(((CaseDataDto) entity).getQuarantineFrom());
+					((CaseDataDto) entity).setQuarantineFrom(quarantineTo);
+				}
+
+				if (((CaseDataDto) entity).getProhibitionToWorkFrom() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil() != null
+					&& ((CaseDataDto) entity).getProhibitionToWorkUntil().before(((CaseDataDto) entity).getProhibitionToWorkFrom())) {
+					Date prohibitionToWorkUntil = ((CaseDataDto) entity).getProhibitionToWorkUntil();
+					((CaseDataDto) entity).setProhibitionToWorkUntil(((CaseDataDto) entity).getProhibitionToWorkFrom());
+					((CaseDataDto) entity).setProhibitionToWorkFrom(prohibitionToWorkUntil);
 				}
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -567,6 +852,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateCases() {
+		initializeRandomGenerator();
 
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 
@@ -577,9 +863,13 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
+
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
 			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
@@ -623,15 +913,24 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
 			// region & facility
-			FacilityIndexDto healthFacility = random(healthFacilities);
-			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-			caze.setRegion(healthFacility.getRegion());
-			caze.setDistrict(healthFacility.getDistrict());
-			caze.setCommunity(healthFacility.getCommunity());
-			caze.setHealthFacility(healthFacility.toReference());
-			caze.setFacilityType(healthFacility.getType());
-			caze.setReportLat(healthFacility.getLatitude());
-			caze.setReportLon(healthFacility.getLongitude());
+			if (healthFacilities.isEmpty() || randomPercent(20)) {
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setHealthFacility(noFacilityRef);
+				caze.setFacilityType(null);
+				caze.setRegion(config.getRegion());
+				caze.setDistrict(config.getDistrict());
+			} else {
+				FacilityIndexDto healthFacility = random(healthFacilities);
+				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+				caze.setRegion(healthFacility.getRegion());
+				caze.setDistrict(healthFacility.getDistrict());
+				caze.setCommunity(healthFacility.getCommunity());
+				caze.setHealthFacility(healthFacility.toReference());
+				caze.setFacilityType(healthFacility.getType());
+				caze.setReportLat(healthFacility.getLatitude());
+				caze.setReportLon(healthFacility.getLongitude());
+			}
 
 			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
@@ -644,7 +943,106 @@ public class DevModeView extends AbstractConfigurationView {
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
+	private void generateSamples() {
+		initializeRandomGenerator();
+
+		SampleGenerationConfig config = sampleGeneratorConfigBinder.getBean();
+
+		float baseOffset = random().nextFloat();
+		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
+
+		FacilityCriteria facilityCriteria = new FacilityCriteria();
+		facilityCriteria.region(config.getRegion());
+		facilityCriteria.district(config.getDistrict());
+
+		long dt = System.nanoTime();
+
+		UserReferenceDto user = UserProvider.getCurrent().getUserReference();
+
+		List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
+			.getRandomCaseReferences(
+				new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+				config.getSampleCount() * 2,
+				random());
+
+		for (int i = 0; i < config.getSampleCount(); i++) {
+
+			CaseReferenceDto caseReference = random(cases);
+
+			List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+			Disease disease = config.getDisease();
+			if (disease == null) {
+				disease = random(diseases);
+			}
+
+			LocalDateTime referenceDateTime =
+				getReferenceDateTime(i, config.getSampleCount(), baseOffset, config.getDisease(), config.getStartDate(), daysBetween);
+
+			SampleDto sample = SampleDto.build(user, caseReference);
+
+			sample.setSamplePurpose(config.getSamplePurpose());
+
+			Date date = java.util.Date.from(referenceDateTime.toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+			sample.setSampleDateTime(date);
+
+			sample.setSampleMaterial(config.getSampleMaterial());
+
+			sample.setFieldSampleID(UUID.randomUUID().toString());
+
+			sample.setComment(random(sampleComments));
+
+			sample.setLab(config.getLaboratory());
+
+			if (config.isRequestPathogenTestsToBePerformed()) {
+				Set set = new HashSet<PathogenTestType>();
+				int until = randomInt(1, PathogenTestType.values().length);
+				for (int j = 0; j < until; j++) {
+					set.add(PathogenTestType.values()[j]);
+				}
+				sample.setPathogenTestingRequested(true);
+				sample.setRequestedPathogenTests(set);
+			}
+
+			if (config.isRequestAdditionalTestsToBePerformed()) {
+				Set set = new HashSet<AdditionalTestType>();
+				int until = randomInt(1, AdditionalTestType.values().length);
+				for (int j = 0; j < until; j++) {
+					set.add(AdditionalTestType.values()[j]);
+				}
+				sample.setAdditionalTestingRequested(true);
+				sample.setRequestedAdditionalTests(set);
+			}
+
+			if (config.isSendDispatch()) {
+				sample.setShipped(true);
+				sample.setShipmentDate(date);
+				sample.setShipmentDetails(random(sampleShipmentDetails));
+			}
+
+			if (config.isReceived()) {
+				sample.setReceived(true);
+				sample.setReceivedDate(date);
+
+				sample.setSpecimenCondition(random(SpecimenCondition.values()));
+			}
+
+			FacadeProvider.getSampleFacade().saveSample(sample);
+
+		}
+
+		dt = System.nanoTime() - dt;
+		long perSample = dt / config.getSampleCount();
+		String msg = String.format(
+			"Generating %d samples took %.2f  s (%.1f ms per sample)",
+			config.getSampleCount(),
+			(double) dt / 1_000_000_000,
+			(double) perSample / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
+	}
+
 	private void generateContacts() {
+		initializeRandomGenerator();
 
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
@@ -669,7 +1067,8 @@ public class DevModeView extends AbstractConfigurationView {
 			cases = FacadeProvider.getCaseFacade()
 				.getRandomCaseReferences(
 					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(disease),
-					config.getContactCount() * 2);
+					config.getContactCount() * 2,
+					random());
 			if (cases == null) {
 				Notification.show("Error", I18nProperties.getString(Strings.messageMissingCases), Notification.Type.ERROR_MESSAGE);
 				return;
@@ -760,7 +1159,7 @@ public class DevModeView extends AbstractConfigurationView {
 				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
-					int[] followUpDays = new Random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
+					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates.add(
@@ -791,6 +1190,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateEvents() {
+		initializeRandomGenerator();
 
 		EventGenerationConfig config = eventGeneratorConfigBinder.getBean();
 
@@ -807,7 +1207,11 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
-		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
+			.getIndexList(facilityCriteria, 0, (int) (config.getMaxParticipantsPerEvent() * config.getPercentageOfCases() / 100), null);
+
+		// Filter list, so that only health facilities meant for accomodation are selected
+		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
 
 		long dt = System.nanoTime();
 
@@ -889,7 +1293,8 @@ public class DevModeView extends AbstractConfigurationView {
 					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 						.getRandomCaseReferences(
 							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(event.getDisease()),
-							numParticipants * 2);
+							numParticipants * 2,
+							random());
 					int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
 					for (int k = 0; (k < numContacts && (cases != null)); k++) {
 						ContactDto contact = ContactDto.build(eventParticipant);
@@ -953,12 +1358,34 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class CaseGenerationConfig {
 
-		private int caseCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
+		private int caseCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+
+		CaseGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			caseCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+		}
+
+		public void loadPerformanceTestConfig() {
+			caseCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+		}
 
 		public int getCaseCount() {
 			return caseCount;
@@ -1011,15 +1438,43 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class ContactGenerationConfig {
 
-		private int contactCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private boolean createWithoutSourceCases = false;
-		private boolean createMultipleContactsPerPerson = false;
-		private boolean createWithVisits = false;
+		private int contactCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private boolean createWithoutSourceCases;
+		private boolean createMultipleContactsPerPerson;
+		private boolean createWithVisits;
+
+		ContactGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			contactCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
+
+		public void loadPerformanceTestConfig() {
+			contactCount = 50;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			region = null;
+			district = null;
+			createWithoutSourceCases = false;
+			createMultipleContactsPerPerson = false;
+			createWithVisits = false;
+		}
 
 		public int getContactCount() {
 			return contactCount;
@@ -1096,24 +1551,56 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static class EventGenerationConfig {
 
-		private int eventCount = 10;
-		private LocalDate startDate = LocalDate.now().minusDays(90);
-		private LocalDate endDate = LocalDate.now();
-		private Disease disease = null;
-		private RegionReferenceDto region = null;
-		private DistrictReferenceDto district = null;
-		private int minParticipantsPerEvent = 3;
-		private int maxParticipantsPerEvent = 10;
-		private int minContactsPerParticipant = 0;
-		private int maxContactsPerParticipant = 3;
-		private int percentageOfCases = 20;
+		private int eventCount;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private int minParticipantsPerEvent;
+		private int maxParticipantsPerEvent;
+		private int minContactsPerParticipant;
+		private int maxContactsPerParticipant;
+		private int percentageOfCases;
+
+		EventGenerationConfig() {
+			loadDefaultConfig();
+		}
+
+		public void loadDefaultConfig() {
+			eventCount = 10;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = null;
+			region = null;
+			district = null;
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 10;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 3;
+			percentageOfCases = 20;
+		}
+
+		public void loadPerformanceTestConfig() {
+			eventCount = 30;
+			startDate = LocalDate.now().minusDays(90);
+			endDate = LocalDate.now();
+			disease = Disease.CORONAVIRUS;
+			// region?
+			// district?
+			minParticipantsPerEvent = 3;
+			maxParticipantsPerEvent = 8;
+			minContactsPerParticipant = 0;
+			maxContactsPerParticipant = 2;
+			percentageOfCases = 15;
+		}
 
 		public int getEventCount() {
 			return eventCount;
 		}
 
-		public void setEventCount(int contactCount) {
-			this.eventCount = contactCount;
+		public void setEventCount(int eventCount) {
+			this.eventCount = eventCount;
 		}
 
 		public LocalDate getStartDate() {
@@ -1199,6 +1686,187 @@ public class DevModeView extends AbstractConfigurationView {
 			} else if (this.percentageOfCases <= 0) {
 				this.percentageOfCases = 0;
 			}
+		}
+
+	}
+
+	private static class SampleGenerationConfig {
+
+		private int sampleCount;
+		private SamplePurpose samplePurpose;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private SampleMaterial sampleMaterial;
+		private String sampleMaterialText;
+		private FacilityReferenceDto laboratory;
+
+		private boolean externalLabOrInternalInHouseTesting = false;
+		private boolean requestPathogenTestsToBePerformed = false;
+		private boolean requestAdditionalTestsToBePerformed = false;
+		private boolean sendDispatch = false;
+		private boolean received = false;
+		private String comment;
+
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+
+		private SampleGenerationConfig() {
+		}
+
+		public static SampleGenerationConfig getDefaultConfig() {
+			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+			sampleGenerationConfig.sampleCount = 10;
+			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+			sampleGenerationConfig.endDate = LocalDate.now();
+			sampleGenerationConfig.disease = null;
+			sampleGenerationConfig.region = null;
+			sampleGenerationConfig.district = null;
+			sampleGenerationConfig.samplePurpose = SamplePurpose.INTERNAL;
+			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+			return sampleGenerationConfig;
+		}
+
+		public static SampleGenerationConfig getPerformanceTestConfig() {
+			SampleGenerationConfig sampleGenerationConfig = new SampleGenerationConfig();
+			sampleGenerationConfig.sampleCount = 50;
+			sampleGenerationConfig.startDate = LocalDate.now().minusDays(90);
+			sampleGenerationConfig.endDate = LocalDate.now();
+			sampleGenerationConfig.disease = Disease.CORONAVIRUS;
+			sampleGenerationConfig.region = null;
+			sampleGenerationConfig.district = null;
+			sampleGenerationConfig.samplePurpose = SamplePurpose.EXTERNAL;
+			sampleGenerationConfig.sampleMaterial = SampleMaterial.BLOOD;
+			sampleGenerationConfig.laboratory = FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false).get(0);
+			return sampleGenerationConfig;
+		}
+
+		public SamplePurpose getSamplePurpose() {
+			return samplePurpose;
+		}
+
+		public void setSamplePurpose(SamplePurpose samplePurpose) {
+			this.samplePurpose = samplePurpose;
+		}
+
+		public SampleMaterial getSampleMaterial() {
+			return sampleMaterial;
+		}
+
+		public void setSampleMaterial(SampleMaterial sampleMaterial) {
+			this.sampleMaterial = sampleMaterial;
+		}
+
+		public String getSampleMaterialText() {
+			return sampleMaterialText;
+		}
+
+		public void setSampleMaterialText(String sampleMaterialText) {
+			this.sampleMaterialText = sampleMaterialText;
+		}
+
+		public FacilityReferenceDto getLaboratory() {
+			return laboratory;
+		}
+
+		public void setLaboratory(FacilityReferenceDto laboratory) {
+			this.laboratory = laboratory;
+		}
+
+		public int getSampleCount() {
+			return sampleCount;
+		}
+
+		public void setSampleCount(int contactCount) {
+			this.sampleCount = contactCount;
+		}
+
+		public LocalDate getStartDate() {
+			return startDate;
+		}
+
+		public void setStartDate(LocalDate startDate) {
+			this.startDate = startDate;
+		}
+
+		public LocalDate getEndDate() {
+			return endDate;
+		}
+
+		public void setEndDate(LocalDate endDate) {
+			this.endDate = endDate;
+		}
+
+		public boolean isRequestPathogenTestsToBePerformed() {
+			return requestPathogenTestsToBePerformed;
+		}
+
+		public void setRequestPathogenTestsToBePerformed(boolean requestPathogenTestsToBePerformed) {
+			this.requestPathogenTestsToBePerformed = requestPathogenTestsToBePerformed;
+		}
+
+		public boolean isExternalLabOrInternalInHouseTesting() {
+			return externalLabOrInternalInHouseTesting;
+		}
+
+		public boolean isRequestAdditionalTestsToBePerformed() {
+			return requestAdditionalTestsToBePerformed;
+		}
+
+		public void setRequestAdditionalTestsToBePerformed(boolean requestAdditionalTestsToBePerformed) {
+			this.requestAdditionalTestsToBePerformed = requestAdditionalTestsToBePerformed;
+		}
+
+		public void setExternalLabOrInternalInHouseTesting(boolean externalLabOrInternalInHouseTesting) {
+			this.externalLabOrInternalInHouseTesting = externalLabOrInternalInHouseTesting;
+		}
+
+		public boolean isSendDispatch() {
+			return sendDispatch;
+		}
+
+		public void setSendDispatch(boolean sendDispatch) {
+			this.sendDispatch = sendDispatch;
+		}
+
+		public boolean isReceived() {
+			return received;
+		}
+
+		public void setReceived(boolean received) {
+			this.received = received;
+		}
+
+		public String getComment() {
+			return comment;
+		}
+
+		public void setComment(String comment) {
+			this.comment = comment;
+		}
+
+		public Disease getDisease() {
+			return disease;
+		}
+
+		public void setDisease(Disease disease) {
+			this.disease = disease;
+		}
+
+		public RegionReferenceDto getRegion() {
+			return region;
+		}
+
+		public void setRegion(RegionReferenceDto region) {
+			this.region = region;
+		}
+
+		public DistrictReferenceDto getDistrict() {
+			return district;
+		}
+
+		public void setDistrict(DistrictReferenceDto district) {
+			this.district = district;
 		}
 
 	}

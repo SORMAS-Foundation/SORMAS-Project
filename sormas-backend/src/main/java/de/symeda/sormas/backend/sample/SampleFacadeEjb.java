@@ -65,10 +65,13 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
@@ -127,6 +130,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String DISTRICT_NAME = "districtName";
+
+	private static final int SIMILARITY_DATE_TIME_THRESHOLD = 2;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -215,6 +220,75 @@ public class SampleFacadeEjb implements SampleFacade {
 	public List<SampleDto> getByContactUuids(List<String> contactUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> root = cq.from(Sample.class);
+
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
+
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, cb, joins));
+
+		Predicate similarityFilter = null;
+		if (criteria.getLabSampleId() != null) {
+			similarityFilter = cb.equal(root.get(Sample.LAB_SAMPLE_ID), criteria.getLabSampleId());
+		}
+
+		Date sampleDateTime = criteria.getSampleDateTime();
+		SampleMaterial sampleMaterial = criteria.getSampleMaterial();
+
+		if (sampleDateTime != null && sampleMaterial != null) {
+			Predicate dateAndMaterialFilter = cb.and(
+				cb.between(
+					root.get(Sample.SAMPLE_DATE_TIME),
+					DateHelper.getStartOfDay(DateHelper.subtractDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD)),
+					DateHelper.getEndOfDay(DateHelper.addDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD))),
+				cb.equal(root.get(Sample.SAMPLE_MATERIAL), sampleMaterial));
+
+			similarityFilter = CriteriaBuilderHelper.or(cb, similarityFilter, dateAndMaterialFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, similarityFilter);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Sample> samples = em.createQuery(cq).getResultList();
+
+		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
+			return getByCriteria(sampleCriteria);
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> root = cq.from(Sample.class);
+
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Sample> samples = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -336,6 +410,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SPECIMEN_CONDITION),
 				joins.getLab().get(Facility.NAME),
 				joins.getReferredSample().get(Sample.UUID),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				caze.get(Case.UUID),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
@@ -512,7 +588,12 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
-	private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
+	private List<SampleExportDto> getExportList(
+		SampleCriteria sampleCriteria,
+		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -543,6 +624,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
 				sample.get(Sample.SAMPLE_SOURCE),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
@@ -626,11 +709,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sample.get(Sample.UUID));
 		} else if (caseCriteria != null) {
 			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		}
 
 		if (filter != null) {
@@ -699,13 +784,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(SampleCriteria criteria, int first, int max) {
-		return getExportList(criteria, null, first, max);
+	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(CaseCriteria criteria, int first, int max) {
-		return getExportList(null, criteria, first, max);
+	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(null,  criteria, selectedRows, first, max);
 	}
 
 	@Override
@@ -793,6 +878,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -928,6 +1015,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
