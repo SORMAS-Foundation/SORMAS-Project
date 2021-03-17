@@ -4,19 +4,20 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,11 +41,13 @@ import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testImportCaseContacts()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -75,7 +78,12 @@ public class ContactImporterTest extends AbstractBeanTest {
 		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
 			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
@@ -84,7 +92,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
 					}
 				}
-				resultConsumer.accept(new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
+				resultConsumer.accept((T) new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -98,8 +106,13 @@ public class ContactImporterTest extends AbstractBeanTest {
 		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
 			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
+				resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -110,13 +123,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: create
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
-
-			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-			}
-		};
+		contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
 		importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -190,28 +197,37 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(8, contactFacade.count(null));
 	}
 
-	private static class ContactImporterExtension extends ContactImporter {
+	public static class ContactImporterExtension extends ContactImporter {
 
-		private ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
+		public StringBuilder stringBuilder = new StringBuilder("");
+		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
+
+		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
 			super(inputFile, hasEntityClassRow, currentUser, caze);
 		}
 
-		protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		public ContactImporterExtension(File inputFile, UserDto currentUser) {
+			super(inputFile, false, currentUser, null);
 		}
 
+		@Override
+		protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+			PersonDto newPerson,
+			Consumer<T> resultConsumer,
+			BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+			String infoText,
+			UI currentUI) {
+			resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		}
+
+		@Override
 		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
 			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
+		@Override
 		protected Writer createErrorReportWriter() {
-			return new OutputStreamWriter(new OutputStream() {
-
-				@Override
-				public void write(int b) {
-					// Do nothing
-				}
-			});
+			return writer;
 		}
 	}
 }
