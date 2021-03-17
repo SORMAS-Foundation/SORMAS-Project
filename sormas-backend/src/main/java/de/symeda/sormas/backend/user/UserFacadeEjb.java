@@ -144,7 +144,9 @@ public class UserFacadeEjb implements UserFacade {
 
 		switch (superordinateJurisdiction) {
 		case NATION:
-			return null;
+			superiorUsersList =
+				userService.getAllByUserRoles(UserRole.getWithJurisdictionLevels(superordinateJurisdiction).toArray(new UserRole[] {}));
+			break;
 		case REGION:
 			superiorUsersList = userService.getAllByRegionAndUserRoles(
 				regionService.getByReferenceDto(user.getRegion()),
