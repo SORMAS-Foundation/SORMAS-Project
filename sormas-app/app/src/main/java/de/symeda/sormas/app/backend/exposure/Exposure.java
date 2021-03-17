@@ -60,6 +60,8 @@ public class Exposure extends PseudonymizableAdo {
 	private EpiData epiData;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
+	@DatabaseField(dataType = DataType.BOOLEAN)
+	private boolean probableInfectionEnvironment;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date startDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -191,6 +193,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	public Date getStartDate() {
