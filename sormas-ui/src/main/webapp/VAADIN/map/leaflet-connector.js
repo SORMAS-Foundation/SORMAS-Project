@@ -45,7 +45,9 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		zoom: 13,
 		trackResize: true,
 		});
-	
+
+	map.attributionControl.addAttribution('© GeoBasis-DE / BKG (2021)');
+
 	// full-screen control
 	map.addControl(new L.Control.Fullscreen({
 		position: 'topright',
