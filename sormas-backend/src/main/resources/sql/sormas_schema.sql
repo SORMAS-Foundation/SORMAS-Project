@@ -6879,4 +6879,25 @@ ALTER TABLE events_history ADD COLUMN internalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
+-- 2021-03-12 Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771
+
+CREATE TABLE externalshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    event_id bigint,
+    sender_id bigint,
+    status varchar(255),
+    primary key(id)
+);
+
+ALTER TABLE externalshareinfo OWNER TO sormas_user;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (349, 'Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771');
+
 -- *** Insert new sql commands BEFORE this line ***

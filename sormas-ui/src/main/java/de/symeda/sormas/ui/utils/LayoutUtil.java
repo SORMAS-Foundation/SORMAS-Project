@@ -34,12 +34,17 @@ public final class LayoutUtil {
 	}
 
 	public static String locCss(String cssClasses, String location) {
+		return locCss(cssClasses, location, null);
+	}
+
+	public static String locCss(String cssClasses, String location, String elementType) {
+		String tag = elementType == null ? "div" : elementType;
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div ");
+		sb.append("<").append(tag).append(" ");
 		if (cssClasses != null) {
 			sb.append("class='").append(cssClasses).append("' ");
 		}
-		sb.append("location='").append(location).append("'></div>");
+		sb.append("location='").append(location).append("'></").append(tag).append(">");
 
 		return sb.toString();
 	}
@@ -51,6 +56,7 @@ public final class LayoutUtil {
 	public static String locs(String... locations) {
 		return locs(Arrays.asList(locations));
 	}
+
 	public static String locs(List<String> locations) {
 		StringBuilder sb = new StringBuilder();
 		for (String location : locations) {

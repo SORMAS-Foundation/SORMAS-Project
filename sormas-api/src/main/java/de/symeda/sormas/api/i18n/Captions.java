@@ -1083,6 +1083,11 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
+	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
+	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";
+	String ExternalSurveillanceToolGateway_title = "ExternalSurveillanceToolGateway.title";
+	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
 	String facility = "facility";
 	String Facility_additionalInformation = "Facility.additionalInformation";
 	String Facility_archived = "Facility.archived";
@@ -1683,11 +1688,6 @@ public interface Captions {
 	String SurveillanceReport_reportingType = "SurveillanceReport.reportingType";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
-	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
-	String SurvnetGateway_send = "SurvnetGateway.send";
-	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
-	String SurvnetGateway_title = "SurvnetGateway.title";
-	String SurvnetGateway_unableToSend = "SurvnetGateway.unableToSend";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
