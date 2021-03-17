@@ -671,8 +671,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE
 				? task.getCaze()
 				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor()
-				|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			if (task.getAssigneeUser() != null) {
 				try {
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
@@ -703,8 +702,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE
 				? task.getCaze()
 				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null
-				&& (task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
+			if (task.getAssigneeUser() != null) {
 				try {
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())

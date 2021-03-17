@@ -43,6 +43,10 @@ public final class DiseaseConfigurationCache {
 	private List<Disease> caseBasedDiseases = new ArrayList<>();
 	private List<Disease> aggregateDiseases = new ArrayList<>();
 	private List<Disease> followUpEnabledDiseases = new ArrayList<>();
+
+	private Map<Disease, Boolean> extendedClassificationDiseases = new HashMap<>();
+	private Map<Disease, Boolean> extendedClassificationMultiDiseases = new HashMap<>();
+
 	private Map<Disease, Integer> followUpDurations = new HashMap<>();
 	private Map<Disease, Integer> caseFollowUpDurations = new HashMap<>();
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new HashMap<>();
@@ -74,6 +78,19 @@ public final class DiseaseConfigurationCache {
 				|| (configuration.getFollowUpEnabled() == null && disease.isDefaultFollowUpEnabled())) {
 				followUpEnabledDiseases.add(disease);
 			}
+
+			if (configuration.getExtendedClassification() == null) {
+				extendedClassificationDiseases.put(disease, disease.isDefaultExtendedClassification());
+			} else {
+				extendedClassificationDiseases.put(disease, configuration.getExtendedClassification());
+			}
+
+			if (configuration.getExtendedClassificationMulti() == null) {
+				extendedClassificationMultiDiseases.put(disease, disease.isDefaultExtendedClassificationMulti());
+			} else {
+				extendedClassificationMultiDiseases.put(disease, configuration.getExtendedClassificationMulti());
+			}
+
 			if (configuration.getFollowUpDuration() != null) {
 				followUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
@@ -231,6 +248,14 @@ public final class DiseaseConfigurationCache {
 		} else {
 			return primaryDiseases;
 		}
+	}
+
+	public boolean usesExtendedClassification(Disease disease) {
+		return extendedClassificationDiseases.get(disease);
+	}
+
+	public boolean usesExtendedClassificationMulti(Disease disease) {
+		return extendedClassificationMultiDiseases.get(disease);
 	}
 
 	public boolean hasFollowUp(Disease disease) {
