@@ -6879,4 +6879,80 @@ ALTER TABLE events_history ADD COLUMN internalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
+
+/** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
+CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    byteCount int;
+
+    alphabet bytea = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; /* RFC 4648/3548 */
+    SHIFT int = 5; /* SHIFT is the number of bits per output character, so the length of the output is the length of the input multiplied by 8/SHIFT, rounded up.*/
+    MASK int = 31;
+
+    result text = '';
+    outputLength int;
+    buffer int;
+    next int;
+    bitsLeft int;
+    pad int;
+    index int;
+
+BEGIN
+    byteCount = length(bytes);
+    outputLength = (byteCount * 8 + SHIFT - 1) / SHIFT;
+    if (separatorBlockSize > 0) THEN
+        outputLength = outputLength + outputLength / separatorBlockSize - 1;
+    END IF;
+
+    buffer = get_byte(bytes,0);
+    next = 1;
+    bitsLeft = 8;
+    while bitsLeft > 0 OR next < byteCount LOOP
+            if (bitsLeft < SHIFT) THEN
+                if (next < byteCount) THEN
+                    buffer = buffer << 8;
+                    buffer = buffer | (get_byte(bytes, next) & 255);
+                    next = next+1;
+                    bitsLeft = bitsLeft + 8;
+                ELSE
+                    pad = SHIFT - bitsLeft;
+                    buffer = buffer << pad;
+                    bitsLeft = bitsLeft + pad;
+                END IF;
+            END IF;
+
+            index = MASK & (buffer >> (bitsLeft - SHIFT));
+            bitsLeft = bitsLeft - SHIFT;
+            result = result || chr(get_byte(alphabet,index));
+
+            IF (separatorBlockSize > 0
+                AND (length(result) + 1) % (separatorBlockSize + 1) = 0
+                AND outputLength - length(result) > separatorBlockSize / 2) THEN
+                result = result || '-';
+            END IF;
+        END LOOP;
+    RETURN result;
+END;
+$BODY$;
+
+CREATE FUNCTION generate_base32_uuid()
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    uuidBytes bytea;
+
+BEGIN
+    uuidBytes = gen_random_bytes(16);
+    uuidBytes = set_byte(uuidBytes, 6, (get_byte(uuidBytes,6) & 15) | 64);  /* clear version, set to version 4 */
+    uuidBytes = set_byte(uuidBytes, 8, (get_byte(uuidBytes,8) & 63) | 128);  /* clear variant, set to to IETF variant */
+    return encode_base32(uuidBytes, 6);
+END;
+$BODY$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (349, 'Provide SQL function to generate a UUIDv4 encoded as base32 #4805');
+
 -- *** Insert new sql commands BEFORE this line ***
