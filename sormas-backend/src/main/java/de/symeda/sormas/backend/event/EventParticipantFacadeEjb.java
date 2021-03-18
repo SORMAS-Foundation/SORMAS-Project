@@ -631,7 +631,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Map<String, Long> contactCountMap = new HashMap<>();
 
-		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, batchedEventParticipantUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
 
@@ -641,7 +641,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(eventParticipantUuids);
+			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(batchedEventParticipantUuids);
 
 			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
 				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);

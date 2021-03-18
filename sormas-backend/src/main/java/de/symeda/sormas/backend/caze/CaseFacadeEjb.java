@@ -577,7 +577,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
-				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
+				caseRoot.get(Case.CASE_CLASSIFICATION),
+				caseRoot.get(Case.CLINICAL_CONFIRMATION), caseRoot.get(Case.EPIDEMIOLOGICAL_CONFIRMATION), caseRoot.get(Case.LABORATORY_DIAGNOSTIC_CONFIRMATION),
+				caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
 				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
 				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
 				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
@@ -3323,12 +3325,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Case.ARCHIVED), false), cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID));
-		List<String> uuids = em.createQuery(cq).getResultList();
+		List<String> caseUuids = em.createQuery(cq).getResultList();
 
-		IterableHelper.executeBatched(uuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, true));
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> caseService.updateArchived(batchedCaseUuids, true));
 		logger.debug(
 			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
-			uuids.size(),
+			caseUuids.size(),
 			daysAfterCaseGetsArchived,
 			DateHelper.durationMillies(startTime));
 	}
@@ -3338,7 +3340,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		long startTime = DateHelper.startTime();
 
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, archived));
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> caseService.updateArchived(batchedCaseUuids, archived));
 		logger.debug(
 			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
 			caseUuids.size(),

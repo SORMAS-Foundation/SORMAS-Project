@@ -155,6 +155,9 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String pointOfEntryDetails;
 	private CaseClassification caseClassification;
+	private YesNoUnknown clinicalConfirmation;
+	private YesNoUnknown epidemiologicalConfirmation;
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
 	private Boolean notACaseReasonNegativeTest;
 	private Boolean notACaseReasonPhysicianInformation;
 	private Boolean notACaseReasonDifferentPathogen;
@@ -308,6 +311,7 @@ public class CaseExportDto implements Serializable {
 						 String districtUuid, String district, String communityUuid, String community,
 						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
+						 YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
 						 Boolean notACaseReasonNegativeTest, Boolean notACaseReasonPhysicianInformation, Boolean notACaseReasonDifferentPathogen, Boolean notACaseReasonOther,
 						 String notACaseReasonDetails, InvestigationStatus investigationStatus, CaseOutcome outcome, Date outcomeDate, YesNoUnknown bloodOrganOrTissueDonated,
 						 FollowUpStatus followUpStatus, Date followUpUntil,
@@ -364,6 +368,9 @@ public class CaseExportDto implements Serializable {
 		this.district = district;
 		this.community = community;
 		this.caseClassification = caseClassification;
+		this.clinicalConfirmation = clinicalConfirmation;
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
 		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
 		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
@@ -821,6 +828,30 @@ public class CaseExportDto implements Serializable {
 
 	@Order(37)
 	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CLINICAL_CONFIRMATION)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public YesNoUnknown getClinicalConfirmation() { return clinicalConfirmation; }
+
+	@Order(38)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public YesNoUnknown getEpidemiologicalConfirmation() { return epidemiologicalConfirmation; }
+
+	@Order(39)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() { return laboratoryDiagnosticConfirmation; }
+
+	@Order(40)
+	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.INVESTIGATION_STATUS)
 	@ExportGroup(ExportGroupType.CORE)
@@ -828,7 +859,7 @@ public class CaseExportDto implements Serializable {
 		return investigationStatus;
 	}
 
-	@Order(38)
+	@Order(41)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -838,7 +869,7 @@ public class CaseExportDto implements Serializable {
 		return outcome;
 	}
 
-	@Order(39)
+	@Order(42)
 	@ExportTarget(caseExportTypes = {
 			CaseExportType.CASE_SURVEILLANCE,
 			CaseExportType.CASE_MANAGEMENT })
@@ -848,7 +879,7 @@ public class CaseExportDto implements Serializable {
 		return outcomeDate;
 	}
 
-	@Order(40)
+	@Order(43)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -859,7 +890,7 @@ public class CaseExportDto implements Serializable {
 		return bloodOrganOrTissueDonated;
 	}
 
-	@Order(41)
+	@Order(44)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -870,7 +901,7 @@ public class CaseExportDto implements Serializable {
 		return nosocomialOutbreak;
 	}
 
-	@Order(42)
+	@Order(45)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -881,7 +912,7 @@ public class CaseExportDto implements Serializable {
 		return infectionSetting;
 	}
 
-	@Order(43)
+	@Order(46)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -892,7 +923,7 @@ public class CaseExportDto implements Serializable {
 		return reInfection;
 	}
 
-	@Order(44)
+	@Order(47)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -903,7 +934,7 @@ public class CaseExportDto implements Serializable {
 		return previousInfectionDate;
 	}
 
-	@Order(50)
+	@Order(48)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -913,7 +944,7 @@ public class CaseExportDto implements Serializable {
 		return quarantine;
 	}
 
-	@Order(51)
+	@Order(49)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -923,7 +954,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineTypeDetails;
 	}
 
-	@Order(52)
+	@Order(50)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -933,7 +964,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineFrom;
 	}
 
-	@Order(53)
+	@Order(51)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -943,7 +974,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineTo;
 	}
 
-	@Order(54)
+	@Order(52)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -956,7 +987,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(55)
+	@Order(53)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -969,7 +1000,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(56)
+	@Order(54)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -982,7 +1013,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(57)
+	@Order(55)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -2108,6 +2139,18 @@ public class CaseExportDto implements Serializable {
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 	}
 
 	public void setNotACaseReasonNegativeTest(Boolean notACaseReasonNegativeTest) {
