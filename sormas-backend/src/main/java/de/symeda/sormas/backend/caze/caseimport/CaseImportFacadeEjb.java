@@ -400,7 +400,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 
-			Language language = userService.getCurrentUser().getLanguage();
+			Language language = I18nProperties.getUserLanguage();
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
