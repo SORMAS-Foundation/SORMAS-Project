@@ -49,15 +49,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
-import de.symeda.sormas.api.caze.*;
-import de.symeda.sormas.api.common.Page;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -115,6 +116,8 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -251,37 +254,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (filter != null) {
 			cq.where(filter);
 			cq.select(cb.count(caze.get(Case.ID)));
-
-			return em.createQuery(cq).getSingleResult();
-		}
-
-		return 0L;
-	}
-
-	//count cases based on the given filter
-	public Long countCasesForFilter(Date date, boolean includeExtendedChangeDateFilters) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> from = cq.from(getElementClass());
-		Predicate filter = createActiveCasesFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters);
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-			cq.select(cb.count(from.get(Case.ID)));
 
 			return em.createQuery(cq).getSingleResult();
 		}

@@ -17,24 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.Date;
-import java.util.List;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -99,7 +105,7 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/caseIndex")
+	@Path("/indexList")
 	public Page<CaseIndexDto> getIndexList(
 		@RequestBody CriteriaWithSorting<CaseCriteria> criteriaWithSorting,
 		@QueryParam("page") int page,
@@ -108,7 +114,7 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/caseIndexDetailed")
+	@Path("/detailedIndexList")
 	public Page<CaseIndexDetailedDto> getIndexDetailedList(
 		@RequestBody CriteriaWithSorting<CaseCriteria> criteriaWithSorting,
 		@QueryParam("page") int page,
