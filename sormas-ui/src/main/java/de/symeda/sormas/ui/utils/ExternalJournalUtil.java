@@ -20,6 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.SormasUI;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -175,6 +176,9 @@ public class ExternalJournalUtil {
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
 		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
+		if (result.isSuccess()) {
+			SormasUI.refreshView();
+		}
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
@@ -191,6 +195,9 @@ public class ExternalJournalUtil {
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
+			if (registerResult.isSuccess()) {
+				SormasUI.refreshView();
+			}
 		}
 	}
 
