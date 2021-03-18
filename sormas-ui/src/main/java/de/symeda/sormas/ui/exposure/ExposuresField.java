@@ -26,6 +26,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -89,11 +91,20 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		addGeneratedColumns(table);
 
-		if (epiDataParentClass == CaseDataDto.class) {
+		if (epiDataParentClass == CaseDataDto.class && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
 				COLUMN_PROBABLE_INFECTION_ENVIRONMENT,
+				COLUMN_TYPE_OF_PLACE,
+				COLUMN_DATE,
+				COLUMN_ADDRESS,
+				COLUMN_DESCRIPTION,
+				COLUMN_SOURCE_CASE_NAME);
+		} else if (epiDataParentClass == CaseDataDto.class) {
+			table.setVisibleColumns(
+				EDIT_COLUMN_ID,
+				COLUMN_EXPOSURE_TYPE,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
