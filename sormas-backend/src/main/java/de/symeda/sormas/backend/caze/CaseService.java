@@ -119,6 +119,8 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -1202,7 +1204,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return Collections.emptyList();
 		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<Case> cases = new LinkedList<>();
-			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+			IterableHelper
+				.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
 			return cases;
 		} else {
 			return getCasesByPersonUuids(personUuids);

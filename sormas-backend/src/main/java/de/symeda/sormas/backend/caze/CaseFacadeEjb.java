@@ -69,6 +69,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -420,6 +422,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caseService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
+	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
+		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, page * size, size, sortProperties);
+		long totalElementCount = count(caseCriteria);
+		return new Page<CaseIndexDto>(caseIndexList, page, size, totalElementCount);
+	}
+
 	@Override
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
 		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
@@ -450,6 +458,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
+		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, page * size, size, sortProperties);
+		long totalElementCount = count(caseCriteria);
+		return new Page<CaseIndexDetailedDto>(caseIndexDetailedList, page, size, totalElementCount);
 	}
 
 	@Override
@@ -2319,7 +2333,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-
 		return caseService.getDeletedUuidsSince(since);
 	}
 
