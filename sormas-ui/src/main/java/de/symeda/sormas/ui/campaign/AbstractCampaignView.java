@@ -24,6 +24,7 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
+import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -44,6 +45,10 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 			I18nProperties.getPrefixCaption("View", CampaignDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 			params);
 		menu.addView(
+			CampaignStatisticsView.VIEW_NAME,
+			I18nProperties.getPrefixCaption("View", CampaignStatisticsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+			params);
+		menu.addView(
 			CampaignsView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 			params);
@@ -52,6 +57,7 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 	public static void registerViews(Navigator navigator) {
 		navigator.addView(CampaignDataView.VIEW_NAME, CampaignDataView.class);
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
+		navigator.addView(CampaignStatisticsView.VIEW_NAME, CampaignStatisticsView.class);
 		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
 		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
 	}

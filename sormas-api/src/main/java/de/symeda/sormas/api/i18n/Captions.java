@@ -1969,6 +1969,8 @@ public interface Captions {
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
+	String View_campaign_campaignstatistics = "View.campaign.campaignstatistics";
+	String View_campaign_campaignstatistics_short = "View.campaign.campaignstatistics.short";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";
