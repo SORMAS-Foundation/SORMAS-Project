@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -669,8 +671,9 @@ public class StartupShutdownService {
 
 				if (serverCountry != null) {
 					Country country = countryService.getByUuid(serverCountry.getUuid());
-					em.createQuery("UPDATE Region set country = :server_country WHERE country is null")
+					em.createQuery("UPDATE Region set country = :server_country, changeDate = :change_date WHERE country is null")
 						.setParameter("server_country", country)
+						.setParameter("change_date", new Timestamp(new Date().getTime()))
 						.executeUpdate();
 				}
 				break;

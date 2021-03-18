@@ -125,9 +125,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
 		List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
-		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
-
-		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
+		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegionByServerCountry();
 		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
 		List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
 		List<Item> initialPlaceOfBirthFacilities =

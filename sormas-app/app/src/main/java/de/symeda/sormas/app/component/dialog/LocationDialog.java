@@ -106,7 +106,7 @@ public class LocationDialog extends FormDialog {
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		List<Item> initialCountries = InfrastructureHelper.loadCountries();
-		List<Item> initialRegions = InfrastructureHelper.loadRegions();
+		List<Item> initialRegions = InfrastructureHelper.loadRegionByServerCountry();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());

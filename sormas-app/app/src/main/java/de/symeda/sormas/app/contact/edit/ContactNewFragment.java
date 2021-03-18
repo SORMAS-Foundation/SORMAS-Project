@@ -82,7 +82,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
 		}
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
-		initialRegions = InfrastructureHelper.loadRegions();
+		initialRegions = InfrastructureHelper.loadRegionByServerCountry();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
