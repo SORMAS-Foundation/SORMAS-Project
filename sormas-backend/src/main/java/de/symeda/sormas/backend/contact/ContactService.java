@@ -44,8 +44,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -96,6 +94,8 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -1266,7 +1266,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 * not use {@link ContactCriteria}. This essentially removes
 	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb,  From<?, Contact> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
 
@@ -1351,7 +1351,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return Collections.emptyList();
 		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<Contact> contacts = new LinkedList<>();
-			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(personUuids)));
+			IterableHelper.executeBatched(
+				personUuids,
+				ModelConstants.PARAMETER_LIMIT,
+				batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
 			return contacts;
 		} else {
 			return getContactsByPersonUuids(personUuids);

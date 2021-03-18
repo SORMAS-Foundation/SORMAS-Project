@@ -152,6 +152,7 @@ public interface Strings {
 	String entityCaseVisits = "entityCaseVisits";
 	String entityClinicalVisit = "entityClinicalVisit";
 	String entityClinicalVisits = "entityClinicalVisits";
+	String entityCommunities = "entityCommunities";
 	String entityContact = "entityContact";
 	String entityContactFollowUps = "entityContactFollowUps";
 	String entityContacts = "entityContacts";
@@ -166,6 +167,7 @@ public interface Strings {
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
+	String entityFacilities = "entityFacilities";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPointsOfEntry = "entityPointsOfEntry";
