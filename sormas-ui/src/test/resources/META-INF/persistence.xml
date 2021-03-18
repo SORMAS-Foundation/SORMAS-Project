@@ -64,6 +64,7 @@
 		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
 		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
 		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
+		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>

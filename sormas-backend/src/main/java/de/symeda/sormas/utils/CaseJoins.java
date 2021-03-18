@@ -43,7 +43,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObjectJoins<T, Case> {
+public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private Join<Case, Person> person;
 	private Join<Case, Region> region;
