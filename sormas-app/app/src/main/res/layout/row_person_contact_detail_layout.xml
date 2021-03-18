@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="de.symeda.sormas.api.person.PersonContactDetailType" />
+        <import type="de.symeda.sormas.api.person.PhoneNumberType" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.person.PersonContactDetail" />
+
+        <variable
+            name="index"
+            type="java.lang.Integer" />
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemPersonContactDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:padding="@dimen/rowListItemPadding"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}">
+
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/personContactDetail_primaryContact"
+            app:value="@{data.primaryContact}"
+            style="@style/ControlSingleColumnStyle"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_owner"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.owner}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_ownerName"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                android:textAlignment="viewEnd"
+                app:value="@{data.ownerName}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_personContactDetailType"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.personContactDetailType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/personContactDetail_contactInformation"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                android:textAlignment="viewEnd"
+                app:value="@{data.contactInformation}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

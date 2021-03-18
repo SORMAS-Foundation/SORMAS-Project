@@ -396,6 +396,14 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		"value",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
+	public static void setValue(ControlTextReadField textField, boolean booleanValue, String valueFormat, String defaultValue) {
+		setValue(textField, Boolean.valueOf(booleanValue), valueFormat, defaultValue);
+	}
+
+	@BindingAdapter(value = {
+		"value",
+		"valueFormat",
+		"defaultValue" }, requireAll = false)
 	public static void setValue(ControlTextReadField textField, Boolean booleanValue, String valueFormat, String defaultValue) {
 		setValue(
 			textField,

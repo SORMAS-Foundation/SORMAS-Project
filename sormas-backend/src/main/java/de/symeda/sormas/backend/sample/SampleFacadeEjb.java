@@ -42,6 +42,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -66,10 +67,13 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
@@ -128,6 +132,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String DISTRICT_NAME = "districtName";
+
+	private static final int SIMILARITY_DATE_TIME_THRESHOLD = 2;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -216,6 +222,75 @@ public class SampleFacadeEjb implements SampleFacade {
 	public List<SampleDto> getByContactUuids(List<String> contactUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> root = cq.from(Sample.class);
+
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
+
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, cb, joins));
+
+		Predicate similarityFilter = null;
+		if (criteria.getLabSampleId() != null) {
+			similarityFilter = cb.equal(root.get(Sample.LAB_SAMPLE_ID), criteria.getLabSampleId());
+		}
+
+		Date sampleDateTime = criteria.getSampleDateTime();
+		SampleMaterial sampleMaterial = criteria.getSampleMaterial();
+
+		if (sampleDateTime != null && sampleMaterial != null) {
+			Predicate dateAndMaterialFilter = cb.and(
+				cb.between(
+					root.get(Sample.SAMPLE_DATE_TIME),
+					DateHelper.getStartOfDay(DateHelper.subtractDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD)),
+					DateHelper.getEndOfDay(DateHelper.addDays(sampleDateTime, SIMILARITY_DATE_TIME_THRESHOLD))),
+				cb.equal(root.get(Sample.SAMPLE_MATERIAL), sampleMaterial));
+
+			similarityFilter = CriteriaBuilderHelper.or(cb, similarityFilter, dateAndMaterialFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, similarityFilter);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Sample> samples = em.createQuery(cq).getResultList();
+
+		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
+			return getByCriteria(sampleCriteria);
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> root = cq.from(Sample.class);
+
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Sample> samples = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -638,8 +713,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sample.get(Sample.UUID));
 		} else if (caseCriteria != null) {
-			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext(cb, cq, joins.getCaze()));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));

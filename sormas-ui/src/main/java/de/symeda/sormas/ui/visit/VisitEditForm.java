@@ -113,7 +113,6 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
-
 		VerticalLayout layoutPhoneLink = new VerticalLayout();
 		layoutPhoneLink.setSpacing(false);
 		layoutPhoneLink.setMargin(false);

@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.customexport;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
@@ -34,9 +33,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationCriteria;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportGroupType;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 
@@ -54,18 +52,16 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	public ExportConfigurationsGrid(
 		ExportType exportType,
-		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		Boolean isPublicExport) {
 		this.exportType = exportType;
 
-		buildGrid(availableProperties, propertyCaptionProvider, isPublicExport);
+		buildGrid(availableProperties, isPublicExport);
 		reload(isPublicExport);
 	}
 
 	private void buildGrid(
-		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		Boolean isPublicExport) {
 
 		setSelectionMode(SelectionMode.NONE);
@@ -75,7 +71,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			.setCaption(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, ExportConfigurationDto.NAME))
 			.setExpandRatio(1);
 
-		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider, !isPublicExport))
+		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, !isPublicExport))
 			.setId(isPublicExport ? COLUMN_ACTIONS_PUBLIC : COLUMN_ACTIONS)
 			.setCaption("");
 	}
@@ -92,8 +88,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	private HorizontalLayout buildButtonLayout(
 		ExportConfigurationDto config,
-		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		boolean canEditOrDelete) {
 
 		HorizontalLayout layout = new HorizontalLayout();
@@ -110,7 +105,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
 			ControllerProvider.getCustomExportController()
-				.openEditExportConfigurationWindow(this, config, availableProperties, propertyCaptionProvider);
+				.openEditExportConfigurationWindow(this, config, availableProperties);
 		});
 		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);

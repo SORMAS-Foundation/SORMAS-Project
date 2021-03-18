@@ -52,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
@@ -92,7 +94,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import org.apache.commons.lang.StringUtils;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -233,7 +234,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -302,7 +303,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -354,6 +355,16 @@ public class EventFacadeEjb implements EventFacade {
 					expression = location.get(Location.HOUSE_NUMBER);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					break;
+				case EventIndexDto.REPORTING_USER:
+					expression = reportingUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = reportingUser.get(User.LAST_NAME);
+					break;
+				case EventIndexDto.RESPONSIBLE_USER:
+					expression = responsibleUser.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = responsibleUser.get(User.LAST_NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -520,7 +531,7 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
@@ -738,7 +749,8 @@ public class EventFacadeEjb implements EventFacade {
 		if (!districtFacade.getDistrictByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
-		if (location.getCommunity() != null && !communityFacade.getByUuid(location.getCommunity().getUuid()).getDistrict().equals(location.getDistrict())) {
+		if (location.getCommunity() != null
+			&& !communityFacade.getByUuid(location.getCommunity().getUuid()).getDistrict().equals(location.getDistrict())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
 		if (location.getFacility() != null) {
@@ -818,6 +830,13 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalId(source.getInternalId());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
@@ -914,6 +933,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+		
+		target.setInternalId(source.getInternalId());
+
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
@@ -962,6 +989,13 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return eventService.exists(uuid);
+	}
+
+	@Override
+	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
+		return eventService.exists(
+			(cb, eventRoot) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
 	}
 
 	@Override
