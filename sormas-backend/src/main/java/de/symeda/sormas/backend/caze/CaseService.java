@@ -49,6 +49,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.contact.ContactQueryContext;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -173,9 +176,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
-		CaseJoins<Case> joins = new CaseJoins<>(from);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, from);
 
-		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from, joins);
+		Predicate filter = createCriteriaFilter(caseCriteria, caseQueryContext);
 		if (!ignoreUserFilter) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
@@ -497,11 +500,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public <T extends AbstractDomainObject> Predicate createCriteriaFilter(
-		CaseCriteria caseCriteria,
-		CriteriaBuilder cb,
-		CriteriaQuery<?> cq,
-		From<T, Case> from,
-		CaseJoins<T> joins) {
+		CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
+
+		final From<?, Case> from = caseQueryContext.getRoot();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final CriteriaQuery cq = caseQueryContext.getQuery();
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
@@ -676,7 +680,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter),
 						cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), textFilter),
 						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
-						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
+						phoneNumberPredicate(cb, (Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);

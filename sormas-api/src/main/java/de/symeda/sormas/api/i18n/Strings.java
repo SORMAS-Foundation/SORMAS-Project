@@ -151,6 +151,7 @@ public interface Strings {
 	String entityCaseVisits = "entityCaseVisits";
 	String entityClinicalVisit = "entityClinicalVisit";
 	String entityClinicalVisits = "entityClinicalVisits";
+	String entityCommunities = "entityCommunities";
 	String entityContact = "entityContact";
 	String entityContactFollowUps = "entityContactFollowUps";
 	String entityContacts = "entityContacts";
@@ -165,8 +166,10 @@ public interface Strings {
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
+	String entityFacilities = "entityFacilities";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
+	String entityPersonContactDetail = "entityPersonContactDetail";
 	String entityPointsOfEntry = "entityPointsOfEntry";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
@@ -473,6 +476,7 @@ public interface Strings {
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUpdatePassword = "headingUpdatePassword";
+	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
 	String headingUserSettings = "headingUserSettings";
@@ -789,6 +793,7 @@ public interface Strings {
 	String messagePersonAddedAsEventParticipant = "messagePersonAddedAsEventParticipant";
 	String messagePersonAlreadyCaseInEvent = "messagePersonAlreadyCaseInEvent";
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
+	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";

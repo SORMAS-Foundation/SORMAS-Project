@@ -103,6 +103,29 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return entity;
 	}
 
+	public List<User> getAllByUserRoles(UserRole... userRoles) {
+		return getAllByUserRoles(Arrays.asList(userRoles));
+	}
+
+	public List<User> getAllByUserRoles(Collection<UserRole> userRoles) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+
+		Predicate filter = createDefaultFilter(cb, from);
+
+		if (userRoles.size() > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate rolesFilter = joinRoles.in(userRoles);
+			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
+			cq.where(filter);
+		}
+
+		cq.distinct(true).orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
 		return getAllByRegionAndUserRoles(region, Arrays.asList(userRoles), null);
 	}
@@ -321,10 +344,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Arrays.asList(userCriteria.getUserRole())));
 		}
 		if (userCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(Region.UUID), userCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(Region.UUID), userCriteria.getRegion().getUuid()));
 		}
 		if (userCriteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), userCriteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), userCriteria.getDistrict().getUuid()));
 		}
 		if (userCriteria.getFreeText() != null) {
 			String[] textFilters = userCriteria.getFreeText().split("\\s+");
