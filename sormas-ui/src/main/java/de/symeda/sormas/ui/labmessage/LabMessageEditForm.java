@@ -52,7 +52,7 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 		addFields(LabMessageDto.UUID, LabMessageDto.MESSAGE_DATE_TIME);
 		labMessageDetails = new Label();
 		Panel detailsPanel = new Panel(labMessageDetails);
-		detailsPanel.setWidth(550, Unit.PIXELS);
+		detailsPanel.setHeight(500, Unit.PIXELS);
 		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
 
