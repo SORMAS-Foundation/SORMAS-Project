@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -54,19 +55,22 @@ public class PersonsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
-			Button setMissingCoordinatesButton = ButtonHelper.createIconButton("Set Missing Coordinates", VaadinIcons.MAP_MARKER, e -> {
-				VaadinUiUtil.showConfirmationPopup(
-					"Caption",
-					new Label(
-						"This will set geocoordinates for every person with an address but no coordinates. Please be aware that this might take several minutes to complete. Persons with existing coordinates are unaffected."),
-					"Proceed",
-					"Cancel",
-					640,
-					confirmed -> {
-						long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates();
-						Notification.show("Changed Persons", "Changed " + changedPersons + " Persons", Notification.Type.TRAY_NOTIFICATION);
-					});
-			}, ValoTheme.BUTTON_PRIMARY);
+			Button setMissingCoordinatesButton =
+				ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates), VaadinIcons.MAP_MARKER, e -> {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
+						new Label(I18nProperties.getString(Strings.confirmationSetMissingGeoCoordinates)),
+						I18nProperties.getCaption(Captions.actionContinue),
+						I18nProperties.getCaption(Captions.actionCancel),
+						640,
+						confirmed -> {
+							long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates();
+							Notification.show(
+								I18nProperties.getCaption(Captions.personsUpdated),
+								String.format(I18nProperties.getString(Strings.notificationPersonsUpdated), changedPersons),
+								Notification.Type.TRAY_NOTIFICATION);
+						});
+				}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(setMissingCoordinatesButton);
 		}
 
