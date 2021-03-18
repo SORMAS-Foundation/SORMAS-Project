@@ -23,6 +23,12 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.region.ContinentFacade;
+import de.symeda.sormas.api.region.SubContinentFacade;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
+import de.symeda.sormas.backend.region.ContinentService;
+import de.symeda.sormas.backend.region.SubContinentFacadeEjb;
+import de.symeda.sormas.backend.region.SubContinentService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -321,6 +327,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
 
+	public ContinentFacade getContinentFacade() {
+		return getBean(ContinentFacadeEjb.ContinentFacadeEjbLocal.class);
+	}
+
+	public SubContinentFacade getSubContinentFacade() {
+		return getBean(SubContinentFacadeEjb.SubContinentFacadeEjbLocal.class);
+	}
+
 	public CountryFacade getCountryFacade() {
 		return getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
 	}
@@ -379,6 +393,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public PointOfEntryService getPointOfEntryService() {
 		return getBean(PointOfEntryService.class);
+	}
+
+	public ContinentService getContinentService() {
+		return getBean(ContinentService.class);
+	}
+
+	public SubContinentService getSubContinentService() {
+		return getBean(SubContinentService.class);
 	}
 
 	public CountryService getCountryService() {

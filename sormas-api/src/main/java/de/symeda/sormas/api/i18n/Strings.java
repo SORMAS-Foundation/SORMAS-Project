@@ -334,12 +334,14 @@ public interface Strings {
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";
 	String headingEditContacts = "headingEditContacts";
+	String headingEditContinent = "headingEditContinent";
 	String headingEditCountry = "headingEditCountry";
 	String headingEditEventParticipant = "headingEditEventParticipant";
 	String headingEditEvents = "headingEditEvents";
 	String headingEditLineListing = "headingEditLineListing";
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
+	String headingEditSubContinent = "headingEditSubContinent";
 	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
@@ -380,6 +382,7 @@ public interface Strings {
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
+	String headingImportContinents = "headingImportContinents";
 	String headingImportCountries = "headingImportCountries";
 	String headingImportCsvFile = "headingImportCsvFile";
 	String headingImportDistricts = "headingImportDistricts";
@@ -393,6 +396,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
+	String headingImportSubContinents = "headingImportSubContinents";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -603,11 +607,13 @@ public interface Strings {
 	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfContinents = "labelNumberOfContinents";
 	String labelNumberOfCountries = "labelNumberOfCountries";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
 	String labelNumberOfRegions = "labelNumberOfRegions";
+	String labelNumberOfSubContinents = "labelNumberOfSubContinents";
 	String labelNumberOfTemplates = "labelNumberOfTemplates";
 	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";

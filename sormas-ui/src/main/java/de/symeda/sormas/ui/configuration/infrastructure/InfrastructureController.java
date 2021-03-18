@@ -41,12 +41,14 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionIndexDto;
+import de.symeda.sormas.api.region.SubContinentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -82,6 +84,30 @@ public class InfrastructureController {
 		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
 		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
 		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createContinent() {
+		CommitDiscardWrapperComponent<ContinentEditForm> createComponent = getContinentEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editContinent(String uuid) {
+		ContinentDto continentDto = FacadeProvider.getContinentFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<ContinentEditForm> editComponent = getContinentEditComponent(continentDto);
+		String caption = I18nProperties.getString(Strings.headingEditContinent);
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createSubContinent() {
+		CommitDiscardWrapperComponent<SubContinentEditForm> createComponent = getSubContinentEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editSubContinent(String uuid) {
+		SubContinentDto subContinentDto = FacadeProvider.getSubContinentFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<SubContinentEditForm> editComponent = getSubContinentEditComponent(subContinentDto);
+		String caption = I18nProperties.getString(Strings.headingEditSubContinent);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -208,6 +234,60 @@ public class InfrastructureController {
 		}
 
 		return editComponent;
+	}
+
+	private CommitDiscardWrapperComponent<ContinentEditForm> getContinentEditComponent(ContinentDto continent) {
+		boolean isNew = continent == null;
+		ContinentEditForm editForm = new ContinentEditForm(isNew);
+		if (isNew) {
+			continent = ContinentDto.build();
+		}
+
+		editForm.setValue(continent);
+
+		final CommitDiscardWrapperComponent<ContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
+				editForm,
+				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+				editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			FacadeProvider.getContinentFacade().save(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(ContinentsView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editView, continent.isArchived(), continent.getUuid(), InfrastructureType.CONTINENT, null);
+		}
+
+		return editView;
+	}
+
+	private CommitDiscardWrapperComponent<SubContinentEditForm> getSubContinentEditComponent(SubContinentDto subContinent) {
+		boolean isNew = subContinent == null;
+		SubContinentEditForm editForm = new SubContinentEditForm(isNew);
+		if (isNew) {
+			subContinent = SubContinentDto.build();
+		}
+
+		editForm.setValue(subContinent);
+
+		final CommitDiscardWrapperComponent<SubContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
+				editForm,
+				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+				editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			FacadeProvider.getSubContinentFacade().save(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(SubContinentsView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editView, subContinent.isArchived(), subContinent.getUuid(), InfrastructureType.SUBCONTINENT, null);
+		}
+
+		return editView;
 	}
 
 	private CommitDiscardWrapperComponent<CountryEditForm> getCountryEditComponent(CountryDto country) {

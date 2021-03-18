@@ -16,6 +16,7 @@ public class CountryDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
+	public static final String SUB_CONTINENT = "subContinent";
 
 	private String defaultName;
 	private String externalId;
@@ -24,6 +25,7 @@ public class CountryDto extends EntityDto {
 	@Size(min = 1, max = 3)
 	private String unoCode;
 	private boolean archived;
+	private SubContinentReferenceDto subContinent;
 
 	public CountryDto(
 		Date creationDate,
@@ -85,6 +87,14 @@ public class CountryDto extends EntityDto {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	public SubContinentReferenceDto getSubContinent() {
+		return subContinent;
+	}
+
+	public void setSubContinent(SubContinentReferenceDto subContinent) {
+		this.subContinent = subContinent;
 	}
 
 	@Override

@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,19 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -104,12 +104,16 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
+import de.symeda.sormas.app.backend.region.Continent;
+import de.symeda.sormas.app.backend.region.ContinentDao;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.CountryDao;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
+import de.symeda.sormas.app.backend.region.SubContinent;
+import de.symeda.sormas.app.backend.region.SubContinentDao;
 import de.symeda.sormas.app.backend.report.AggregateReport;
 import de.symeda.sormas.app.backend.report.AggregateReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
@@ -156,7 +160,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 288;
+	public static final int DATABASE_VERSION = 289;
 
 	private static DatabaseHelper instance = null;
 
@@ -236,6 +240,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
+				TableUtils.clearTable(connectionSource, Continent.class);
+				TableUtils.clearTable(connectionSource, SubContinent.class);
 				TableUtils.clearTable(connectionSource, Country.class);
 				TableUtils.clearTable(connectionSource, Region.class);
 				TableUtils.clearTable(connectionSource, Campaign.class);
@@ -264,6 +270,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
 			TableUtils.createTableIfNotExists(connectionSource, Config.class);
 			TableUtils.createTable(connectionSource, Location.class);
+			TableUtils.createTable(connectionSource, Continent.class);
+			TableUtils.createTable(connectionSource, SubContinent.class);
 			TableUtils.createTable(connectionSource, Country.class);
 			TableUtils.createTable(connectionSource, Region.class);
 			TableUtils.createTable(connectionSource, District.class);
@@ -2074,6 +2082,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				// ATTENTION: break should only be done after last version
 				break;
+			case 288:
+				currentVersion = 288;
+				TableUtils.createTableIfNotExists(connectionSource, Continent.class);
+				TableUtils.createTableIfNotExists(connectionSource, SubContinent.class);
+				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subContinent_id BIGINT REFERENCES subContinent(id);");
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
@@ -2375,6 +2388,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, PortHealthInfo.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
+			TableUtils.dropTable(connectionSource, Continent.class, true);
+			TableUtils.dropTable(connectionSource, SubContinent.class, true);
 			TableUtils.dropTable(connectionSource, Country.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
 			TableUtils.dropTable(connectionSource, District.class, true);
@@ -2449,6 +2464,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new PointOfEntryDao((Dao<PointOfEntry, Long>) innerDao);
 				} else if (type.equals(Facility.class)) {
 					dao = (AbstractAdoDao<ADO>) new FacilityDao((Dao<Facility, Long>) innerDao);
+				} else if (type.equals(Continent.class)) {
+					dao = (AbstractAdoDao<ADO>) new ContinentDao((Dao<Continent, Long>) innerDao);
+				} else if (type.equals(SubContinent.class)) {
+					dao = (AbstractAdoDao<ADO>) new SubContinentDao((Dao<SubContinent, Long>) innerDao);
 				} else if (type.equals(Country.class)) {
 					dao = (AbstractAdoDao<ADO>) new CountryDao((Dao<Country, Long>) innerDao);
 				} else if (type.equals(Region.class)) {
@@ -2635,6 +2654,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static FacilityDao getFacilityDao() {
 		return (FacilityDao) getAdoDao(Facility.class);
+	}
+
+	public static ContinentDao getContinentDao() {
+		return (ContinentDao) getAdoDao(Continent.class);
+	}
+
+	public static SubContinentDao getSubContinentDao() {
+		return (SubContinentDao) getAdoDao(SubContinent.class);
 	}
 
 	public static CountryDao getCountryDao() {

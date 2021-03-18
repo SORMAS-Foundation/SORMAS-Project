@@ -20,6 +20,8 @@ public enum ExportEntityName {
     CONTACT_FOLLOW_UPS("entityContactFollowUps", "contact follow ups"),
     CONTACT_VISITS("entityContactVisits", "contact visits"),
     COUNTRIES("entityCountries", "countries"),
+    CONTINENTS("entityContinents", "continents"),
+    SUBCONTINENTS("entitySubContinents", "subcontinents"),
     DISTRICTS("entityDistricts", "districts"),
     EVENTS("entityEvents", "events"),
     EVENT_PARTICIPANTS("entityEventParticipants", "event participants"),

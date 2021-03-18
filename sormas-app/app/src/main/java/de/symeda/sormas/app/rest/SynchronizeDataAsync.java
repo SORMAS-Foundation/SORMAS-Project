@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -54,9 +54,11 @@ import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.region.SubContinentDtoHelper;
 import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
@@ -651,6 +653,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
+		// subcontinents
+		List<String> subContinentUuids = executeUuidCall(RetroProvider.getSubContinentFacade().pullUuids());
+		DatabaseHelper.getSubContinentDao().deleteInvalid(subContinentUuids);
+		// continents
+		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
+		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// campaigns
@@ -663,6 +671,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies
 
+		new ContinentDtoHelper().pullMissing(continentUuids);
+		new SubContinentDtoHelper().pullMissing(subContinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);

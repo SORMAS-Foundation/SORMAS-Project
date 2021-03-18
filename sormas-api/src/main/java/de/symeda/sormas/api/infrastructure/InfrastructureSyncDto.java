@@ -10,9 +10,11 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.SubContinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleConfigDto;
 
@@ -21,6 +23,8 @@ public class InfrastructureSyncDto implements Serializable {
 	private static final long serialVersionUID = -3874808120492307171L;
 
 	private boolean initialSyncRequired;
+	private List<ContinentDto> continents;
+	private List<SubContinentDto> subContinents;
 	private List<CountryDto> countries;
 	private List<RegionDto> regions;
 	private List<DistrictDto> districts;
@@ -43,6 +47,22 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setInitialSyncRequired(boolean initialSyncRequired) {
 		this.initialSyncRequired = initialSyncRequired;
+	}
+
+	public List<ContinentDto> getContinents() {
+		return continents;
+	}
+
+	public void setContinents(List<ContinentDto> continents) {
+		this.continents = continents;
+	}
+
+	public List<SubContinentDto> getSubContinents() {
+		return subContinents;
+	}
+
+	public void setSubContinents(List<SubContinentDto> subContinents) {
+		this.subContinents = subContinents;
 	}
 
 	public List<CountryDto> getCountries() {

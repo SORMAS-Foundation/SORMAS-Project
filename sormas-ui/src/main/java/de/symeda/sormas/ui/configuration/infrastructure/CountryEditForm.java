@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -17,7 +18,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             fluidRowLocs(CountryDto.ISO_CODE, CountryDto.DEFAULT_NAME) +
-            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE);
+            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE, CountryDto.SUB_CONTINENT);
     //@formatter:on
 
 	private final Boolean create;
@@ -51,10 +52,17 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		addField(CountryDto.ISO_CODE, TextField.class).setMaxLength(3);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
+		ComboBox subContinent = addField(CountryDto.SUB_CONTINENT, ComboBox.class);
+
+		subContinent.addItems(FacadeProvider.getSubContinentFacade().getAllActiveAsReference());
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CountryDto.DEFAULT_NAME, CountryDto.ISO_CODE);
+
+		if (!create) {
+			subContinent.setEnabled(false);
+		}
 	}
 
 	@Override

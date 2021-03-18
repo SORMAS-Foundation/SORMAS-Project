@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Collections;
-import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -17,15 +16,19 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CountryCriteria;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryIndexDto;
+import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubContinentReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -51,6 +54,7 @@ public class CountriesView extends AbstractConfigurationView {
 
 	// Filter
 	private SearchField searchField;
+	private ComboBox subContinentFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
@@ -80,6 +84,17 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		subContinentFilter = new ComboBox();
+		subContinentFilter.setId(CountryDto.SUB_CONTINENT);
+		subContinentFilter.setWidth(140, Unit.PIXELS);
+		subContinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUB_CONTINENT));
+		subContinentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		subContinentFilter.addValueChangeListener(e -> {
+			criteria.subContinent((SubContinentReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(subContinentFilter);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -250,6 +265,7 @@ public class CountriesView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameCodeLike());
+		subContinentFilter.setValue(criteria.getSubContinent());
 
 		applyingCriteria = false;
 	}

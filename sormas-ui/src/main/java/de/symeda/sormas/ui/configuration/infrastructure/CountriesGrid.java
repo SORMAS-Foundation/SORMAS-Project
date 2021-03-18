@@ -42,6 +42,7 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 		setColumns(
 			CountryIndexDto.ISO_CODE,
 			CountryIndexDto.DISPLAY_NAME,
+			CountryIndexDto.SUB_CONTINENT,
 			CountryIndexDto.EXTERNAL_ID,
 			CountryIndexDto.UNO_CODE,
 			CountryIndexDto.DEFAULT_NAME);

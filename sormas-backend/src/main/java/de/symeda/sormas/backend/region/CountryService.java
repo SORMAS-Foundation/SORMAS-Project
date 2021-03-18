@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -96,6 +97,10 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
     public Predicate buildCriteriaFilter(CountryCriteria criteria, CriteriaBuilder cb, Root<Country> from) {
 
         Predicate filter = null;
+        if (criteria.getSubContinent() != null) {
+            filter = CriteriaBuilderHelper
+                    .and(cb, filter, cb.equal(from.join(Country.SUB_CONTINENT, JoinType.LEFT).get(SubContinent.UUID), criteria.getSubContinent().getUuid()));
+        }
         if (criteria.getNameCodeLike() != null) {
             String[] textFilters = criteria.getNameCodeLike().split("\\s+");
             for (int i = 0; i < textFilters.length; i++) {

@@ -50,6 +50,8 @@ public final class I18nProperties {
 	private final ResourceBundle validationProperties;
 	private final ResourceBundle stringProperties;
 	private final ResourceBundle countryProperties;
+	private final ResourceBundle continentProperties;
+	private final ResourceBundle subcontinentProperties;
 
 	private static I18nProperties getInstance(Language language) {
 
@@ -319,10 +321,6 @@ public final class I18nProperties {
 		return getInstance(language).countryProperties.getString(nameLanguageKey);
 	}
 
-	private I18nProperties() {
-		this(defaultLanguage);
-	}
-
 	private I18nProperties(Language language) {
 
 		this.captionProperties = loadProperties("captions", language.getLocale());
@@ -331,6 +329,20 @@ public final class I18nProperties {
 		this.validationProperties = loadProperties("validations", language.getLocale());
 		this.stringProperties = loadProperties("strings", language.getLocale());
 		this.countryProperties = loadProperties("countries", language.getLocale());
+		this.continentProperties = loadProperties("continents", language.getLocale());
+		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
+	}
+	
+	private I18nProperties() {
+		this(defaultLanguage);
+	}
+
+	public static String getContinentName(String defaultName) {
+		return getInstance(userLanguage.get()).continentProperties.getString("continent." + defaultName + ".name");
+	}
+
+	public static String getSubContinentName(String defaultName) {
+		return getInstance(userLanguage.get()).subcontinentProperties.getString("subcontinent." + defaultName + ".name");
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {

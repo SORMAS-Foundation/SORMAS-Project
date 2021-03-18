@@ -61,10 +61,12 @@ import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.region.SubContinentFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -173,6 +175,22 @@ public class FacadeProvider {
 
 	public static FacilityFacade getFacilityFacade() {
 		return get().lookupEjbRemote(FacilityFacade.class);
+	}
+
+	public static ContinentFacade geContinentFacade() {
+		return get().lookupEjbRemote(ContinentFacade.class);
+	}
+
+	public static SubContinentFacade geSubContinentFacade() {
+		return get().lookupEjbRemote(SubContinentFacade.class);
+	}
+
+	public static ContinentFacade getContinentFacade() {
+		return get().lookupEjbRemote(ContinentFacade.class);
+	}
+
+	public static SubContinentFacade getSubContinentFacade() {
+		return get().lookupEjbRemote(SubContinentFacade.class);
 	}
 
 	public static CountryFacade getCountryFacade() {

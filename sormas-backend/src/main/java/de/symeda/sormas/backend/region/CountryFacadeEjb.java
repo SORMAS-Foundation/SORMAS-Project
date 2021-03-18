@@ -15,6 +15,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -45,6 +47,8 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private SubContinentService subContinentService;
 
 	@EJB
 	private UserService userService;
@@ -75,6 +79,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
+		Join<Object, Object> subContinent = country.join(Country.SUB_CONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
@@ -89,6 +94,9 @@ public class CountryFacadeEjb implements CountryFacade {
 				switch (sortProperty.propertyName) {
 				case CountryIndexDto.DISPLAY_NAME:
 					expression = country.get(Country.DEFAULT_NAME);
+					break;
+				case CountryIndexDto.SUB_CONTINENT:
+					expression = subContinent.get(SubContinent.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
@@ -205,6 +213,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
+		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
 
 		return dto;
 	}
@@ -225,6 +234,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(isoCode);
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
+		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
 
 		return dto;
 	}
@@ -237,6 +247,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		target.setSubContinent(subContinentService.getByUuid(source.getSubContinent().getUuid()));
 
 		return target;
 	}

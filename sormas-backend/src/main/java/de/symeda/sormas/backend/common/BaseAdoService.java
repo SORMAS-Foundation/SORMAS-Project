@@ -104,7 +104,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ADO> from = cq.from(getElementClass());
 		cq.select(cb.count(from));
-		cq.where(filterBuilder.apply(cb, from));
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -133,6 +136,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		Root<ADO> from = cq.from(getElementClass());
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		return em.createQuery(cq).getResultList();
 	}
 
