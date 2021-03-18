@@ -1681,11 +1681,13 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		for (Visit visit : visitService.getAllRelevantVisits(
+		Set<Visit> allRelevantVisits = visitService.getAllRelevantVisits(
 			caze.getPerson(),
 			caze.getDisease(),
 			CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
-			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()))) {
+			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
+
+		for (Visit visit : allRelevantVisits) {
 			caze.getVisits().add(visit); // Necessary for further logic during the case save process
 			visit.setCaze(caze);
 		}
