@@ -7,7 +7,7 @@ public class Page<T> implements Serializable {
     List<T> elements;
     int pageNumber = 0;
     int size = 50;
-    long totalNoElements=0;
+    long totalElementCount =0;
     boolean hasNext=false;
 
 
@@ -18,12 +18,12 @@ public class Page<T> implements Serializable {
     private Page() {
     }
 
-    public Page(List<T> elements, int pageNumber, int size, Long totalNoElements) {
+    public Page(List<T> elements, int pageNumber, int size, Long totalElementCount) {
         this.elements = elements;
-        this.totalNoElements = totalNoElements;
+        this.totalElementCount = totalElementCount;
         this.pageNumber = pageNumber;
         this.size = size;
-        hasNext = totalNoElements>(pageNumber+1)*size;
+        hasNext = totalElementCount >(pageNumber+1)*size;
     }
 
     public List<T> getElements() {
@@ -50,12 +50,12 @@ public class Page<T> implements Serializable {
         this.size = size;
     }
 
-    public Long getTotalNoElements() {
-        return totalNoElements;
+    public Long getTotalElementCount() {
+        return totalElementCount;
     }
 
-    public void setTotalNoElements(int totalNoElements) {
-        this.totalNoElements = totalNoElements;
+    public void setTotalElementCount(int totalElementCount) {
+        this.totalElementCount = totalElementCount;
     }
 
     public boolean isHasNext() {

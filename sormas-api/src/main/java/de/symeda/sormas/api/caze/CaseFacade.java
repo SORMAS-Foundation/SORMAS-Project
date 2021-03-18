@@ -59,12 +59,10 @@ public interface CaseFacade {
 
 	long count(CaseCriteria caseCriteria);
 
-	Page<CaseDataDto> getPagingAllActiveCasesAfter(Date date, int page, int size);
-
-
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
@@ -139,8 +137,6 @@ public interface CaseFacade {
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 
 	List<String> getArchivedUuidsSince(Date since);
-
-	public List<String> getPagingArchivedUuidsSince(Date since, int page, int size);
 
 	List<String> getDeletedUuidsSince(Date since);
 
@@ -226,5 +222,5 @@ public interface CaseFacade {
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 
-    List<CaseDataDto> getByPersonUuids(List<String> personUuids);
+	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 }
