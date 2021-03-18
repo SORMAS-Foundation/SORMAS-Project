@@ -157,7 +157,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
 		ComboBox districtField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.DISTRICT, 140));

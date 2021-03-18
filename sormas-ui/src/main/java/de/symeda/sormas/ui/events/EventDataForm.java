@@ -62,7 +62,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -340,8 +339,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
-
-		ComboBox countryField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.COUNTRY);
+		locationForm.setDistrictRequiredOnDefaultCountry(true);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
@@ -441,10 +439,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
-		countryField.addValueChangeListener(e -> {
-			configureInfrastructureFields(locationForm, countryField, regionField, districtField);
-		});
-
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
@@ -495,8 +489,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
 		}
 
-		configureInfrastructureFields(locationForm, countryField, regionField, districtField);
-
 		addValueChangeListener((e) -> {
 			ValidationUtils.initComponentErrorValidator(
 				externalTokenField,
@@ -506,22 +498,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				(externalToken) -> FacadeProvider.getEventFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
 
 		});
-	}
-
-	private void configureInfrastructureFields(LocationEditForm locationForm, ComboBox countryField, ComboBox regionField, ComboBox districtField) {
-		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
-		CountryReferenceDto countryDto = (CountryReferenceDto) countryField.getValue();
-		boolean enabledAndRequired = serverCountryDto == null
-			? countryDto == null
-			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
-
-		locationForm.getField(LocationDto.REGION).setEnabled(enabledAndRequired);
-		locationForm.getField(LocationDto.DISTRICT).setEnabled(enabledAndRequired);
-		locationForm.setFieldsRequirement(enabledAndRequired, LocationDto.REGION, LocationDto.DISTRICT);
-		if (!enabledAndRequired) {
-			regionField.setValue(null);
-			districtField.setValue(null);
-		}
 	}
 
 	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {

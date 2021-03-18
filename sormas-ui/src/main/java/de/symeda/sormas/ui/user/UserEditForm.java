@@ -174,7 +174,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+        region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
         addValidators(UserDto.USER_NAME, new UserNameValidator());

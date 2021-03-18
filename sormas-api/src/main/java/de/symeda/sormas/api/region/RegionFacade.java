@@ -29,6 +29,10 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface RegionFacade {
 
+	List<RegionReferenceDto> getAllActiveByServerCountry();
+
+	List<RegionReferenceDto> getAllActiveByCountry(String countryUuid);
+
 	List<RegionReferenceDto> getAllActiveByArea(String areaUuid);
 
 	List<RegionReferenceDto> getAllActiveAsReference();

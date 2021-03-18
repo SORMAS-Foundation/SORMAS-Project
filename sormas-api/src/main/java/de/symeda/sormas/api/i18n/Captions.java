@@ -1467,6 +1467,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String region = "region";
 	String Region_archived = "Region.archived";
+	String Region_country = "Region.country";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";

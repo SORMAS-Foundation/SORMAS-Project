@@ -124,7 +124,7 @@ public class CaseContactsView extends AbstractCaseView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (region != null) {

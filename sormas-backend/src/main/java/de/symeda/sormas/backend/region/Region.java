@@ -43,6 +43,7 @@ public class Region extends InfrastructureAdo {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
+	public static final String COUNTRY = "country";
 
 	private String name;
 	private String epidCode;
@@ -50,6 +51,7 @@ public class Region extends InfrastructureAdo {
 	private Float growthRate;
 	private String externalID;
 	private Area area;
+	private Country country;
 
 	public String getName() {
 		return name;
@@ -106,5 +108,14 @@ public class Region extends InfrastructureAdo {
 
 	public void setArea(Area area) {
 		this.area = area;
+	}
+
+	@ManyToOne
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 }

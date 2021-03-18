@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.utils.HtmlHelper;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -84,8 +82,8 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -96,6 +94,7 @@ import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisu
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -859,7 +858,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			LeafletMapUtil.addOtherCountriesOverlay(map);
 		}
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 
 		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
 

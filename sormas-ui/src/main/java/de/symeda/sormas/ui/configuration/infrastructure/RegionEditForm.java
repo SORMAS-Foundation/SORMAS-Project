@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -34,8 +35,9 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) + 
-					fluidRowLocs(RegionDto.AREA) + 
+			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
+					fluidRowLocs(RegionDto.COUNTRY) +
+					fluidRowLocs(RegionDto.AREA) +
 					fluidRowLocs(RegionDto.EXTERNAL_ID);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
@@ -69,6 +71,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 		addField(RegionDto.NAME, TextField.class);
 		addField(RegionDto.EPID_CODE, TextField.class);
+		ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
 		ComboBox area = addInfrastructureField(RegionDto.AREA);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
@@ -79,12 +82,15 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
 
+		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+	}
 
-		// area can always be changed, as it's not directly use for data references of other entities (e.g. case)
-//		if (!create) {
-//			area.setEnabled(false);
-//		}
+	@Override
+	public void setValue(RegionDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		getField(RegionDto.COUNTRY).setReadOnly(newFieldValue.getCountry() != null);
 	}
 
 	@Override

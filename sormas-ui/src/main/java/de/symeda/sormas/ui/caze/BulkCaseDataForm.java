@@ -335,7 +335,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		});
 		facilityType.setValue(FacilityType.HOSPITAL); // default
 
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
 		FieldHelper

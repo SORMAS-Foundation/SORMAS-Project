@@ -317,7 +317,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				}
 			}
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {

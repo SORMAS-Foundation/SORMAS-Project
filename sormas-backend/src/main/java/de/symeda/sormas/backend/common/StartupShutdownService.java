@@ -49,11 +49,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
@@ -64,6 +64,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -81,6 +82,9 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
@@ -147,6 +151,10 @@ public class StartupShutdownService {
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
 	private ServerAccessDataService serverAccessDataService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private CountryService countryService;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -654,6 +662,16 @@ public class StartupShutdownService {
 				for (Contact contact : contactService.getAll()) {
 					contactService.updateFollowUpUntilAndStatus(contact);
 					contactService.udpateContactStatus(contact);
+				}
+				break;
+			case 349:
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (serverCountry != null) {
+					Country country = countryService.getByUuid(serverCountry.getUuid());
+					em.createQuery("UPDATE Region set country = :server_country WHERE country is null")
+						.setParameter("server_country", country)
+						.executeUpdate();
 				}
 				break;
 

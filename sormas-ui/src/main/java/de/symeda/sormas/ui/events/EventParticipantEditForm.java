@@ -102,7 +102,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		LocationDto locationDto = event.getEventLocation();
 		boolean shouldBeRequired = locationDto.getRegion() == null || locationDto.getDistrict() == null;

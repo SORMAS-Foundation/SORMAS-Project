@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.v7.ui.ComboBox;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -140,7 +142,36 @@ public class InfrastructureFieldsHelper {
 		facilityDetailsField.setVisible(false);
 		facilityDetailsField.setRequired(false);
 
-		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+	}
+
+	/**
+	 * Updates the region combo items based on the selected country
+	 *
+	 * @param countryCombo
+	 *            country field
+	 * @param regionCombo
+	 *            region field
+	 * @param extraConfig
+	 *            function called that accepts a boolean.
+	 *            It is called with true if the server country or no country is selected in the country combo
+	 */
+	public static void updateRegionBasedOnCountry(ComboBox countryCombo, ComboBox regionCombo, Consumer<Boolean> extraConfig) {
+		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+		CountryReferenceDto countryDto = (CountryReferenceDto) countryCombo.getValue();
+		boolean isNoCountryOrServerCountry = serverCountryDto == null
+			? countryDto == null
+			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
+
+		if (isNoCountryOrServerCountry) {
+			FieldHelper.updateItems(regionCombo, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		} else {
+			FieldHelper.updateItems(regionCombo, FacadeProvider.getRegionFacade().getAllActiveByCountry(countryDto.getUuid()));
+		}
+
+		if (extraConfig != null) {
+			extraConfig.accept(isNoCountryOrServerCountry);
+		}
 	}
 
 	private static boolean isFacilityDetailsRequired(ComboBox facilityCombo) {

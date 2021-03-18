@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Collections;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
@@ -42,7 +44,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import java.util.Collections;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
@@ -127,7 +128,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 						? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true)
 						: null);
 		});
-		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		healthFacility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {

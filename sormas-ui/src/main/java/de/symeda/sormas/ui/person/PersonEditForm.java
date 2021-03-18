@@ -427,7 +427,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			cbPlaceOfBirthFacility,
 			tfPlaceOfBirthFacilityDetails,
 			true);
-		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
 

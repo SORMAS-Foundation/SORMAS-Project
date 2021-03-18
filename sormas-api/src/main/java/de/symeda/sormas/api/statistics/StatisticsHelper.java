@@ -291,7 +291,7 @@ public final class StatisticsHelper {
 				return StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 			case REGION:
 				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getRegionFacade()
-					.getAllActiveAsReference();
+					.getAllActiveByServerCountry();
 			case DISTRICT:
 				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getDistrictFacade()
 					.getAllActiveAsReference();
