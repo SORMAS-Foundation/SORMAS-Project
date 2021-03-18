@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -109,6 +110,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
+			System.out.println("Added buttons");
 		}
 	}
 
@@ -425,10 +427,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	private HorizontalLayout createGeoButton() {
-
 		HorizontalLayout geoButtonLayout = new HorizontalLayout();
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
+
+		Page.getCurrent().getStyles().add(".geocode-button-red {color: #cc0000 !important;}");
 
 		Button geocodeButton = ButtonHelper.createIconButtonWithCaption(
 			"geocodeButton",
@@ -438,6 +441,29 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ValoTheme.BUTTON_ICON_ONLY,
 			ValoTheme.BUTTON_BORDERLESS,
 			ValoTheme.BUTTON_LARGE);
+
+		// Highlight geocode-button when the address changes
+		ValueChangeListener addressListener = e -> geocodeButton.addStyleName("geocode-button-red");
+		// adding the valuechangelistener inside another valuechangelistener seems counterintuitive, but it prevents the listener from being executed when the initial field values are set
+		getField(LocationDto.STREET).addValueChangeListener(e -> {
+			getField(LocationDto.STREET).removeValueChangeListener(addressListener);
+			getField(LocationDto.STREET).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.POSTAL_CODE).addValueChangeListener(e -> {
+			getField(LocationDto.POSTAL_CODE).removeValueChangeListener(addressListener);
+			getField(LocationDto.POSTAL_CODE).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.CITY).addValueChangeListener(e -> {
+			getField(LocationDto.CITY).removeValueChangeListener(addressListener);
+			getField(LocationDto.CITY).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(e -> {
+			getField(LocationDto.HOUSE_NUMBER).removeValueChangeListener(addressListener);
+			getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(addressListener);
+		});
+
+		geocodeButton.addClickListener(e -> geocodeButton.removeStyleName("geocode-button-red"));
+		geocodeButton.removeStyleName("geocode-button-red");
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
