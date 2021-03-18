@@ -177,8 +177,8 @@ public class SurvnetGatewayFacadeEjbTest extends AbstractBeanTest {
 			homeAddress.setCity("Home city");
 			homeAddress.setPostalCode("12345");
 
-			p.setPrimaryPhone("12345678");
-			p.setPrimaryEmailAddress("test@email.com");
+			p.setPhone("12345678");
+			p.setEmailAddress("test@email.com");
 			p.setSex(Sex.MALE);
 
 			p.setBirthdateYYYY(1978);

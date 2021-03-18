@@ -136,7 +136,7 @@ public class ExternalJournalUtil {
 			parameters.put("uuid", person.getUuid());
 			parameters.put("firstname", person.getFirstName());
 			parameters.put("lastname", person.getLastName());
-			parameters.put("email", person.getPrimaryEmailAddress());
+			parameters.put("email", person.getEmailAddress());
 			byte[] document = createSymptomJournalForm(formUrl, parameters);
 
 			return new ByteArrayInputStream(document);

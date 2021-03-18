@@ -152,8 +152,8 @@ public class LabMessageController {
 		personDto.setBirthdateMM(labMessageDto.getPersonBirthDateMM());
 		personDto.setBirthdateYYYY(labMessageDto.getPersonBirthDateYYYY());
 		personDto.setSex(labMessageDto.getPersonSex());
-		personDto.setPrimaryPhone(labMessageDto.getPersonPhone());
-		personDto.setPrimaryEmailAddress(labMessageDto.getPersonEmail());
+		personDto.setPhone(labMessageDto.getPersonPhone());
+		personDto.setEmailAddress(labMessageDto.getPersonEmail());
 		return personDto;
 	}
 

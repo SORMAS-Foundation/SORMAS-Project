@@ -69,7 +69,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
 		PersonDto person = new PersonDto();
-		person.setPrimaryEmailAddress("test@test.de");
+		person.setEmailAddress("test@test.de");
 		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -82,9 +82,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenInvalidEmailIsNotExportable() {
 		PersonDto person = new PersonDto();
-		person.setPrimaryEmailAddress("test@test");
+		person.setEmailAddress("test@test");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
-		person.setPrimaryPhone("+496211218490");
+		person.setPhone("+496211218490");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -98,7 +98,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenValidPhoneIsExportable() {
 
 		PersonDto person = new PersonDto();
-		person.setPrimaryPhone("+496211218490");
+		person.setPhone("+496211218490");
 		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -112,9 +112,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenInvalidPhoneIsNotExportable() {
 
 		PersonDto person = new PersonDto();
-		person.setPrimaryPhone("0");
+		person.setPhone("0");
 		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
-		person.setPrimaryEmailAddress("test@test.de");
+		person.setEmailAddress("test@test.de");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -143,8 +143,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenIncompleteBirthdateIsNotExportable() {
 		PersonDto person = new PersonDto();
-		person.setPrimaryEmailAddress("test@test.de");
-		person.setPrimaryPhone("+496211218490");
+		person.setEmailAddress("test@test.de");
+		person.setPhone("+496211218490");
 		person.setBirthdateYYYY(2000);
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 		person.setBirthdateMM(6);

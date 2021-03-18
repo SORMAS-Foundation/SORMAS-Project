@@ -460,19 +460,19 @@ public class PersonDto extends PseudonymizableDto {
 		getPersonContactDetails().add(pcd);
 	}
 
-	public String getPrimaryPhone() {
+	public String getPhone() {
 		return getPersonContactInformation(PersonContactDetailType.PHONE);
 	}
 
-	public void setPrimaryPhone(String phone) {
+	public void setPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
 	}
 
-	public String getPrimaryEmailAddress() {
+	public String getEmailAddress() {
 		return getPersonContactInformation(PersonContactDetailType.EMAIL);
 	}
 
-	public void setPrimaryEmailAddress(String email) {
+	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
 	}
 

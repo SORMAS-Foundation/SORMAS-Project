@@ -285,18 +285,18 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(detailedPerson.getPrimaryEmailAddress());
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
 			if (configFacade.getPatientDiaryConfig().isActive()) {
 				try {
 					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPrimaryPhone(), "DE");
+					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
 					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
 					exportPerson.setPhone(internationalPhone);
 				} catch (NumberParseException e) {
-					exportPerson.setPhone(detailedPerson.getPrimaryPhone());
+					exportPerson.setPhone(detailedPerson.getPhone());
 				}
 			} else {
-				exportPerson.setPhone(detailedPerson.getPrimaryPhone());
+				exportPerson.setPhone(detailedPerson.getPhone());
 			}
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());

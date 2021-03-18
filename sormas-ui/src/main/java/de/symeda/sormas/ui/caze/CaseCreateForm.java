@@ -580,8 +580,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPrimaryPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPrimaryEmailAddress());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();

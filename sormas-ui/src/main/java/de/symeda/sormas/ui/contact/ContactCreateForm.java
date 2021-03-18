@@ -478,8 +478,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPrimaryPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPrimaryEmailAddress());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();

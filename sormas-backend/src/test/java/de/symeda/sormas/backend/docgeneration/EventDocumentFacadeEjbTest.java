@@ -64,7 +64,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto1 = PersonDto.build();
 		personDto1.setFirstName("Isidore");
 		personDto1.setLastName("Isou");
-		personDto1.setPrimaryPhone("+49 681 1234");
+		personDto1.setPhone("+49 681 1234");
 
 		getPersonFacade().savePerson(personDto1);
 
@@ -76,7 +76,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto2 = PersonDto.build();
 		personDto2.setFirstName("Guy");
 		personDto2.setLastName("Debord");
-		personDto2.setPrimaryPhone("+49 681 4567");
+		personDto2.setPhone("+49 681 4567");
 
 		getPersonFacade().savePerson(personDto2);
 
@@ -88,7 +88,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto3 = PersonDto.build();
 		personDto3.setFirstName("Georges");
 		personDto3.setLastName("Bataille");
-		personDto3.setPrimaryPhone("+49 681 8901");
+		personDto3.setPhone("+49 681 8901");
 
 		getPersonFacade().savePerson(personDto3);
 

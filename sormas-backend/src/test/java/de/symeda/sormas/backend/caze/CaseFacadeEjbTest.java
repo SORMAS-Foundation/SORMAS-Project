@@ -331,7 +331,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
-		cazePerson.setPrimaryPhone("40742140797");
+		cazePerson.setPhone("40742140797");
 		getPersonFacade().savePerson(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
@@ -540,7 +540,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
 			p.getAddress().setPostalCode("10115");
 			p.getAddress().setCity("Berlin");
-			p.setPrimaryPhone("+4930-90-1820");
+			p.setPhone("+4930-90-1820");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -554,7 +554,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
 			p.getAddress().setPostalCode("20095");
 			p.getAddress().setCity("Hamburg");
-			p.setPrimaryPhone("+49-30-901822");
+			p.setPhone("+49-30-901822");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -568,7 +568,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
 			p.getAddress().setPostalCode("80331");
 			p.getAddress().setCity("Munich");
-			p.setPrimaryPhone("+49 31 9018 20");
+			p.setPhone("+49 31 9018 20");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -672,8 +672,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final String primaryPhone = "0000444888";
 		final String primaryEmail = "primary@email.com";
-		cazePerson.setPrimaryPhone(primaryPhone);
-		cazePerson.setPrimaryEmailAddress(primaryEmail);
+		cazePerson.setPhone(primaryPhone);
+		cazePerson.setEmailAddress(primaryEmail);
 
 		cazePerson.getPersonContactDetails()
 			.add(
