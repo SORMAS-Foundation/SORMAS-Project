@@ -6911,20 +6911,21 @@ ALTER TABLE personcontactdetail_history OWNER TO sormas_user;
 CREATE INDEX IF NOT EXISTS idx_personcontactdetail_person_id ON personcontactdetail (person_id);
 CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personcontactdetail (primarycontact);
 
-CREATE OR REPLACE FUNCTION migratePersonContacts(_person_id bigint, _personcontactdetailtype varchar,
-                                                 _primarycontact boolean, _contactinformation varchar, _additionalformation varchar,
-                                                 _thirdparty boolean, _thirdpartyrole varchar, _thirdpartyname varchar)
-RETURNS VOID AS $$
-    BEGIN
-    INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, phonenumbertype, details, contactinformation, additionalinformation, thirdparty, thirdpartyrole, thirdpartyname)
-    VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), _person_id, _primarycontact, _personcontactdetailtype, null, null, _contactinformation, _additionalformation, _thirdparty, _thirdpartyrole, _thirdpartyname);
-    END;
-$$ LANGUAGE plpgsql;
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'PHONE', phone, false
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS FALSE;
 
-SELECT migratePersonContacts(id, 'PHONE', true, person.phone, null, false, null, null) from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS FALSE;
-SELECT migratePersonContacts(id, 'EMAIL', true, person.emailaddress,null, false, null, null) from person where (person.emailaddress <> '' and person.emailaddress is not null) IS TRUE;
-SELECT migratePersonContacts(id, 'PHONE', false, person.phone, null,true, null, person.phoneowner) from person where (person.phone <> '' and person.phone is not null) IS TRUE AND (person.phoneowner <> '' and person.phoneowner is not null) IS TRUE;
-SELECT migratePersonContacts(id, 'OTHER', false, null, person.generalpractitionerdetails,true, person.generalpractitionerdetails, null) from person where (person.generalpractitionerdetails <> '' and person.generalpractitionerdetails is not null) IS TRUE;
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'EMAIL', emailaddress, false
+FROM person WHERE (emailaddress <> '' AND emailaddress IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'PHONE', phone, true, phoneowner
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, additionalinformation, thirdparty, thirdpartyrole, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'OTHER', generalpractitionerdetails, true, 'General practitioner', generalpractitionerdetails
+FROM person WHERE (generalpractitionerdetails <> '' AND generalpractitionerdetails IS NOT NULL) IS TRUE;
 
 ALTER TABLE person DROP COLUMN phone;
 ALTER TABLE person DROP COLUMN phoneowner;
