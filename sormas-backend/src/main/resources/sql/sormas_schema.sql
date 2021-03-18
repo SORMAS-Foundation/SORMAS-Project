@@ -6879,6 +6879,8 @@ ALTER TABLE events_history ADD COLUMN internalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
+DROP FUNCTION IF EXISTS encode_base32;
+DROP FUNCTION IF EXISTS generate_base32_uuid;
 
 /** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
 CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
