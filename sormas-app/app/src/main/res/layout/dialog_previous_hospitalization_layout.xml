@@ -63,7 +63,7 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/caseHospitalization_intensiveCareUnit"
+                android:id="@+id/casePreviousHospitalization_intensiveCareUnit"
                 app:value="@={data.intensiveCareUnit}"
                 style="@style/ControlSingleColumnStyle" />
 
@@ -73,15 +73,15 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/caseHospitalization_intensiveCareUnitStart"
-                    dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                    android:id="@+id/casePreviousHospitalization_intensiveCareUnitStart"
+                    dependencyParentField="@{casePreviousHospitalizationIntensiveCareUnit}"
                     dependencyParentValue="@{YesNoUnknown.YES}"
                     app:value="@={data.intensiveCareUnitStart}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/caseHospitalization_intensiveCareUnitEnd"
-                    dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                    android:id="@+id/casePreviousHospitalization_intensiveCareUnitEnd"
+                    dependencyParentField="@{casePreviousHospitalizationIntensiveCareUnit}"
                     dependencyParentValue="@{YesNoUnknown.YES}"
                     app:value="@={data.intensiveCareUnitEnd}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />

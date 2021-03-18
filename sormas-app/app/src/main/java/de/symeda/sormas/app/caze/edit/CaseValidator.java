@@ -214,7 +214,48 @@ final class CaseValidator {
 			return false;
 		};
 
+		ResultCallback<Boolean> intensiveCareUnitStartCallback = () -> {
+			if (contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getValue() != null
+				&& contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance()
+					.compare(
+						contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getValue(),
+						contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getValue())
+					> 0) {
+					contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.beforeDate,
+							contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getCaption(),
+							contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getCaption()));
+					return true;
+				}
+			}
+			return false;
+		};
+
+		ResultCallback<Boolean> intensiveCareUnitEndCallback = () -> {
+			if (contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getValue() != null
+				&& contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance()
+					.compare(
+						contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getValue(),
+						contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getValue())
+					< 0) {
+					contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.afterDate,
+							contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.getCaption(),
+							contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.getCaption()));
+					return true;
+				}
+			}
+
+			return false;
+		};
+
 		contentBinding.casePreviousHospitalizationAdmissionDate.setValidationCallback(admissionDateCallback);
 		contentBinding.casePreviousHospitalizationDischargeDate.setValidationCallback(dischargeDateCallback);
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.setValidationCallback(intensiveCareUnitStartCallback);
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.setValidationCallback(intensiveCareUnitEndCallback);
 	}
 }
