@@ -1,8 +1,12 @@
-
 /* 1. Load CSV data into temp table */
 CREATE TABLE tmp_facility (name text, regionname text, districtname text, communityname text, city text, postalcode text, street text, housenumber text, phonenumber text, emailaddress text, 
 						   	contactFirstName text, contactLastName text, contactPhoneNumber text, contactEmailAddress text, additionalinformation text, 
 							areatype varchar(255), latitude double precision, longitude double precision, type varchar(255), publicownership boolean, archived boolean, externalid text);
+
+/** TODO
+	Adjust the path below to the one that provides the CSV file.
+	Note that the user running the postgres services needs to have access rights.
+**/
 COPY tmp_facility
 FROM 'C:\Users\Public\Documents\facilities.csv'
 DELIMITER ';'
