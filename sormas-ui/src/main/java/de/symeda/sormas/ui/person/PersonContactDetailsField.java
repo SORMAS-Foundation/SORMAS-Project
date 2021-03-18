@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
@@ -19,16 +21,19 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonContactDetailsField extends AbstractTableField<PersonContactDetailDto> {
 
-	private static final String OWNER = Captions.personContactDetailOwner;
-	private static final String OWNER_NAME = Captions.personContactDetailOwnerName;
+	private static final String COLUMN_PRIMARY = PersonContactDetailDto.PRIMARY_CONTACT;
+	private static final String COLUMN_OWNER = Captions.personContactDetailOwner;
+	private static final String COLUMN_OWNER_NAME = Captions.personContactDetailOwnerName;
 	private static final String THIS_PERSON = Captions.personContactDetailThisPerson;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 	private PersonDto thisPerson;
+	private boolean isPseudonymized;
 
 	public PersonContactDetailsField(
 		PersonDto thisPerson,
@@ -58,22 +63,22 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(PersonContactDetailDto.I18N_PREFIX));
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityPersonContactDetail));
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 
 				final Predicate<PersonContactDetailDto> sameTypePrimaryPredicate =
 					pcd -> pcd.getPersonContactDetailType() == entry.getPersonContactDetailType()
-						&& entry.getUuid() != pcd.getUuid()
+						&& !entry.getUuid().equals(pcd.getUuid())
 						&& pcd.isPrimaryContact();
 
 				if (entry.isPrimaryContact()) {
 					Optional<PersonContactDetailDto> optionalPersonContactDetailDto =
 						getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
-					if (optionalPersonContactDetailDto.isPresent()) {
-						VaadinUiUtil.showConfirmationPopup(
-							I18nProperties.getCaption(Strings.headingUpdatePersonContactDetails),
+					optionalPersonContactDetailDto.ifPresent(
+						personContactDetailDto -> VaadinUiUtil.showConfirmationPopup(
+							I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
 							new Label(I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate)),
 							questionWindow -> {
 								ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
@@ -82,13 +87,15 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 									@Override
 									protected void onConfirm() {
-										optionalPersonContactDetailDto.get().setPrimaryContact(false);
+										personContactDetailDto.setPrimaryContact(false);
+										commitCallback.accept(editForm.getValue());
 										questionWindow.close();
 									}
 
 									@Override
 									protected void onCancel() {
 										entry.setPrimaryContact(false);
+										commitCallback.accept(editForm.getValue());
 										questionWindow.close();
 									}
 								};
@@ -98,10 +105,10 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 								return confirmationComponent;
 							},
-							null);
-					}
+							null));
+				} else {
+					commitCallback.accept(editForm.getValue());
 				}
-				commitCallback.accept(editForm.getValue());
 			}
 		});
 
@@ -118,27 +125,35 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 	protected void updateColumns() {
 		Table table = getTable();
 
-		table.addGeneratedColumn(OWNER, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+		table.addGeneratedColumn(COLUMN_PRIMARY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;
+			return new Label(personContactDetailDto.isPrimaryContact() ? VaadinIcons.CHECK_CIRCLE.getHtml() : "", ContentMode.HTML);
+		});
+		table.addGeneratedColumn(COLUMN_OWNER, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;
 			return personContactDetailDto.isThirdParty() ? personContactDetailDto.getThirdPartyRole() : I18nProperties.getCaption(THIS_PERSON);
 		});
-		table.addGeneratedColumn(OWNER_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+		table.addGeneratedColumn(COLUMN_OWNER_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PersonContactDetailDto personContactDetailDto = (PersonContactDetailDto) itemId;
 			return personContactDetailDto.isThirdParty() ? personContactDetailDto.getThirdPartyName() : thisPerson.toReference().getCaption();
 		});
 
 		table.setVisibleColumns(
 			EDIT_COLUMN_ID,
-			PersonContactDetailDto.PRIMARY,
-			OWNER,
-			OWNER_NAME,
+			COLUMN_PRIMARY,
+			COLUMN_OWNER,
+			COLUMN_OWNER_NAME,
 			PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE,
 			PersonContactDetailDto.CONTACT_INFORMATION);
 
+		table.setCellStyleGenerator(
+			FieldAccessCellStyleGenerator
+				.withFieldAccessCheckers(PersonContactDetailDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
-		table.setColumnExpandRatio(PersonContactDetailDto.PRIMARY, 0);
-		table.setColumnExpandRatio(OWNER, 0);
-		table.setColumnExpandRatio(OWNER_NAME, 0);
+		table.setColumnExpandRatio(COLUMN_PRIMARY, 0);
+		table.setColumnExpandRatio(COLUMN_OWNER, 0);
+		table.setColumnExpandRatio(COLUMN_OWNER_NAME, 0);
 		table.setColumnExpandRatio(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE, 0);
 		table.setColumnExpandRatio(PersonContactDetailDto.CONTACT_INFORMATION, 0);
 
@@ -176,6 +191,10 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 			return true;
 
 		return false;
+	}
+
+	public void setPseudonymized(boolean isPseudonymized) {
+		this.isPseudonymized = isPseudonymized;
 	}
 
 	public void setThisPerson(PersonDto thisPerson) {

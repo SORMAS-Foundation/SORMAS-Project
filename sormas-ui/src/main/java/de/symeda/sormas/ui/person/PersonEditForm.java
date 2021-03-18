@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
@@ -113,6 +112,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox birthDateDay;
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
+	private boolean isPseudonymized;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -186,6 +186,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.personContext = personContext;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
+		this.isPseudonymized = isPseudonymized;
 
 		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
@@ -201,8 +202,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			new FieldVisibilityCheckers()
-				.add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
+			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
@@ -283,9 +283,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-
 		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
 		personContactDetailsField.setId(PersonDto.PERSON_CONTACT_DETAILS);
+		personContactDetailsField.setPseudonymized(isPseudonymized);
 		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
 		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
 
@@ -466,14 +466,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				Validations.duplicateExternalToken,
 				externalTokenWarningLabel,
 				(externalToken) -> FacadeProvider.getPersonFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
-		});
-	}
 
-	@Override
-	public void setValue(PersonDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-		PersonContactDetailsField field = (PersonContactDetailsField) getFieldGroup().getField(PersonDto.PERSON_CONTACT_DETAILS);
-		field.setThisPerson(newFieldValue);
+			personContactDetailsField.setThisPerson((PersonDto) e.getProperty().getValue());
+		});
 	}
 
 	private void addListenersToInfrastructureFields(

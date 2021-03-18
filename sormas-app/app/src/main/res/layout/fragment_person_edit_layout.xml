@@ -557,7 +557,8 @@
                 android:orientation="vertical"
                 android:paddingStart="@dimen/parentLayoutHorizontalPadding"
                 android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalPadding">
+                android:paddingTop="@dimen/parentLayoutVerticalPadding"
+                android:layout_marginBottom="@dimen/parentLayoutVerticalPadding">
 
                 <RelativeLayout
                     android:layout_width="match_parent"

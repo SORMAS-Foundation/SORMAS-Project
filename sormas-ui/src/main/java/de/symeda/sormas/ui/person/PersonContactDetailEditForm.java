@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.person;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 
 import java.util.Arrays;
 
@@ -20,17 +21,19 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactDetailDto> {
 
 	private static final String HTML_LAYOUT = divs(
-		fluidRowLocs(PersonContactDetailDto.THIRD_PARTY),
+		fluidRowLocsCss(CssStyles.VSPACE_3, PersonContactDetailDto.THIRD_PARTY),
 		fluidRowLocs(PersonContactDetailDto.THIRD_PARTY_ROLE, PersonContactDetailDto.THIRD_PARTY_NAME),
-		fluidRowLocs(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE, PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.DETAILS),
+		fluidRowLocs(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE, PersonContactDetailDto.PHONE_NUMBER_TYPE),
+		fluidRowLocs(PersonContactDetailDto.DETAILS, ""),
 		fluidRowLocs(PersonContactDetailDto.CONTACT_INFORMATION, PersonContactDetailDto.ADDITIONAL_INFORMATION),
-		fluidRowLocs(PersonContactDetailDto.PRIMARY));
+		fluidRowLocsCss(CssStyles.VSPACE_3, PersonContactDetailDto.PRIMARY_CONTACT));
 
 	public PersonContactDetailEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -52,7 +55,7 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 		addField(PersonContactDetailDto.DETAILS, TextField.class);
 		addField(PersonContactDetailDto.CONTACT_INFORMATION, TextField.class);
 		addField(PersonContactDetailDto.ADDITIONAL_INFORMATION, TextField.class);
-		addField(PersonContactDetailDto.PRIMARY, CheckBox.class);
+		addField(PersonContactDetailDto.PRIMARY_CONTACT, CheckBox.class);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

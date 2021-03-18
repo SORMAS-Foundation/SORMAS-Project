@@ -40,9 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.person.PersonContactDetailDto;
-import de.symeda.sormas.api.person.PersonContactDetailType;
-import de.symeda.sormas.api.person.PhoneNumberType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -87,8 +84,11 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -331,7 +331,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
-		cazePerson.setPhone("40742140797");
+		cazePerson.setPrimaryPhone("40742140797");
 		getPersonFacade().savePerson(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
@@ -540,7 +540,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
 			p.getAddress().setPostalCode("10115");
 			p.getAddress().setCity("Berlin");
-			p.setPhone("+4930-90-1820");
+			p.setPrimaryPhone("+4930-90-1820");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -554,7 +554,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
 			p.getAddress().setPostalCode("20095");
 			p.getAddress().setCity("Hamburg");
-			p.setPhone("+49-30-901822");
+			p.setPrimaryPhone("+49-30-901822");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -568,7 +568,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
 			p.getAddress().setPostalCode("80331");
 			p.getAddress().setCity("Munich");
-			p.setPhone("+49 31 9018 20");
+			p.setPrimaryPhone("+49 31 9018 20");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -672,12 +672,48 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final String primaryPhone = "0000444888";
 		final String primaryEmail = "primary@email.com";
-		cazePerson.setPhone(primaryPhone);
-		cazePerson.setEmailAddress(primaryEmail);
+		cazePerson.setPrimaryPhone(primaryPhone);
+		cazePerson.setPrimaryEmailAddress(primaryEmail);
 
-		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.PHONE, PhoneNumberType.LANDLINE, "", "0265590500", "", false, "", ""));
-		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.EMAIL, null, "", "secondary@email.com", "", false, "", ""));
-		cazePerson.getPersonContactDetails().add(new PersonContactDetailDto(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.PHONE,
+					PhoneNumberType.LANDLINE,
+					"",
+					"0265590500",
+					"",
+					false,
+					"",
+					""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.EMAIL,
+					null,
+					"",
+					"secondary@email.com",
+					"",
+					false,
+					"",
+					""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.OTHER,
+					null,
+					"SkypeID",
+					"personSkype",
+					"",
+					false,
+					"",
+					""));
 
 		getPersonFacade().savePerson(cazePerson);
 

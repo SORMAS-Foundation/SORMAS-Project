@@ -328,8 +328,8 @@ public class ContactController {
 		person.setBirthdateMM(createForm.getBirthdateMM());
 		person.setBirthdateDD(createForm.getBirthdateDD());
 		person.setSex(createForm.getSex());
-		person.setPhone(createForm.getPhone());
-		person.setEmailAddress(createForm.getEmailAddress());
+		person.setPrimaryPhone(createForm.getPhone());
+		person.setPrimaryEmailAddress(createForm.getEmailAddress());
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {

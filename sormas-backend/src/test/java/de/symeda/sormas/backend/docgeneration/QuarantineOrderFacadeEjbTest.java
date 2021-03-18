@@ -96,7 +96,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		personDto.setBirthdateMM(12);
 		personDto.setBirthdateDD(28);
 		personDto.setAddress(locationDto);
-		personDto.setPhone("+49 681 1234");
+		personDto.setPrimaryPhone("+49 681 1234");
 
 		getPersonFacade().savePerson(personDto);
 

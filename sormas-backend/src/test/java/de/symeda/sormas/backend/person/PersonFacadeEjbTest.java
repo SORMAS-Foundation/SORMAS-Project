@@ -282,8 +282,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("Klaus");
 		person.setLastName("Draufle");
 		person.setSex(Sex.MALE);
-		person.setEmailAddress("test@test.de");
-		person.setPhone("+496211218490");
+		person.setPrimaryEmailAddress("test@test.de");
+		person.setPrimaryPhone("+496211218490");
 		person.setBirthdateYYYY(2000);
 		person.setBirthdateMM(6);
 		person.setBirthdateDD(1);
@@ -305,8 +305,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getFirstName(), exportPerson.getFirstName());
 		assertEquals(person.getLastName(), exportPerson.getLastName());
 		assertEquals(person.getSex(), exportPerson.getSex());
-		assertEquals(person.getEmailAddress(), exportPerson.getEmailAddress());
-		assertEquals(person.getPhone(), exportPerson.getPhone());
+		assertEquals(person.getPrimaryEmailAddress(), exportPerson.getEmailAddress());
+		assertEquals(person.getPrimaryPhone(), exportPerson.getPhone());
 		assertEquals(person.getBirthdateYYYY(), exportPerson.getBirthdateYYYY());
 		assertEquals(person.getBirthdateMM(), exportPerson.getBirthdateMM());
 		assertEquals(person.getBirthdateDD(), exportPerson.getBirthdateDD());

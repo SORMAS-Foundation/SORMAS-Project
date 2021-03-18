@@ -113,7 +113,6 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
-
 		VerticalLayout layoutPhoneLink = new VerticalLayout();
 		layoutPhoneLink.setSpacing(false);
 		layoutPhoneLink.setMargin(false);
@@ -121,7 +120,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		Label labelPhoneLink = new Label((I18nProperties.getCaption(Captions.contactPersonPhoneNumber)));
 		labelPhoneLink.setPrimaryStyleName("v-caption");
 		layoutPhoneLink.addComponent(labelPhoneLink);
-		Link linkPhone = new Link(this.person.getPhone(), new ExternalResource(PHONE_LINK_PREFIX + this.person.getPhone()));
+		Link linkPhone = new Link(this.person.getPrimaryPhone(), new ExternalResource(PHONE_LINK_PREFIX + this.person.getPrimaryPhone()));
 		linkPhone.setWidth(100, Unit.PERCENTAGE);
 		layoutPhoneLink.addComponent(linkPhone);
 		getContent().addComponent(layoutPhoneLink, CONTACT_PERSON_PHONE_NUMBER_LOC);

@@ -74,8 +74,8 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			homeAddress.setCity("Home city");
 			homeAddress.setPostalCode("12345");
 
-			p.setPhone("12345678");
-			p.setEmailAddress("test@email.com");
+			p.setPrimaryPhone("12345678");
+			p.setPrimaryEmailAddress("test@email.com");
 			p.setSex(Sex.MALE);
 
 			p.setBirthdateYYYY(1978);
@@ -261,8 +261,8 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			homeAddress.setCity("Home city");
 			homeAddress.setPostalCode("12345");
 
-			p.setPhone("12345678");
-			p.setEmailAddress("test@email.com");
+			p.setPrimaryPhone("12345678");
+			p.setPrimaryEmailAddress("test@email.com");
 			p.setSex(Sex.MALE);
 
 			p.setBirthdateYYYY(1978);

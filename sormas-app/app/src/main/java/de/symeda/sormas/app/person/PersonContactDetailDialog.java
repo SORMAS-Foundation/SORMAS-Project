@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.person;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -37,9 +40,6 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPersonContactDetailEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class PersonContactDetailDialog extends FormDialog {
 
@@ -79,11 +79,12 @@ public class PersonContactDetailDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		contentBinding.personContactDetailPersonContactDetailType.initializeSpinner(DataUtils.getEnumItems(PersonContactDetailType.class, false));
+		contentBinding.personContactDetailPersonContactDetailType.initializeSpinner(DataUtils.getEnumItems(PersonContactDetailType.class, true));
 		contentBinding.personContactDetailPhoneNumberType.initializeSpinner(DataUtils.getEnumItems(PhoneNumberType.class, true));
 
 		contentBinding.personContactDetailPersonContactDetailType.addValueChangedListener(e -> {
-			if (e.getValue() != PersonContactDetailType.OTHER && (data.getPhoneNumberType() == null || data.getPhoneNumberType() != PhoneNumberType.OTHER)) {
+			if (e.getValue() != PersonContactDetailType.OTHER
+				&& (data.getPhoneNumberType() == null || data.getPhoneNumberType() != PhoneNumberType.OTHER)) {
 				contentBinding.personContactDetailDetails.setValue(null);
 				contentBinding.personContactDetailDetails.setVisibility(View.GONE);
 			} else {
@@ -91,7 +92,8 @@ public class PersonContactDetailDialog extends FormDialog {
 			}
 		});
 		contentBinding.personContactDetailPhoneNumberType.addValueChangedListener(e -> {
-			if (e.getValue() != PhoneNumberType.OTHER && (data.getPersonContactDetailType() == null || data.getPersonContactDetailType() != PersonContactDetailType.OTHER)) {
+			if (e.getValue() != PhoneNumberType.OTHER
+				&& (data.getPersonContactDetailType() == null || data.getPersonContactDetailType() != PersonContactDetailType.OTHER)) {
 				contentBinding.personContactDetailDetails.setValue(null);
 				contentBinding.personContactDetailDetails.setVisibility(View.GONE);
 			} else {

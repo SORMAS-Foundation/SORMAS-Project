@@ -17,13 +17,11 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -32,11 +30,9 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
-import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -831,6 +827,15 @@ public class ContactExportDto implements Serializable {
 
 	@Order(68)
 	@ExportProperty({
+		ContactDto.PERSON,
+		PersonDto.OTHER_CONTACT_DETAILS })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getOtherContactDetails() {
+		return otherContactDetails;
+	}
+
+	@Order(69)
+	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
@@ -838,7 +843,7 @@ public class ContactExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(69)
+	@Order(70)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_DETAILS })
@@ -847,7 +852,7 @@ public class ContactExportDto implements Serializable {
 		return occupationDetails;
 	}
 
-	@Order(70)
+	@Order(71)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ARMED_FORCES_RELATION_TYPE })
@@ -1126,15 +1131,6 @@ public class ContactExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {
 		return externalToken;
-	}
-
-	@Order(118)
-	@ExportProperty({
-			ContactDto.PERSON,
-			PersonDto.OTHER_CONTACT_DETAILS })
-	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getOtherContactDetails() {
-		return otherContactDetails;
 	}
 
 	public void setEventCount(Long eventCount) {

@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externaljournal;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +35,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import static org.junit.Assert.fail;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
@@ -69,7 +69,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
 		PersonDto person = new PersonDto();
-		person.setEmailAddress("test@test.de");
+		person.setPrimaryEmailAddress("test@test.de");
 		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -82,9 +82,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenInvalidEmailIsNotExportable() {
 		PersonDto person = new PersonDto();
-		person.setEmailAddress("test@test");
+		person.setPrimaryEmailAddress("test@test");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
-		person.setPhone("+496211218490");
+		person.setPrimaryPhone("+496211218490");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -98,7 +98,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenValidPhoneIsExportable() {
 
 		PersonDto person = new PersonDto();
-		person.setPhone("+496211218490");
+		person.setPrimaryPhone("+496211218490");
 		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -112,9 +112,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenInvalidPhoneIsNotExportable() {
 
 		PersonDto person = new PersonDto();
-		person.setPhone("0");
+		person.setPrimaryPhone("0");
 		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
-		person.setEmailAddress("test@test.de");
+		person.setPrimaryEmailAddress("test@test.de");
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
@@ -143,8 +143,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenIncompleteBirthdateIsNotExportable() {
 		PersonDto person = new PersonDto();
-		person.setEmailAddress("test@test.de");
-		person.setPhone("+496211218490");
+		person.setPrimaryEmailAddress("test@test.de");
+		person.setPrimaryPhone("+496211218490");
 		person.setBirthdateYYYY(2000);
 		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 		person.setBirthdateMM(6);
@@ -185,6 +185,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		// Define relevant changes
 		HashMap<String, Object> relevantChanges = new HashMap<String, Object>() {
+
 			{
 				put(Person.FIRST_NAME, "Heinz");
 				put(Person.LAST_NAME, "Müller");

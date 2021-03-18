@@ -15,17 +15,20 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -74,9 +77,6 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
@@ -380,7 +380,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		return newAddresses;
 	}
 
-
 	private ObservableList<PersonContactDetail> getPersonContactDetails() {
 		ObservableArrayList<PersonContactDetail> personContactDetails = new ObservableArrayList<>();
 		personContactDetails.addAll(record.getPersonContactDetails());
@@ -413,9 +412,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		onPersonContactDetailItemClickListener = (v, item) -> {
 			final PersonContactDetail personContactDetail = (PersonContactDetail) item;
 			final PersonContactDetail personContactDetailClone = (PersonContactDetail) personContactDetail.clone();
-			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetailClone, record, getActivityRootData(), false);
+			final PersonContactDetailDialog dialog =
+				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetailClone, record, getActivityRootData(), false);
 
-			dialog.setPositiveCallback(personContactDetailDialogCallback(personContactDetail, dialog, () -> updatePersonContactDetails()));
+			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetailClone, dialog, () -> {
+				record.getPersonContactDetails().set(record.getPersonContactDetails().indexOf(personContactDetail), personContactDetailClone);
+				updatePersonContactDetails();
+			}));
 
 			dialog.setDeleteCallback(() -> {
 				removePersonContactDetail(personContactDetail);
@@ -432,58 +435,23 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 			dialog.setPositiveCallback(() -> addAddress(address));
 
-			dialog.setDeleteCallback(() -> removeAddress(address));
-
 			dialog.show();
 			dialog.configureAsPersonAddressDialog(false);
 		});
 
 		getContentBinding().btnAddPersonContactDetail.setOnClickListener(v -> {
 			final PersonContactDetail personContactDetail = DatabaseHelper.getPersonContactDetailDao().build();
-			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetail, record, getActivityRootData(), true);
+			final PersonContactDetailDialog dialog =
+				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetail, record, getActivityRootData(), true);
 
-			dialog.setPositiveCallback(personContactDetailDialogCallback(personContactDetail, dialog, () -> addPersonContactDetail(personContactDetail)));
-
-			dialog.setDeleteCallback(() -> {
-				removePersonContactDetail(personContactDetail);
-				dialog.dismiss();
-			});
-
+			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetail, dialog, () -> {
+				record.getPersonContactDetails().add(0, personContactDetail);
+				updatePersonContactDetails();
+			}));
 			dialog.show();
+
 			dialog.configureAsPersonContactDetailDialog(false);
 		});
-	}
-
-	private Callback personContactDetailDialogCallback(PersonContactDetail personContactDetail, PersonContactDetailDialog dialog, Callback callback) {
-		return () -> {
-			final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
-			for (PersonContactDetail pcd : personContactDetails) {
-				if (pcd.getPersonContactDetailType() == personContactDetail.getPersonContactDetailType()
-						&& personContactDetail.getUuid() != pcd.getUuid()
-						&& pcd.isPrimaryContact()) {
-
-					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
-							BaseActivity.getActiveActivity(),
-							I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
-							I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate),
-							R.string.yes,
-							R.string.no);
-
-					confirmationDialog.setPositiveCallback(() -> {
-						pcd.setPrimaryContact(false);
-						callback.call();
-
-					});
-					confirmationDialog.setNegativeCallback(() -> {
-						personContactDetail.setPrimaryContact(false);
-						callback.call();
-					});
-					confirmationDialog.show();
-					break;
-				}
-			}
-			dialog.dismiss();
-		};
 	}
 
 	private void updateAddresses() {
@@ -511,9 +479,38 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		updatePersonContactDetails();
 	}
 
-	private void addPersonContactDetail(PersonContactDetail item) {
-		record.getPersonContactDetails().add(0, item);
-		updatePersonContactDetails();
+	private void checkExistingPrimaryContactDetails(PersonContactDetail item, PersonContactDetailDialog dialog, Callback callback) {
+		final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
+		for (PersonContactDetail pcd : personContactDetails) {
+			if (pcd.getPersonContactDetailType() == item.getPersonContactDetailType()
+				&& !item.getUuid().equals(pcd.getUuid())
+				&& pcd.isPrimaryContact()) {
+
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					BaseActivity.getActiveActivity(),
+					I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
+					I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate),
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					pcd.setPrimaryContact(false);
+					callback.call();
+				});
+
+				confirmationDialog.setNegativeCallback(() -> {
+					item.setPrimaryContact(false);
+					callback.call();
+				});
+
+				confirmationDialog.show();
+				dialog.dismiss();
+				return;
+			}
+		}
+
+		callback.call();
+		dialog.dismiss();
 	}
 
 	// Overrides

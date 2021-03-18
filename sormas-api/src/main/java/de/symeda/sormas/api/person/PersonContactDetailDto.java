@@ -8,7 +8,7 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "PersonContactDetail";
 
 	public static final String PERSON = "person";
-	public static final String PRIMARY = "primaryContact";
+	public static final String PRIMARY_CONTACT = "primaryContact";
 	public static final String PERSON_CONTACT_DETAILS_TYPE = "personContactDetailType";
 	public static final String PHONE_NUMBER_TYPE = "phoneNumberType";
 	public static final String DETAILS = "details";

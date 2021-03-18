@@ -187,7 +187,7 @@ public class ExternalJournalService {
 	 * @param personUuid
 	 *            uuid of person already registered in the external journal
 	 * @param newFollowUpUntilDate
-	 * 			  the updated follow-up end date
+	 *            the updated follow-up end date
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
@@ -366,8 +366,8 @@ public class ExternalJournalService {
 	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
-		String email = person.getEmailAddress();
-		String phone = person.getPhone();
+		String email = person.getPrimaryEmailAddress();
+		String phone = person.getPrimaryPhone();
 		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
 		if (!hasPhoneOrEmail) {
 			validationErrors.add(NO_PHONE_OR_EMAIL);
@@ -411,7 +411,7 @@ public class ExternalJournalService {
 	}
 
 	private boolean isEmailAvailable(PersonDto person) {
-		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getPrimaryEmailAddress())
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()
@@ -484,7 +484,8 @@ public class ExternalJournalService {
 			.collect(Collectors.joining("\n"));
 	}
 
-	/** Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	/**
+	 * Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to DELETED if successful.
 	 *
 	 * @param person

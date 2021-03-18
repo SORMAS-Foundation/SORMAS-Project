@@ -48,7 +48,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseQueryContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -93,6 +92,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -285,18 +285,18 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
+			exportPerson.setEmailAddress(detailedPerson.getPrimaryEmailAddress());
 			if (configFacade.getPatientDiaryConfig().isActive()) {
 				try {
 					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
+					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPrimaryPhone(), "DE");
 					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
 					exportPerson.setPhone(internationalPhone);
 				} catch (NumberParseException e) {
-					exportPerson.setPhone(detailedPerson.getPhone());
+					exportPerson.setPhone(detailedPerson.getPrimaryPhone());
 				}
 			} else {
-				exportPerson.setPhone(detailedPerson.getPhone());
+				exportPerson.setPhone(detailedPerson.getPrimaryPhone());
 			}
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
@@ -394,8 +394,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+			.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
@@ -423,8 +423,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+			.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 

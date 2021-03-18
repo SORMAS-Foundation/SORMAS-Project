@@ -20,13 +20,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <import type="de.symeda.sormas.api.person.PersonContactDetailType" />
-
         <import type="de.symeda.sormas.api.person.PhoneNumberType" />
-
-        <import type="de.symeda.sormas.api.i18n.I18nProperties" />\
-
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Captions" />
 
         <variable
@@ -53,7 +49,7 @@
         android:elevation="2dp"
         android:onClickListener="@{(view) -> callback.onClick(view, data)}">
 
-        <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/personContactDetail_primaryContact"
             app:value="@{data.primaryContact}"
             style="@style/ControlSingleColumnStyle"/>

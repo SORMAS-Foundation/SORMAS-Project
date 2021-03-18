@@ -431,6 +431,7 @@
                     android:id="@+id/person_externalToken"
                     app:value="@{data.externalToken}"
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
+
             </LinearLayout>
 
             <LinearLayout

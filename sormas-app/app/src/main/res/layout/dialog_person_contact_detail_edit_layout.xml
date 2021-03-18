@@ -52,6 +52,7 @@
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/personContactDetail_thirdParty"
                 style="@style/ControlSingleColumnStyle"
+                app:caption="@{I18nProperties.getCaption(Captions.personContactDetailThirdParty)}"
                 app:value="@={data.thirdParty}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

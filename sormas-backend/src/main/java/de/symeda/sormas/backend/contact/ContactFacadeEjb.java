@@ -57,7 +57,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseQueryContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -503,10 +502,10 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddressFacility().get(Facility.NAME),
 					joins.getAddressFacility().get(Facility.UUID),
 					joins.getAddress().get(Location.FACILITY_DETAILS),
-					((Expression<String>)contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY)),
-					((Expression<String>)contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
-					((Expression<String>)contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY)),
-					((Expression<String>)contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)),
+					((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY)),
+					((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
+					((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY)),
+					((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
 					joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
@@ -709,10 +708,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 			contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
-		Predicate filter = CriteriaBuilderHelper.and(
-			cb,
-			listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext),
-			cb.isNotEmpty(contactRoot.get(Contact.VISITS)));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext), cb.isNotEmpty(contactRoot.get(Contact.VISITS)));
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contactRoot.get(Contact.UUID));
 		cq.where(filter);
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
@@ -775,7 +772,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
 
 		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
-		// fixme - why was this added?
 		joins.getVisits();
 
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);

@@ -25,9 +25,6 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.vaadin.v7.ui.CheckBox;
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -41,12 +38,14 @@ import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -69,6 +68,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -167,7 +167,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField firstContactDate = addField(ContactDto.FIRST_CONTACT_DATE, DateField.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
 		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
@@ -477,8 +478,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPrimaryPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPrimaryEmailAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();

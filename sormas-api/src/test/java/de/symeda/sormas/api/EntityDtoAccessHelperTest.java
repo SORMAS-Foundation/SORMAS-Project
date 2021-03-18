@@ -66,7 +66,7 @@ public class EntityDtoAccessHelperTest {
 		personDto.setBirthdateDD(26);
 		personDto.setBirthdateMM(11);
 		personDto.setBirthdateYYYY(1973);
-		personDto.setPhone("+49 681 1234");
+		personDto.setPrimaryPhone("+49 681 1234");
 
 		LocationDto address = new LocationDto();
 		address.setStreet("Elm Street");

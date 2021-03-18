@@ -169,6 +169,7 @@ public interface Strings {
 	String entityFacilities = "entityFacilities";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
+	String entityPersonContactDetail = "entityPersonContactDetail";
 	String entityPointsOfEntry = "entityPointsOfEntry";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";

@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
@@ -113,7 +114,7 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		phoneOwnerSubQuery.select(
 			cb.selectCase()
 				.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
-				.otherwise(cb.literal(Captions.personContactDetailThisPerson)));
+				.otherwise(cb.literal(I18nProperties.getCaption(Captions.personContactDetailThisPerson))));
 		return phoneOwnerSubQuery;
 	}
 }
