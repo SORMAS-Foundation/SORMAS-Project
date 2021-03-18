@@ -6,7 +6,7 @@
     <notes><![CDATA[
     Addresses another software: https://github.com/google/guava
     ]]></notes>
-	<filePath regex="true">.*\failureaccess.*\.jar</filePath>
+	<filePath regex="true">.*\bfailureaccess.*\.jar</filePath>
     <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
   </suppress>
   <suppress>
