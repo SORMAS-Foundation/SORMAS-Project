@@ -386,7 +386,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			String dateFormat = currentUser.getLanguage().getDateFormat();
+			String dateFormat = I18nProperties.getUserLanguage().getDateFormat();
 			try {
 				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, dateFormat));
 				return true;
