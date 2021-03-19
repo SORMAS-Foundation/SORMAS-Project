@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -57,9 +58,14 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	@Override
 	public List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
 		return continentService.getByDefaultName(name, includeArchivedEntities)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(ContinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Collection<String> continentUuids) {
+		return continentService.isUsedInInfrastructureData(continentUuids, Subcontinent.CONTINENT, Subcontinent.class);
 	}
 
 	@Override
@@ -84,12 +90,12 @@ public class ContinentFacadeEjb implements ContinentFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-					case ContinentDto.EXTERNAL_ID:
-					case ContinentDto.DEFAULT_NAME:
-						expression = continent.get(sortProperty.propertyName);
-						break;
-					default:
-						throw new IllegalArgumentException(sortProperty.propertyName);
+				case ContinentDto.EXTERNAL_ID:
+				case ContinentDto.DEFAULT_NAME:
+					expression = continent.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -101,7 +107,13 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		cq.select(continent);
 
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
+			return em.createQuery(cq)
+				.setFirstResult(first)
+				.setMaxResults(max)
+				.getResultList()
+				.stream()
+				.map(this::toIndexDto)
+				.collect(Collectors.toList());
 		} else {
 			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
 		}
@@ -128,9 +140,9 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	@Override
 	public List<ContinentDto> getAllAfter(Date date) {
 		return continentService.getAll((cb, root) -> continentService.createChangeDateFilter(cb, root, date))
-				.stream()
-				.map(this::toDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(this::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -146,10 +158,10 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	@Override
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
 		return continentService.getAllActive(Continent.DEFAULT_NAME, true)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.sorted(Comparator.comparing(ContinentReferenceDto::getCaption))
-				.collect(Collectors.toList());
+			.stream()
+			.map(ContinentFacadeEjb::toReferenceDto)
+			.sorted(Comparator.comparing(ContinentReferenceDto::getCaption))
+			.collect(Collectors.toList());
 	}
 
 	@Override

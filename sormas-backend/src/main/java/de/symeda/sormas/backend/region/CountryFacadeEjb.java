@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
-		Join<Object, Object> subcontinent = country.join(Country.SUB_CONTINENT, JoinType.LEFT);
+		Join<Object, Object> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
@@ -96,7 +97,7 @@ public class CountryFacadeEjb implements CountryFacade {
 				case CountryIndexDto.DISPLAY_NAME:
 					expression = country.get(Country.DEFAULT_NAME);
 					break;
-				case CountryIndexDto.SUB_CONTINENT:
+				case CountryIndexDto.SUBCONTINENT:
 					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
@@ -306,6 +307,21 @@ public class CountryFacadeEjb implements CountryFacade {
 		String countryName = configFacadeEjb.getCountryName();
 		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Collection<String> countryUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Country> root = cq.from(Country.class);
+		Join<Country, Subcontinent> subcontinentJoin = root.join(Country.SUBCONTINENT);
+
+		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(Subcontinent.ARCHIVED)), root.get(Country.UUID).in(countryUuids)));
+
+		cq.select(root.get(Country.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	// Need to be in the same order as in the constructor

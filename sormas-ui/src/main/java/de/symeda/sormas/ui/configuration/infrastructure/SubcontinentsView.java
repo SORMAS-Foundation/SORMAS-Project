@@ -79,7 +79,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		continentFilter = new ComboBox();
-		continentFilter.setId(CountryDto.SUB_CONTINENT);
+		continentFilter.setId(CountryDto.SUBCONTINENT);
 		continentFilter.setWidth(140, Unit.PIXELS);
 		continentFilter.setCaption(I18nProperties.getPrefixCaption(SubcontinentDto.I18N_PREFIX, SubcontinentDto.CONTINENT));
 		continentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());

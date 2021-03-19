@@ -84,9 +84,9 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		subcontinentFilter = new ComboBox();
-		subcontinentFilter.setId(CountryDto.SUB_CONTINENT);
+		subcontinentFilter.setId(CountryDto.SUBCONTINENT);
 		subcontinentFilter.setWidth(140, Unit.PIXELS);
-		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUB_CONTINENT));
+		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUBCONTINENT));
 		subcontinentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		subcontinentFilter.addValueChangeListener(e -> {
 			criteria.subcontinent((SubcontinentReferenceDto) e.getProperty().getValue());

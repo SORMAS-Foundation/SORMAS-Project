@@ -124,11 +124,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (isAnySurveillanceEnabled) {
 				menu.addView(
-					CountriesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
-				menu.addView(
 					ContinentsView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", ContinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 					null,
@@ -136,6 +131,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				menu.addView(
 					SubcontinentsView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", SubcontinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+				menu.addView(
+					CountriesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 					null,
 					false);
 			}

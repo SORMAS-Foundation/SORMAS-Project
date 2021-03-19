@@ -18,7 +18,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             fluidRowLocs(CountryDto.ISO_CODE, CountryDto.DEFAULT_NAME) +
-            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE, CountryDto.SUB_CONTINENT);
+            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE, CountryDto.SUBCONTINENT);
     //@formatter:on
 
 	private final Boolean create;
@@ -52,7 +52,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		addField(CountryDto.ISO_CODE, TextField.class).setMaxLength(3);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
-		ComboBox subcontinent = addField(CountryDto.SUB_CONTINENT, ComboBox.class);
+		ComboBox subcontinent = addField(CountryDto.SUBCONTINENT, ComboBox.class);
 
 		subcontinent.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 

@@ -104,7 +104,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Country.SUB_CONTINENT, JoinType.LEFT).get(Subcontinent.UUID), criteria.getSubcontinent().getUuid()));
+				cb.equal(from.join(Country.SUBCONTINENT, JoinType.LEFT).get(Subcontinent.UUID), criteria.getSubcontinent().getUuid()));
 		}
 		if (criteria.getNameCodeLike() != null) {
 			String[] textFilters = criteria.getNameCodeLike().split("\\s+");

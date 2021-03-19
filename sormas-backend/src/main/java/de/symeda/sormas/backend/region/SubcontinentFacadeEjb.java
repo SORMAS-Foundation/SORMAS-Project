@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +65,26 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Collection<String> subcontinentUuids) {
+		return subcontinentService.isUsedInInfrastructureData(subcontinentUuids, Country.SUBCONTINENT, Country.class);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Collection<String> subcontinentUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Subcontinent> root = cq.from(Subcontinent.class);
+		Join<Subcontinent, Continent> continentJoin = root.join(Subcontinent.CONTINENT);
+
+		cq.where(cb.and(cb.isTrue(continentJoin.get(Continent.ARCHIVED)), root.get(Subcontinent.UUID).in(subcontinentUuids)));
+
+		cq.select(root.get(Subcontinent.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	@Override
