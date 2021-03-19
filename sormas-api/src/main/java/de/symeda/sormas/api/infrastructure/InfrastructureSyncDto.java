@@ -14,7 +14,7 @@ import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.SubContinentDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleConfigDto;
 
@@ -24,7 +24,7 @@ public class InfrastructureSyncDto implements Serializable {
 
 	private boolean initialSyncRequired;
 	private List<ContinentDto> continents;
-	private List<SubContinentDto> subContinents;
+	private List<SubcontinentDto> subcontinents;
 	private List<CountryDto> countries;
 	private List<RegionDto> regions;
 	private List<DistrictDto> districts;
@@ -57,12 +57,12 @@ public class InfrastructureSyncDto implements Serializable {
 		this.continents = continents;
 	}
 
-	public List<SubContinentDto> getSubContinents() {
-		return subContinents;
+	public List<SubcontinentDto> getSubcontinents() {
+		return subcontinents;
 	}
 
-	public void setSubContinents(List<SubContinentDto> subContinents) {
-		this.subContinents = subContinents;
+	public void setSubcontinents(List<SubcontinentDto> subcontinents) {
+		this.subcontinents = subcontinents;
 	}
 
 	public List<CountryDto> getCountries() {

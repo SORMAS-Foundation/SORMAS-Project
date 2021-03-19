@@ -8,8 +8,8 @@ import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.SubContinentCriteria;
-import de.symeda.sormas.api.region.SubContinentIndexDto;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
+import de.symeda.sormas.api.region.SubcontinentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -18,14 +18,14 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class SubContinentsGrid extends FilteredGrid<SubContinentIndexDto, SubContinentCriteria> {
+public class SubcontinentsGrid extends FilteredGrid<SubcontinentIndexDto, SubcontinentCriteria> {
 
-	public SubContinentsGrid(SubContinentCriteria criteria) {
-		super(SubContinentIndexDto.class);
+	public SubcontinentsGrid(SubcontinentCriteria criteria) {
+		super(SubcontinentIndexDto.class);
 
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(SubContinentsView.class).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(SubcontinentsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -37,18 +37,18 @@ public class SubContinentsGrid extends FilteredGrid<SubContinentIndexDto, SubCon
 		}
 
 		setColumns(
-			SubContinentIndexDto.DISPLAY_NAME,
-			SubContinentIndexDto.CONTINENT,
-			SubContinentIndexDto.EXTERNAL_ID,
-			SubContinentIndexDto.DEFAULT_NAME);
-		getColumn(SubContinentIndexDto.DEFAULT_NAME).setHidden(true);
+			SubcontinentIndexDto.DISPLAY_NAME,
+			SubcontinentIndexDto.CONTINENT,
+			SubcontinentIndexDto.EXTERNAL_ID,
+			SubcontinentIndexDto.DEFAULT_NAME);
+		getColumn(SubcontinentIndexDto.DEFAULT_NAME).setHidden(true);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editSubContinent(e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editSubcontinent(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(SubContinentIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(SubcontinentIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 	}
 
@@ -58,8 +58,8 @@ public class SubContinentsGrid extends FilteredGrid<SubContinentIndexDto, SubCon
 
 	public void setLazyDataProvider() {
 
-		DataProvider<SubContinentIndexDto, SubContinentCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getSubContinentFacade()
+		DataProvider<SubcontinentIndexDto, SubcontinentCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getSubcontinentFacade()
 				.getIndexList(
 					query.getFilter().orElse(null),
 					query.getOffset(),
@@ -69,15 +69,15 @@ public class SubContinentsGrid extends FilteredGrid<SubContinentIndexDto, SubCon
 						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList()))
 				.stream(),
-			query -> (int) FacadeProvider.getSubContinentFacade().count(query.getFilter().orElse(null)));
+			query -> (int) FacadeProvider.getSubcontinentFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void setEagerDataProvider() {
 
-		ListDataProvider<SubContinentIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getSubContinentFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<SubcontinentIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getSubcontinentFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

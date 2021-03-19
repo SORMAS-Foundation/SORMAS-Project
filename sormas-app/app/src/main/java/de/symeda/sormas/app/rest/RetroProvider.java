@@ -15,12 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,10 +27,12 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
@@ -88,7 +88,7 @@ public final class RetroProvider {
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
 	private ContinentFacadeRetro continentFacadeRetro;
-	private SubContinentFacadeRetro subContinentFacadeRetro;
+	private SubcontinentFacadeRetro subcontinentFacadeRetro;
 	private CountryFacadeRetro countryFacadeRetro;
 	private RegionFacadeRetro regionFacadeRetro;
 	private FacilityFacadeRetro facilityFacadeRetro;
@@ -524,17 +524,17 @@ public final class RetroProvider {
 		return instance.continentFacadeRetro;
 	}
 
-	public static SubContinentFacadeRetro getSubContinentFacade() throws NoConnectionException {
+	public static SubcontinentFacadeRetro getSubcontinentFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
-		if (instance.subContinentFacadeRetro == null) {
+		if (instance.subcontinentFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
-				if (instance.subContinentFacadeRetro == null) {
-					instance.subContinentFacadeRetro = instance.retrofit.create(SubContinentFacadeRetro.class);
+				if (instance.subcontinentFacadeRetro == null) {
+					instance.subcontinentFacadeRetro = instance.retrofit.create(SubcontinentFacadeRetro.class);
 				}
 			}
 		}
-		return instance.subContinentFacadeRetro;
+		return instance.subcontinentFacadeRetro;
 	}
 
 	public static CountryFacadeRetro getCountryFacade() throws NoConnectionException {

@@ -343,7 +343,7 @@ public interface Strings {
 	String headingEditLineListing = "headingEditLineListing";
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
-	String headingEditSubContinent = "headingEditSubContinent";
+	String headingEditSubcontinent = "headingEditSubcontinent";
 	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
@@ -398,7 +398,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
-	String headingImportSubContinents = "headingImportSubContinents";
+	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -617,7 +617,7 @@ public interface Strings {
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
 	String labelNumberOfRegions = "labelNumberOfRegions";
-	String labelNumberOfSubContinents = "labelNumberOfSubContinents";
+	String labelNumberOfSubcontinents = "labelNumberOfSubcontinents";
 	String labelNumberOfTemplates = "labelNumberOfTemplates";
 	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";

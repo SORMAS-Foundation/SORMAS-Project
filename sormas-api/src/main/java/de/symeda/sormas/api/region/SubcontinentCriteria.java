@@ -6,7 +6,7 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class SubContinentCriteria extends BaseCriteria implements Serializable, Cloneable {
+public class SubcontinentCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -3172115054516586926L;
 
@@ -14,7 +14,7 @@ public class SubContinentCriteria extends BaseCriteria implements Serializable, 
 	private String nameLike;
 	private ContinentReferenceDto continent;
 
-	public SubContinentCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+	public SubcontinentCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
@@ -33,12 +33,12 @@ public class SubContinentCriteria extends BaseCriteria implements Serializable, 
 		return continent;
 	}
 
-	public SubContinentCriteria nameLike(String nameLike) {
+	public SubcontinentCriteria nameLike(String nameLike) {
 		this.nameLike = nameLike;
 		return this;
 	}
 
-	public SubContinentCriteria continent(ContinentReferenceDto continent) {
+	public SubcontinentCriteria continent(ContinentReferenceDto continent) {
 		this.continent = continent;
 		return this;
 	}

@@ -23,12 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.region.ContinentFacade;
-import de.symeda.sormas.api.region.SubContinentFacade;
-import de.symeda.sormas.backend.region.ContinentFacadeEjb;
-import de.symeda.sormas.backend.region.ContinentService;
-import de.symeda.sormas.backend.region.SubContinentFacadeEjb;
-import de.symeda.sormas.backend.region.SubContinentService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -66,19 +60,21 @@ import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.region.SubcontinentFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
-import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -137,6 +133,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
+import de.symeda.sormas.backend.region.ContinentService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -144,6 +142,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.region.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.region.SubcontinentService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -333,8 +333,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ContinentFacadeEjb.ContinentFacadeEjbLocal.class);
 	}
 
-	public SubContinentFacade getSubContinentFacade() {
-		return getBean(SubContinentFacadeEjb.SubContinentFacadeEjbLocal.class);
+	public SubcontinentFacade getSubcontinentFacade() {
+		return getBean(SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal.class);
 	}
 
 	public CountryFacade getCountryFacade() {
@@ -401,8 +401,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ContinentService.class);
 	}
 
-	public SubContinentService getSubContinentService() {
-		return getBean(SubContinentService.class);
+	public SubcontinentService getSubcontinentService() {
+		return getBean(SubcontinentService.class);
 	}
 
 	public CountryService getCountryService() {

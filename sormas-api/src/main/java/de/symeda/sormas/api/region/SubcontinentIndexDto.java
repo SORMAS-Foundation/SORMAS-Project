@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.region;
 
-public class SubContinentIndexDto extends SubContinentDto {
+public class SubcontinentIndexDto extends SubcontinentDto {
 
 	public static final String DISPLAY_NAME = "displayName";
 

@@ -66,17 +66,17 @@ import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.region.SubContinentFacade;
+import de.symeda.sormas.api.region.SubcontinentFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -177,20 +177,12 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(FacilityFacade.class);
 	}
 
-	public static ContinentFacade geContinentFacade() {
-		return get().lookupEjbRemote(ContinentFacade.class);
-	}
-
-	public static SubContinentFacade geSubContinentFacade() {
-		return get().lookupEjbRemote(SubContinentFacade.class);
-	}
-
 	public static ContinentFacade getContinentFacade() {
 		return get().lookupEjbRemote(ContinentFacade.class);
 	}
 
-	public static SubContinentFacade getSubContinentFacade() {
-		return get().lookupEjbRemote(SubContinentFacade.class);
+	public static SubcontinentFacade getSubcontinentFacade() {
+		return get().lookupEjbRemote(SubcontinentFacade.class);
 	}
 
 	public static CountryFacade getCountryFacade() {

@@ -48,7 +48,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionIndexDto;
-import de.symeda.sormas.api.region.SubContinentDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -99,15 +99,15 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
-	public void createSubContinent() {
-		CommitDiscardWrapperComponent<SubContinentEditForm> createComponent = getSubContinentEditComponent(null);
+	public void createSubcontinent() {
+		CommitDiscardWrapperComponent<SubcontinentEditForm> createComponent = getSubcontinentEditComponent(null);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
 	}
 
-	public void editSubContinent(String uuid) {
-		SubContinentDto subContinentDto = FacadeProvider.getSubContinentFacade().getByUuid(uuid);
-		CommitDiscardWrapperComponent<SubContinentEditForm> editComponent = getSubContinentEditComponent(subContinentDto);
-		String caption = I18nProperties.getString(Strings.headingEditSubContinent);
+	public void editSubcontinent(String uuid) {
+		SubcontinentDto subcontinentDto = FacadeProvider.getSubcontinentFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<SubcontinentEditForm> editComponent = getSubcontinentEditComponent(subcontinentDto);
+		String caption = I18nProperties.getString(Strings.headingEditSubcontinent);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -246,9 +246,9 @@ public class InfrastructureController {
 		editForm.setValue(continent);
 
 		final CommitDiscardWrapperComponent<ContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
-				editForm,
-				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
-				editForm.getFieldGroup());
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			FacadeProvider.getContinentFacade().save(editForm.getValue());
@@ -263,28 +263,28 @@ public class InfrastructureController {
 		return editView;
 	}
 
-	private CommitDiscardWrapperComponent<SubContinentEditForm> getSubContinentEditComponent(SubContinentDto subContinent) {
-		boolean isNew = subContinent == null;
-		SubContinentEditForm editForm = new SubContinentEditForm(isNew);
+	private CommitDiscardWrapperComponent<SubcontinentEditForm> getSubcontinentEditComponent(SubcontinentDto subcontinent) {
+		boolean isNew = subcontinent == null;
+		SubcontinentEditForm editForm = new SubcontinentEditForm(isNew);
 		if (isNew) {
-			subContinent = SubContinentDto.build();
+			subcontinent = SubcontinentDto.build();
 		}
 
-		editForm.setValue(subContinent);
+		editForm.setValue(subcontinent);
 
-		final CommitDiscardWrapperComponent<SubContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
-				editForm,
-				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
-				editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SubcontinentEditForm> editView = new CommitDiscardWrapperComponent<>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getSubContinentFacade().save(editForm.getValue());
+			FacadeProvider.getSubcontinentFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
-			SormasUI.get().getNavigator().navigateTo(SubContinentsView.VIEW_NAME);
+			SormasUI.get().getNavigator().navigateTo(SubcontinentsView.VIEW_NAME);
 		});
 
 		if (!isNew) {
-			extendEditComponentWithArchiveButton(editView, subContinent.isArchived(), subContinent.getUuid(), InfrastructureType.SUBCONTINENT, null);
+			extendEditComponentWithArchiveButton(editView, subcontinent.isArchived(), subcontinent.getUuid(), InfrastructureType.SUBCONTINENT, null);
 		}
 
 		return editView;
@@ -301,9 +301,9 @@ public class InfrastructureController {
 		editForm.setValue(country);
 
 		final CommitDiscardWrapperComponent<CountryEditForm> editView = new CommitDiscardWrapperComponent<>(
-				editForm,
-				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
-				editForm.getFieldGroup());
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			FacadeProvider.getCountryFacade().saveCountry(editForm.getValue());
@@ -701,7 +701,7 @@ public class InfrastructureController {
 				: I18nProperties.getString(Strings.confirmationDearchiveCountries);
 			notificationMessage =
 				archive ? I18nProperties.getString(Strings.messageCountriesArchived) : I18nProperties.getString(Strings.messageCountriesDearchived);
-				break;
+			break;
 		case REGION:
 			confirmationMessage = archive
 				? I18nProperties.getString(Strings.confirmationArchiveRegions)

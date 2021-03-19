@@ -3,9 +3,9 @@ package de.symeda.sormas.api.region;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class SubContinentDto extends EntityDto {
+public class SubcontinentDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "SubContinent";
+	public static final String I18N_PREFIX = "Subcontinent";
 	public static final String DEFAULT_NAME = "defaultName";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String CONTINENT = "continent";
@@ -15,8 +15,8 @@ public class SubContinentDto extends EntityDto {
 	private boolean archived;
 	private ContinentReferenceDto continent;
 
-	public static SubContinentDto build() {
-		SubContinentDto dto = new SubContinentDto();
+	public static SubcontinentDto build() {
+		SubcontinentDto dto = new SubcontinentDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}

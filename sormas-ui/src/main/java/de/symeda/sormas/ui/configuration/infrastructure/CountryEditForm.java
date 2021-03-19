@@ -52,16 +52,16 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		addField(CountryDto.ISO_CODE, TextField.class).setMaxLength(3);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
-		ComboBox subContinent = addField(CountryDto.SUB_CONTINENT, ComboBox.class);
+		ComboBox subcontinent = addField(CountryDto.SUB_CONTINENT, ComboBox.class);
 
-		subContinent.addItems(FacadeProvider.getSubContinentFacade().getAllActiveAsReference());
+		subcontinent.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CountryDto.DEFAULT_NAME, CountryDto.ISO_CODE);
 
 		if (!create) {
-			subContinent.setEnabled(false);
+			subcontinent.setEnabled(false);
 		}
 	}
 

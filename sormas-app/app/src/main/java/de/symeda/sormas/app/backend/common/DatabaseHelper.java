@@ -15,21 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -41,6 +26,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -118,8 +118,8 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
-import de.symeda.sormas.app.backend.region.SubContinent;
-import de.symeda.sormas.app.backend.region.SubContinentDao;
+import de.symeda.sormas.app.backend.region.Subcontinent;
+import de.symeda.sormas.app.backend.region.SubcontinentDao;
 import de.symeda.sormas.app.backend.report.AggregateReport;
 import de.symeda.sormas.app.backend.report.AggregateReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
@@ -248,7 +248,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Continent.class);
-				TableUtils.clearTable(connectionSource, SubContinent.class);
+				TableUtils.clearTable(connectionSource, Subcontinent.class);
 				TableUtils.clearTable(connectionSource, Country.class);
 				TableUtils.clearTable(connectionSource, Region.class);
 				TableUtils.clearTable(connectionSource, Campaign.class);
@@ -278,7 +278,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTableIfNotExists(connectionSource, Config.class);
 			TableUtils.createTable(connectionSource, Location.class);
 			TableUtils.createTable(connectionSource, Continent.class);
-			TableUtils.createTable(connectionSource, SubContinent.class);
+			TableUtils.createTable(connectionSource, Subcontinent.class);
 			TableUtils.createTable(connectionSource, Country.class);
 			TableUtils.createTable(connectionSource, Region.class);
 			TableUtils.createTable(connectionSource, District.class);
@@ -2096,8 +2096,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 289:
 				currentVersion = 289;
 				TableUtils.createTableIfNotExists(connectionSource, Continent.class);
-				TableUtils.createTableIfNotExists(connectionSource, SubContinent.class);
-				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subContinent_id BIGINT REFERENCES subContinent(id);");
+				TableUtils.createTableIfNotExists(connectionSource, Subcontinent.class);
+				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
@@ -2296,13 +2296,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private void migratePersonContactDetails() throws SQLException {
 		GenericRawResults<Object[]> newPersons = getDao(Person.class).queryRaw(
-				"SELECT id, phone, phoneOwner, emailAddress, generalPractitionerDetails FROM person WHERE changeDate = 0 AND snapshot = 0;",
-				new DataType[]{
-						DataType.BIG_INTEGER,
-						DataType.STRING,
-						DataType.STRING,
-						DataType.STRING,
-						DataType.STRING});
+			"SELECT id, phone, phoneOwner, emailAddress, generalPractitionerDetails FROM person WHERE changeDate = 0 AND snapshot = 0;",
+			new DataType[] {
+				DataType.BIG_INTEGER,
+				DataType.STRING,
+				DataType.STRING,
+				DataType.STRING,
+				DataType.STRING });
 
 		for (Object[] pcd : newPersons) {
 			formatRawResultString(pcd, 1, false);
@@ -2312,8 +2312,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertPart =
-					"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
-							+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName, snapshot) ";
+				"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
+					+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName, snapshot) ";
 
 			BigInteger personId = (BigInteger) pcd[0];
 			String phone = (String) pcd[1];
@@ -2324,23 +2324,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (StringUtils.isNotEmpty(phone)) {
 				boolean phoneOwnerEmpty = StringUtils.isEmpty(phoneOwner);
 				getDao(PersonContactDetail.class).executeRaw(
-						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ (phoneOwnerEmpty ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", " + "null" + ", " + (phoneOwnerEmpty ? "0" : "1") + ", " + "null"
-								+ ", " + (phoneOwnerEmpty ? "null" : phoneOwner) + ", " + "0);");
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ (phoneOwnerEmpty ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", "
+						+ "null" + ", " + (phoneOwnerEmpty ? "0" : "1") + ", " + "null" + ", " + (phoneOwnerEmpty ? "null" : phoneOwner) + ", "
+						+ "0);");
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
 				getDao(PersonContactDetail.class).executeRaw(
-						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ "1" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "0" + ", "
-								+ "null" + ", " + "null" + ", " + "0);");
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "1" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "0"
+						+ ", " + "null" + ", " + "null" + ", " + "0);");
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
 				getDao(PersonContactDetail.class).executeRaw(
-						insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-								+ "0" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails + ", "
-								+ "1" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
+					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
+						+ "0" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails
+						+ ", " + "1" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
 			}
 		}
 	}
@@ -2453,7 +2454,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, PersonContactDetail.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Continent.class, true);
-			TableUtils.dropTable(connectionSource, SubContinent.class, true);
+			TableUtils.dropTable(connectionSource, Subcontinent.class, true);
 			TableUtils.dropTable(connectionSource, Country.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
 			TableUtils.dropTable(connectionSource, District.class, true);
@@ -2532,8 +2533,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new FacilityDao((Dao<Facility, Long>) innerDao);
 				} else if (type.equals(Continent.class)) {
 					dao = (AbstractAdoDao<ADO>) new ContinentDao((Dao<Continent, Long>) innerDao);
-				} else if (type.equals(SubContinent.class)) {
-					dao = (AbstractAdoDao<ADO>) new SubContinentDao((Dao<SubContinent, Long>) innerDao);
+				} else if (type.equals(Subcontinent.class)) {
+					dao = (AbstractAdoDao<ADO>) new SubcontinentDao((Dao<Subcontinent, Long>) innerDao);
 				} else if (type.equals(Country.class)) {
 					dao = (AbstractAdoDao<ADO>) new CountryDao((Dao<Country, Long>) innerDao);
 				} else if (type.equals(Region.class)) {
@@ -2730,8 +2731,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (ContinentDao) getAdoDao(Continent.class);
 	}
 
-	public static SubContinentDao getSubContinentDao() {
-		return (SubContinentDao) getAdoDao(SubContinent.class);
+	public static SubcontinentDao getSubcontinentDao() {
+		return (SubcontinentDao) getAdoDao(Subcontinent.class);
 	}
 
 	public static CountryDao getCountryDao() {

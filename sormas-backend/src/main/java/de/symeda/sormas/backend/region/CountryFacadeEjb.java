@@ -22,7 +22,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -49,7 +49,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	@EJB
 	private CountryService countryService;
 	@EJB
-	private SubContinentService subContinentService;
+	private SubcontinentService subcontinentService;
 
 	@EJB
 	private UserService userService;
@@ -80,7 +80,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
-		Join<Object, Object> subContinent = country.join(Country.SUB_CONTINENT, JoinType.LEFT);
+		Join<Object, Object> subcontinent = country.join(Country.SUB_CONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
@@ -97,7 +97,7 @@ public class CountryFacadeEjb implements CountryFacade {
 					expression = country.get(Country.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.SUB_CONTINENT:
-					expression = subContinent.get(SubContinent.DEFAULT_NAME);
+					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
@@ -214,7 +214,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
-		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -235,7 +235,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(isoCode);
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
-		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -248,9 +248,9 @@ public class CountryFacadeEjb implements CountryFacade {
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
-		final SubContinentReferenceDto subContinent = source.getSubContinent();
-		if (subContinent != null) {
-			target.setSubContinent(subContinentService.getByUuid(subContinent.getUuid()));
+		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
+		if (subcontinent != null) {
+			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
 		}
 
 		return target;

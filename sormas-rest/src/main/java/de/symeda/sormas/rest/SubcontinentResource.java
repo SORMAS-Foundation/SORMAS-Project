@@ -12,30 +12,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.SubContinentDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
 
 @Path("/subcontinents")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
 	"REST_USER" })
-public class SubContinentResource {
+public class SubcontinentResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<SubContinentDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.geSubContinentFacade().getAllAfter(new Date(since));
+	public List<SubcontinentDto> getAll(@PathParam("since") long since) {
+		return FacadeProvider.getSubcontinentFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<SubContinentDto> getByUuids(List<String> uuids) {
-		return FacadeProvider.geSubContinentFacade().getByUuids(uuids);
+	public List<SubcontinentDto> getByUuids(List<String> uuids) {
+		return FacadeProvider.getSubcontinentFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.geSubContinentFacade().getAllUuids();
+		return FacadeProvider.getSubcontinentFacade().getAllUuids();
 	}
 }

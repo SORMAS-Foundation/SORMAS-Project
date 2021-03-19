@@ -24,18 +24,18 @@ public class ContinentResource {
 	@GET
 	@Path("/all/{since}")
 	public List<ContinentDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.geContinentFacade().getAllAfter(new Date(since));
+		return FacadeProvider.getContinentFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
 	public List<ContinentDto> getByUuids(List<String> uuids) {
-		return FacadeProvider.geContinentFacade().getByUuids(uuids);
+		return FacadeProvider.getContinentFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.geContinentFacade().getAllUuids();
+		return FacadeProvider.getContinentFacade().getAllUuids();
 	}
 }

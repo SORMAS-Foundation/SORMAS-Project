@@ -12,49 +12,49 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.region.SubContinentCriteria;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class SubContinentService extends AbstractInfrastructureAdoService<SubContinent> {
+public class SubcontinentService extends AbstractInfrastructureAdoService<Subcontinent> {
 
-	public SubContinentService() {
-		super(SubContinent.class);
+	public SubcontinentService() {
+		super(Subcontinent.class);
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, SubContinent> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Subcontinent> from) {
 		return null;
 	}
 
-	public Predicate buildCriteriaFilter(SubContinentCriteria criteria, CriteriaBuilder cb, Root<SubContinent> from) {
+	public Predicate buildCriteriaFilter(SubcontinentCriteria criteria, CriteriaBuilder cb, Root<Subcontinent> from) {
 
 		Predicate filter = null;
 		if (criteria.getContinent() != null) {
 			filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.equal(from.join(SubContinent.CONTINENT, JoinType.LEFT).get(Continent.UUID), criteria.getContinent().getUuid()));
+				.and(cb, filter, cb.equal(from.join(Subcontinent.CONTINENT, JoinType.LEFT).get(Continent.UUID), criteria.getContinent().getUuid()));
 		}
 		if (criteria.getNameLike() != null) {
-			filter = CriteriaBuilderHelper.and(cb, cb.like(cb.lower(from.get(SubContinent.DEFAULT_NAME)), criteria.getNameLike().toLowerCase()));
+			filter = CriteriaBuilderHelper.and(cb, cb.like(cb.lower(from.get(Subcontinent.DEFAULT_NAME)), criteria.getNameLike().toLowerCase()));
 		}
 		filter = addRelevancePredicate(cb, from, filter, criteria.getRelevanceStatus());
 		return filter;
 	}
 
-	public List<SubContinent> getByDefaultName(String name, boolean includeArchivedEntities) {
+	public List<Subcontinent> getByDefaultName(String name, boolean includeArchivedEntities) {
 		if (name == null) {
 			return Collections.emptyList();
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SubContinent> cq = cb.createQuery(getElementClass());
-		Root<SubContinent> from = cq.from(getElementClass());
+		CriteriaQuery<Subcontinent> cq = cb.createQuery(getElementClass());
+		Root<Subcontinent> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(SubContinent.DEFAULT_NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(SubContinent.DEFAULT_NAME))), name.trim().toLowerCase()));
+			cb.equal(cb.trim(from.get(Subcontinent.DEFAULT_NAME)), name.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(Subcontinent.DEFAULT_NAME))), name.trim().toLowerCase()));
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

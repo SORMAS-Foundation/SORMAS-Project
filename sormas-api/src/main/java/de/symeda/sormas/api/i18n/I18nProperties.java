@@ -332,7 +332,7 @@ public final class I18nProperties {
 		this.continentProperties = loadProperties("continents", language.getLocale());
 		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
 	}
-	
+
 	private I18nProperties() {
 		this(defaultLanguage);
 	}
@@ -341,7 +341,7 @@ public final class I18nProperties {
 		return getInstance(userLanguage.get()).continentProperties.getString("continent." + defaultName + ".name");
 	}
 
-	public static String getSubContinentName(String defaultName) {
+	public static String getSubcontinentName(String defaultName) {
 		return getInstance(userLanguage.get()).subcontinentProperties.getString("subcontinent." + defaultName + ".name");
 	}
 
