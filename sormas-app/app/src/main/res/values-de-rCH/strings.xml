@@ -318,7 +318,7 @@
     <string name="heading_outbreak_response">Ausbruchsantwort</string>
     <string name="heading_person_involved">Beteiligte Person</string>
     <string name="heading_person_involved_new">Neue Person beteiligt</string>
-    <string name="heading_person_contact_detail">Person contact details</string>
+    <string name="heading_person_contact_detail">Personen-Kontaktdetails</string>
     <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
