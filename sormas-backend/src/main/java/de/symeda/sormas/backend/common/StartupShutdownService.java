@@ -49,11 +49,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
@@ -407,6 +407,15 @@ public class StartupShutdownService {
 			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(hospitalInformant);
 			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
+
+			// Create Community Officer
+			User communityOfficer = MockDataGenerator.createUser(UserRole.COMMUNITY_OFFICER, "Community", "Officer", "CommOff");
+			communityOfficer.setUserName("CommOff");
+			communityOfficer.setRegion(region);
+			communityOfficer.setDistrict(district);
+			communityOfficer.setCommunity(community);
+			userService.persist(communityOfficer);
+			userUpdateEvent.fire(new UserUpdateEvent(communityOfficer));
 
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
