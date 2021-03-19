@@ -420,6 +420,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		Contact contact = contactService.getByUuid(contactUuid);
+
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+
 		contactService.delete(contact);
 
 		if (contact.getCaze() != null) {

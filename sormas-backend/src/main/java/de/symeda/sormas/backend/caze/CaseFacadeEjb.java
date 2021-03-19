@@ -2271,7 +2271,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 
-		caseService.delete(caseService.getByUuid(caseUuid));
+		Case caze = caseService.getByUuid(caseUuid);
+
+		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
+
+		caseService.delete(caze);
 	}
 
 	@Override
