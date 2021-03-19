@@ -608,10 +608,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				(CommunityReferenceDto) community.getValue(),
 				(FacilityType) facilityType.getValue(),
 				facility));
+
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
-
+				// switched from home to facility
 				// default values
 				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
@@ -634,11 +635,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				updateFacilityDetails(facility, facilityDetails);
 			} else {
-				if (facility.getValue() == null && !facility.isReadOnly()) {
+				// switched from facility to home
+				if (!facility.isReadOnly()) {
 					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 					facility.addItem(noFacilityRef);
 					facility.setValue(noFacilityRef);
 				}
+				facilityTypeGroup.clear();
+				facilityType.clear();
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(
