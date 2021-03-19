@@ -677,7 +677,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		cazePerson.getPersonContactDetails()
 			.add(
-				new PersonContactDetailDto(
+				PersonContactDetailDto.build(
 					cazePerson.toReference(),
 					false,
 					PersonContactDetailType.PHONE,
@@ -690,30 +690,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 					""));
 		cazePerson.getPersonContactDetails()
 			.add(
-				new PersonContactDetailDto(
-					cazePerson.toReference(),
-					false,
-					PersonContactDetailType.EMAIL,
-					null,
-					"",
-					"secondary@email.com",
-					"",
-					false,
-					"",
-					""));
+				PersonContactDetailDto
+					.build(cazePerson.toReference(), false, PersonContactDetailType.EMAIL, null, "", "secondary@email.com", "", false, "", ""));
 		cazePerson.getPersonContactDetails()
 			.add(
-				new PersonContactDetailDto(
-					cazePerson.toReference(),
-					false,
-					PersonContactDetailType.OTHER,
-					null,
-					"SkypeID",
-					"personSkype",
-					"",
-					false,
-					"",
-					""));
+				PersonContactDetailDto
+					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
 
 		getPersonFacade().savePerson(cazePerson);
 

@@ -582,8 +582,12 @@ public class CaseController {
 		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
 		person.setSex(createForm.getSex());
 		person.setPresentCondition(createForm.getPresentCondition());
-		person.setPhone(createForm.getPhone());
-		person.setEmailAddress(createForm.getEmailAddress());
+		if (StringUtils.isNotEmpty(createForm.getPhone())) {
+			person.setPhone(createForm.getPhone());
+		}
+		if (StringUtils.isNotEmpty(createForm.getEmailAddress())) {
+			person.setEmailAddress(createForm.getEmailAddress());
+		}
 		person.setNationalHealthId(createForm.getNationalHealthId());
 		person.setPassportNumber(createForm.getPassportNumber());
 	}
