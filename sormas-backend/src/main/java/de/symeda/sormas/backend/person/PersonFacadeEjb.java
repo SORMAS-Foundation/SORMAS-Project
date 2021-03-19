@@ -699,7 +699,13 @@ public class PersonFacadeEjb implements PersonFacade {
 		long changedPersons = 0;
 
 		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
+		if (indexList == null) {
+			return 0;
+		}
 		List<Person> personsList = personService.getByUuids(indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
+		if (personsList == null) {
+			return 0;
+		}
 
 		for (Person person : personsList) {
 

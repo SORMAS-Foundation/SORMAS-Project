@@ -55,6 +55,16 @@ public class PersonsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
+			/*
+			 * VerticalLayout popupLayout = new VerticalLayout();
+			 * popupLayout.setMargin(true);
+			 * popupLayout.setSpacing(false);
+			 * Label popupDescLabel = new Label(I18nProperties.getString(Strings.confirmationSetMissingGeoCoordinates));
+			 * CheckBox popupCheckbox = new CheckBox("test");
+			 * popupLayout.addComponent(popupDescLabel);
+			 * popupLayout.addComponent(popupCheckbox);
+			 */
+
 			Button setMissingCoordinatesButton =
 				ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates), VaadinIcons.MAP_MARKER, e -> {
 					VaadinUiUtil.showConfirmationPopup(
@@ -64,11 +74,13 @@ public class PersonsView extends AbstractView {
 						I18nProperties.getCaption(Captions.actionCancel),
 						640,
 						confirmed -> {
-							long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates();
-							Notification.show(
-								I18nProperties.getCaption(Captions.personsUpdated),
-								String.format(I18nProperties.getString(Strings.notificationPersonsUpdated), changedPersons),
-								Notification.Type.TRAY_NOTIFICATION);
+							if (confirmed) {
+								long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates();
+								Notification.show(
+									I18nProperties.getCaption(Captions.personsUpdated),
+									String.format(I18nProperties.getString(Strings.notificationPersonsUpdated), changedPersons),
+									Notification.Type.TRAY_NOTIFICATION);
+							}
 						});
 				}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(setMissingCoordinatesButton);
