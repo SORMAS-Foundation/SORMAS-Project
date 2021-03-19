@@ -717,11 +717,9 @@ public interface Strings {
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountriesArchived = "messageCountriesArchived";
-	String messageCountriesArchivingNotPossible = "messageCountriesArchivingNotPossible";
 	String messageCountriesDearchived = "messageCountriesDearchived";
 	String messageCountriesDearchivingNotPossible = "messageCountriesDearchivingNotPossible";
 	String messageCountryArchived = "messageCountryArchived";
-	String messageCountryArchivingNotPossible = "messageCountryArchivingNotPossible";
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
