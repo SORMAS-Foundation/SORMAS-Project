@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.component.dialog;
 
-import static android.view.View.GONE;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -40,6 +38,8 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
+import static android.view.View.GONE;
+
 /**
  * This should probably inherit from DialogFragment
  */
@@ -62,19 +62,34 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	// Button callbacks
 	private boolean suppressNextDismiss;
-	private Callback positiveCallback;
-	private Callback negativeCallback;
-	private Callback deleteCallback;
+    private Callback positiveCallback;
+    private Callback negativeCallback;
+    private Callback deleteCallback;
 
 	// Constructor
+
+	public AbstractDialog(
+			final FragmentActivity activity,
+			int rootLayoutId,
+			int contentLayoutResourceId,
+			int buttonPanelLayoutResourceId,
+			int headingResourceId,
+			int subHeadingResourceId,
+			boolean closeOnPositiveButtonClick) {
+		this(activity, rootLayoutId, contentLayoutResourceId,
+				buttonPanelLayoutResourceId,
+				headingResourceId >= 0 ? activity.getResources().getString(headingResourceId) : null,
+				subHeadingResourceId >= 0 ? activity.getResources().getString(subHeadingResourceId) : null,
+				closeOnPositiveButtonClick);
+	}
 
 	public AbstractDialog(
 		final FragmentActivity activity,
 		int rootLayoutId,
 		int contentLayoutResourceId,
 		int buttonPanelLayoutResourceId,
-		int headingResourceId,
-		int subHeadingResourceId,
+		String heading,
+		String subHeading,
 		boolean closeOnPositiveButtonClick) {
 		this.builder = new AlertDialog.Builder(activity);
 		this.activity = activity;
@@ -84,14 +99,6 @@ public abstract class AbstractDialog implements NotificationContext {
 		this.closeOnPositiveButtonClick = closeOnPositiveButtonClick;
 
 		Resources resources = activity.getResources();
-		String heading = null;
-		if (headingResourceId >= 0) {
-			heading = resources.getString(headingResourceId);
-		}
-		String subHeading = null;
-		if (subHeadingResourceId >= 0) {
-			subHeading = resources.getString(subHeadingResourceId);
-		}
 		String positiveLabel = resources.getString(getPositiveButtonText());
 		String negativeLabel = resources.getString(getNegativeButtonText());
 		String deleteLabel = resources.getString(getDeleteButtonText());
@@ -108,6 +115,14 @@ public abstract class AbstractDialog implements NotificationContext {
 		int buttonPanelLayoutResourceId,
 		int headingResourceId,
 		int subHeadingResourceId) {
+		this(activity, rootLayoutId, contentLayoutResourceId, buttonPanelLayoutResourceId, headingResourceId, subHeadingResourceId, true);
+	}
+
+	public AbstractDialog(
+		final FragmentActivity activity,
+		int rootLayoutId,
+		int contentLayoutResourceId,
+		int buttonPanelLayoutResourceId, String headingResourceId, String subHeadingResourceId) {
 		this(activity, rootLayoutId, contentLayoutResourceId, buttonPanelLayoutResourceId, headingResourceId, subHeadingResourceId, true);
 	}
 

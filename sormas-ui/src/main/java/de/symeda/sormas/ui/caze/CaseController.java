@@ -105,10 +105,10 @@ import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseForm;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceToolGatewayType;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
-import de.symeda.sormas.ui.survnet.SurvnetGateway;
-import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -208,6 +208,15 @@ public class CaseController {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
+					if (updatedContact.getResultingCase() != null) {
+						String caseUuid = updatedContact.getResultingCase().getUuid();
+						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+						FacadeProvider.getExternalJournalFacade()
+							.notifyExternalJournalFollowUpUntilUpdate(
+								caze.getPerson().getUuid(),
+								caze.getFollowUpUntil(),
+								updatedContact.getFollowUpUntil());
+					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
@@ -220,6 +229,11 @@ public class CaseController {
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
 				FacadeProvider.getContactFacade().saveContact(updatedContact);
+				FacadeProvider.getExternalJournalFacade()
+					.notifyExternalJournalFollowUpUntilUpdate(
+						selectedCase.getPerson().getUuid(),
+						selectedCase.getFollowUpUntil(),
+						updatedContact.getFollowUpUntil());
 
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
@@ -370,7 +384,7 @@ public class CaseController {
 		ContactDto convertedContact,
 		EventParticipantDto convertedEventParticipant,
 		Disease unrelatedDisease,
-		boolean createdFromLabMesssage) {
+		boolean createdFromLabMessage) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
 		assert (unrelatedDisease == null || convertedEventParticipant == null);
@@ -486,7 +500,7 @@ public class CaseController {
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (!createdFromLabMesssage) {
+					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
 				} else if (convertedEventParticipant != null) {
@@ -506,18 +520,18 @@ public class CaseController {
 								FacadeProvider.getCaseFacade()
 									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
 							}
-							if (!createdFromLabMesssage) {
+							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
 							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
-							if (!createdFromLabMesssage) {
+							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
 						}
 					});
-				} else if (createdFromLabMesssage) {
+				} else if (createdFromLabMessage) {
 					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
@@ -866,7 +880,7 @@ public class CaseController {
 				} else {
 					Notification.show(
 						String.format(
-							I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted),
+							I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
 							DataHelper.getShortUuid(caze.getUuid())),
 						"",
 						Type.ERROR_MESSAGE);
@@ -900,8 +914,9 @@ public class CaseController {
 
 	private boolean deleteCase(CaseDataDto caze) {
 		boolean deletable = true;
-		if (FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
-			deletable = SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
+		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
+			deletable = ExternalSurveillanceServiceGateway
+				.deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType.CASES, Collections.singletonList(caze));
 		}
 		if (deletable) {
 			FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
@@ -1237,7 +1252,7 @@ public class CaseController {
 									I18nProperties.getString(Strings.messageCountCasesNotDeleted),
 									String.format("<b>%s</b>", countNotDeletedCases),
 									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
-								I18nProperties.getString(Strings.messageCasesNotDeletedReasonSurvnet)),
+								I18nProperties.getString(Strings.messageCasesNotDeletedReasonExternalSurveillanceTool)),
 							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);
 					}
@@ -1446,7 +1461,7 @@ public class CaseController {
 		return titleLayout;
 	}
 
-	public void sendCasesToSurvnet(Collection<? extends CaseIndexDto> selectedCases, Runnable reloadCallback) {
+	public void sendCasesToExternalSurveillanceTool(Collection<? extends CaseIndexDto> selectedCases, Runnable reloadCallback) {
 		List<String> selectedUuids = selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
 
 		// Show an error when at least one selected case is not a CORONAVIRUS case
@@ -1454,7 +1469,7 @@ public class CaseController {
 		if (nonCoronavirusCase.isPresent()) {
 			Notification.show(
 				String.format(
-					I18nProperties.getString(Strings.errorSurvNetNonCoronavirusCase),
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolNonCoronavirusCase),
 					DataHelper.getShortUuid(nonCoronavirusCase.get().getUuid()),
 					I18nProperties.getEnumCaption(Disease.CORONAVIRUS)),
 				"",
@@ -1466,13 +1481,15 @@ public class CaseController {
 		String ownershipHandedOverUuid = FacadeProvider.getCaseFacade().getFirstCaseUuidWithOwnershipHandedOver(selectedUuids);
 		if (ownershipHandedOverUuid != null) {
 			Notification.show(
-				String.format(I18nProperties.getString(Strings.errorSurvNetCaseNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+				String.format(
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotOwned),
+					DataHelper.getShortUuid(ownershipHandedOverUuid)),
 				"",
 				Type.ERROR_MESSAGE);
 			return;
 		}
 
-		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.CASES, selectedUuids);
+		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids);
 	}
 
 }

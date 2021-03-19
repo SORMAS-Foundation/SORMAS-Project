@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,34 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.survnet;
+package de.symeda.sormas.api.externalsurveillancetool;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.event.EventDto;
+public class ExternalSurveillanceToolException extends Exception {
 
-import java.util.List;
+	private static final long serialVersionUID = -3526487657644154163L;
 
-import javax.ejb.Remote;
-
-/**
- * Gateway to interact with the local SurvNet instance of the health department
- */
-@Remote
-public interface SurvnetGatewayFacade {
-
-	boolean isFeatureEnabled();
-
-	/**
-	 * Requests the cases to be sent to SurvNet
-	 * 
-	 * @param caseUuids
-	 * @return http response code of the gateway
-	 */
-	int sendCases(List<String> caseUuids);
-
-	int sendEvents(List<String> eventUuids);
-
-    int deleteCases(List<CaseDataDto> cases);
-
-	int deleteEvents(List<EventDto> events);
+	public ExternalSurveillanceToolException(String messageTag) {
+		super(messageTag);
+	}
 }

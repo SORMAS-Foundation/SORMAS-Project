@@ -58,13 +58,13 @@ public class SurveillanceReportService extends BaseAdoService<SurveillanceReport
 		if (caseUuids != null && !caseUuids.isEmpty()) {
 			List<SurveillanceReport> reports = new ArrayList<>();
 
-			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, s -> {
+			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<SurveillanceReport> cq = cb.createQuery(SurveillanceReport.class);
 				Root<SurveillanceReport> reportRoot = cq.from(SurveillanceReport.class);
 				Join<SurveillanceReport, Case> caseJoin = reportRoot.join(SurveillanceReport.CAZE, JoinType.LEFT);
 
-				cq.where(caseJoin.get(AbstractDomainObject.UUID).in(s));
+				cq.where(caseJoin.get(AbstractDomainObject.UUID).in(batchedCaseUuids));
 
 				reports.addAll(em.createQuery(cq).getResultList());
 			});

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -38,6 +39,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -104,8 +107,6 @@ public class Person extends AbstractDomainObject {
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
-	public static final String PHONE = "phone";
-	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
@@ -115,12 +116,11 @@ public class Person extends AbstractDomainObject {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
-	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
-	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
+	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
@@ -156,9 +156,6 @@ public class Person extends AbstractDomainObject {
 	private BurialConductor burialConductor;
 
 	private Location address;
-	private String phone;
-	private String phoneOwner;
-	private String emailAddress;
 	private List<ManualMessageLog> manualMessageLogs;
 
 	private Sex sex;
@@ -182,11 +179,11 @@ public class Person extends AbstractDomainObject {
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private ArmedForcesRelationType armedForcesRelationType;
-	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
+	private Set<PersonContactDetail> personContactDetails = new HashSet<>();
 	private Date changeDateOfEmbeddedLists;
 
 	private SymptomJournalStatus symptomJournalStatus;
@@ -353,22 +350,6 @@ public class Person extends AbstractDomainObject {
 
 	public void setAddress(Location address) {
 		this.address = address;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getPhoneOwner() {
-		return phoneOwner;
-	}
-
-	public void setPhoneOwner(String phoneOwner) {
-		this.phoneOwner = phoneOwner;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -572,24 +553,6 @@ public class Person extends AbstractDomainObject {
 		this.birthWeight = birthWeight;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getGeneralPractitionerDetails() {
-		return generalPractitionerDetails;
-	}
-
-	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
-		this.generalPractitionerDetails = generalPractitionerDetails;
-	}
-
-	@Column
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
 	@Column
 	public String getPassportNumber() {
 		return passportNumber;
@@ -627,6 +590,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setAddresses(Set<Location> addresses) {
 		this.addresses = addresses;
+	}
+
+	@OneToMany(mappedBy = PersonContactDetail.PERSON, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<PersonContactDetail> getPersonContactDetails() {
+		return personContactDetails;
+	}
+
+	public void setPersonContactDetails(Set<PersonContactDetail> personContactDetails) {
+		this.personContactDetails = personContactDetails;
 	}
 
 	/**
@@ -737,6 +709,41 @@ public class Person extends AbstractDomainObject {
 
 	public void setManualMessageLogs(List<ManualMessageLog> manualMessageLogs) {
 		this.manualMessageLogs = manualMessageLogs;
+	}
+
+	@Transient
+	public String getPhone() {
+		return getPersonContactInformation(PersonContactDetailType.PHONE);
+	}
+
+	public void setPhone(String phone) {
+		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
+	}
+
+	@Transient
+	public String getEmailAddress() {
+		return getPersonContactInformation(PersonContactDetailType.EMAIL);
+	}
+
+	public void setEmailAddress(String email) {
+		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
+	}
+
+	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
+		final PersonContactDetail pcd =
+			new PersonContactDetail(this, true, personContactDetailType, null, null, contactInfo, null, false, null, null);
+		getPersonContactDetails().add(pcd);
+	}
+
+	@Transient
+	private String getPersonContactInformation(PersonContactDetailType personContactDetailType) {
+		final Optional<PersonContactDetail> optionalPersonContactDetail = getPersonContactDetails().stream()
+			.filter(pcd -> pcd.isPrimaryContact() && pcd.getPersonContactDetailType() == personContactDetailType)
+			.findAny();
+		if (optionalPersonContactDetail.isPresent()) {
+			return optionalPersonContactDetail.get().getContactInformation();
+		}
+		return null;
 	}
 
 	public PersonReferenceDto toReference() {

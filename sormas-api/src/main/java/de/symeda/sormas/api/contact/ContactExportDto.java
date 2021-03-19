@@ -69,7 +69,7 @@ public class ContactExportDto implements Serializable {
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 	public static final String EVENT_COUNT = "eventCount";
-	public static final String BIRTH_DATE = "birthDate";
+	public static final String BIRTH_DATE = "birthdate";
 
 	private long id;
 	private long personId;
@@ -139,6 +139,8 @@ public class ContactExportDto implements Serializable {
 	private String phoneOwner;
 	@SensitiveData
 	private String emailAddress;
+	@SensitiveData
+	private String otherContactDetails;
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
@@ -218,7 +220,7 @@ public class ContactExportDto implements Serializable {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
+							String phone, String phoneOwner, String emailAddress, String otherContactDetails, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
 							// vaccination info
@@ -289,6 +291,10 @@ public class ContactExportDto implements Serializable {
 		this.phone = phone;
 		this.phoneOwner = phoneOwner;
 		this.emailAddress = emailAddress;
+//		for (String otherContactDetail : otherContactDetails) {
+//			this.otherContactDetails += this.otherContactDetails.equals("") ? otherContactDetail : ", " + otherContactDetail;
+//		}
+		this.otherContactDetails = otherContactDetails;
 		this.occupationType = occupationType;
 		this.occupationDetails = occupationDetails;
 		this.armedForcesRelationType = armedForcesRelationType;
@@ -821,6 +827,15 @@ public class ContactExportDto implements Serializable {
 
 	@Order(68)
 	@ExportProperty({
+		ContactDto.PERSON,
+		PersonDto.OTHER_CONTACT_DETAILS })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getOtherContactDetails() {
+		return otherContactDetails;
+	}
+
+	@Order(69)
+	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
@@ -828,7 +843,7 @@ public class ContactExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(69)
+	@Order(70)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_DETAILS })
@@ -837,7 +852,7 @@ public class ContactExportDto implements Serializable {
 		return occupationDetails;
 	}
 
-	@Order(70)
+	@Order(71)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ARMED_FORCES_RELATION_TYPE })
@@ -1276,5 +1291,9 @@ public class ContactExportDto implements Serializable {
 
 	public void setFacility(String facility) {
 		this.facility = facility;
+	}
+
+	public void setOtherContactDetails(String otherContactDetails) {
+		this.otherContactDetails = otherContactDetails;
 	}
 }

@@ -38,7 +38,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -85,8 +84,11 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -668,7 +670,55 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		final String primaryPhone = "0000444888";
+		final String primaryEmail = "primary@email.com";
+		cazePerson.setPhone(primaryPhone);
+		cazePerson.setEmailAddress(primaryEmail);
+
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.PHONE,
+					PhoneNumberType.LANDLINE,
+					"",
+					"0265590500",
+					"",
+					false,
+					"",
+					""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.EMAIL,
+					null,
+					"",
+					"secondary@email.com",
+					"",
+					false,
+					"",
+					""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				new PersonContactDetailDto(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.OTHER,
+					null,
+					"SkypeID",
+					"personSkype",
+					"",
+					false,
+					"",
+					""));
+
+		getPersonFacade().savePerson(cazePerson);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -682,6 +732,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 //		assertNotNull(exportDto.getSampleLab1());
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
+		assertEquals(primaryPhone, exportDto.getPhone());
+		assertEquals(primaryEmail, exportDto.getEmailAddress());
+		final String otherContactDetails = exportDto.getOtherContactDetails();
+		assertTrue(otherContactDetails.contains("0265590500 (PHONE)"));
+		assertTrue(otherContactDetails.contains("secondary@email.com (EMAIL)"));
+		assertTrue(otherContactDetails.contains("personSkype (SkypeID)"));
 	}
 
 	/**
@@ -728,7 +784,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> result =
+			cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
