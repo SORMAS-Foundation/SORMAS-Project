@@ -74,10 +74,11 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 						&& pcd.isPrimaryContact();
 
 				if (entry.isPrimaryContact()) {
-					Optional<PersonContactDetailDto> optionalPersonContactDetailDto =
+					Optional<PersonContactDetailDto> existingPrimaryContactDetails =
 						getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
-					optionalPersonContactDetailDto.ifPresent(
-						personContactDetailDto -> VaadinUiUtil.showConfirmationPopup(
+
+					if (existingPrimaryContactDetails.isPresent()) {
+						VaadinUiUtil.showConfirmationPopup(
 							I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
 							new Label(I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate)),
 							questionWindow -> {
@@ -87,7 +88,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 									@Override
 									protected void onConfirm() {
-										personContactDetailDto.setPrimaryContact(false);
+										existingPrimaryContactDetails.get().setPrimaryContact(false);
 										commitCallback.accept(editForm.getValue());
 										questionWindow.close();
 									}
@@ -105,7 +106,10 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 								return confirmationComponent;
 							},
-							null));
+							null);
+					} else {
+						commitCallback.accept(editForm.getValue());
+					}
 				} else {
 					commitCallback.accept(editForm.getValue());
 				}

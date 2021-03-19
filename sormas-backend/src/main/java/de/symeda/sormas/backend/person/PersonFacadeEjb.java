@@ -637,7 +637,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		if (!CollectionUtils.isEmpty(source.getPersonContactDetails())) {
 			target.setPersonContactDetails(source.getPersonContactDetails().stream().map(entity -> {
-				final PersonContactDetailDto personContactDetailDto = new PersonContactDetailDto(
+				final PersonContactDetailDto personContactDetailDto = PersonContactDetailDto.build(
 					source.toReference(),
 					entity.isPrimaryContact(),
 					entity.getPersonContactDetailType(),
