@@ -318,6 +318,7 @@
     <string name="heading_outbreak_response">Réponse à l\'épidémie</string>
     <string name="heading_person_involved">Personne impliquée</string>
     <string name="heading_person_involved_new">Nouvelle personne impliquée</string>
+    <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Choisir ou créer un Cas</string>
     <string name="heading_pick_or_create_event">Choisir ou créer un événement</string>
