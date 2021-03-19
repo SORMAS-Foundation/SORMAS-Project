@@ -82,5 +82,5 @@ public interface PersonFacade {
 
 	boolean doesExternalTokenExist(String externalToken, String personUuid);
 
-	long setMissingGeoCoordinates();
+	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 }

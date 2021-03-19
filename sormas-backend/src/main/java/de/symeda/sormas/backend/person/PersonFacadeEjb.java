@@ -695,7 +695,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public long setMissingGeoCoordinates() {
+	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
 		long changedPersons = 0;
 
 		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
@@ -709,7 +709,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		for (Person person : personsList) {
 
-			if (person.getAddress() != null && (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null)) {
+			if (person.getAddress() != null
+				&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
 				try {
 					GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
 					if (latLon != null) {
