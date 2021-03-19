@@ -246,6 +246,17 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
+	public void removeLinkCaseEventParticipant(EventDto event, CaseDataDto caseDataDto, String notificationMessage) {
+		EventParticipantReferenceDto eventParticipantRef =
+			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(event.getUuid(), caseDataDto.getPerson().getUuid());
+
+		EventParticipantDto eventParticipantDto = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+		eventParticipantDto.setResultingCase(null);
+		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+
+		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
+	}
+
 	public void removeSuperordinateEvent(EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
 		subordinateEvent.setSuperordinateEvent(null);
 		FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
@@ -801,12 +812,12 @@ public class EventController {
 		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
 		if (nonClusterEvent.isPresent()) {
 			Notification.show(
-					String.format(
-							I18nProperties.getString(Strings.errorSurvNetNonClusterEvent),
-							DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
-							I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
-					"",
-					Type.ERROR_MESSAGE);
+				String.format(
+					I18nProperties.getString(Strings.errorSurvNetNonClusterEvent),
+					DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
+					I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
+				"",
+				Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -814,9 +825,9 @@ public class EventController {
 		String ownershipHandedOverUuid = FacadeProvider.getEventFacade().getFirstEventUuidWithOwnershipHandedOver(selectedUuids);
 		if (ownershipHandedOverUuid != null) {
 			Notification.show(
-					String.format(I18nProperties.getString(Strings.errorSurvNetEventNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
-					"",
-					Type.ERROR_MESSAGE);
+				String.format(I18nProperties.getString(Strings.errorSurvNetEventNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+				"",
+				Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -824,9 +835,9 @@ public class EventController {
 
 		callback.run();
 		new Notification(
-				I18nProperties.getString(Strings.headingEventsSentToSurvNet),
-				I18nProperties.getString(Strings.messageEventsSentToSurvnet),
-				Type.HUMANIZED_MESSAGE,
-				false).show(Page.getCurrent());
+			I18nProperties.getString(Strings.headingEventsSentToSurvNet),
+			I18nProperties.getString(Strings.messageEventsSentToSurvnet),
+			Type.HUMANIZED_MESSAGE,
+			false).show(Page.getCurrent());
 	}
 }

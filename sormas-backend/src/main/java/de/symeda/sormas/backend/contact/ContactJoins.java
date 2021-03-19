@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.contact;
 
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
@@ -39,7 +40,7 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.visit.Visit;
 
-public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
+public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private Join<Contact, Person> person;
 //	private CaseJoins<Contact> caseJoins;
@@ -83,7 +84,7 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo;
 
-	public ContactJoins(Root<Contact> contact) {
+	public ContactJoins(From<T, Contact> contact) {
 		super(contact);
 
 //		this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));

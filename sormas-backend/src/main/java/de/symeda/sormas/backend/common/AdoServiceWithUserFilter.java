@@ -7,7 +7,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -89,7 +88,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		return "%" + textFilter.toLowerCase() + "%";
 	}
 
-	protected Predicate phoneNumberPredicate(CriteriaBuilder cb, Path<Object> path, String textFilter) {
+	protected Predicate phoneNumberPredicate(CriteriaBuilder cb, Expression<String> path, String textFilter) {
 		return cb.like(removeNonNumbersExpression(cb, path), formatPhoneNumberForSearch(textFilter));
 	}
 
@@ -105,7 +104,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 				: formattedPhoneNumber);
 	}
 
-	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Path<Object> path) {
+	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Expression<String> path) {
 		return cb.function("REGEXP_REPLACE", String.class, path, cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
 	}
 }

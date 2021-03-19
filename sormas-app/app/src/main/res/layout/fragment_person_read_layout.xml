@@ -37,6 +37,9 @@
         <variable name="addressList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.location.Location&gt;" />
         <variable name="addressItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="addressBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
+        <variable name="personContactDetailList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.PersonContactDetail&gt;" />
+        <variable name="personContactDetailItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="personContactDetailBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
     <ScrollView
@@ -403,23 +406,6 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_phone"
-                    app:value="@{data.phone}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_phoneOwner"
-                    app:value="@{data.phoneOwner}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/person_birthCountry"
                     app:value="@{birthCountry}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
@@ -430,19 +416,6 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_emailAddress"
-                app:value="@{data.emailAddress}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_generalPractitionerDetails"
-                app:value="@{data.generalPractitionerDetails}"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:textArea="true"
-                style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -458,6 +431,52 @@
                     android:id="@+id/person_externalToken"
                     app:value="@{data.externalToken}"
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/personContactDetails_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{personContactDetailList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
+
+                    <TextView
+                        android:id="@+id/personContactDetails_headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_person_contact_detail"
+                        style="@style/SubHeadingCompactStyle" />
+
+                </RelativeLayout>
+
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle"
+                    app:goneIfEmpty="@{personContactDetailList}"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:padding="@dimen/rowListItemParentPadding"
+                    app:callback="@{personContactDetailItemClickCallback}"
+                    app:entries="@{personContactDetailList}"
+                    app:layout="@{@layout/row_person_contact_detail_layout}"
+                    app:bindCallback="@{personContactDetailBindCallback}" />
+
             </LinearLayout>
 
         </LinearLayout>

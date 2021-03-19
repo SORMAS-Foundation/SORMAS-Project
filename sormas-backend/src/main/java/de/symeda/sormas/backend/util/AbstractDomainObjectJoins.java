@@ -8,15 +8,15 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-public class AbstractDomainObjectJoins<X, Y extends AbstractDomainObject> {
+public class AbstractDomainObjectJoins<Z, Y extends AbstractDomainObject> {
 
-	private From<X, Y> root;
+	private From<Z, Y> root;
 
-	public AbstractDomainObjectJoins(From<X, Y> root) {
+	public AbstractDomainObjectJoins(From<Z, Y> root) {
 		this.root = root;
 	}
 
-	public From<X, Y> getRoot() {
+	public From<Z, Y> getRoot() {
 		return root;
 	}
 

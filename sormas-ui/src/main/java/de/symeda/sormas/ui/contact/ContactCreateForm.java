@@ -167,7 +167,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField firstContactDate = addField(ContactDto.FIRST_CONTACT_DATE, DateField.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
 		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
