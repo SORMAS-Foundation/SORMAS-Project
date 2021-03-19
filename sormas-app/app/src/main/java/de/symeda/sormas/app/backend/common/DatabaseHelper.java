@@ -2092,18 +2092,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, PersonContactDetail.class);
 				migratePersonContactDetails();
 
-      case 289:
+			case 289:
 				currentVersion = 289;
 				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN intensiveCareUnit varchar(255);");
 				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN intensiveCareUnitStart timestamp;");
 				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN intensiveCareUnitEnd timestamp");
-          
+
 			case 290:
 				currentVersion = 290;
 				TableUtils.createTableIfNotExists(connectionSource, Continent.class);
 				TableUtils.createTableIfNotExists(connectionSource, Subcontinent.class);
 				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
-
 
 				// ATTENTION: break should only be done after last version
 				break;
