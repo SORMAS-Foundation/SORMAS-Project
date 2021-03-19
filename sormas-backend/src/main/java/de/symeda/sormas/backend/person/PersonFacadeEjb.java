@@ -385,8 +385,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+			.when(cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(contactRoot.get(Contact.FOLLOW_UP_UNTIL), minDate)));
 
@@ -414,8 +414,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final Date minDate = new Date(0);
 		final Expression<Object> followUpStatusExpression = cb.selectCase()
-				.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
-				.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
+			.when(cb.equal(caseRoot.get(Case.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED), cb.nullLiteral(Date.class))
+			.otherwise(caseRoot.get(Case.FOLLOW_UP_UNTIL));
 		cq.multiselect(personJoin.get(Person.UUID), followUpStatusExpression);
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(cb.coalesce(caseRoot.get(Case.FOLLOW_UP_UNTIL), minDate)));
 
@@ -445,6 +445,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(contactRoot.get(Contact.DELETED), false));
+
 		if (uuid != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
@@ -471,6 +473,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caseRoot.get(Case.DELETED), false));
 
 		if (uuid != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
@@ -500,6 +504,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Contact> contactRoot = cq.from(Contact.class);
 		Join<Contact, Person> personContactJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 		Predicate contactFilter = contactService.createUserFilter(cb, cq, contactRoot);
+
+		contactFilter = CriteriaBuilderHelper.and(cb, contactFilter, cb.equal(contactRoot.get(Contact.DELETED), false));
+
 		if (uuid != null) {
 			contactFilter = CriteriaBuilderHelper.and(cb, contactFilter, cb.equal(personContactJoin.get(Person.UUID), uuid));
 		}
@@ -513,6 +520,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Person> personCaseJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, caseRoot);
+
+		caseFilter = CriteriaBuilderHelper.and(cb, caseFilter, cb.equal(caseRoot.get(Case.DELETED), false));
+
 		if (uuid != null) {
 			caseFilter = CriteriaBuilderHelper.and(cb, caseFilter, cb.equal(personCaseJoin.get(Person.UUID), uuid));
 
