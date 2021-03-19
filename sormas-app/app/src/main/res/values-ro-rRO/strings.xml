@@ -318,6 +318,7 @@
     <string name="heading_outbreak_response">Outbreak Response</string>
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
+    <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
     <string name="heading_pick_or_create_event">Pick or Create a Event</string>
