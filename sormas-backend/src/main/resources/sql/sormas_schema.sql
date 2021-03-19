@@ -6879,6 +6879,61 @@ ALTER TABLE events_history ADD COLUMN internalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
+-- 2020-02-19 Person contact details #2744
+create table personcontactdetail(
+     id bigint not null,
+     uuid varchar(36) not null unique,
+     changedate timestamp not null,
+     creationdate timestamp not null,
+     person_id bigint not null,
+     primarycontact boolean DEFAULT false,
+     personcontactdetailtype varchar(255),
+     phonenumbertype varchar(255),
+     details text,
+     contactInformation text,
+     additionalInformation text,
+     thirdParty boolean DEFAULT false,
+     thirdPartyRole text,
+     thirdPartyName text
+);
+ALTER TABLE personcontactdetail OWNER TO sormas_user;
+
+ALTER TABLE personcontactdetail
+    ADD CONSTRAINT fk_personcontactdetail_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+
+ALTER TABLE personcontactdetail ADD COLUMN sys_period tstzrange;
+CREATE TABLE personcontactdetail_history (LIKE personcontactdetail);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'personcontactdetail_history', true);
+ALTER TABLE personcontactdetail_history OWNER TO sormas_user;
+
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_person_id ON personcontactdetail (person_id);
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personcontactdetail (primarycontact);
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'PHONE', phone, false
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS FALSE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'EMAIL', emailaddress, false
+FROM person WHERE (emailaddress <> '' AND emailaddress IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'PHONE', phone, true, phoneowner
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, additionalinformation, thirdparty, thirdpartyrole, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'OTHER', generalpractitionerdetails, true, 'General practitioner', generalpractitionerdetails
+FROM person WHERE (generalpractitionerdetails <> '' AND generalpractitionerdetails IS NOT NULL) IS TRUE;
+
+ALTER TABLE person DROP COLUMN phone;
+ALTER TABLE person DROP COLUMN phoneowner;
+ALTER TABLE person DROP COLUMN emailaddress;
+ALTER TABLE person DROP COLUMN generalpractitionerdetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (349, 'Person contact details #2744');
+
 -- 2020-03-17 Create continent and subcontinent #4775
 CREATE TABLE continent (
                            id bigint NOT NULL,
@@ -6911,6 +6966,6 @@ ALTER TABLE subcontinent ADD CONSTRAINT fk_subcontinent_continent_id FOREIGN KEY
 ALTER TABLE country ADD COLUMN subcontinent_id BIGINT;
 ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (349, '2020-03-17 Create continent and subcontinent #4775');
+INSERT INTO schema_version (version_number, comment) VALUES (350, '2020-03-17 Create continent and subcontinent #4775');
 
 -- *** Insert new sql commands BEFORE this line ***

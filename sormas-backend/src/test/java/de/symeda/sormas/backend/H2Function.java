@@ -1,14 +1,22 @@
 package de.symeda.sormas.backend;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.DateHelper8;
 
+/**
+ * When extending this class make sure to also extend {@link AbstractBeanTest#initH2Functions()} and {@link ExtendedH2Dialect}.
+ */
 public class H2Function {
 
 	public static float similarity(String a, String b) {
 		return a.equalsIgnoreCase(b) ? 1 : 0;
+	}
+
+	public static String array_to_string(String[] array, String delimiter) {
+		return array != null ? String.join(delimiter, Arrays.asList(array)) : null;
 	}
 
 	public static long date_part(String part, Date date) {

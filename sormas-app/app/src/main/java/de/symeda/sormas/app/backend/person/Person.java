@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import androidx.databinding.Bindable;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,12 +29,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -51,6 +49,8 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Person.TABLE_NAME)
 @DatabaseTable(tableName = Person.TABLE_NAME)
@@ -125,12 +125,6 @@ public class Person extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String phone;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String phoneOwner;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String emailAddress;
 
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
@@ -170,14 +164,13 @@ public class Person extends PseudonymizableAdo {
 	@Enumerated
 	private ArmedForcesRelationType armedForcesRelationType;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String generalPractitionerDetails;
 	@Column
 	private String passportNumber;
 	@Column
 	private String nationalHealthId;
 
 	private List<Location> addresses = new ArrayList<>();
+	private List<PersonContactDetail> personContactDetails = new ArrayList<>();
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalId;
@@ -300,21 +293,6 @@ public class Person extends PseudonymizableAdo {
 		this.address = address;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getPhoneOwner() {
-		return phoneOwner;
-	}
-
-	public void setPhoneOwner(String phoneOwner) {
-		this.phoneOwner = phoneOwner;
-	}
 
 	public Sex getSex() {
 		return sex;
@@ -545,22 +523,6 @@ public class Person extends PseudonymizableAdo {
 		this.birthWeight = birthWeight;
 	}
 
-	public String getGeneralPractitionerDetails() {
-		return generalPractitionerDetails;
-	}
-
-	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
-		this.generalPractitionerDetails = generalPractitionerDetails;
-	}
-
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
 	public String getPassportNumber() {
 		return passportNumber;
 	}
@@ -591,6 +553,14 @@ public class Person extends PseudonymizableAdo {
 
 	public void setAddresses(List<Location> addresses) {
 		this.addresses = addresses;
+	}
+
+	public List<PersonContactDetail> getPersonContactDetails() {
+		return personContactDetails;
+	}
+
+	public void setPersonContactDetails(List<PersonContactDetail> personContactDetails) {
+		this.personContactDetails = personContactDetails;
 	}
 
 	public String getExternalId() {

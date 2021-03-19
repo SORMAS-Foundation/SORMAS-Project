@@ -25,13 +25,13 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class ActionJoins extends AbstractDomainObjectJoins<Action, Action> {
+public class ActionJoins<T> extends AbstractDomainObjectJoins<T, Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
 	private Join<Action, User> lastModifiedBy;
 
-	public ActionJoins(From<Action, Action> root) {
+	public ActionJoins(From<T, Action> root) {
 		super(root);
 	}
 

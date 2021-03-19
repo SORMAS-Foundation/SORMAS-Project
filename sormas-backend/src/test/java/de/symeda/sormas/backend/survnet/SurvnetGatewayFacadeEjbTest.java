@@ -80,9 +80,8 @@ public class SurvnetGatewayFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSendingCasesNotOk() {
 		stubFor(
-			post(urlEqualTo("/export"))
-					.withRequestBody(containing("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY"))
-					.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
+			post(urlEqualTo("/export")).withRequestBody(containing("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY"))
+				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		int result = subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
 		assertThat(result, CoreMatchers.is(HttpStatus.SC_NOT_FOUND));

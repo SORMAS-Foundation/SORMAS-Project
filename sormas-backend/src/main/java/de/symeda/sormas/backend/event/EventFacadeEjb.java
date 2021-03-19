@@ -234,7 +234,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -303,7 +303,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -531,7 +531,7 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
