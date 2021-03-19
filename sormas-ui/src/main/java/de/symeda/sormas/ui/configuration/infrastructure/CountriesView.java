@@ -83,17 +83,6 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		subcontinentFilter = new ComboBox();
-		subcontinentFilter.setId(CountryDto.SUBCONTINENT);
-		subcontinentFilter.setWidth(140, Unit.PIXELS);
-		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUBCONTINENT));
-		subcontinentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		subcontinentFilter.addValueChangeListener(e -> {
-			criteria.subcontinent((SubcontinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(subcontinentFilter);
-
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COUNTRY));
@@ -178,6 +167,17 @@ public class CountriesView extends AbstractConfigurationView {
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
+
+		subcontinentFilter = new ComboBox();
+		subcontinentFilter.setId(CountryDto.SUBCONTINENT);
+		subcontinentFilter.setWidth(140, Unit.PIXELS);
+		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUBCONTINENT));
+		subcontinentFilter.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
+		subcontinentFilter.addValueChangeListener(e -> {
+			criteria.subcontinent((SubcontinentReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(subcontinentFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(CountriesView.class).remove(CountryCriteria.class);

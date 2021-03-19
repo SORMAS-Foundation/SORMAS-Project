@@ -23,7 +23,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.region.SubcontinentIndexDto;
@@ -77,17 +76,6 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
-
-		continentFilter = new ComboBox();
-		continentFilter.setId(CountryDto.SUBCONTINENT);
-		continentFilter.setWidth(140, Unit.PIXELS);
-		continentFilter.setCaption(I18nProperties.getPrefixCaption(SubcontinentDto.I18N_PREFIX, SubcontinentDto.CONTINENT));
-		continentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		continentFilter.addValueChangeListener(e -> {
-			criteria.continent((ContinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(continentFilter);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -166,6 +154,17 @@ public class SubcontinentsView extends AbstractConfigurationView {
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
+
+		continentFilter = new ComboBox();
+		continentFilter.setId(SubcontinentDto.CONTINENT);
+		continentFilter.setWidth(140, Unit.PIXELS);
+		continentFilter.setCaption(I18nProperties.getPrefixCaption(SubcontinentDto.I18N_PREFIX, SubcontinentDto.CONTINENT));
+		continentFilter.addItems(FacadeProvider.getContinentFacade().getAllActiveAsReference());
+		continentFilter.addValueChangeListener(e -> {
+			criteria.continent((ContinentReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(continentFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(SubcontinentsView.class).remove(SubcontinentCriteria.class);
