@@ -18,15 +18,21 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
 import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.SubContinentFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 
 @Stateless(name = "InfrastructureFacade")
 public class InfrastructureFacadeEjb implements InfrastructureFacade {
 
+	@EJB
+	private ContinentFacadeEjb.ContinentFacadeEjbLocal continentFacade;
+	@EJB
+	private SubContinentFacadeEjb.SubContinentFacadeEjbLocal subContinentFacade;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
@@ -71,6 +77,8 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 			return sync;
 		}
 
+		sync.setContinents(continentFacade.getAllAfter(changeDates.getContinentChangeDate()));
+		sync.setSubContinents(subContinentFacade.getAllAfter(changeDates.getSubContinentChangeDate()));
 		sync.setCountries(countryFacade.getAllAfter(changeDates.getCountryChangeDate()));
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));

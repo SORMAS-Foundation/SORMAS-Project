@@ -28,19 +28,6 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
@@ -2105,14 +2092,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 288;
 				TableUtils.createTable(connectionSource, PersonContactDetail.class);
 				migratePersonContactDetails();
-				// ATTENTION: break should only be done after last version
-				break;
+
 			case 289:
 				currentVersion = 289;
 				TableUtils.createTableIfNotExists(connectionSource, Continent.class);
 				TableUtils.createTableIfNotExists(connectionSource, SubContinent.class);
 				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subContinent_id BIGINT REFERENCES subContinent(id);");
-
+				// ATTENTION: break should only be done after last version
+				break;
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}

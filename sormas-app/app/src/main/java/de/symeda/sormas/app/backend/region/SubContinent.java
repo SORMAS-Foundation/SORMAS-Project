@@ -29,8 +29,8 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
-@Entity(name = District.TABLE_NAME)
-@DatabaseTable(tableName = District.TABLE_NAME)
+@Entity(name = SubContinent.TABLE_NAME)
+@DatabaseTable(tableName = SubContinent.TABLE_NAME)
 public class SubContinent extends InfrastructureAdo {
 
     public static final String TABLE_NAME = "subContinent";
@@ -53,6 +53,14 @@ public class SubContinent extends InfrastructureAdo {
 
     public void setDefaultName(String defaultName) {
         this.defaultName = defaultName;
+    }
+
+    public Continent getContinent() {
+        return continent;
+    }
+
+    public void setContinent(Continent continent) {
+        this.continent = continent;
     }
 
     @Override
