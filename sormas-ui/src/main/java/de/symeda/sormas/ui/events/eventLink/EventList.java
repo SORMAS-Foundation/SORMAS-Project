@@ -27,6 +27,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventList extends PaginationList<EventIndexDto> {
 
@@ -52,6 +54,31 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.caze(caseReferenceDto);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingUnlinkCaseFromEvent),
+						new Label(I18nProperties.getString(Strings.confirmationUnlinkCaseFromEvent)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						480,
+						confirmed -> {
+							if (confirmed) {
+								EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
+								CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseReferenceDto.getUuid());
+								ControllerProvider.getEventController()
+										.removeLinkCaseEventParticipant(
+												selectedEvent,
+												caseDataDto,
+												I18nProperties.getString(Strings.messageEventParticipationUnlinked));
+								reload();
+							}
+						});
+
+				});
+			}
+		};
 	}
 
 	public EventList(PersonReferenceDto personRef) {

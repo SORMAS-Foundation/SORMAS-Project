@@ -2,11 +2,11 @@ package de.symeda.sormas.backend.externaljournal;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -14,6 +14,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,7 +35,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import static org.junit.Assert.fail;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
@@ -187,16 +187,17 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		HashMap<String, Object> relevantChanges = new HashMap<String, Object>() {
 
 			{
-				put("FirstName", "Heinz");
-				put("LastName", "Müller");
-				put("Sex", Sex.FEMALE);
-				put("EmailAddress", "heinz@test.de");
-				put("Phone", "+496211218491");
-				put("BirthdateYYYY", 2001);
-				put("BirthdateMM", 7);
-				put("BirthdateDD", 2);
+				put(Person.FIRST_NAME, "Heinz");
+				put(Person.LAST_NAME, "Müller");
+				put(Person.SEX, Sex.FEMALE);
+				put(Person.BIRTHDATE_YYYY, 2001);
+				put(Person.BIRTHDATE_MM, 7);
+				put(Person.BIRTHDATE_DD, 2);
 			}
 		};
+
+		person.setPhone("+496211218491");
+		person.setEmailAddress("heinz@test.de");
 
 		// Apply each change and make sure it makes notification considered necessary
 		for (String propertyName : relevantChanges.keySet()) {
@@ -261,12 +262,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	private void setPersonProperty(Person person, String propertyName, Object propertyValue) {
 		try {
-			Method method = person.getClass().getMethod("set" + propertyName, propertyValue.getClass());
-			method.invoke(person, propertyValue);
-		} catch (NoSuchMethodException e) {
-			// This probably means that the set method is gone, which may impose changes to the External Journal Interface
-			fail();
+			BeanUtils.setProperty(person, propertyName, propertyValue);
 		} catch (IllegalAccessException | InvocationTargetException e) {
+			fail();
 			e.printStackTrace();
 		}
 	}

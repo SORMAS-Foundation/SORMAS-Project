@@ -1,5 +1,19 @@
 package de.symeda.sormas.ui.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
@@ -11,6 +25,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
@@ -20,19 +35,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class ExternalJournalUtil {
 
@@ -43,7 +45,9 @@ public class ExternalJournalUtil {
 	 * If no external journal is enabled with the current settings, an empty optional is returned.
 	 * If the person is not registered in the external journal, a create account/register button is returned
 	 * If the person is registered, a button is returned which opens a popup with further options.
-	 * @param person person to be managed by the external journal
+	 * 
+	 * @param person
+	 *            person to be managed by the external journal
 	 * @return Optional containing appropriate Button
 	 */
 	public static Optional<Button> getExternalJournalUiButton(PersonDto person) {
@@ -53,8 +57,7 @@ public class ExternalJournalUtil {
 			} else {
 				return Optional.of(createSymptomJournalRegisterButton(person));
 			}
-		}
-		else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
+		} else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createPatientDiaryOptionsButton(person));
 			} else {
@@ -71,16 +74,19 @@ public class ExternalJournalUtil {
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		// TODO: implement cancel for PIA
-		Button.ClickListener cancelListener = clickEvent -> {};
+		Button.ClickListener cancelListener = clickEvent -> {
+		};
 		Button.ClickListener openListener = clickEvent -> openSymptomJournalWindow(person);
-		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.symptomJournalOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInSymptomJournalButton), openListener, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton =
+			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.symptomJournalOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInSymptomJournalButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
 	}
-
 
 	private static Button createSymptomJournalRegisterButton(PersonDto person) {
 		Button btnCreateSymptomJournalAccount = new Button(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
@@ -96,9 +102,12 @@ public class ExternalJournalUtil {
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		Button.ClickListener cancelListener = clickEvent -> showCancelFollowupConfirmationPopup(person);
 		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
-		PopupButton ediaryButton = ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.patientDiaryOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
-		Button cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
-		Button openButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPatientDiaryButton), openListener, ValoTheme.BUTTON_PRIMARY);
+		PopupButton ediaryButton =
+			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.patientDiaryOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button cancelButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
+		Button openButton =
+			ButtonHelper.createButton(I18nProperties.getCaption(Captions.openInPatientDiaryButton), openListener, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(cancelButton);
 		popupLayout.addComponent(openButton);
 		return ediaryButton;
@@ -164,12 +173,16 @@ public class ExternalJournalUtil {
 	}
 
 	private static void showCancelFollowupConfirmationPopup(PersonDto personDto) {
-		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.cancelExternalFollowUpPopupTitle),
-				new Label(I18nProperties.getString(Strings.confirmationCancelExternalFollowUpPopup)),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				600,
-				confirmed -> {if (confirmed) cancelPatientDiaryFollowUp(personDto);});
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.cancelExternalFollowUpPopupTitle),
+			new Label(I18nProperties.getString(Strings.confirmationCancelExternalFollowUpPopup)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmed -> {
+				if (confirmed)
+					cancelPatientDiaryFollowUp(personDto);
+			});
 	}
 
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
