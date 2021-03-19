@@ -246,6 +246,17 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
+	public void removeLinkCaseEventParticipant(EventDto event, CaseDataDto caseDataDto, String notificationMessage) {
+		EventParticipantReferenceDto eventParticipantRef =
+			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(event.getUuid(), caseDataDto.getPerson().getUuid());
+
+		EventParticipantDto eventParticipantDto = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+		eventParticipantDto.setResultingCase(null);
+		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+
+		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
+	}
+
 	public void removeSuperordinateEvent(EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
 		subordinateEvent.setSuperordinateEvent(null);
 		FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
@@ -802,12 +813,12 @@ public class EventController {
 		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
 		if (nonClusterEvent.isPresent()) {
 			Notification.show(
-					String.format(
+				String.format(
 					I18nProperties.getString(Strings.errorExternalSurveillanceToolNonClusterEvent),
-							DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
-							I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
-					"",
-					Type.ERROR_MESSAGE);
+					DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
+					I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
+				"",
+				Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -818,8 +829,8 @@ public class EventController {
 				String.format(
 					I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned),
 					DataHelper.getShortUuid(ownershipHandedOverUuid)),
-					"",
-					Type.ERROR_MESSAGE);
+				"",
+				Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -829,7 +840,7 @@ public class EventController {
 		new Notification(
 			I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
 			I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
-				Type.HUMANIZED_MESSAGE,
-				false).show(Page.getCurrent());
+			Type.HUMANIZED_MESSAGE,
+			false).show(Page.getCurrent());
 	}
 }
