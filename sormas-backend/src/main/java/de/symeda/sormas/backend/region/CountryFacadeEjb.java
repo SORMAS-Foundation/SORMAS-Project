@@ -22,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.region.SubContinentReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -247,7 +248,10 @@ public class CountryFacadeEjb implements CountryFacade {
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
-		target.setSubContinent(subContinentService.getByUuid(source.getSubContinent().getUuid()));
+		final SubContinentReferenceDto subContinent = source.getSubContinent();
+		if (subContinent != null) {
+			target.setSubContinent(subContinentService.getByUuid(subContinent.getUuid()));
+		}
 
 		return target;
 	}
