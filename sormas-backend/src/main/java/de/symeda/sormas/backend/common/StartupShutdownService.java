@@ -675,7 +675,7 @@ public class StartupShutdownService {
 					contactService.udpateContactStatus(contact);
 				}
 				break;
-			case 350:
+			case 351:
 				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
 				if (serverCountry != null) {
