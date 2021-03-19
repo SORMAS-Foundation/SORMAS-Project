@@ -85,8 +85,8 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		return getAllActiveByPredicate((cb, root) -> {
 			if (serverCountry != null) {
-				Path<Object> countryUui = root.join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
-				return CriteriaBuilderHelper.or(cb, cb.isNull(countryUui), cb.equal(countryUui, serverCountry.getUuid()));
+				Path<Object> countryUuid = root.join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+				return CriteriaBuilderHelper.or(cb, cb.isNull(countryUuid), cb.equal(countryUuid, serverCountry.getUuid()));
 			}
 
 			return null;

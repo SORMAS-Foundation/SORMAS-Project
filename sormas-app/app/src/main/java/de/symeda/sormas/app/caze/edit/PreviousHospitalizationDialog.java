@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static android.view.View.GONE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
@@ -87,7 +86,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			setLiveValidationDisabled(true);
 		}
 
-		List<Item> initialRegions = InfrastructureHelper.loadRegionByServerCountry();
+		List<Item> initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);

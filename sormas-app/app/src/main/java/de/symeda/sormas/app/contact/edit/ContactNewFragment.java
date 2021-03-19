@@ -39,8 +39,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
-import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -82,7 +80,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
 		}
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
-		initialRegions = InfrastructureHelper.loadRegionByServerCountry();
+		initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));

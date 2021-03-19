@@ -66,11 +66,11 @@ public final class InfrastructureHelper {
 		return items;
 	}
 
-	public static List<Item> loadRegionByServerCountry() {
+	public static List<Item> loadRegionsByServerCountry() {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveByServerCountry());
 	}
 
-	public static List<Item> loadRegionBuCountry(Country country) {
+	public static List<Item> loadRegionsByCountry(Country country) {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveByCountry(country));
 	}
 
@@ -198,9 +198,9 @@ public final class InfrastructureHelper {
 				? selectedCountry == null
 				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 
-			List<Item> newDistricts =
-				isServerCountry ? InfrastructureHelper.loadRegionByServerCountry() : InfrastructureHelper.loadRegionBuCountry(selectedCountry);
-			regionField.setSpinnerData(newDistricts, regionField.getValue());
+			List<Item> newRegions =
+				isServerCountry ? InfrastructureHelper.loadRegionsByServerCountry() : InfrastructureHelper.loadRegionsByCountry(selectedCountry);
+			regionField.setSpinnerData(newRegions, regionField.getValue());
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(

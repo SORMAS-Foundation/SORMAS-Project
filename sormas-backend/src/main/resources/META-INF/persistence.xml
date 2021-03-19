@@ -102,8 +102,8 @@
          	<property name="hibernate.hbm2ddl.auto" value="validate"/>
          	 -->
 			<property name="hibernate.jdbc.batch_size" value="100" />
-			<property name="hibernate.order_inserts" value="true" />
-			<property name="hibernate.order_updates" value="true" />
+			<property name="hibernate.order_inserts" value="false" />
+			<property name="hibernate.order_updates" value="false" />
       	</properties>
 		
 	</persistence-unit>

@@ -172,7 +172,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
 		contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
-		initialRegions = InfrastructureHelper.loadRegionByServerCountry();
+		initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
 		allDistricts = InfrastructureHelper.loadAllDistricts();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
