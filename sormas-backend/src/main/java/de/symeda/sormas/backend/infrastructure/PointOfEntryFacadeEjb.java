@@ -149,7 +149,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
-		return service.getByName(name, districtService.getByReferenceDto(district))
+		return service.getByName(name, districtService.getByReferenceDto(district), includeArchivedEntities)
 			.stream()
 			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

@@ -58,7 +58,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return pointsOfEntry;
 	}
 
-	public List<PointOfEntry> getByName(String name, District district) {
+	public List<PointOfEntry> getByName(String name, District district, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
@@ -69,6 +69,9 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase()));
 		if (district != null && !PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
+		}
+		if(!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
 		cq.where(filter);

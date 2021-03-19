@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +29,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb.DiseaseVariantFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -124,6 +126,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EnumService enumService;
+	@EJB
+	private DiseaseVariantFacadeEjbLocal diseaseVariantFacade;
 
 	@Override
 	@Transactional
@@ -500,18 +504,35 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
 						if (pointOfEntry.isEmpty()) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importEntryDoesNotExistDbOrDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(
+											Validations.importEntryDoesNotExistDbOrDistrict,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
 						} else if (pointOfEntry.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importPointOfEntryNotUniqueInDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(
+											Validations.importPointOfEntryNotUniqueInDistrict,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(DiseaseVariantReferenceDto.class)) {
+						List<DiseaseVariantReferenceDto> variants = diseaseVariantFacade.getByName(entry, caze.getDisease());
+						if (variants.isEmpty()) {
+							throw new ImportErrorException(
+									I18nProperties.getValidationError(
+											Validations.importDiseaseVariantNotExistOrDisease,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
+						} else if (variants.size() > 1) {
+							throw new ImportErrorException(
+									I18nProperties.getValidationError(
+											Validations.importDiseaseVariantNotUniqueForDisease,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, variants.get(0));
 						}
 					} else {
 						throw new UnsupportedOperationException(

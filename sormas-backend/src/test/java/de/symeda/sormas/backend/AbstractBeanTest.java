@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -437,6 +438,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
+	}
+
+	public DiseaseVariantService getDiseaseVariantService() {
+		return getBean(DiseaseVariantService.class);
 	}
 
 	public PopulationDataFacade getPopulationDataFacade() {

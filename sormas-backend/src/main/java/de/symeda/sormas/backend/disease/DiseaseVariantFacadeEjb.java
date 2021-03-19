@@ -65,6 +65,14 @@ public class DiseaseVariantFacadeEjb implements DiseaseVariantFacade {
 		return diseaseVariantService.getAllByDisease(disease).stream().map(DiseaseVariantFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<DiseaseVariantReferenceDto> getByName(String name, Disease disease) {
+		return diseaseVariantService.getByName(name, disease)
+				.stream()
+				.map(DiseaseVariantFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
 	public static DiseaseVariantDto toDto(DiseaseVariant source) {
 
 		if (source == null) {
