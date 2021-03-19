@@ -1,11 +1,12 @@
 #!/bin/bash
+# Execute with ./build_deploy.sh <arg> , e.g. ./build_deploy.sh fast
 
 mvn cargo:stop
 
 # recompile
 cd ../sormas-base || exit
 
-if [ "$1" = "clean" ]; then
+if [ "$1" = "wipe" ]; then
   cd ../sormas-cargoserver || exit
   docker-compose down
   docker volume rm sormas-cargoserver_psqldata_cargoserver
