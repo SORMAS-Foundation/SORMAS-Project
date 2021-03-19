@@ -418,6 +418,15 @@ public class StartupShutdownService {
 			userService.persist(hospitalInformant);
 			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
 
+			// Create Community Officer
+			User communityOfficer = MockDataGenerator.createUser(UserRole.COMMUNITY_OFFICER, "Community", "Officer", "CommOff");
+			communityOfficer.setUserName("CommOff");
+			communityOfficer.setRegion(region);
+			communityOfficer.setDistrict(district);
+			communityOfficer.setCommunity(community);
+			userService.persist(communityOfficer);
+			userUpdateEvent.fire(new UserUpdateEvent(communityOfficer));
+
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
 			poeInformant.setRegion(region);

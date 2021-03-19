@@ -14,11 +14,8 @@
  */
 package de.symeda.sormas.ui.events;
 
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -44,9 +41,9 @@ import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
-import de.symeda.sormas.ui.survnet.SurvnetGateway;
-import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -70,7 +67,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
-	private HorizontalLayout survNetLayout;
+	private ExternalSurveillanceShareComponent externalSurvToolLayout;
 
 	public EventDataView() {
 		super(VIEW_NAME);
@@ -92,7 +89,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -106,15 +103,16 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
+		editComponent =
+			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EVENT_LOC);
 
-		survNetLayout = SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
-		setSurvNetLayoutVisibility(event.getEventStatus());
+		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, getEventRef());
+		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
@@ -202,9 +200,9 @@ public class EventDataView extends AbstractEventView {
 		setEventEditPermission(container);
 	}
 
-	private void setSurvNetLayoutVisibility(EventStatus eventStatus) {
-		if (survNetLayout != null) {
-			survNetLayout.setVisible(eventStatus == EventStatus.CLUSTER);
+	private void setExternalSurvToolLayoutVisibility(EventStatus eventStatus) {
+		if (externalSurvToolLayout != null) {
+			externalSurvToolLayout.setVisible(eventStatus == EventStatus.CLUSTER);
 		}
 	}
 }
