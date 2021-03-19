@@ -456,7 +456,7 @@ public class PersonDto extends PseudonymizableDto {
 			}
 		}
 		final PersonContactDetailDto pcd =
-			new PersonContactDetailDto(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
+			PersonContactDetailDto.build(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
 		getPersonContactDetails().add(pcd);
 	}
 
