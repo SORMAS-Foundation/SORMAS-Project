@@ -6964,4 +6964,10 @@ ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitend timestamp;
 ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitend timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (351, 'Add fields for intensive care unit to previous hospitalization #4591');
+
+-- 2021-03-19 Add sample material text to lab message #4773
+ALTER TABLE labmessage ADD COLUMN samplematerialtext VARCHAR(255) AFTER samplematerial;
+ALTER TABLE labmessage_history ADD COLUMN samplematerialtext VARCHAR(255) AFTER samplematerial;
+
+INSERT INTO schema_version (version_number, comment) VALUES (352, 'Add sample material text to lab message #4773');
 -- *** Insert new sql commands BEFORE this line ***

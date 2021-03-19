@@ -93,6 +93,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setProcessed(source.isProcessed());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setPersonPhone(source.getPersonPhone());
@@ -148,6 +149,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setProcessed(source.isProcessed());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setTestDateTime(source.getTestDateTime());

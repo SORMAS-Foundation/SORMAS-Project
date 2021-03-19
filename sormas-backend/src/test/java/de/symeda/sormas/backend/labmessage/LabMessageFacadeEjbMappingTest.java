@@ -27,6 +27,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleReceivedDate(new Date());
 		source.setLabSampleId("Lab Sample Id");
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
+		source.setSampleMaterialText("Sample material text");
 		source.setTestLabName("Test Lab Name");
 		source.setTestLabExternalId("Test Lab External Id");
 		source.setTestLabPostalCode("Test Lab Postal Code");
@@ -61,6 +62,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleReceivedDate(), result.getSampleReceivedDate());
 		assertEquals(source.getLabSampleId(), result.getLabSampleId());
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
+		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getTestLabName(), result.getTestLabName());
 		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
 		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
@@ -98,6 +100,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleReceivedDate(new Date());
 		source.setLabSampleId("Lab Sample Id");
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
+		source.setSampleMaterialText("Sample material text");
 		source.setTestLabName("Test Lab Name");
 		source.setTestLabExternalId("Test Lab External Id");
 		source.setTestLabPostalCode("Test Lab Postal Code");
@@ -131,6 +134,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleReceivedDate(), result.getSampleReceivedDate());
 		assertEquals(source.getLabSampleId(), result.getLabSampleId());
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
+		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getTestLabName(), result.getTestLabName());
 		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
 		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
