@@ -63,7 +63,6 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -405,7 +404,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 
-			Language language = userService.getCurrentUser().getLanguage();
+			Language language = I18nProperties.getUserLanguage();
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
@@ -650,7 +649,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, userService.getCurrentUser().getLanguage().getDateFormat()));
+			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {

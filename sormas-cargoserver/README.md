@@ -40,42 +40,47 @@ in file `custom.properties` (see file `custom.properties.example`).
 
 After adjusting the configurations, (re)run `mvn install` and (re)start the server.
 
-## Build the project
+## Build the project (simple)
+The most convenient way to build and deploy the SORMAS artifacts to cargo is to use `build_deploy.sh`.
+
+
+## Build the project (details)
+Build all SORMAS artifacts:
 
 ```bash
-(cd sormas-base && mvn install)
+cd sormas-base && mvn install
 ```
 
 ### Start SORMAS-PostgreSQL docker container
 
 ```bash
-(cd sormas-cargoserver && docker-compose up -d)
+cd sormas-cargoserver && docker-compose up -d
 ```
 
-## Start local SORMAS server
+### Start local SORMAS server
 
 ```bash
-(cd sormas-cargoserver && mvn cargo:run)
+cd sormas-cargoserver && mvn cargo:run
 ```
 
-## Visit
+### Visit
 
 Once the deployment is completed, you can navigate to `http://localhost:6080/sormas-ui` and login as `admin` with
 password `sadmin`.
 
-## Stop local SORMAS server
+### Stop local SORMAS server
 
 ```bash
-(cd sormas-cargoserver && mvn cargo:stop)
+cd sormas-cargoserver && mvn cargo:stop
 ```
 
-## Stop DB SORMAS-PostgreSQL docker container
+### Stop DB SORMAS-PostgreSQL docker container
 
 ```bash
-(cd sormas-cargoserver && docker-compose down)
+cd sormas-cargoserver && docker-compose down
 ```
 
-## Remove docker volume (if intended)
+### Remove docker volume (if intended)
 
 The SORMAS-PostgreSQL docker container uses a named docker volume:
 

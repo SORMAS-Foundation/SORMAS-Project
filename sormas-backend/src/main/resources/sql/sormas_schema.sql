@@ -6934,4 +6934,34 @@ ALTER TABLE person DROP COLUMN generalpractitionerdetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (349, 'Person contact details #2744');
 
+-- 2021-03-12 Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771
+
+CREATE TABLE externalshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    event_id bigint,
+    sender_id bigint,
+    status varchar(255),
+    primary key(id)
+);
+
+ALTER TABLE externalshareinfo OWNER TO sormas_user;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (350, 'Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771');
+
+-- 2021-03-09 Add fields for intensive care unit to previous hospitalization #4591
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitend timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitend timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (351, 'Add fields for intensive care unit to previous hospitalization #4591');
 -- *** Insert new sql commands BEFORE this line ***

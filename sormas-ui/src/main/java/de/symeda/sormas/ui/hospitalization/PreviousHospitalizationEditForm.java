@@ -19,6 +19,9 @@ package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
@@ -36,13 +39,13 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import java.util.Collections;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
@@ -53,7 +56,15 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(PreviousHospitalizationDto.HOSPITALIZATION_REASON, PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON)
+		+ fluidRowLocs(
+			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT,
+			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_START,
+			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_END)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
+
+	private NullableOptionGroup intensiveCareUnit;
+	private DateField intensiveCareUnitStart;
+	private DateField intensiveCareUnitEnd;
 
 	public PreviousHospitalizationEditForm(
 		boolean create,
@@ -86,16 +97,24 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		addField(PreviousHospitalizationDto.HOSPITALIZATION_REASON);
 		addField(PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 
+		intensiveCareUnit = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
+		intensiveCareUnitStart = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
+		intensiveCareUnitStart.setVisible(false);
+		intensiveCareUnitEnd = addField(PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
+		intensiveCareUnitEnd.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
+
 		healthFacility.setImmediate(true);
 
 		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON,
-				PreviousHospitalizationDto.HOSPITALIZATION_REASON,
-				Collections.singletonList(HospitalizationReasonType.OTHER),
-				true);
+			getFieldGroup(),
+			PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+			PreviousHospitalizationDto.HOSPITALIZATION_REASON,
+			Collections.singletonList(HospitalizationReasonType.OTHER),
+			true);
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -169,6 +188,34 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDate.getCaption(), admissionDate.getCaption())));
+		intensiveCareUnitStart.addValidator(
+			new DateComparisonValidator(
+				intensiveCareUnitStart,
+				admissionDate,
+				false,
+				true,
+				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDate.getCaption())));
+		intensiveCareUnitStart.addValidator(
+			new DateComparisonValidator(
+				intensiveCareUnitStart,
+				intensiveCareUnitEnd,
+				true,
+				true,
+				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
+		intensiveCareUnitEnd.addValidator(
+			new DateComparisonValidator(
+				intensiveCareUnitEnd,
+				intensiveCareUnitStart,
+				false,
+				true,
+				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
+		intensiveCareUnitEnd.addValidator(
+			new DateComparisonValidator(
+				intensiveCareUnitEnd,
+				dischargeDate,
+				true,
+				true,
+				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 

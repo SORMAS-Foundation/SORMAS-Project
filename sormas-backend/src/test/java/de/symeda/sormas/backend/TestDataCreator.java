@@ -86,6 +86,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -111,6 +112,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class TestDataCreator {
 
@@ -1384,6 +1386,38 @@ public class TestDataCreator {
 		beanTest.getDiseaseVariantService().persist(diseaseVariant);
 
 		return diseaseVariant;
+	}
+
+	public ExternalShareInfo createExternalShareInfo(
+		CaseReferenceDto caze,
+		UserReferenceDto sender,
+		ExternalShareStatus status,
+		Consumer<ExternalShareInfo> customConfig) {
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setCaze(beanTest.getCaseService().getByUuid(caze.getUuid()));
+		shareInfo.setSender(beanTest.getUserService().getByUuid(sender.getUuid()));
+		shareInfo.setStatus(status);
+
+		if (customConfig != null) {
+			customConfig.accept(shareInfo);
+		}
+
+		beanTest.getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		return shareInfo;
+	}
+
+	public ExternalShareInfo createExternalShareInfo(EventReferenceDto event, UserReferenceDto sender, ExternalShareStatus status) {
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setEvent(beanTest.getEventService().getByUuid(event.getUuid()));
+		shareInfo.setSender(beanTest.getUserService().getByUuid(sender.getUuid()));
+		shareInfo.setStatus(status);
+
+		beanTest.getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		return shareInfo;
 	}
 
 	/**
