@@ -633,6 +633,7 @@ public interface Captions {
 	String contactSourceCase = "contactSourceCase";
 	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
+	String country = "country";
 	String Country_archived = "Country.archived";
 	String Country_defaultName = "Country.defaultName";
 	String Country_displayName = "Country.displayName";
