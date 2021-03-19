@@ -75,4 +75,8 @@ public class UserReferenceDto extends ReferenceDto {
 	public String getLastName() {
 		return lastName;
 	}
+
+	public String getShortCaption() {
+		return buildCaption(firstName, lastName, null);
+	}
 }
