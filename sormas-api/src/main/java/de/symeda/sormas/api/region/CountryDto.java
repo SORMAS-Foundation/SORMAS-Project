@@ -35,7 +35,10 @@ public class CountryDto extends EntityDto {
 		String defaultName,
 		String externalId,
 		String isoCode,
-		String unoCode) {
+		String unoCode,
+		String subcontinentUuid,
+		String subcontinentName,
+		String subcontinentExternalId) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -43,6 +46,9 @@ public class CountryDto extends EntityDto {
 		this.externalId = externalId;
 		this.isoCode = isoCode;
 		this.unoCode = unoCode;
+		if (subcontinentUuid != null) {
+			this.subcontinent = new SubcontinentReferenceDto(subcontinentUuid, subcontinentName, subcontinentExternalId);
+		}
 	}
 
 	public CountryDto() {

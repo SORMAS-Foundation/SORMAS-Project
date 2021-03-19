@@ -327,6 +327,8 @@ public class CountryFacadeEjb implements CountryFacade {
 	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
 
+		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
+
 		cq.multiselect(
 			root.get(Country.CREATION_DATE),
 			root.get(Country.CHANGE_DATE),
@@ -335,6 +337,9 @@ public class CountryFacadeEjb implements CountryFacade {
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
-			root.get(Country.UNO_CODE));
+			root.get(Country.UNO_CODE),
+			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(Subcontinent.DEFAULT_NAME),
+			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}
 }
