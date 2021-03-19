@@ -58,7 +58,7 @@ public class PersonsView extends AbstractView {
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
 
 			Label popupDescLabel = new Label(I18nProperties.getString(Strings.confirmationSetMissingGeoCoordinates));
-			CheckBox popupCheckbox = new CheckBox(I18nProperties.getCaption(Captions.personsReplaceMissingGeoCoordinates));
+			CheckBox popupCheckbox = new CheckBox(I18nProperties.getCaption(Captions.personsReplaceGeoCoordinates));
 			popupCheckbox.setValue(false);
 
 			VerticalLayout popupLayout = new VerticalLayout();

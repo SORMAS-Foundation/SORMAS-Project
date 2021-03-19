@@ -1432,7 +1432,7 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
-	String personsReplaceMissingGeoCoordinates = "personsReplaceGeoCoordinates";
+	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
 	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
