@@ -12,8 +12,6 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -25,7 +23,6 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -34,6 +31,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
+import de.symeda.sormas.ui.campaign.components.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
@@ -48,7 +46,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 	private final CampaignStatisticsGrid grid;
 
 	private CampaignStatisticsFilterForm filterForm;
-	protected OptionGroup campaignFormElementImportance;
+	private ImportanceFilterSwitcher importanceFilterSwitcher;
 
 	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
 
@@ -90,19 +88,20 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
 
-		createImportanceFilterSwitch();
-		filtersLayout.addComponent(campaignFormElementImportance);
-		filtersLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
-		filtersLayout.setExpandRatio(campaignFormElementImportance, 0.2f);
+		importanceFilterSwitcher = new ImportanceFilterSwitcher();
+		importanceFilterSwitcher.setVisible(false);
+		filtersLayout.addComponent(importanceFilterSwitcher);
+		filtersLayout.setComponentAlignment(importanceFilterSwitcher, Alignment.TOP_RIGHT);
+		filtersLayout.setExpandRatio(importanceFilterSwitcher, 0.2f);
 
 		mainLayout.addComponent(filtersLayout);
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
-			campaignFormElementImportance.setVisible(value != null);
+			importanceFilterSwitcher.setVisible(value != null);
 		});
 
-		campaignFormElementImportance.addValueChangeListener(e -> {
+		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
 			createFormMetaChangedCallback()
 				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
@@ -116,22 +115,6 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		mainLayout.setStyleName("crud-main-layout");
 
 		addComponent(mainLayout);
-	}
-
-	private void createImportanceFilterSwitch() {
-
-		campaignFormElementImportance = new OptionGroup();
-		CssStyles.style(campaignFormElementImportance, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.IMPORTANT, I18nProperties.getEnumCaption(CampaignFormElementImportance.IMPORTANT));
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
-
-		campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance.setVisible(false);
 	}
 
 	public CampaignStatisticsFilterForm createFilterBar() {
@@ -177,7 +160,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 						.findFirst()
 						.orElse(null);
 				}
-				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(campaignFormElementImportance.getValue());
+				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(importanceFilterSwitcher.getValue());
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
