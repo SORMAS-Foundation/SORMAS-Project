@@ -43,9 +43,13 @@ public enum TypeOfPlace {
 	public static final List<TypeOfPlace> FOR_CASES = Arrays.asList(FACILITY, HOME);
 	public static final List<TypeOfPlace> FOR_ACTIVITY_AS_CASE_GERMANY =
 		Arrays.asList(FACILITY_23_IFSG, COMMUNITY_FACILITY, FACILITY_36_IFSG, UNKNOWN, OTHER);
-	public static final List<TypeOfPlace> FACILITY_TYPES = Arrays.asList(FACILITY, FACILITY_23_IFSG, COMMUNITY_FACILITY, FACILITY_36_IFSG);
+	private static final List<TypeOfPlace> FACILITY_TYPES = Arrays.asList(FACILITY, FACILITY_23_IFSG, COMMUNITY_FACILITY, FACILITY_36_IFSG);
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public static boolean isFacilityType(Object typeOfPlace) {
+		return FACILITY_TYPES.contains(typeOfPlace);
 	}
 }

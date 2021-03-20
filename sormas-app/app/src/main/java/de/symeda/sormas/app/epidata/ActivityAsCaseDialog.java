@@ -3,6 +3,8 @@ package de.symeda.sormas.app.epidata;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -30,7 +33,9 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
@@ -55,7 +60,7 @@ public class ActivityAsCaseDialog extends FormDialog {
 			-1,
 			false,
 			UiFieldAccessCheckers.forSensitiveData(activityAsCase.isPseudonymized()),
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)));
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()));
 
 		this.data = activityAsCase;
 		this.create = create;
@@ -66,7 +71,7 @@ public class ActivityAsCaseDialog extends FormDialog {
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
-		locationDialog.setFacilityFieldsVisible(data.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+		locationDialog.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(data.getTypeOfPlace()), true);
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.activityAsCaseLocation.setValue(locationClone);
@@ -88,6 +93,11 @@ public class ActivityAsCaseDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+
+		List<Item> typeOfPlaceList = CountryHelper.isCountry(ConfigProvider.getServerCountryCode(), CountryHelper.COUNTRY_CODE_GERMANY)
+			? DataUtils.toItems(TypeOfPlace.FOR_ACTIVITY_AS_CASE_GERMANY, true)
+			: DataUtils.getEnumItems(TypeOfPlace.class, true, fieldVisibilityCheckers);
+
 		contentBinding.activityAsCaseStartDate.initializeDateField(getFragmentManager());
 		contentBinding.activityAsCaseEndDate.initializeDateField(getFragmentManager());
 
@@ -95,15 +105,17 @@ public class ActivityAsCaseDialog extends FormDialog {
 			setLiveValidationDisabled(true);
 		}
 
-		contentBinding.activityAsCaseActivityAsCaseType.initializeSpinner(DataUtils.getEnumItems(ActivityAsCaseType.class, true));
+		contentBinding.activityAsCaseActivityAsCaseType
+			.initializeSpinner(DataUtils.getEnumItems(ActivityAsCaseType.class, true, fieldVisibilityCheckers));
 		contentBinding.activityAsCaseGatheringType.initializeSpinner(DataUtils.getEnumItems(GatheringType.class, true));
 		contentBinding.activityAsCaseHabitationType.initializeSpinner(DataUtils.getEnumItems(HabitationType.class, true));
-		contentBinding.activityAsCaseTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
+		contentBinding.activityAsCaseTypeOfPlace.initializeSpinner(typeOfPlaceList);
 		contentBinding.activityAsCaseMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
 		contentBinding.activityAsCaseRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
 		contentBinding.activityAsCaseWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));
 
 		contentBinding.activityAsCaseActivityAsCaseType.addValueChangedListener(e -> {
+			setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) getRootView());
 		});
 		contentBinding.activityAsCaseMeansOfTransport.addValueChangedListener(e -> {
 			contentBinding.activityAsCaseConnectionNumber.setCaption(
@@ -117,7 +129,7 @@ public class ActivityAsCaseDialog extends FormDialog {
 		setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) getRootView());
 
 		contentBinding.activityAsCaseTypeOfPlace.addValueChangedListener(e -> {
-			if (e.getValue() != TypeOfPlace.FACILITY) {
+			if (!TypeOfPlace.isFacilityType(e.getValue())) {
 				contentBinding.activityAsCaseWorkEnvironment.setValue(null);
 				contentBinding.activityAsCaseWorkEnvironment.setVisibility(View.GONE);
 			} else {

@@ -236,9 +236,9 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
 
-		locationForm.setFacilityFieldsVisible(TypeOfPlace.FACILITY_TYPES.contains(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);
-		getField(ActivityAsCaseDto.TYPE_OF_PLACE).addValueChangeListener(
-			e -> locationForm.setFacilityFieldsVisible(TypeOfPlace.FACILITY_TYPES.contains(e.getProperty().getValue()), true));
+		locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);
+		getField(ActivityAsCaseDto.TYPE_OF_PLACE)
+			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(e.getProperty().getValue()), true));
 	}
 
 	private void setUpRequirements() {
