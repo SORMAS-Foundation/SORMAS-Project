@@ -1,9 +1,8 @@
-package de.symeda.sormas.ui.campaign.components;
+package de.symeda.sormas.ui.campaign.components.importancefilterswitcher;
 
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
-import de.symeda.sormas.api.campaign.data.CampaignFormElementImportance;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -19,5 +18,9 @@ public class ImportanceFilterSwitcher extends OptionGroup {
 		addItem(CampaignFormElementImportance.ALL);
 		setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 		setValue(CampaignFormElementImportance.ALL);
+	}
+
+	public boolean isImportantSelected() {
+		return CampaignFormElementImportance.IMPORTANT.equals(this.getValue());
 	}
 }

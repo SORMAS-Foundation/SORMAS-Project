@@ -16,7 +16,6 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
-import de.symeda.sormas.api.campaign.data.CampaignFormElementImportance;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -31,7 +30,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
-import de.symeda.sormas.ui.campaign.components.ImportanceFilterSwitcher;
+import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
@@ -158,7 +157,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 						.findFirst()
 						.orElse(null);
 				}
-				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(importanceFilterSwitcher.getValue());
+				final boolean onlyImportantFormElements = importanceFilterSwitcher.isImportantSelected();
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
