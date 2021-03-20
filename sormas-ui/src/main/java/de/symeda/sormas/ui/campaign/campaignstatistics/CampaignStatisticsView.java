@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -177,5 +178,23 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				}
 			}
 		};
+	}
+
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+			campaignLayout.setValue(criteria.getCampaign());
+		}
+
+		applyingCriteria = true;
+		filterForm.setValue(criteria);
+		applyingCriteria = false;
+
+		grid.reload();
+
+		super.enter(event);
 	}
 }

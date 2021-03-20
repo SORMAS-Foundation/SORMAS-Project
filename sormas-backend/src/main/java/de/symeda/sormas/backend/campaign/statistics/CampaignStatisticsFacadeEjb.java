@@ -35,7 +35,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery());
+		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		List<CampaignStatisticsDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
 			result -> new CampaignStatisticsDto(
 				(String) result[0],
@@ -51,10 +51,11 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 
 	@Override
 	public long count(CampaignFormDataCriteria criteria) {
-		return 10;
+		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
+		return campaignsStatisticsQuery.getResultStream().count();
 	}
 
-	private String buildStatisticsQuery() {
+	private String buildStatisticsQuery(CampaignFormDataCriteria criteria) {
 		StringBuilder selectBuilder = new StringBuilder("SELECT ").append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
 			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
@@ -75,8 +76,13 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.COMMUNITY, Community.TABLE_NAME, Community.ID));
 
 		StringBuilder queryBuilder = new StringBuilder();
-
 		queryBuilder.append(selectBuilder).append(joinBuilder);
+
+		String whereBuilder = buildWhereBuilder(criteria);
+		if (!whereBuilder.isEmpty()) {
+			queryBuilder.append(" WHERE ");
+			queryBuilder.append(whereBuilder);
+		}
 
 		return queryBuilder.toString();
 	}
@@ -99,6 +105,58 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(".")
 			.append(joinedFieldName);
 		return joinConditionBuilder.toString();
+	}
+
+	private String buildWhereBuilder(CampaignFormDataCriteria criteria) {
+		StringBuilder whereBuilder = new StringBuilder();
+		if (criteria.getCampaign() != null) {
+			whereBuilder.append(Campaign.TABLE_NAME)
+				.append(".")
+				.append(Campaign.UUID)
+				.append(" = '")
+				.append(criteria.getCampaign().getUuid())
+				.append("'");
+		}
+		if (criteria.getCampaignFormMeta() != null) {
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append(CampaignFormMeta.TABLE_NAME)
+				.append(".")
+				.append(CampaignFormMeta.UUID)
+				.append(" = '")
+				.append(criteria.getCampaignFormMeta().getUuid())
+				.append("'");
+		}
+		if (criteria.getRegion() != null) {
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append(Region.TABLE_NAME).append(".").append(Region.UUID).append(" = '").append(criteria.getRegion().getUuid()).append("'");
+		}
+		if (criteria.getDistrict() != null) {
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append(District.TABLE_NAME)
+				.append(".")
+				.append(District.UUID)
+				.append(" = '")
+				.append(criteria.getDistrict().getUuid())
+				.append("'");
+		}
+		if (criteria.getCommunity() != null) {
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append(Community.TABLE_NAME)
+				.append(".")
+				.append(Community.UUID)
+				.append(" = '")
+				.append(criteria.getCommunity().getUuid())
+				.append("'");
+		}
+		return whereBuilder.toString();
 	}
 
 	@LocalBean
