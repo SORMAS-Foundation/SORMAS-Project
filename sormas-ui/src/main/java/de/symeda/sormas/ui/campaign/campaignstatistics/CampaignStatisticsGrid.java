@@ -45,7 +45,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsIndex
 	public void setDataProvider() {
 		DataProvider<CampaignStatisticsIndexDto, CampaignFormDataCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCampaignStatisticsFacade()
-				.getIndexList(
+				.queryCampaignStatistics(
 					query.getFilter().orElse(null),
 					query.getOffset(),
 					query.getLimit(),
