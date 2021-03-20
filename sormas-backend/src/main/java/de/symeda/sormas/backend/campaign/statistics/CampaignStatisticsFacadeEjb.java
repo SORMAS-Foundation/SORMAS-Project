@@ -68,60 +68,11 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(CampaignFormData.TABLE_NAME);
 
 		StringBuilder joinBuilder = new StringBuilder();
-		joinBuilder.append(" LEFT JOIN ")
-			.append(Campaign.TABLE_NAME)
-			.append(" ON ")
-			.append(CampaignFormData.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormData.CAMPAIGN)
-			.append("_id = ")
-			.append(Campaign.TABLE_NAME)
-			.append(".")
-			.append(Campaign.ID);
-
-		joinBuilder.append(" LEFT JOIN ")
-			.append(CampaignFormMeta.TABLE_NAME)
-			.append(" ON ")
-			.append(CampaignFormData.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormData.CAMPAIGN_FORM_META)
-			.append("_id = ")
-			.append(CampaignFormMeta.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormMeta.ID);
-
-		joinBuilder.append(" LEFT JOIN ")
-			.append(Region.TABLE_NAME)
-			.append(" ON ")
-			.append(CampaignFormData.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormData.REGION)
-			.append("_id = ")
-			.append(Region.TABLE_NAME)
-			.append(".")
-			.append(Region.ID);
-
-		joinBuilder.append(" LEFT JOIN ")
-			.append(District.TABLE_NAME)
-			.append(" ON ")
-			.append(CampaignFormData.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormData.DISTRICT)
-			.append("_id = ")
-			.append(District.TABLE_NAME)
-			.append(".")
-			.append(District.ID);
-
-		joinBuilder.append(" LEFT JOIN ")
-			.append(Community.TABLE_NAME)
-			.append(" ON ")
-			.append(CampaignFormData.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormData.COMMUNITY)
-			.append("_id = ")
-			.append(Community.TABLE_NAME)
-			.append(".")
-			.append(Community.ID);
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN, Campaign.TABLE_NAME, Campaign.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME, CampaignFormMeta.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.REGION, Region.TABLE_NAME, Region.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.DISTRICT, District.TABLE_NAME, District.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.COMMUNITY, Community.TABLE_NAME, Community.ID));
 
 		StringBuilder queryBuilder = new StringBuilder();
 
@@ -134,6 +85,20 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		StringBuilder selectFieldBuilder = new StringBuilder();
 		selectFieldBuilder.append(tableName).append(".").append(fieldName).append(" AS ").append(tableName).append("_").append(fieldName);
 		return selectFieldBuilder.toString();
+	}
+
+	private String buildLeftJoinCondition(String fieldPart, String joinedTableName, String joinedFieldName) {
+		StringBuilder joinConditionBuilder = new StringBuilder(" LEFT JOIN ");
+		joinConditionBuilder.append(joinedTableName)
+			.append(" ON ")
+			.append(CampaignFormData.TABLE_NAME)
+			.append(".")
+			.append(fieldPart)
+			.append("_id = ")
+			.append(joinedTableName)
+			.append(".")
+			.append(joinedFieldName);
+		return joinConditionBuilder.toString();
 	}
 
 	@LocalBean
