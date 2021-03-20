@@ -15,7 +15,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataGrid;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -26,7 +25,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 	private final CampaignSelector campaignLayout;
 	private final CampaignFormDataCriteria criteria;
-	private final CampaignDataGrid grid;
+	private final CampaignStatisticsGrid grid;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaignstatistics";
 
@@ -37,7 +36,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		addHeaderComponent(campaignLayout);
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
-		grid = new CampaignDataGrid(criteria);
+		grid = new CampaignStatisticsGrid(criteria);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -50,11 +49,20 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
-
 			{
 				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
+
+		VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.addComponent(grid);
+		mainLayout.setMargin(true);
+		mainLayout.setSpacing(false);
+		mainLayout.setSizeFull();
+		mainLayout.setExpandRatio(grid, 1);
+		mainLayout.setStyleName("crud-main-layout");
+
+		addComponent(mainLayout);
 	}
 }

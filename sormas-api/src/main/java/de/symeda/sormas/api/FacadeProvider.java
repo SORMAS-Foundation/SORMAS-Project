@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
@@ -71,10 +72,10 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -313,6 +314,10 @@ public class FacadeProvider {
 
 	public static CampaignFormDataFacade getCampaignFormDataFacade() {
 		return get().lookupEjbRemote(CampaignFormDataFacade.class);
+	}
+
+	public static CampaignStatisticsFacade getCampaignStatisticsFacade() {
+		return get().lookupEjbRemote(CampaignStatisticsFacade.class);
 	}
 
 	public static SormasToSormasFacade getSormasToSormasFacade() {
