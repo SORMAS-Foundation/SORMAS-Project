@@ -30,7 +30,8 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsIndex
 			CampaignStatisticsIndexDto.FORM,
 			CampaignStatisticsIndexDto.REGION,
 			CampaignStatisticsIndexDto.DISTRICT,
-			CampaignStatisticsIndexDto.COMMUNITY);
+			CampaignStatisticsIndexDto.COMMUNITY,
+			CampaignStatisticsIndexDto.FORM_COUNT);
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignStatisticsIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
