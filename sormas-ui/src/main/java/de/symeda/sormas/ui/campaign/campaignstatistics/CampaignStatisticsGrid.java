@@ -7,15 +7,15 @@ import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
-import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsIndexDto;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsIndexDto, CampaignFormDataCriteria> {
+public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, CampaignFormDataCriteria> {
 
 	public CampaignStatisticsGrid(CampaignFormDataCriteria criteria) {
-		super(CampaignStatisticsIndexDto.class);
+		super(CampaignStatisticsDto.class);
 		setSizeFull();
 
 		setDataProvider();
@@ -26,15 +26,15 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsIndex
 
 	protected void addDefaultColumns() {
 		setColumns(
-			CampaignStatisticsIndexDto.CAMPAIGN,
-			CampaignStatisticsIndexDto.FORM,
-			CampaignStatisticsIndexDto.REGION,
-			CampaignStatisticsIndexDto.DISTRICT,
-			CampaignStatisticsIndexDto.COMMUNITY,
-			CampaignStatisticsIndexDto.FORM_COUNT);
+			CampaignStatisticsDto.CAMPAIGN,
+			CampaignStatisticsDto.FORM,
+			CampaignStatisticsDto.REGION,
+			CampaignStatisticsDto.DISTRICT,
+			CampaignStatisticsDto.COMMUNITY,
+			CampaignStatisticsDto.FORM_COUNT);
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CampaignStatisticsIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(CampaignStatisticsDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 	}
 
@@ -43,7 +43,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsIndex
 	}
 
 	public void setDataProvider() {
-		DataProvider<CampaignStatisticsIndexDto, CampaignFormDataCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<CampaignStatisticsDto, CampaignFormDataCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCampaignStatisticsFacade()
 				.queryCampaignStatistics(
 					query.getFilter().orElse(null),

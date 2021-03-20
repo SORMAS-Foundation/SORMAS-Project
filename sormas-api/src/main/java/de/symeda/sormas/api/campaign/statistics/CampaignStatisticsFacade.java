@@ -10,7 +10,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface CampaignStatisticsFacade {
 
-	List<CampaignStatisticsIndexDto> queryCampaignStatistics(
+	List<CampaignStatisticsDto> queryCampaignStatistics(
 		CampaignFormDataCriteria criteria,
 		Integer first,
 		Integer max,

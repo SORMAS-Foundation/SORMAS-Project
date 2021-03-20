@@ -2,11 +2,10 @@ package de.symeda.sormas.api.campaign.statistics;
 
 import java.io.Serializable;
 
-public class CampaignStatisticsIndexDto implements Serializable, Cloneable {
+public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "CampaignStatistics";
 
-	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
 	public static final String REGION = "region";
@@ -14,7 +13,6 @@ public class CampaignStatisticsIndexDto implements Serializable, Cloneable {
 	public static final String COMMUNITY = "community";
 	public static final String FORM_COUNT = "formCount";
 
-	private String uuid;
 	private String campaign;
 	private String form;
 	private String region;
@@ -22,22 +20,13 @@ public class CampaignStatisticsIndexDto implements Serializable, Cloneable {
 	private String community;
 	private int formCount;
 
-	public CampaignStatisticsIndexDto(String uuid, String campaign, String form, String region, String district, String community, int formCount) {
-		this.uuid = uuid;
+	public CampaignStatisticsDto(String campaign, String form, String region, String district, String community, int formCount) {
 		this.campaign = campaign;
 		this.form = form;
 		this.region = region;
 		this.district = district;
 		this.community = community;
 		this.formCount = formCount;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getCampaign() {

@@ -11,8 +11,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
-import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
@@ -29,16 +29,15 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	private EntityManager em;
 
 	@Override
-	public List<CampaignStatisticsIndexDto> queryCampaignStatistics(
+	public List<CampaignStatisticsDto> queryCampaignStatistics(
 		CampaignFormDataCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery());
-		List<CampaignStatisticsIndexDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
-			result -> new CampaignStatisticsIndexDto(
-				"",
+		List<CampaignStatisticsDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
+			result -> new CampaignStatisticsDto(
 				(String) result[0],
 				(String) result[1],
 				(String) result[2],
