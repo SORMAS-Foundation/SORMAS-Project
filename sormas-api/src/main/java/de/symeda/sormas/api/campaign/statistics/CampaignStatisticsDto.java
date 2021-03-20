@@ -18,9 +18,9 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 	private String region;
 	private String district;
 	private String community;
-	private int formCount;
+	private long formCount;
 
-	public CampaignStatisticsDto(String campaign, String form, String region, String district, String community, int formCount) {
+	public CampaignStatisticsDto(String campaign, String form, String region, String district, String community, long formCount) {
 		this.campaign = campaign;
 		this.form = form;
 		this.region = region;
@@ -69,11 +69,11 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 		this.community = community;
 	}
 
-	public int getFormCount() {
+	public long getFormCount() {
 		return formCount;
 	}
 
-	public void setFormCount(int formCount) {
+	public void setFormCount(long formCount) {
 		this.formCount = formCount;
 	}
 }

@@ -38,12 +38,12 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		List<CampaignStatisticsDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
 			result -> new CampaignStatisticsDto(
-				(String) result[0],
 				(String) result[1],
 				(String) result[2],
 				(String) result[3],
 				(String) result[4],
-				0))
+				(String) result[5],
+				result[0] != null ? ((Number) result[0]).longValue() : null))
 			.collect(Collectors.toList());
 		return results;
 
@@ -56,7 +56,12 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	}
 
 	private String buildStatisticsQuery(CampaignFormDataCriteria criteria) {
-		StringBuilder selectBuilder = new StringBuilder("SELECT ").append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
+		StringBuilder selectBuilder = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
+			.append(".")
+			.append(CampaignFormMeta.UUID)
+			.append(")")
+			.append(", ")
+			.append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
 			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
 			.append(", ")
@@ -78,11 +83,13 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append(selectBuilder).append(joinBuilder);
 
-		String whereBuilder = buildWhereBuilder(criteria);
+		String whereBuilder = buildWhereFilter(criteria);
 		if (!whereBuilder.isEmpty()) {
 			queryBuilder.append(" WHERE ");
 			queryBuilder.append(whereBuilder);
 		}
+
+		queryBuilder.append(buildGroupByFilter(criteria));
 
 		return queryBuilder.toString();
 	}
@@ -107,7 +114,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return joinConditionBuilder.toString();
 	}
 
-	private String buildWhereBuilder(CampaignFormDataCriteria criteria) {
+	private String buildWhereFilter(CampaignFormDataCriteria criteria) {
 		StringBuilder whereBuilder = new StringBuilder();
 		if (criteria.getCampaign() != null) {
 			whereBuilder.append(Campaign.TABLE_NAME)
@@ -157,6 +164,30 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 				.append("'");
 		}
 		return whereBuilder.toString();
+	}
+
+	private String buildGroupByFilter(CampaignFormDataCriteria criteria) {
+		StringBuilder groupByFilter = new StringBuilder(" GROUP BY ");
+		groupByFilter.append(Campaign.TABLE_NAME)
+			.append(".")
+			.append(Campaign.NAME)
+			.append(", ")
+			.append(CampaignFormMeta.TABLE_NAME)
+			.append(".")
+			.append(CampaignFormMeta.FORM_NAME)
+			.append(", ")
+			.append(Region.TABLE_NAME)
+			.append(".")
+			.append(Region.NAME)
+			.append(", ")
+			.append(District.TABLE_NAME)
+			.append(".")
+			.append(District.NAME)
+			.append(", ")
+			.append(Community.TABLE_NAME)
+			.append(".")
+			.append(Community.NAME);
+		return groupByFilter.toString();
 	}
 
 	@LocalBean
