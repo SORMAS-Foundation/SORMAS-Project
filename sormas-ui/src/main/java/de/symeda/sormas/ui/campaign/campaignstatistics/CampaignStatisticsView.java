@@ -48,8 +48,6 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 	private CampaignStatisticsFilterForm filterForm;
 	private ImportanceFilterSwitcher importanceFilterSwitcher;
 
-	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
-
 	public CampaignStatisticsView() {
 		super(VIEW_NAME);
 

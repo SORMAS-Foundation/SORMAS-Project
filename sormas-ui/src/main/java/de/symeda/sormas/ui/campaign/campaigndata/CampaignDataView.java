@@ -32,8 +32,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -55,6 +53,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
+import de.symeda.sormas.ui.campaign.components.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -71,9 +70,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignFormDataCriteria criteria;
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
-	protected OptionGroup campaignFormElementImportance;
-
-	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
+	private ImportanceFilterSwitcher importanceFilterSwitcher;
 
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
@@ -98,19 +95,20 @@ public class CampaignDataView extends AbstractCampaignView {
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
 
-		createImportanceFilterSwitch();
-		filtersLayout.addComponent(campaignFormElementImportance);
-		filtersLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
-		filtersLayout.setExpandRatio(campaignFormElementImportance, 0.2f);
+		importanceFilterSwitcher = new ImportanceFilterSwitcher();
+		importanceFilterSwitcher.setVisible(false);
+		filtersLayout.addComponent(importanceFilterSwitcher);
+		filtersLayout.setComponentAlignment(importanceFilterSwitcher, Alignment.TOP_RIGHT);
+		filtersLayout.setExpandRatio(importanceFilterSwitcher, 0.2f);
 
 		mainLayout.addComponent(filtersLayout);
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
-			campaignFormElementImportance.setVisible(value != null);
+			importanceFilterSwitcher.setVisible(value != null);
 		});
 
-		campaignFormElementImportance.addValueChangeListener(e -> {
+		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
 			createFormMetaChangedCallback()
 				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
@@ -228,22 +226,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 	}
 
-	private void createImportanceFilterSwitch() {
-
-		campaignFormElementImportance = new OptionGroup();
-		CssStyles.style(campaignFormElementImportance, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.IMPORTANT, I18nProperties.getEnumCaption(CampaignFormElementImportance.IMPORTANT));
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
-
-		campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance.setVisible(false);
-	}
-
 	public CampaignFormDataFilterForm createFilterBar() {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		criteria.setRegion(user.getRegion());
@@ -287,7 +269,7 @@ public class CampaignDataView extends AbstractCampaignView {
 						.findFirst()
 						.orElse(null);
 				}
-				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(campaignFormElementImportance.getValue());
+				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(importanceFilterSwitcher.getValue());
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
