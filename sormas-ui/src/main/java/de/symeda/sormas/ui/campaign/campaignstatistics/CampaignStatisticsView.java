@@ -79,7 +79,10 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
-		jurisdictionSelector.addValueChangeListener(e -> criteria.setGroupingLevel((CampaignJurisdictionLevel) e.getValue()));
+		jurisdictionSelector.addValueChangeListener(e -> {
+			criteria.setGroupingLevel((CampaignJurisdictionLevel) e.getValue());
+			grid.reload();
+		});
 		jurisdictionLayout.addComponent(jurisdictionSelector);
 		mainLayout.addComponent(jurisdictionLayout);
 
@@ -133,7 +136,6 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
-		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
 		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignLayout == null) {
