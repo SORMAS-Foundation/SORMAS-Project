@@ -16,6 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -77,7 +78,9 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		VerticalLayout mainLayout = new VerticalLayout();
 
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
-		jurisdictionLayout.addComponent(new JurisdictionSelector());
+		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
+		jurisdictionSelector.addValueChangeListener(e -> criteria.setGroupingLevel((CampaignJurisdictionLevel) e.getValue()));
+		jurisdictionLayout.addComponent(jurisdictionSelector);
 		mainLayout.addComponent(jurisdictionLayout);
 
 		HorizontalLayout filtersLayout = new HorizontalLayout();
@@ -130,6 +133,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
+		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
 		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignLayout == null) {

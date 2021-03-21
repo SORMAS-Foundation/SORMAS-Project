@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
@@ -36,17 +37,15 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		List<SortProperty> sortProperties) {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
-		List<CampaignStatisticsDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
+		return ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(
 			result -> new CampaignStatisticsDto(
 				(String) result[1],
 				(String) result[2],
-				(String) result[3],
-				(String) result[4],
-				(String) result[5],
+				result.length > 3 ? (String) result[3] : "",
+				result.length > 4 ? (String) result[4] : "",
+				result.length > 5 ? (String) result[5] : "",
 				result[0] != null ? ((Number) result[0]).longValue() : null))
 			.collect(Collectors.toList());
-		return results;
-
 	}
 
 	@Override
@@ -56,6 +55,24 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	}
 
 	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria) {
+		String selectExpression = buildSelectExpression(criteria);
+		String joinExpression = buildJoinExpression();
+
+		StringBuilder queryBuilder = new StringBuilder();
+		queryBuilder.append(selectExpression).append(joinExpression);
+
+		String whereExpression = buildWhereExpression(criteria);
+		if (!whereExpression.isEmpty()) {
+			queryBuilder.append(" WHERE ");
+			queryBuilder.append(whereExpression);
+		}
+
+		queryBuilder.append(buildGroupByExpression(criteria));
+
+		return queryBuilder.toString();
+	}
+
+	private String buildSelectExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder selectBuilder = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
 			.append(CampaignFormMeta.UUID)
@@ -63,41 +80,37 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", ")
 			.append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
-			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
-			.append(", ")
-			.append(buildSelectField(Region.TABLE_NAME, Region.NAME))
-			.append(", ")
-			.append(buildSelectField(District.TABLE_NAME, District.NAME))
-			.append(", ")
-			.append(buildSelectField(Community.TABLE_NAME, Community.NAME))
-			.append(" FROM ")
-			.append(CampaignFormData.TABLE_NAME);
+			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME));
 
-		StringBuilder joinBuilder = new StringBuilder();
-		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN, Campaign.TABLE_NAME, Campaign.ID));
-		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME, CampaignFormMeta.ID));
-		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.REGION, Region.TABLE_NAME, Region.ID));
-		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.DISTRICT, District.TABLE_NAME, District.ID));
-		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.COMMUNITY, Community.TABLE_NAME, Community.ID));
-
-		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append(selectBuilder).append(joinBuilder);
-
-		String whereBuilder = buildWhereFilter(criteria);
-		if (!whereBuilder.isEmpty()) {
-			queryBuilder.append(" WHERE ");
-			queryBuilder.append(whereBuilder);
+		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
+		if (shouldIncludeRegion(groupingLevel)) {
+			selectBuilder.append(", ").append(buildSelectField(Region.TABLE_NAME, Region.NAME));
 		}
+		if (shouldIncludeDistrict(groupingLevel)) {
+			selectBuilder.append(", ").append(buildSelectField(District.TABLE_NAME, District.NAME));
+		}
+		if (shouldIncludeCommunity(groupingLevel)) {
+			selectBuilder.append(", ").append(buildSelectField(Community.TABLE_NAME, Community.NAME));
+		}
+		selectBuilder.append(" FROM ").append(CampaignFormData.TABLE_NAME);
 
-		queryBuilder.append(buildGroupByFilter(criteria));
-
-		return queryBuilder.toString();
+		return selectBuilder.toString();
 	}
 
 	private String buildSelectField(String tableName, String fieldName) {
 		StringBuilder selectFieldBuilder = new StringBuilder();
 		selectFieldBuilder.append(tableName).append(".").append(fieldName).append(" AS ").append(tableName).append("_").append(fieldName);
 		return selectFieldBuilder.toString();
+	}
+
+	private String buildJoinExpression() {
+		StringBuilder joinBuilder = new StringBuilder();
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN, Campaign.TABLE_NAME, Campaign.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME, CampaignFormMeta.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.REGION, Region.TABLE_NAME, Region.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.DISTRICT, District.TABLE_NAME, District.ID));
+		joinBuilder.append(buildLeftJoinCondition(CampaignFormData.COMMUNITY, Community.TABLE_NAME, Community.ID));
+		return joinBuilder.toString();
 	}
 
 	private String buildLeftJoinCondition(String fieldPart, String joinedTableName, String joinedFieldName) {
@@ -114,7 +127,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return joinConditionBuilder.toString();
 	}
 
-	private String buildWhereFilter(CampaignStatisticsCriteria criteria) {
+	private String buildWhereExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder whereBuilder = new StringBuilder();
 		if (criteria.getCampaign() != null) {
 			whereBuilder.append(Campaign.TABLE_NAME)
@@ -166,7 +179,8 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return whereBuilder.toString();
 	}
 
-	private String buildGroupByFilter(CampaignStatisticsCriteria criteria) {
+	private String buildGroupByExpression(CampaignStatisticsCriteria criteria) {
+		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
 		StringBuilder groupByFilter = new StringBuilder(" GROUP BY ");
 		groupByFilter.append(Campaign.TABLE_NAME)
 			.append(".")
@@ -174,20 +188,32 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", ")
 			.append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
-			.append(CampaignFormMeta.FORM_NAME)
-			.append(", ")
-			.append(Region.TABLE_NAME)
-			.append(".")
-			.append(Region.NAME)
-			.append(", ")
-			.append(District.TABLE_NAME)
-			.append(".")
-			.append(District.NAME)
-			.append(", ")
-			.append(Community.TABLE_NAME)
-			.append(".")
-			.append(Community.NAME);
+			.append(CampaignFormMeta.FORM_NAME);
+		if (shouldIncludeRegion(groupingLevel)) {
+			groupByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
+		}
+		if (shouldIncludeDistrict(groupingLevel)) {
+			groupByFilter.append(", ").append(District.TABLE_NAME).append(".").append(District.NAME);
+		}
+		if (shouldIncludeCommunity(groupingLevel)) {
+			groupByFilter.append(", ").append(Community.TABLE_NAME).append(".").append(Community.NAME);
+		}
+
 		return groupByFilter.toString();
+	}
+
+	private boolean shouldIncludeRegion(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.REGION.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel);
+	}
+
+	private boolean shouldIncludeDistrict(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel) || CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel);
+	}
+
+	private boolean shouldIncludeCommunity(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel);
 	}
 
 	@LocalBean

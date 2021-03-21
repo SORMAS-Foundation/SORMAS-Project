@@ -3,6 +3,7 @@ package de.symeda.sormas.api.campaign.statistics;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -25,6 +26,8 @@ public class CampaignStatisticsCriteria extends BaseCriteria implements Serializ
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+
+	private CampaignJurisdictionLevel groupingLevel;
 
 	public CampaignReferenceDto getCampaign() {
 		return campaign;
@@ -72,5 +75,13 @@ public class CampaignStatisticsCriteria extends BaseCriteria implements Serializ
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public CampaignJurisdictionLevel getGroupingLevel() {
+		return groupingLevel;
+	}
+
+	public void setGroupingLevel(CampaignJurisdictionLevel groupingLevel) {
+		this.groupingLevel = groupingLevel;
 	}
 }
