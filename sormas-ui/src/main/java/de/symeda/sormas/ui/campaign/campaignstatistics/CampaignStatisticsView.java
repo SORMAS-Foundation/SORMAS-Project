@@ -111,6 +111,11 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
+		campaignLayout.addValueChangeListener(e -> {
+			criteria.setCampaignFormMeta(null);
+			filterForm.setValue(criteria);
+		});
+
 		addComponent(mainLayout);
 	}
 
