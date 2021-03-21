@@ -16,7 +16,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -95,7 +94,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		mainLayout.addComponent(filtersLayout);
 
-		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
+		filterForm.getField(CampaignStatisticsCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 		});
@@ -103,7 +102,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
 			createFormMetaChangedCallback()
-				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
+				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignStatisticsCriteria.CAMPAIGN_FORM_META).getValue());
 		});
 
 		mainLayout.addComponent(grid);
@@ -128,7 +127,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			}
 		});
 		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
+			ViewModelProviders.of(CampaignDataView.class).remove(CampaignStatisticsCriteria.class);
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
