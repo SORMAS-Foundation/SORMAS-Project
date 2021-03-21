@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -30,7 +30,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 
 	@Override
 	public List<CampaignStatisticsDto> queryCampaignStatistics(
-		CampaignFormDataCriteria criteria,
+		CampaignStatisticsCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
@@ -50,12 +50,12 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	}
 
 	@Override
-	public long count(CampaignFormDataCriteria criteria) {
+	public long count(CampaignStatisticsCriteria criteria) {
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		return campaignsStatisticsQuery.getResultStream().count();
 	}
 
-	private String buildStatisticsQuery(CampaignFormDataCriteria criteria) {
+	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria) {
 		StringBuilder selectBuilder = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
 			.append(CampaignFormMeta.UUID)
@@ -114,7 +114,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return joinConditionBuilder.toString();
 	}
 
-	private String buildWhereFilter(CampaignFormDataCriteria criteria) {
+	private String buildWhereFilter(CampaignStatisticsCriteria criteria) {
 		StringBuilder whereBuilder = new StringBuilder();
 		if (criteria.getCampaign() != null) {
 			whereBuilder.append(Campaign.TABLE_NAME)
@@ -166,7 +166,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return whereBuilder.toString();
 	}
 
-	private String buildGroupByFilter(CampaignFormDataCriteria criteria) {
+	private String buildGroupByFilter(CampaignStatisticsCriteria criteria) {
 		StringBuilder groupByFilter = new StringBuilder(" GROUP BY ");
 		groupByFilter.append(Campaign.TABLE_NAME)
 			.append(".")

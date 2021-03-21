@@ -11,6 +11,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -23,7 +24,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignFormDataCriteria> {
+public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignStatisticsCriteria> {
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
 	private ComboBox cbCampaignForm;
@@ -33,7 +34,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignFor
 
 	protected CampaignStatisticsFilterForm() {
 
-		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		super(CampaignStatisticsCriteria.class, CampaignFormDataDto.I18N_PREFIX);
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
@@ -143,7 +144,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignFor
 	}
 
 	@Override
-	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
+	protected void applyDependenciesOnNewValue(CampaignStatisticsCriteria criteria) {
 		cbCampaignForm.removeAllItems();
 		if (criteria.getCampaign() != null) {
 			cbCampaignForm

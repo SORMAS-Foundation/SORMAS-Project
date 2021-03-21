@@ -22,6 +22,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
@@ -42,7 +43,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaignstatistics";
 
 	private final CampaignSelector campaignLayout;
-	private final CampaignFormDataCriteria criteria;
+	private final CampaignStatisticsCriteria criteria;
 	private final CampaignStatisticsGrid grid;
 
 	private CampaignStatisticsFilterForm filterForm;
@@ -54,7 +55,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		campaignLayout = new CampaignSelector();
 		addHeaderComponent(campaignLayout);
 
-		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
+		criteria = ViewModelProviders.of(getClass()).get(CampaignStatisticsCriteria.class);
 		grid = new CampaignStatisticsGrid(criteria);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {

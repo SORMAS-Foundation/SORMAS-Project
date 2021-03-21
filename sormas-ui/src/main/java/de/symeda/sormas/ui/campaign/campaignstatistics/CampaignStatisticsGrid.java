@@ -6,15 +6,15 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, CampaignFormDataCriteria> {
+public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, CampaignStatisticsCriteria> {
 
-	public CampaignStatisticsGrid(CampaignFormDataCriteria criteria) {
+	public CampaignStatisticsGrid(CampaignStatisticsCriteria criteria) {
 		super(CampaignStatisticsDto.class);
 		setSizeFull();
 
@@ -43,7 +43,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 	}
 
 	public void setDataProvider() {
-		DataProvider<CampaignStatisticsDto, CampaignFormDataCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<CampaignStatisticsDto, CampaignStatisticsCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCampaignStatisticsFacade()
 				.queryCampaignStatistics(
 					query.getFilter().orElse(null),
