@@ -41,6 +41,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			result -> new CampaignStatisticsDto(
 				(String) result[1],
 				(String) result[2],
+				"",
 				result.length > 3 ? (String) result[3] : "",
 				result.length > 4 ? (String) result[4] : "",
 				result.length > 5 ? (String) result[5] : "",

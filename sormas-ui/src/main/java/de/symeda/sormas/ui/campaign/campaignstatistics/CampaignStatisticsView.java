@@ -80,7 +80,11 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
 		jurisdictionSelector.addValueChangeListener(e -> {
-			criteria.setGroupingLevel((CampaignJurisdictionLevel) e.getValue());
+			CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
+			criteria.setGroupingLevel(groupingValue);
+			boolean shouldShowAreaColumn =
+				CampaignJurisdictionLevel.AREA.equals(groupingValue) || CampaignJurisdictionLevel.REGION.equals(groupingValue);
+			grid.showAreaColumn(shouldShowAreaColumn);
 			grid.reload();
 		});
 		jurisdictionLayout.addComponent(jurisdictionSelector);

@@ -8,6 +8,7 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -15,14 +16,16 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	private String campaign;
 	private String form;
+	private String area;
 	private String region;
 	private String district;
 	private String community;
 	private long formCount;
 
-	public CampaignStatisticsDto(String campaign, String form, String region, String district, String community, long formCount) {
+	public CampaignStatisticsDto(String campaign, String form, String area, String region, String district, String community, long formCount) {
 		this.campaign = campaign;
 		this.form = form;
+		this.area = area;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -43,6 +46,14 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	public void setForm(String form) {
 		this.form = form;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
 	}
 
 	public String getRegion() {

@@ -28,6 +28,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 		setColumns(
 			CampaignStatisticsDto.CAMPAIGN,
 			CampaignStatisticsDto.FORM,
+			CampaignStatisticsDto.AREA,
 			CampaignStatisticsDto.REGION,
 			CampaignStatisticsDto.DISTRICT,
 			CampaignStatisticsDto.COMMUNITY,
@@ -57,5 +58,9 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 			query -> (int) FacadeProvider.getCampaignStatisticsFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
+	}
+
+	public void showAreaColumn(boolean shouldShow) {
+		getColumn(CampaignStatisticsDto.AREA).setHidden(!shouldShow);
 	}
 }
