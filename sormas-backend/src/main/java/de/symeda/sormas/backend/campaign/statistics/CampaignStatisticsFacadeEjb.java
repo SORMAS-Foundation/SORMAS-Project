@@ -67,7 +67,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			queryBuilder.append(whereExpression);
 		}
 
-		queryBuilder.append(buildGroupByExpression(criteria));
+		queryBuilder.append(buildGroupByExpression(criteria)).append(buildOrderByExpression(criteria));
 
 		return queryBuilder.toString();
 	}
@@ -200,6 +200,29 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		}
 
 		return groupByFilter.toString();
+	}
+
+	private String buildOrderByExpression(CampaignStatisticsCriteria criteria) {
+		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
+		StringBuilder orderByFilter = new StringBuilder(" ORDER BY ");
+		orderByFilter.append(Campaign.TABLE_NAME)
+			.append(".")
+			.append(Campaign.NAME)
+			.append(", ")
+			.append(CampaignFormMeta.TABLE_NAME)
+			.append(".")
+			.append(CampaignFormMeta.FORM_NAME);
+		if (shouldIncludeRegion(groupingLevel)) {
+			orderByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
+		}
+		if (shouldIncludeDistrict(groupingLevel)) {
+			orderByFilter.append(", ").append(District.TABLE_NAME).append(".").append(District.NAME);
+		}
+		if (shouldIncludeCommunity(groupingLevel)) {
+			orderByFilter.append(", ").append(Community.TABLE_NAME).append(".").append(Community.NAME);
+		}
+
+		return orderByFilter.toString();
 	}
 
 	private boolean shouldIncludeRegion(CampaignJurisdictionLevel groupingLevel) {
