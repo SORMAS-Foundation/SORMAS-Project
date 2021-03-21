@@ -80,7 +80,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filtersLayout.setMargin(false);
 		filtersLayout.setSpacing(true);
 
-		CampaignStatisticsFilterForm filterForm = createFilterForm();
+		filterForm = createFilterForm();
 		filtersLayout.addComponent(filterForm);
 		filtersLayout.setComponentAlignment(filterForm, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterForm, 0.8f);
@@ -124,7 +124,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
-		filterForm = new CampaignStatisticsFilterForm();
+		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignLayout == null) {
 				navigateTo(null);
