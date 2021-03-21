@@ -29,7 +29,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
 import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -81,10 +80,10 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filtersLayout.setMargin(false);
 		filtersLayout.setSpacing(true);
 
-		CampaignStatisticsFilterForm filterBar = createFilterBar();
-		filtersLayout.addComponent(filterBar);
-		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
-		filtersLayout.setExpandRatio(filterBar, 0.8f);
+		CampaignStatisticsFilterForm filterForm = createFilterForm();
+		filtersLayout.addComponent(filterForm);
+		filtersLayout.setComponentAlignment(filterForm, Alignment.TOP_LEFT);
+		filtersLayout.setExpandRatio(filterForm, 0.8f);
 
 		importanceFilterSwitcher = new ImportanceFilterSwitcher();
 		importanceFilterSwitcher.setVisible(false);
@@ -115,7 +114,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	public CampaignStatisticsFilterForm createFilterBar() {
+	public CampaignStatisticsFilterForm createFilterForm() {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
@@ -127,7 +126,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			}
 		});
 		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(CampaignDataView.class).remove(CampaignStatisticsCriteria.class);
+			ViewModelProviders.of(CampaignStatisticsView.class).remove(CampaignStatisticsCriteria.class);
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
