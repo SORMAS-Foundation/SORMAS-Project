@@ -73,7 +73,7 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto) {
-		return toReferenceDto(countryService.getByUuid(countryReferenceDto.getUuid()).getSubContinent().getContinent());
+		return toReferenceDto(countryService.getByUuid(countryReferenceDto.getUuid()).getSubcontinent().getContinent());
 	}
 
 	@Override

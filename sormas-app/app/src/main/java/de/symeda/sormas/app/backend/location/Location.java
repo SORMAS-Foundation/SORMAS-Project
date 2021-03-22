@@ -39,7 +39,7 @@ import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.region.SubContinent;
+import de.symeda.sormas.app.backend.region.Subcontinent;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
@@ -66,7 +66,7 @@ public class Location extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Continent continent;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private SubContinent subContinent;
+	private Subcontinent subcontinent;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Country country;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -144,12 +144,12 @@ public class Location extends PseudonymizableAdo {
 		this.continent = continent;
 	}
 
-	public SubContinent getSubContinent() {
-		return subContinent;
+	public Subcontinent getSubcontinent() {
+		return subcontinent;
 	}
 
-	public void setSubContinent(SubContinent subContinent) {
-		this.subContinent = subContinent;
+	public void setSubcontinent(Subcontinent subcontinent) {
+		this.subcontinent = subcontinent;
 	}
 
 	public Country getCountry() {

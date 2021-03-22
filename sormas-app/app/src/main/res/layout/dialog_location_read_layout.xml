@@ -62,9 +62,9 @@
                 app:value="@{data.continent}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/location_subContinent"
+                android:id="@+id/location_subcontinent"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@{data.subContinent}" />
+                app:value="@{data.subcontinent}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_country"

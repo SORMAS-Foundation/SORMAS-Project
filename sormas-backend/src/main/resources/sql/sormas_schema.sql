@@ -7007,6 +7007,6 @@ ALTER TABLE location ADD CONSTRAINT fk_location_continent_id FOREIGN KEY (contin
 ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
 
 
-INSERT INTO schema_version (version_number, comment) VALUES (351, '2020-03-19 Add continent and subcontinent to location #4777');
+INSERT INTO schema_version (version_number, comment) VALUES (353, '2020-03-19 Add continent and subcontinent to location #4777');
 
 -- *** Insert new sql commands BEFORE this line ***

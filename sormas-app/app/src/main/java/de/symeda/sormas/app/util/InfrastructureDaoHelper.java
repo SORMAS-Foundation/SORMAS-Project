@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -58,11 +54,29 @@ import static de.symeda.sormas.app.util.DataUtils.toItems;
 public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadContinents() {
-		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+				DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true)
+						.stream()
+						.map(c -> new Item<>(I18nProperties.getContinentName(c.getDefaultName()), c))
+						.sorted(Comparator.comparing(Item::getKey))
+						.collect(Collectors.toList()));
+		return items;
 	}
 
 	public static List<Item> loadSubcontinents() {
-		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+				DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true)
+						.stream()
+						.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
+						.sorted(Comparator.comparing(Item::getKey))
+						.collect(Collectors.toList()));
+		return items;
 	}
 
 	public static List<Item> loadCountries() {
@@ -177,9 +191,9 @@ public final class InfrastructureDaoHelper {
 			final ControlSpinnerField continentField,
 			List<Item> continents,
 			Continent initialContinent,
-			final ControlSpinnerField subContinentField,
-			List<Item> subContinents,
-			SubContinent initialSubContinent,
+			final ControlSpinnerField subcontinentField,
+			List<Item> subcontinents,
+			Subcontinent initialSubcontinent,
 			final ControlSpinnerField countryField,
 			List<Item> countries,
 			Country initialCountry,
@@ -208,21 +222,17 @@ public final class InfrastructureDaoHelper {
 		if (continentItem != null && !continents.contains(continentItem)) {
 			continents.add(continentItem);
 		}
-		continentField.initializeSpinner(continents, null);
+		continentField.initializeSpinner(continents);
 		continentField.setValue(initialContinent);
-		if (continents.isEmpty()) {
-			continentField.setVisibility(GONE);
-		}
+		continentField.setVisibility(GONE);
 
-		Item subContinentItem = initialSubContinent != null ? DataUtils.toItem(initialSubContinent) : null;
-		if (subContinentItem != null && !continents.contains(subContinentItem)) {
-			subContinents.add(subContinentItem);
+		Item subcontinentItem = initialSubcontinent != null ? DataUtils.toItem(initialSubcontinent) : null;
+		if (subcontinentItem != null && !continents.contains(subcontinentItem)) {
+			subcontinents.add(subcontinentItem);
 		}
-		subContinentField.initializeSpinner(subContinents, null);
-		subContinentField.setValue(initialSubContinent);
-		if (subContinents.isEmpty()) {
-			subContinentField.setVisibility(GONE);
-		}
+		subcontinentField.initializeSpinner(subcontinents);
+		subcontinentField.setValue(initialSubcontinent);
+		subcontinentField.setVisibility(GONE);
 
 		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
 		if (countryItem != null && !countries.contains(countryItem)) {
@@ -243,8 +253,10 @@ public final class InfrastructureDaoHelper {
 				facilityField,
 				facilityDetailsField,
 				typeField);
-			subContinentField.setValue(selectedCountry.getSubContinent());
-			continentField.setValue(selectedCountry.getSubContinent().getContinent());
+			if (selectedCountry != null) {
+				subcontinentField.setValue(selectedCountry.getSubcontinent());
+				continentField.setValue(selectedCountry.getSubcontinent().getContinent());
+			}
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(

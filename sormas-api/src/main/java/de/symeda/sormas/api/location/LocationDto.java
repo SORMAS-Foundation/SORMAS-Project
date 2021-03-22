@@ -18,7 +18,7 @@
 package de.symeda.sormas.api.location;
 
 import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -47,7 +47,7 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
 	public static final String CONTINENT = "continent";
-	public static final String SUB_CONTINENT = "subContinent";
+	public static final String SUB_CONTINENT = "subcontinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -66,7 +66,7 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String FACILITY_DETAILS = "facilityDetails";
 
 	private ContinentReferenceDto continent;
-	private SubContinentReferenceDto subContinent;
+	private SubcontinentReferenceDto subcontinent;
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -147,12 +147,12 @@ public class LocationDto extends PseudonymizableDto {
 		this.continent = continent;
 	}
 
-	public SubContinentReferenceDto getSubContinent() {
-		return subContinent;
+	public SubcontinentReferenceDto getSubcontinent() {
+		return subcontinent;
 	}
 
-	public void setSubContinent(SubContinentReferenceDto subContinent) {
-		this.subContinent = subContinent;
+	public void setSubcontinent(SubcontinentReferenceDto subcontinent) {
+		this.subcontinent = subcontinent;
 	}
 
 	public CountryReferenceDto getCountry() {

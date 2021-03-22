@@ -29,10 +29,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.ui.UI;
-import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
-import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,6 +40,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -62,12 +59,15 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
@@ -108,6 +108,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox facilityType;
 	private ComboBox facility;
 	private TextField facilityDetails;
+	private ComboBox continent;
+	private ComboBox subcontinent;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -205,17 +207,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		tfLongitude.setConverter(stringToAngularLocationConverter);
 		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
-		ComboBox continent = addInfrastructureField(LocationDto.CONTINENT);
-		ComboBox subContinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
+		continent = addInfrastructureField(LocationDto.CONTINENT);
+		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
-		if (!(UI.getCurrent().getNavigator().getCurrentView() instanceof CaseEpiDataView)){
-			continent.setVisible(false);
-			subContinent.setVisible(false);
-		}
+		continent.setVisible(false);
+		subcontinent.setVisible(false);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -233,7 +233,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				} else {
 					enableInfrastructureFields(false);
 					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
-					subContinent.setValue(FacadeProvider.getSubContinentFacade().getByCountry(countryDto));
+					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
 					resetInfrastructureFields(region, district, community);
 				}
 			} else {
@@ -242,7 +242,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				} else {
 					enableInfrastructureFields(false);
 					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
-					subContinent.setValue(FacadeProvider.getSubContinentFacade().getByCountry(countryDto));
+					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
 					resetInfrastructureFields(region, district, community);
 				}
 			}
@@ -394,11 +394,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		} else {
 			continent.addItems(continents);
 		}
-		final List<SubContinentReferenceDto> subContinents = FacadeProvider.getSubContinentFacade().getAllActiveAsReference();
-		if (subContinents.isEmpty()) {
-			subContinent.setVisible(false);
+		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
+		if (subcontinents.isEmpty()) {
+			subcontinent.setVisible(false);
 		} else {
-			subContinent.addItems(subContinents);
+			subcontinent.addItems(subcontinents);
 		}
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -599,6 +599,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+		}
+	}
+
+	public void setContinentFieldsVisible(boolean visible, boolean clearOnHidden) {
+		continent.setVisible(visible);
+		subcontinent.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			continent.clear();
+			subcontinent.clear();
 		}
 	}
 

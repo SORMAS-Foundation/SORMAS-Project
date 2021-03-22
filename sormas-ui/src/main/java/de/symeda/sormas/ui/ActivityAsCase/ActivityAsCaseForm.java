@@ -216,6 +216,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 		locationForm.setFacilityFieldsVisible(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ActivityAsCaseDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
+		locationForm.setContinentFieldsVisible(true, true);
 	}
 
 	private void setUpRequirements() {

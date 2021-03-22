@@ -106,7 +106,7 @@ public class LocationDialog extends FormDialog {
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		List<Item> initialContinents = InfrastructureDaoHelper.loadContinents();
-		List<Item> initialSubContinents = InfrastructureDaoHelper.loadSubContinents();
+		List<Item> initialSubcontinents = InfrastructureDaoHelper.loadSubcontinents();
 		List<Item> initialCountries = InfrastructureDaoHelper.loadCountries();
 		List<Item> initialRegions = InfrastructureDaoHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
@@ -134,9 +134,9 @@ public class LocationDialog extends FormDialog {
 			this.contentBinding.locationContinent,
 			initialContinents,
 			data.getContinent(),
-			this.contentBinding.locationSubContinent,
-			initialSubContinents,
-			data.getSubContinent(),
+			this.contentBinding.locationSubcontinent,
+			initialSubcontinents,
+			data.getSubcontinent(),
 			this.contentBinding.locationCountry,
 			initialCountries,
 			data.getCountry(),
@@ -293,6 +293,16 @@ public class LocationDialog extends FormDialog {
 			contentBinding.locationFacility.setValue(null);
 			contentBinding.locationFacilityDetails.setValue(null);
 			contentBinding.locationFacilityType.setValue(null);
+		}
+	}
+
+	public void setContinentFieldsVisible( boolean clearOnHidden) {
+		contentBinding.locationContinent.setVisibility(InfrastructureDaoHelper.loadContinents().isEmpty() ? GONE : VISIBLE);
+		contentBinding.locationSubcontinent.setVisibility(InfrastructureDaoHelper.loadSubcontinents().isEmpty() ? GONE : VISIBLE);
+
+		if (clearOnHidden) {
+			contentBinding.locationContinent.setValue(null);
+			contentBinding.locationContinent.setValue(null);
 		}
 	}
 
