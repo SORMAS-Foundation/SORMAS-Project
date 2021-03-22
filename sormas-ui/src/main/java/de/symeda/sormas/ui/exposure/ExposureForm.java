@@ -354,8 +354,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		String HTML_LAYOUT = UUID_REPORTING_USER;
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
 			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
-			(FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()
-				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckPropableInfoectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
+			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
+				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckPropableInfectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
 		}
 		//@formatter:on
 		return HTML_LAYOUT + OTHER_STANDARD_FIELDS;
