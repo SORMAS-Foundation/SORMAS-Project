@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.epidata;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +38,9 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogExposureEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class ExposureDialog extends FormDialog {
 
@@ -83,6 +83,7 @@ public class ExposureDialog extends FormDialog {
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
 		locationDialog.setFacilityFieldsVisible(data.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+		locationDialog.setContinentFieldsVisible(true);
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.exposureLocation.setValue(locationClone);
