@@ -112,8 +112,10 @@ public class RegionFacadeEjb implements RegionFacade {
 	public List<RegionDto> getAllAfter(Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
+		CriteriaQuery<RegionDto> cq = cb.createQuery(RegionDto.class);
 		Root<Region> region = cq.from(Region.class);
+
+		selectDtoFields(cq, region);
 
 		Predicate filter = regionService.createChangeDateFilter(cb, region, date);
 
@@ -121,7 +123,26 @@ public class RegionFacadeEjb implements RegionFacade {
 			cq.where(filter);
 		}
 
-		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(Collectors.toList());
+		return em.createQuery(cq).getResultList();
+	}
+
+	// Need to be in the same order as in the constructor
+	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
+
+		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
+
+		cq.multiselect(
+			root.get(Region.CREATION_DATE),
+			root.get(Region.CHANGE_DATE),
+			root.get(Region.UUID),
+			root.get(Region.ARCHIVED),
+			root.get(Region.NAME),
+			root.get(Region.EPID_CODE),
+			root.get(Region.GROWTH_RATE),
+			root.get(Region.EXTERNAL_ID),
+			country.get(Country.UUID),
+			country.get(Country.DEFAULT_NAME),
+			country.get(Country.ISO_CODE));
 	}
 
 	@Override

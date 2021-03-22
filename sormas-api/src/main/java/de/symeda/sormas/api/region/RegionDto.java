@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
@@ -53,7 +54,10 @@ public class RegionDto extends EntityDto {
 		String name,
 		String epidCode,
 		Float growthRate,
-		String externalID) {
+		String externalID,
+		String countryUuid,
+		String countryName,
+		String countryIsoCode) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -61,6 +65,10 @@ public class RegionDto extends EntityDto {
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
 		this.externalID = externalID;
+
+		if (countryUuid != null) {
+			this.country = new CountryReferenceDto(countryUuid, I18nProperties.getCountryName(countryIsoCode, countryName), countryIsoCode);
+		}
 	}
 
 	public RegionDto() {
