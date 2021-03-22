@@ -58,9 +58,43 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private CommunityService communityService;
 	@EJB
-	private PersonService personService;
-	@EJB
 	private FacilityService facilityService;
+
+	public Location fromDto(LocationDto source, boolean checkChangeDate) {
+
+		if (source == null) {
+			return null;
+		}
+
+		Location target = DtoHelper.fillOrBuildEntity(source, locationService.getByUuid(source.getUuid()), Location::new, checkChangeDate);
+
+		target.setDetails(source.getDetails());
+		target.setCity(source.getCity());
+		target.setAreaType(source.getAreaType());
+
+		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+		target.setSubcontinent(subcontinentService.getByReferenceDto(source.getSubcontinent()));
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+
+		target.setLatitude(source.getLatitude());
+		target.setLongitude(source.getLongitude());
+		target.setLatLonAccuracy(source.getLatLonAccuracy());
+
+		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
+		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setFacilityType(source.getFacilityType());
+
+		return target;
+	}
 
 	public static LocationDto toDto(Location source) {
 
@@ -93,42 +127,6 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAddressType(source.getAddressType());
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
 		target.setFacility(FacilityFacadeEjb.toReferenceDto(source.getFacility()));
-		target.setFacilityDetails(source.getFacilityDetails());
-		target.setFacilityType(source.getFacilityType());
-
-		return target;
-	}
-
-	public Location fromDto(LocationDto source, boolean checkChangeDate) {
-
-		if (source == null) {
-			return null;
-		}
-
-		Location target = DtoHelper.fillOrBuildEntity(source, locationService.getByUuid(source.getUuid()), Location::new, checkChangeDate);
-
-		target.setDetails(source.getDetails());
-		target.setCity(source.getCity());
-		target.setAreaType(source.getAreaType());
-
-		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-		target.setSubcontinent(subcontinentService.getByReferenceDto(source.getSubcontinent()));
-		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
-		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-
-		target.setLatitude(source.getLatitude());
-		target.setLongitude(source.getLongitude());
-		target.setLatLonAccuracy(source.getLatLonAccuracy());
-
-		target.setPostalCode(source.getPostalCode());
-		target.setStreet(source.getStreet());
-		target.setHouseNumber(source.getHouseNumber());
-		target.setAdditionalInformation(source.getAdditionalInformation());
-		target.setAddressType(source.getAddressType());
-		target.setAddressTypeDetails(source.getAddressTypeDetails());
-		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
 
