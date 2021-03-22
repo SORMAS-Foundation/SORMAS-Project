@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.share;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import javax.ejb.EJB;
@@ -25,6 +26,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -90,5 +92,18 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		shareInfo.setStatus(status);
 
 		ensurePersisted(shareInfo);
+	}
+
+	public List<ExternalShareInfoCountAndLatestDate> getCaseShareCountAndLatestDate(List<Long> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalShareInfoCountAndLatestDate> cq = cb.createQuery(ExternalShareInfoCountAndLatestDate.class);
+		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
+
+		Join<ExternalShareInfo, Case> caze = root.join(ExternalShareInfo.CAZE, JoinType.LEFT);
+		cq.multiselect(caze.get(Case.ID), cb.count(root.get(ExternalShareInfo.ID)), cb.max(root.get(ExternalShareInfo.CREATION_DATE)));
+		cq.where(caze.get(Case.ID).in(caseUuids));
+
+		return em.createQuery(cq).getResultList();
+
 	}
 }

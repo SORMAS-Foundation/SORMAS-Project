@@ -69,6 +69,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
+	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 
 	private long id;
 	private String uuid;
@@ -106,6 +108,9 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
 	private Integer visitCount;
+
+	private Date surveillanceToolLastShareDate;
+	private Long surveillanceToolShareCount;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -168,6 +173,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
+
+		this.surveillanceToolShareCount = surveillanceToolShareCount;
 
 		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -416,5 +423,21 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setVisitCount(Integer visitCount) {
 		this.visitCount = visitCount;
+	}
+
+	public Date getSurveillanceToolLastShareDate() {
+		return surveillanceToolLastShareDate;
+	}
+
+	public void setSurveillanceToolLastShareDate(Date surveillanceToolLastShareDate) {
+		this.surveillanceToolLastShareDate = surveillanceToolLastShareDate;
+	}
+
+	public Long getSurveillanceToolShareCount() {
+		return surveillanceToolShareCount;
+	}
+
+	public void setSurveillanceToolShareCount(Long surveillanceToolShareCount) {
+		this.surveillanceToolShareCount = surveillanceToolShareCount;
 	}
 }

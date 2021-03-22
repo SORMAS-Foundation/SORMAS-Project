@@ -69,8 +69,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.Page;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -112,6 +110,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
@@ -215,6 +214,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.event.EventSummaryDetails;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -255,6 +255,8 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
@@ -396,6 +398,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private DiseaseVariantService diseaseVariantService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private ExternalShareInfoService externalShareInfoService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -479,14 +485,30 @@ public class CaseFacadeEjb implements CaseFacade {
 			cases = em.createQuery(cq).getResultList();
 		}
 
+		Map<Long, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			survToolShareCountAndDates =
+				externalShareInfoService.getCaseShareCountAndLatestDate(cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectId, Function.identity()));
+		}
+
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			CaseIndexDto.class,
-			cases,
-			c -> caseJurisdictionChecker.isInJurisdictionOrOwned(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, c.getAgeAndBirthDate(), isInJurisdiction, null);
+		for (CaseIndexDto caze : cases) {
+			if (survToolShareCountAndDates != null) {
+				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getId());
+
+				if (survToolShareCountAndDate != null) {
+					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
+					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
+				}
+			}
+
+			Boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caze.getJurisdiction());
+			pseudonymizer.pseudonymizeDto(CaseIndexDto.class, caze, isInJurisdiction, (c) -> {
+				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
 			});
+		}
 
 		return cases;
 	}
@@ -508,31 +530,44 @@ public class CaseFacadeEjb implements CaseFacade {
 		// doesn't seem to be possible and using a native query is not an option because of user filters
 		List<EventSummaryDetails> eventSummaries =
 			eventService.getEventSummaryDetailsByCases(cases.stream().map(CaseIndexDetailedDto::getId).collect(Collectors.toList()));
-		for (CaseIndexDetailedDto caze : cases) {
-			if (caze.getEventCount() == 0) {
-				continue;
-			}
 
-			eventSummaries.stream()
-				.filter(v -> v.getCaseId() == caze.getId())
-				.max(Comparator.comparing(EventSummaryDetails::getEventDate))
-				.ifPresent(eventSummary -> {
-					caze.setLatestEventId(eventSummary.getEventUuid());
-					caze.setLatestEventStatus(eventSummary.getEventStatus());
-					caze.setLatestEventTitle(eventSummary.getEventTitle());
-				});
+		Map<Long, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			survToolShareCountAndDates =
+				externalShareInfoService.getCaseShareCountAndLatestDate(cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectId, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			CaseIndexDetailedDto.class,
-			cases,
-			c -> caseJurisdictionChecker.isInJurisdictionOrOwned(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, c.getAgeAndBirthDate(), isInJurisdiction, null);
+		for (CaseIndexDetailedDto caze : cases) {
+			if (survToolShareCountAndDates != null) {
+				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getId());
+
+				if (survToolShareCountAndDate != null) {
+					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
+					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
+				}
+			}
+
+			if (caze.getEventCount() > 0) {
+				eventSummaries.stream()
+					.filter(v -> v.getCaseId() == caze.getId())
+					.max(Comparator.comparing(EventSummaryDetails::getEventDate))
+					.ifPresent(eventSummary -> {
+						caze.setLatestEventId(eventSummary.getEventUuid());
+						caze.setLatestEventStatus(eventSummary.getEventStatus());
+						caze.setLatestEventTitle(eventSummary.getEventTitle());
+					});
+			}
+
+			Boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caze.getJurisdiction());
+			pseudonymizer.pseudonymizeDto(CaseIndexDetailedDto.class, caze, isInJurisdiction, (c) -> {
+				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
 				pseudonymizer
-					.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), userService.getCurrentUser(), c::setReportingUser);
+					.pseudonymizeUser(userService.getByUuid(caze.getReportingUser().getUuid()), userService.getCurrentUser(), caze::setReportingUser);
 			});
+		}
 
 		return cases;
 	}
