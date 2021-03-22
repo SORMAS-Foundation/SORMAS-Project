@@ -286,7 +286,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.LAST_NAME),
 			person.get(Person.SEX),
 			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			// POSITIVE is the max value of available results
 			cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
@@ -302,7 +301,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.LAST_NAME),
 			person.get(Person.SEX),
 			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			reportingUser.get(User.UUID));
 
@@ -487,7 +485,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.SEX),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
 			person.get(Person.BIRTHDATE_DD),
 			person.get(Person.BIRTHDATE_MM),
 			person.get(Person.BIRTHDATE_YYYY),
