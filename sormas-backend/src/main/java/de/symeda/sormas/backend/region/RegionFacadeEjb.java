@@ -341,8 +341,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities) {
+	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
 		return regionService.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
+		return regionService.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

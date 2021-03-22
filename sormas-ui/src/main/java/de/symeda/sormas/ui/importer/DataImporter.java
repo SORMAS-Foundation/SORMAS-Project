@@ -46,6 +46,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -425,16 +427,24 @@ public abstract class DataImporter {
 			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);
-			if (region.isEmpty()) {
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
+			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (region.size() > 1) {
+			} else if (regions.size() > 1) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
-				pd.getWriteMethod().invoke(element, region.get(0));
-				return true;
+				RegionDto region = regions.get(0);
+				CountryReferenceDto serverCountry = FacadeProvider.getCountryFacade().getServerCountry();
+
+				if (region.getCountry() != null && !region.getCountry().equals(serverCountry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
+				} else {
+					pd.getWriteMethod().invoke(element, region.toReference());
+					return true;
+				}
 			}
 		}
 		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {

@@ -19,6 +19,9 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -28,6 +31,7 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
@@ -83,7 +87,13 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
 
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
+
 		area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		FieldHelper.setVisibleWhen(
+			country,
+			Collections.singletonList(area),
+			Arrays.asList(null, FacadeProvider.getCountryFacade().getServerCountry()),
+			true);
 	}
 
 	@Override

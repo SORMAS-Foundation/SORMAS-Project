@@ -90,6 +90,7 @@ public interface Validations {
 	String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
+	String importRegionNotInServerCountry = "importRegionNotInServerCountry";
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";
 	String importUnexpectedError = "importUnexpectedError";

@@ -55,7 +55,9 @@ public interface RegionFacade {
 
 	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
 
-	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
+	List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities);
+
+	List<RegionDto> getByName(String name, boolean includeArchivedEntities);
 
 	List<RegionReferenceDto> getByExternalId(String id, boolean includeArchivedEntities);
 
