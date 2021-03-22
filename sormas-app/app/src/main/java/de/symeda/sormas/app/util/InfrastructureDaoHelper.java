@@ -79,6 +79,14 @@ public final class InfrastructureDaoHelper {
 		return items;
 	}
 
+	public static List<Item> loadContinents() {
+		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
+	}
+
+	public static List<Item> loadSubcontinents() {
+		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
+	}
+
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
 
