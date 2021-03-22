@@ -57,13 +57,17 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		return getFieldAccessCheckers(inJurisdiction).getCheckerByType(SensitiveDataFieldAccessChecker.class);
 	}
 
-	public void pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
+	public boolean pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
 		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
 		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight()) {
 			setPseudonymizedValue.accept(null);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public <DTO extends PseudonymizableDto> void restoreUser(
