@@ -318,6 +318,7 @@
     <string name="heading_outbreak_response">Reakce na propuknutí</string>
     <string name="heading_person_involved">Zapojená osoba</string>
     <string name="heading_person_involved_new">Zapojena nová osoba</string>
+    <string name="heading_person_contact_detail">Kontaktní údaje osoby</string>
     <string name="heading_pick_or_create_person">Vyberte nebo vytvořte osobu</string>
     <string name="heading_pick_or_create_case">Vyberte nebo vytvořte případ</string>
     <string name="heading_pick_or_create_event">Vyberte nebo vytvořte případ</string>

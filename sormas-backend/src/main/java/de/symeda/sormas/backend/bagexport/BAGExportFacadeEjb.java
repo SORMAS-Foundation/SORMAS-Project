@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -74,6 +75,8 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 
 		Expression<String> homeAddressCountry = cb.literal(TODO_VALUE);
@@ -91,9 +94,9 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			homeAddress.get(Location.CITY),
 			homeAddress.get(Location.POSTAL_CODE),
 			homeAddressCountry,
-			person.get(Person.PHONE),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
 			mobileNumber,
-			person.get(Person.EMAIL_ADDRESS),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
 			person.get(Person.SEX),
 			person.get(Person.BIRTHDATE_DD),
 			person.get(Person.BIRTHDATE_MM),
@@ -237,6 +240,8 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		Join<Person, Location> homeAddress = contactJoins.getPersonAddress();
 		Join<Contact, Case> caze = contactJoins.getCaze();
 
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 		Expression<Date> caseLinkContactDate = cb.nullLiteral(Date.class);
 
@@ -249,7 +254,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			homeAddress.get(Location.HOUSE_NUMBER),
 			homeAddress.get(Location.CITY),
 			homeAddress.get(Location.POSTAL_CODE),
-			person.get(Person.PHONE),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
 			mobileNumber,
 			person.get(Person.SEX),
 			person.get(Person.BIRTHDATE_DD),

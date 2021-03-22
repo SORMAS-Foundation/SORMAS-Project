@@ -124,6 +124,9 @@ public interface Validations {
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
+	String taskMissingCaseLink = "taskMissingCaseLink";
+	String taskMissingContactLink = "taskMissingContactLink";
+	String taskMissingEventLink = "taskMissingEventLink";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
 	String vaccineDosesFormat = "vaccineDosesFormat";

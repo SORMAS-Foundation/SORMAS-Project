@@ -59,7 +59,7 @@ public final class CaseLogic {
 	}
 
 	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
-		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate: reportDate;
+		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate : reportDate;
 	}
 
 	public static boolean isEpidNumberPrefix(String s) {
@@ -81,20 +81,26 @@ public final class CaseLogic {
 	}
 
 	/**
-	 * Should be called if the facility of a case is changed
+	 * Handles the hospitalization change of a case.
 	 * 
 	 * @param caze
+	 *            The new CaseDataDto for which the facility change should be handled.
 	 * @param oldCase
+	 *            The Dto of the existing case being changed.
 	 * @param isTransfer
+	 *            Indicates if the old case is transferred (both from or to a hospital).
 	 */
 	public static void handleHospitalization(CaseDataDto caze, CaseDataDto oldCase, boolean isTransfer) {
-
+		// todo (@JonasCir) I feel this whole class or at least this method should be absorbed by the case EJB
+		// case is already in a hospital and is transferred from it (discharge or other hospital)...
 		if (isTransfer && FacilityType.HOSPITAL.equals(oldCase.getFacilityType())) {
+			// therefore add the old hospitalization to the list of previous ones
 			PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
 			caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
 			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
 		}
 
+		// clear everything if a case is transferred or discharged from a hospital
 		if (isTransfer || !FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			// set everything but previous hospitalization to null
 			try {
@@ -115,9 +121,8 @@ public final class CaseLogic {
 			}
 		}
 
-		if (isTransfer && FacilityType.HOSPITAL.equals(caze.getFacilityType()))
-
-		{
+		// case gets transferred to a hospital
+		if (isTransfer && FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			caze.getHospitalization().setAdmissionDate(new Date());
 		}
 	}

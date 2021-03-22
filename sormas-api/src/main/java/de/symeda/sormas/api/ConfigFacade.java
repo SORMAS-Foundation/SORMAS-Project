@@ -107,7 +107,7 @@ public interface ConfigFacade {
 
 	SormasToSormasConfig getSormasToSormasConfig();
 
-	String getSurvnetGatewayUrl();
+	String getExternalSurveillanceToolGatewayUrl();
 
 	String getAuthenticationProvider();
 

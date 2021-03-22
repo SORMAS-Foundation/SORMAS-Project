@@ -15,18 +15,15 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static android.view.View.GONE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -82,6 +79,8 @@ public class PreviousHospitalizationDialog extends FormDialog {
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.initializeDateField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);

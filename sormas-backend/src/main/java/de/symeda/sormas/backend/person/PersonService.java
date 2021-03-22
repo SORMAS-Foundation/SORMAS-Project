@@ -46,7 +46,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -173,7 +172,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
 	}
 
-	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
+	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
+
+		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		final From<?, Person> personFrom = personQueryContext.getRoot();
+		final CriteriaQuery<?> cq = personQueryContext.getQuery();
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
@@ -193,8 +196,13 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 						cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
 						cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.EMAIL_ADDRESS)), textFilter),
-						phoneNumberPredicate(cb, personFrom.get(Person.PHONE), textFilter),
+						cb.like(
+							cb.lower((Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY)),
+							textFilter),
+						phoneNumberPredicate(
+							cb,
+							(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+							textFilter),
 						cb.like(cb.lower(location.get(Location.STREET)), textFilter),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));

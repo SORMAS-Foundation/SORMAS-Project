@@ -490,9 +490,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			srcMediaName);
 
 		// Make external ID field read-only when SORMAS is connected to a SurvNet instance
-		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getExternalSurveillanceToolGatewayUrl())) {
 			setEnabled(false, EventDto.EXTERNAL_ID);
-			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
+			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
 		}
 
 		configureInfrastructureFields(locationForm, countryField, regionField, districtField);

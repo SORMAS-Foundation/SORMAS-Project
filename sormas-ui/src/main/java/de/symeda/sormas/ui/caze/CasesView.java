@@ -697,11 +697,11 @@ public class CasesView extends AbstractView {
 							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.SurvnetGateway_sendShort),
+							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
 							mi -> ControllerProvider.getCaseController()
-								.sendCasesToSurvnet(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()));
+								.sendCasesToExternalSurveillanceTool(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 
