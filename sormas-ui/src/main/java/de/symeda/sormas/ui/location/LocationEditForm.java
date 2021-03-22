@@ -110,7 +110,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
-			System.out.println("Added buttons");
 		}
 	}
 

@@ -754,8 +754,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 
-		System.out.println("Changed " + changedPersons + "/" + personsList.size() + " person coordinates.");
-
 		return changedPersons;
 	}
 
