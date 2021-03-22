@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -63,6 +64,11 @@ public class ContinentFacadeEjb implements ContinentFacade {
 			.stream()
 			.map(ContinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Collection<String> continentUuids) {
+		return continentService.isUsedInInfrastructureData(continentUuids, Subcontinent.CONTINENT, Subcontinent.class);
 	}
 
 	@Override

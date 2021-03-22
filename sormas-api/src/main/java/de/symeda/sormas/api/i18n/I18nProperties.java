@@ -332,17 +332,21 @@ public final class I18nProperties {
 		this.continentProperties = loadProperties("continents", language.getLocale());
 		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
 	}
-	
+
 	private I18nProperties() {
 		this(defaultLanguage);
 	}
 
 	public static String getContinentName(String defaultName) {
-		return getInstance(userLanguage.get()).continentProperties.getString("continent." + defaultName + ".name");
+		String name =
+			getInstance(userLanguage.get()).continentProperties.getString("continent." + defaultName.replace(" ", "_").toUpperCase() + ".name");
+		return name != null ? name : defaultName;
 	}
 
-	public static String getSubContinentName(String defaultName) {
-		return getInstance(userLanguage.get()).subcontinentProperties.getString("subcontinent." + defaultName + ".name");
+	public static String getSubcontinentName(String defaultName) {
+		String name =
+			getInstance(userLanguage.get()).subcontinentProperties.getString("subcontinent." + defaultName.replace(" ", "_").toUpperCase() + ".name");
+		return name != null ? name : defaultName;
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {

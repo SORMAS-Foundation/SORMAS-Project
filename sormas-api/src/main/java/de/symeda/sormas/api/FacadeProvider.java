@@ -45,6 +45,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
@@ -66,18 +67,18 @@ import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.region.SubContinentFacade;
+import de.symeda.sormas.api.region.SubcontinentFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
-import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -177,20 +178,12 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(FacilityFacade.class);
 	}
 
-	public static ContinentFacade geContinentFacade() {
-		return get().lookupEjbRemote(ContinentFacade.class);
-	}
-
-	public static SubContinentFacade geSubContinentFacade() {
-		return get().lookupEjbRemote(SubContinentFacade.class);
-	}
-
 	public static ContinentFacade getContinentFacade() {
 		return get().lookupEjbRemote(ContinentFacade.class);
 	}
 
-	public static SubContinentFacade getSubContinentFacade() {
-		return get().lookupEjbRemote(SubContinentFacade.class);
+	public static SubcontinentFacade getSubcontinentFacade() {
+		return get().lookupEjbRemote(SubcontinentFacade.class);
 	}
 
 	public static CountryFacade getCountryFacade() {
@@ -357,8 +350,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(BAGExportFacade.class);
 	}
 
-	public static SurvnetGatewayFacade getSurvnetGatewayFacade() {
-		return get().lookupEjbRemote(SurvnetGatewayFacade.class);
+	public static ExternalSurveillanceToolFacade getExternalSurveillanceToolFacade() {
+		return get().lookupEjbRemote(ExternalSurveillanceToolFacade.class);
 	}
 
 	public static AreaFacade getAreaFacade() {
@@ -409,6 +402,10 @@ public class FacadeProvider {
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {
 		return get().lookupEjbRemote(SurveillanceReportFacade.class);
+	}
+
+	public static ExternalShareInfoFacade getExternalShareInfoFacade() {
+		return get().lookupEjbRemote(ExternalShareInfoFacade.class);
 	}
 
 	public static I18nFacade getI18nFacade() {

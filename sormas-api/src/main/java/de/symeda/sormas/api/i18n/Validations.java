@@ -91,7 +91,7 @@ public interface Validations {
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotUnique = "importRegionNotUnique";
-	String importSubContinentAlreadyExists = "importSubContinentAlreadyExists";
+	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";

@@ -8,7 +8,7 @@ public class InfrastructureChangeDatesDto implements Serializable {
 	private static final long serialVersionUID = 6269655187128160377L;
 
 	private Date continentChangeDate;
-	private Date subContinentChangeDate;
+	private Date subcontinentChangeDate;
 	private Date countryChangeDate;
 	private Date regionChangeDate;
 	private Date districtChangeDate;
@@ -31,12 +31,12 @@ public class InfrastructureChangeDatesDto implements Serializable {
 		this.continentChangeDate = continentChangeDate;
 	}
 
-	public Date getSubContinentChangeDate() {
-		return subContinentChangeDate;
+	public Date getSubcontinentChangeDate() {
+		return subcontinentChangeDate;
 	}
 
-	public void setSubContinentChangeDate(Date subContinentChangeDate) {
-		this.subContinentChangeDate = subContinentChangeDate;
+	public void setSubcontinentChangeDate(Date subcontinentChangeDate) {
+		this.subcontinentChangeDate = subcontinentChangeDate;
 	}
 
 	public Date getCountryChangeDate() {

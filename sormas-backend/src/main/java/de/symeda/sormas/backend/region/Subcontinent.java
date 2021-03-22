@@ -1,12 +1,13 @@
 package de.symeda.sormas.backend.region;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity
-public class SubContinent extends InfrastructureAdo {
+public class Subcontinent extends InfrastructureAdo {
 
 	public static final String TABLE_NAME = "subcontinent";
 
@@ -34,7 +35,7 @@ public class SubContinent extends InfrastructureAdo {
 		this.externalId = externalId;
 	}
 
-    @ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH)
 	public Continent getContinent() {
 		return continent;
 	}

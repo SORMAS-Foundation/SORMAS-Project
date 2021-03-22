@@ -25,9 +25,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CountryCriteria;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryIndexDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -54,7 +52,7 @@ public class CountriesView extends AbstractConfigurationView {
 
 	// Filter
 	private SearchField searchField;
-	private ComboBox subContinentFilter;
+	private ComboBox subcontinentFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
@@ -85,17 +83,6 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		subContinentFilter = new ComboBox();
-		subContinentFilter.setId(CountryDto.SUB_CONTINENT);
-		subContinentFilter.setWidth(140, Unit.PIXELS);
-		subContinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUB_CONTINENT));
-		subContinentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		subContinentFilter.addValueChangeListener(e -> {
-			criteria.subContinent((SubContinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(subContinentFilter);
-
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COUNTRY));
@@ -117,10 +104,11 @@ public class CountriesView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid,
-					ExportEntityName.COUNTRIES,
-					Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
-					Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(
+				grid,
+				ExportEntityName.COUNTRIES,
+				Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
+				Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -179,6 +167,17 @@ public class CountriesView extends AbstractConfigurationView {
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
+
+		subcontinentFilter = new ComboBox();
+		subcontinentFilter.setId(CountryDto.SUBCONTINENT);
+		subcontinentFilter.setWidth(140, Unit.PIXELS);
+		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUBCONTINENT));
+		subcontinentFilter.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
+		subcontinentFilter.addValueChangeListener(e -> {
+			criteria.subcontinent((SubcontinentReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(subcontinentFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(CountriesView.class).remove(CountryCriteria.class);
@@ -265,7 +264,7 @@ public class CountriesView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameCodeLike());
-		subContinentFilter.setValue(criteria.getSubContinent());
+		subcontinentFilter.setValue(criteria.getSubcontinent());
 
 		applyingCriteria = false;
 	}

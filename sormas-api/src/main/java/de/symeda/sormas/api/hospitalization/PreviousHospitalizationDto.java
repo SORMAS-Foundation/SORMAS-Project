@@ -46,6 +46,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String DESCRIPTION = "description";
 	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
 	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
+	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
+	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
+	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -63,6 +66,10 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
+
+	private YesNoUnknown intensiveCareUnit;
+	private Date intensiveCareUnitStart;
+	private Date intensiveCareUnitEnd;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -89,6 +96,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
 		previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
 		previousHospitalization.setOtherHospitalizationReason(hospitalization.getOtherHospitalizationReason());
+		previousHospitalization.setIntensiveCareUnit(hospitalization.getIntensiveCareUnit());
+		previousHospitalization.setIntensiveCareUnitStart(hospitalization.getIntensiveCareUnitStart());
+		previousHospitalization.setIntensiveCareUnitEnd(hospitalization.getIntensiveCareUnitEnd());
 
 		return previousHospitalization;
 	}
@@ -179,5 +189,29 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
 		this.otherHospitalizationReason = otherHospitalizationReason;
+	}
+
+	public YesNoUnknown getIntensiveCareUnit() {
+		return intensiveCareUnit;
+	}
+
+	public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+		this.intensiveCareUnit = intensiveCareUnit;
+	}
+
+	public Date getIntensiveCareUnitStart() {
+		return intensiveCareUnitStart;
+	}
+
+	public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+		this.intensiveCareUnitStart = intensiveCareUnitStart;
+	}
+
+	public Date getIntensiveCareUnitEnd() {
+		return intensiveCareUnitEnd;
+	}
+
+	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
 	}
 }

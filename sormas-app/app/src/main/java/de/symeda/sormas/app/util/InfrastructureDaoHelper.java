@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.app.util;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,7 +44,7 @@ import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.region.SubContinent;
+import de.symeda.sormas.app.backend.region.Subcontinent;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -57,8 +61,8 @@ public final class InfrastructureDaoHelper {
 		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
 	}
 
-	public static List<Item> loadSubContinents() {
-		return toItems(DatabaseHelper.getSubContinentDao().queryActiveForAll(SubContinent.DEFAULT_NAME, true));
+	public static List<Item> loadSubcontinents() {
+		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
 	}
 
 	public static List<Item> loadCountries() {
@@ -227,37 +231,47 @@ public final class InfrastructureDaoHelper {
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
-			boolean shouldBeActive = serverCountryName == null ? selectedCountry == null : selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
-			configureInfrastructureFields(shouldBeActive, regionField, districtField, communityField, typeGroupField, facilityField, facilityDetailsField, typeField);
+			boolean shouldBeActive = serverCountryName == null
+				? selectedCountry == null
+				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
+			configureInfrastructureFields(
+				shouldBeActive,
+				regionField,
+				districtField,
+				communityField,
+				typeGroupField,
+				facilityField,
+				facilityDetailsField,
+				typeField);
 			subContinentField.setValue(selectedCountry.getSubContinent());
 			continentField.setValue(selectedCountry.getSubContinent().getContinent());
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(
-				entity,
-				regionField,
-				regions,
-				initialRegion,
-				districtField,
-				districts,
-				initialDistrict,
-				communityField,
-				communities,
-				initialCommunity,
-				facilityOrHomeField,
-				facilityOrHomeList,
-				typeGroupField,
-				typeGroups,
-				typeField,
-				types,
-				facilityField,
-				facilities,
-				initialFacility,
-				facilityDetailsField,
-				null,
-				null,
-				null,
-				withLaboratory);
+			entity,
+			regionField,
+			regions,
+			initialRegion,
+			districtField,
+			districts,
+			initialDistrict,
+			communityField,
+			communities,
+			initialCommunity,
+			facilityOrHomeField,
+			facilityOrHomeList,
+			typeGroupField,
+			typeGroups,
+			typeField,
+			types,
+			facilityField,
+			facilities,
+			initialFacility,
+			facilityDetailsField,
+			null,
+			null,
+			null,
+			withLaboratory);
 	}
 
 	public static void initializeFacilityFields(
@@ -570,14 +584,15 @@ public final class InfrastructureDaoHelper {
 		}
 	}
 
-	private static void configureInfrastructureFields(boolean shouldBeActive,
-													  ControlSpinnerField regionField,
-													  ControlSpinnerField districtField,
-													  ControlSpinnerField communityField,
-													  ControlSpinnerField typeGroupField,
-													  ControlSpinnerField facilityField,
-													  ControlTextEditField facilityDetailsField,
-													  ControlSpinnerField typeField) {
+	private static void configureInfrastructureFields(
+		boolean shouldBeActive,
+		ControlSpinnerField regionField,
+		ControlSpinnerField districtField,
+		ControlSpinnerField communityField,
+		ControlSpinnerField typeGroupField,
+		ControlSpinnerField facilityField,
+		ControlTextEditField facilityDetailsField,
+		ControlSpinnerField typeField) {
 		regionField.setEnabled(shouldBeActive);
 		districtField.setEnabled(shouldBeActive);
 		communityField.setEnabled(shouldBeActive);

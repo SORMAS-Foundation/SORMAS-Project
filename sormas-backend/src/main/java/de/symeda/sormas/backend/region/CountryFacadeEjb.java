@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,7 +23,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,6 +32,7 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -49,7 +50,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	@EJB
 	private CountryService countryService;
 	@EJB
-	private SubContinentService subContinentService;
+	private SubcontinentService subcontinentService;
 
 	@EJB
 	private UserService userService;
@@ -80,7 +81,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
-		Join<Object, Object> subContinent = country.join(Country.SUB_CONTINENT, JoinType.LEFT);
+		Join<Object, Object> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
@@ -96,8 +97,8 @@ public class CountryFacadeEjb implements CountryFacade {
 				case CountryIndexDto.DISPLAY_NAME:
 					expression = country.get(Country.DEFAULT_NAME);
 					break;
-				case CountryIndexDto.SUB_CONTINENT:
-					expression = subContinent.get(SubContinent.DEFAULT_NAME);
+				case CountryIndexDto.SUBCONTINENT:
+					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
@@ -214,7 +215,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
-		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -235,7 +236,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(isoCode);
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
-		dto.setSubContinent(SubContinentFacadeEjb.toReferenceDto(entity.getSubContinent()));
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -248,9 +249,9 @@ public class CountryFacadeEjb implements CountryFacade {
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
-		final SubContinentReferenceDto subContinent = source.getSubContinent();
-		if (subContinent != null) {
-			target.setSubContinent(subContinentService.getByUuid(subContinent.getUuid()));
+		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
+		if (subcontinent != null) {
+			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
 		}
 
 		return target;
@@ -308,8 +309,25 @@ public class CountryFacadeEjb implements CountryFacade {
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}
 
+	@Override
+	public boolean hasArchivedParentInfrastructure(Collection<String> countryUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Country> root = cq.from(Country.class);
+		Join<Country, Subcontinent> subcontinentJoin = root.join(Country.SUBCONTINENT);
+
+		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(Subcontinent.ARCHIVED)), root.get(Country.UUID).in(countryUuids)));
+
+		cq.select(root.get(Country.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
 	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
+
+		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		cq.multiselect(
 			root.get(Country.CREATION_DATE),
@@ -319,6 +337,9 @@ public class CountryFacadeEjb implements CountryFacade {
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
-			root.get(Country.UNO_CODE));
+			root.get(Country.UNO_CODE),
+			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(Subcontinent.DEFAULT_NAME),
+			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}
 }

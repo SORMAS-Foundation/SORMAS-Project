@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -38,10 +39,7 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 	@SensitiveData
 	private String thirdPartyName;
 
-	public PersonContactDetailDto() {
-	}
-
-	public PersonContactDetailDto(
+	public static PersonContactDetailDto build(
 		PersonReferenceDto person,
 		boolean primaryContact,
 		PersonContactDetailType personContactDetailType,
@@ -52,16 +50,21 @@ public class PersonContactDetailDto extends PseudonymizableDto {
 		boolean thirdParty,
 		String thirdPartyRole,
 		String thirdPartyName) {
-		this.person = person;
-		this.primaryContact = primaryContact;
-		this.personContactDetailType = personContactDetailType;
-		this.phoneNumberType = phoneNumberType;
-		this.details = details;
-		this.contactInformation = contactInformation;
-		this.additionalInformation = additionalInformation;
-		this.thirdParty = thirdParty;
-		this.thirdPartyRole = thirdPartyRole;
-		this.thirdPartyName = thirdPartyName;
+
+		PersonContactDetailDto contactDetail = new PersonContactDetailDto();
+		contactDetail.setUuid(DataHelper.createUuid());
+		contactDetail.person = person;
+		contactDetail.primaryContact = primaryContact;
+		contactDetail.personContactDetailType = personContactDetailType;
+		contactDetail.phoneNumberType = phoneNumberType;
+		contactDetail.details = details;
+		contactDetail.contactInformation = contactInformation;
+		contactDetail.additionalInformation = additionalInformation;
+		contactDetail.thirdParty = thirdParty;
+		contactDetail.thirdPartyRole = thirdPartyRole;
+		contactDetail.thirdPartyName = thirdPartyName;
+
+		return contactDetail;
 	}
 
 	public PersonReferenceDto getPerson() {

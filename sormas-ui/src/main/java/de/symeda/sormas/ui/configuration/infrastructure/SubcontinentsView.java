@@ -23,11 +23,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.SubContinentCriteria;
-import de.symeda.sormas.api.region.SubContinentDto;
-import de.symeda.sormas.api.region.SubContinentIndexDto;
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
+import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.region.SubcontinentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -43,12 +41,12 @@ import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class SubContinentsView extends AbstractConfigurationView {
+public class SubcontinentsView extends AbstractConfigurationView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/subcontinents";
 	protected Button createButton;
 	protected Button importButton;
-	private SubContinentCriteria criteria;
+	private SubcontinentCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 	// Filter
 	private SearchField searchField;
@@ -57,21 +55,21 @@ public class SubContinentsView extends AbstractConfigurationView {
 	private Button resetButton;
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
-	private SubContinentsGrid grid;
+	private SubcontinentsGrid grid;
 	private MenuBar bulkOperationsDropdown;
 
-	public SubContinentsView() {
+	public SubcontinentsView() {
 		super(VIEW_NAME);
 
-		viewConfiguration = ViewModelProviders.of(SubContinentsView.class).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(SubContinentsView.class).get(SubContinentCriteria.class);
+		viewConfiguration = ViewModelProviders.of(SubcontinentsView.class).get(ViewConfiguration.class);
+		criteria = ViewModelProviders.of(SubcontinentsView.class).get(SubcontinentCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
-		grid = new SubContinentsGrid(criteria);
+		grid = new SubcontinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfSubContinents, grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfSubcontinents, grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -79,21 +77,10 @@ public class SubContinentsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		continentFilter = new ComboBox();
-		continentFilter.setId(CountryDto.SUB_CONTINENT);
-		continentFilter.setWidth(140, Unit.PIXELS);
-		continentFilter.setCaption(I18nProperties.getPrefixCaption(SubContinentDto.I18N_PREFIX, SubContinentDto.CONTINENT));
-		continentFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		continentFilter.addValueChangeListener(e -> {
-			criteria.continent((ContinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(continentFilter);
-
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.SUBCONTINENT));
-				window.setCaption(I18nProperties.getString(Strings.headingImportSubContinents));
+				window.setCaption(I18nProperties.getString(Strings.headingImportSubcontinents));
 				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
@@ -107,8 +94,8 @@ public class SubContinentsView extends AbstractConfigurationView {
 			StreamResource streamResource = GridExportStreamResource.createStreamResource(
 				grid,
 				ExportEntityName.SUBCONTINENTS,
-				Collections.singletonList(SubContinentsGrid.EDIT_BTN_ID),
-				Collections.singletonList(SubContinentIndexDto.DEFAULT_NAME));
+				Collections.singletonList(SubcontinentsGrid.EDIT_BTN_ID),
+				Collections.singletonList(SubcontinentIndexDto.DEFAULT_NAME));
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -117,7 +104,7 @@ public class SubContinentsView extends AbstractConfigurationView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createSubContinent(),
+				e -> ControllerProvider.getInfrastructureController().createSubcontinent(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
@@ -168,8 +155,19 @@ public class SubContinentsView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(searchField);
 
+		continentFilter = new ComboBox();
+		continentFilter.setId(SubcontinentDto.CONTINENT);
+		continentFilter.setWidth(140, Unit.PIXELS);
+		continentFilter.setCaption(I18nProperties.getPrefixCaption(SubcontinentDto.I18N_PREFIX, SubcontinentDto.CONTINENT));
+		continentFilter.addItems(FacadeProvider.getContinentFacade().getAllActiveAsReference());
+		continentFilter.addValueChangeListener(e -> {
+			criteria.continent((ContinentReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(continentFilter);
+
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
-			ViewModelProviders.of(SubContinentsView.class).remove(SubContinentCriteria.class);
+			ViewModelProviders.of(SubcontinentsView.class).remove(SubcontinentCriteria.class);
 			navigateTo(null);
 		}, CssStyles.FORCE_CAPTION);
 		resetButton.setVisible(false);
@@ -187,10 +185,10 @@ public class SubContinentsView extends AbstractConfigurationView {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.subContinentActiveSubContinents));
+					.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.subcontinentActiveSubcontinents));
 				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.subContinentArchivedSubContinents));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.subContinentAllSubContinents));
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.subcontinentArchivedSubcontinents));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.subcontinentAllSubcontinents));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);

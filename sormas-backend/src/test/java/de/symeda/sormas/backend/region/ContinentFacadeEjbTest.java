@@ -8,10 +8,10 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.region.ContinentCriteria;
 import de.symeda.sormas.api.region.ContinentDto;
-import de.symeda.sormas.api.region.SubContinentCriteria;
-import de.symeda.sormas.api.region.SubContinentDto;
-import de.symeda.sormas.api.region.SubContinentIndexDto;
-import de.symeda.sormas.api.region.SubContinentReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
+import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.region.SubcontinentIndexDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -33,25 +33,25 @@ public class ContinentFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSubContinent() {
+	public void testSubcontinent() {
 		final Continent continent = creator.createContinent("EUROPE");
-		final SubContinentDto subContinentDto = new SubContinentDto();
-		subContinentDto.setDefaultName("CENTRAL_EUROPE");
-		subContinentDto.setContinent(continent.toReference());
-		getSubContinentFacade().save(subContinentDto);
-		final List<SubContinentReferenceDto> subContinents = getSubContinentFacade().getByDefaultName("CENTRAL_EUROPE", false);
-		assertEquals(1, subContinents.size());
-		final SubContinentDto savedSubContinentDto = getSubContinentFacade().getByUuid(subContinents.get(0).getUuid());
-		assertEquals("CENTRAL_EUROPE", savedSubContinentDto.getDefaultName());
-		assertEquals("EUROPE", savedSubContinentDto.getContinent().getCaption());
+		final SubcontinentDto subcontinentDto = new SubcontinentDto();
+		subcontinentDto.setDefaultName("CENTRAL_EUROPE");
+		subcontinentDto.setContinent(continent.toReference());
+		getSubcontinentFacade().save(subcontinentDto);
+		final List<SubcontinentReferenceDto> subcontinents = getSubcontinentFacade().getByDefaultName("CENTRAL_EUROPE", false);
+		assertEquals(1, subcontinents.size());
+		final SubcontinentDto savedSubcontinentDto = getSubcontinentFacade().getByUuid(subcontinents.get(0).getUuid());
+		assertEquals("CENTRAL_EUROPE", savedSubcontinentDto.getDefaultName());
+		assertEquals("EUROPE", savedSubcontinentDto.getContinent().getCaption());
 
-		final List<SubContinentIndexDto> indexList =
-			getSubContinentFacade().getIndexList(new SubContinentCriteria().continent(continent.toReference()), null, null, null);
+		final List<SubcontinentIndexDto> indexList =
+			getSubcontinentFacade().getIndexList(new SubcontinentCriteria().continent(continent.toReference()), null, null, null);
 		assertEquals(1, indexList.size());
-		final SubContinentIndexDto subContinentIndexDto = indexList.get(0);
-		assertEquals("CENTRAL_EUROPE", subContinentIndexDto.getDefaultName());
-		assertEquals("EUROPE", subContinentIndexDto.getContinent().getCaption());
-		assertEquals("Central Europe", subContinentIndexDto.getDisplayName());
+		final SubcontinentIndexDto subcontinentIndexDto = indexList.get(0);
+		assertEquals("CENTRAL_EUROPE", subcontinentIndexDto.getDefaultName());
+		assertEquals("EUROPE", subcontinentIndexDto.getContinent().getCaption());
+		assertEquals("Central Europe", subcontinentIndexDto.getDisplayName());
 	}
 
 	@Test(expected = ValidationRuntimeException.class)

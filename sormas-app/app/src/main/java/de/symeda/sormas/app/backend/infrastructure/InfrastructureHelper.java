@@ -16,7 +16,7 @@ import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
-import de.symeda.sormas.app.backend.region.SubContinentDtoHelper;
+import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
 
@@ -26,7 +26,7 @@ public class InfrastructureHelper {
 		InfrastructureChangeDatesDto changeDates = new InfrastructureChangeDatesDto();
 
 		changeDates.setContinentChangeDate(DatabaseHelper.getContinentDao().getLatestChangeDate());
-		changeDates.setSubContinentChangeDate(DatabaseHelper.getSubContinentDao().getLatestChangeDate());
+		changeDates.setSubcontinentChangeDate(DatabaseHelper.getSubcontinentDao().getLatestChangeDate());
 		changeDates.setCountryChangeDate(DatabaseHelper.getCountryDao().getLatestChangeDate());
 		changeDates.setRegionChangeDate(DatabaseHelper.getRegionDao().getLatestChangeDate());
 		changeDates.setDistrictChangeDate(DatabaseHelper.getDistrictDao().getLatestChangeDate());
@@ -46,7 +46,7 @@ public class InfrastructureHelper {
 
 	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData) throws DaoException {
 		new ContinentDtoHelper().handlePulledList(DatabaseHelper.getContinentDao(), infrastructureData.getContinents());
-		new SubContinentDtoHelper().handlePulledList(DatabaseHelper.getSubContinentDao(), infrastructureData.getSubContinents());
+		new SubcontinentDtoHelper().handlePulledList(DatabaseHelper.getSubcontinentDao(), infrastructureData.getSubcontinents());
 		new CountryDtoHelper().handlePulledList(DatabaseHelper.getCountryDao(), infrastructureData.getCountries());
 		new RegionDtoHelper().handlePulledList(DatabaseHelper.getRegionDao(), infrastructureData.getRegions());
 		new DistrictDtoHelper().handlePulledList(DatabaseHelper.getDistrictDao(), infrastructureData.getDistricts());

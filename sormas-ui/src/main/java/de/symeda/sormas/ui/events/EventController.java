@@ -67,8 +67,8 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.survnet.SurvnetGateway;
-import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceToolGatewayType;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -484,7 +484,7 @@ public class EventController {
 					if (!deleteEvent(event)) {
 						Notification.show(
 							String.format(
-								I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted),
+								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
 								DataHelper.getShortUuid(event.getUuid())),
 							"",
 							Type.ERROR_MESSAGE);
@@ -515,8 +515,9 @@ public class EventController {
 
 	private boolean deleteEvent(EventDto event) {
 		boolean deletable = true;
-		if (event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
-			deletable = SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.EVENTS, Collections.singletonList(event));
+		if (event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			deletable = ExternalSurveillanceServiceGateway
+				.deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType.EVENTS, Collections.singletonList(event));
 		}
 		if (deletable) {
 			FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
@@ -644,8 +645,8 @@ public class EventController {
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
-					StringBuilder nonDeletableEventsFromSurvnet = new StringBuilder();
-					int countNotDeletedEventsFromSurvnet = 0;
+					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
+					int countNotDeletedEventsFromExternalTool = 0;
 					for (EventIndexDto selectedRow : selectedRows) {
 						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid());
 						if (existEventParticipantsLinkedToEvent(eventDto)) {
@@ -653,8 +654,8 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							if (!deleteEvent(eventDto)) {
-								countNotDeletedEventsFromSurvnet = countNotDeletedEventsFromSurvnet + 1;
-								nonDeletableEventsFromSurvnet.append(selectedRow.getUuid(), 0, 6).append(", ");
+								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
+								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}
 						}
 					}
@@ -662,12 +663,12 @@ public class EventController {
 						nonDeletableEventsWithParticipants = new StringBuilder(
 							" " + nonDeletableEventsWithParticipants.substring(0, nonDeletableEventsWithParticipants.length() - 2) + ". ");
 					}
-					if (nonDeletableEventsFromSurvnet.length() > 0) {
-						nonDeletableEventsFromSurvnet =
-							new StringBuilder(" " + nonDeletableEventsFromSurvnet.substring(0, nonDeletableEventsFromSurvnet.length() - 2) + ". ");
+					if (nonDeletableEventsFromExternalTool.length() > 0) {
+						nonDeletableEventsFromExternalTool = new StringBuilder(
+							" " + nonDeletableEventsFromExternalTool.substring(0, nonDeletableEventsFromExternalTool.length() - 2) + ". ");
 					}
 					callback.run();
-					if (countNotDeletedEventsWithParticipants == 0 && countNotDeletedEventsFromSurvnet == 0) {
+					if (countNotDeletedEventsWithParticipants == 0 && countNotDeletedEventsFromExternalTool == 0) {
 						new Notification(
 							I18nProperties.getString(Strings.headingEventsDeleted),
 							I18nProperties.getString(Strings.messageEventsDeleted),
@@ -686,15 +687,15 @@ public class EventController {
 									I18nProperties.getString(Strings.messageEventsNotDeletedReason)))
 								.append("<br/> <br/>");
 						}
-						if (countNotDeletedEventsFromSurvnet > 0) {
+						if (countNotDeletedEventsFromExternalTool > 0) {
 							description.append(
 								String.format(
 									"%1s <br/> %2s",
 									String.format(
-										I18nProperties.getString(Strings.messageCountEventsNotDeletedSurvnet),
-										String.format("<b>%s</b>", countNotDeletedEventsFromSurvnet),
-										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromSurvnet.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReasonSurvnet)));
+										I18nProperties.getString(Strings.messageCountEventsNotDeletedExternalSurveillanceTool),
+										String.format("<b>%s</b>", countNotDeletedEventsFromExternalTool),
+										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromExternalTool.toString()))),
+									I18nProperties.getString(Strings.messageEventsNotDeletedReasonExternalSurveillanceTool)));
 						}
 
 						Window response = VaadinUiUtil.showSimplePopupWindow(
@@ -805,7 +806,7 @@ public class EventController {
 		return titleLayout;
 	}
 
-	public void sendAllSelectedToSurvnet(Set<EventIndexDto> selectedRows, Runnable callback) {
+	public void sendAllSelectedToExternalSurveillanceTool(Set<EventIndexDto> selectedRows, Runnable callback) {
 		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 
 		// Show an error when at least one selected event is not a CLUSTER event
@@ -813,7 +814,7 @@ public class EventController {
 		if (nonClusterEvent.isPresent()) {
 			Notification.show(
 				String.format(
-					I18nProperties.getString(Strings.errorSurvNetNonClusterEvent),
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolNonClusterEvent),
 					DataHelper.getShortUuid(nonClusterEvent.get().getUuid()),
 					I18nProperties.getEnumCaption(EventStatus.CLUSTER)),
 				"",
@@ -825,18 +826,20 @@ public class EventController {
 		String ownershipHandedOverUuid = FacadeProvider.getEventFacade().getFirstEventUuidWithOwnershipHandedOver(selectedUuids);
 		if (ownershipHandedOverUuid != null) {
 			Notification.show(
-				String.format(I18nProperties.getString(Strings.errorSurvNetEventNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+				String.format(
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned),
+					DataHelper.getShortUuid(ownershipHandedOverUuid)),
 				"",
 				Type.ERROR_MESSAGE);
 			return;
 		}
 
-		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.EVENTS, selectedUuids);
+		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids);
 
 		callback.run();
 		new Notification(
-			I18nProperties.getString(Strings.headingEventsSentToSurvNet),
-			I18nProperties.getString(Strings.messageEventsSentToSurvnet),
+			I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
+			I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
 			Type.HUMANIZED_MESSAGE,
 			false).show(Page.getCurrent());
 	}

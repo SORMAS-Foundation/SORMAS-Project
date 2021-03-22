@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -58,7 +58,7 @@ import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
-import de.symeda.sormas.app.backend.region.SubContinentDtoHelper;
+import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
@@ -398,6 +398,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "pullInitialInfrastructureTrace")
 	private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+		new ContinentDtoHelper().pullEntities(false);
+		new SubcontinentDtoHelper().pullEntities(false);
+		new CountryDtoHelper().pullEntities(false);
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
@@ -654,8 +657,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
 		// subcontinents
-		List<String> subContinentUuids = executeUuidCall(RetroProvider.getSubContinentFacade().pullUuids());
-		DatabaseHelper.getSubContinentDao().deleteInvalid(subContinentUuids);
+		List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
+		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
 		// continents
 		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
 		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
@@ -672,7 +675,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// order is important, due to dependencies
 
 		new ContinentDtoHelper().pullMissing(continentUuids);
-		new SubContinentDtoHelper().pullMissing(subContinentUuids);
+		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
