@@ -27,16 +27,9 @@ public final class CountryHelper {
 	public static boolean isCountry(String countryLocale, String country) {
 		// If the country locale is complete (e.g. de-DE), check the last (country) part; 
 		// otherwise check the first (language) part
-		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
-			if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
-				return true;
-			}
-		} else {
-			if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
-				return true;
-			}
-		}
-		return false;
+		return Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)
+			? countryLocale.toLowerCase().endsWith(country.toLowerCase())
+			: countryLocale.toLowerCase().startsWith(country.toLowerCase());
 	}
 
 	public static boolean isInCountries(String countryLocale, String... countries) {
