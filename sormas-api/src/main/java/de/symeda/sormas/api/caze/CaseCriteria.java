@@ -118,6 +118,9 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsFromOtherInstances;
+	private Boolean onlyCasesNotSharedWithExternalSurvTool;
+	private Boolean onlyCasesSharedWithExternalSurvTool;
+	private Boolean onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
 
 	@Override
 	public CaseCriteria clone() {
@@ -595,5 +598,29 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Boolean getOnlyCasesNotSharedWithExternalSurvTool() {
+		return onlyCasesNotSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesNotSharedWithExternalSurvTool(Boolean onlyCasesNotSharedWithExternalSurvTool) {
+		this.onlyCasesNotSharedWithExternalSurvTool = onlyCasesNotSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyCasesSharedWithExternalSurvTool() {
+		return onlyCasesSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesSharedWithExternalSurvTool(Boolean onlyCasesSharedWithExternalSurvTool) {
+		this.onlyCasesSharedWithExternalSurvTool = onlyCasesSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyCasesCahngedSinceLastSharedWithExternalSurvTool() {
+		return onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesCahngedSinceLastSharedWithExternalSurvTool(Boolean onlyCasesCahngedSinceLastSharedWithExternalSurvTool) {
+		this.onlyCasesCahngedSinceLastSharedWithExternalSurvTool = onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
 	}
 }
