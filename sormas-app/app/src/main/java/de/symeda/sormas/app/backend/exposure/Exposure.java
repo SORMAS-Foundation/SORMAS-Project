@@ -60,7 +60,7 @@ public class Exposure extends PseudonymizableAdo {
 	private EpiData epiData;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
-	@DatabaseField(dataType = DataType.BOOLEAN)
+	@DatabaseField
 	private boolean probableInfectionEnvironment;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date startDate;
