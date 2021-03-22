@@ -67,7 +67,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
-	private static final String COLUMN_PROBABLE_INFECTION_ENVIRONMENT = ExposureDto.PROBABLE_INFECTION_ENVIRONMENT;
 	private static final String COLUMN_TYPE_OF_PLACE = ExposureDto.TYPE_OF_PLACE;
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_ADDRESS = Captions.address;
@@ -95,7 +94,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
-				COLUMN_PROBABLE_INFECTION_ENVIRONMENT,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
@@ -138,23 +136,24 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				exposureString = VaadinIcons.INFO_CIRCLE.getHtml() + " " + exposureString;
 			}
 
+			if (exposure.isProbableInfectionEnvironment()) {
+				exposureString = VaadinIcons.CHECK_CIRCLE_O.getHtml() + " " + exposureString;
+			}
+
 			Label exposureTypeLabel = new Label(exposureString, ContentMode.HTML);
 
 			if (exposure.getRiskArea() == YesNoUnknown.YES) {
-				exposureTypeLabel.setDescription(I18nProperties.getString(Strings.infoExposuresRiskAreaHint));
+				exposureTypeLabel.setDescription(I18nProperties.getString(Strings.infoExposuresRiskAreaHint) + " ");
+			}
+
+			if (exposure.isProbableInfectionEnvironment()) {
+				exposureTypeLabel
+					.setDescription(exposureTypeLabel.getDescription() + I18nProperties.getString(Strings.infoExposuresInfectionEnvironmentHint));
 			}
 
 			return exposureTypeLabel;
 		});
 
-		table.addGeneratedColumn(COLUMN_PROBABLE_INFECTION_ENVIRONMENT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			ExposureDto exposure = (ExposureDto) itemId;
-			String exposureString = exposure.isProbableInfectionEnvironment() ? I18nProperties.getString(Strings.yes) : "";
-
-			Label infectionEnvironmentLabel = new Label(exposureString, ContentMode.HTML);
-
-			return infectionEnvironmentLabel;
-		});
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return exposure.getTypeOfPlace() != null

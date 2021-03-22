@@ -534,6 +534,7 @@ public interface Strings {
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
+	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
