@@ -1,5 +1,5 @@
 /* 1. Load CSV data into temp table */
-CREATE TABLE tmp_facility (name text, regionname text, districtname text, communityname text, city text, postalcode text, street text, housenumber text, phonenumber text, emailaddress text, 
+CREATE TEMP TABLE tmp_facility (name text, regionname text, districtname text, communityname text, city text, postalcode text, street text, housenumber text, phonenumber text, emailaddress text, 
 						   	contactFirstName text, contactLastName text, contactPhoneNumber text, contactEmailAddress text, additionalinformation text, 
 							areatype varchar(255), latitude double precision, longitude double precision, type varchar(255), publicownership boolean, archived boolean, externalid text);
 
@@ -43,14 +43,33 @@ IF (SELECT count(*) FROM tmp_facility WHERE region_id IS NULL OR district_id IS 
    RAISE WARNING 'Ignoring facilities without region or district: %', errordetails;
 END IF;
 
+DELETE FROM tmp_facility WHERE region_id IS NULL OR district_id IS NULL;
+
 /* make sure all entries have an external id */
 IF (SELECT count(*) FROM tmp_facility WHERE externalid IS NULL) > 0 THEN
 	errordetails = (SELECT string_agg(name, ', ') FROM tmp_facility WHERE externalid IS NULL);
    RAISE WARNING 'Ignoring facilities without externalid: %', errordetails;
 END IF;
 
+DELETE FROM tmp_facility WHERE externalid IS NULL;
+
+/* make sure externalids are only used once in the imported data */
+ALTER TABLE tmp_facility ADD COLUMN externalidcount integer;
+UPDATE tmp_facility 
+	SET externalidcount = cnt
+	FROM (SELECT externalid, COUNT(externalid) as cnt FROM tmp_facility GROUP BY externalid) calc 
+	WHERE calc.externalid = tmp_facility.externalid;
+
+IF (SELECT MAX(externalidcount) FROM tmp_facility) > 1 THEN
+	errordetails = (SELECT string_agg(externalid, ', ') FROM tmp_facility WHERE externalidcount > 1);
+   RAISE WARNING 'Ignoring facilities that are using the same externalid: %', errordetails;
+END IF;
+
+DELETE FROM tmp_facility WHERE externalidcount > 1;
+
 END;
 $$ LANGUAGE plpgsql;
+
 
 /* 4. Update existing facilities */
 UPDATE facility 
