@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,7 +46,7 @@ public class ExternalJournalUtil {
 	 * If no external journal is enabled with the current settings, an empty optional is returned.
 	 * If the person is not registered in the external journal, a create account/register button is returned
 	 * If the person is registered, a button is returned which opens a popup with further options.
-	 * 
+	 *
 	 * @param person
 	 *            person to be managed by the external journal
 	 * @return Optional containing appropriate Button
@@ -188,6 +189,9 @@ public class ExternalJournalUtil {
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
 		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
+		if (result.isSuccess()) {
+			SormasUI.refreshView();
+		}
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
@@ -204,6 +208,9 @@ public class ExternalJournalUtil {
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
+			if (registerResult.isSuccess()) {
+				SormasUI.refreshView();
+			}
 		}
 	}
 
