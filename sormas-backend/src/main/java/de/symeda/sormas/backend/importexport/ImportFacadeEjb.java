@@ -76,7 +76,6 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -749,11 +748,7 @@ public class ImportFacadeEjb implements ImportFacade {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
 			} else {
-				Language language = userService.getCurrentUser().getLanguage();
-				if (language == null) {
-					language = Language.EN;
-				}
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, language.getDateFormat()));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 				return true;
 			}
 		}

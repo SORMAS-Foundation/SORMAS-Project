@@ -3,13 +3,9 @@ package de.symeda.sormas.backend.common;
 import java.sql.Timestamp;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-
-import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AdoServiceWithUserFilter<ADO> {
 

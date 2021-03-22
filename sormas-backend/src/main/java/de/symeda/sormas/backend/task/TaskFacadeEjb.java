@@ -627,13 +627,13 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Map<String, Long> taskCountMap = new HashMap<>();
 
-		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, batchedUserUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 			Root<Task> from = cq.from(Task.class);
 			Join<Task, User> userJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(userUuids));
+			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(batchedUserUuids));
 			cq.multiselect(userJoin.get(User.UUID), cb.count(from));
 			cq.groupBy(userJoin.get(User.UUID));
 

@@ -1,8 +1,12 @@
 package de.symeda.sormas.app.backend.region;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
@@ -25,6 +29,11 @@ public class Country extends InfrastructureAdo {
 	@Column
 	private String isoCode;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	@JoinColumn
+	private Subcontinent subcontinent;
+
 	public String getName() {
 		return name;
 	}
@@ -39,6 +48,14 @@ public class Country extends InfrastructureAdo {
 
 	public void setIsoCode(String isoCode) {
 		this.isoCode = isoCode;
+	}
+
+	public Subcontinent getSubcontinent() {
+		return subcontinent;
+	}
+
+	public void setSubcontinent(Subcontinent subcontinent) {
+		this.subcontinent = subcontinent;
 	}
 
 	@Override
