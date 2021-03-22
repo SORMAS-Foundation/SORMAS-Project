@@ -45,7 +45,11 @@ public interface EventGroupFacade {
 
     void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
+    void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences);
+
     void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
+
+    void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences);
 
     void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 

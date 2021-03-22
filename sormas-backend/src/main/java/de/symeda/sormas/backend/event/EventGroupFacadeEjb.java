@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -209,6 +210,16 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
+		linkEventsToGroups(eventReferences, Collections.singletonList(eventGroupReference));
+	}
+
+	@Override
+	public void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences) {
+		linkEventsToGroups(Collections.singletonList(eventReference), eventGroupReferences);
+	}
+
+	@Override
+	public void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences) {
 		if (eventReferences == null || eventReferences.isEmpty()) {
 			return;
 		}
@@ -216,11 +227,27 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 		List<Event> events = eventService.getByUuids(eventUuids);
 
-		EventGroup eventGroupToAdd = eventGroupService.getByUuid(eventGroupReference.getUuid());
+		List<String> eventGroupUuids = eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList());
+		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
 
 		for (Event event : events) {
 			// Check that the event group is not already related to this event
-			if (event.getEventGroups() != null && event.getEventGroups().stream().anyMatch(group -> group.getUuid().equals(eventGroupReference.getUuid()))) {
+			List<EventGroup> filteredEventGroups = eventGroups;
+			if (eventGroups == null) {
+				filteredEventGroups = Collections.emptyList();
+			}
+
+			if (event.getEventGroups() != null) {
+				Set<String> alreadyRelatedUuids = event.getEventGroups()
+					.stream()
+					.map(EventGroup::getUuid)
+					.collect(Collectors.toSet());
+				filteredEventGroups = filteredEventGroups.stream()
+					.filter(eventGroup -> !alreadyRelatedUuids.contains(eventGroup.getUuid()))
+					.collect(Collectors.toList());
+			}
+
+			if (filteredEventGroups.isEmpty()) {
 				continue;
 			}
 
@@ -228,7 +255,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			if (event.getEventGroups() != null) {
 				groups.addAll(event.getEventGroups());
 			}
-			groups.add(eventGroupToAdd);
+			groups.addAll(filteredEventGroups);
 			event.setEventGroups(groups);
 
 			eventService.ensurePersisted(event);

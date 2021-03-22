@@ -27,6 +27,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -82,6 +85,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventGroupFacadeEjbLocal eventGroupFacade;
+	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
@@ -135,9 +140,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 		EventDto event = entities.getEvent();
 		List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
+		List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		try {
-			eventFacade.saveEvent(event);
+			event = eventFacade.saveEvent(event);
 
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());
@@ -149,6 +155,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				}
 				eventParticipantFacade.saveEventParticipant(eventParticipant);
 			}
+
+			eventGroupFacade.linkEventToGroups(event.toReference(), eventGroupReferences);
 
 			return ImportLineResultDto.successResult();
 		} catch (ValidationRuntimeException e) {
@@ -180,6 +188,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
 		final List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
+		final List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		final MutableBoolean currentEventParticipantHasEntries = new MutableBoolean(false);
 		final Mutable<String> firstEventParticipantColumnName = new MutableObject<>(null);
@@ -221,6 +230,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 								cellData.getEntityPropertyPath());
 						}
 
+					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(EventGroupReferenceDto.class))) {
+						eventGroupReferences.add(new EventGroupReferenceDto(cellData.getValue()));
 					} else if (!StringUtils.isEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current event
 						insertColumnEntryIntoData(event, cellData.getValue(), cellData.getEntityPropertyPath());
