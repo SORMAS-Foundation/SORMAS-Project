@@ -17,8 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -28,17 +33,14 @@ import javax.ejb.Stateless;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
-
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.operation.MathTransform;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,7 +199,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
 
-				String shapeRegionName = geoShapeService.sniffShapeName(feature, Arrays.asList("StateName", "REGION", "GEN"));
+				String shapeRegionName = geoShapeService.sniffShapeAttribute(feature, Arrays.asList("StateName", "REGION", "GEN"));
 				if (shapeRegionName == null) {
 					continue;
 				}
@@ -254,7 +256,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
 
-				String shapeDistrictName = geoShapeService.sniffShapeName(feature, Arrays.asList("LGAName", "DISTRICT", "GEN"));
+				String shapeDistrictName = geoShapeService.sniffShapeAttribute(feature, Arrays.asList("LGAName", "DISTRICT", "GEN"));
 				if (shapeDistrictName == null) {
 					continue;
 				}
@@ -266,24 +268,55 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 					continue;
 				}
 
-				Optional<DistrictReferenceDto> districtResult = districts.stream().filter(r -> {
-					String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();
-					return districtName.contains(shapeDistrictName)
-						|| shapeDistrictName.contains(districtName)
-						|| geoShapeService.similarity(shapeDistrictName, districtName) > 0.7f;
-				}).reduce((r1, r2) -> {
-					// take the result that best fits
+				Optional<DistrictReferenceDto> districtResult;
 
-					if (r1.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
-						return r1;
-					if (r2.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
-						return r2;
+				// Use IDs in germany (could also be used for other countries, if fitting externalIDs are provided
+				if (countryName.equals("germany")) {
+					String shapeDistrictId = geoShapeService.sniffShapeAttribute(feature, Arrays.asList("ARS"));
+					if (shapeDistrictId == null) {
+						continue;
+					}
 
-					return Double.compare(
-						geoShapeService.similarity(r1.getCaption(), shapeDistrictName),
-						geoShapeService.similarity(r2.getCaption(), shapeDistrictName)) <= 0 ? r1 : r2;
-				});
+					districtResult = districts.stream().filter(r -> {
+						String districtExtID = r.getExternalId();
+						if (districtExtID == null) {
+							return false;
+						}
+						return districtExtID.contains(shapeDistrictId)
+							|| shapeDistrictId.contains(districtExtID)
+							|| geoShapeService.similarity(shapeDistrictId, districtExtID) > 0.8f;
+					}).reduce((r1, r2) -> {
+						// take the result that best fits
 
+						if (r1.getExternalId().equals(shapeDistrictId))
+							return r1;
+						if (r2.getExternalId().equals(shapeDistrictId))
+							return r2;
+
+						return Double.compare(
+							geoShapeService.similarity(r1.getExternalId(), shapeDistrictId),
+							geoShapeService.similarity(r2.getExternalId(), shapeDistrictId)) <= 0 ? r1 : r2;
+					});
+				} else {
+					districtResult = districts.stream().filter(r -> {
+						String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();
+						return districtName.contains(shapeDistrictName)
+							|| shapeDistrictName.contains(districtName)
+							|| geoShapeService.similarity(shapeDistrictName, districtName) > 0.7f;
+					}).reduce((r1, r2) -> {
+						// take the result that best fits
+
+						if (r1.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
+							return r1;
+						if (r2.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
+							return r2;
+
+						return Double.compare(
+							geoShapeService.similarity(r1.getCaption(), shapeDistrictName),
+							geoShapeService.similarity(r2.getCaption(), shapeDistrictName)) <= 0 ? r1 : r2;
+					});
+
+				}
 				geoShapeService.storeShape(districtMultiPolygons, districtShapes, multiPolygon, shapeDistrictName, districtResult);
 			}
 			iterator.close();

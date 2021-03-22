@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.utils.HtmlHelper;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -84,8 +82,8 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -96,6 +94,7 @@ import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisu
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -629,7 +628,11 @@ public class StatisticsView extends AbstractStatisticsView {
 					seriesValue = value.getIncidence(incidenceDivisor);
 				}
 				Object seriesId = value.getRowKey();
-				hcjs.append("['").append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId))).append("',").append(seriesValue).append("],");
+				hcjs.append("['")
+					.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId)))
+					.append("',")
+					.append(seriesValue)
+					.append("],");
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
@@ -727,22 +730,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		hcjs.append("],");
 
-		hcjs.append("exporting: {\n" +
-				"        buttons: {\n" +
-				"            contextButton: {\n" +
-				"                menuItems: [\n" +
-				"                    'printChart',\n" +
-				"                    'separator',\n" +
-				"                    'downloadPNG',\n" +
-				"                    'downloadJPEG',\n" +
-				"                    'downloadPDF',\n" +
-				"                    'downloadSVG',\n" +
-				"                    'downloadCSV',\n" +
-				"                    'downloadXLS'\n" +
-				"                ]\n" +
-				"            }\n" +
-				"        }\n" +
-				"    }");
+		hcjs.append(
+			"exporting: {\n" + "        buttons: {\n" + "            contextButton: {\n" + "                menuItems: [\n"
+				+ "                    'printChart',\n" + "                    'separator',\n" + "                    'downloadPNG',\n"
+				+ "                    'downloadJPEG',\n" + "                    'downloadPDF',\n" + "                    'downloadSVG',\n"
+				+ "                    'downloadCSV',\n" + "                    'downloadXLS'\n" + "                ]\n" + "            }\n"
+				+ "        }\n" + "    }");
 		hcjs.append("};");
 
 		chart.setHcjs(hcjs.toString());
@@ -981,6 +974,38 @@ public class StatisticsView extends AbstractStatisticsView {
 				resultPolygons.add(polygon);
 			}
 		}
+		// sort polygon array, so that polygons which are completely contained by another appear on top
+		resultPolygons.sort((o1, o2) -> {
+			double LatMin0 = o1.getLatLons()[0][0], LatMax0 = o1.getLatLons()[0][0], LonMin0 = o1.getLatLons()[0][1], LonMax0 = o1.getLatLons()[0][1];
+			for (double[] LatLon : o1.getLatLons()) {
+				if (LatLon[0] < LatMin0)
+					LatMin0 = LatLon[0];
+				if (LatLon[0] > LatMax0)
+					LatMax0 = LatLon[0];
+				if (LatLon[1] < LonMin0)
+					LonMin0 = LatLon[1];
+				if (LatLon[1] > LonMax0)
+					LonMax0 = LatLon[1];
+			}
+			double LatMin1 = o2.getLatLons()[0][0], LatMax1 = o2.getLatLons()[0][0], LonMin1 = o2.getLatLons()[0][1], LonMax1 = o2.getLatLons()[0][1];
+			for (double[] LatLon : o2.getLatLons()) {
+				if (LatLon[0] < LatMin1)
+					LatMin1 = LatLon[0];
+				if (LatLon[0] > LatMax1)
+					LatMax1 = LatLon[0];
+				if (LatLon[1] < LonMin1)
+					LonMin1 = LatLon[1];
+				if (LatLon[1] > LonMax1)
+					LonMax1 = LatLon[1];
+			}
+			if (LatMax0 < LatMax1 && LatMin0 > LatMin1 && LonMax0 < LonMax1 && LonMin0 > LonMin1) {
+				return 1;
+			}
+			if (LatMax0 > LatMax1 && LatMin0 < LatMin1 && LonMax0 > LonMax1 && LonMin0 < LonMin1) {
+				return -1;
+			}
+			return 0;
+		});
 		map.addPolygonGroup("results", resultPolygons);
 
 		mapLayout.addComponent(map);
