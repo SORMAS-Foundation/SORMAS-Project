@@ -23,6 +23,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.ui.utils.CaseDownloadUtil;
+import de.symeda.sormas.ui.utils.EventDownloadUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -165,8 +172,11 @@ public class EventsView extends AbstractView {
 		eventsViewSwitcher.addItem(EventsViewType.ACTIONS);
 		eventsViewSwitcher.setItemCaption(EventsViewType.ACTIONS, I18nProperties.getCaption(Captions.eventActionsView));
 
-		eventsViewSwitcher.addItem(EventsViewType.GROUPS);
-		eventsViewSwitcher.setItemCaption(EventsViewType.GROUPS, I18nProperties.getCaption(Captions.eventGroupsView));
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (eventGroupsFeatureEnabled) {
+			eventsViewSwitcher.addItem(EventsViewType.GROUPS);
+			eventsViewSwitcher.setItemCaption(EventsViewType.GROUPS, I18nProperties.getCaption(Captions.eventGroupsView));
+		}
 
 		eventsViewSwitcher.setValue(viewConfiguration.getViewType());
 		eventsViewSwitcher.addValueChangeListener(e -> {
@@ -211,25 +221,9 @@ public class EventsView extends AbstractView {
 
 			{
 				if (isDefaultViewType()) {
-					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-						EventExportDto.class,
-						null,
-						(Integer start, Integer max) -> FacadeProvider.getEventFacade()
-							.getExportList((EventCriteria) grid.getCriteria(), this.getSelectedRows(), start, max),
-						(propertyId, type) -> {
-							String caption = I18nProperties.findPrefixCaption(
-								propertyId,
-								EventExportDto.I18N_PREFIX,
-								EventIndexDto.I18N_PREFIX,
-								EventDto.I18N_PREFIX,
-								LocationDto.I18N_PREFIX);
-							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-							}
-							return caption;
-						},
-						ExportEntityName.EVENTS,
-						null);
+					StreamResource exportStreamResource = EventDownloadUtil
+						.createEventExportResource((EventCriteria) grid.getCriteria(), this::getSelectedRows, buildDetailedExportConfiguration());
+
 					addExportButton(
 						exportStreamResource,
 						exportPopupButton,
@@ -640,6 +634,19 @@ public class EventsView extends AbstractView {
 					.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 			}
 		}
+	}
+
+	private ExportConfigurationDto buildDetailedExportConfiguration() {
+		if (true)
+			return null;
+		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
+		boolean eventGroupFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		config.setProperties(
+			ImportExportUtils.getEventExportProperties(EventDownloadUtil::getPropertyCaption, eventGroupFeatureEnabled)
+				.stream()
+				.map(ExportPropertyMetaInfo::getPropertyId)
+				.collect(Collectors.toSet()));
+		return config;
 	}
 
 	private ComboBox buildRelevanceStatus(String eventActiveCaption, String eventArchivedCaption, String eventAllCaption) {

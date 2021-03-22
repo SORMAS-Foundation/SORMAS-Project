@@ -26,6 +26,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -146,9 +147,12 @@ public class EventDataView extends AbstractEventView {
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 
-		EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
-		eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (eventGroupsFeatureEnabled) {
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
+			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {

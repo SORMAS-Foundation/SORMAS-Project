@@ -108,6 +108,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			pendingTasksColumn.setSortable(false);
 		}
 
+
 		List<String> columnIds = new ArrayList(
 			Arrays.asList(
 				EventIndexDto.UUID,
@@ -142,6 +143,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			columnIds.remove(NUMBER_OF_PENDING_TASKS);
 		}
 
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (!eventGroupsFeatureEnabled) {
+			columnIds.remove(EventIndexDto.EVENT_GROUPS);
+		}
+
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
@@ -149,18 +155,21 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
-		Column<EventIndexDto, EventGroupsIndexDto> eventGroupsColumn = (Column<EventIndexDto, EventGroupsIndexDto>) getColumn(EventIndexDto.EVENT_GROUPS);
-		eventGroupsColumn.setSortable(false);
-		eventGroupsColumn.setRenderer(new EventGroupsValueProvider(), new HtmlRenderer());
 
-		addItemClickListener(e -> {
-			if (e.getColumn() != null && EventIndexDto.EVENT_GROUPS.equals(e.getColumn().getId())) {
-				EventGroupsIndexDto eventGroups = e.getItem().getEventGroups();
-				if (eventGroups != null && eventGroups.getEventGroup() != null) {
-					ControllerProvider.getEventGroupController().navigateToData(eventGroups.getEventGroup().getUuid());
+		if (eventGroupsFeatureEnabled) {
+			Column<EventIndexDto, EventGroupsIndexDto> eventGroupsColumn = (Column<EventIndexDto, EventGroupsIndexDto>) getColumn(EventIndexDto.EVENT_GROUPS);
+			eventGroupsColumn.setSortable(false);
+			eventGroupsColumn.setRenderer(new EventGroupsValueProvider(), new HtmlRenderer());
+
+			addItemClickListener(e -> {
+				if (e.getColumn() != null && EventIndexDto.EVENT_GROUPS.equals(e.getColumn().getId())) {
+					EventGroupsIndexDto eventGroups = e.getItem().getEventGroups();
+					if (eventGroups != null && eventGroups.getEventGroup() != null) {
+						ControllerProvider.getEventGroupController().navigateToData(eventGroups.getEventGroup().getUuid());
+					}
 				}
-			}
-		});
+			});
+		}
 
 		setContactCountMethod(EventContactCountMethod.ALL); // Count all contacts by default
 

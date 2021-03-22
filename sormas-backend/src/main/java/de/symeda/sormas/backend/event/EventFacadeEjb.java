@@ -52,6 +52,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -123,6 +126,8 @@ public class EventFacadeEjb implements EventFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -462,35 +467,37 @@ public class EventFacadeEjb implements EventFacade {
 				});
 			}
 
-			// Get latest EventGroup with EventGroup count
-			CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = latestEventCQ.from(Event.class);
-			Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
-			notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
-			isInIndexlist = eventRoot.get(Event.UUID).in(eventUuids);
-			latestEventCQ.where(notDeleted, isInIndexlist);
-			latestEventCQ.multiselect(
-				eventRoot.get(Event.UUID),
-				CriteriaBuilderHelper.windowFirstValueDesc(
-					cb,
-					eventGroupJoin.get(EventGroup.UUID),
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+				// Get latest EventGroup with EventGroup count
+				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+				Root<Event> eventRoot = latestEventCQ.from(Event.class);
+				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+				notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
+				isInIndexlist = eventRoot.get(Event.UUID).in(eventUuids);
+				latestEventCQ.where(notDeleted, isInIndexlist);
+				latestEventCQ.multiselect(
 					eventRoot.get(Event.UUID),
-					eventGroupJoin.get(EventGroup.CREATION_DATE)),
-				CriteriaBuilderHelper.windowFirstValueDesc(
-					cb,
-					eventGroupJoin.get(EventGroup.NAME),
-					eventRoot.get(Event.UUID),
-					eventGroupJoin.get(EventGroup.CREATION_DATE)),
-				CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.UUID),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.NAME),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
 
-			objectQueryList = em.createQuery(latestEventCQ).getResultList();
+				objectQueryList = em.createQuery(latestEventCQ).getResultList();
 
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
-					EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
-					EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
-					eventGroupsByEventId.put((String) r[0], eventGroups);
-				});
+				if (objectQueryList != null) {
+					objectQueryList.forEach(r -> {
+						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+						EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
+						eventGroupsByEventId.put((String) r[0], eventGroups);
+					});
+				}
 			}
 		}
 
@@ -658,35 +665,37 @@ public class EventFacadeEjb implements EventFacade {
 				});
 			}
 
-			// Get latest EventGroup with EventGroup count
-			CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = latestEventCQ.from(Event.class);
-			Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
-			notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
-			isInExportlist = eventRoot.get(Event.UUID).in(eventUuids);
-			latestEventCQ.where(notDeleted, isInExportlist);
-			latestEventCQ.multiselect(
-				eventRoot.get(Event.UUID),
-				CriteriaBuilderHelper.windowFirstValueDesc(
-					cb,
-					eventGroupJoin.get(EventGroup.UUID),
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+				// Get latest EventGroup with EventGroup count
+				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+				Root<Event> eventRoot = latestEventCQ.from(Event.class);
+				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+				notDeleted = cb.isFalse(eventGroupJoin.get(EventGroup.DELETED));
+				isInExportlist = eventRoot.get(Event.UUID).in(eventUuids);
+				latestEventCQ.where(notDeleted, isInExportlist);
+				latestEventCQ.multiselect(
 					eventRoot.get(Event.UUID),
-					eventGroupJoin.get(EventGroup.CREATION_DATE)),
-				CriteriaBuilderHelper.windowFirstValueDesc(
-					cb,
-					eventGroupJoin.get(EventGroup.NAME),
-					eventRoot.get(Event.UUID),
-					eventGroupJoin.get(EventGroup.CREATION_DATE)),
-				CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.UUID),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.NAME),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
 
-			objectQueryList = em.createQuery(latestEventCQ).getResultList();
+				objectQueryList = em.createQuery(latestEventCQ).getResultList();
 
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
-					EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
-					EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
-					eventGroupsByEventId.put((String) r[0], eventGroups);
-				});
+				if (objectQueryList != null) {
+					objectQueryList.forEach(r -> {
+						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+						EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
+						eventGroupsByEventId.put((String) r[0], eventGroups);
+					});
+				}
 			}
 		}
 

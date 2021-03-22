@@ -13,7 +13,8 @@ public enum ExportGroupType {
 	CASE_MANAGEMENT,
 	FOLLOW_UP,
 	ADDITIONAL,
-	EVENT;
+	EVENT,
+	EVENT_GROUP;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
