@@ -41,9 +41,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Continent;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.SubContinent;
 
 @Entity
 @Audited
@@ -56,6 +58,8 @@ public class Location extends AbstractDomainObject {
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
+	public static final String CONTINENT = "continent";
+	public static final String SUB_CONTINENT = "subContinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -77,6 +81,8 @@ public class Location extends AbstractDomainObject {
 	private String city;
 	private AreaType areaType;
 
+	private Continent continent;
+	private SubContinent subContinent;
 	private Country country;
 	private Region region;
 	private District district;
@@ -132,6 +138,24 @@ public class Location extends AbstractDomainObject {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	@ManyToOne(cascade = {})
+	public Continent getContinent() {
+		return continent;
+	}
+
+	public void setContinent(Continent continent) {
+		this.continent = continent;
+	}
+
+	@ManyToOne(cascade = {})
+	public SubContinent getSubContinent() {
+		return subContinent;
+	}
+
+	public void setSubContinent(SubContinent subContinent) {
+		this.subContinent = subContinent;
 	}
 
 	@ManyToOne(cascade = {})

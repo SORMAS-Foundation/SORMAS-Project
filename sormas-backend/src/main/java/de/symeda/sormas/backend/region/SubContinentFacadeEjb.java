@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.SubContinentCriteria;
 import de.symeda.sormas.api.region.SubContinentDto;
 import de.symeda.sormas.api.region.SubContinentFacade;
@@ -43,6 +44,8 @@ public class SubContinentFacadeEjb implements SubContinentFacade {
 	private SubContinentService subContinentService;
 	@EJB
 	private ContinentService continentService;
+	@EJB
+	private CountryService countryService;
 
 	public static SubContinentReferenceDto toReferenceDto(SubContinent entity) {
 		if (entity == null) {
@@ -64,6 +67,11 @@ public class SubContinentFacadeEjb implements SubContinentFacade {
 			.stream()
 			.map(SubContinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public SubContinentReferenceDto getByCountry(CountryReferenceDto countryDto) {
+		return toReferenceDto(countryService.getByUuid(countryDto.getUuid()).getSubContinent());
 	}
 
 	@Override

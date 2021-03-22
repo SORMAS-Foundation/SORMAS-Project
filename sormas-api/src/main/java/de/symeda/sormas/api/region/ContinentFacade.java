@@ -7,4 +7,6 @@ import javax.ejb.Remote;
 @Remote
 public interface ContinentFacade extends BaseFacade<ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentCriteria> {
     List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
+
+    ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto);
 }

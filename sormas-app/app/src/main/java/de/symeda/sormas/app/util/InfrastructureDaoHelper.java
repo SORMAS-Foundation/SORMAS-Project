@@ -51,7 +51,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.util.DataUtils.toItems;
 
-public final class InfrastructureHelper {
+public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadContinents() {
 		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
@@ -170,6 +170,12 @@ public final class InfrastructureHelper {
 
 	public static void initializeFacilityFields(
 			AbstractDomainObject entity,
+			final ControlSpinnerField continentField,
+			List<Item> continents,
+			Continent initialContinent,
+			final ControlSpinnerField subContinentField,
+			List<Item> subContinents,
+			SubContinent initialSubContinent,
 			final ControlSpinnerField countryField,
 			List<Item> countries,
 			Country initialCountry,
@@ -193,6 +199,27 @@ public final class InfrastructureHelper {
 			Facility initialFacility,
 			final ControlTextEditField facilityDetailsField,
 			boolean withLaboratory) {
+
+		Item continentItem = initialContinent != null ? DataUtils.toItem(initialContinent) : null;
+		if (continentItem != null && !continents.contains(continentItem)) {
+			continents.add(continentItem);
+		}
+		continentField.initializeSpinner(continents, null);
+		continentField.setValue(initialContinent);
+		if (continents.isEmpty()) {
+			continentField.setVisibility(GONE);
+		}
+
+		Item subContinentItem = initialSubContinent != null ? DataUtils.toItem(initialSubContinent) : null;
+		if (subContinentItem != null && !continents.contains(subContinentItem)) {
+			subContinents.add(subContinentItem);
+		}
+		subContinentField.initializeSpinner(subContinents, null);
+		subContinentField.setValue(initialSubContinent);
+		if (subContinents.isEmpty()) {
+			subContinentField.setVisibility(GONE);
+		}
+
 		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
 		if (countryItem != null && !countries.contains(countryItem)) {
 			countries.add(countryItem);
@@ -202,6 +229,8 @@ public final class InfrastructureHelper {
 			String serverCountryName = ConfigProvider.getServerCountryName();
 			boolean shouldBeActive = serverCountryName == null ? selectedCountry == null : selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 			configureInfrastructureFields(shouldBeActive, regionField, districtField, communityField, typeGroupField, facilityField, facilityDetailsField, typeField);
+			subContinentField.setValue(selectedCountry.getSubContinent());
+			continentField.setValue(selectedCountry.getSubContinent().getContinent());
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(

@@ -6,4 +6,6 @@ import java.util.List;
 @Remote
 public interface SubContinentFacade extends BaseFacade<SubContinentDto, SubContinentIndexDto, SubContinentReferenceDto, SubContinentCriteria> {
     List<SubContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
+
+    SubContinentReferenceDto getByCountry(CountryReferenceDto countryDto);
 }

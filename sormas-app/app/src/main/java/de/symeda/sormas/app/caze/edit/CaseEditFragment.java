@@ -80,7 +80,7 @@ import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
@@ -135,9 +135,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(CaseDataDto.class, contentBinding.mainContent);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
 		if (!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataCommunity)) {
@@ -318,11 +318,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 
-		initialRegions = InfrastructureHelper.loadRegions();
-		allDistricts = InfrastructureHelper.loadAllDistricts();
-		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
-		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
+		initialRegions = InfrastructureDaoHelper.loadRegions();
+		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
+		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
+		initialFacilities = InfrastructureDaoHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 
@@ -439,10 +439,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.setVaccinationClass(Vaccination.class);
 		contentBinding.setTrimesterClass(Trimester.class);
 
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
 			record,
 			contentBinding.caseDataRegion,
 			initialRegions,

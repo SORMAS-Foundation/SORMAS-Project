@@ -52,7 +52,7 @@ import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
 
@@ -172,10 +172,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
 		contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
-		initialRegions = InfrastructureHelper.loadRegions();
-		allDistricts = InfrastructureHelper.loadAllDistricts();
-		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
-		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
+		initialRegions = InfrastructureDaoHelper.loadRegions();
+		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
+		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
@@ -195,7 +195,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.setCaze(sourceCase);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		InfrastructureHelper.initializeRegionFields(
+		InfrastructureDaoHelper.initializeRegionFields(
 			contentBinding.contactRegion,
 			initialRegions,
 			record.getRegion(),

@@ -6968,4 +6968,14 @@ ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subco
 
 INSERT INTO schema_version (version_number, comment) VALUES (350, '2020-03-17 Create continent and subcontinent #4775');
 
+-- 2020-03-19 Add continent and subcontinent to location #4777
+
+ALTER TABLE location ADD COLUMN continent_id BIGINT;
+ALTER TABLE location ADD COLUMN subcontinent_id BIGINT;
+ALTER TABLE location ADD CONSTRAINT fk_location_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
+ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (351, '2020-03-19 Add continent and subcontinent to location #4777');
+
 -- *** Insert new sql commands BEFORE this line ***
