@@ -40,9 +40,11 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.Subcontinent;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -50,6 +52,14 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
 public final class InfrastructureHelper {
+
+	public static List<Item> loadContinents() {
+		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
+	}
+
+	public static List<Item> loadSubcontinents() {
+		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
+	}
 
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
