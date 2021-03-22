@@ -90,16 +90,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		addGeneratedColumns(table);
 
-		if (epiDataParentClass == CaseDataDto.class && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			table.setVisibleColumns(
-				EDIT_COLUMN_ID,
-				COLUMN_EXPOSURE_TYPE,
-				COLUMN_TYPE_OF_PLACE,
-				COLUMN_DATE,
-				COLUMN_ADDRESS,
-				COLUMN_DESCRIPTION,
-				COLUMN_SOURCE_CASE_NAME);
-		} else if (epiDataParentClass == CaseDataDto.class) {
+		if (epiDataParentClass == CaseDataDto.class) {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
