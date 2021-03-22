@@ -125,6 +125,7 @@ public interface Strings {
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
+	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
@@ -908,6 +909,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationPersonsUpdated = "notificationPersonsUpdated";
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";

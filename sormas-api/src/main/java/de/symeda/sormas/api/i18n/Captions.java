@@ -1440,6 +1440,9 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
+	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
+	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
+	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
