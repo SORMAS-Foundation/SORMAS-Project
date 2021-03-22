@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -74,5 +76,17 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		cq.select(join.get(InfrastructureAdo.ID));
 
 		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
+	protected Predicate addRelevancePredicate(CriteriaBuilder cb, Root<?> from, Predicate filter, EntityRelevanceStatus relevanceStatus) {
+		if (relevanceStatus != null) {
+			if (relevanceStatus == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+						.and(cb, filter, cb.or(cb.equal(from.get(InfrastructureAdo.ARCHIVED), false), cb.isNull(from.get(InfrastructureAdo.ARCHIVED))));
+			} else if (relevanceStatus == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(InfrastructureAdo.ARCHIVED), true));
+			}
+		}
+		return filter;
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,11 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.survnet;
+package de.symeda.sormas.api.share;
 
-public enum SurvnetGatewayType {
+import java.util.List;
 
-	CASES,
-	EVENTS;
+import javax.ejb.Remote;
 
+@Remote
+public interface ExternalShareInfoFacade {
+
+	List<ExternalShareInfoDto> getIndexList(ExternalShareInfoCriteria criteria, Integer first, Integer max);
 }

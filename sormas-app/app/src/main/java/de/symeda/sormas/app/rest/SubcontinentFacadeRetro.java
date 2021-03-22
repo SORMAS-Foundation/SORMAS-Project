@@ -13,34 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.survnet;
-
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.event.EventDto;
+package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.region.SubcontinentDto;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-/**
- * Gateway to interact with the local SurvNet instance of the health department
- */
-@Remote
-public interface SurvnetGatewayFacade {
+public interface SubcontinentFacadeRetro {
 
-	boolean isFeatureEnabled();
+	@GET("subcontinents/all/{since}")
+	Call<List<SubcontinentDto>> pullAllSince(@Path("since") long since);
 
-	/**
-	 * Requests the cases to be sent to SurvNet
-	 * 
-	 * @param caseUuids
-	 * @return http response code of the gateway
-	 */
-	int sendCases(List<String> caseUuids);
+	@POST("subcontinents/query")
+	Call<List<SubcontinentDto>> pullByUuids(@Body List<String> uuids);
 
-	int sendEvents(List<String> eventUuids);
-
-    int deleteCases(List<CaseDataDto> cases);
-
-	int deleteEvents(List<EventDto> events);
+	@GET("subcontinents/uuids")
+	Call<List<String>> pullUuids();
 }

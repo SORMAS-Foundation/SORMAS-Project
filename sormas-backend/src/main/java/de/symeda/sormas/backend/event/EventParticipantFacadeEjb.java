@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
@@ -267,9 +268,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
-		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
+		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
@@ -310,7 +312,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Root<Sample> subRoot = dateSubquery.from(Sample.class);
 		final Expression<Date> maxSampleDateTime = cb.<Date> greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext);
 		Predicate pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
 			cb,
 			cb.isFalse(subRoot.get(Sample.DELETED)),
@@ -408,7 +410,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, eventParticipant)),
 			cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
@@ -442,8 +444,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Join<Person, Location> address = person.join(Person.ADDRESS);
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
@@ -505,8 +511,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			address.get(Location.HOUSE_NUMBER),
 			address.get(Location.ADDITIONAL_INFORMATION),
 			address.get(Location.POSTAL_CODE),
-			person.get(Person.PHONE),
-			person.get(Person.EMAIL_ADDRESS),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
 
 			resultingCase.get(Case.UUID),
 
@@ -530,7 +536,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			vaccinationInfo.get(VaccinationInfo.VACCINE_UNII_CODE),
 			vaccinationInfo.get(VaccinationInfo.VACCINE_ATC_CODE));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, eventParticipantQueryContext);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
@@ -612,7 +618,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, root);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
 		cq.where(filter);
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
@@ -625,7 +631,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Map<String, Long> contactCountMap = new HashMap<>();
 
-		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, batchedEventParticipantUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
 
@@ -635,7 +641,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(eventParticipantUuids);
+			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(batchedEventParticipantUuids);
 
 			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
 				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);
