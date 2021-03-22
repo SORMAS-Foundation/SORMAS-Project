@@ -65,6 +65,7 @@ public interface Validations {
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	String importCommunityNotUnique = "importCommunityNotUnique";
+	String importContinentAlreadyExists = "importContinentAlreadyExists";
 	String importCountryAlreadyExists = "importCountryAlreadyExists";
 	String importCountryEmptyIso = "importCountryEmptyIso";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
@@ -91,6 +92,7 @@ public interface Validations {
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotUnique = "importRegionNotUnique";
+	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";

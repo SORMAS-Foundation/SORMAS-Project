@@ -6965,10 +6965,45 @@ ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitend time
 
 INSERT INTO schema_version (version_number, comment) VALUES (351, 'Add fields for intensive care unit to previous hospitalization #4591');
 
+-- 2020-03-17 Create continent and subcontinent #4775
+CREATE TABLE continent (
+                           id bigint NOT NULL,
+                           uuid varchar(36) not null unique,
+                           creationdate timestamp without time zone NOT NULL,
+                           changedate timestamp not null,
+                           archived boolean not null default false,
+                           defaultname varchar(255) NOT NULL,
+                           externalid varchar(255),
+                           primary key(id)
+);
+
+CREATE TABLE subcontinent (
+                              id bigint NOT NULL,
+                              uuid varchar(36) not null unique,
+                              creationdate timestamp without time zone NOT NULL,
+                              changedate timestamp not null,
+                              archived boolean not null default false,
+                              defaultname varchar(255) NOT NULL,
+                              externalid varchar(255),
+                              continent_id bigint NOT NULL,
+                              primary key(id)
+);
+
+ALTER TABLE continent OWNER TO sormas_user;
+ALTER TABLE subcontinent OWNER TO sormas_user;
+
+ALTER TABLE subcontinent ADD CONSTRAINT fk_subcontinent_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
+
+ALTER TABLE country ADD COLUMN subcontinent_id BIGINT;
+ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
+
+
 -- 2021-03-15 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
 ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (352, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+INSERT INTO schema_version (version_number, comment) VALUES (353, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
 
 -- *** Insert new sql commands BEFORE this line ***
