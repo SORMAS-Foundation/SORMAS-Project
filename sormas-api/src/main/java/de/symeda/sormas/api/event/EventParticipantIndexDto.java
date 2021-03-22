@@ -3,6 +3,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -44,7 +45,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	private PathogenTestResultType pathogenTestResult;
 	private Date sampleDateTime;
 
-	private final EventParticipantJurisdictionDto eventJurisdiction;
+	private EventParticipantJurisdictionDto eventJurisdiction;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -55,6 +56,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		String lastName,
 		Sex sex,
 		Integer approximateAge,
+		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
 		PathogenTestResultType pathogenTestResult,
 		Date sampleDateTime,
