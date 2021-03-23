@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -96,6 +97,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 		super.initColumns();
 
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			getColumn(CaseIndexDetailedDto.REINFECTION).setHidden(true);
+		}
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
