@@ -128,7 +128,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			}
 
 			if (exposure.isProbableInfectionEnvironment()) {
-				exposureString = VaadinIcons.CHECK_CIRCLE_O.getHtml() + " " + exposureString;
+				exposureString = VaadinIcons.CHECK_CIRCLE.getHtml() + " " + exposureString;
 			}
 
 			Label exposureTypeLabel = new Label(exposureString, ContentMode.HTML);
