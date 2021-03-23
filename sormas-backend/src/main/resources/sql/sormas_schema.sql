@@ -7078,11 +7078,18 @@ $BODY$;
 
 INSERT INTO schema_version (version_number, comment) VALUES (353, 'Provide SQL function to generate a UUIDv4 encoded as base32 #4805');
 
+-- 2021-03-17 Add a country field to regions #4784
+ALTER TABLE region ADD COLUMN country_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_country_id FOREIGN KEY (country_id) REFERENCES country (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (354, 'Add a country field to regions #4784', true);
+
+
 
 -- 2021-03-22 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
 ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (354, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
 
 -- *** Insert new sql commands BEFORE this line ***

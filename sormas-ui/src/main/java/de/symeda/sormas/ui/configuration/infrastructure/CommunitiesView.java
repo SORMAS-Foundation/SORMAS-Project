@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -45,11 +43,11 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -72,6 +70,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 	// Filter
 	private SearchField searchField;
+	private ComboBox countryFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox relevanceStatusFilter;
@@ -89,7 +88,8 @@ public class CommunitiesView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(CommunitiesView.class).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteria.class);
+		criteria = ViewModelProviders.of(CommunitiesView.class)
+			.get(CommunityCriteria.class, new CommunityCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -180,6 +180,18 @@ public class CommunitiesView extends AbstractConfigurationView {
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
+
+		countryFilter = new CountryCombo((country, isServerCountry) -> {
+			criteria.country(country);
+			grid.reload();
+
+			if (isServerCountry) {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			} else {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
+			}
+		});
+		filterLayout.addComponent(countryFilter);
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(DistrictDto.REGION);
@@ -302,6 +314,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameLike());
+		countryFilter.setValue(criteria.getCountry());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 

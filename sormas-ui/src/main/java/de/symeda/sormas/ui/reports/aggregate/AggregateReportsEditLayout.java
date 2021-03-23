@@ -98,7 +98,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxRegion = new ComboBox<>();
 		comboBoxRegion.setWidth(250, Unit.PIXELS);
 		comboBoxRegion.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.REGION));
-		comboBoxRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		comboBoxRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		comboBoxRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			comboBoxDistrict.clear();

@@ -84,6 +84,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -103,6 +104,7 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -152,6 +154,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private GeocodingService geocodingService;
 	@EJB
 	private PersonContactDetailService personContactDetailService;
 	@EJB
@@ -727,6 +731,40 @@ public class PersonFacadeEjb implements PersonFacade {
 		return personService.exists(
 			(cb, personRoot) -> CriteriaBuilderHelper
 				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
+	}
+
+	@Override
+	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
+		long changedPersons = 0;
+
+		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
+		if (indexList == null) {
+			return 0;
+		}
+		List<Person> personsList = personService.getByUuids(indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
+		if (personsList == null) {
+			return 0;
+		}
+
+		for (Person person : personsList) {
+
+			if (person.getAddress() != null
+				&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
+				try {
+					GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
+					if (latLon != null) {
+						person.getAddress().setLatitude(latLon.getLat());
+						person.getAddress().setLongitude(latLon.getLon());
+						changedPersons++;
+					}
+				} catch (Exception e) {
+					// This exception might be called when an invalid addess was entered, resulting in a server timeou
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return changedPersons;
 	}
 
 	/**

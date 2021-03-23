@@ -126,8 +126,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		epidField.setInvalidCommitted(true);
 		style(epidField, ERROR_COLOR_PRIMARY);
 
-		TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
-		style(externalIdField, ERROR_COLOR_PRIMARY);
+		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+			style(externalIdField, ERROR_COLOR_PRIMARY);
+		}
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
@@ -317,7 +319,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				}
 			}
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {

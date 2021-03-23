@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
@@ -37,7 +38,7 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 
 	private final ExternalShareInfoCriteria criteria;
 	private final Label placeholderLabel;
-	private Language userLanguage;
+	private final Language userLanguage;
 
 	public ExternalShareInfoList(ExternalShareInfoCriteria criteria, boolean showPlaceholder, String placeholderCaptionTag) {
 		super(5);
@@ -47,7 +48,7 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 		this.placeholderLabel = new Label(placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null);
 		this.placeholderLabel.setVisible(showPlaceholder);
 
-		userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		userLanguage = I18nProperties.getUserLanguage();
 	}
 
 	@Override
@@ -91,8 +92,13 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 			infoLayout.setTemplateContents(buildLayout());
 			infoLayout.setWidth(100, Unit.PERCENTAGE);
 
-			Label senderLabel = new Label(shareInfo.getSender().getShortCaption());
+			Label senderLabel = new Label(
+				shareInfo.isPseudonymized() ? I18nProperties.getCaption(Captions.inaccessibleValue) : shareInfo.getSender().getShortCaption());
 			senderLabel.addStyleName(CssStyles.LABEL_BOLD);
+			if (shareInfo.isPseudonymized()) {
+				senderLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+			}
+
 			infoLayout.addComponent(senderLabel, SENDER_LOC);
 
 			Label timestampLabel = new Label(DateHelper.formatLocalDateTime(shareInfo.getCreationDate(), userLanguage));
