@@ -460,18 +460,41 @@ public class PersonDto extends PseudonymizableDto {
 		getPersonContactDetails().add(pcd);
 	}
 
+	/**
+	 *
+	 * @return the String representation of the PRIMARY phone number. Phone numbers set with the {@link #setPhone(String)} method
+	 *         automatically become primary.
+	 *         A phone number entered in the personEditForm is not, and thus does not become primary phone number unless the user
+	 *         specifically sets it.
+	 */
 	public String getPhone() {
 		return getPersonContactInformation(PersonContactDetailType.PHONE);
 	}
 
+	/**
+	 * 
+	 * @param phone
+	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
+	 */
 	public void setPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
 	}
 
+	/**
+	 * 
+	 * @return the PRIMARY email address. Email addresses set with the {@link #setEmailAddress(String)} method automatically become primary.
+	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
+	 *         specifically sets it.
+	 */
 	public String getEmailAddress() {
 		return getPersonContactInformation(PersonContactDetailType.EMAIL);
 	}
 
+	/**
+	 * 
+	 * @param email
+	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
+	 */
 	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
 	}
