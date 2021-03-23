@@ -92,6 +92,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
 			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
 		+ loc(WEEK_AND_DATE_FILTER);
 
@@ -300,6 +301,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 				I18nProperties.getCaption(Captions.caseFilterOnlyFromOtherInstances),
 				I18nProperties.getDescription(Descriptions.descCaseFilterOnlyFromOtherInstances),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_CASES_WITH_REINFECTION,
+				I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
+				I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
