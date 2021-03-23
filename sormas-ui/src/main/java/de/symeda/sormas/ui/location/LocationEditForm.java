@@ -228,18 +228,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 
 		country.addValueChangeListener(e -> {
-			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
-			if (serverCountryDto == null) {
-				if (countryDto != null) {
-					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
-					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
-				}
-			} else {
-				if (countryDto != null && !serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
-					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
-					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
-				}
+			if (countryDto != null) {
+				continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
+				subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
 			}
 		});
 

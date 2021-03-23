@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.app.util;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -47,10 +51,6 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadContinents() {
@@ -58,11 +58,12 @@ public final class InfrastructureDaoHelper {
 
 		items.add(new Item<>("", null));
 		items.addAll(
-				DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true)
-						.stream()
-						.map(c -> new Item<>(I18nProperties.getContinentName(c.getDefaultName()), c))
-						.sorted(Comparator.comparing(Item::getKey))
-						.collect(Collectors.toList()));
+			DatabaseHelper.getContinentDao()
+				.queryActiveForAll(Continent.DEFAULT_NAME, true)
+				.stream()
+				.map(c -> new Item<>(I18nProperties.getContinentName(c.getDefaultName()), c))
+				.sorted(Comparator.comparing(Item::getKey))
+				.collect(Collectors.toList()));
 		return items;
 	}
 
@@ -71,11 +72,12 @@ public final class InfrastructureDaoHelper {
 
 		items.add(new Item<>("", null));
 		items.addAll(
-				DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true)
-						.stream()
-						.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
-						.sorted(Comparator.comparing(Item::getKey))
-						.collect(Collectors.toList()));
+			DatabaseHelper.getSubcontinentDao()
+				.queryActiveForAll(Subcontinent.DEFAULT_NAME, true)
+				.stream()
+				.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
+				.sorted(Comparator.comparing(Item::getKey))
+				.collect(Collectors.toList()));
 		return items;
 	}
 
@@ -191,36 +193,36 @@ public final class InfrastructureDaoHelper {
 	}
 
 	public static void initializeFacilityFields(
-			AbstractDomainObject entity,
-			final ControlSpinnerField continentField,
-			List<Item> continents,
-			Continent initialContinent,
-			final ControlSpinnerField subcontinentField,
-			List<Item> subcontinents,
-			Subcontinent initialSubcontinent,
-			final ControlSpinnerField countryField,
-			List<Item> countries,
-			Country initialCountry,
-			final ControlSpinnerField regionField,
-			List<Item> regions,
-			Region initialRegion,
-			final ControlSpinnerField districtField,
-			List<Item> districts,
-			District initialDistrict,
-			final ControlSpinnerField communityField,
-			List<Item> communities,
-			Community initialCommunity,
-			final ControlSpinnerField facilityOrHomeField,
-			List<Item> facilityOrHomeList,
-			final ControlSpinnerField typeGroupField,
-			List<Item> typeGroups,
-			final ControlSpinnerField typeField,
-			List<Item> types,
-			final ControlSpinnerField facilityField,
-			List<Item> facilities,
-			Facility initialFacility,
-			final ControlTextEditField facilityDetailsField,
-			boolean withLaboratory) {
+		AbstractDomainObject entity,
+		final ControlSpinnerField continentField,
+		List<Item> continents,
+		Continent initialContinent,
+		final ControlSpinnerField subcontinentField,
+		List<Item> subcontinents,
+		Subcontinent initialSubcontinent,
+		final ControlSpinnerField countryField,
+		List<Item> countries,
+		Country initialCountry,
+		final ControlSpinnerField regionField,
+		List<Item> regions,
+		Region initialRegion,
+		final ControlSpinnerField districtField,
+		List<Item> districts,
+		District initialDistrict,
+		final ControlSpinnerField communityField,
+		List<Item> communities,
+		Community initialCommunity,
+		final ControlSpinnerField facilityOrHomeField,
+		List<Item> facilityOrHomeList,
+		final ControlSpinnerField typeGroupField,
+		List<Item> typeGroups,
+		final ControlSpinnerField typeField,
+		List<Item> types,
+		final ControlSpinnerField facilityField,
+		List<Item> facilities,
+		Facility initialFacility,
+		final ControlTextEditField facilityDetailsField,
+		boolean withLaboratory) {
 
 		Item continentItem = initialContinent != null ? DataUtils.toItem(initialContinent) : null;
 		if (continentItem != null && !continents.contains(continentItem)) {
@@ -249,8 +251,7 @@ public final class InfrastructureDaoHelper {
 				? selectedCountry == null
 				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 
-			List<Item> newRegions =
-				isServerCountry ? InfrastructureHelper.loadRegionsByServerCountry() : InfrastructureHelper.loadRegionsByCountry(selectedCountry);
+			List<Item> newRegions = isServerCountry ? loadRegionsByServerCountry() : loadRegionsByCountry(selectedCountry);
 			regionField.setSpinnerData(newRegions, regionField.getValue());
 			if (selectedCountry != null) {
 				subcontinentField.setValue(selectedCountry.getSubcontinent());
