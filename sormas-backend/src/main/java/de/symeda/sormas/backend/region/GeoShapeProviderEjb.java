@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -354,6 +357,37 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 					.map(coordinate -> new GeoLatLon(coordinate.y, coordinate.x))
 					.toArray(GeoLatLon[]::new))
 			.toArray(GeoLatLon[][]::new);
+	}
+
+	/**
+	 * Load the shapefile attributions for the configured country.
+	 *
+	 * @return The shapefile attributions for the configured country.
+	 */
+	@Override
+	public String loadShapefileAttributions() {
+		String countryName = configFacade.getCountryName();
+		if (countryName.isEmpty()) {
+			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
+		} else {
+			String filepath = "attributions/" + countryName + "/" + "shapefiles.txt";
+			URL filepathUrl = GeoShapeProviderEjb.class.getClassLoader().getResource(filepath);
+			if (filepathUrl == null || !filepath.endsWith(".txt")) {
+				logger.warn("Invalid attribution filepath: " + filepath + ". No shapefile attribution provided for the configured country?");
+				return "";
+			}
+
+			List<String> content = Collections.singletonList("");
+			try {
+				content = Files.readAllLines(Paths.get(filepathUrl.toURI()));
+			} catch (Exception e) {
+				logger.error("Could not read attribution file: " + e.toString());
+			}
+
+			return String.join(",", content);
+
+		}
+		return "";
 	}
 
 	@LocalBean

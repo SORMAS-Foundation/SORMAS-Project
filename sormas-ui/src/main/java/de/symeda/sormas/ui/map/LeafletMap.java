@@ -19,10 +19,6 @@ package de.symeda.sormas.ui.map;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 
@@ -89,8 +85,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 			}
 		});
 		// credit where credit's due
-		String attribution = loadShapefileAttributions();
+		String attribution = FacadeProvider.getGeoShapeProvider().loadShapefileAttributions();
 		this.addShapefileAttribution(attribution);
+
 	}
 
 	/**
@@ -165,36 +162,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	 */
 	public void addShapefileAttribution(String attribution) {
 		callFunction("addShapefileAttribution", attribution);
-	}
-
-	/**
-	 * Load the shapefile attributions for the configured country.
-	 * 
-	 * @return The shapefile attributions for the configured country.
-	 */
-	private String loadShapefileAttributions() {
-		String countryName = FacadeProvider.getConfigFacade().getCountryName();
-		if (countryName.isEmpty()) {
-			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
-		} else {
-			String filepath = "attributions/" + countryName + "/" + "shapefiles.txt";
-			URL filepathUrl = LeafletMap.class.getClassLoader().getResource(filepath);
-			if (filepathUrl == null || !filepath.endsWith(".txt")) {
-				logger.warn("Invalid attribution filepath: " + filepath + ". No shapefile attribution provided for the configured country?");
-				return "";
-			}
-
-			List<String> content = Collections.singletonList("");
-			try {
-				content = Files.readAllLines(Paths.get(filepathUrl.toURI()));
-			} catch (Exception e) {
-				logger.error("Could not read attribution file: " + e.toString());
-			}
-
-			return String.join(",", content);
-
-		}
-		return "";
 	}
 
 	public interface MarkerClickListener extends Serializable {
