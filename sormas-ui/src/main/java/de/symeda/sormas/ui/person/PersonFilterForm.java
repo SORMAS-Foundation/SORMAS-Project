@@ -63,7 +63,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
 		final ComboBox regionFilter = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		final ComboBox districtFilter = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.DISTRICT, 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));

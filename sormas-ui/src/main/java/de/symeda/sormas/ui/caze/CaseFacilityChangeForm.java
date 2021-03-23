@@ -206,7 +206,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				this.getValue().setFacilityType((FacilityType) type.getValue());
 			}
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
 		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC);

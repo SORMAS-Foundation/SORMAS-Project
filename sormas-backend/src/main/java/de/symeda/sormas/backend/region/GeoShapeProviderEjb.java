@@ -197,7 +197,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			ContentFeatureSource featureSource = dataStore.getFeatureSource();
 			ContentFeatureCollection featureCollection = featureSource.getFeatures();
 
-			List<RegionReferenceDto> regions = regionFacade.getAllActiveAsReference();
+			List<RegionReferenceDto> regions = regionFacade.getAllActiveByServerCountry();
 
 			SimpleFeatureIterator iterator = featureCollection.features();
 			while (iterator.hasNext()) {

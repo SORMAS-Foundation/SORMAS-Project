@@ -654,7 +654,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				(FacilityType) facilityType.getValue(),
 				facility));
 		facility.addValueChangeListener(e -> updateFacilityDetails(facility, facilityDetails));
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);

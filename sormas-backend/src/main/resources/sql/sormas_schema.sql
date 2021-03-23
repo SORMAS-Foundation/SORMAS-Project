@@ -7078,4 +7078,11 @@ $BODY$;
 
 INSERT INTO schema_version (version_number, comment) VALUES (353, 'Provide SQL function to generate a UUIDv4 encoded as base32 #4805');
 
+-- 2021-03-17 Add a country field to regions #4784
+ALTER TABLE region ADD COLUMN country_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_country_id FOREIGN KEY (country_id) REFERENCES country (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (354, 'Add a country field to regions #4784', true);
+
+
 -- *** Insert new sql commands BEFORE this line ***
