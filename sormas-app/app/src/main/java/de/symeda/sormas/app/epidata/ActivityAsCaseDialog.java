@@ -94,7 +94,8 @@ public class ActivityAsCaseDialog extends FormDialog {
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 
-		List<Item> typeOfPlaceList = CountryHelper.isCountry(ConfigProvider.getServerCountryCode(), CountryHelper.COUNTRY_CODE_GERMANY)
+		boolean isCountryGermany = CountryHelper.isCountry(ConfigProvider.getServerCountryCode(), CountryHelper.COUNTRY_CODE_GERMANY);
+		List<Item> typeOfPlaceList = isCountryGermany
 			? DataUtils.toItems(TypeOfPlace.FOR_ACTIVITY_AS_CASE_GERMANY, true)
 			: DataUtils.getEnumItems(TypeOfPlace.class, true, fieldVisibilityCheckers);
 
@@ -110,6 +111,9 @@ public class ActivityAsCaseDialog extends FormDialog {
 		contentBinding.activityAsCaseGatheringType.initializeSpinner(DataUtils.getEnumItems(GatheringType.class, true));
 		contentBinding.activityAsCaseHabitationType.initializeSpinner(DataUtils.getEnumItems(HabitationType.class, true));
 		contentBinding.activityAsCaseTypeOfPlace.initializeSpinner(typeOfPlaceList);
+		if (isCountryGermany) {
+			contentBinding.activityAsCaseTypeOfPlace.setCaption(I18nProperties.getCaption(Captions.ActivityAsCase_typeOfPlaceIfSG));
+		}
 		contentBinding.activityAsCaseMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
 		contentBinding.activityAsCaseRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
 		contentBinding.activityAsCaseWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));
