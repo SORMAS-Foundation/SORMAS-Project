@@ -55,6 +55,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -1125,10 +1126,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
-			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
-			if (caze.getSymptoms().getOnsetDate() != null) {
-				beginDate = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate());
-			}
+			LocalDate beginDate = DateHelper8.toLocalDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
 			LocalDate untilDate =
 				caze.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(caze.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
