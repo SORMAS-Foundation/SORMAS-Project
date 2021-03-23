@@ -115,7 +115,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 		presentConditionList = DataUtils.getEnumItems(PresentCondition.class, true);
 
-		initialRegions = InfrastructureDaoHelper.loadRegions();
+		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
 		initialFacilities = InfrastructureDaoHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());

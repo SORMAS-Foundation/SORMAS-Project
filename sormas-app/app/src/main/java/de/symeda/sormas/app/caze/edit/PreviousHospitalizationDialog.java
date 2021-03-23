@@ -86,7 +86,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			setLiveValidationDisabled(true);
 		}
 
-		List<Item> initialRegions = InfrastructureDaoHelper.loadRegions();
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);

@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -110,6 +111,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private TextField facilityDetails;
 	private ComboBox continent;
 	private ComboBox subcontinent;
+
+	private boolean districtRequiredOnDefaultCountry;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -228,22 +231,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
 			if (serverCountryDto == null) {
-				if (countryDto == null) {
-					enableInfrastructureFields(true);
-				} else {
-					enableInfrastructureFields(false);
+				if (countryDto != null) {
 					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
 					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
-					resetInfrastructureFields(region, district, community);
 				}
 			} else {
-				if (countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
-					enableInfrastructureFields(true);
-				} else {
-					enableInfrastructureFields(false);
+				if (countryDto != null && !serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
 					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
 					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
-					resetInfrastructureFields(region, district, community);
 				}
 			}
 		});
@@ -401,33 +396,23 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			subcontinent.addItems(subcontinents);
 		}
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		updateRegionCombo(region, country);
+		country.addValueChangeListener(e -> {
+			updateRegionCombo(region, country);
+			region.setValue(null);
+		});
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
 	}
 
-	private void resetInfrastructureFields(ComboBox region, ComboBox district, ComboBox community) {
-		region.setValue(null);
-		district.setValue(null);
-		community.setValue(null);
-		facility.setValue(null);
-		facilityDetails.setValue(null);
-		facilityType.setValue(null);
-		facilityTypeGroup.setValue(null);
-	}
-
-	private void enableInfrastructureFields(boolean isEnabled) {
-		setEnabled(
-			isEnabled,
-			LocationDto.REGION,
-			LocationDto.DISTRICT,
-			LocationDto.COMMUNITY,
-			LocationDto.FACILITY,
-			LocationDto.FACILITY_DETAILS,
-			LocationDto.FACILITY_TYPE);
-		facilityTypeGroup.setEnabled(isEnabled);
+	private void updateRegionCombo(ComboBox region, ComboBox country) {
+		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
+			if (districtRequiredOnDefaultCountry) {
+				setFieldsRequirement(isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
+			}
+		});
 	}
 
 	private void overrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
@@ -546,6 +531,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	public void showAddressType() {
 		addressType.setVisible(true);
 		addressType.setRequired(true);
+	}
+
+	public void setDistrictRequiredOnDefaultCountry(boolean required) {
+		this.districtRequiredOnDefaultCountry = required;
 	}
 
 	@Override

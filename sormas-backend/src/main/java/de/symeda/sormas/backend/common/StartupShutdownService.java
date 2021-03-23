@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -64,6 +66,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -81,6 +84,9 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
@@ -147,6 +153,10 @@ public class StartupShutdownService {
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
 	private ServerAccessDataService serverAccessDataService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private CountryService countryService;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -663,6 +673,17 @@ public class StartupShutdownService {
 				for (Contact contact : contactService.getAll()) {
 					contactService.updateFollowUpUntilAndStatus(contact);
 					contactService.udpateContactStatus(contact);
+				}
+				break;
+			case 354:
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (serverCountry != null) {
+					Country country = countryService.getByUuid(serverCountry.getUuid());
+					em.createQuery("UPDATE Region set country = :server_country, changeDate = :change_date WHERE country is null")
+						.setParameter("server_country", country)
+						.setParameter("change_date", new Timestamp(new Date().getTime()))
+						.executeUpdate();
 				}
 				break;
 

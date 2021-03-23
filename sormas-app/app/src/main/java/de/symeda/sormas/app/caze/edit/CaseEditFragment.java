@@ -318,7 +318,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 
-		initialRegions = InfrastructureDaoHelper.loadRegions();
+		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());

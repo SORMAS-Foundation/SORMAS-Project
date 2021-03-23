@@ -83,7 +83,7 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 
 		setFieldVisibilitiesAndAccesses(MaternalHistoryDto.class, contentBinding.mainContent);
 
-		List<Item> initialRegions = InfrastructureDaoHelper.loadRegions();
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRashExposureRegion());
 		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getRashExposureDistrict());
 		InfrastructureDaoHelper.initializeRegionFields(

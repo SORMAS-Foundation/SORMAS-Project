@@ -81,7 +81,7 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
-		List<Item> initialRegions = InfrastructureDaoHelper.loadRegions();
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
 		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
