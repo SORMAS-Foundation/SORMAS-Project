@@ -87,8 +87,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
-			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT),
-			fluidRowLocs(LocationDto.COUNTRY),
+			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT, ""),
+			fluidRowLocs(LocationDto.COUNTRY, "", ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
