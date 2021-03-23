@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.api.share;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class ExternalShareInfoDto extends EntityDto {
+public class ExternalShareInfoDto extends PseudonymizableDto {
+
+	private static final long serialVersionUID = -849958253662994975L;
 
 	private UserReferenceDto sender;
 

@@ -300,7 +300,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
 		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
 
-		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID, PersonDto.EXTERNAL_ID);
+		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
+		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			addField(PersonDto.EXTERNAL_ID);
+		}
 		TextField externalTokenField = addField(PersonDto.EXTERNAL_TOKEN);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonExternalTokenWarning));
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
