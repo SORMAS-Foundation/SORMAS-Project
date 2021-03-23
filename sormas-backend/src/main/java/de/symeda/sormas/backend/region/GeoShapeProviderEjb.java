@@ -179,7 +179,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
-		List<RegionReferenceDto> regions = regionFacade.getAllActiveAsReference();
+		List<RegionReferenceDto> regions = regionFacade.getAllActiveByServerCountry();;
 
 		try {
 			// load shapefile

@@ -449,7 +449,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				contactOfficerField,
 				districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
 		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);

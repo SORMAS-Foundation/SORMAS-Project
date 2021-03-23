@@ -1440,6 +1440,9 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
+	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
+	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
+	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
@@ -1499,6 +1502,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String region = "region";
 	String Region_archived = "Region.archived";
+	String Region_country = "Region.country";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
