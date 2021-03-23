@@ -528,7 +528,7 @@ public interface Strings {
 	String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
-	String infoCheckPropableInfectionEnvironment = "infoCheckPropableInfectionEnvironment";
+	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
 	String infoCompletenessMerge = "infoCompletenessMerge";
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";

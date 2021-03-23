@@ -355,7 +355,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
 			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
 			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
-				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckPropableInfectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
+				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckProbableInfectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
 		}
 		//@formatter:on
 		return HTML_LAYOUT + OTHER_STANDARD_FIELDS;

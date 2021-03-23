@@ -36,12 +36,12 @@ public interface Validations {
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
 	String caseClassificationInvalid = "caseClassificationInvalid";
+	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
-	String epiDataMultipleInfectionEnvironments = "epiDataMultipleInfectionEnvironments";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";

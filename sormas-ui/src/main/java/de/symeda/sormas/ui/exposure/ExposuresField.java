@@ -304,7 +304,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private void showMultipleInfectionEnvironmentsPopup(ExposureDto entry) {
 		VerticalLayout warningLayout = VaadinUiUtil.createWarningLayout();
 		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
-		com.vaadin.ui.Label infoLabel = new com.vaadin.ui.Label(I18nProperties.getValidationError(Validations.epiDataMultipleInfectionEnvironments));
+		com.vaadin.ui.Label infoLabel = new com.vaadin.ui.Label(I18nProperties.getValidationError(Validations.caseMultipleInfectionEnvironments));
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		warningLayout.addComponent(infoLabel);
 		ConfirmationComponent yesNo = VaadinUiUtil.buildYesNoConfirmationComponent();
