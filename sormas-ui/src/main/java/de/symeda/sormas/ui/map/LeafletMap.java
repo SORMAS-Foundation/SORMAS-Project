@@ -19,6 +19,10 @@ package de.symeda.sormas.ui.map;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 
@@ -28,9 +32,12 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.util.ReflectTools;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JS and CSS files are in the VAADIN folder, so we can also access required
@@ -49,6 +56,8 @@ import elemental.json.JsonArray;
 	"vaadin://map/leaflet.fullscreen.css",
 	"vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = 1671451734103288729L;
 
@@ -79,6 +88,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 				LeafletMap.this.fireEvent(new MarkerClickEvent(LeafletMap.this, groupId, markerIndex));
 			}
 		});
+		// credit where credit's due
+		String attribution = loadShapefileAttributions();
+		this.addShapefileAttribution(attribution);
 	}
 
 	/**
@@ -142,6 +154,47 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public void addMarkerClickListener(MarkerClickListener listener) {
 		addListener(MarkerClickEvent.class, listener, MarkerClickListener.MARKER_CLICK_METHOD);
+	}
+
+	/**
+	 * Append the give attribution to the Leaflet attribution list.
+	 * See https://leafletjs.com/reference-1.7.1.html#control-attribution
+	 * 
+	 * @param attribution
+	 *            The attribution to be given.
+	 */
+	public void addShapefileAttribution(String attribution) {
+		callFunction("addShapefileAttribution", attribution);
+	}
+
+	/**
+	 * Load the shapefile attributions for the configured country.
+	 * 
+	 * @return The shapefile attributions for the configured country.
+	 */
+	private String loadShapefileAttributions() {
+		String countryName = FacadeProvider.getConfigFacade().getCountryName();
+		if (countryName.isEmpty()) {
+			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
+		} else {
+			String filepath = "attributions/" + countryName + "/" + "shapefiles.txt";
+			URL filepathUrl = LeafletMap.class.getClassLoader().getResource(filepath);
+			if (filepathUrl == null || !filepath.endsWith(".txt")) {
+				logger.warn("Invalid attribution filepath: " + filepath + ". No shapefile attribution provided for the configured country?");
+				return "";
+			}
+
+			List<String> content = Collections.singletonList("");
+			try {
+				content = Files.readAllLines(Paths.get(filepathUrl.toURI()));
+			} catch (Exception e) {
+				logger.error("Could not read attribution file: " + e.toString());
+			}
+
+			return String.join(",", content);
+
+		}
+		return "";
 	}
 
 	public interface MarkerClickListener extends Serializable {

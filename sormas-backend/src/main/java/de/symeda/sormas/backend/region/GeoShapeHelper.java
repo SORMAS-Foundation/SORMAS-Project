@@ -34,20 +34,16 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-@Stateless
-@LocalBean
-public class GeoShapeService {
+public class GeoShapeHelper {
 
 	private static final String EPSG4326 =
 		"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]";
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(GeoShapeHelper.class);
 
 	/**
 	 * Returns the specific features/settings for the given shapefile.
@@ -60,16 +56,18 @@ public class GeoShapeService {
 	 * @throws IOException
 	 *             Throws in case the file could not be loaded.
 	 */
-	public ContentFeatureSource featureSourceOfShapefile(String countryName, String filename) throws IOException {
+	public static ContentFeatureSource featureSourceOfShapefile(String countryName, String filename) throws IOException {
 		String filepath = "shapefiles/" + countryName + "/" + filename;
-		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
+		URL filepathUrl = GeoShapeHelper.class.getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
 			logger.warn("Invalid shapefile filepath: " + filepath);
 			return null;
 		}
 
 		ShapefileDataStore dataStore = new ShapefileDataStore(filepathUrl);
-		return dataStore.getFeatureSource();
+		ContentFeatureSource source = dataStore.getFeatureSource();
+		dataStore.dispose();
+		return source;
 	}
 
 	/**
@@ -84,7 +82,7 @@ public class GeoShapeService {
 	 * @throws FactoryException
 	 *             Throws if the requested math transformer could not be build.
 	 */
-	public MathTransform getLatLonMathTransform(ContentFeatureSource featureSource) throws FactoryException {
+	public static MathTransform getLatLonMathTransform(ContentFeatureSource featureSource) throws FactoryException {
 		// The CRS of the source file. There are tons of different schemas
 		CoordinateReferenceSystem sourceCRS = featureSource.getSchema().getCoordinateReferenceSystem();
 
@@ -107,9 +105,13 @@ public class GeoShapeService {
 	 * @throws TransformException
 	 *             Throws in case the transformation to EPSG4326 cannot be computed.
 	 */
-	public MultiPolygon getPolygon(SimpleFeature feature, MathTransform transform) throws TransformException {
+	public static MultiPolygon getPolygon(SimpleFeature feature, MathTransform transform) throws TransformException {
 		// get the geometry of the actual feature
 		Geometry sourceGeometry = (Geometry) feature.getDefaultGeometry();
+		if (sourceGeometry == null) {
+			logger.warn("Could not get the default geometry for " + feature.toString());
+			return null;
+		}
 
 		// transform the geometry and save it in a new variable
 		Geometry reprojectedGeometry = JTS.transform(sourceGeometry, transform);
@@ -132,7 +134,7 @@ public class GeoShapeService {
 	 * @return
 	 *         The name of the feature, null if no name could be found.
 	 */
-	public String sniffShapeName(SimpleFeature feature, List<String> list) {
+	public static String sniffShapeName(SimpleFeature feature, List<String> list) {
 		String shapeName = null;
 		// all these attributes can hold the region name
 		for (String attr : list) {
@@ -157,7 +159,7 @@ public class GeoShapeService {
 	 * @return
 	 *         2D array of Lat/Lon coordinates of the polygon.
 	 */
-	private GeoLatLon[][] polygonToGeoLatLons(MultiPolygon multiPolygon) {
+	private static GeoLatLon[][] polygonToGeoLatLons(MultiPolygon multiPolygon) {
 		GeoLatLon[][] shape = new GeoLatLon[multiPolygon.getNumGeometries()][];
 		for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
 			Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
@@ -182,7 +184,7 @@ public class GeoShapeService {
 	 * @param <T>
 	 *            Either RegionReferenceDto or DistrictReferenceDto of the given shape.
 	 */
-	public <T> void storeShape(
+	public static <T> void storeShape(
 		Map<T, MultiPolygon> polygonStore,
 		Map<T, GeoLatLon[][]> shapeStore,
 		MultiPolygon multiPolygon,
@@ -210,7 +212,7 @@ public class GeoShapeService {
 	 *            Either RegionReferenceDto or DistrictReferenceDto.
 	 * 
 	 */
-	public <T> void reportNotFound(Map<T, GeoLatLon[][]> shapeStore, List<T> infraList) {
+	public static <T> void reportNotFound(Map<T, GeoLatLon[][]> shapeStore, List<T> infraList) {
 		StringBuilder notFound = new StringBuilder();
 		for (T infra : infraList) {
 			if (!shapeStore.containsKey(infra)) {
@@ -228,7 +230,7 @@ public class GeoShapeService {
 	/**
 	 * Calculates the similarity (a number within 0 and 1) between two strings.
 	 */
-	public double similarity(String s1, String s2) {
+	public static double similarity(String s1, String s2) {
 
 		String longer = s1, shorter = s2;
 		if (s1.length() < s2.length()) { // longer should always have greater
@@ -257,7 +259,7 @@ public class GeoShapeService {
 	 * @return
 	 *         The Levenshtein Edit Distance of s1 and s2.
 	 */
-	public int editDistance(String s1, String s2) {
+	public static int editDistance(String s1, String s2) {
 		// Fixme(@JonasCir) This is likely duplicate code
 		s1 = s1.toLowerCase();
 		s2 = s2.toLowerCase();

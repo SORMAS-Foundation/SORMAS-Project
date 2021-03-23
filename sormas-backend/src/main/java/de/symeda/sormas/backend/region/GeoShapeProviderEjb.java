@@ -62,9 +62,6 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	@EJB
-	private GeoShapeService geoShapeService;
-
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
 
@@ -186,23 +183,23 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		try {
 			// load shapefile
-			ContentFeatureSource featureSource = geoShapeService.featureSourceOfShapefile(countryName, "regions.shp");
+			ContentFeatureSource featureSource = GeoShapeHelper.featureSourceOfShapefile(countryName, "regions.shp");
 			if (featureSource == null) {
 				return;
 			}
 
-			MathTransform transform = geoShapeService.getLatLonMathTransform(featureSource);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
 
-				String shapeRegionName = geoShapeService.sniffShapeName(feature, Arrays.asList("StateName", "REGION", "GEN"));
+				String shapeRegionName = GeoShapeHelper.sniffShapeName(feature, Arrays.asList("StateName", "REGION", "GEN"));
 				if (shapeRegionName == null) {
 					continue;
 				}
 
-				MultiPolygon multiPolygon = geoShapeService.getPolygon(feature, transform);
+				MultiPolygon multiPolygon = GeoShapeHelper.getPolygon(feature, transform);
 				if (multiPolygon == null) {
 					// there might me entries without a polygon -> not relevant
 					continue;
@@ -223,11 +220,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 							}
 						});
 
-				geoShapeService.storeShape(regionMultiPolygons, regionShapes, multiPolygon, shapeRegionName, regionResult);
+				GeoShapeHelper.storeShape(regionMultiPolygons, regionShapes, multiPolygon, shapeRegionName, regionResult);
 			}
 			iterator.close();
 
-			geoShapeService.reportNotFound(regionShapes, regions);
+			GeoShapeHelper.reportNotFound(regionShapes, regions);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -243,23 +240,23 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		try {
 			// load shapefile
-			ContentFeatureSource featureSource = geoShapeService.featureSourceOfShapefile(countryName, "districts.shp");
+			ContentFeatureSource featureSource = GeoShapeHelper.featureSourceOfShapefile(countryName, "districts.shp");
 			if (featureSource == null) {
 				return;
 			}
 
-			MathTransform transform = geoShapeService.getLatLonMathTransform(featureSource);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
 
-				String shapeDistrictName = geoShapeService.sniffShapeName(feature, Arrays.asList("LGAName", "DISTRICT", "GEN"));
+				String shapeDistrictName = GeoShapeHelper.sniffShapeName(feature, Arrays.asList("LGAName", "DISTRICT", "GEN"));
 				if (shapeDistrictName == null) {
 					continue;
 				}
 
-				MultiPolygon multiPolygon = geoShapeService.getPolygon(feature, transform);
+				MultiPolygon multiPolygon = GeoShapeHelper.getPolygon(feature, transform);
 
 				if (multiPolygon == null) {
 					// there might me entries without a polygon -> not relevant
@@ -270,7 +267,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 					String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();
 					return districtName.contains(shapeDistrictName)
 						|| shapeDistrictName.contains(districtName)
-						|| geoShapeService.similarity(shapeDistrictName, districtName) > 0.7f;
+						|| GeoShapeHelper.similarity(shapeDistrictName, districtName) > 0.7f;
 				}).reduce((r1, r2) -> {
 					// take the result that best fits
 
@@ -280,15 +277,15 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 						return r2;
 
 					return Double.compare(
-						geoShapeService.similarity(r1.getCaption(), shapeDistrictName),
-						geoShapeService.similarity(r2.getCaption(), shapeDistrictName)) <= 0 ? r1 : r2;
+						GeoShapeHelper.similarity(r1.getCaption(), shapeDistrictName),
+						GeoShapeHelper.similarity(r2.getCaption(), shapeDistrictName)) <= 0 ? r1 : r2;
 				});
 
-				geoShapeService.storeShape(districtMultiPolygons, districtShapes, multiPolygon, shapeDistrictName, districtResult);
+				GeoShapeHelper.storeShape(districtMultiPolygons, districtShapes, multiPolygon, shapeDistrictName, districtResult);
 			}
 			iterator.close();
 
-			geoShapeService.reportNotFound(districtShapes, districts);
+			GeoShapeHelper.reportNotFound(districtShapes, districts);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

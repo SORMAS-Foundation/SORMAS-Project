@@ -884,9 +884,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.addPolygonGroup("outlines", outlinePolygones);
 
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			resultData.sort((a, b) -> {
-				return Integer.compare(a.getCaseCount(), b.getCaseCount());
-			});
+			resultData.sort(Comparator.comparingInt(StatisticsCaseCountDto::getCaseCount));
 		} else {
 			resultData.sort((a, b) -> {
 				BigDecimal incidenceA = a.getIncidence(incidenceDivisor);
