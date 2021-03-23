@@ -216,7 +216,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			FieldHelper
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(

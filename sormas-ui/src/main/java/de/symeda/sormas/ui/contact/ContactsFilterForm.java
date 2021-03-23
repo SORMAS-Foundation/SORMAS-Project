@@ -150,7 +150,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.REGION,
 					I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID),
 					240));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
 		ComboBox districtField = addField(
