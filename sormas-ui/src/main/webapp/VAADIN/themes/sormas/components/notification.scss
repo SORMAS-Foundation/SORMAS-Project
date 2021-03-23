@@ -19,6 +19,12 @@
 
 	.v-Notification.tray {
 
+		border: 1px solid #005A9C;
+
+		.v-Notification-caption{
+			color: #005A9C;
+		}
+
 		&.notification-error {
 			background: #cc0000;
 			color: white;

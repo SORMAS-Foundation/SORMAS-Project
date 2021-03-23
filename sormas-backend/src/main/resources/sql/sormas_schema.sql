@@ -6999,6 +6999,85 @@ ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subco
 
 INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
 
+-- 2021-03-22 Provide SQL function to generate a UUIDv4 encoded as base32 #4805
+DROP FUNCTION IF EXISTS encode_base32;
+DROP FUNCTION IF EXISTS generate_base32_uuid;
+
+/** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
+CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    byteCount int;
+
+    alphabet bytea = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; /* RFC 4648/3548 */
+    SHIFT int = 5; /* SHIFT is the number of bits per output character, so the length of the output is the length of the input multiplied by 8/SHIFT, rounded up.*/
+    MASK int = 31;
+
+    result text = '';
+    outputLength int;
+    buffer int;
+    next int;
+    bitsLeft int;
+    pad int;
+    index int;
+
+BEGIN
+    byteCount = length(bytes);
+    outputLength = (byteCount * 8 + SHIFT - 1) / SHIFT;
+    if (separatorBlockSize > 0) THEN
+        outputLength = outputLength + outputLength / separatorBlockSize - 1;
+    END IF;
+
+    buffer = get_byte(bytes,0);
+    next = 1;
+    bitsLeft = 8;
+    while bitsLeft > 0 OR next < byteCount LOOP
+            if (bitsLeft < SHIFT) THEN
+                if (next < byteCount) THEN
+                    buffer = buffer << 8;
+                    buffer = buffer | (get_byte(bytes, next) & 255);
+                    next = next+1;
+                    bitsLeft = bitsLeft + 8;
+                ELSE
+                    pad = SHIFT - bitsLeft;
+                    buffer = buffer << pad;
+                    bitsLeft = bitsLeft + pad;
+                END IF;
+            END IF;
+
+            index = MASK & (buffer >> (bitsLeft - SHIFT));
+            bitsLeft = bitsLeft - SHIFT;
+            result = result || chr(get_byte(alphabet,index));
+
+            IF (separatorBlockSize > 0
+                AND (length(result) + 1) % (separatorBlockSize + 1) = 0
+                AND outputLength - length(result) > separatorBlockSize / 2) THEN
+                result = result || '-';
+            END IF;
+        END LOOP;
+    RETURN result;
+END;
+$BODY$;
+
+CREATE FUNCTION generate_base32_uuid()
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    uuidBytes bytea;
+
+BEGIN
+    uuidBytes = gen_random_bytes(16);
+    uuidBytes = set_byte(uuidBytes, 6, (get_byte(uuidBytes,6) & 15) | 64);  /* clear version, set to version 4 */
+    uuidBytes = set_byte(uuidBytes, 8, (get_byte(uuidBytes,8) & 63) | 128);  /* clear variant, set to to IETF variant */
+    return encode_base32(uuidBytes, 6);
+END;
+$BODY$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (353, 'Provide SQL function to generate a UUIDv4 encoded as base32 #4805');
+
 -- 2020-03-19 Add continent and subcontinent to location #4777
 
 ALTER TABLE location ADD COLUMN continent_id BIGINT;
@@ -7008,6 +7087,6 @@ ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (sub
 ALTER TABLE location_history ADD COLUMN continent_id BIGINT;
 ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (353, '2020-03-19 Add continent and subcontinent to location #4777');
+INSERT INTO schema_version (version_number, comment) VALUES (354, '2020-03-19 Add continent and subcontinent to location #4777');
 
 -- *** Insert new sql commands BEFORE this line ***
