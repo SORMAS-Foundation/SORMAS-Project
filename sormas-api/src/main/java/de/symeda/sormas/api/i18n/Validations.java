@@ -36,6 +36,7 @@ public interface Validations {
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
 	String caseClassificationInvalid = "caseClassificationInvalid";
+	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";

@@ -1076,6 +1076,7 @@ public interface Captions {
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
+	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
