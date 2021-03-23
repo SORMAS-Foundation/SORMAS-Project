@@ -41,6 +41,11 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	}
 
 	@Override
+	protected Stream<String> getReinfectionColumn() {
+		return Stream.of(CaseIndexDetailedDto.REINFECTION);
+	}
+
+	@Override
 	public Stream<String> getEventColumns() {
 		return Stream.of(
 			CaseIndexDetailedDto.EVENT_COUNT,

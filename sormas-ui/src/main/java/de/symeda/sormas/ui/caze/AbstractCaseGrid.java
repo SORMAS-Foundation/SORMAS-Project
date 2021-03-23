@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -190,6 +191,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					CaseIndexDto.CASE_CLASSIFICATION,
 					CaseIndexDto.OUTCOME,
 					CaseIndexDto.INVESTIGATION_STATUS),
+				getReinfectionColumn(),
 				getPersonColumns(),
 				getEventColumns(),
 				getSymptomsColumns(),
@@ -201,11 +203,13 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					CaseIndexDto.REPORT_DATE,
 					CaseIndexDto.QUARANTINE_TO,
 					CaseIndexDto.CREATION_DATE),
-				caseFollowUpEnabled
-					? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, ContactIndexDto.SYMPTOM_JOURNAL_STATUS, NUMBER_OF_VISITS)
-					: Stream.<String> empty(),
+					getFollowUpColumns(),
 				Stream.of(COLUMN_COMPLETENESS))
-			.flatMap(s -> s);
+			.flatMap(Function.identity());
+	}
+
+	protected Stream<String> getReinfectionColumn() {
+		return Stream.empty();
 	}
 
 	protected Stream<String> getPersonColumns() {
@@ -222,6 +226,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	protected Stream<String> getSampleColumns() {
 		return Stream.empty();
+	}
+
+	private Stream<String> getFollowUpColumns() {
+		return caseFollowUpEnabled
+				? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, ContactIndexDto.SYMPTOM_JOURNAL_STATUS, NUMBER_OF_VISITS)
+				: Stream.empty();
 	}
 
 	public void reload() {
