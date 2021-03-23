@@ -16,26 +16,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.disease;
+package de.symeda.sormas.backend.disease;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import org.junit.Test;
 
-import javax.ejb.Remote;
-import java.util.Date;
-import java.util.List;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
-@Remote
-public interface DiseaseVariantFacade {
+/**
+ * @author Alex Vidrean
+ * @since 18-Mar-21
+ */
+public class DiseaseVariantServiceTest extends AbstractBeanTest {
 
-    List<DiseaseVariantDto> getAllAfter(Date date);
+    @Test
+    public void testGetByName() {
+        creator.createDiseaseVariant("B.1.1.7", Disease.CORONAVIRUS);
+        creator.createDiseaseVariant("B.1.1.28.1-P.1", Disease.CORONAVIRUS);
 
-    List<DiseaseVariantDto> getByUuids(List<String> uuids);
+        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.CORONAVIRUS), hasSize(1));
+        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.ANTHRAX), hasSize(0));
+        assertThat(getDiseaseVariantService().getByName(" b.1.1.28.1-P.1 ", Disease.CORONAVIRUS), hasSize(1));
 
-    List<String> getAllUuids();
+    }
 
-    List<DiseaseVariantReferenceDto> getAll();
-
-    List<DiseaseVariantReferenceDto> getAllByDisease(Disease disease);
-
-    List<DiseaseVariantReferenceDto> getByName(String name, Disease disease);
 }
