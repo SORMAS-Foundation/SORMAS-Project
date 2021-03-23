@@ -98,46 +98,37 @@ public final class DtoHelper {
 					// entity: just fill the existing one with the source
 					copyDtoValues((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
 				} else {
-					boolean targetIsEmpty =
-						targetValue == null || (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
 					boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
 					// should we write into the target property?
-					if (targetIsEmpty || override) {
+					if (Collection.class.isAssignableFrom(pd.getPropertyType())) {
 
-						if (Collection.class.isAssignableFrom(pd.getPropertyType()) && sourceValue != null) {
+						if (targetValue == null) {
+							targetValue = sourceValue.getClass().newInstance();
+							pd.getWriteMethod().invoke(target, targetValue);
+						}
 
-							if (targetValue == null) {
-								targetValue = sourceValue.getClass().newInstance();
-								pd.getWriteMethod().invoke(target, targetValue);
+						Collection targetCollection = (Collection) targetValue;
+
+						for (Object sourceEntry : (Collection) sourceValue) {
+							if (sourceEntry instanceof EntityDto) {
+								EntityDto newEntry = ((EntityDto) sourceEntry).clone();
+								newEntry.setUuid(DataHelper.createUuid());
+								newEntry.setCreationDate(null);
+								copyDtoValues(newEntry, (EntityDto) sourceEntry, true);
+								targetCollection.add(newEntry);
+							} else if (DataHelper.isValueType(sourceEntry.getClass())
+								|| sourceEntry instanceof ReferenceDto
+								|| sourceEntry instanceof JsonDataEntry) {
+								targetCollection.add(sourceEntry);
+							} else {
+								throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
 							}
+						}
 
-							Collection targetCollection = (Collection) targetValue;
-							targetCollection.clear();
-
-							for (Object sourceEntry : (Collection) sourceValue) {
-
-								if (sourceEntry instanceof EntityDto) {
-									EntityDto newEntry = ((EntityDto) sourceEntry).clone();
-									newEntry.setUuid(DataHelper.createUuid());
-									newEntry.setCreationDate(null);
-									copyDtoValues(newEntry, (EntityDto) sourceEntry, true);
-									targetCollection.add(newEntry);
-								} else if (DataHelper.isValueType(sourceEntry.getClass())
-									|| sourceEntry instanceof ReferenceDto
-									|| sourceEntry instanceof JsonDataEntry) {
-									targetCollection.add(sourceEntry);
-								} else {
-									throw new UnsupportedOperationException(
-										pd.getPropertyType().getName() + " is not supported as a list entry type.");
-								}
-							}
-
-						} else if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
-
+					} else if (targetValue == null || override) {
+						if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 							pd.getWriteMethod().invoke(target, sourceValue);
-
 						} else {
-
 							// Other objects are not supported
 							throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
 						}

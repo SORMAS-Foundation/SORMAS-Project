@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +32,14 @@ import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
 
-//Using Silent Runner to ignore unnecessary stubbing exception
-//which is a side effect of extending AbstractBeanTest
+// Using Silent Runner to ignore unnecessary stubbing exception
+// which is a side effect of extending AbstractBeanTest
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testUmlautsInInfrastructureImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testUmlautsInInfrastructureImport()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -73,7 +75,85 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testDontImportDuplicateInfrastructure() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testUmlautsInInfrastructureImportIso8859()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		// Import region
+		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_iso_8859_1.csv").toURI());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
+		importer.runImport();
+		RegionReferenceDto region1 = getRegionFacade().getByName("Region with ä", false).get(0);
+		assertEquals("Region with ä", region1.getCaption());
+		RegionReferenceDto region2 = getRegionFacade().getByName("Region with ß", false).get(0);
+		assertEquals("Region with ß", region2.getCaption());
+	}
+
+	@Test
+	public void testUmlautsInInfrastructureWindows1252()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		// Import region
+		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_windows_1252.csv").toURI());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
+		importer.runImport();
+		RegionReferenceDto region1 = getRegionFacade().getByName("Region with ä", false).get(0);
+		assertEquals("Region with ä", region1.getCaption());
+		RegionReferenceDto region2 = getRegionFacade().getByName("Region with ß", false).get(0);
+		assertEquals("Region with ß", region2.getCaption());
+	}
+
+	@Test
+	public void testLargeFileUtf8() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		// Import region
+		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8.csv").toURI());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
+		importer.runImport();
+		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
+		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
+	}
+
+	@Test
+	public void testLargeFileUtf8WithBOM()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		// Import region
+		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8_with_bom.csv").toURI());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
+		importer.runImport();
+		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
+		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
+	}
+
+	@Test
+	public void testLargeFileISO8859_1()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		// Import region
+		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_iso8859_1.csv").toURI());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
+		importer.runImport();
+
+		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
+		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
+	}
+
+	@Test
+	public void testDontImportDuplicateInfrastructure()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -109,7 +189,8 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportFromFileWithBom() throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
+	public void testImportFromFileWithBom()
+		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 

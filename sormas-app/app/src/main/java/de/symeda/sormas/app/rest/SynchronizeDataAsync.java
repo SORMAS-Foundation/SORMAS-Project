@@ -54,9 +54,11 @@ import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
@@ -396,6 +398,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "pullInitialInfrastructureTrace")
 	private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+		new ContinentDtoHelper().pullEntities(false);
+		new SubcontinentDtoHelper().pullEntities(false);
+		new CountryDtoHelper().pullEntities(false);
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
@@ -651,6 +656,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
+		// subcontinents
+		List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
+		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
+		// continents
+		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
+		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// campaigns
@@ -663,6 +674,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies
 
+		new ContinentDtoHelper().pullMissing(continentUuids);
+		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);

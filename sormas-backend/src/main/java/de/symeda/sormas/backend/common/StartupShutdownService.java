@@ -49,11 +49,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
@@ -408,6 +408,15 @@ public class StartupShutdownService {
 			userService.persist(hospitalInformant);
 			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
 
+			// Create Community Officer
+			User communityOfficer = MockDataGenerator.createUser(UserRole.COMMUNITY_OFFICER, "Community", "Officer", "CommOff");
+			communityOfficer.setUserName("CommOff");
+			communityOfficer.setRegion(region);
+			communityOfficer.setDistrict(district);
+			communityOfficer.setCommunity(community);
+			userService.persist(communityOfficer);
+			userUpdateEvent.fire(new UserUpdateEvent(communityOfficer));
+
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
 			poeInformant.setRegion(region);
@@ -492,6 +501,7 @@ public class StartupShutdownService {
 
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * 
 	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
@@ -504,7 +514,7 @@ public class StartupShutdownService {
 			return;
 		}
 
-		if(!authProvider.isUserSyncAtStartupEnabled()) {
+		if (!authProvider.isUserSyncAtStartupEnabled()) {
 			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
 			return;
 		}
@@ -753,9 +763,8 @@ public class StartupShutdownService {
 	}
 
 	private void createMissingDiseaseConfigurations() {
-
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);

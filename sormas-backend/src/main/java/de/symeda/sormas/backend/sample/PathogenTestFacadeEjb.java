@@ -293,6 +293,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
 		target.setReportDate(source.getReportDate());
+		target.setViaLims(source.isViaLims());
 
 		return target;
 	}
@@ -345,6 +346,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
 		target.setReportDate(source.getReportDate());
+		target.setViaLims(source.isViaLims());
 
 		return target;
 	}

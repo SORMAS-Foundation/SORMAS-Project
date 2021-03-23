@@ -27,12 +27,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.backend.importexport.ImportErrorException;
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
-import de.symeda.sormas.backend.importexport.ImportCellData;
-import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.ImportHelper;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -50,10 +44,10 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -62,7 +56,12 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.ImportCellData;
+import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -200,7 +199,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 					EventDto event = entities.getEvent();
 					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(EventParticipantDto.class))
 						|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PersonDto.class))
-						|| (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(LocationDto.class)) && eventParticipants.size() > 0)) {
+						|| (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(LocationDto.class))
+							&& eventParticipants.size() > 0)) {
 						// If the current column belongs to an EventParticipant, set firstEventParticipantColumnName if it's empty, add a new participant
 						// to the list if the first column of a new participant has been reached and insert the entry of the cell into the participant
 						if (firstEventParticipantColumnName.getValue() == null) {
@@ -208,7 +208,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 						}
 						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstEventParticipantColumnName.getValue())) {
 							currentEventParticipantHasEntries.setFalse();
-							EventParticipantDto eventParticipantDto = EventParticipantDto.build(new EventReferenceDto(event.getUuid()), currentUserRef);
+							EventParticipantDto eventParticipantDto =
+								EventParticipantDto.build(new EventReferenceDto(event.getUuid()), currentUserRef);
 							eventParticipantDto.setPerson(PersonDto.build());
 							eventParticipants.add(eventParticipantDto);
 						}
@@ -315,11 +316,16 @@ public class EventImportFacadeEjb implements EventImportFacade {
 							districtFacade.getByName(entry, ImportHelper.getRegionBasedOnDistrict(pd.getName(), event, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrRegion,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importDistrictNotUnique,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
@@ -334,7 +340,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importCommunityNotUnique,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
@@ -364,12 +373,16 @@ public class EventImportFacadeEjb implements EventImportFacade {
 							}
 						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importFacilityNotUniqueInDistrict,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importFacilityNotUniqueInCommunity,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
@@ -418,21 +431,30 @@ public class EventImportFacadeEjb implements EventImportFacade {
 					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-						List<DistrictReferenceDto> district =
-							districtFacade.getByName(entry, ImportHelper.getRegionBasedOnDistrict(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement), false);
+						List<DistrictReferenceDto> district = districtFacade.getByName(
+							entry,
+							ImportHelper.getRegionBasedOnDistrict(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement),
+							false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrRegion,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importDistrictNotUnique,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community =
-							communityFacade.getByName(entry, ImportHelper.getDistrictBasedOnCommunity(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement), false);
+						List<CommunityReferenceDto> community = communityFacade.getByName(
+							entry,
+							ImportHelper.getDistrictBasedOnCommunity(pd.getName(), eventParticipant, eventParticipant.getPerson(), currentElement),
+							false);
 						if (community.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(
@@ -441,7 +463,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importCommunityNotUnique,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
@@ -471,12 +496,16 @@ public class EventImportFacadeEjb implements EventImportFacade {
 							}
 						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importFacilityNotUniqueInDistrict,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(
-								I18nProperties
-									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, importFacade.buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importFacilityNotUniqueInCommunity,
+									entry,
+									importFacade.buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}

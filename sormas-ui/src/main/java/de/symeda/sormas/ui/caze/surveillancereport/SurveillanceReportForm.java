@@ -87,7 +87,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_LOC);
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
-		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 
 		return facilityTypeGroup;

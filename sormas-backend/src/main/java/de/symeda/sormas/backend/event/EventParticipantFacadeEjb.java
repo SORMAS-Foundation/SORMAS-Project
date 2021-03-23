@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
@@ -80,6 +78,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
@@ -269,19 +268,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
-		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
+		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Object, Object> reportingUser = eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT);
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
-
-		Subquery<Date> dateSubquery = cq.subquery(Date.class);
-		Root<Sample> subRoot = dateSubquery.from(Sample.class);
-		final Expression<Date> maxSampleDateTime = cb.<Date>greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
@@ -294,20 +290,47 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			samples.get(Sample.PATHOGEN_TEST_RESULT),
-			samples.get(Sample.SAMPLE_DATE_TIME),
-			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
+			// POSITIVE is the max value of available results
+			cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
+			// all samples have the same date, but have to be aggregated
+			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
+			reportingUser.get(User.UUID));
+		cq.groupBy(
+			eventParticipant.get(EventParticipant.UUID),
+			person.get(Person.UUID),
+			resultingCase.get(Case.UUID),
+			event.get(Event.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.SEX),
+			person.get(Person.APPROXIMATE_AGE),
+			person.get(Person.APPROXIMATE_AGE_TYPE),
+			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			reportingUser.get(User.UUID));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
-		Predicate pathogenTestResultWhereCondition = cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID));
+		Subquery<Date> dateSubquery = cq.subquery(Date.class);
+		Root<Sample> subRoot = dateSubquery.from(Sample.class);
+		final Expression<Date> maxSampleDateTime = cb.<Date> greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
+
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext);
+		Predicate pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
+			cb,
+			cb.isFalse(subRoot.get(Sample.DELETED)),
+			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID)));
 		if (eventParticipantCriteria.getPathogenTestResult() != null) {
-			pathogenTestResultWhereCondition = CriteriaBuilderHelper
-				.and(cb, filter, pathogenTestResultWhereCondition, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
+			pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				pathogenTestResultWhereCondition,
+				cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 		final Predicate nullOrMaxSampleDateTime = CriteriaBuilderHelper.or(
 			cb,
 			cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)),
-			cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition)));
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.isFalse(samples.get(Sample.DELETED)),
+				cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition))));
 		cq.where(CriteriaBuilderHelper.and(cb, nullOrMaxSampleDateTime, filter));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -370,10 +393,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<EventParticipantListEntryDto> getListEntries(
-		EventParticipantCriteria eventParticipantCriteria,
-		Integer first,
-		Integer max) {
+	public List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipantListEntryDto> cq = cb.createQuery(EventParticipantListEntryDto.class);
@@ -390,7 +410,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant),
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, eventParticipant)),
 			cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
@@ -424,8 +444,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Join<Person, Location> address = person.join(Person.ADDRESS);
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
@@ -487,8 +511,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			address.get(Location.HOUSE_NUMBER),
 			address.get(Location.ADDITIONAL_INFORMATION),
 			address.get(Location.POSTAL_CODE),
-			person.get(Person.PHONE),
-			person.get(Person.EMAIL_ADDRESS),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
 
 			resultingCase.get(Case.UUID),
 
@@ -512,7 +536,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			vaccinationInfo.get(VaccinationInfo.VACCINE_UNII_CODE),
 			vaccinationInfo.get(VaccinationInfo.VACCINE_ATC_CODE));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, eventParticipantQueryContext);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
@@ -594,7 +618,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, root);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
 		cq.where(filter);
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
@@ -607,7 +631,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Map<String, Long> contactCountMap = new HashMap<>();
 
-		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, batchedEventParticipantUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
 
@@ -617,7 +641,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(eventParticipantUuids);
+			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(batchedEventParticipantUuids);
 
 			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
 				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);

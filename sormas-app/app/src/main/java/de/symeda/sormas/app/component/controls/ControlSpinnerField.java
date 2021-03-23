@@ -124,6 +124,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 		input.setAdapter(null);
 		input.setSelection(Spinner.INVALID_POSITION);
 		input.setAdapter(adapter);
+
+		if (inverseBindingListener != null) {
+			inverseBindingListener.onChange();
+		}
 	}
 
 	public int getPositionOf(Item item) {

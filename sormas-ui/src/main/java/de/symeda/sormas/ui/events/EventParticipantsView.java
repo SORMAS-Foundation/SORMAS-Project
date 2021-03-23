@@ -140,8 +140,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 					ExportType.EVENT_PARTICIPANTS,
-					ImportExportUtils.getEventParticipantExportProperties(),
-					EventParticipantDownloadUtil::getPropertyCaption,
+					ImportExportUtils.getEventParticipantExportProperties(EventParticipantDownloadUtil::getPropertyCaption),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()

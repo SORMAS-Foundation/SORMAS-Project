@@ -73,6 +73,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String BIRTH_DATE = "birthdate";
+	public static final String AGE_GROUP = "ageGroup";
 
 	private long id;
 	private long personId;
@@ -364,7 +365,7 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		EventParticipantDto.PERSON,
-		PersonDto.APPROXIMATE_AGE_GROUP })
+		AGE_GROUP })
 	@ExportGroup(ExportGroupType.PERSON)
 	public String getAgeGroup() {
 		return ageGroup;

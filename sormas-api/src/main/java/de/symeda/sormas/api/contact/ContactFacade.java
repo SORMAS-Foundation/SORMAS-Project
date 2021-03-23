@@ -136,6 +136,8 @@ public interface ContactFacade {
 
 	boolean exists(String uuid);
 
+	boolean doesExternalTokenExist(String externalToken, String contactUuid);
+
 	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,

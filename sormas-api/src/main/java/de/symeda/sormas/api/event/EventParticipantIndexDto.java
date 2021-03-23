@@ -5,7 +5,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -38,7 +37,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	@SensitiveData
 	private String lastName;
 	private Sex sex;
-	private String approximateAge;
+	private Integer approximateAge;
 	@SensitiveData
 	private String involvementDescription;
 	private long contactCount;
@@ -70,7 +69,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
-		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
+		this.approximateAge = approximateAge;
 		this.involvementDescription = involvementDescription;
 		this.pathogenTestResult = pathogenTestResult;
 		this.sampleDateTime = sampleDateTime;
@@ -133,11 +132,11 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.sex = sex;
 	}
 
-	public String getApproximateAge() {
+	public Integer getApproximateAge() {
 		return approximateAge;
 	}
 
-	public void setApproximateAge(String approximateAge) {
+	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
 
