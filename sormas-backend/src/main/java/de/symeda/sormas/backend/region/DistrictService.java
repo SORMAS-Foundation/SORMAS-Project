@@ -60,6 +60,25 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<District> getAllActiveByServerCountry() {
+		CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
+		Root<District> from = cq.from(getElementClass());
+		Predicate filter = createBasicFilter(cb, from);
+
+		if (serverCountry != null) {
+			Path<Object> countryUuid = from.join(District.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNull(countryUuid), cb.equal(countryUuid, serverCountry.getUuid())));
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.asc(from.get(District.NAME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public int getCountByRegion(Region region) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
