@@ -29,12 +29,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb.DiseaseVariantFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.ImportErrorException;
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
-import de.symeda.sormas.backend.importexport.ImportCellData;
-import de.symeda.sormas.backend.importexport.ImportHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -50,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -79,6 +74,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb.DiseaseVariantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -514,16 +510,16 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
 						if (pointOfEntry.isEmpty()) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(
-											Validations.importEntryDoesNotExistDbOrDistrict,
-											entry,
-											buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrDistrict,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
 						} else if (pointOfEntry.size() > 1) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(
-											Validations.importPointOfEntryNotUniqueInDistrict,
-											entry,
-											buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importPointOfEntryNotUniqueInDistrict,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
 						}
@@ -531,16 +527,16 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						List<DiseaseVariantReferenceDto> variants = diseaseVariantFacade.getByName(entry, caze.getDisease());
 						if (variants.isEmpty()) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(
-											Validations.importDiseaseVariantNotExistOrDisease,
-											entry,
-											buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importDiseaseVariantNotExistOrDisease,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
 						} else if (variants.size() > 1) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(
-											Validations.importDiseaseVariantNotUniqueForDisease,
-											entry,
-											buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importDiseaseVariantNotUniqueForDisease,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, variants.get(0));
 						}
