@@ -62,6 +62,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 
 	private String uuid;
 	private TaskContext taskContext;
@@ -79,6 +80,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private ContactReferenceDto contact;
 	private String region;
 	private String district;
+	private String community;
 
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -104,7 +106,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String casePointOfEntryUuid, String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, 
 			String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, 
-			String eventDistrictUuid, String eventCommunityUuid, String region, String district) {
+			String eventDistrictUuid, String eventCommunityUuid, String region, String district, String community) {
 	//@formatter:on
 
 		this.setUuid(uuid);
@@ -164,6 +166,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.creatorComment = creatorComment;
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
 		this.assigneeReply = assigneeReply;
+		this.community = community;
 		this.district = district;
 		this.region = region;
 
@@ -315,5 +318,13 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setDistrict(String district) {
 		this.district = district;
+	}
+
+	public String getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(String community) {
+		this.community = community;
 	}
 }

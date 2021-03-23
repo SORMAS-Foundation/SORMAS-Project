@@ -369,6 +369,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		TaskJoins joins = new TaskJoins(task);
 
+		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
 			.otherwise(
@@ -382,6 +383,14 @@ public class TaskFacadeEjb implements TaskFacade {
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
 					.otherwise(joins.getEventDistrict().get(District.NAME)));
+
+		Expression<Object> community = cb.selectCase()
+			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
+					.otherwise(joins.getEventCommunity().get(Community.NAME)));
+
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
@@ -399,7 +408,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
 				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
 				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
-				region, district
+				region, district, community
 		);
 		//@formatter:on
 
