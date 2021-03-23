@@ -7005,7 +7005,8 @@ ALTER TABLE location ADD COLUMN continent_id BIGINT;
 ALTER TABLE location ADD COLUMN subcontinent_id BIGINT;
 ALTER TABLE location ADD CONSTRAINT fk_location_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
 ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
-
+ALTER TABLE location_history ADD COLUMN continent_id BIGINT;
+ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (353, '2020-03-19 Add continent and subcontinent to location #4777');
 

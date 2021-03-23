@@ -39,6 +39,7 @@ import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
@@ -296,13 +297,18 @@ public class LocationDialog extends FormDialog {
 		}
 	}
 
-	public void setContinentFieldsVisible( boolean clearOnHidden) {
-		contentBinding.locationContinent.setVisibility(InfrastructureDaoHelper.loadContinents().isEmpty() ? GONE : VISIBLE);
-		contentBinding.locationSubcontinent.setVisibility(InfrastructureDaoHelper.loadSubcontinents().isEmpty() ? GONE : VISIBLE);
-
-		if (clearOnHidden) {
+	public void updateContinentFieldsVisibility() {
+		if (DatabaseHelper.getContinentDao().countOf() == 0) {
+			contentBinding.locationContinent.setVisibility(GONE);
 			contentBinding.locationContinent.setValue(null);
-			contentBinding.locationContinent.setValue(null);
+		} else {
+			contentBinding.locationContinent.setVisibility(VISIBLE);
+		}
+		if (DatabaseHelper.getSubcontinentDao().countOf() == 0) {
+			contentBinding.locationSubcontinent.setVisibility(GONE);
+			contentBinding.locationSubcontinent.setValue(null);
+		} else {
+			contentBinding.locationSubcontinent.setVisibility(VISIBLE);
 		}
 	}
 

@@ -40,7 +40,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -67,7 +66,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
@@ -88,7 +86,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
-			fluidRowLocs(LocationDto.COUNTRY, LocationDto.SUB_CONTINENT, LocationDto.CONTINENT),
+			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT),
+			fluidRowLocs(LocationDto.COUNTRY),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),

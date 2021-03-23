@@ -83,7 +83,7 @@ public class ExposureDialog extends FormDialog {
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
 		locationDialog.setFacilityFieldsVisible(data.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
-		locationDialog.setContinentFieldsVisible(true);
+		locationDialog.updateContinentFieldsVisibility();
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.exposureLocation.setValue(locationClone);

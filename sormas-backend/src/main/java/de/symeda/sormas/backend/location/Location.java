@@ -131,7 +131,7 @@ public class Location extends AbstractDomainObject {
 		this.areaType = areaType;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Country getCountry() {
 		return country;
 	}
@@ -140,7 +140,7 @@ public class Location extends AbstractDomainObject {
 		this.country = country;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Continent getContinent() {
 		return continent;
 	}
@@ -149,7 +149,7 @@ public class Location extends AbstractDomainObject {
 		this.continent = continent;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Subcontinent getSubcontinent() {
 		return subcontinent;
 	}
@@ -158,7 +158,7 @@ public class Location extends AbstractDomainObject {
 		this.subcontinent = subcontinent;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Region getRegion() {
 		return region;
 	}
@@ -167,7 +167,7 @@ public class Location extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public District getDistrict() {
 		return district;
 	}
@@ -176,7 +176,7 @@ public class Location extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Community getCommunity() {
 		return community;
 	}
