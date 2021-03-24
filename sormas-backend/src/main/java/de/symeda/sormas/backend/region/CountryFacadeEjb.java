@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -165,6 +166,33 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
+	public String mergeOrSaveCountry(CountryDto dto) throws ValidationRuntimeException {
+		if (StringUtils.isBlank(dto.getIsoCode())) {
+			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
+		}
+
+		Country country = countryService.getByUuid(dto.getUuid());
+
+		if (country == null) {
+			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);
+			if (byIsoCode.isPresent()) {
+				dto.setChangeDate(new Date());
+				country = byIsoCode.get();
+			} else {
+				Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
+				if (byUnoCode.isPresent()) {
+					dto.setChangeDate(new Date());
+					country = byUnoCode.get();
+				}
+			}
+		}
+
+		country = mergeOrBuildEntity(dto, country, true);
+		countryService.ensurePersisted(country);
+		return country.getUuid();
+	}
+
+	@Override
 	public void archive(String countryUuid) {
 		Country country = countryService.getByUuid(countryUuid);
 		if (country != null) {
@@ -253,6 +281,29 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
 		}
+
+		return target;
+	}
+
+	private Country mergeOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
+
+		if (source.getDefaultName() != null) {
+			target.setDefaultName(source.getDefaultName());
+		}
+		if (source.getExternalId() != null) {
+			target.setExternalId(source.getExternalId());
+		}
+		if (source.getIsoCode() != null) {
+			target.setIsoCode(source.getIsoCode());
+		}
+		if (source.getUnoCode() != null) {
+			target.setUnoCode(source.getUnoCode());
+		}
+		if (source.getSubcontinent() != null) {
+			target.setSubcontinent(subcontinentService.getByUuid(source.getSubcontinent().getUuid()));
+		}
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

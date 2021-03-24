@@ -266,6 +266,27 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
+	public void mergeOrSaveDistrict(DistrictDto dto) throws ValidationRuntimeException {
+
+		if (dto.getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+
+		District district = districtService.getByUuid(dto.getUuid());
+
+		if (district == null) {
+			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				district = districtService.getByUuid(duplicates.get(0).getUuid());
+			}
+		}
+
+		district = mergeOrBuildEntity(dto, district, true);
+		districtService.ensurePersisted(district);
+	}
+
+	@Override
 	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
 
 		return districtService.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
@@ -391,6 +412,28 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
+
+		return target;
+	}
+
+	private District mergeOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+		if (source.getEpidCode() != null) {
+			target.setEpidCode(source.getEpidCode());
+		}
+		if (source.getGrowthRate() != null) {
+			target.setGrowthRate(source.getGrowthRate());
+		}
+		if (source.getRegion() != null) {
+			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		}
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
 

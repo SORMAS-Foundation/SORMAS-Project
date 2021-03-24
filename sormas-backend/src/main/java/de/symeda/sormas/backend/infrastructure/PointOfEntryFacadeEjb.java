@@ -182,6 +182,28 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
+	public void mergeOrSave(PointOfEntryDto dto) throws ValidationRuntimeException {
+
+		validate(dto);
+
+		PointOfEntry pointOfEntry = null;
+		if (dto.getUuid() != null) {
+			pointOfEntry = service.getByUuid(dto.getUuid());
+		}
+
+		if (pointOfEntry == null) {
+			List<PointOfEntryReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				pointOfEntry = service.getByUuid(duplicates.get(0).getUuid());
+			}
+		}
+
+		pointOfEntry = mergeOrBuildEntity(dto, pointOfEntry, true);
+		service.ensurePersisted(pointOfEntry);
+	}
+
+	@Override
 	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
@@ -352,6 +374,37 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+
+		return target;
+	}
+
+	private PointOfEntry mergeOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+		if (source.getPointOfEntryType() != null) {
+			target.setPointOfEntryType(source.getPointOfEntryType());
+		}
+		if (source.getLatitude() != null) {
+			target.setLatitude(source.getLatitude());
+		}
+		if (source.getLongitude() != null) {
+			target.setLongitude(source.getLongitude());
+		}
+		if (source.getRegion() != null) {
+			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		}
+		if (source.getDistrict() != null) {
+			target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		}
+		if (source.getExternalID() != null) {
+			target.setExternalID(source.getExternalID());
+		}
+		target.setActive(source.isActive());
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

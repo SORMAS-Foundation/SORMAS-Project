@@ -1184,6 +1184,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
+	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";

@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
@@ -10,6 +11,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -33,6 +35,7 @@ public class AbstractImportLayout extends VerticalLayout {
 	protected Upload upload;
 	protected final UserDto currentUser;
 	protected final UI currentUI;
+	protected ImportReceiver generatedReceiver;
 
 	public AbstractImportLayout() {
 		currentUser = UserProvider.getCurrent().getUser();
@@ -100,6 +103,32 @@ public class AbstractImportLayout extends VerticalLayout {
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
+	}
+
+	protected void addImportCsvComponentWithOverwrite(int step, Function<Boolean, ImportReceiver> receiverGenerator) {
+		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
+		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
+		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
+		addComponent(importCsvComponent);
+		generatedReceiver = receiverGenerator.apply(false);
+		upload = new Upload("", generatedReceiver);
+		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
+		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addSucceededListener(generatedReceiver);
+
+		CheckBox allowOverwrite = new CheckBox(I18nProperties.getCaption(Captions.infrastructureImportAllowOverwrite));
+		CssStyles.style(allowOverwrite, CssStyles.VSPACE_TOP_3);
+		allowOverwrite.setValue(false);
+
+		addComponent(allowOverwrite);
+		addComponent(upload);
+
+		allowOverwrite.addValueChangeListener(e -> {
+			upload.removeSucceededListener(generatedReceiver);
+			generatedReceiver = receiverGenerator.apply(e.getValue());
+			upload.setReceiver(generatedReceiver);
+			upload.addSucceededListener(generatedReceiver);
+		});
 	}
 
 	protected void addDownloadErrorReportComponent(int step) {

@@ -260,17 +260,37 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	@Override
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 
+		if (dto.getDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+
 		Community community = communityService.getByUuid(dto.getUuid());
 
 		if (community == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
 		}
 
+		community = fillOrBuildEntity(dto, community, true);
+		communityService.ensurePersisted(community);
+	}
+
+	@Override
+	public void mergeOrSaveCommunity(CommunityDto dto) throws ValidationRuntimeException {
+
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
-		community = fillOrBuildEntity(dto, community, true);
+		Community community = communityService.getByUuid(dto.getUuid());
+
+		if (community == null) {
+			List<CommunityReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				community = communityService.getByUuid(duplicates.get(0).getUuid());
+			}
+		}
+		community = mergeOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
 	}
 
@@ -348,6 +368,22 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
+
+		return target;
+	}
+
+	private Community mergeOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+		if (source.getDistrict() != null) {
+			target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		}
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
 

@@ -564,16 +564,42 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 
-		if (dto.getType() == null
-			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
-			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacilityType));
-		}
+		validateFacilityDto(dto);
 
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
 		if (facility == null && !getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
+		}
+
+		facility = fillOrBuildEntity(dto, facility, true);
+		facilityService.ensurePersisted(facility);
+	}
+
+	@Override
+	public void mergeOrSaveFacility(FacilityDto dto) throws ValidationRuntimeException {
+
+		validateFacilityDto(dto);
+
+		Facility facility = facilityService.getByUuid(dto.getUuid());
+
+		if (facility == null) {
+			List<FacilityReferenceDto> duplicates = getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				facility = facilityService.getByUuid(duplicates.get(0).getUuid());
+			}
+		}
+
+		facility = mergeOrBuildEntity(dto, facility, true);
+		facilityService.ensurePersisted(facility);
+	}
+
+	private void validateFacilityDto(FacilityDto dto) {
+		if (dto.getType() == null
+			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
+			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacilityType));
 		}
 
 		if (!FacilityType.LABORATORY.equals(dto.getType())) {
@@ -584,9 +610,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 			}
 		}
-
-		facility = fillOrBuildEntity(dto, facility, true);
-		facilityService.ensurePersisted(facility);
 	}
 
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
@@ -609,6 +632,58 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setLongitude(source.getLongitude());
 
 		target.setType(source.getType());
+		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
+
+		return target;
+	}
+
+	private Facility mergeOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+
+		if (source.getRegion() != null) {
+			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		}
+		if (source.getDistrict() != null) {
+			target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		}
+		if (source.getCommunity() != null) {
+			target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+		}
+
+		if (source.getCity() != null) {
+			target.setCity(source.getCity());
+		}
+		if (source.getPostalCode() != null) {
+			target.setPostalCode(source.getPostalCode());
+		}
+		if (source.getStreet() != null) {
+			target.setStreet(source.getStreet());
+		}
+		if (source.getHouseNumber() != null) {
+			target.setHouseNumber(source.getHouseNumber());
+		}
+		if (source.getAdditionalInformation() != null) {
+			target.setAdditionalInformation(source.getAdditionalInformation());
+		}
+		if (source.getAreaType() != null) {
+			target.setAreaType(source.getAreaType());
+		}
+		if (source.getLatitude() != null) {
+			target.setLatitude(source.getLatitude());
+		}
+		if (source.getLongitude() != null) {
+			target.setLongitude(source.getLongitude());
+		}
+
+		if (source.getType() != null) {
+			target.setType(source.getType());
+		}
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
 

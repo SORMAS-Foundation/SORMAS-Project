@@ -28,6 +28,8 @@ public interface PointOfEntryFacade {
 
 	long count(PointOfEntryCriteria criteria);
 
+	void mergeOrSave(PointOfEntryDto dto) throws ValidationRuntimeException;
+
 	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 
 	List<PointOfEntryDto> getAllAfter(Date date);

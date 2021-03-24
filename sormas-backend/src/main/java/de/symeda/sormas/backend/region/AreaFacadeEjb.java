@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -115,6 +116,22 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
+	public void mergeOrSaveArea(AreaDto area) {
+		Area entity = service.getByUuid(area.getUuid());
+
+		if (entity == null) {
+			List<Area> duplicates = service.getByName(area.getName(), true);
+			if (!duplicates.isEmpty()) {
+				area.setChangeDate(new Date());
+				entity = duplicates.get(0);
+			}
+		}
+
+		entity = mergeOrBuild(area, entity, true);
+		service.ensurePersisted(entity);
+	}
+
+	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids) {
 		return service.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
 	}
@@ -136,6 +153,20 @@ public class AreaFacadeEjb implements AreaFacade {
 	@Override
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	public Area mergeOrBuild(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+		if (source.getExternalId() != null) {
+			target.setExternalId(source.getExternalId());
+		}
+		target.setArchived(source.isArchived());
+
+		return target;
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {

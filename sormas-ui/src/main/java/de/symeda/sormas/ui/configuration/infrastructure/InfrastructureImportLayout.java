@@ -100,59 +100,71 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
 			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
-		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
-			resetDownloadErrorReportButton();
-
-			try {
-				DataImporter importer;
-				switch (infrastructureType) {
-				case COMMUNITY:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY);
-					break;
-				case DISTRICT:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT);
-					break;
-				case FACILITY:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY);
-					break;
-				case POINT_OF_ENTRY:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY);
-					break;
-				case POPULATION_DATA:
-					importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
-					break;
-				case COUNTRY:
-					importer = new CountryImporter(file, currentUser);
-					break;
-				case REGION:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);
-					break;
-				case AREA:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA);
-					break;
-				case SUBCONTINENT:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT);
-					break;
-				case CONTINENT:
-					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT);
-					break;
-				default:
-					throw new UnsupportedOperationException(
-						"Import is currently not implemented for infrastructure type " + infrastructureType.name());
-				}
-
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
-			} catch (IOException | CsvValidationException e) {
-				new Notification(
-					I18nProperties.getString(Strings.headingImportFailed),
-					I18nProperties.getString(Strings.messageImportFailed),
-					Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			}
-		}));
 
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
+			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
+				resetDownloadErrorReportButton();
+
+				try {
+					DataImporter importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
+					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				} catch (IOException | CsvValidationException e) {
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}));
 			upload.setEnabled(false);
+		} else {
+			addImportCsvComponentWithOverwrite(3, allowOverwrite -> new ImportReceiver(fileNameAddition, file -> {
+				resetDownloadErrorReportButton();
+
+				try {
+					DataImporter importer;
+					switch (infrastructureType) {
+					case COMMUNITY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY, allowOverwrite);
+						break;
+					case DISTRICT:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT, allowOverwrite);
+						break;
+					case FACILITY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY, allowOverwrite);
+						break;
+					case POINT_OF_ENTRY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY, allowOverwrite);
+						break;
+					case COUNTRY:
+						importer = new CountryImporter(file, currentUser, allowOverwrite);
+						break;
+					case REGION:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION, allowOverwrite);
+						break;
+					case AREA:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA, allowOverwrite);
+						break;
+					case SUBCONTINENT:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT, allowOverwrite);
+						break;
+					case CONTINENT:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT, allowOverwrite);
+						break;
+					default:
+						throw new UnsupportedOperationException(
+							"Import is currently not implemented for infrastructure type " + infrastructureType.name());
+					}
+
+					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				} catch (IOException | CsvValidationException e) {
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}));
 		}
 
 		addDownloadErrorReportComponent(4);

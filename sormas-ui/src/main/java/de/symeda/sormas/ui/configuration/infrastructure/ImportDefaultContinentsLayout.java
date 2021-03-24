@@ -18,54 +18,43 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
 
 import com.opencsv.exceptions.CsvValidationException;
-import com.vaadin.server.Page;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.CheckBox;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.ImportLayoutComponent;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
-public class ImportDefaultContinentsLayout extends AbstractImportLayout {
+public class ImportDefaultContinentsLayout extends AbstractImportDefaultCsvLayout {
+
+	private CheckBox allowOverwrite;
 
 	public ImportDefaultContinentsLayout() {
 		super();
-
-		addImportDefaultContinentsCsvComponent(1, (event) -> {
-			URI continentsFileUri = FacadeProvider.getImportFacade().getAllContinentsImportFilePath();
-			File continentsFile = Paths.get(continentsFileUri).toFile();
-			resetDownloadErrorReportButton();
-			try {
-				DataImporter importer = new InfrastructureImporter(continentsFile, currentUser, InfrastructureType.CONTINENT);
-				importer.setCsvSeparator(',');
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
-			} catch (IOException | CsvValidationException e) {
-				new Notification(
-					I18nProperties.getString(Strings.headingImportFailed),
-					I18nProperties.getString(Strings.messageImportFailed),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			}
-		});
-
-		addDownloadErrorReportComponent(2);
 	}
 
-	protected void addImportDefaultContinentsCsvComponent(int step, Button.ClickListener clickListener) {
-		String headline = I18nProperties.getString(Strings.headingImportAllContinents);
-		String infoText = I18nProperties.getString(Strings.infoImportAllContinents);
-		ImportLayoutComponent importCsvComponent =
-			new ImportLayoutComponent(step, headline, infoText, null, I18nProperties.getCaption(Captions.actionImport));
-		importCsvComponent.getButton().addClickListener(clickListener);
-		addComponent(importCsvComponent);
+	@Override
+	protected URI getImportFilePath() {
+		return FacadeProvider.getImportFacade().getAllContinentsImportFilePath();
+	}
+
+	@Override
+	protected void doImport(File importFile) throws IOException, CsvValidationException {
+		DataImporter importer = new InfrastructureImporter(importFile, currentUser, InfrastructureType.CONTINENT, isAllowOverwrite());
+		importer.setCsvSeparator(',');
+		importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
+	}
+
+	@Override
+	protected String getHeadingImport() {
+		return Strings.infoImportAllContinents;
+	}
+
+	@Override
+	protected String getInfoImport() {
+		return Strings.headingImportAllContinents;
 	}
 }

@@ -341,6 +341,23 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
+	public void mergeOrSaveRegion(RegionDto dto) throws ValidationRuntimeException {
+
+		Region region = regionService.getByUuid(dto.getUuid());
+
+		if (region == null) {
+			List<Region> duplicates = regionService.getByName(dto.getName(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				region = duplicates.get(0);
+			}
+		}
+
+		region = mergeOrBuildEntity(dto, region, true);
+		regionService.ensurePersisted(region);
+	}
+
+	@Override
 	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
 		return regionService.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -381,6 +398,33 @@ public class RegionFacadeEjb implements RegionFacade {
 		target.setExternalID(source.getExternalID());
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+
+		return target;
+	}
+
+	private Region mergeOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
+
+		if (source.getName() != null) {
+			target.setName(source.getName());
+		}
+		if (source.getEpidCode() != null) {
+			target.setEpidCode(source.getEpidCode());
+		}
+		if (source.getGrowthRate() != null) {
+			target.setGrowthRate(source.getGrowthRate());
+		}
+		if (source.getExternalID() != null) {
+			target.setExternalID(source.getExternalID());
+		}
+		if (source.getArea() != null) {
+			target.setArea(areaService.getByReferenceDto(source.getArea()));
+		}
+		if (source.getCountry() != null) {
+			target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		}
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

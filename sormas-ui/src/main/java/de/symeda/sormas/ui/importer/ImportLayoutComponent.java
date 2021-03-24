@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.importer;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.VerticalLayout;
@@ -18,8 +19,13 @@ public class ImportLayoutComponent extends VerticalLayout {
 	private Label headlineLabel;
 	private Label infoTextLabel;
 	private Button button;
+	private CheckBox checkbox;
 
 	public ImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption) {
+		this(step, headline, infoText, buttonIcon, buttonCaption, null);
+	}
+
+	public ImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption, String checkboxCaption) {
 		setSpacing(false);
 		setMargin(false);
 
@@ -30,6 +36,13 @@ public class ImportLayoutComponent extends VerticalLayout {
 		if (infoText != null) {
 			infoTextLabel = new Label(infoText);
 			addComponent(infoTextLabel);
+		}
+
+		if (checkboxCaption != null) {
+			checkbox = new CheckBox(checkboxCaption);
+			CssStyles.style(checkbox, CssStyles.VSPACE_TOP_3);
+			checkbox.setValue(false);
+			addComponent(checkbox);
 		}
 
 		if (buttonCaption != null) {
@@ -47,5 +60,9 @@ public class ImportLayoutComponent extends VerticalLayout {
 
 	public Button getButton() {
 		return button;
+	}
+
+	public CheckBox getCheckbox() {
+		return checkbox;
 	}
 }

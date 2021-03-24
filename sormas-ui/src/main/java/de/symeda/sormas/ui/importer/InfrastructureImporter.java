@@ -34,10 +34,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public class InfrastructureImporter extends DataImporter {
 
 	private final InfrastructureType type;
+	protected final boolean allowOverwrite;
 
 	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type) {
+		this(inputFile, currentUser, type, false);
+	}
+
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite) {
 		super(inputFile, false, currentUser);
 		this.type = type;
+		this.allowOverwrite = allowOverwrite;
 	}
 
 	@Override
@@ -105,28 +111,60 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				switch (type) {
 				case COMMUNITY:
-					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getCommunityFacade().mergeOrSaveCommunity((CommunityDto) newEntityDto);
+					} else {
+						FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto);
+					}
 					break;
 				case DISTRICT:
-					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getDistrictFacade().mergeOrSaveDistrict((DistrictDto) newEntityDto);
+					} else {
+						FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto);
+					}
 					break;
 				case FACILITY:
-					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getFacilityFacade().mergeOrSaveFacility((FacilityDto) newEntityDto);
+					} else {
+						FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto);
+					}
 					break;
 				case POINT_OF_ENTRY:
-					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getPointOfEntryFacade().mergeOrSave((PointOfEntryDto) newEntityDto);
+					} else {
+						FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
+					}
 					break;
 				case REGION:
-					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getRegionFacade().mergeOrSaveRegion((RegionDto) newEntityDto);
+					} else {
+						FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);
+					}
 					break;
 				case AREA:
-					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getAreaFacade().mergeOrSaveArea((AreaDto) newEntityDto);
+					} else {
+						FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto);
+					}
 					break;
 				case SUBCONTINENT:
-					FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getSubcontinentFacade().mergeOrSave((SubcontinentDto) newEntityDto);
+					} else {
+						FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto);
+					}
 					break;
 				case CONTINENT:
-					FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto);
+					if (allowOverwrite) {
+						FacadeProvider.getContinentFacade().mergeOrSave((ContinentDto) newEntityDto);
+					} else {
+						FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto);
+					}
 					break;
 				default:
 					throw new IllegalArgumentException(type.toString());

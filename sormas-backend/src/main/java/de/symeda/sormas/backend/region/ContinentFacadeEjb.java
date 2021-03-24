@@ -178,6 +178,23 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
+	public void mergeOrSave(ContinentDto dto) {
+
+		Continent continent = continentService.getByUuid(dto.getUuid());
+
+		if (continent == null) {
+			List<Continent> duplicates = continentService.getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				continent = duplicates.get(0);
+			}
+		}
+
+		continent = mergeOrBuildEntity(dto, continent, true);
+		continentService.ensurePersisted(continent);
+	}
+
+	@Override
 	public long count(ContinentCriteria criteria) {
 		return continentService.count((cb, root) -> continentService.buildCriteriaFilter(criteria, cb, root));
 	}
@@ -219,6 +236,20 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
+
+		return target;
+	}
+
+	private Continent mergeOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
+
+		if (source.getDefaultName() != null) {
+			target.setDefaultName(source.getDefaultName());
+		}
+		if (source.getExternalId() != null) {
+			target.setExternalId(source.getExternalId());
+		}
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

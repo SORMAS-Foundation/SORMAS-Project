@@ -200,6 +200,23 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
+	public void mergeOrSave(SubcontinentDto dto) {
+
+		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
+
+		if (subcontinent == null) {
+			List<Subcontinent> duplicates = subcontinentService.getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				dto.setChangeDate(new Date());
+				subcontinent = duplicates.get(0);
+			}
+		}
+
+		subcontinent = mergeOrBuildEntity(dto, subcontinent, true);
+		subcontinentService.ensurePersisted(subcontinent);
+	}
+
+	@Override
 	public long count(SubcontinentCriteria criteria) {
 		return subcontinentService.count((cb, root) -> subcontinentService.buildCriteriaFilter(criteria, cb, root));
 	}
@@ -244,6 +261,23 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+
+		return target;
+	}
+
+	private Subcontinent mergeOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
+
+		if (source.getDefaultName() != null) {
+			target.setDefaultName(source.getDefaultName());
+		}
+		if (source.getExternalId() != null) {
+			target.setExternalId(source.getExternalId());
+		}
+		if (source.getContinent() != null) {
+			target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+		}
+		target.setArchived(source.isArchived());
 
 		return target;
 	}
