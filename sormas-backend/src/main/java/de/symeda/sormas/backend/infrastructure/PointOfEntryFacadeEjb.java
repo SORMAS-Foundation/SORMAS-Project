@@ -165,24 +165,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
-
-		PointOfEntry pointOfEntry = null;
-		if (dto.getUuid() != null) {
-			pointOfEntry = service.getByUuid(dto.getUuid());
-		}
-
-		if (pointOfEntry == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
-		}
-
-		validate(dto);
-
-		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
-		service.ensurePersisted(pointOfEntry);
+		save(dto, false);
 	}
 
 	@Override
-	public void mergeOrSave(PointOfEntryDto dto) throws ValidationRuntimeException {
+	public void save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		validate(dto);
 
@@ -194,12 +181,18 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		if (pointOfEntry == null) {
 			List<PointOfEntryReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
 			if (!duplicates.isEmpty()) {
-				dto.setChangeDate(new Date());
-				pointOfEntry = service.getByUuid(duplicates.get(0).getUuid());
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					pointOfEntry = service.getByUuid(uuid);
+					PointOfEntryDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
+				}
 			}
 		}
 
-		pointOfEntry = mergeOrBuildEntity(dto, pointOfEntry, true);
+		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
 	}
 
@@ -374,37 +367,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
-		return target;
-	}
-
-	private PointOfEntry mergeOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
-
-		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
-
-		if (source.getName() != null) {
-			target.setName(source.getName());
-		}
-		if (source.getPointOfEntryType() != null) {
-			target.setPointOfEntryType(source.getPointOfEntryType());
-		}
-		if (source.getLatitude() != null) {
-			target.setLatitude(source.getLatitude());
-		}
-		if (source.getLongitude() != null) {
-			target.setLongitude(source.getLongitude());
-		}
-		if (source.getRegion() != null) {
-			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		}
-		if (source.getDistrict() != null) {
-			target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		}
-		if (source.getExternalID() != null) {
-			target.setExternalID(source.getExternalID());
-		}
-		target.setActive(source.isActive());
-		target.setArchived(source.isArchived());
 
 		return target;
 	}

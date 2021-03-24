@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,31 +103,29 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
-	public void saveArea(AreaDto area) {
-		Area entity = service.getByUuid(area.getUuid());
-
-		if (entity == null && !service.getByName(area.getName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
-		}
-
-		entity = fromDto(area, entity, true);
-		service.ensurePersisted(entity);
+	public void saveArea(AreaDto dto) {
+		saveArea(dto, false);
 	}
 
 	@Override
-	public void mergeOrSaveArea(AreaDto area) {
-		Area entity = service.getByUuid(area.getUuid());
+	public void saveArea(AreaDto dto, boolean allowMerge) {
+		Area area = service.getByUuid(dto.getUuid());
 
-		if (entity == null) {
-			List<Area> duplicates = service.getByName(area.getName(), true);
+		if (area == null) {
+			List<Area> duplicates = service.getByName(dto.getName(), true);
 			if (!duplicates.isEmpty()) {
-				area.setChangeDate(new Date());
-				entity = duplicates.get(0);
+				if (allowMerge) {
+					area = duplicates.get(0);
+					AreaDto dtoToMerge = getAreaByUuid(area.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
+				}
 			}
 		}
 
-		entity = mergeOrBuild(area, entity, true);
-		service.ensurePersisted(entity);
+		area = fromDto(dto, area, true);
+		service.ensurePersisted(area);
 	}
 
 	@Override
@@ -153,20 +150,6 @@ public class AreaFacadeEjb implements AreaFacade {
 	@Override
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	public Area mergeOrBuild(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
-
-		if (source.getName() != null) {
-			target.setName(source.getName());
-		}
-		if (source.getExternalId() != null) {
-			target.setExternalId(source.getExternalId());
-		}
-		target.setArchived(source.isArchived());
-
-		return target;
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {

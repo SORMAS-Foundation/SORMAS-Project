@@ -50,6 +50,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+
 	@EJB
 	private SubcontinentService subcontinentService;
 
@@ -149,24 +150,11 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
-		if (StringUtils.isBlank(dto.getIsoCode())) {
-			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
-		}
-
-		Country country = countryService.getByUuid(dto.getUuid());
-
-		if (country == null
-			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent() || countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
-		}
-
-		country = fillOrBuildEntity(dto, country, true);
-		countryService.ensurePersisted(country);
-		return country.getUuid();
+		return saveCountry(dto, false);
 	}
 
 	@Override
-	public String mergeOrSaveCountry(CountryDto dto) throws ValidationRuntimeException {
+	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
@@ -175,19 +163,19 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		if (country == null) {
 			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);
-			if (byIsoCode.isPresent()) {
-				dto.setChangeDate(new Date());
-				country = byIsoCode.get();
-			} else {
-				Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
-				if (byUnoCode.isPresent()) {
-					dto.setChangeDate(new Date());
-					country = byUnoCode.get();
+			Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
+			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
+				if (allowMerge) {
+					country = byIsoCode.isPresent() ? byIsoCode.get() : byUnoCode.get();
+					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 				}
 			}
 		}
 
-		country = mergeOrBuildEntity(dto, country, true);
+		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
 		return country.getUuid();
 	}
@@ -281,29 +269,6 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
 		}
-
-		return target;
-	}
-
-	private Country mergeOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
-
-		if (source.getDefaultName() != null) {
-			target.setDefaultName(source.getDefaultName());
-		}
-		if (source.getExternalId() != null) {
-			target.setExternalId(source.getExternalId());
-		}
-		if (source.getIsoCode() != null) {
-			target.setIsoCode(source.getIsoCode());
-		}
-		if (source.getUnoCode() != null) {
-			target.setUnoCode(source.getUnoCode());
-		}
-		if (source.getSubcontinent() != null) {
-			target.setSubcontinent(subcontinentService.getByUuid(source.getSubcontinent().getUuid()));
-		}
-		target.setArchived(source.isArchived());
 
 		return target;
 	}

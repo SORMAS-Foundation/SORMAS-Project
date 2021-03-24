@@ -107,12 +107,15 @@ import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.ContinentDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -697,8 +700,9 @@ public class ImportFacadeEjb implements ImportFacade {
 			|| clazz == CommunityReferenceDto.class
 			|| clazz == FacilityReferenceDto.class
 			|| clazz == PointOfEntryReferenceDto.class
-			|| clazz == SubcontinentDto.class
-			|| clazz == ContinentDto.class;
+			|| clazz == CountryReferenceDto.class
+			|| clazz == SubcontinentReferenceDto.class
+			|| clazz == ContinentReferenceDto.class;
 	}
 
 	/**

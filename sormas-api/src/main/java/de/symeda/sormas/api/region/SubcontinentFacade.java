@@ -14,5 +14,5 @@ public interface SubcontinentFacade extends BaseFacade<SubcontinentDto, Subconti
 
 	boolean hasArchivedParentInfrastructure(Collection<String> subcontinentUuids);
 
-	void mergeOrSave(SubcontinentDto dto);
+	void save(SubcontinentDto dto, boolean allowMerge);
 }

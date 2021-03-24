@@ -166,31 +166,28 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public void save(ContinentDto dto) {
-
-		Continent continent = continentService.getByUuid(dto.getUuid());
-
-		if (continent == null && !continentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
-		}
-
-		continent = fillOrBuildEntity(dto, continent, true);
-		continentService.ensurePersisted(continent);
+		save(dto, false);
 	}
 
 	@Override
-	public void mergeOrSave(ContinentDto dto) {
+	public void save(ContinentDto dto, boolean allowMerge) {
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
 		if (continent == null) {
 			List<Continent> duplicates = continentService.getByDefaultName(dto.getDefaultName(), true);
 			if (!duplicates.isEmpty()) {
-				dto.setChangeDate(new Date());
-				continent = duplicates.get(0);
+				if (allowMerge) {
+					continent = duplicates.get(0);
+					ContinentDto dtoToMerge = getByUuid(continent.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
+				}
 			}
 		}
 
-		continent = mergeOrBuildEntity(dto, continent, true);
+		continent = fillOrBuildEntity(dto, continent, true);
 		continentService.ensurePersisted(continent);
 	}
 
@@ -236,20 +233,6 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
-
-		return target;
-	}
-
-	private Continent mergeOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
-
-		if (source.getDefaultName() != null) {
-			target.setDefaultName(source.getDefaultName());
-		}
-		if (source.getExternalId() != null) {
-			target.setExternalId(source.getExternalId());
-		}
-		target.setArchived(source.isArchived());
 
 		return target;
 	}

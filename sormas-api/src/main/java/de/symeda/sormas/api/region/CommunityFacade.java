@@ -50,7 +50,7 @@ public interface CommunityFacade {
 
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 
-	void mergeOrSaveCommunity(CommunityDto dto) throws ValidationRuntimeException;
+	void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
 

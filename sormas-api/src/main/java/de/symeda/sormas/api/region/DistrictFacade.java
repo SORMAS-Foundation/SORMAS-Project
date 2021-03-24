@@ -54,7 +54,7 @@ public interface DistrictFacade {
 
 	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 
-	void mergeOrSaveDistrict(DistrictDto dto) throws ValidationRuntimeException;
+	void saveDistrict(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 

@@ -251,22 +251,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
-
-		District district = districtService.getByUuid(dto.getUuid());
-		if (district == null && !getByName(dto.getName(), dto.getRegion(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
-		}
-
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-
-		district = fillOrBuildEntity(dto, district, true);
-		districtService.ensurePersisted(district);
+		saveDistrict(dto, false);
 	}
 
 	@Override
-	public void mergeOrSaveDistrict(DistrictDto dto) throws ValidationRuntimeException {
+	public void saveDistrict(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
@@ -277,12 +266,18 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		if (district == null) {
 			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
 			if (!duplicates.isEmpty()) {
-				dto.setChangeDate(new Date());
-				district = districtService.getByUuid(duplicates.get(0).getUuid());
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					district = districtService.getByUuid(uuid);
+					DistrictDto dtoToMerge = getDistrictByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
+				}
 			}
 		}
 
-		district = mergeOrBuildEntity(dto, district, true);
+		district = fillOrBuildEntity(dto, district, true);
 		districtService.ensurePersisted(district);
 	}
 
@@ -412,28 +407,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		target.setArchived(source.isArchived());
-		target.setExternalID(source.getExternalID());
-
-		return target;
-	}
-
-	private District mergeOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
-
-		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
-
-		if (source.getName() != null) {
-			target.setName(source.getName());
-		}
-		if (source.getEpidCode() != null) {
-			target.setEpidCode(source.getEpidCode());
-		}
-		if (source.getGrowthRate() != null) {
-			target.setGrowthRate(source.getGrowthRate());
-		}
-		if (source.getRegion() != null) {
-			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		}
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
 

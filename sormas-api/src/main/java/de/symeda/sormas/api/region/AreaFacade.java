@@ -20,7 +20,7 @@ public interface AreaFacade {
 
 	void saveArea(AreaDto area);
 
-	void mergeOrSaveArea(AreaDto area);
+	void saveArea(AreaDto area, boolean allowMerge);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids);
 

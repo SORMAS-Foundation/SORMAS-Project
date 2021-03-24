@@ -188,31 +188,29 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public void save(SubcontinentDto dto) {
-
-		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
-
-		if (subcontinent == null && !subcontinentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
-		}
-
-		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
-		subcontinentService.ensurePersisted(subcontinent);
+		save(dto, false);
 	}
 
 	@Override
-	public void mergeOrSave(SubcontinentDto dto) {
+	public void save(SubcontinentDto dto, boolean allowMerge) {
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 
 		if (subcontinent == null) {
-			List<Subcontinent> duplicates = subcontinentService.getByDefaultName(dto.getDefaultName(), true);
+			List<SubcontinentReferenceDto> duplicates = getByDefaultName(dto.getDefaultName(), true);
 			if (!duplicates.isEmpty()) {
-				dto.setChangeDate(new Date());
-				subcontinent = duplicates.get(0);
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					subcontinent = subcontinentService.getByUuid(uuid);
+					SubcontinentDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
+				}
 			}
 		}
 
-		subcontinent = mergeOrBuildEntity(dto, subcontinent, true);
+		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
 		subcontinentService.ensurePersisted(subcontinent);
 	}
 
@@ -261,23 +259,6 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-
-		return target;
-	}
-
-	private Subcontinent mergeOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
-
-		if (source.getDefaultName() != null) {
-			target.setDefaultName(source.getDefaultName());
-		}
-		if (source.getExternalId() != null) {
-			target.setExternalId(source.getExternalId());
-		}
-		if (source.getContinent() != null) {
-			target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-		}
-		target.setArchived(source.isArchived());
 
 		return target;
 	}

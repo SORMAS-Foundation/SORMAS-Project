@@ -24,7 +24,7 @@ public interface CountryFacade {
 
 	String saveCountry(CountryDto dto);
 
-	String mergeOrSaveCountry(CountryDto dto) throws ValidationRuntimeException;
+	String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	void archive(String countryUuid);
 

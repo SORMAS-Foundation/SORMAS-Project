@@ -563,21 +563,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
-
-		validateFacilityDto(dto);
-
-		Facility facility = facilityService.getByUuid(dto.getUuid());
-
-		if (facility == null && !getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
-		}
-
-		facility = fillOrBuildEntity(dto, facility, true);
-		facilityService.ensurePersisted(facility);
+		saveFacility(dto, false);
 	}
 
 	@Override
-	public void mergeOrSaveFacility(FacilityDto dto) throws ValidationRuntimeException {
+	public void saveFacility(FacilityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		validateFacilityDto(dto);
 
@@ -586,12 +576,18 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		if (facility == null) {
 			List<FacilityReferenceDto> duplicates = getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true);
 			if (!duplicates.isEmpty()) {
-				dto.setChangeDate(new Date());
-				facility = facilityService.getByUuid(duplicates.get(0).getUuid());
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					facility = facilityService.getByUuid(uuid);
+					FacilityDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
+				}
 			}
 		}
 
-		facility = mergeOrBuildEntity(dto, facility, true);
+		facility = fillOrBuildEntity(dto, facility, true);
 		facilityService.ensurePersisted(facility);
 	}
 
@@ -632,58 +628,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setLongitude(source.getLongitude());
 
 		target.setType(source.getType());
-		target.setArchived(source.isArchived());
-		target.setExternalID(source.getExternalID());
-
-		return target;
-	}
-
-	private Facility mergeOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
-
-		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
-
-		if (source.getName() != null) {
-			target.setName(source.getName());
-		}
-
-		if (source.getRegion() != null) {
-			target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		}
-		if (source.getDistrict() != null) {
-			target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		}
-		if (source.getCommunity() != null) {
-			target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-		}
-
-		if (source.getCity() != null) {
-			target.setCity(source.getCity());
-		}
-		if (source.getPostalCode() != null) {
-			target.setPostalCode(source.getPostalCode());
-		}
-		if (source.getStreet() != null) {
-			target.setStreet(source.getStreet());
-		}
-		if (source.getHouseNumber() != null) {
-			target.setHouseNumber(source.getHouseNumber());
-		}
-		if (source.getAdditionalInformation() != null) {
-			target.setAdditionalInformation(source.getAdditionalInformation());
-		}
-		if (source.getAreaType() != null) {
-			target.setAreaType(source.getAreaType());
-		}
-		if (source.getLatitude() != null) {
-			target.setLatitude(source.getLatitude());
-		}
-		if (source.getLongitude() != null) {
-			target.setLongitude(source.getLongitude());
-		}
-
-		if (source.getType() != null) {
-			target.setType(source.getType());
-		}
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
 
