@@ -55,6 +55,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SEROTYPE = "serotype";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String REPORT_DATE = "reportDate";
+	public static final String VIA_LIMS = "viaLims";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -88,6 +89,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private Date reportDate;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean viaLims;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -258,5 +261,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public boolean isViaLims() {
+		return viaLims;
+	}
+
+	public void setViaLims(boolean viaLims) {
+		this.viaLims = viaLims;
 	}
 }

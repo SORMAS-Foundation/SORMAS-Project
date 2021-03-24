@@ -59,7 +59,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String SAMPLES = "samples";
-
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 	private User reportingUser;
 	private Event event;
 	private Person person;

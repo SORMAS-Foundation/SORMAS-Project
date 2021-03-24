@@ -17,6 +17,45 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.security.RunAs;
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -105,10 +144,14 @@ import java.util.stream.Stream;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
-	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
+
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
+
+	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
+
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
 			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
@@ -159,20 +202,6 @@ public class StartupShutdownService {
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
-
-	static boolean isBlankOrSqlComment(String sqlLine) {
-		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
-	}
-
-	static Integer extractSchemaVersion(String sqlLine) {
-
-		return Optional.ofNullable(sqlLine)
-			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
-			.filter(Matcher::matches)
-			.map(m -> m.group(1))
-			.map(Integer::parseInt)
-			.orElse(null);
-	}
 
 	@PostConstruct
 	public void startup() {
@@ -708,6 +737,20 @@ public class StartupShutdownService {
 		} finally {
 			logger.info("Database update completed.");
 		}
+	}
+
+	static boolean isBlankOrSqlComment(String sqlLine) {
+		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
+	}
+
+	static Integer extractSchemaVersion(String sqlLine) {
+
+		return Optional.ofNullable(sqlLine)
+			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+			.filter(Matcher::matches)
+			.map(m -> m.group(1))
+			.map(Integer::parseInt)
+			.orElse(null);
 	}
 
 	private void upgrade() {

@@ -8,8 +8,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
@@ -40,11 +38,13 @@ public class EventParticipantListEntry extends HorizontalLayout {
 
 		HorizontalLayout idLayout = new HorizontalLayout();
 		Label eventParticipantUuidLabel = new Label(
-			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.UUID) + SEPARATOR
+			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.UUID)
+				+ SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getUuid())));
 		eventParticipantUuidLabel.setDescription(eventParticipantListEntryDto.getUuid());
 		Label eventUuidLabel = new Label(
-			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.UUID) + SEPARATOR
+			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.UUID)
+				+ SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getEventUuid())));
 		eventUuidLabel.setDescription(eventParticipantListEntryDto.getEventUuid());
 
@@ -56,13 +56,15 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		mainLayout.addComponent(idLayout);
 
 		HorizontalLayout diseaseStatusLayout = new HorizontalLayout();
-		Label diseaseLabel = new Label(eventParticipantListEntryDto.getDisease().toString());
+		String eventDiseaseString = eventParticipantListEntryDto.getDisease() != null
+			? eventParticipantListEntryDto.getDisease().toString()
+			: I18nProperties.getCaption(Captions.eventNoDisease);
+		Label diseaseLabel = new Label(eventDiseaseString);
 		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		diseaseLabel.setDescription(eventParticipantListEntryDto.getDisease().toString());
+		diseaseLabel.setDescription(eventDiseaseString);
 		diseaseStatusLayout.addComponent(diseaseLabel);
 
-		Label statusLabel =
-			new Label(eventParticipantListEntryDto.getEventStatus().toString());
+		Label statusLabel = new Label(eventParticipantListEntryDto.getEventStatus().toString());
 		statusLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		statusLabel.setDescription(eventParticipantListEntryDto.getEventStatus().toString());
 		diseaseStatusLayout.addComponent(statusLabel);

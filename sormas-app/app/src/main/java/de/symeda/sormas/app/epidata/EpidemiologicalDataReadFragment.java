@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -42,9 +43,11 @@ import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.exposure.Exposure;
+import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.DialogActivityAsCaseReadLayoutBinding;
@@ -65,7 +68,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			EpidemiologicalDataReadFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -74,7 +77,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			EpidemiologicalDataReadFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -117,12 +120,15 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 				boundView -> FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
 					ActivityAsCaseDto.class,
 					(ViewGroup) boundView,
-					new FieldVisibilityCheckers(),
+					getFieldVisibilityCheckers(),
 					getFieldAccessCheckers()));
 
 			final DialogActivityAsCaseReadLayoutBinding activityAsCaseBinding = (DialogActivityAsCaseReadLayoutBinding) infoDialog.getBinding();
 			if (((ActivityAsCase) item).getMeansOfTransport() == MeansOfTransport.PLANE) {
 				activityAsCaseBinding.activityAsCaseConnectionNumber.setCaption(I18nProperties.getCaption(Captions.activityAsCaseFlightNumber));
+			}
+			if (CountryHelper.isCountry(ConfigProvider.getServerCountryCode(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+				activityAsCaseBinding.activityAsCaseTypeOfPlace.setCaption(I18nProperties.getCaption(Captions.ActivityAsCase_typeOfPlaceIfSG));
 			}
 
 			final FacilityType facilityType = ((ActivityAsCase) item).getLocation().getFacilityType();
@@ -133,7 +139,8 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
 				ActivityAsCaseDto.class,
 				(ViewGroup) infoDialog.getBinding().getRoot(),
-				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData())),
+				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData()))
+					.andWithCountry(ConfigProvider.getServerCountryCode()),
 				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized()));
 
 			infoDialog.show();
@@ -165,9 +172,15 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 
 		contentBinding.setActivityascaseList(activitiesAsCase);
 		contentBinding.setActivityascaseItemClickCallback(onActivityAsCaseItemClickListener);
-		contentBinding.setActivityascaseListBindCallback(
-			v -> FieldVisibilityAndAccessHelper
-				.setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
+		boolean isCountryGermany = CountryHelper.isCountry(ConfigProvider.getServerCountryCode(), CountryHelper.COUNTRY_CODE_GERMANY);
+		contentBinding.setActivityascaseListBindCallback(v -> {
+			if (isCountryGermany) {
+				((ControlTextReadField) ((ViewGroup) v).findViewById(R.id.activityAsCase_typeOfPlace))
+					.setCaption(I18nProperties.getCaption(Captions.ActivityAsCase_typeOfPlaceIfSG));
+			}
+			FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) v, getFieldVisibilityCheckers(), getFieldAccessCheckers());
+		});
 	}
 
 	@Override

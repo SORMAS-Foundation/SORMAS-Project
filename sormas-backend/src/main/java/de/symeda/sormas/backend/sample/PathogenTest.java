@@ -82,6 +82,7 @@ public class PathogenTest extends CoreAdo {
 	private String serotype;
 	private Float cqValue;
 	private Date reportDate;
+	private boolean viaLims;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -240,5 +241,14 @@ public class PathogenTest extends CoreAdo {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	@Column
+	public boolean isViaLims() {
+		return viaLims;
+	}
+
+	public void setViaLims(boolean viaLims) {
+		this.viaLims = viaLims;
 	}
 }

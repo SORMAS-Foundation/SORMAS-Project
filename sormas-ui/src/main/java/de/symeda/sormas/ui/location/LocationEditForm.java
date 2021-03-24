@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -57,7 +58,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -69,6 +69,7 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -103,6 +104,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox facilityType;
 	private ComboBox facility;
 	private TextField facilityDetails;
+
+	private boolean districtRequiredOnDefaultCountry;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -211,26 +214,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
 			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
-
-		country.addValueChangeListener(e -> {
-			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
-			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
-			if (serverCountryDto == null) {
-				if (countryDto == null) {
-					enableInfrastructureFields(true);
-				} else {
-					enableInfrastructureFields(false);
-					resetInfrastructureFields(region, district, community);
-				}
-			} else {
-				if (countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode())) {
-					enableInfrastructureFields(true);
-				} else {
-					enableInfrastructureFields(false);
-					resetInfrastructureFields(region, district, community);
-				}
-			}
-		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -372,34 +355,25 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				}
 			}
 		});
+
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		updateRegionCombo(region, country);
+		country.addValueChangeListener(e -> {
+			updateRegionCombo(region, country);
+			region.setValue(null);
+		});
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
 	}
 
-	private void resetInfrastructureFields(ComboBox region, ComboBox district, ComboBox community) {
-		region.setValue(null);
-		district.setValue(null);
-		community.setValue(null);
-		facility.setValue(null);
-		facilityDetails.setValue(null);
-		facilityType.setValue(null);
-		facilityTypeGroup.setValue(null);
-	}
-
-	private void enableInfrastructureFields(boolean isEnabled) {
-		setEnabled(
-			isEnabled,
-			LocationDto.REGION,
-			LocationDto.DISTRICT,
-			LocationDto.COMMUNITY,
-			LocationDto.FACILITY,
-			LocationDto.FACILITY_DETAILS,
-			LocationDto.FACILITY_TYPE);
-		facilityTypeGroup.setEnabled(isEnabled);
+	private void updateRegionCombo(ComboBox region, ComboBox country) {
+		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
+			if (districtRequiredOnDefaultCountry) {
+				setFieldsRequirement(isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
+			}
+		});
 	}
 
 	private void overrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
@@ -425,10 +399,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	private HorizontalLayout createGeoButton() {
-
 		HorizontalLayout geoButtonLayout = new HorizontalLayout();
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
+
+		Page.getCurrent().getStyles().add(".geocode-button-red {color: #cc0000 !important;}");
 
 		Button geocodeButton = ButtonHelper.createIconButtonWithCaption(
 			"geocodeButton",
@@ -438,6 +413,29 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ValoTheme.BUTTON_ICON_ONLY,
 			ValoTheme.BUTTON_BORDERLESS,
 			ValoTheme.BUTTON_LARGE);
+
+		// Highlight geocode-button when the address changes
+		ValueChangeListener addressListener = e -> geocodeButton.addStyleName("geocode-button-red");
+		// adding the valuechangelistener inside another valuechangelistener seems counterintuitive, but it prevents the listener from being executed when the initial field values are set
+		getField(LocationDto.STREET).addValueChangeListener(e -> {
+			getField(LocationDto.STREET).removeValueChangeListener(addressListener);
+			getField(LocationDto.STREET).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.POSTAL_CODE).addValueChangeListener(e -> {
+			getField(LocationDto.POSTAL_CODE).removeValueChangeListener(addressListener);
+			getField(LocationDto.POSTAL_CODE).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.CITY).addValueChangeListener(e -> {
+			getField(LocationDto.CITY).removeValueChangeListener(addressListener);
+			getField(LocationDto.CITY).addValueChangeListener(addressListener);
+		});
+		getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(e -> {
+			getField(LocationDto.HOUSE_NUMBER).removeValueChangeListener(addressListener);
+			getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(addressListener);
+		});
+
+		geocodeButton.addClickListener(e -> geocodeButton.removeStyleName("geocode-button-red"));
+		geocodeButton.removeStyleName("geocode-button-red");
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
@@ -494,6 +492,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	public void showAddressType() {
 		addressType.setVisible(true);
 		addressType.setRequired(true);
+	}
+
+	public void setDistrictRequiredOnDefaultCountry(boolean required) {
+		this.districtRequiredOnDefaultCountry = required;
 	}
 
 	@Override

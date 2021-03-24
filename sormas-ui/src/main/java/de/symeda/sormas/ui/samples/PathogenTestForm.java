@@ -59,7 +59,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(PathogenTestDto.REPORT_DATE, "") +
+			fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
 			fluidRowLocs("", PathogenTestDto.TYPING_ID) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TESTED_DISEASE_DETAILS) +
@@ -99,7 +99,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			return;
 		}
 
-		DateField reportDateField = addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
+		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
+		addField(PathogenTestDto.VIA_LIMS);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);

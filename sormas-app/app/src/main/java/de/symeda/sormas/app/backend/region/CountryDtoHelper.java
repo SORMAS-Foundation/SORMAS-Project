@@ -6,6 +6,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -42,6 +43,7 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 		ado.setName(dto.getDefaultName());
 		ado.setIsoCode(dto.getIsoCode());
 		ado.setArchived(dto.isArchived());
+		ado.setSubcontinent(DatabaseHelper.getSubcontinentDao().getByReferenceDto(dto.getSubcontinent()));
 	}
 
 	@Override

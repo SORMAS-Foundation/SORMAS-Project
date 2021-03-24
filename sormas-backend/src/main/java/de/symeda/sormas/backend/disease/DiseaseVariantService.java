@@ -26,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -65,5 +64,21 @@ public class DiseaseVariantService extends AdoServiceWithUserFilter<DiseaseVaria
     @Override
     public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DiseaseVariant> from) {
         return null;
+    }
+
+    public List<DiseaseVariant> getByName(String name, Disease disease) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<DiseaseVariant> cq = cb.createQuery(getElementClass());
+        Root<DiseaseVariant> from = cq.from(getElementClass());
+
+        Predicate filter = cb.or(
+                cb.equal(cb.trim(from.get(DiseaseVariant.NAME)), name.trim()),
+                cb.equal(cb.lower(cb.trim(from.get(DiseaseVariant.NAME))), name.trim().toLowerCase()));
+        if (disease != null) {
+            filter = cb.and(filter, cb.equal(from.get(DiseaseVariant.DISEASE), disease));
+        }
+
+        cq.where(filter);
+        return em.createQuery(cq).getResultList();
     }
 }

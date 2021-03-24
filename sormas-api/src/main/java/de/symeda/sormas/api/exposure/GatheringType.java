@@ -22,6 +22,7 @@ public enum GatheringType {
 	PARTY,
 	RELIGIOUS,
 	MUSICAL,
+	CONCERT,
 	DEMONSTRATION,
 	CARNIVAL,
 	FAIR,

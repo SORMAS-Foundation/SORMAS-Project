@@ -12,6 +12,7 @@ public class CountryCriteria extends BaseCriteria implements Serializable, Clone
 
 	private EntityRelevanceStatus relevanceStatus;
 	private String nameCodeLike;
+	private SubcontinentReferenceDto subcontinent;
 
 	public CountryCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
@@ -28,8 +29,17 @@ public class CountryCriteria extends BaseCriteria implements Serializable, Clone
 		return nameCodeLike;
 	}
 
+	public SubcontinentReferenceDto getSubcontinent() {
+		return subcontinent;
+	}
+
 	public CountryCriteria nameCodeLike(String nameCodeLike) {
 		this.nameCodeLike = nameCodeLike;
+		return this;
+	}
+
+	public CountryCriteria subcontinent(SubcontinentReferenceDto subcontinent) {
+		this.subcontinent = subcontinent;
 		return this;
 	}
 }

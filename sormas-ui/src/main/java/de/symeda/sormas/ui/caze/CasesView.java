@@ -415,7 +415,7 @@ public class CasesView extends AbstractView {
 
 			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
 				bulkOperationsDropdown.setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				this.filterForm.enableSearchAndReportingUser();
@@ -519,13 +519,11 @@ public class CasesView extends AbstractView {
 
 	private void enterBulkEditMode() {
 		bulkOperationsDropdown.setVisible(true);
-		viewConfiguration.setInEagerMode(true);
+		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
 		filterForm.disableSearchAndReportingUser();
-		AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
-		caseGrid.setEagerDataProvider();
-		caseGrid.reload();
+		((AbstractCaseGrid<?>) grid).reload();
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -699,11 +697,11 @@ public class CasesView extends AbstractView {
 							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.SurvnetGateway_sendShort),
+							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
 							mi -> ControllerProvider.getCaseController()
-								.sendCasesToSurvnet(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()));
+								.sendCasesToExternalSurveillanceTool(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 

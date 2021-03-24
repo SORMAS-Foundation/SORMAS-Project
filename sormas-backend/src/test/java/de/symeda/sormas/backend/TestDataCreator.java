@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -86,6 +86,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -104,12 +105,15 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Continent;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class TestDataCreator {
 
@@ -1136,6 +1140,15 @@ public class TestDataCreator {
 		return new RDCFEntities(region, district, community, facility);
 	}
 
+	public Continent createContinent(String name) {
+		Continent continent = new Continent();
+		continent.setUuid(DataHelper.createUuid());
+		continent.setDefaultName(name);
+		beanTest.getContinentService().persist(continent);
+
+		return continent;
+	}
+
 	public Country createCountry(String countryName, String isoCode, String unoCode) {
 		Country country = new Country();
 		country.setUuid(DataHelper.createUuid());
@@ -1361,16 +1374,60 @@ public class TestDataCreator {
 		return systemEvent;
 	}
 
-	public LabMessageDto createLabMessage(Consumer<LabMessageDto> customSettigns) {
+	public LabMessageDto createLabMessage(Consumer<LabMessageDto> customSettings) {
 		LabMessageDto labMessage = LabMessageDto.build();
 
-		if (customSettigns != null) {
-			customSettigns.accept(labMessage);
+		if (customSettings != null) {
+			customSettings.accept(labMessage);
 		}
 
 		beanTest.getLabMessageFacade().save(labMessage);
 
 		return labMessage;
+	}
+
+	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+
+		DiseaseVariant diseaseVariant = new DiseaseVariant();
+		diseaseVariant.setUuid(DataHelper.createUuid());
+		diseaseVariant.setName(name);
+		diseaseVariant.setDisease(disease);
+
+		beanTest.getDiseaseVariantService().persist(diseaseVariant);
+
+		return diseaseVariant;
+	}
+
+	public ExternalShareInfo createExternalShareInfo(
+		CaseReferenceDto caze,
+		UserReferenceDto sender,
+		ExternalShareStatus status,
+		Consumer<ExternalShareInfo> customConfig) {
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setCaze(beanTest.getCaseService().getByUuid(caze.getUuid()));
+		shareInfo.setSender(beanTest.getUserService().getByUuid(sender.getUuid()));
+		shareInfo.setStatus(status);
+
+		if (customConfig != null) {
+			customConfig.accept(shareInfo);
+		}
+
+		beanTest.getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		return shareInfo;
+	}
+
+	public ExternalShareInfo createExternalShareInfo(EventReferenceDto event, UserReferenceDto sender, ExternalShareStatus status) {
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setEvent(beanTest.getEventService().getByUuid(event.getUuid()));
+		shareInfo.setSender(beanTest.getUserService().getByUuid(sender.getUuid()));
+		shareInfo.setStatus(status);
+
+		beanTest.getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		return shareInfo;
 	}
 
 	/**

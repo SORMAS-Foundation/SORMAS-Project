@@ -165,7 +165,7 @@ public class LineListingLayout extends VerticalLayout {
 			region.setVisible(false);
 			updateDistricts(userRegion);
 		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			region.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();

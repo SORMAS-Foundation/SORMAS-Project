@@ -78,6 +78,8 @@ public interface EventFacade {
 
 	boolean exists(String uuid);
 
+	boolean doesExternalTokenExist(String externalToken, String eventUuid);
+
 	String getUuidByCaseUuidOrPersonUuid(String value);
 
 	Set<String> getAllSubordinateEventUuids(String eventUuid);

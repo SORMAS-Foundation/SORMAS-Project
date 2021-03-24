@@ -88,6 +88,7 @@ public interface Descriptions {
 	String Event_endDate = "Event.endDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventStatus = "Event.eventStatus";
+	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcLastName = "Event.srcLastName";
