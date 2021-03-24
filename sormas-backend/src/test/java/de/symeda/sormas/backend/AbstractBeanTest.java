@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -61,10 +62,12 @@ import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.region.SubcontinentFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -133,6 +136,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
+import de.symeda.sormas.backend.region.ContinentService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -140,6 +145,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.region.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.region.SubcontinentService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -326,6 +333,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
 
+	public ContinentFacade getContinentFacade() {
+		return getBean(ContinentFacadeEjb.ContinentFacadeEjbLocal.class);
+	}
+
+	public SubcontinentFacade getSubcontinentFacade() {
+		return getBean(SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal.class);
+	}
+
 	public CountryFacade getCountryFacade() {
 		return getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
 	}
@@ -386,6 +401,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PointOfEntryService.class);
 	}
 
+	public ContinentService getContinentService() {
+		return getBean(ContinentService.class);
+	}
+
+	public SubcontinentService getSubcontinentService() {
+		return getBean(SubcontinentService.class);
+	}
+
 	public CountryService getCountryService() {
 		return getBean(CountryService.class);
 	}
@@ -440,6 +463,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
+	}
+
+	public DiseaseVariantService getDiseaseVariantService() {
+		return getBean(DiseaseVariantService.class);
 	}
 
 	public PopulationDataFacade getPopulationDataFacade() {

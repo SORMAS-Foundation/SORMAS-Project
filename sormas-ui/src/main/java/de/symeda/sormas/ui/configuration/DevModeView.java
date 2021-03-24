@@ -190,7 +190,7 @@ public class DevModeView extends AbstractConfigurationView {
 		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
 			seedField.setValue("performance");
 			useManualSeedCheckbox.setValue(true);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
 			caseGenerationConfig.loadPerformanceTestConfig();
@@ -213,7 +213,7 @@ public class DevModeView extends AbstractConfigurationView {
 		}, CssStyles.FORCE_CAPTION);
 		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
 			useManualSeedCheckbox.setValue(false);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
 			caseGenerationConfig.loadDefaultConfig();
@@ -282,7 +282,7 @@ public class DevModeView extends AbstractConfigurationView {
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseOptionsLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeCaseRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
@@ -351,7 +351,7 @@ public class DevModeView extends AbstractConfigurationView {
 		contactGeneratorConfigBinder.bind(diseaseField, ContactGenerationConfig::getDisease, ContactGenerationConfig::setDisease);
 		contactOptionsFirstLineLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
 		contactGeneratorConfigBinder.bind(regionField, ContactGenerationConfig::getRegion, ContactGenerationConfig::setRegion);
@@ -553,7 +553,7 @@ public class DevModeView extends AbstractConfigurationView {
 		diseaseField.setRequiredIndicatorVisible(true);
 		sampleOptionsFirstLineLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeSampleRegion));
 		sampleGeneratorConfigBinder.bind(regionField, SampleGenerationConfig::getRegion, SampleGenerationConfig::setRegion);

@@ -51,6 +51,8 @@ public interface Strings {
 	String confirmationArchiveCases = "confirmationArchiveCases";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
+	String confirmationArchiveContinent = "confirmationArchiveContinent";
+	String confirmationArchiveContinents = "confirmationArchiveContinents";
 	String confirmationArchiveCountries = "confirmationArchiveCountries";
 	String confirmationArchiveCountry = "confirmationArchiveCountry";
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
@@ -65,6 +67,8 @@ public interface Strings {
 	String confirmationArchivePointsOfEntry = "confirmationArchivePointsOfEntry";
 	String confirmationArchiveRegion = "confirmationArchiveRegion";
 	String confirmationArchiveRegions = "confirmationArchiveRegions";
+	String confirmationArchiveSubcontinent = "confirmationArchiveSubcontinent";
+	String confirmationArchiveSubcontinents = "confirmationArchiveSubcontinents";
 	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
@@ -76,6 +80,8 @@ public interface Strings {
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
+	String confirmationDearchiveContinent = "confirmationDearchiveContinent";
+	String confirmationDearchiveContinents = "confirmationDearchiveContinents";
 	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
 	String confirmationDearchiveCountry = "confirmationDearchiveCountry";
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
@@ -90,6 +96,8 @@ public interface Strings {
 	String confirmationDearchivePointsOfEntry = "confirmationDearchivePointsOfEntry";
 	String confirmationDearchiveRegion = "confirmationDearchiveRegion";
 	String confirmationDearchiveRegions = "confirmationDearchiveRegions";
+	String confirmationDearchiveSubcontinent = "confirmationDearchiveSubcontinent";
+	String confirmationDearchiveSubcontinents = "confirmationDearchiveSubcontinents";
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
@@ -117,6 +125,7 @@ public interface Strings {
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
+	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
@@ -344,12 +353,14 @@ public interface Strings {
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";
 	String headingEditContacts = "headingEditContacts";
+	String headingEditContinent = "headingEditContinent";
 	String headingEditCountry = "headingEditCountry";
 	String headingEditEventParticipant = "headingEditEventParticipant";
 	String headingEditEvents = "headingEditEvents";
 	String headingEditLineListing = "headingEditLineListing";
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
+	String headingEditSubcontinent = "headingEditSubcontinent";
 	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
@@ -390,6 +401,7 @@ public interface Strings {
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
+	String headingImportContinents = "headingImportContinents";
 	String headingImportCountries = "headingImportCountries";
 	String headingImportCsvFile = "headingImportCsvFile";
 	String headingImportDistricts = "headingImportDistricts";
@@ -403,6 +415,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
+	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -516,6 +529,7 @@ public interface Strings {
 	String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
+	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
 	String infoCompletenessMerge = "infoCompletenessMerge";
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
@@ -547,6 +561,7 @@ public interface Strings {
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
+	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
@@ -615,11 +630,13 @@ public interface Strings {
 	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfContinents = "labelNumberOfContinents";
 	String labelNumberOfCountries = "labelNumberOfCountries";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
 	String labelNumberOfRegions = "labelNumberOfRegions";
+	String labelNumberOfSubcontinents = "labelNumberOfSubcontinents";
 	String labelNumberOfTemplates = "labelNumberOfTemplates";
 	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";
@@ -689,6 +706,12 @@ public interface Strings {
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
+	String messageContinentArchived = "messageContinentArchived";
+	String messageContinentArchivingNotPossible = "messageContinentArchivingNotPossible";
+	String messageContinentDearchived = "messageContinentDearchived";
+	String messageContinentsArchived = "messageContinentsArchived";
+	String messageContinentsArchivingNotPossible = "messageContinentsArchivingNotPossible";
+	String messageContinentsDearchived = "messageContinentsDearchived";
 	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
@@ -698,8 +721,10 @@ public interface Strings {
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountriesArchived = "messageCountriesArchived";
 	String messageCountriesDearchived = "messageCountriesDearchived";
+	String messageCountriesDearchivingNotPossible = "messageCountriesDearchivingNotPossible";
 	String messageCountryArchived = "messageCountryArchived";
 	String messageCountryDearchived = "messageCountryDearchived";
+	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
@@ -833,6 +858,14 @@ public interface Strings {
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";
+	String messageSubcontinentArchived = "messageSubcontinentArchived";
+	String messageSubcontinentArchivingNotPossible = "messageSubcontinentArchivingNotPossible";
+	String messageSubcontinentDearchived = "messageSubcontinentDearchived";
+	String messageSubcontinentDearchivingNotPossible = "messageSubcontinentDearchivingNotPossible";
+	String messageSubcontinentsArchived = "messageSubcontinentsArchived";
+	String messageSubcontinentsArchivingNotPossible = "messageSubcontinentsArchivingNotPossible";
+	String messageSubcontinentsDearchived = "messageSubcontinentsDearchived";
+	String messageSubcontinentsDearchivingNotPossible = "messageSubcontinentsDearchivingNotPossible";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
@@ -878,6 +911,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationPersonsUpdated = "notificationPersonsUpdated";
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";

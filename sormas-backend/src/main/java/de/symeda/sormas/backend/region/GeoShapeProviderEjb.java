@@ -18,31 +18,30 @@
 package de.symeda.sormas.backend.region;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.store.ContentFeatureCollection;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.GeometryAttribute;
+import org.locationtech.jts.geom.TopologyException;
+
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.MathTransform;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,82 +182,52 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
-
-		// load shapefile
-		String filepath = "shapefiles/" + countryName + "/regions.shp";
-		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
-		if (filepathUrl == null || !filepath.endsWith(".shp")) {
-			logger.warn("Invalid shapefile filepath: " + filepath);
-			return;
-		}
+		List<RegionReferenceDto> regions = regionFacade.getAllActiveByServerCountry();;
 
 		try {
-			ShapefileDataStore dataStore = new ShapefileDataStore(filepathUrl);
-			ContentFeatureSource featureSource = dataStore.getFeatureSource();
-			ContentFeatureCollection featureCollection = featureSource.getFeatures();
+			// load shapefile
+			ContentFeatureSource featureSource = GeoShapeHelper.featureSourceOfShapefile(countryName, "regions.shp");
+			if (featureSource == null) {
+				return;
+			}
 
-			List<RegionReferenceDto> regions = regionFacade.getAllActiveAsReference();
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
+			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
-			SimpleFeatureIterator iterator = featureCollection.features();
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
-				GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
-				MultiPolygon multiPolygon = (MultiPolygon) defaultGeometryProperty.getValue();
 
-				// TODO find better solution to column name defintion
-				String shapeRegionName = (String) feature.getAttribute("StateName");
+				String shapeRegionName = GeoShapeHelper.sniffShapeName(feature, Arrays.asList("StateName", "REGION", "GEN"));
 				if (shapeRegionName == null) {
-					shapeRegionName = (String) feature.getAttribute("REGION");
+					continue;
 				}
-				shapeRegionName = shapeRegionName.replaceAll("\\W", "").toLowerCase();
-				String finalShapeRegionName = shapeRegionName;
+
+				MultiPolygon multiPolygon = GeoShapeHelper.getPolygon(feature, transform);
+				if (multiPolygon == null) {
+					// there might me entries without a polygon -> not relevant
+					continue;
+				}
+
 				Optional<RegionReferenceDto> regionResult = regions.stream().filter(r -> {
 					String regionName = r.getCaption().replaceAll("\\W", "").toLowerCase();
-					return regionName.contains(finalShapeRegionName) || finalShapeRegionName.contains(regionName);
+					return regionName.contains(shapeRegionName) || shapeRegionName.contains(regionName);
 				})
 					.reduce(
 						(r1, r2) -> {
 							// dumb heuristic: take the result that best fits the length
-							if (Math.abs(r1.getCaption().length() - finalShapeRegionName.length())
-								<= Math.abs(r2.getCaption().length() - finalShapeRegionName.length())) {
+							if (Math.abs(r1.getCaption().length() - shapeRegionName.length())
+								<= Math.abs(r2.getCaption().length() - shapeRegionName.length())) {
 								return r1;
 							} else {
 								return r2;
 							}
 						});
 
-				if (!regionResult.isPresent()) {
-					logger.warn("Region not found: " + shapeRegionName);
-					continue;
-				}
-				RegionReferenceDto region = regionResult.get();
-
-				regionMultiPolygons.put(region, multiPolygon);
-
-				GeoLatLon[][] regionShape = new GeoLatLon[multiPolygon.getNumGeometries()][];
-				for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-					Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
-					regionShape[i] = Arrays.stream(polygon.getExteriorRing().getCoordinates())
-						.map(c -> new GeoLatLon(c.y, c.x))
-						.toArray(size -> new GeoLatLon[size]);
-				}
-				regionShapes.put(region, regionShape);
+				GeoShapeHelper.storeShape(regionMultiPolygons, regionShapes, multiPolygon, shapeRegionName, regionResult);
 			}
 			iterator.close();
-			dataStore.dispose();
 
-			StringBuilder notFoundRegions = new StringBuilder();
-			for (RegionReferenceDto region : regions) {
-				if (!regionShapes.containsKey(region)) {
-					if (notFoundRegions.length() > 0) {
-						notFoundRegions.append(", ");
-					}
-					notFoundRegions.append(region.getCaption());
-				}
-			}
-			if (notFoundRegions.length() > 0) {
-				logger.warn("No shape for regions found: " + notFoundRegions.toString());
-			}
+			GeoShapeHelper.reportNotFound(regionShapes, regions);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -270,87 +239,56 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		districtShapes.clear();
 		districtMultiPolygons.clear();
-
-		// load shapefile
-		String filepath = "shapefiles/" + countryName + "/districts.shp";
-		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
-		if (filepathUrl == null || !filepath.endsWith(".shp")) {
-			logger.warn("Invalid shapefile filepath: " + filepath);
-			return;
-		}
+		List<DistrictReferenceDto> districts = districtFacade.getAllActiveAsReference();
 
 		try {
-			ShapefileDataStore dataStore = new ShapefileDataStore(filepathUrl);
-			ContentFeatureSource featureSource = dataStore.getFeatureSource();
-			ContentFeatureCollection featureCollection = featureSource.getFeatures();
+			// load shapefile
+			ContentFeatureSource featureSource = GeoShapeHelper.featureSourceOfShapefile(countryName, "districts.shp");
+			if (featureSource == null) {
+				return;
+			}
 
-			List<DistrictReferenceDto> districts = districtFacade.getAllActiveAsReference();
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
+			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
-			SimpleFeatureIterator iterator = featureCollection.features();
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
-				GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
-				MultiPolygon multiPolygon = (MultiPolygon) defaultGeometryProperty.getValue();
+
+				String shapeDistrictName = GeoShapeHelper.sniffShapeName(feature, Arrays.asList("LGAName", "DISTRICT", "GEN"));
+				if (shapeDistrictName == null) {
+					continue;
+				}
+
+				MultiPolygon multiPolygon = GeoShapeHelper.getPolygon(feature, transform);
+
 				if (multiPolygon == null) {
 					// there might me entries without a polygon -> not relevant
 					continue;
 				}
 
-				String shapeDistrictName = (String) feature.getAttribute("LGAName");
-				if (shapeDistrictName == null) {
-					shapeDistrictName = (String) feature.getAttribute("DISTRICT");
-				}
-				shapeDistrictName = shapeDistrictName.replaceAll("\\W", "").toLowerCase();
-				String finalShapeDistrictName = shapeDistrictName;
 				Optional<DistrictReferenceDto> districtResult = districts.stream().filter(r -> {
 					String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();
-					return districtName.contains(finalShapeDistrictName)
-						|| finalShapeDistrictName.contains(districtName)
-						|| similarity(finalShapeDistrictName, districtName) > 0.7f;
+					return districtName.contains(shapeDistrictName)
+						|| shapeDistrictName.contains(districtName)
+						|| GeoShapeHelper.similarity(shapeDistrictName, districtName) > 0.7f;
 				}).reduce((r1, r2) -> {
 					// take the result that best fits
 
-					if (r1.getCaption().replaceAll("\\W", "").toLowerCase().equals(finalShapeDistrictName))
+					if (r1.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
 						return r1;
-					if (r2.getCaption().replaceAll("\\W", "").toLowerCase().equals(finalShapeDistrictName))
+					if (r2.getCaption().replaceAll("\\W", "").toLowerCase().equals(shapeDistrictName))
 						return r2;
 
-					return Double.compare(similarity(r1.getCaption(), finalShapeDistrictName), similarity(r2.getCaption(), finalShapeDistrictName))
-						<= 0 ? r1 : r2;
+					return Double.compare(
+						GeoShapeHelper.similarity(r1.getCaption(), shapeDistrictName),
+						GeoShapeHelper.similarity(r2.getCaption(), shapeDistrictName)) <= 0 ? r1 : r2;
 				});
 
-				if (!districtResult.isPresent()) {
-					logger.warn("District not found: " + shapeDistrictName);
-					continue;
-				}
-				DistrictReferenceDto district = districtResult.get();
-
-				districtMultiPolygons.put(district, multiPolygon);
-
-				GeoLatLon[][] districtShape = new GeoLatLon[multiPolygon.getNumGeometries()][];
-				for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-					Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
-					districtShape[i] = Arrays.stream(polygon.getExteriorRing().getCoordinates())
-						.map(c -> new GeoLatLon(c.y, c.x))
-						.toArray(size -> new GeoLatLon[size]);
-				}
-				districtShapes.put(district, districtShape);
+				GeoShapeHelper.storeShape(districtMultiPolygons, districtShapes, multiPolygon, shapeDistrictName, districtResult);
 			}
 			iterator.close();
-			dataStore.dispose();
 
-			StringBuilder notFoundDistricts = new StringBuilder();
-			for (DistrictReferenceDto district : districts) {
-				if (!districtShapes.containsKey(district)) {
-					if (notFoundDistricts.length() > 0) {
-						notFoundDistricts.append(", ");
-					}
-					notFoundDistricts.append(district.getCaption());
-				}
-			}
-			if (notFoundDistricts.length() > 0) {
-				logger.warn("No shape for districts found: " + notFoundDistricts.toString());
-			}
+			GeoShapeHelper.reportNotFound(districtShapes, districts);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -361,28 +299,32 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		GeometryFactory factory = JTSFactoryFinder.getGeometryFactory();
 
 		// combine all regions that touch into new polygons
-		List<Polygon> polygons = new ArrayList<Polygon>();
+		List<Polygon> polygons = new ArrayList<>();
 		for (GeoLatLon[][] regionShape : regionShapes.values()) {
 
 			for (GeoLatLon[] regionPolygon : regionShape) {
+				try {
 
-				// convert region to polygon
-				Polygon polygon = factory.createPolygon(
-					Arrays.stream(regionPolygon)
-						.map(regionPoint -> new Coordinate(regionPoint.getLon(), regionPoint.getLat()))
-						.toArray(Coordinate[]::new));
+					// convert region to polygon
+					Polygon polygon = factory.createPolygon(
+						Arrays.stream(regionPolygon)
+							.map(regionPoint -> new Coordinate(regionPoint.getLon(), regionPoint.getLat()))
+							.toArray(Coordinate[]::new));
 
-				boolean added = false;
-				for (int i = 0; i < polygons.size(); i++) {
-					if (polygons.get(i).touches(polygon)) { // touch?
-						polygons.set(i, (Polygon) polygons.get(i).union(polygon)); // union
-						added = true;
-						break;
+					boolean added = false;
+					for (int i = 0; i < polygons.size(); i++) {
+						if (polygons.get(i).touches(polygon)) { // touch?
+							polygons.set(i, (Polygon) polygons.get(i).union(polygon)); // union
+							added = true;
+							break;
+						}
 					}
-				}
+					if (!added) {
+						polygons.add(polygon);
+					}
 
-				if (!added) {
-					polygons.add(polygon);
+				} catch (TopologyException e) {
+					logger.error(e.toString());
 				}
 			}
 		}
@@ -392,15 +334,19 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			for (int j = 0; j < polygons.size(); j++) {
 				if (i == j)
 					continue;
-				if (polygons.get(i).touches(polygons.get(j))) { // touch
-					polygons.set(i, (Polygon) polygons.get(i).union(polygons.get(j))); // union
-					polygons.remove(j);
-					if (i >= j) {
-						i--;
-						break;
-					} else {
-						j--;
+				try {
+					if (polygons.get(i).touches(polygons.get(j))) { // touch
+						polygons.set(i, (Polygon) polygons.get(i).union(polygons.get(j))); // union
+						polygons.remove(j);
+						if (i >= j) {
+							i--;
+							break;
+						} else {
+							j--;
+						}
 					}
+				} catch (TopologyException e) {
+					logger.error(e.toString());
 				}
 			}
 		}
@@ -414,57 +360,34 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	}
 
 	/**
-	 * Calculates the similarity (a number within 0 and 1) between two strings.
+	 * Load the shapefile attributions for the configured country.
+	 *
+	 * @return The shapefile attributions for the configured country.
 	 */
-	public static double similarity(String s1, String s2) {
-
-		String longer = s1, shorter = s2;
-		if (s1.length() < s2.length()) { // longer should always have greater
-										// length
-			longer = s2;
-			shorter = s1;
-		}
-		int longerLength = longer.length();
-		if (longerLength == 0) {
-			return 1.0;
-			/* both strings are zero length */ }
-		/*
-		 * // If you have StringUtils, you can use it to calculate the edit
-		 * distance: return (longerLength -
-		 * StringUtils.getLevenshteinDistance(longer, shorter)) / (double)
-		 * longerLength;
-		 */
-		return (longerLength - editDistance(longer, shorter)) / (double) longerLength;
-
-	}
-
-	// Example implementation of the Levenshtein Edit Distance
-	// See http://rosettacode.org/wiki/Levenshtein_distance#Java
-	public static int editDistance(String s1, String s2) {
-
-		s1 = s1.toLowerCase();
-		s2 = s2.toLowerCase();
-
-		int[] costs = new int[s2.length() + 1];
-		for (int i = 0; i <= s1.length(); i++) {
-			int lastValue = i;
-			for (int j = 0; j <= s2.length(); j++) {
-				if (i == 0)
-					costs[j] = j;
-				else {
-					if (j > 0) {
-						int newValue = costs[j - 1];
-						if (s1.charAt(i - 1) != s2.charAt(j - 1))
-							newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-						costs[j - 1] = lastValue;
-						lastValue = newValue;
-					}
-				}
+	@Override
+	public String loadShapefileAttributions() {
+		String countryName = configFacade.getCountryName();
+		if (countryName.isEmpty()) {
+			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
+		} else {
+			String filepath = "attributions/" + countryName + "/" + "shapefiles.txt";
+			URL filepathUrl = GeoShapeProviderEjb.class.getClassLoader().getResource(filepath);
+			if (filepathUrl == null || !filepath.endsWith(".txt")) {
+				logger.warn("Invalid attribution filepath: " + filepath + ". No shapefile attribution provided for the configured country?");
+				return "";
 			}
-			if (i > 0)
-				costs[s2.length()] = lastValue;
+
+			List<String> content = Collections.singletonList("");
+			try {
+				content = Files.readAllLines(Paths.get(filepathUrl.toURI()));
+			} catch (Exception e) {
+				logger.error("Could not read attribution file: " + e.toString());
+			}
+
+			return String.join(",", content);
+
 		}
-		return costs[s2.length()];
+		return "";
 	}
 
 	@LocalBean

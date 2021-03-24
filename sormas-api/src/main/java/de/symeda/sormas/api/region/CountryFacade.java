@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -35,4 +36,7 @@ public interface CountryFacade {
 	List<CountryReferenceDto> getAllActiveAsReference();
 
 	CountryReferenceDto getServerCountry();
+
+	boolean hasArchivedParentInfrastructure(Collection<String> countryUuids);
+
 }

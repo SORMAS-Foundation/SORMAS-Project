@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -27,20 +28,26 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 
 @Stateless
 @LocalBean
 public class CommunityService extends AbstractInfrastructureAdoService<Community> {
+
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 
 	public CommunityService() {
 		super(Community.class);
@@ -97,6 +104,24 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 		Predicate filter = null;
+
+		CountryReferenceDto country = criteria.getCountry();
+		if (country != null) {
+			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+			Path<Object> countryUuid = from.join(Community.DISTRICT, JoinType.LEFT)
+				.join(District.REGION, JoinType.LEFT)
+				.join(Region.COUNTRY, JoinType.LEFT)
+				.get(Country.UUID);
+			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
+
+			if (country.equals(serverCountry)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
+			} else {
+				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
+			}
+		}
+
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()));
 		}
