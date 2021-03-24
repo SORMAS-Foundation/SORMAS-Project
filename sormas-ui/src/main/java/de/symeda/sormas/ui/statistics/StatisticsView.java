@@ -976,12 +976,14 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 		}
 		// sort polygon array, so that polygons which are completely contained by another appear on top
+		List<Integer[]> indexesToSwap = new ArrayList<>();
 		int poly1index = 0, poly2index = 0;
 		for (LeafletPolygon poly1 : resultPolygons) {
 			for (LeafletPolygon poly2 : resultPolygons) {
 				if (poly1index == poly2index) {
 					continue;
 				}
+				// determine maximum latitude and longitude of each polygon
 				double LatMin0 = poly1.getLatLons()[0][0], LatMax0 = poly1.getLatLons()[0][0], LonMin0 = poly1.getLatLons()[0][1],
 					LonMax0 = poly1.getLatLons()[0][1];
 				for (double[] LatLon : poly1.getLatLons()) {
@@ -1006,16 +1008,21 @@ public class StatisticsView extends AbstractStatisticsView {
 					if (LatLon[1] > LonMax1)
 						LonMax1 = LatLon[1];
 				}
+				// if the max/min values of poly1 are completely inside those of poly2, switch both
 				if (LatMax0 < LatMax1 && LatMin0 > LatMin1 && LonMax0 < LonMax1 && LonMin0 > LonMin1) {
-					// switch if poly1 is inside poly2
-					Collections.swap(resultPolygons, poly1index, poly2index); // hmmm, now i change the list while iterating...
+					// make sure not to change the list we are currently iterating over
+					indexesToSwap.add(
+						new Integer[] {
+							poly1index,
+							poly2index });
 				}
-				if (LatMax0 > LatMax1 && LatMin0 < LatMin1 && LonMax0 > LonMax1 && LonMin0 < LonMin1) {
 
-				}
 				poly2index++;
 			}
 			poly1index++;
+		}
+		for (Integer[] swaps : indexesToSwap) {
+			Collections.swap(resultPolygons, swaps[0], swaps[1]);
 		}
 
 		map.addPolygonGroup("results", resultPolygons);
