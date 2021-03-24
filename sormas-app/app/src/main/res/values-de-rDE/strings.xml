@@ -318,6 +318,7 @@
     <string name="heading_outbreak_response">Ausbruchsantwort</string>
     <string name="heading_person_involved">Beteiligte Person</string>
     <string name="heading_person_involved_new">Neue Person beteiligt</string>
+    <string name="heading_person_contact_detail">Personen-Kontaktdetails</string>
     <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
@@ -367,7 +368,7 @@
     <string name="heading_extend_followup">Nachverfolgungs Zeitraum verlängern</string>
     <string name="heading_contact_tracing_first_contact">Erster Kontakt mit Kontaktverfolgung</string>
     <string name="heading_exposure">Exposition</string>
-    <string name="heading_activityAsCase">Aktivität als Fall</string>
+    <string name="heading_activityAsCase">Betreuung/Unterbringung/Tätigkeit in Einrichtung</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>

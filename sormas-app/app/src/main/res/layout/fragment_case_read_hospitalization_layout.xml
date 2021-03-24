@@ -25,6 +25,7 @@
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.hospitalization.HospitalizationReasonType" />
+        <import type="de.symeda.sormas.api.facility.FacilityType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />
@@ -48,7 +49,9 @@
                 android:padding="@dimen/fragment_padding"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:id="@+id/main_content">
+                android:id="@+id/main_content"
+                app:goneIfVariable="@{caze.facilityType}"
+                app:goneIfNotValue="@{FacilityType.HOSPITAL}">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -155,10 +158,20 @@
                     app:appendValue="@{data.otherHospitalizationReason}"
                     style="@style/ControlSingleColumnStyle" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/fragment_padding"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseHospitalization_hospitalizedPreviously"
-                    app:value="@{data.hospitalizedPreviously}"
-                    style="@style/ControlSingleColumnStyle" />
+                        android:id="@+id/caseHospitalization_hospitalizedPreviously"
+                        app:value="@{data.hospitalizedPreviously}"
+                        style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 

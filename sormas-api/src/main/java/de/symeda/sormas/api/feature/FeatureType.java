@@ -43,7 +43,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
-			CONTACT_TRACING }),
+			CONTACT_TRACING,
+			EVENT_SURVEILLANCE }),
 	INFRASTRUCTURE_TYPE_AREA(true, false, null),
 	CASE_FOLLOWUP(true, false, null),
 	TASK_NOTIFICATIONS(true,
@@ -59,7 +60,12 @@ public enum FeatureType {
 	SURVEILLANCE_REPORTS(true,
 		false,
 		new FeatureType[] {
-			CASE_SURVEILANCE });
+			CASE_SURVEILANCE }),
+	PERSON_MANAGEMENT(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			EVENT_SURVEILLANCE });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

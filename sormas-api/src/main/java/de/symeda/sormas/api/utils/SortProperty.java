@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class SortProperty implements Serializable {
@@ -24,14 +27,19 @@ public class SortProperty implements Serializable {
 	private static final long serialVersionUID = 2972594862424083789L;
 
 	public final String propertyName;
+
 	public final boolean ascending;
+
 
 	public SortProperty(String propertyName) {
 		this(propertyName, true);
 	}
 
-	public SortProperty(String propertyName, boolean ascending) {
+	@JsonCreator
+	public SortProperty(@JsonProperty("propertyName") String propertyName, @JsonProperty("ascending") boolean ascending) {
 		this.propertyName = propertyName;
 		this.ascending = ascending;
 	}
+
+
 }

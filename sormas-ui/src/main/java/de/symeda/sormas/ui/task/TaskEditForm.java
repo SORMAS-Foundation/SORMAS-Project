@@ -203,13 +203,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 			}
 
-			// Allow regional users to assign the task to national ones
+			// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
+			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
+			// For national users, there is no higher level
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& userDto.getDistrict() == null
-				&& userDto.getRegion() != null) {
-				users.addAll(
-					FacadeProvider.getUserFacade()
-						.getUsersByRegionAndRoles(null, UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION).toArray(new UserRole[0])));
+				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+
+				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
+				if (superordinateUsers != null) {
+					users.addAll(superordinateUsers);
+				}
 			}
 
 			// Validation

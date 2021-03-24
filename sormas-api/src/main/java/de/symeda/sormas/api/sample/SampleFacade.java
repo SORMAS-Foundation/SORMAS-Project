@@ -70,6 +70,8 @@ public interface SampleFacade {
 
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
 
+	List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria);
+
 	boolean exists(String uuid);
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);

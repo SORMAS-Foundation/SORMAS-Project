@@ -40,9 +40,11 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.Subcontinent;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -50,6 +52,14 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
 public final class InfrastructureHelper {
+
+	public static List<Item> loadContinents() {
+		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
+	}
+
+	public static List<Item> loadSubcontinents() {
+		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
+	}
 
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
@@ -66,8 +76,12 @@ public final class InfrastructureHelper {
 		return items;
 	}
 
-	public static List<Item> loadRegions() {
-		return toItems(DatabaseHelper.getRegionDao().queryActiveForAll(Region.NAME, true));
+	public static List<Item> loadRegionsByServerCountry() {
+		return toItems(DatabaseHelper.getRegionDao().queryActiveByServerCountry());
+	}
+
+	public static List<Item> loadRegionsByCountry(Country country) {
+		return toItems(DatabaseHelper.getRegionDao().queryActiveByCountry(country));
 	}
 
 	public static List<Item> loadAllDistricts() {
@@ -159,30 +173,30 @@ public final class InfrastructureHelper {
 	}
 
 	public static void initializeFacilityFields(
-			AbstractDomainObject entity,
-			final ControlSpinnerField countryField,
-			List<Item> countries,
-			Country initialCountry,
-			final ControlSpinnerField regionField,
-			List<Item> regions,
-			Region initialRegion,
-			final ControlSpinnerField districtField,
-			List<Item> districts,
-			District initialDistrict,
-			final ControlSpinnerField communityField,
-			List<Item> communities,
-			Community initialCommunity,
-			final ControlSpinnerField facilityOrHomeField,
-			List<Item> facilityOrHomeList,
-			final ControlSpinnerField typeGroupField,
-			List<Item> typeGroups,
-			final ControlSpinnerField typeField,
-			List<Item> types,
-			final ControlSpinnerField facilityField,
-			List<Item> facilities,
-			Facility initialFacility,
-			final ControlTextEditField facilityDetailsField,
-			boolean withLaboratory) {
+		AbstractDomainObject entity,
+		final ControlSpinnerField countryField,
+		List<Item> countries,
+		Country initialCountry,
+		final ControlSpinnerField regionField,
+		List<Item> regions,
+		Region initialRegion,
+		final ControlSpinnerField districtField,
+		List<Item> districts,
+		District initialDistrict,
+		final ControlSpinnerField communityField,
+		List<Item> communities,
+		Community initialCommunity,
+		final ControlSpinnerField facilityOrHomeField,
+		List<Item> facilityOrHomeList,
+		final ControlSpinnerField typeGroupField,
+		List<Item> typeGroups,
+		final ControlSpinnerField typeField,
+		List<Item> types,
+		final ControlSpinnerField facilityField,
+		List<Item> facilities,
+		Facility initialFacility,
+		final ControlTextEditField facilityDetailsField,
+		boolean withLaboratory) {
 		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
 		if (countryItem != null && !countries.contains(countryItem)) {
 			countries.add(countryItem);
@@ -190,35 +204,40 @@ public final class InfrastructureHelper {
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
-			boolean shouldBeActive = serverCountryName == null ? selectedCountry == null : selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
-			configureInfrastructureFields(shouldBeActive, regionField, districtField, communityField, typeGroupField, facilityField, facilityDetailsField, typeField);
+			boolean isServerCountry = serverCountryName == null
+				? selectedCountry == null
+				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
+
+			List<Item> newRegions =
+				isServerCountry ? InfrastructureHelper.loadRegionsByServerCountry() : InfrastructureHelper.loadRegionsByCountry(selectedCountry);
+			regionField.setSpinnerData(newRegions, regionField.getValue());
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(
-				entity,
-				regionField,
-				regions,
-				initialRegion,
-				districtField,
-				districts,
-				initialDistrict,
-				communityField,
-				communities,
-				initialCommunity,
-				facilityOrHomeField,
-				facilityOrHomeList,
-				typeGroupField,
-				typeGroups,
-				typeField,
-				types,
-				facilityField,
-				facilities,
-				initialFacility,
-				facilityDetailsField,
-				null,
-				null,
-				null,
-				withLaboratory);
+			entity,
+			regionField,
+			regions,
+			initialRegion,
+			districtField,
+			districts,
+			initialDistrict,
+			communityField,
+			communities,
+			initialCommunity,
+			facilityOrHomeField,
+			facilityOrHomeList,
+			typeGroupField,
+			typeGroups,
+			typeField,
+			types,
+			facilityField,
+			facilities,
+			initialFacility,
+			facilityDetailsField,
+			null,
+			null,
+			null,
+			withLaboratory);
 	}
 
 	public static void initializeFacilityFields(
@@ -528,33 +547,6 @@ public final class InfrastructureHelper {
 					|| selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_POE_UUID) ? VISIBLE : GONE);
 		} else {
 			pointOfEntryDetailsField.setVisibility(GONE);
-		}
-	}
-
-	private static void configureInfrastructureFields(boolean shouldBeActive,
-													  ControlSpinnerField regionField,
-													  ControlSpinnerField districtField,
-													  ControlSpinnerField communityField,
-													  ControlSpinnerField typeGroupField,
-													  ControlSpinnerField facilityField,
-													  ControlTextEditField facilityDetailsField,
-													  ControlSpinnerField typeField) {
-		regionField.setEnabled(shouldBeActive);
-		districtField.setEnabled(shouldBeActive);
-		communityField.setEnabled(shouldBeActive);
-		typeGroupField.setEnabled(shouldBeActive);
-		facilityField.setEnabled(shouldBeActive);
-		facilityDetailsField.setEnabled(shouldBeActive);
-		typeField.setEnabled(shouldBeActive);
-
-		if (!shouldBeActive) {
-			regionField.setValue(null);
-			districtField.setValue(null);
-			communityField.setValue(null);
-			typeGroupField.setValue(null);
-			facilityField.setValue(null);
-			facilityDetailsField.setValue(null);
-			typeField.setValue(null);
 		}
 	}
 }

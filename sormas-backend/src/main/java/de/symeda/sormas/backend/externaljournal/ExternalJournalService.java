@@ -45,7 +45,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
@@ -185,20 +184,22 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a followUpUntilDate has been updated
 	 *
-	 * @param contact
-	 *            a contact assigned to a person already available in the external journal
+	 * @param personUuid
+	 *            uuid of person already registered in the external journal
+	 * @param newFollowUpUntilDate
+	 *            the updated follow-up end date
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
+		PersonDto person = personFacade.getPersonByUuid(personUuid);
 		if (person.isEnrolledInExternalJournal()) {
-			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
+			if (newFollowUpUntilDate.after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().isActive()) {
-					notifySymptomJournal(contact.getPerson().getUuid());
+					notifySymptomJournal(personUuid);
 				}
 				if (configFacade.getPatientDiaryConfig().isActive()) {
-					notifyPatientDiary(contact.getPerson().getUuid());
+					notifyPatientDiary(personUuid);
 				}
 			}
 		}
@@ -483,7 +484,8 @@ public class ExternalJournalService {
 			.collect(Collectors.joining("\n"));
 	}
 
-	/** Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	/**
+	 * Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to DELETED if successful.
 	 *
 	 * @param person

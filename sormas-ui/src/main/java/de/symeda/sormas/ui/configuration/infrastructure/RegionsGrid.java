@@ -59,6 +59,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 
 		setColumns(
 			RegionIndexDto.NAME,
+			RegionIndexDto.COUNTRY,
 			RegionIndexDto.AREA,
 			RegionIndexDto.EPID_CODE,
 			RegionIndexDto.EXTERNAL_ID,

@@ -123,7 +123,7 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 				cbRashExposureCommunity,
 				district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
 		});
-		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

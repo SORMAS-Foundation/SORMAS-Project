@@ -12,7 +12,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,11 +46,14 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.CharsetHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -326,7 +328,7 @@ public abstract class DataImporter {
 	}
 
 	private CSVReader getCSVReader(File inputFile) throws IOException {
-		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		CharsetDecoder decoder = CharsetHelper.getDecoder(inputFile);
 		InputStream inputStream = Files.newInputStream(inputFile.toPath());
 		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
 		Reader reader = new InputStreamReader(bomInputStream, decoder);
@@ -386,7 +388,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			String dateFormat = currentUser.getLanguage().getDateFormat();
+			String dateFormat = I18nProperties.getUserLanguage().getDateFormat();
 			try {
 				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, dateFormat));
 				return true;
@@ -425,16 +427,24 @@ public abstract class DataImporter {
 			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);
-			if (region.isEmpty()) {
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
+			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (region.size() > 1) {
+			} else if (regions.size() > 1) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
-				pd.getWriteMethod().invoke(element, region.get(0));
-				return true;
+				RegionDto region = regions.get(0);
+				CountryReferenceDto serverCountry = FacadeProvider.getCountryFacade().getServerCountry();
+
+				if (region.getCountry() != null && !region.getCountry().equals(serverCountry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
+				} else {
+					pd.getWriteMethod().invoke(element, region.toReference());
+					return true;
+				}
 			}
 		}
 		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {

@@ -61,6 +61,8 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
 		target.setFollowUpDuration(source.getFollowUpDuration());
 		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setExtendedClassification(source.getExtendedClassification());
+		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 	}
 
 	@Override
@@ -73,5 +75,7 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
 		target.setFollowUpDuration(source.getFollowUpDuration());
 		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setExtendedClassification(source.getExtendedClassification());
+		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 	}
 }

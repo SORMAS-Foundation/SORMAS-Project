@@ -36,9 +36,11 @@ public interface Validations {
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
 	String caseClassificationInvalid = "caseClassificationInvalid";
+	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
+	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
@@ -49,6 +51,7 @@ public interface Validations {
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
+	String externalMessageConfigError = "externalMessageConfigError";
 	String externalMessageConversionError = "externalMessageConversionError";
 	String externalMessageDecryptError = "externalMessageDecryptError";
 	String externalMessageDisplayError = "externalMessageDisplayError";
@@ -62,8 +65,11 @@ public interface Validations {
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	String importCommunityNotUnique = "importCommunityNotUnique";
+	String importContinentAlreadyExists = "importContinentAlreadyExists";
 	String importCountryAlreadyExists = "importCountryAlreadyExists";
 	String importCountryEmptyIso = "importCountryEmptyIso";
+	String importDiseaseVariantNotExistOrDisease = "importDiseaseVariantNotExistOrDisease";
+	String importDiseaseVariantNotUniqueForDisease = "importDiseaseVariantNotUniqueForDisease";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
 	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";
@@ -87,10 +93,13 @@ public interface Validations {
 	String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
+	String importRegionNotInServerCountry = "importRegionNotInServerCountry";
 	String importRegionNotUnique = "importRegionNotUnique";
+	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";
@@ -120,6 +129,9 @@ public interface Validations {
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
+	String taskMissingCaseLink = "taskMissingCaseLink";
+	String taskMissingContactLink = "taskMissingContactLink";
+	String taskMissingEventLink = "taskMissingEventLink";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
 	String vaccineDosesFormat = "vaccineDosesFormat";

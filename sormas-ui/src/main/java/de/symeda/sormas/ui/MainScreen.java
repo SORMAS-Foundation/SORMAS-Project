@@ -55,11 +55,13 @@ import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.ContinentsView;
 import de.symeda.sormas.ui.configuration.infrastructure.CountriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.SubcontinentsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -189,7 +191,7 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
 		}
-		if (permitted(UserRight.PERSON_VIEW)) {
+		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
 		}
@@ -284,6 +286,8 @@ public class MainScreen extends HorizontalLayout {
 				CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME,
 				PointsOfEntryView.VIEW_NAME,
+				ContinentsView.VIEW_NAME,
+				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
 				LabMessagesView.VIEW_NAME));
 

@@ -42,10 +42,43 @@ public class ConfirmationDialog extends AbstractDialog {
 		getConfig().setHideHeadlineSeparator(true);
 	}
 
+	public ConfirmationDialog(final FragmentActivity activity, String headingResId, String subHeadingResId) {
+		super(
+			activity,
+			R.layout.dialog_root_layout,
+			R.layout.dialog_confirmation_layout,
+			R.layout.dialog_root_two_button_panel_layout,
+			headingResId,
+			subHeadingResId);
+
+		getConfig().setHideHeadlineSeparator(true);
+	}
+
 	public ConfirmationDialog(
 		final FragmentActivity activity,
 		int headingResId,
 		int subHeadingResId,
+		int positiveButtonTextResId,
+		int negativeButtonTextResId) {
+		this(activity, headingResId, subHeadingResId);
+
+		Resources resources = getContext().getResources();
+		if (positiveButtonTextResId >= 0) {
+			getConfig().setPositiveButtonText(resources.getString(positiveButtonTextResId));
+		} else {
+			getConfig().setPositiveButtonText(resources.getString(R.string.action_confirm));
+		}
+		if (negativeButtonTextResId >= 0) {
+			getConfig().setNegativeButtonText(resources.getString(negativeButtonTextResId));
+		} else {
+			getConfig().setNegativeButtonText(resources.getString(R.string.action_dismiss));
+		}
+	}
+
+	public ConfirmationDialog(
+		final FragmentActivity activity,
+		String headingResId,
+		String subHeadingResId,
 		int positiveButtonTextResId,
 		int negativeButtonTextResId) {
 		this(activity, headingResId, subHeadingResId);
