@@ -86,7 +86,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
+	public Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
 		return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
 	}
 

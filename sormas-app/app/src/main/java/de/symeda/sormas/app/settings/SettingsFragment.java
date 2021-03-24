@@ -17,8 +17,12 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,8 +34,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -44,6 +51,8 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -60,6 +69,10 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import org.hzi.sormas.lbds.core.http.HttpMethod;
+import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+import org.hzi.sormas.lbds.messaging.LbdsSendIntent;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
@@ -278,7 +291,35 @@ public class SettingsFragment extends BaseLandingFragment {
 	}
 
 	public void syncLbds() {
-		Log.i("SYNCH", "Synch");
+		Log.i("SYNC", "Sync");
+
+		/*try {
+			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
+			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(rsa.getPublic());
+			kexToLbdsIntent.setComponent(LbdsRelated.componentName);
+			ComponentName c = getContext().startForegroundService(kexToLbdsIntent);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}*/
+
+		PersonDto target = new PersonDto();
+		PersonDao personDao = DatabaseHelper.getPersonDao();
+		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+		List<Person> modifiedEntities = personDao.getModifiedEntities();
+		Person firstEntry = modifiedEntities.get(0);
+		personDtoHelper.fillInnerFromAdo(target, firstEntry);
+		resetFields(target);
+		String payload = new Gson().toJson(target);
+
+		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", payload);
+		Intent intent = new LbdsSendIntent(method);
+
+		intent.setComponent(LbdsRelated.componentName);
+		ComponentName c = getContext().startForegroundService(intent);
+	}
+
+	private void resetFields(PersonDto personDto) {
+		//TODO: reset all fields except uuid, firstname, lastname, sex, changedate?
 	}
 
 	@Override
