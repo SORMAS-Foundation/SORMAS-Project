@@ -31,6 +31,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
@@ -301,6 +303,13 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 
+	public class SeveralNonPrimaryContactDetailsException extends Exception {
+
+		public SeveralNonPrimaryContactDetailsException(String message) {
+			super(message);
+		}
+	}
+
 	public static String buildCaption(String firstName, String lastName) {
 		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
 	}
@@ -475,11 +484,12 @@ public class PersonDto extends PseudonymizableDto {
 	 *
 	 * @param onlyPrimary
 	 *            if true, the return value is same as in {@link #getPhone()}. Otherwise, this method tries to return the only phone
-	 *            number for this person, no matter if primary or not. Results in an IndexOutOfBoundsException when there are several phone
-	 *            numbers.
+	 *            number for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there are
+	 *            several phone numbers.
 	 * @return String representation of the only phone number to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
 	 */
-	public String getPhone(boolean onlyPrimary) {
+	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryPhone = getPhone();
 		if (onlyPrimary || !(primaryPhone == "")) {
 			return primaryPhone;
@@ -488,7 +498,7 @@ public class PersonDto extends PseudonymizableDto {
 			if (allPhones.size() == 0) {
 				return "";
 			} else if (allPhones.size() > 1) {
-				throw new IndexOutOfBoundsException("Too many results found, none of which is marked primary.");
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
 			} else {
 				return allPhones.get(0);
 			}
@@ -528,11 +538,13 @@ public class PersonDto extends PseudonymizableDto {
 	 * 
 	 * @param onlyPrimary
 	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
-	 *            address for this person, no matter if primary or not. Results in an IndexOutOfBoundsException when there are several email
+	 *            address for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there
+	 *            are several email
 	 *            addresses.
 	 * @return the only email address to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
 	 */
-	public String getEmailAddress(boolean onlyPrimary) {
+	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryEmail = getEmailAddress();
 		if (onlyPrimary || !(primaryEmail == "")) {
 			return primaryEmail;
@@ -541,7 +553,7 @@ public class PersonDto extends PseudonymizableDto {
 			if (allEmails.size() == 0) {
 				return "";
 			} else if (allEmails.size() > 1) {
-				throw new IndexOutOfBoundsException("Too many results found, none of which is marked primary.");
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
 			} else {
 				return allEmails.get(0);
 			}

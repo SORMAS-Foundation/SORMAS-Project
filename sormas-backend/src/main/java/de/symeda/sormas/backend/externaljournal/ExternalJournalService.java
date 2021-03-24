@@ -372,13 +372,13 @@ public class ExternalJournalService {
 
 		try {
 			email = person.getEmailAddress(false);
-		} catch (IndexOutOfBoundsException e) {
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			severalEmails = true;
 		}
 
 		try {
 			phone = person.getPhone(false);
-		} catch (IndexOutOfBoundsException e) {
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			severalPhones = true;
 		}
 
