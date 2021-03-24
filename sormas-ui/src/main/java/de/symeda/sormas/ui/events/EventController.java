@@ -834,9 +834,8 @@ public class EventController {
 			return;
 		}
 
-		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids);
+		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback);
 
-		callback.run();
 		new Notification(
 			I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
 			I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),

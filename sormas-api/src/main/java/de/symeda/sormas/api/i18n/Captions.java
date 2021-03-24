@@ -335,6 +335,8 @@ public interface Captions {
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
+	String CaseData_surveillanceToolLastShareDate = "CaseData.surveillanceToolLastShareDate";
+	String CaseData_surveillanceToolShareCount = "CaseData.surveillanceToolShareCount";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
@@ -406,6 +408,9 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";

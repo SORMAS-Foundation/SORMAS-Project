@@ -72,26 +72,27 @@ public class ExternalSurveillanceServiceGateway {
 			sendToExternalSurveillanceTool(
 				entityString,
 				gatewayCall,
-				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent));
+				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent),
+				SormasUI::refreshView);
 		}, shareInfoCriteria, editComponent);
 		targetLayout.addComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
 
 		return shareComponent;
 	}
 
-	public static void sendCasesToExternalSurveillanceTool(List<String> uuids) {
+	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.entityCases), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids);
-		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent));
+		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback);
 	}
 
-	public static void sendEventsToExternalSurveillanceTool(List<String> uuids) {
+	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.entityEvents), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
-		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent));
+		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback);
 	}
 
-	private static void sendToExternalSurveillanceTool(String entityString, GatewayCall gatewayCall, String successMessage) {
+	private static void sendToExternalSurveillanceTool(String entityString, GatewayCall gatewayCall, String successMessage, Runnable callback) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_confirmSend),
 			new Label(String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSend), entityString.toLowerCase())),
@@ -101,7 +102,7 @@ public class ExternalSurveillanceServiceGateway {
 			confirmed -> {
 				if (confirmed) {
 					handleGatewayCall(gatewayCall, successMessage);
-					SormasUI.refreshView();
+					callback.run();
 				}
 			});
 	}

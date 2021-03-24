@@ -69,6 +69,9 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesNotSharedWithExternalSurvTool";
+	public static final String ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesSharedWithExternalSurvTool";
+	public static final String ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesChangedSinceLastSharedWithExternalSurvTool";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -120,7 +123,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean onlyContactsFromOtherInstances;
 	private Boolean onlyCasesNotSharedWithExternalSurvTool;
 	private Boolean onlyCasesSharedWithExternalSurvTool;
-	private Boolean onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
+	private Boolean onlyCasesChangedSinceLastSharedWithExternalSurvTool;
 
 	@Override
 	public CaseCriteria clone() {
@@ -616,11 +619,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.onlyCasesSharedWithExternalSurvTool = onlyCasesSharedWithExternalSurvTool;
 	}
 
-	public Boolean getOnlyCasesCahngedSinceLastSharedWithExternalSurvTool() {
-		return onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
+	public Boolean getOnlyCasesChangedSinceLastSharedWithExternalSurvTool() {
+		return onlyCasesChangedSinceLastSharedWithExternalSurvTool;
 	}
 
-	public void setOnlyCasesCahngedSinceLastSharedWithExternalSurvTool(Boolean onlyCasesCahngedSinceLastSharedWithExternalSurvTool) {
-		this.onlyCasesCahngedSinceLastSharedWithExternalSurvTool = onlyCasesCahngedSinceLastSharedWithExternalSurvTool;
+	public void setOnlyCasesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyCasesChangedSinceLastSharedWithExternalSurvTool) {
+		this.onlyCasesChangedSinceLastSharedWithExternalSurvTool = onlyCasesChangedSinceLastSharedWithExternalSurvTool;
 	}
 }

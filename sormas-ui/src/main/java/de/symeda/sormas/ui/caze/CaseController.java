@@ -1493,7 +1493,7 @@ public class CaseController {
 			return;
 		}
 
-		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids);
+		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback);
 	}
 
 }

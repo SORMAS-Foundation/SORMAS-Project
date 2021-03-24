@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -82,8 +83,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
-		+ filterLocsCss(
-			"vspace-3",
+		+ filterLocs(
 			CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 			CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY,
 			CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
@@ -93,6 +93,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
+		+ filterLocsCss(
+			VSPACE_3,
+			CaseCriteria.ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
+			CaseCriteria.ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL,
+			CaseCriteria.ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
@@ -311,6 +316,35 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
 					I18nProperties.getCaption(Captions.caseFilterInludeCasesFromOtherJurisdictions),
 					I18nProperties.getDescription(Descriptions.descCaseFilterIncludeCasesFromOtherJurisdictions),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+		}
+
+		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotSharedWithExternalSurvTool),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesSharedWithExternalSurvToo),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool),
+					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
