@@ -1007,23 +1007,23 @@ public class DevModeView extends AbstractConfigurationView {
 				sample.setLab(config.getLaboratory());
 
 				if (config.isRequestPathogenTestsToBePerformed()) {
-					Set set = new HashSet<PathogenTestType>();
+					Set pathogenTestTypes = new HashSet<PathogenTestType>();
 					int until = randomInt(1, PathogenTestType.values().length);
 					for (int j = 0; j < until; j++) {
-						set.add(PathogenTestType.values()[j]);
+						pathogenTestTypes.add(PathogenTestType.values()[j]);
 					}
 					sample.setPathogenTestingRequested(true);
-					sample.setRequestedPathogenTests(set);
+					sample.setRequestedPathogenTests(pathogenTestTypes);
 				}
 
 				if (config.isRequestAdditionalTestsToBePerformed()) {
-					Set set = new HashSet<AdditionalTestType>();
+					Set additionalTestTypes = new HashSet<AdditionalTestType>();
 					int until = randomInt(1, AdditionalTestType.values().length);
 					for (int j = 0; j < until; j++) {
-						set.add(AdditionalTestType.values()[j]);
+						additionalTestTypes.add(AdditionalTestType.values()[j]);
 					}
 					sample.setAdditionalTestingRequested(true);
-					sample.setRequestedAdditionalTests(set);
+					sample.setRequestedAdditionalTests(additionalTestTypes);
 				}
 
 				if (config.isSendDispatch()) {
