@@ -22,6 +22,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -628,7 +629,11 @@ public class StatisticsView extends AbstractStatisticsView {
 					seriesValue = value.getIncidence(incidenceDivisor);
 				}
 				Object seriesId = value.getRowKey();
-				hcjs.append("['").append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId))).append("',").append(seriesValue).append("],");
+				hcjs.append("['")
+					.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId)))
+					.append("',")
+					.append(seriesValue)
+					.append("],");
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
@@ -726,22 +731,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		hcjs.append("],");
 
-		hcjs.append("exporting: {\n" +
-				"        buttons: {\n" +
-				"            contextButton: {\n" +
-				"                menuItems: [\n" +
-				"                    'printChart',\n" +
-				"                    'separator',\n" +
-				"                    'downloadPNG',\n" +
-				"                    'downloadJPEG',\n" +
-				"                    'downloadPDF',\n" +
-				"                    'downloadSVG',\n" +
-				"                    'downloadCSV',\n" +
-				"                    'downloadXLS'\n" +
-				"                ]\n" +
-				"            }\n" +
-				"        }\n" +
-				"    }");
+		hcjs.append(
+			"exporting: {\n" + "        buttons: {\n" + "            contextButton: {\n" + "                menuItems: [\n"
+				+ "                    'printChart',\n" + "                    'separator',\n" + "                    'downloadPNG',\n"
+				+ "                    'downloadJPEG',\n" + "                    'downloadPDF',\n" + "                    'downloadSVG',\n"
+				+ "                    'downloadCSV',\n" + "                    'downloadXLS'\n" + "                ]\n" + "            }\n"
+				+ "        }\n" + "    }");
 		hcjs.append("};");
 
 		chart.setHcjs(hcjs.toString());
@@ -973,11 +968,56 @@ public class StatisticsView extends AbstractStatisticsView {
 					polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
 				}
 				// fillOpacity is used, so we can still hover the region
-				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": " + fillOpacity + "}");
+				polygon.setOptions(
+					"{\"stroke\": true, \"color\": '#000000', \"weight\": 1, \"fillColor\": '" + fillColor + "', \"fillOpacity\": " + fillOpacity
+						+ "}");
 				polygon.setLatLons(shapePart);
 				resultPolygons.add(polygon);
 			}
 		}
+		// sort polygon array, so that polygons which are completely contained by another appear on top
+		int poly1index = 0, poly2index = 0;
+		for (LeafletPolygon poly1 : resultPolygons) {
+			for (LeafletPolygon poly2 : resultPolygons) {
+				if (poly1index == poly2index) {
+					continue;
+				}
+				double LatMin0 = poly1.getLatLons()[0][0], LatMax0 = poly1.getLatLons()[0][0], LonMin0 = poly1.getLatLons()[0][1],
+					LonMax0 = poly1.getLatLons()[0][1];
+				for (double[] LatLon : poly1.getLatLons()) {
+					if (LatLon[0] < LatMin0)
+						LatMin0 = LatLon[0];
+					if (LatLon[0] > LatMax0)
+						LatMax0 = LatLon[0];
+					if (LatLon[1] < LonMin0)
+						LonMin0 = LatLon[1];
+					if (LatLon[1] > LonMax0)
+						LonMax0 = LatLon[1];
+				}
+				double LatMin1 = poly2.getLatLons()[0][0], LatMax1 = poly2.getLatLons()[0][0], LonMin1 = poly2.getLatLons()[0][1],
+					LonMax1 = poly2.getLatLons()[0][1];
+				for (double[] LatLon : poly2.getLatLons()) {
+					if (LatLon[0] < LatMin1)
+						LatMin1 = LatLon[0];
+					if (LatLon[0] > LatMax1)
+						LatMax1 = LatLon[0];
+					if (LatLon[1] < LonMin1)
+						LonMin1 = LatLon[1];
+					if (LatLon[1] > LonMax1)
+						LonMax1 = LatLon[1];
+				}
+				if (LatMax0 < LatMax1 && LatMin0 > LatMin1 && LonMax0 < LonMax1 && LonMin0 > LonMin1) {
+					// switch if poly1 is inside poly2
+					Collections.swap(resultPolygons, poly1index, poly2index); // hmmm, now i change the list while iterating...
+				}
+				if (LatMax0 > LatMax1 && LatMin0 < LatMin1 && LonMax0 > LonMax1 && LonMin0 < LonMin1) {
+
+				}
+				poly2index++;
+			}
+			poly1index++;
+		}
+
 		map.addPolygonGroup("results", resultPolygons);
 
 		mapLayout.addComponent(map);

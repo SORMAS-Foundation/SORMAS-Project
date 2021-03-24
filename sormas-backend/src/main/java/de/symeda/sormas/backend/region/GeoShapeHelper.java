@@ -17,8 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.region.GeoLatLon;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.JTS;
@@ -34,9 +39,8 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
 
 public class GeoShapeHelper {
 
@@ -134,7 +138,7 @@ public class GeoShapeHelper {
 	 * @return
 	 *         The name of the feature, null if no name could be found.
 	 */
-	public static String sniffShapeName(SimpleFeature feature, List<String> list) {
+	public static String sniffShapeAttribute(SimpleFeature feature, List<String> list) {
 		String shapeName = null;
 		// all these attributes can hold the region name
 		for (String attr : list) {
