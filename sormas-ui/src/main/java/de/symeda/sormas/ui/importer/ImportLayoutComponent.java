@@ -1,8 +1,12 @@
 package de.symeda.sormas.ui.importer;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.VerticalLayout;
@@ -22,10 +26,17 @@ public class ImportLayoutComponent extends VerticalLayout {
 	private CheckBox checkbox;
 
 	public ImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption) {
-		this(step, headline, infoText, buttonIcon, buttonCaption, null);
+		this(step, headline, infoText, buttonIcon, buttonCaption, null, null);
 	}
 
-	public ImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption, String checkboxCaption) {
+	public ImportLayoutComponent(
+		int step,
+		String headline,
+		String infoText,
+		Resource buttonIcon,
+		String buttonCaption,
+		String checkboxCaption,
+		String checkboxDescription) {
 		setSpacing(false);
 		setMargin(false);
 
@@ -40,9 +51,20 @@ public class ImportLayoutComponent extends VerticalLayout {
 
 		if (checkboxCaption != null) {
 			checkbox = new CheckBox(checkboxCaption);
-			CssStyles.style(checkbox, CssStyles.VSPACE_TOP_3);
 			checkbox.setValue(false);
-			addComponent(checkbox);
+			if (checkboxDescription != null) {
+				HorizontalLayout checkboxBar = new HorizontalLayout();
+				checkboxBar.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+				checkboxBar.setDescription(checkboxDescription);
+				CssStyles.style(checkboxBar, CssStyles.VSPACE_TOP_3);
+				checkboxBar.addComponent(checkbox);
+				Label labelInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+				checkboxBar.addComponent(labelInfo);
+				addComponent(checkboxBar);
+			} else {
+				CssStyles.style(checkbox, CssStyles.VSPACE_TOP_3);
+				addComponent(checkbox);
+			}
 		}
 
 		if (buttonCaption != null) {

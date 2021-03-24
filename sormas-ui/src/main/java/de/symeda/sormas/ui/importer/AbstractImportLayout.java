@@ -10,8 +10,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -116,11 +120,16 @@ public class AbstractImportLayout extends VerticalLayout {
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(generatedReceiver);
 
+		HorizontalLayout checkboxBar = new HorizontalLayout();
+		checkboxBar.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+		checkboxBar.setDescription(I18nProperties.getString(Strings.infoImportInfrastructureAllowOverwrite));
+		CssStyles.style(checkboxBar, CssStyles.VSPACE_TOP_3);
 		CheckBox allowOverwrite = new CheckBox(I18nProperties.getCaption(Captions.infrastructureImportAllowOverwrite));
-		CssStyles.style(allowOverwrite, CssStyles.VSPACE_TOP_3);
 		allowOverwrite.setValue(false);
-
-		addComponent(allowOverwrite);
+		checkboxBar.addComponent(allowOverwrite);
+		Label labelInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		checkboxBar.addComponent(labelInfo);
+		addComponent(checkboxBar);
 		addComponent(upload);
 
 		allowOverwrite.addValueChangeListener(e -> {

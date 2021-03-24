@@ -571,6 +571,7 @@ public interface Strings {
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportAllSubcontinents = "infoImportAllSubcontinents";
 	String infoImportCsvFile = "infoImportCsvFile";
+	String infoImportInfrastructureAllowOverwrite = "infoImportInfrastructureAllowOverwrite";
 	String infoImportProcess = "infoImportProcess";
 	String infoImportSimilarity = "infoImportSimilarity";
 	String infoLineListingConfigurationNation = "infoLineListingConfigurationNation";

@@ -74,7 +74,8 @@ public abstract class AbstractImportDefaultCsvLayout extends AbstractImportLayou
 			infoText,
 			null,
 			I18nProperties.getCaption(Captions.actionImport),
-			I18nProperties.getCaption(Captions.infrastructureImportAllowOverwrite));
+			I18nProperties.getCaption(Captions.infrastructureImportAllowOverwrite),
+			I18nProperties.getString(Strings.infoImportInfrastructureAllowOverwrite));
 		importCsvComponent.getButton().addClickListener(clickListener);
 		allowOverwrite = importCsvComponent.getCheckbox();
 		addComponent(importCsvComponent);
