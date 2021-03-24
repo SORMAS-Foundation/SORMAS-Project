@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.user;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
@@ -21,13 +22,22 @@ import static org.mockito.Mockito.when;
 
 public class UserServiceTest extends AbstractBeanTest {
 
+    private static MockedStatic<AuthProvider> mockAuthProvider;
+
     @BeforeClass
     public static void beforeClass() {
         AuthProvider authProvider = mock(AuthProvider.class);
-
-        MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
+        mockAuthProvider = mockStatic(AuthProvider.class);
+        assertNotNull(mockAuthProvider);
         mockAuthProvider.when(AuthProvider::getProvider).thenReturn(authProvider);
         when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        assertNotNull(mockAuthProvider);
+        //Important: release static mock.
+        mockAuthProvider.closeOnDemand();
     }
 
     @Test

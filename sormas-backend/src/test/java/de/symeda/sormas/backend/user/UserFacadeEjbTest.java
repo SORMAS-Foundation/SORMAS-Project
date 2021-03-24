@@ -120,6 +120,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
 		assertThat(validLoginRoles, nullValue());
+
+        //Important: release static mock.
+		mockAuthProvider.closeOnDemand();
 	}
 
     @Test

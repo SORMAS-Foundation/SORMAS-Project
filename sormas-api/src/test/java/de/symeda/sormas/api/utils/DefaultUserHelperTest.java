@@ -31,8 +31,6 @@ public class DefaultUserHelperTest {
     private static final String DEFAULT_COMM_OFF_USER_PASS = "CommOff";
     private static final String DEFAULT_POE_INF_USER_PASS = "PoeInf";
 
-    private static final int COUNT_OF_DEFAULT_ACCOUNTS = 13;
-
     private static final Map<String, String> DEFAULT_USERS  = new HashMap<String, String>() {{
         put(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASS);
         put(DEFAULT_SURV_SUP_USER_PASS, DEFAULT_SURV_SUP_USER_PASS);
