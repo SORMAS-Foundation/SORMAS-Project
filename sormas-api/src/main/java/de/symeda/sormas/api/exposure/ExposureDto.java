@@ -107,7 +107,6 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	private String exposureTypeDetails;
 	private LocationDto location;
-	@HideForCountriesExcept
 	private ExposureRole exposureRole;
 
 	// Type of Place
