@@ -55,9 +55,9 @@ public interface Captions {
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
+	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
 	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
-	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllCountries = "actionImportAllCountries";

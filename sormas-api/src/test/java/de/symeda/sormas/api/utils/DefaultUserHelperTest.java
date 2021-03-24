@@ -28,9 +28,10 @@ public class DefaultUserHelperTest {
     private static final String DEFAULT_NAT_CLIN_USER_PASS = "NatClin";
     private static final String DEFAULT_SURV_OFF_USER_PASS = "SurvOff";
     private static final String DEFAULT_HOSP_INF_USER_PASS = "HospInf";
+    private static final String DEFAULT_COMM_OFF_USER_PASS = "CommOff";
     private static final String DEFAULT_POE_INF_USER_PASS = "PoeInf";
 
-    private static final int COUNT_OF_DEFAULT_ACCOUNTS = 12;
+    private static final int COUNT_OF_DEFAULT_ACCOUNTS = 13;
 
     private static final Map<String, String> DEFAULT_USERS  = new HashMap<String, String>() {{
         put(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASS);
@@ -44,6 +45,7 @@ public class DefaultUserHelperTest {
         put(DEFAULT_NAT_CLIN_USER_PASS, DEFAULT_NAT_CLIN_USER_PASS);
         put(DEFAULT_SURV_OFF_USER_PASS, DEFAULT_SURV_OFF_USER_PASS);
         put(DEFAULT_HOSP_INF_USER_PASS, DEFAULT_HOSP_INF_USER_PASS);
+        put(DEFAULT_COMM_OFF_USER_PASS, DEFAULT_COMM_OFF_USER_PASS);
         put(DEFAULT_POE_INF_USER_PASS, DEFAULT_POE_INF_USER_PASS);
     }};
 
@@ -79,7 +81,7 @@ public class DefaultUserHelperTest {
     public void currentUserUsesDefaultPassword() {
         List<UserDto> defaultDtos = new ArrayList<>();
         UserDto admin = new UserDto();
-        admin.setUserName("admin");
+        admin.setUserName(DEFAULT_ADMIN_USERNAME);
         defaultDtos.add(admin);
         UserDto randomUser = new UserDto();
         randomUser.setUserName(UUID.randomUUID().toString());
@@ -94,7 +96,7 @@ public class DefaultUserHelperTest {
     public void otherUsersWithDefaultPassword() {
         List<UserDto> defaultDtos = new ArrayList<>();
         UserDto admin = new UserDto();
-        admin.setUserName("admin");
+        admin.setUserName(DEFAULT_ADMIN_USERNAME);
         defaultDtos.add(admin);
         UserDto randomUser = new UserDto();
         randomUser.setUserName(UUID.randomUUID().toString());
@@ -109,7 +111,7 @@ public class DefaultUserHelperTest {
 
     @Test
     public void getDefaultUserNames() {
-        assertEquals(COUNT_OF_DEFAULT_ACCOUNTS, DefaultUserHelper.getDefaultUserNames().size());
+        assertEquals(DEFAULT_USERS.size(), DefaultUserHelper.getDefaultUserNames().size());
         Set<String> result = DefaultUserHelper.getDefaultUserNames();
         for (String defaultUser : DEFAULT_USERS.keySet()) {
             assertTrue(result.contains(defaultUser));
