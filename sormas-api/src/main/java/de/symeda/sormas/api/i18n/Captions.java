@@ -405,6 +405,7 @@ public interface Captions {
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";

@@ -276,6 +276,7 @@ public class CaseListCriteriaBuilder {
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
+				caze.get(Case.RE_INFECTION),
 				joins.getAddress().get(Location.CITY),
 				joins.getAddress().get(Location.STREET),
 				joins.getAddress().get(Location.HOUSE_NUMBER),
