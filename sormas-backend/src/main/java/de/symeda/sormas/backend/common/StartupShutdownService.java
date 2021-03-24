@@ -144,10 +144,14 @@ import java.util.stream.Stream;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
-	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
+
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
+
+	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
+
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
 			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
@@ -198,20 +202,6 @@ public class StartupShutdownService {
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
-
-	static boolean isBlankOrSqlComment(String sqlLine) {
-		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
-	}
-
-	static Integer extractSchemaVersion(String sqlLine) {
-
-		return Optional.ofNullable(sqlLine)
-			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
-			.filter(Matcher::matches)
-			.map(m -> m.group(1))
-			.map(Integer::parseInt)
-			.orElse(null);
-	}
 
 	@PostConstruct
 	public void startup() {
@@ -747,6 +737,20 @@ public class StartupShutdownService {
 		} finally {
 			logger.info("Database update completed.");
 		}
+	}
+
+	static boolean isBlankOrSqlComment(String sqlLine) {
+		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
+	}
+
+	static Integer extractSchemaVersion(String sqlLine) {
+
+		return Optional.ofNullable(sqlLine)
+			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+			.filter(Matcher::matches)
+			.map(m -> m.group(1))
+			.map(Integer::parseInt)
+			.orElse(null);
 	}
 
 	private void upgrade() {
