@@ -1,0 +1,2 @@
+This file contains special characters дцья.
+It is ISO-8859-1 encoded.

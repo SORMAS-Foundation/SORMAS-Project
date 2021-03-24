@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.labmessage;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import javax.naming.CannotProceedException;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -73,9 +75,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.naming.CannotProceedException;
-import javax.validation.constraints.NotNull;
 
 public class LabMessageController {
 
@@ -211,7 +210,7 @@ public class LabMessageController {
 				List<SampleDto> samples =
 					FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(eventParticipantRef));
 				if (samples.isEmpty()) {
-					createSample(ui, SampleDto.build(ui.getUserProvider().getUserReference(), eventParticipantRef), labMessageDto, false);
+					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), labMessageDto, false);
 				} else {
 					pickOrCreateSample(ui, eventParticipantDto, labMessageDto, samples);
 				}

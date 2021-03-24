@@ -75,7 +75,7 @@ public class CaseListCriteriaBuilder {
 
 	private <T> CriteriaQuery<T> buildIndexCriteria(
 		Class<T> type,
-		BiFunction<Root<Case>, CaseJoins<Case>, List<Selection<?>>> selectionProvider,
+		BiFunction<Root<Case>, CaseQueryContext, List<Selection<?>>> selectionProvider,
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties,
@@ -84,9 +84,10 @@ public class CaseListCriteriaBuilder {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
 		Root<Case> caze = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
-		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, joins));
+		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, caseQueryContext));
 
 		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
 		Root<Case> visitCountRoot = visitCountSq.from(Case.class);
@@ -153,7 +154,7 @@ public class CaseListCriteriaBuilder {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -164,8 +165,14 @@ public class CaseListCriteriaBuilder {
 		return cq;
 	}
 
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
+	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
 
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		return getCaseIndexSelections(root, joins);
+	}
+
+	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
 		return Arrays.asList(
 			root.get(AbstractDomainObject.ID),
 			root.get(Case.UUID),
@@ -262,9 +269,11 @@ public class CaseListCriteriaBuilder {
 		}
 	}
 
-	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseQueryContext caseQueryContext) {
 
-		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, joins));
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
 				joins.getAddress().get(Location.CITY),
@@ -272,7 +281,7 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.HOUSE_NUMBER),
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
-				joins.getPerson().get(Person.PHONE),
+				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
 				joins.getSymptoms().get(Symptoms.ONSET_DATE)));

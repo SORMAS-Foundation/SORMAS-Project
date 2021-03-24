@@ -79,7 +79,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -206,7 +206,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				this.getValue().setFacilityType((FacilityType) type.getValue());
 			}
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
 		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC);

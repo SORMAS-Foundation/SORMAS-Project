@@ -25,9 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.webkit.WebView;
-
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -320,12 +318,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 
-		initialRegions = InfrastructureHelper.loadRegions();
+		initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
 		allDistricts = InfrastructureHelper.loadAllDistricts();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
-		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 
 		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
@@ -638,7 +636,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		if (record.getHealthFacility() == null) {
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);

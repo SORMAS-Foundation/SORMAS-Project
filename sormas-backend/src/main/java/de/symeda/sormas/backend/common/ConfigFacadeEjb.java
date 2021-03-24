@@ -128,7 +128,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
-	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
@@ -463,8 +463,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getSurvnetGatewayUrl() {
-		return getProperty(SURVNET_GATEWAY_URL, null);
+	public String getExternalSurveillanceToolGatewayUrl() {
+		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, null);
 	}
 
 	@Override

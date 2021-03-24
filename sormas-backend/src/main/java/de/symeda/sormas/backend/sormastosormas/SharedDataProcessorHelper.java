@@ -322,7 +322,7 @@ public class SharedDataProcessorHelper {
 			region.getExternalId() != null ? regionFacade.getByExternalId(region.getExternalId(), false).stream().findFirst() : Optional.empty();
 
 		if (!localRegion.isPresent()) {
-			localRegion = regionFacade.getByName(region.getCaption(), false).stream().findFirst();
+			localRegion = regionFacade.getReferencesByName(region.getCaption(), false).stream().findFirst();
 		}
 
 		return localRegion.orElse(null);

@@ -137,7 +137,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		final ComboBox hospitalizationReason = addField(HospitalizationDto.HOSPITALIZATION_REASON);
 		final TextField otherHospitalizationReason = addField(HospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
-
 		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField =
@@ -181,11 +180,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		}
 
 		FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				HospitalizationDto.OTHER_HOSPITALIZATION_REASON,
-				HospitalizationDto.HOSPITALIZATION_REASON,
-				Collections.singletonList(HospitalizationReasonType.OTHER),
-				true);
+			getFieldGroup(),
+			HospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+			HospitalizationDto.HOSPITALIZATION_REASON,
+			Collections.singletonList(HospitalizationReasonType.OTHER),
+			true);
 
 		// Validations
 		admissionDateField.addValidator(

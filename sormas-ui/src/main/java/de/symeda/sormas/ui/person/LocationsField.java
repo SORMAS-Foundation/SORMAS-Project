@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Window;
@@ -11,8 +10,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -38,23 +35,6 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 	@Override
 	protected void editEntry(LocationDto entry, boolean create, Consumer<LocationDto> commitCallback) {
-
-		if (create && entry.getUuid() == null) {
-			entry.setUuid(DataHelper.createUuid());
-		}
-
-		if (create) {
-			List<CountryReferenceDto> countryItems = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-			CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
-			CountryReferenceDto defaultCountry = countryItems.stream()
-				.filter(
-					countryReferenceDto -> serverCountryDto != null
-						&& countryReferenceDto.getIsoCode().equalsIgnoreCase(serverCountryDto.getIsoCode()))
-				.findFirst()
-				.orElse(null);
-			entry.setCountry(defaultCountry);
-		}
-
 		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.showAddressType();
 		editForm.setValue(entry);
@@ -168,5 +148,13 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			columnId = LocationDto.STREET;
 		}
 		return fieldAccessCheckers.isAccessible(getEntryType(), columnId.toString());
+	}
+
+	@Override
+	protected LocationDto createEntry() {
+		LocationDto location = LocationDto.build();
+		location.setCountry(FacadeProvider.getCountryFacade().getServerCountry());
+
+		return location;
 	}
 }

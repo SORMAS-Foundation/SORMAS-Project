@@ -27,9 +27,20 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 
 	private static final long serialVersionUID = -1794892073657582900L;
 
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public DistrictCriteria country(CountryReferenceDto country) {
+		this.country = country;
+
+		return this;
+	}
 
 	public DistrictCriteria region(RegionReferenceDto region) {
 		this.region = region;

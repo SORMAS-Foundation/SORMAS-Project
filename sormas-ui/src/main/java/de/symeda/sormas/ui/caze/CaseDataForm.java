@@ -571,7 +571,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -611,10 +611,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				(CommunityReferenceDto) community.getValue(),
 				(FacilityType) facilityType.getValue(),
 				facility));
+
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
-
+				// switched from home to facility
 				// default values
 				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
@@ -637,11 +638,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				updateFacilityDetails(facility, facilityDetails);
 			} else {
-				if (facility.getValue() == null && !facility.isReadOnly()) {
+				// switched from facility to home
+				if (!facility.isReadOnly()) {
 					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 					facility.addItem(noFacilityRef);
 					facility.setValue(noFacilityRef);
 				}
+				facilityTypeGroup.clear();
+				facilityType.clear();
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(
@@ -653,7 +657,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				(FacilityType) facilityType.getValue(),
 				facility));
 		facility.addValueChangeListener(e -> updateFacilityDetails(facility, facilityDetails));
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
@@ -1261,9 +1265,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			// Make external ID field read-only when SORMAS is connected to a SurvNet instance
-			if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+			if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getExternalSurveillanceToolGatewayUrl())) {
 				setEnabled(false, CaseDataDto.EXTERNAL_ID);
-				((TextField) getField(CaseDataDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
+				((TextField) getField(CaseDataDto.EXTERNAL_ID))
+					.setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
 			}
 		});
 	}

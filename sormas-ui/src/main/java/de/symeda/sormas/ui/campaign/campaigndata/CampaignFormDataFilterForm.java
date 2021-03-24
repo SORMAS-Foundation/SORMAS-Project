@@ -87,7 +87,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		regionFilter = addField(
 			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		districtFilter = addField(
 			FieldConfiguration

@@ -318,6 +318,7 @@
     <string name="heading_outbreak_response">Risposta al focolaio</string>
     <string name="heading_person_involved">Persona Coinvolta</string>
     <string name="heading_person_involved_new">Nuova Persona Coinvolta</string>
+    <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Scegli o Crea Persona</string>
     <string name="heading_pick_or_create_case">Scegli o crea un caso</string>
     <string name="heading_pick_or_create_event">Scegli o crea un evento</string>

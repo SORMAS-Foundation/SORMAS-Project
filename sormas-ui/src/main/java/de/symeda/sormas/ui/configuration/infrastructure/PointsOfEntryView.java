@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -29,12 +27,12 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -57,6 +55,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 	// Filters
 	private SearchField searchField;
+	private ComboBox countryFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox typeFilter;
@@ -77,7 +76,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		SormasUI ui = (SormasUI)getUI();
 
 		viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(PointsOfEntryView.class).get(PointOfEntryCriteria.class);
+		criteria = ViewModelProviders.of(PointsOfEntryView.class)
+			.get(PointOfEntryCriteria.class, new PointOfEntryCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -171,6 +171,18 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
+
+		countryFilter = new CountryCombo((country, isServerCountry) -> {
+			criteria.country(country);
+			grid.reload();
+
+			if (isServerCountry) {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			} else {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
+			}
+		});
+		filterLayout.addComponent(countryFilter);
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(PointOfEntryDto.REGION);
@@ -318,6 +330,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameLike());
+		countryFilter.setValue(criteria.getCountry());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		typeFilter.setValue(criteria.getType());

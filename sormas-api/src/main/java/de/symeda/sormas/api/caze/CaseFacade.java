@@ -30,6 +30,9 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -57,6 +60,10 @@ public interface CaseFacade {
 	long count(CaseCriteria caseCriteria);
 
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
@@ -215,5 +222,5 @@ public interface CaseFacade {
 
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 
-    List<CaseDataDto> getByPersonUuids(List<String> personUuids);
+	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 }
