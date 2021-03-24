@@ -16,15 +16,18 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,8 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+
+import static java.util.stream.Collectors.toList;
 
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
@@ -170,6 +175,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	public List<LabMessageDto> getByLabSampleId(String labSampleId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+		cq.where(from.get(LabMessage.LAB_SAMPLE_ID).in(labSampleId));
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+	@Override
 	public Boolean isProcessed(String uuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -242,7 +257,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 				Expression<?> expression = labMessage.get(sortProperty.propertyName);
 				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
 			})
-			.collect(Collectors.toList());
+			.collect(toList());
 
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);
