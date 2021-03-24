@@ -139,20 +139,20 @@ public class GeoShapeHelper {
 	 *         The name of the feature, null if no name could be found.
 	 */
 	public static String sniffShapeAttribute(SimpleFeature feature, List<String> list) {
-		String shapeName = null;
+		String shapeAttribute = null;
 		// all these attributes can hold the region name
 		for (String attr : list) {
-			shapeName = (String) feature.getAttribute(attr);
-			if (shapeName != null) {
+			shapeAttribute = (String) feature.getAttribute(attr);
+			if (shapeAttribute != null) {
 				break;
 			}
 		}
-		if (shapeName == null) {
-			logger.error("No name for the shape could be found");
+		if (shapeAttribute == null) {
+			logger.error("No attribute for the shape could be found");
 			return null;
 		}
 
-		return shapeName.replaceAll("\\W", "").toLowerCase();
+		return shapeAttribute.replaceAll("\\W", "").toLowerCase();
 	}
 
 	/**

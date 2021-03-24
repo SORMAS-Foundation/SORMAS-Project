@@ -989,13 +989,13 @@ public class StatisticsView extends AbstractStatisticsView {
 				double LatMin1 = Collections.min(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
 				double LatMax1 = Collections.max(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
 				double LonMin1 = Collections.min(poly1LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-				double LonMax1 = Collections.max(poly1LatLons.stream().map(x -> x[2]).collect(Collectors.toList()));
+				double LonMax1 = Collections.max(poly1LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
 
 				List<double[]> poly2LatLons = Arrays.asList(poly2.getLatLons());
 				double LatMin2 = Collections.min(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
 				double LatMax2 = Collections.max(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
 				double LonMin2 = Collections.min(poly2LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-				double LonMax2 = Collections.max(poly2LatLons.stream().map(x -> x[2]).collect(Collectors.toList()));
+				double LonMax2 = Collections.max(poly2LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
 
 				// if the max/min values of poly1 are completely inside those of poly2, switch both
 				if (LatMax1 < LatMax2 && LatMin1 > LatMin2 && LonMax1 < LonMax2 && LonMin1 > LonMin2) {
