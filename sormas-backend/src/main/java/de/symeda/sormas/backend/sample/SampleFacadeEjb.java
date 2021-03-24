@@ -42,8 +42,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseQueryContext;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +78,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -120,7 +119,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -729,7 +727,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
-			List<PathogenTest> pathogenTests = sampleService.getById(exportDto.getId()).getPathogenTests();
+			Sample sample1 = sampleService.getById(exportDto.getId());
+			List<PathogenTest> pathogenTests = sample1.getPathogenTests();
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
 				String lab = pathogenTest.getLab() != null
@@ -761,12 +760,16 @@ public class SampleFacadeEjb implements SampleFacade {
 				}
 			}
 
-			List<AdditionalTest> additionalTests = additionalTestService.getAllBySample(sampleService.getById(exportDto.getId()));
-			if (additionalTests.size() > 0) {
-				exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTests.get(0)));
-			}
-			if (additionalTests.size() > 1) {
-				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.yes));
+			if (exportDto.getAdditionalTestingRequested()) {
+				List<AdditionalTest> additionalTests = additionalTestService.getAllBySample(sample1);
+				if (additionalTests.size() > 0) {
+					exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTests.get(0)));
+				}
+				if (additionalTests.size() > 1) {
+					exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.yes));
+				} else {
+					exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
+				}
 			} else {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
@@ -791,7 +794,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
-		return getExportList(null,  criteria, selectedRows, first, max);
+		return getExportList(null, criteria, selectedRows, first, max);
 	}
 
 	@Override
