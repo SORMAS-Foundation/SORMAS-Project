@@ -118,12 +118,36 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		if (hasOptions) {
 			addFields(customOptions);
 
-			addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
-
-			addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
-
+			CheckBox handoverOwnership = addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+			CheckBox pseudonimyzePersonalData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
 			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+
+			handoverOwnership.addValueChangeListener(e -> {
+				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
+				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
+				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
+				if(ownershipHandedOver) {
+					pseudonimyzePersonalData.setValue(false);
+					pseudonymizeSensitiveData.setValue(false);
+				}
+			});
+
+			pseudonimyzePersonalData.addValueChangeListener(e -> {
+				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonymizeSensitiveData.getValue();
+				handoverOwnership.setEnabled(!pseudonimyze);
+				if (pseudonimyze) {
+					handoverOwnership.setValue(false);
+				}
+			});
+
+			pseudonymizeSensitiveData.addValueChangeListener(e -> {
+				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonimyzePersonalData.getValue();
+				handoverOwnership.setEnabled(!pseudonimyze);
+				if (pseudonimyze) {
+					handoverOwnership.setValue(false);
+				}
+			});
 
 			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 			comment.setRows(3);
