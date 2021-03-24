@@ -31,6 +31,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
@@ -301,6 +303,13 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 
+	public class SeveralNonPrimaryContactDetailsException extends Exception {
+
+		public SeveralNonPrimaryContactDetailsException(String message) {
+			super(message);
+		}
+	}
+
 	public static String buildCaption(String firstName, String lastName) {
 		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
 	}
@@ -460,18 +469,112 @@ public class PersonDto extends PseudonymizableDto {
 		getPersonContactDetails().add(pcd);
 	}
 
+	/**
+	 *
+	 * @return the String representation of the PRIMARY phone number. Phone numbers set with the {@link #setPhone(String)} method
+	 *         automatically become primary.
+	 *         A phone number entered in the personEditForm is not, and thus does not become primary phone number unless the user
+	 *         specifically sets it.
+	 */
 	public String getPhone() {
 		return getPersonContactInformation(PersonContactDetailType.PHONE);
 	}
 
+	/**
+	 *
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getPhone()}. Otherwise, this method tries to return the only phone
+	 *            number for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there are
+	 *            several phone numbers.
+	 * @return String representation of the only phone number to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
+	 */
+	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
+		String primaryPhone = getPhone();
+		if (onlyPrimary || !(primaryPhone == "")) {
+			return primaryPhone;
+		} else {
+			List<String> allPhones = getAllPhoneNumbers();
+			if (allPhones.size() == 0) {
+				return "";
+			} else if (allPhones.size() > 1) {
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allPhones.get(0);
+			}
+		}
+	}
+
+	public ArrayList<String> getAllPhoneNumbers() {
+		ArrayList result = new ArrayList();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param phone
+	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
+	 */
 	public void setPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
 	}
 
+	/**
+	 * 
+	 * @return the PRIMARY email address. Email addresses set with the {@link #setEmailAddress(String)} method automatically become primary.
+	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
+	 *         specifically sets it.
+	 */
 	public String getEmailAddress() {
 		return getPersonContactInformation(PersonContactDetailType.EMAIL);
 	}
 
+	/**
+	 * 
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
+	 *            address for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there
+	 *            are several email
+	 *            addresses.
+	 * @return the only email address to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
+	 */
+	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
+		String primaryEmail = getEmailAddress();
+		if (onlyPrimary || !(primaryEmail == "")) {
+			return primaryEmail;
+		} else {
+			List<String> allEmails = getAllEmailAddresses();
+			if (allEmails.size() == 0) {
+				return "";
+			} else if (allEmails.size() > 1) {
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allEmails.get(0);
+			}
+		}
+	}
+
+	public ArrayList<String> getAllEmailAddresses() {
+		ArrayList result = new ArrayList();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param email
+	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
+	 */
 	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
 	}
