@@ -240,7 +240,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				eventService.createUserFilter(cb, cq, event);
+				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
@@ -311,7 +311,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				eventService.createUserFilter(cb, cq, event);
+				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
