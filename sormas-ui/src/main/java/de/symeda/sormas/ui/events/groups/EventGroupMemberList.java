@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
+import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -34,6 +36,8 @@ import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -77,13 +81,22 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			EventGroupMemberListEntry listEntry = new EventGroupMemberListEntry(event);
 
 			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENT_EDIT)) {
-				listEntry.addUnlinkEventListener(
-					i,
-					(ClickListener) clickEvent -> {
-						ControllerProvider.getEventGroupController().unlinkEventGroup(event.toReference(), eventGroupReference);
-						reload();
-					});
+			if (user.hasUserRight(UserRight.EVENTGROUP_UNLINK)) {
+				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+					if (!user.isNational() && !user.hasRegion(new RegionReferenceDto(event.getJurisdiction().getRegionUuid()))) {
+						new Notification(
+							I18nProperties.getString(Strings.headingEventGroupUnlinkEvent),
+							I18nProperties.getString(Strings.messageEventGroupUnlinkEventFromAnotherJurisdiction),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+						return;
+					}
+
+					ControllerProvider.getEventGroupController().unlinkEventGroup(event.toReference(), eventGroupReference);
+					reload();
+				});
+			}
+			if (user.hasUserRight(UserRight.EVENTGROUP_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));

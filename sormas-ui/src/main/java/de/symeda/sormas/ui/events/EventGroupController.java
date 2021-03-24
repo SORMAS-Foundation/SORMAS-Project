@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
@@ -63,6 +64,39 @@ public class EventGroupController {
 		EventGroupDto eventGroupDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEventGroup));
 		return eventGroupDto;
+	}
+
+	public void select(EventReferenceDto eventReference) {
+		select(Collections.singletonList(eventReference), null);
+	}
+
+	public void select(List<EventReferenceDto> eventReferences, Runnable callback) {
+		Set<String> excludedEventGroupUuids = FacadeProvider.getEventGroupFacade()
+			.getCommonEventGroupsByEvents(eventReferences)
+			.stream()
+			.map(EventGroupReferenceDto::getUuid)
+			.collect(Collectors.toSet());
+		EventGroupSelectionField selectionField = new EventGroupSelectionField(excludedEventGroupUuids);
+		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventGroupSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
+			if (selectedEventGroup != null) {
+				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
+
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
+
+				if (callback != null) {
+					callback.run();
+				} else {
+					SormasUI.refreshView();
+				}
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEventGroup));
 	}
 
 	public void selectOrCreate(EventReferenceDto eventReference) {
@@ -110,7 +144,7 @@ public class EventGroupController {
 
 		final CommitDiscardWrapperComponent<EventGroupDataForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -142,21 +176,28 @@ public class EventGroupController {
 		EventGroupDto eventGroup = FacadeProvider.getEventGroupFacade().getEventGroupByUuid(uuid);
 		EventGroupDataForm eventGroupEditForm = new EventGroupDataForm(false);
 		eventGroupEditForm.setValue(eventGroup);
+		UserProvider user = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<EventGroupDataForm> editView = new CommitDiscardWrapperComponent<>(
 			eventGroupEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
+			user.hasUserRight(UserRight.EVENTGROUP_EDIT),
 			eventGroupEditForm.getFieldGroup());
 
-		editView.addCommitListener(() -> {
-			if (!eventGroupEditForm.getFieldGroup().isModified()) {
-				EventGroupDto updatedEventGroup = eventGroupEditForm.getValue();
-				FacadeProvider.getEventGroupFacade().saveEventGroup(updatedEventGroup);
-				Notification.show(I18nProperties.getString(Strings.messageEventGroupSaved), Notification.Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
-			}
-		});
+		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
+		boolean hasRegion = user.isNational() || regions.stream().allMatch(user::hasRegion);
+		editView.setReadOnly(hasRegion);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+		if (user.hasUserRight(UserRight.EVENTGROUP_EDIT) && hasRegion) {
+			editView.addCommitListener(() -> {
+				if (!eventGroupEditForm.getFieldGroup().isModified()) {
+					EventGroupDto updatedEventGroup = eventGroupEditForm.getValue();
+					FacadeProvider.getEventGroupFacade().saveEventGroup(updatedEventGroup);
+					Notification.show(I18nProperties.getString(Strings.messageEventGroupSaved), Notification.Type.WARNING_MESSAGE);
+					SormasUI.refreshView();
+				}
+			});
+		}
+
+		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
 			editView.addDeleteListener(() -> {
 				deleteEventGroup(eventGroup);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
@@ -164,7 +205,7 @@ public class EventGroupController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
 			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				archiveOrDearchiveEventGroup(uuid, !archived);

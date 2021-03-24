@@ -21,11 +21,13 @@
 package de.symeda.sormas.ui.events.groups;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -55,11 +57,27 @@ public class EventGroupListComponent extends VerticalLayout {
 		EventGroupList eventList = new EventGroupList(event);
 		createEventGroupListComponent(eventList, I18nProperties.getCaption(Captions.eventGroups), e -> {
 			EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
-			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
-			if (events > 0) {
-				ControllerProvider.getEventGroupController().selectOrCreate(event);
-			} else {
+			UserProvider user = UserProvider.getCurrent();
+			if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+				long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+				if (events > 0) {
+					ControllerProvider.getEventGroupController().selectOrCreate(event);
+				} else {
+					ControllerProvider.getEventGroupController().create(event);
+				}
+			} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
 				ControllerProvider.getEventGroupController().create(event);
+			} else {
+				long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+				if (events > 0) {
+					ControllerProvider.getEventGroupController().select(event);
+				} else {
+					new Notification(
+						I18nProperties.getString(Strings.headingEventGroupLinkEvent),
+						I18nProperties.getString(Strings.errorNotRequiredRights),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
 			}
 		});
 	}
@@ -83,7 +101,8 @@ public class EventGroupListComponent extends VerticalLayout {
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+		UserProvider user = UserProvider.getCurrent();
+		if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) || user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.linkEventGroup));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

@@ -22,12 +22,15 @@ package de.symeda.sormas.ui.events.groups;
 
 import java.util.List;
 
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
+import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -71,29 +74,41 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(this.event.getUuid());
 		List<EventGroupIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			EventGroupIndexDto eventGroup = displayedEntries.get(i);
 			EventGroupListEntry listEntry = new EventGroupListEntry(eventGroup);
 
 			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENT_EDIT)) {
+			if (user.hasUserRight(UserRight.EVENTGROUP_UNLINK)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+					if (!user.isNational() && !user.hasRegion(event.getEventLocation().getRegion())) {
+						new Notification(
+							I18nProperties.getString(Strings.headingEventGroupUnlinkEvent),
+							I18nProperties.getString(Strings.messageEventGroupUnlinkEventFromAnotherJurisdiction),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+						return;
+					}
+
 					ControllerProvider.getEventGroupController()
 						.unlinkEventGroup(
-							event,
+							this.event,
 							listEntry.getEventGroup().toReference());
 					reload();
 				});
+			}
+			if (user.hasUserRight(UserRight.EVENTGROUP_EDIT)) {
 				listEntry.addEditListener(i, (ClickListener) clickEvent -> {
 					ControllerProvider.getEventGroupController().navigateToData(listEntry.getEventGroup().getUuid());
 				});
-				listEntry.addListEventsListener(i, (ClickListener) clickEvent -> {
-					EventCriteria eventCriteria = new EventCriteria();
-					eventCriteria.setEventGroup(listEntry.getEventGroup().toReference());
-					ControllerProvider.getEventController().navigateTo(eventCriteria);
-				});
 			}
+			listEntry.addListEventsListener(i, (ClickListener) clickEvent -> {
+				EventCriteria eventCriteria = new EventCriteria();
+				eventCriteria.setEventGroup(listEntry.getEventGroup().toReference());
+				ControllerProvider.getEventController().navigateTo(eventCriteria);
+			});
 			listLayout.addComponent(listEntry);
 		}
 	}

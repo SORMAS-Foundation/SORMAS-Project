@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.utils.SortProperty;
+import java.util.List;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface EventGroupFacade {
@@ -58,4 +58,6 @@ public interface EventGroupFacade {
     void deleteEventGroup(String uuid);
 
     void archiveOrDearchiveEventGroup(String uuid, boolean archive);
+
+    List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
 }

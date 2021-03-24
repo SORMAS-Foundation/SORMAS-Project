@@ -35,6 +35,8 @@ import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -146,11 +148,20 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 		filterLayout.addComponent(createFilterBar());
 
 		mainLayout.addComponent(filterLayout);
-		addSelectEventGroupRadioGroup();
-		mainLayout.addComponent(eventGroupGrid);
-		addCreateEventGroupRadioGroup();
 
-		rbSelectEventGroup.setValue(SELECT_EVENT_GROUP);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			addSelectEventGroupRadioGroup();
+		}
+		mainLayout.addComponent(eventGroupGrid);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+			addCreateEventGroupRadioGroup();
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			rbSelectEventGroup.setValue(SELECT_EVENT_GROUP);
+		} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+			rbSelectEventGroup.setValue(CREATE_EVENT_GROUP);
+		}
 
 		return mainLayout;
 	}

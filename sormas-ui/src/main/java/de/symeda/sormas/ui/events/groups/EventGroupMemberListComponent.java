@@ -70,7 +70,7 @@ public class EventGroupMemberListComponent extends VerticalLayout {
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

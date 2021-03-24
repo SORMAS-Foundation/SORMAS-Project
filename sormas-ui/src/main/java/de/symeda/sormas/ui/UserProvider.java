@@ -18,11 +18,13 @@
 package de.symeda.sormas.ui;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -72,6 +74,15 @@ public class UserProvider {
 
 	public boolean hasAllUserRights(UserRight... userRights) {
 		return getUserRights().containsAll(Arrays.asList(userRights));
+	}
+
+	public boolean isNational() {
+		return getCurrent().hasUserRole(UserRole.NATIONAL_USER);
+	}
+
+	public boolean hasRegion(RegionReferenceDto regionReference) {
+		RegionReferenceDto userRegionReference = getCurrent().getUser().getRegion();
+		return Objects.equals(userRegionReference, regionReference);
 	}
 
 	public UserReferenceDto getUserReference() {

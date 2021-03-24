@@ -388,6 +388,8 @@ public interface Strings {
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
+	String headingEventGroupLinkEvent = "headingEventGroupLinkEvent";
+	String headingEventGroupUnlinkEvent = "headingEventGroupUnlinkEvent";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -775,6 +777,7 @@ public interface Strings {
 	String messageEventGroupCreated = "messageEventGroupCreated";
 	String messageEventGroupDearchived = "messageEventGroupDearchived";
 	String messageEventGroupSaved = "messageEventGroupSaved";
+	String messageEventGroupUnlinkEventFromAnotherJurisdiction = "messageEventGroupUnlinkEventFromAnotherJurisdiction";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
@@ -793,9 +796,11 @@ public interface Strings {
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";
+	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
 	String messageEventToEventGroupUnlinked = "messageEventToEventGroupUnlinked";
+	String messageEventUnlinkEventGroupFromAnotherJurisdiction = "messageEventUnlinkEventGroupFromAnotherJurisdiction";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";

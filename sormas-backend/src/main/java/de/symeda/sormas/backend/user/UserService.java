@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.user;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -481,6 +482,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
+	}
+
+	public boolean hasRegion(RegionReferenceDto regionReference) {
+		User currentUser = getCurrentUser();
+		if (currentUser.getRegion() == null) {
+			return false;
+		}
+		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, User> root) {

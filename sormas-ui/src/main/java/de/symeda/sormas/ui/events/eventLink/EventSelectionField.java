@@ -113,7 +113,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		this.criteria = new EventCriteria();
 		criteria.setExcludedUuids(excludedUuids);
-		criteria.setUserFilterIncluded(false);
+		criteria.setUserFilterIncluded(true);
 		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		initializeGrid();
 	}

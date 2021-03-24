@@ -49,10 +49,15 @@ import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -149,7 +154,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		if (eventGroupCriteria != null) {
 			if (eventGroupCriteria.getUserFilterIncluded()) {
-				eventGroupService.createUserFilter(cb, cq, eventGroup);
+				filter = eventGroupService.createUserFilter(cb, cq, eventGroup);
 			}
 
 			Predicate criteriaFilter = eventGroupService.buildCriteriaFilter(eventGroupCriteria, cb, eventGroup);
@@ -203,7 +208,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		if (eventGroupCriteria != null) {
 			if (eventGroupCriteria.getUserFilterIncluded()) {
-				eventGroupService.createUserFilter(cb, cq, eventGroup);
+				filter = eventGroupService.createUserFilter(cb, cq, eventGroup);
 			}
 
 			Predicate criteriaFilter = eventGroupService.buildCriteriaFilter(eventGroupCriteria, cb, eventGroup);
@@ -224,8 +229,22 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto, boolean checkChangeDate) {
+		User currentUser = userService.getCurrentUser();
+		if (!userService.hasRight(UserRight.EVENTGROUP_EDIT)) {
+			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to edit event groups.");
+		}
 
 		EventGroup eventGroup = fromDto(dto, checkChangeDate);
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
+			for (RegionReferenceDto region : regions) {
+				if (!userService.hasRegion(region)) {
+					throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to edit event groups related to another region.");
+				}
+			}
+		}
 
 		eventGroupService.ensurePersisted(eventGroup);
 
@@ -249,6 +268,11 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences) {
+		User currentUser = userService.getCurrentUser();
+		if (!userService.hasRight(UserRight.EVENTGROUP_LINK)) {
+			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to link events.");
+		}
+
 		if (eventReferences == null || eventReferences.isEmpty()) {
 			return;
 		}
@@ -260,6 +284,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
 
 		for (Event event : events) {
+			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+			if (jurisdictionLevel != JurisdictionLevel.NATION) {
+				Region region = event.getEventLocation().getRegion();
+				if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
+					throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
+				}
+			}
+
 			// Check that the event group is not already related to this event
 			List<EventGroup> filteredEventGroups = eventGroups;
 			if (eventGroups == null) {
@@ -293,7 +325,20 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
+		User currentUser = userService.getCurrentUser();
+		if (!userService.hasRight(UserRight.EVENTGROUP_UNLINK)) {
+			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to unlink events.");
+		}
+
 		Event event = eventService.getByUuid(eventReference.getUuid());
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			Region region = event.getEventLocation().getRegion();
+			if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
+				throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to unlink events from another region to an event group.");
+			}
+		}
 
 		// Check that the event group is not already unlinked to this event
 		if (event.getEventGroups() == null || event.getEventGroups().stream().noneMatch(group -> group.getUuid().equals(eventGroupReference.getUuid()))) {
@@ -315,20 +360,64 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void deleteEventGroup(String uuid) {
-
-		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
+		User currentUser = userService.getCurrentUser();
+		if (!userService.hasRight(UserRight.EVENTGROUP_DELETE)) {
+			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to delete events.");
 		}
 
-		eventGroupService.delete(eventGroupService.getByUuid(uuid));
+		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
+			for (RegionReferenceDto region : regions) {
+				if (!userService.hasRegion(region)) {
+					throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to delete event groups related to another region.");
+				}
+			}
+		}
+
+		eventGroupService.delete(eventGroup);
 	}
 
 	@Override
 	public void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
+		User currentUser = userService.getCurrentUser();
+		if (!userService.hasRight(UserRight.EVENTGROUP_ARCHIVE)) {
+			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de") + "archive events.");
+		}
 
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
+			for (RegionReferenceDto region : regions) {
+				if (!userService.hasRegion(region)) {
+					throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de") + "archive event groups related to another region.");
+				}
+			}
+		}
+
 		eventGroup.setArchived(archive);
 		eventGroupService.ensurePersisted(eventGroup);
+	}
+
+	@Override
+	public List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventGroup> eventGroupRoot = cq.from(EventGroup.class);
+		Join<EventGroup, Event> eventJoin = eventGroupRoot.join(EventGroup.EVENTS, JoinType.INNER);
+		Join<Event, Location> locationJoin = eventJoin.join(Event.EVENT_LOCATION, JoinType.INNER);
+		cq.where(cb.equal(eventGroupRoot.get(EventGroup.UUID), uuid));
+		cq.select(locationJoin.get(Location.REGION).get(Region.UUID));
+
+		return em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.map(RegionReferenceDto::new)
+			.collect(Collectors.toList());
 	}
 
 	public static EventGroupDto toDto(EventGroup source) {
