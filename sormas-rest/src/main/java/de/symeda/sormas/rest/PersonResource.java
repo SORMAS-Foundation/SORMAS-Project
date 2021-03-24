@@ -47,7 +47,7 @@ import de.symeda.sormas.api.person.PersonDto;
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
-	"REST_USER" })
+	"REST_USER", "ADMIN" })
 public class PersonResource extends EntityDtoResource {
 
 	@GET

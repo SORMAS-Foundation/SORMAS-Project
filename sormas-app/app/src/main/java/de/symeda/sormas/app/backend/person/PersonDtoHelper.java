@@ -60,7 +60,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PersonDto> personDtos) throws NoConnectionException {
+	public Call<List<PushResult>> pushAll(List<PersonDto> personDtos) throws NoConnectionException {
 		return RetroProvider.getPersonFacade().pushAll(personDtos);
 	}
 
