@@ -146,7 +146,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 						? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true)
 						: null);
 		});
-		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		healthFacility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {

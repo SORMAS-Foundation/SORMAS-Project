@@ -36,4 +36,6 @@ public interface DiseaseVariantFacade {
     List<DiseaseVariantReferenceDto> getAll();
 
     List<DiseaseVariantReferenceDto> getAllByDisease(Disease disease);
+
+    List<DiseaseVariantReferenceDto> getByName(String name, Disease disease);
 }

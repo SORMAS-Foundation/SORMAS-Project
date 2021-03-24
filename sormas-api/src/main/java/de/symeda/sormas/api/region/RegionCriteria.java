@@ -29,6 +29,7 @@ public class RegionCriteria extends BaseCriteria implements Serializable, Clonea
 
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
+	private CountryReferenceDto country;
 
 	@IgnoreForUrl
 	public String getNameEpidLike() {
@@ -48,5 +49,15 @@ public class RegionCriteria extends BaseCriteria implements Serializable, Clonea
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
+	}
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public RegionCriteria country(CountryReferenceDto country) {
+		this.country = country;
+
+		return this;
 	}
 }

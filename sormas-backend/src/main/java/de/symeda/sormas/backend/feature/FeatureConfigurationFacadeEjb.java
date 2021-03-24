@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,15 +112,15 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		if (includeInactive) {
 			if (criteria.getDistrict() == null) {
-				List<District> districts = null;
+				List<District> districts;
 				if (criteria.getRegion() != null) {
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
 					districts = districtService.getAllActiveByRegion(region);
 				} else {
-					districts = districtService.getAllActive();
+					districts = districtService.getAllActiveByServerCountry();
 				}
 
-				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
+				List<String> activeUuids = resultList.stream().map(FeatureConfigurationIndexDto::getDistrictUuid).collect(Collectors.toList());
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
 
 				for (District district : districts) {
@@ -138,7 +139,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		if (criteria.getRegion() != null) {
-			resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
+			resultList.sort(Comparator.comparing(FeatureConfigurationIndexDto::getDistrictName));
 		} else {
 			resultList.sort((c1, c2) -> {
 				if (c1.getRegionName().equals(c2.getRegionName())) {

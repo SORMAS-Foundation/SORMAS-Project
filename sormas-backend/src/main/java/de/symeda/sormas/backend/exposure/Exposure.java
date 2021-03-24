@@ -64,6 +64,7 @@ public class Exposure extends AbstractDomainObject {
 
 	private EpiData epiData;
 	private User reportingUser;
+	private boolean probableInfectionEnvironment;
 	private Date startDate;
 	private Date endDate;
 	private String description;
@@ -145,6 +146,15 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	@Column
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

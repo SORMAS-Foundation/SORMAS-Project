@@ -180,7 +180,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 				return createTokens(dateValues);
 			case REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			case DISTRICT:
 				if (jurisdictionElement == null) {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
@@ -220,7 +220,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 					return new ArrayList<>();
 				}
 			case PERSON_REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			case PERSON_DISTRICT:
 				if (residenceElement == null) {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
