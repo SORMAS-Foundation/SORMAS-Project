@@ -94,17 +94,6 @@ public class DefaultPasswordOtherScreen extends Window {
 			onContinue.run();
 		}, ValoTheme.BUTTON_PRIMARY);
 
-		Button generateNewPasswordsButton = ButtonHelper.createButton(Captions.actionGenerateNewPasswords, (Button.ClickListener) clickEvent -> {
-			selectionModel.getSelectedItems().forEach(item -> {
-				item.setRight(FacadeProvider.getUserFacade().resetPassword(item.getLeft().getUuid()));
-				userGrid.getDataProvider().refreshItem(item);
-			});
-			selectionModel.deselectAll();
-			newPasswordSetHintsLabel.setVisible(true);
-			continueButton.setCaption(I18nProperties.getCaption(Captions.actionContinue));
-			center();
-		});
-
 		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandFileDownloader.OnDemandStreamResource() {
 
 			@Override
@@ -116,10 +105,10 @@ public class DefaultPasswordOtherScreen extends Window {
 			public InputStream getStream() {
 				StringWriter stringWriter = new StringWriter();
 				CSVWriter csvWriter = CSVUtils.createCSVWriter(stringWriter, ',');
-				csvWriter.writeNext(new String[]{
+				csvWriter.writeNext(
+					new String[] {
 						I18nProperties.getCaption(Captions.User_userName),
-						I18nProperties.getString(Strings.DefaultPassword_newPassword)
-				});
+						I18nProperties.getString(Strings.DefaultPassword_newPassword) });
 				for (MutablePair<UserDto, String> item : usersWithNewPassword) {
 					if (item.getRight() != null) {
 						csvWriter.writeNext(
@@ -135,8 +124,21 @@ public class DefaultPasswordOtherScreen extends Window {
 
 		Button exportToCsvButton = ButtonHelper.createButton(Captions.export, (Button.ClickListener) clickEvent -> {
 		});
+		exportToCsvButton.setEnabled(false);
 
 		fileDownloader.extend(exportToCsvButton);
+
+		Button generateNewPasswordsButton = ButtonHelper.createButton(Captions.actionGenerateNewPasswords, (Button.ClickListener) clickEvent -> {
+			selectionModel.getSelectedItems().forEach(item -> {
+				item.setRight(FacadeProvider.getUserFacade().resetPassword(item.getLeft().getUuid()));
+				userGrid.getDataProvider().refreshItem(item);
+			});
+			selectionModel.deselectAll();
+			newPasswordSetHintsLabel.setVisible(true);
+			continueButton.setCaption(I18nProperties.getCaption(Captions.actionContinue));
+			exportToCsvButton.setEnabled(true);
+			center();
+		});
 
 		HorizontalLayout buttonBarLayout = new HorizontalLayout();
 		buttonBarLayout.addComponent(generateNewPasswordsButton);
