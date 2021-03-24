@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -984,39 +985,26 @@ public class StatisticsView extends AbstractStatisticsView {
 					continue;
 				}
 				// determine maximum latitude and longitude of each polygon
-				double LatMin0 = poly1.getLatLons()[0][0], LatMax0 = poly1.getLatLons()[0][0], LonMin0 = poly1.getLatLons()[0][1],
-					LonMax0 = poly1.getLatLons()[0][1];
-				for (double[] LatLon : poly1.getLatLons()) {
-					if (LatLon[0] < LatMin0)
-						LatMin0 = LatLon[0];
-					if (LatLon[0] > LatMax0)
-						LatMax0 = LatLon[0];
-					if (LatLon[1] < LonMin0)
-						LonMin0 = LatLon[1];
-					if (LatLon[1] > LonMax0)
-						LonMax0 = LatLon[1];
-				}
-				double LatMin1 = poly2.getLatLons()[0][0], LatMax1 = poly2.getLatLons()[0][0], LonMin1 = poly2.getLatLons()[0][1],
-					LonMax1 = poly2.getLatLons()[0][1];
-				for (double[] LatLon : poly2.getLatLons()) {
-					if (LatLon[0] < LatMin1)
-						LatMin1 = LatLon[0];
-					if (LatLon[0] > LatMax1)
-						LatMax1 = LatLon[0];
-					if (LatLon[1] < LonMin1)
-						LonMin1 = LatLon[1];
-					if (LatLon[1] > LonMax1)
-						LonMax1 = LatLon[1];
-				}
+				List<double[]> poly1LatLons = Arrays.asList(poly1.getLatLons());
+				double LatMin1 = Collections.min(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
+				double LatMax1 = Collections.max(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
+				double LonMin1 = Collections.min(poly1LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
+				double LonMax1 = Collections.max(poly1LatLons.stream().map(x -> x[2]).collect(Collectors.toList()));
+
+				List<double[]> poly2LatLons = Arrays.asList(poly2.getLatLons());
+				double LatMin2 = Collections.min(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
+				double LatMax2 = Collections.max(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
+				double LonMin2 = Collections.min(poly2LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
+				double LonMax2 = Collections.max(poly2LatLons.stream().map(x -> x[2]).collect(Collectors.toList()));
+
 				// if the max/min values of poly1 are completely inside those of poly2, switch both
-				if (LatMax0 < LatMax1 && LatMin0 > LatMin1 && LonMax0 < LonMax1 && LonMin0 > LonMin1) {
+				if (LatMax1 < LatMax2 && LatMin1 > LatMin2 && LonMax1 < LonMax2 && LonMin1 > LonMin2) {
 					// make sure not to change the list we are currently iterating over
 					indexesToSwap.add(
 						new Integer[] {
 							poly1index,
 							poly2index });
 				}
-
 				poly2index++;
 			}
 			poly1index++;
