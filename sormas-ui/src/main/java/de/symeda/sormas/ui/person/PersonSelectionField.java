@@ -50,6 +50,14 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	private RadioButtonGroup<String> rbCreatePerson;
 	private Consumer<Boolean> selectionChangeCallback;
 
+	/**
+	 * Generate a selection field which contains a grid containing all similar persons to the `referencePerson`.
+	 * 
+	 * @param referencePerson
+	 *            The person for which similar persons are searched and displayed.
+	 * @param infoText
+	 *            Information displayed to the user.
+	 */
 	public PersonSelectionField(PersonDto referencePerson, String infoText) {
 		this.referencePerson = referencePerson;
 		this.infoText = infoText;
@@ -152,6 +160,9 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(rbSelectPerson);
 	}
 
+	/**
+	 * Load a grid of all persons similar to the given reference person.
+	 */
 	private void initializeGrid() {
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
 			.lastName(referencePerson.getLastName())
