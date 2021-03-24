@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -984,21 +983,12 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (poly1index == poly2index) {
 					continue;
 				}
-				// determine maximum latitude and longitude of each polygon
-				List<double[]> poly1LatLons = Arrays.asList(poly1.getLatLons());
-				double LatMin1 = Collections.min(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
-				double LatMax1 = Collections.max(poly1LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
-				double LonMin1 = Collections.min(poly1LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-				double LonMax1 = Collections.max(poly1LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-
-				List<double[]> poly2LatLons = Arrays.asList(poly2.getLatLons());
-				double LatMin2 = Collections.min(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
-				double LatMax2 = Collections.max(poly2LatLons.stream().map(x -> x[0]).collect(Collectors.toList()));
-				double LonMin2 = Collections.min(poly2LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-				double LonMax2 = Collections.max(poly2LatLons.stream().map(x -> x[1]).collect(Collectors.toList()));
-
+				// get maximum latitude and longitude of each polygon
 				// if the max/min values of poly1 are completely inside those of poly2, switch both
-				if (LatMax1 < LatMax2 && LatMin1 > LatMin2 && LonMax1 < LonMax2 && LonMin1 > LonMin2) {
+				if (poly1.getMaxLatLon()[0] < poly2.getMaxLatLon()[0]
+					&& poly1.getMinLatLon()[0] > poly2.getMinLatLon()[0]
+					&& poly1.getMaxLatLon()[1] < poly2.getMaxLatLon()[1]
+					&& poly1.getMinLatLon()[1] > poly2.getMinLatLon()[1]) {
 					// make sure not to change the list we are currently iterating over
 					indexesToSwap.add(
 						new Integer[] {

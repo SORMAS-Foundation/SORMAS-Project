@@ -127,21 +127,21 @@ public class GeoShapeHelper {
 	}
 
 	/**
-	 * Try to find the name of the feature.
+	 * Try to find an attribute of the feature.
 	 * 
-	 * It is not clear which fields hold the name of the feature (e.g., region name).
+	 * It is not clear which fields hold the specific attribute of the feature (e.g., region name).
 	 * 
 	 * @param feature
-	 *            The feature we want to learn the name of.
-	 * @param list
-	 *            A list of candidates to contain the name.
+	 *            The feature we want to learn the attribute of.
+	 * @param attributeNames
+	 *            A list of attribute-name candidates
 	 * @return
-	 *         The name of the feature, null if no name could be found.
+	 *         The value of the feature attribute, null if no attribute with a fitting attribute-name could be found.
 	 */
-	public static String sniffShapeAttribute(SimpleFeature feature, List<String> list) {
+	public static String sniffShapeAttribute(SimpleFeature feature, List<String> attributeNames) {
 		String shapeAttribute = null;
 		// all these attributes can hold the region name
-		for (String attr : list) {
+		for (String attr : attributeNames) {
 			shapeAttribute = (String) feature.getAttribute(attr);
 			if (shapeAttribute != null) {
 				break;
