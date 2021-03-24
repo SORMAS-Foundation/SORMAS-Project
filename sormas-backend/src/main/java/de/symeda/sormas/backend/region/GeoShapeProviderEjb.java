@@ -270,7 +270,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				}
 
 				Optional<DistrictReferenceDto> districtResult;
-				// Use IDs in germany (could also be used for other countries, if fitting externalIDs are provided
+
+				// Use IDs in germany (could also be used for other countries, if fitting externalIDs are provided. Those can then be mapped to the externalID in SORMAS
 				if (countryName.equals("germany")) {
 					String shapeDistrictId = GeoShapeHelper.sniffShapeAttribute(feature, Arrays.asList("ARS"));
 					if (shapeDistrictId == null) {
