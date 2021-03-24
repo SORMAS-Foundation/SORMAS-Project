@@ -20,9 +20,11 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -74,6 +76,12 @@ public class InfrastructureImporter extends DataImporter {
 		case AREA:
 			newEntityDto = AreaDto.build();
 			break;
+		case SUBCONTINENT:
+			newEntityDto = SubcontinentDto.build();
+			break;
+		case CONTINENT:
+			newEntityDto = ContinentDto.build();
+			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
 		}
@@ -113,6 +121,12 @@ public class InfrastructureImporter extends DataImporter {
 					break;
 				case AREA:
 					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto);
+					break;
+				case SUBCONTINENT:
+					FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto);
+					break;
+				case CONTINENT:
+					FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto);
 					break;
 				default:
 					throw new IllegalArgumentException(type.toString());

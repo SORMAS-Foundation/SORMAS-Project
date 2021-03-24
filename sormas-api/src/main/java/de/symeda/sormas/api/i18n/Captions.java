@@ -58,7 +58,9 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";

@@ -81,6 +81,16 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			templateFileName = "sormas_import_area_template.csv";
 			fileNameAddition = "_area_import_";
 			break;
+		case SUBCONTINENT:
+			templateFilePath = FacadeProvider.getImportFacade().getSubcontinentImportTemplateFilePath();
+			templateFileName = "sormas_import_subcontinent_template.csv";
+			fileNameAddition = "_subcontinent_import_";
+			break;
+		case CONTINENT:
+			templateFilePath = FacadeProvider.getImportFacade().getContinentImportTemplateFilePath();
+			templateFileName = "sormas_import_continent_template.csv";
+			fileNameAddition = "_continent_import_";
+			break;
 		default:
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
 		}
@@ -119,6 +129,12 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 					break;
 				case AREA:
 					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA);
+					break;
+				case SUBCONTINENT:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT);
+					break;
+				case CONTINENT:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT);
 					break;
 				default:
 					throw new UnsupportedOperationException(
