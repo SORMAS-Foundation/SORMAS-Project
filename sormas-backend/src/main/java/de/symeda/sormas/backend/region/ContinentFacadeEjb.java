@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.ContinentIndexDto;
 import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -43,6 +44,8 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	private ContinentService continentService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private SubcontinentService subcontinentService;
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
 		if (entity == null) {
@@ -72,8 +75,15 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
+	public ContinentReferenceDto getBySubcontinent(SubcontinentReferenceDto subcontinentReferenceDto) {
+		return toReferenceDto(subcontinentService.getByUuid(subcontinentReferenceDto.getUuid()).getContinent());
+	}
+
+	@Override
 	public ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto) {
-		return toReferenceDto(countryService.getByUuid(countryReferenceDto.getUuid()).getSubcontinent().getContinent());
+		final Country country = countryService.getByUuid(countryReferenceDto.getUuid());
+		final Subcontinent subcontinent = country.getSubcontinent();
+		return subcontinent != null ? toReferenceDto(subcontinent.getContinent()) : null;
 	}
 
 	@Override

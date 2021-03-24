@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -50,6 +46,10 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 public final class InfrastructureDaoHelper {
 
@@ -254,8 +254,11 @@ public final class InfrastructureDaoHelper {
 			List<Item> newRegions = isServerCountry ? loadRegionsByServerCountry() : loadRegionsByCountry(selectedCountry);
 			regionField.setSpinnerData(newRegions, regionField.getValue());
 			if (selectedCountry != null) {
-				subcontinentField.setValue(selectedCountry.getSubcontinent());
-				continentField.setValue(selectedCountry.getSubcontinent().getContinent());
+				final Subcontinent subcontinent = selectedCountry.getSubcontinent();
+				subcontinentField.setValue(subcontinent);
+				if (subcontinent != null) {
+					continentField.setValue(subcontinent.getContinent());
+				}
 			}
 		});
 		countryField.setValue(initialCountry);

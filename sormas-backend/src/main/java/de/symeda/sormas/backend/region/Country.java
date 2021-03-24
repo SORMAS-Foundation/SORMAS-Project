@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -57,7 +58,8 @@ public class Country extends InfrastructureAdo {
 		this.unoCode = unoCode;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn(nullable = false)
 	public Subcontinent getSubcontinent() {
 		return subcontinent;
 	}

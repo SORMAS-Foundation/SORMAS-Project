@@ -227,11 +227,59 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
+		ValueChangeListener continentValueListener = e -> {
+			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				subcontinent,
+				continentReferenceDto != null
+					? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+					: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
+			if (subcontinent.getValue() == null) {
+				FieldHelper.updateItems(
+					country,
+					continentReferenceDto != null
+						? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+						: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+				country.setValue(null);
+			}
+			subcontinent.setValue(null);
+		};
+
+		ValueChangeListener subContinentValueListener = e -> {
+			SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				country,
+				subcontinentReferenceDto != null
+					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
+					: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+
+			country.setValue(null);
+
+			if (subcontinentReferenceDto != null) {
+				if (continent.getValue() == null) {
+					continent.removeValueChangeListener(continentValueListener);
+					continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
+					continent.addValueChangeListener(continentValueListener);
+				}
+			}
+		};
+
+		continent.addValueChangeListener(continentValueListener);
+		subcontinent.addValueChangeListener(subContinentValueListener);
+
 		country.addValueChangeListener(e -> {
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
 			if (countryDto != null) {
-				continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
-				subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
+				if (continent.getValue() == null) {
+					continent.removeValueChangeListener(continentValueListener);
+					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
+					continent.addValueChangeListener(continentValueListener);
+				}
+				if (subcontinent.getValue() == null) {
+					subcontinent.removeValueChangeListener(subContinentValueListener);
+					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
+					subcontinent.addValueChangeListener(subContinentValueListener);
+				}
 			}
 		});
 
@@ -534,6 +582,41 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		return HTML_LAYOUT;
 	}
 
+	@Override
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+		field.addValueChangeListener(e -> fireValueChange(false));
+
+		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
+			facilityTypeGroup.clear();
+		}
+	}
+
+	public void setContinentFieldsVisible(boolean visible, boolean clearOnHidden) {
+		continent.setVisible(visible);
+		subcontinent.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			continent.clear();
+			subcontinent.clear();
+		}
+	}
+
+	private boolean areFacilityDetailsRequired() {
+		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+	}
+
 	private static class MapPopupView extends PopupView {
 
 		private static final long serialVersionUID = 6119339732442336000L;
@@ -584,40 +667,5 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		public void setCoordinates(GeoLatLon coordinates) {
 			this.coordinates = coordinates;
 		}
-	}
-
-	@Override
-	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
-		field.addValueChangeListener(e -> fireValueChange(false));
-
-		return super.addFieldToLayout(layout, propertyId, field);
-	}
-
-	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
-		facility.setVisible(visible);
-		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
-		facilityType.setVisible(visible);
-		facilityTypeGroup.setVisible(visible);
-
-		if (!visible && clearOnHidden) {
-			facility.clear();
-			facilityDetails.clear();
-			facilityType.clear();
-			facilityTypeGroup.clear();
-		}
-	}
-
-	public void setContinentFieldsVisible(boolean visible, boolean clearOnHidden) {
-		continent.setVisible(visible);
-		subcontinent.setVisible(visible);
-
-		if (!visible && clearOnHidden) {
-			continent.clear();
-			subcontinent.clear();
-		}
-	}
-
-	private boolean areFacilityDetailsRequired() {
-		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 	}
 }

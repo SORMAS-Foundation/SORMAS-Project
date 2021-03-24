@@ -12,5 +12,7 @@ public interface ContinentFacade extends BaseFacade<ContinentDto, ContinentIndex
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> continentUuids);
 
+    ContinentReferenceDto getBySubcontinent(SubcontinentReferenceDto subcontinentReferenceDto);
+
     ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto);
 }
