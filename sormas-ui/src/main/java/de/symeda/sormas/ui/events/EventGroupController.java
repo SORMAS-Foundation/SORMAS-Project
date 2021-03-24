@@ -70,7 +70,12 @@ public class EventGroupController {
 	}
 
 	public void selectOrCreate(List<EventReferenceDto> eventReferences, Runnable callback) {
-		EventGroupSelectionField selectionField = new EventGroupSelectionField();
+		Set<String> excludedEventGroupUuids = FacadeProvider.getEventGroupFacade()
+			.getCommonEventGroupsByEvents(eventReferences)
+			.stream()
+			.map(EventGroupReferenceDto::getUuid)
+			.collect(Collectors.toSet());
+		EventGroupSelectionField selectionField = new EventGroupSelectionField(excludedEventGroupUuids);
 		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventGroupSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.google.common.collect.Sets;
 
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
@@ -94,6 +97,32 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	public EventGroupDto getEventGroupByUuid(String uuid) {
 		return toDto(eventGroupService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<EventGroupReferenceDto> getCommonEventGroupsByEvents(List<EventReferenceDto> eventReferences) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<EventGroup> from = cq.from(EventGroup.class);
+		Join<EventGroup, Event> eventJoin = from.join(EventGroup.EVENTS, JoinType.INNER);
+		Set<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+		cq.where(eventJoin.get(Event.UUID).in(eventUuids));
+		cq.multiselect(eventJoin.get(Event.UUID), from.get(EventGroup.UUID));
+		Map<String, Set<String>> eventGroupsByEvent = em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.collect(Collectors.groupingBy(row -> (String) row[0], Collectors.mapping(row -> (String) row[1], Collectors.toSet())));
+
+		if (eventGroupsByEvent.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		Set<String> commonEventGroupUuids = eventGroupsByEvent.values()
+			.stream()
+			.reduce(Sets::intersection)
+			.orElseGet(Collections::emptySet);
+
+		return commonEventGroupUuids.stream().map(EventGroupReferenceDto::new).collect(Collectors.toList());
 	}
 
 	@Override

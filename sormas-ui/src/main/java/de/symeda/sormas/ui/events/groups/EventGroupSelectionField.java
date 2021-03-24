@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.ui.events.groups;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Component;
@@ -55,12 +56,17 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 	private final EventGroupCriteria criteria;
 
 	public EventGroupSelectionField() {
+		this(null);
+	}
+
+	public EventGroupSelectionField(Set<String> excludedUuids) {
 		this.searchField = new TextField();
 		this.searchEventField = new TextField();
 		this.infoPickOrCreateEventGroup = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
 
 		this.criteria = new EventGroupCriteria();
 		criteria.setUserFilterIncluded(false);
+		criteria.setExcludedUuids(excludedUuids);
 
 		initializeGrid();
 	}

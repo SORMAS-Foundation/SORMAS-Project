@@ -37,6 +37,8 @@ public interface EventGroupFacade {
 
     EventGroupDto getEventGroupByUuid(String uuid);
 
+    List<EventGroupReferenceDto> getCommonEventGroupsByEvents(List<EventReferenceDto> eventReferences);
+
     List<EventGroupIndexDto> getIndexList(EventGroupCriteria eventGroupCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
     long count(EventGroupCriteria eventGroupCriteria);
