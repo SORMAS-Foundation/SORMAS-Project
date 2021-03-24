@@ -472,6 +472,40 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	/**
+	 *
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getPhone()}. Otherwise, this method tries to return the only phone
+	 *            number for this person, no matter if primary or not. Results in an IndexOutOfBoundsException when there are several phone
+	 *            numbers.
+	 * @return String representation of the only phone number to be used.
+	 */
+	public String getPhone(boolean onlyPrimary) {
+		String primaryPhone = getPhone();
+		if (onlyPrimary || !(primaryPhone == "")) {
+			return primaryPhone;
+		} else {
+			List<String> allPhones = getAllPhoneNumbers();
+			if (allPhones.size() == 0) {
+				return "";
+			} else if (allPhones.size() > 1) {
+				throw new IndexOutOfBoundsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allPhones.get(0);
+			}
+		}
+	}
+
+	public ArrayList<String> getAllPhoneNumbers() {
+		ArrayList result = new ArrayList();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * 
 	 * @param phone
 	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
@@ -488,6 +522,40 @@ public class PersonDto extends PseudonymizableDto {
 	 */
 	public String getEmailAddress() {
 		return getPersonContactInformation(PersonContactDetailType.EMAIL);
+	}
+
+	/**
+	 * 
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
+	 *            address for this person, no matter if primary or not. Results in an IndexOutOfBoundsException when there are several email
+	 *            addresses.
+	 * @return the only email address to be used.
+	 */
+	public String getEmailAddress(boolean onlyPrimary) {
+		String primaryEmail = getEmailAddress();
+		if (onlyPrimary || !(primaryEmail == "")) {
+			return primaryEmail;
+		} else {
+			List<String> allEmails = getAllEmailAddresses();
+			if (allEmails.size() == 0) {
+				return "";
+			} else if (allEmails.size() > 1) {
+				throw new IndexOutOfBoundsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allEmails.get(0);
+			}
+		}
+	}
+
+	public ArrayList<String> getAllEmailAddresses() {
+		ArrayList result = new ArrayList();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
 	}
 
 	/**
