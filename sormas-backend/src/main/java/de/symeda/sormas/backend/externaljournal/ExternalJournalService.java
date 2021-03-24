@@ -6,6 +6,7 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.SEVERAL_PHONES_OR_EMAILS;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -366,8 +367,25 @@ public class ExternalJournalService {
 	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
-		String email = person.getEmailAddress();
-		String phone = person.getPhone();
+		boolean severalEmails = false, severalPhones = false;
+		String phone = "", email = "";
+
+		try {
+			email = person.getEmailAddress(false);
+		} catch (IndexOutOfBoundsException e) {
+			severalEmails = true;
+		}
+
+		try {
+			phone = person.getPhone(false);
+		} catch (IndexOutOfBoundsException e) {
+			severalPhones = true;
+		}
+
+		if (severalEmails && severalPhones || (severalEmails && phone == "") || (severalPhones && email == "")) {
+			validationErrors.add(SEVERAL_PHONES_OR_EMAILS);
+		}
+
 		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
 		if (!hasPhoneOrEmail) {
 			validationErrors.add(NO_PHONE_OR_EMAIL);
