@@ -43,7 +43,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	@Override
 	protected Stream<String> getReinfectionColumn() {
-		return Stream.of(CaseIndexDetailedDto.REINFECTION);
+		return Stream.of(CaseIndexDetailedDto.RE_INFECTION);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		super.initColumns();
 
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			getColumn(CaseIndexDetailedDto.REINFECTION).setHidden(true);
+			getColumn(CaseIndexDetailedDto.RE_INFECTION).setHidden(true);
 		}
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);

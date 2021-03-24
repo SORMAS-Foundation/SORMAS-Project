@@ -20,7 +20,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	private static final long serialVersionUID = -3722694511897383913L;
 
-	public static final String REINFECTION = "reInfection";
+	public static final String RE_INFECTION = "reInfection";
 	public static final String SEX = "sex";
 	public static final String CITY = "city";
 	public static final String STREET = "street";
