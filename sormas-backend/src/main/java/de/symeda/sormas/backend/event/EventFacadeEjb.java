@@ -261,6 +261,8 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.multiselect(
 			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -315,6 +317,8 @@ public class EventFacadeEjb implements EventFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
+				case EventIndexDto.EXTERNAL_ID:
+				case EventIndexDto.EXTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:

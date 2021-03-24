@@ -467,7 +467,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
 		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, page * size, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
-		return new Page<CaseIndexDetailedDto>(caseIndexDetailedList, page, size, totalElementCount);
+		return new Page<>(caseIndexDetailedList, page, size, totalElementCount);
 	}
 
 	@Override

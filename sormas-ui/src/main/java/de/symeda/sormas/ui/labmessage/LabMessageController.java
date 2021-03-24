@@ -668,7 +668,6 @@ public class LabMessageController {
 
 		addProcessedInMeantimeCheck(createComponent, labMessageDto, entityCreated);
 		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
-		form.setValue(labMessageDto);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
@@ -688,6 +687,8 @@ public class LabMessageController {
 		window.setContent(layout);
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
+
+		form.setValue(labMessageDto);
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto) {
