@@ -1,0 +1,2 @@
+This file does not contain any special characters.
+It should be recognized as valid UTF-8 content.

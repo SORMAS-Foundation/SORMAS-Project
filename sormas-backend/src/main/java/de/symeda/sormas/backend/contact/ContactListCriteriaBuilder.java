@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -77,7 +79,9 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+
+		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -159,11 +163,11 @@ public class ContactListCriteriaBuilder {
 		return expressions;
 	}
 
-	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactJoins joins) {
+	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
-		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, joins));
-		indexSelection.addAll(
-			Arrays.asList(
+		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
+		List<Selection<?>> selections = Arrays.asList(
 				joins.getPerson().get(Person.SEX),
 				joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
@@ -172,9 +176,10 @@ public class ContactListCriteriaBuilder {
 				joins.getAddress().get(Location.HOUSE_NUMBER),
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
-				joins.getPerson().get(Person.PHONE),
+				((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME)));
+				joins.getReportingUser().get(User.LAST_NAME));
+		indexSelection.addAll(selections);
 
 		return indexSelection;
 	}
@@ -203,20 +208,21 @@ public class ContactListCriteriaBuilder {
 
 	private <T> CriteriaQuery<T> buildIndexCriteria(
 		Class<T> type,
-		BiFunction<Root<Contact>, ContactJoins, List<Selection<?>>> selectionProvider,
+		BiFunction<Root<Contact>, ContactQueryContext, List<Selection<?>>> selectionProvider,
 		ContactCriteria contactCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<T> cq = cb.createQuery(type);
-		Root<Contact> contact = cq.from(Contact.class);
-		ContactJoins joins = new ContactJoins(contact);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<T> cq = cb.createQuery(type);
+		final Root<Contact> contact = cq.from(Contact.class);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
+		final ContactJoins joins = new ContactJoins(contact);
 
-		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, joins));
+		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
 
-		Predicate filter = buildContactFilter(contactCriteria, cb, contact, cq, joins);
+		Predicate filter = buildContactFilter(contactCriteria,contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -244,21 +250,18 @@ public class ContactListCriteriaBuilder {
 
 	public Predicate buildContactFilter(
 		ContactCriteria contactCriteria,
-		CriteriaBuilder cb,
-		Root<Contact> contact,
-		CriteriaQuery<?> query,
-		ContactJoins joins) {
+		ContactQueryContext contactQueryContext) {
 
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilterForJoin(cb, query, contact, contactCriteria);
+			filter = contactService.createUserFilterForJoin(contactQueryContext, contactCriteria);
 		}
 
 		if (contactCriteria != null) {
-			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact, joins);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, contactQueryContext);
+			filter = CriteriaBuilderHelper.and(contactQueryContext.getCriteriaBuilder(), filter, criteriaFilter);
 		}
 		return filter;
 	}

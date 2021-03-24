@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -455,11 +454,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testIncludeContactsFromOtherJurisdictionsFilter() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RegionReferenceDto regionReferenceDto = getRegionFacade().getByName("Region", false).get(0);
+		RegionReferenceDto regionReferenceDto = getRegionFacade().getReferencesByName("Region", false).get(0);
 		DistrictReferenceDto districtReferenceDto = getDistrictFacade().getByName("District", regionReferenceDto, false).get(0);
 
 		RDCFEntities rdcf2 = creator.createRDCFEntities("NewRegion", "NewDistrict", "Community2", "Facility2");
-		RegionReferenceDto region2ReferenceDto = getRegionFacade().getByName("NewRegion", false).get(0);
+		RegionReferenceDto region2ReferenceDto = getRegionFacade().getReferencesByName("NewRegion", false).get(0);
 		DistrictReferenceDto district2ReferenceDto = getDistrictFacade().getByName("NewDistrict", region2ReferenceDto, false).get(0);
 
 		// "mainUser" is the user which executes the grid query

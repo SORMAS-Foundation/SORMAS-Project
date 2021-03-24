@@ -69,7 +69,7 @@ public class PopulationDataImporter extends DataImporter {
 		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
 		for (int i = 0; i < entityProperties.length; i++) {
 			if (PopulationDataDto.REGION.equalsIgnoreCase(entityProperties[i])) {
-				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByName(values[i], false);
+				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getReferencesByName(values[i], false);
 				if (regions.size() != 1) {
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 					return ImportLineResult.ERROR;

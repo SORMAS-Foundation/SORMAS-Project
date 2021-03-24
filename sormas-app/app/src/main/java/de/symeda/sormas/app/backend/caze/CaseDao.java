@@ -37,15 +37,14 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -314,13 +313,22 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	}
 
 	public void createPreviousHospitalizationAndUpdateHospitalization(Case caze, Case oldCase) {
-		caze.getHospitalization()
-			.getPreviousHospitalizations()
-			.add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
-		caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-		caze.getHospitalization().setAdmissionDate(new Date());
-		caze.getHospitalization().setDischargeDate(null);
-		caze.getHospitalization().setIsolated(null);
+		if (FacilityType.HOSPITAL.equals(oldCase.getFacilityType())) {
+			caze.getHospitalization()
+				.getPreviousHospitalizations()
+				.add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
+			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		}
+		if (FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
+			caze.getHospitalization().setAdmissionDate(new Date());
+			caze.getHospitalization().setDischargeDate(null);
+			caze.getHospitalization().setIsolated(null);
+			caze.getHospitalization().setIntensiveCareUnit(null);
+			caze.getHospitalization().setLeftAgainstAdvice(null);
+			caze.getHospitalization().setAdmittedToHealthFacility(null);
+			caze.getHospitalization().setHospitalizationReason(null);
+			caze.getHospitalization().setOtherHospitalizationReason(null);
+		}
 	}
 
 	/**

@@ -328,8 +328,12 @@ public class ContactController {
 		person.setBirthdateMM(createForm.getBirthdateMM());
 		person.setBirthdateDD(createForm.getBirthdateDD());
 		person.setSex(createForm.getSex());
-		person.setPhone(createForm.getPhone());
-		person.setEmailAddress(createForm.getEmailAddress());
+		if (StringUtils.isNotEmpty(createForm.getPhone())) {
+			person.setPhone(createForm.getPhone());
+		}
+		if (StringUtils.isNotEmpty(createForm.getEmailAddress())) {
+			person.setEmailAddress(createForm.getEmailAddress());
+		}
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {

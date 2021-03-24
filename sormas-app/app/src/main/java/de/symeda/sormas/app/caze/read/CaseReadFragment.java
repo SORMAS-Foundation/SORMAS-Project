@@ -21,8 +21,8 @@ import static android.view.View.VISIBLE;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
-
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -43,10 +43,10 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
@@ -146,11 +146,14 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 	}
 
 	private void updateCaseConfirmationFields(FragmentCaseReadLayoutBinding contentBinding) {
-		DiseaseConfiguration diseaseConfiguration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(record.getDisease());
 
 		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			if (diseaseConfiguration.getExtendedClassification()) {
-				if (diseaseConfiguration.getExtendedClassificationMulti()) {
+			Disease disease = record.getDisease();
+			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+
+			if (extendedClassification) {
+				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+				if (extendedClassificationMulti) {
 					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
 					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
@@ -223,7 +226,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		}
 
 		if (record.getHealthFacility() == null) {
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);

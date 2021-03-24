@@ -44,6 +44,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private List<Disease> caseBasedDiseases = new ArrayList<>();
 	private List<Disease> aggregateDiseases = new ArrayList<>();
 	private List<Disease> followUpEnabledDiseases = new ArrayList<>();
+
+	private Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
+	private Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
+
 	private Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
@@ -122,6 +126,16 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased) {
 		return getAllDiseases(active, primary, caseBased).stream().filter(d -> followUpEnabledDiseases.contains(d)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean usesExtendedClassification(Disease disease) {
+		return extendedClassificationDiseases.get(disease);
+	}
+
+	@Override
+	public boolean usesExtendedClassificationMulti(Disease disease) {
+		return extendedClassificationMultiDiseases.get(disease);
 	}
 
 	@Override
@@ -242,13 +256,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return target;
 	}
 
-	public DiseaseConfigurationDto getDiseaseConfiguration(Disease disease) {
-		return toDto(service.getDiseaseConfiguration(disease));
-	}
-
 	@PostConstruct
 	public void loadData() {
-
 		activeDiseases.clear();
 		inactiveDiseases.clear();
 		primaryDiseases.clear();
@@ -257,6 +266,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		aggregateDiseases.clear();
 		followUpEnabledDiseases.clear();
 		followUpDurations.clear();
+		extendedClassificationDiseases.clear();
+		extendedClassificationMultiDiseases.clear();
 		caseFollowUpDurations.clear();
 		eventParticipantFollowUpDurations.clear();
 
@@ -282,6 +293,19 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				|| (configuration.getFollowUpEnabled() == null && disease.isDefaultFollowUpEnabled())) {
 				followUpEnabledDiseases.add(disease);
 			}
+
+			if (configuration.getExtendedClassification() == null) {
+				extendedClassificationDiseases.put(disease, disease.isDefaultExtendedClassification());
+			} else {
+				extendedClassificationDiseases.put(disease, configuration.getExtendedClassification());
+			}
+
+			if (configuration.getExtendedClassificationMulti() == null) {
+				extendedClassificationMultiDiseases.put(disease, disease.isDefaultExtendedClassificationMulti());
+			} else {
+				extendedClassificationMultiDiseases.put(disease, configuration.getExtendedClassificationMulti());
+			}
+
 			if (configuration.getFollowUpDuration() != null) {
 				followUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {

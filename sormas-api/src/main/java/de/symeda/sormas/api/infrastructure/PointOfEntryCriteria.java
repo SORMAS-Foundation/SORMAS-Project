@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -12,12 +13,23 @@ public class PointOfEntryCriteria extends BaseCriteria implements Serializable, 
 
 	private static final long serialVersionUID = 2244899630454224009L;
 
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String nameLike;
 	private PointOfEntryType type;
 	private Boolean active;
 	private EntityRelevanceStatus relevanceStatus;
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public PointOfEntryCriteria country(CountryReferenceDto country) {
+		this.country = country;
+
+		return this;
+	}
 
 	public RegionReferenceDto getRegion() {
 		return region;

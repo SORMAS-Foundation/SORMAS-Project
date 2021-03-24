@@ -92,7 +92,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 					SampleCriteria.REGION,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION),
 					140));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
 		addField(
