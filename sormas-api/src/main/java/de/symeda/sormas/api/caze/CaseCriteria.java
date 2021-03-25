@@ -90,7 +90,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date newCaseDateTo;
 	private Date creationDateFrom;
 	private Date creationDateTo;
-	private NewCaseDateType newCaseDateType;
+	private CaseCriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private PersonReferenceDto person;
@@ -223,7 +223,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	 * @param newCaseDateTo
 	 *            will automatically be set to the end of the day
 	 */
-	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
+	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, CaseCriteriaDateType newCaseDateType) {
 
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
@@ -252,7 +252,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.newCaseDateTo = newCaseDateTo;
 	}
 
-	public NewCaseDateType getNewCaseDateType() {
+	public CaseCriteriaDateType getNewCaseDateType() {
 		return newCaseDateType;
 	}
 
@@ -265,7 +265,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return dateFilterOption;
 	}
 
-	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+	public void setNewCaseDateType(CaseCriteriaDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
 

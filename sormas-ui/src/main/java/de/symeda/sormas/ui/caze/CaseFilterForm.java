@@ -27,6 +27,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseCriteriaDateType;
+import de.symeda.sormas.api.caze.CaseCriteriaDateTypeHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -319,7 +321,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+		boolean isExternalShareEnabled = FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled();
+		if (isExternalShareEnabled) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -348,7 +351,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(isExternalShareEnabled), WEEK_AND_DATE_FILTER);
 	}
 
 	@Override
@@ -688,13 +691,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 	}
 
-	private HorizontalLayout buildWeekAndDateFilter() {
+	private HorizontalLayout buildWeekAndDateFilter(boolean isExternalShareEnabled) {
 
-		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+		EpiWeekAndDateFilterComponent<CaseCriteriaDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
 			false,
 			I18nProperties.getString(Strings.infoCaseDate),
-			NewCaseDateType.class,
+			CaseCriteriaDateTypeHelper.getTypes(isExternalShareEnabled),
 			I18nProperties.getString(Strings.promptNewCaseDateType),
 			null,
 			this);
@@ -714,7 +717,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return dateFilterRowLayout;
 	}
 
-	private void onApplyClick(EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter) {
+	private void onApplyClick(EpiWeekAndDateFilterComponent<CaseCriteriaDateType> weekAndDateFilter) {
 		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 		Date fromDate, toDate;
 		if (dateFilterOption == DateFilterOption.DATE) {
@@ -728,7 +731,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			CaseCriteria criteria = getValue();
-			NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			CaseCriteriaDateType newCaseDateType = (CaseCriteriaDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 
 			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 			criteria.dateFilterOption(dateFilterOption);

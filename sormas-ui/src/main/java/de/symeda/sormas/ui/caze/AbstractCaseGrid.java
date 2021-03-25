@@ -163,10 +163,18 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+		if (externalSurveillanceToolShareEnabled) {
+			Column<CaseIndexDto, Date> shareDateColumn = ((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE));
+			shareDateColumn.setSortable(false);
+			shareDateColumn.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+			getColumn(CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT).setSortable(false);
+		}
+
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE))
-			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
 		if (caseFollowUpEnabled) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
@@ -198,16 +206,11 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				getEventColumns(),
 				getSymptomsColumns(),
 				getSampleColumns(),
-				Stream.of(
-					CaseIndexDto.DISTRICT_NAME,
-					CaseIndexDto.HEALTH_FACILITY_NAME,
-					CaseIndexDto.POINT_OF_ENTRY_NAME,
-					CaseIndexDto.REPORT_DATE,
-					CaseIndexDto.QUARANTINE_TO),
+				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME, CaseIndexDto.REPORT_DATE),
 				externalSurveillanceToolShareEnabled
 					? Stream.of(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE, CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT)
 					: Stream.<String> empty(),
-				Stream.of(CaseIndexDto.CREATION_DATE),
+				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				caseFollowUpEnabled
 					? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, ContactIndexDto.SYMPTOM_JOURNAL_STATUS, NUMBER_OF_VISITS)
 					: Stream.<String> empty(),

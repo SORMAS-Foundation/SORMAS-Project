@@ -75,16 +75,15 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
-//
-//		Response response = ClientBuilder.newBuilder()
-//			.connectTimeout(30, TimeUnit.SECONDS)
-//			.build()
-//			.target(serviceUrl)
-//			.path("export")
-//			.request()
-//			.post(Entity.json(params));
-//		int status = response.getStatus();
-		int status = HttpServletResponse.SC_OK;
+
+		Response response = ClientBuilder.newBuilder()
+			.connectTimeout(30, TimeUnit.SECONDS)
+			.build()
+			.target(serviceUrl)
+			.path("export")
+			.request()
+			.post(Entity.json(params));
+		int status = response.getStatus();
 
 		switch (status) {
 		case HttpServletResponse.SC_OK:

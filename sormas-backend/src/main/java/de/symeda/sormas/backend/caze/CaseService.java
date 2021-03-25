@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -53,8 +54,10 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseCriteriaDateType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ExternalShareDateType;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
@@ -501,7 +504,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
-		final CriteriaQuery cq = caseQueryContext.getQuery();
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
@@ -589,6 +592,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				createNewCaseFilter(
+					cq,
 					cb,
 					from,
 					DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()),
@@ -765,39 +769,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesNotSharedWithExternalSurvTool())) {
 			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survTolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survTolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survTolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
+			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
+			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(cb.exists(survToolShareSubQuery)));
 		}
 
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesSharedWithExternalSurvTool())) {
 			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survTolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survTolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survTolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
+			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
+			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(survToolShareSubQuery));
 		}
 
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesChangedSinceLastSharedWithExternalSurvTool())) {
-			Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
-			Root<ExternalShareInfo> survTolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			Join<Object, Object> survToolShareCase = survTolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT);
-			@SuppressWarnings({
-				"unchecked",
-				"rawtypes" })
-			Expression<Timestamp> latestShareDate =
-				// double conversion because hibernate doesn't know the `max` function for timestamps
-				(Expression<Timestamp>) ((Expression) cb.max(survTolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
+			Predicate changedSinceLastShareFilter =
+				buildLatestSurvToolShareDateFilter(cq, cb, from, (latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false));
 
-			survToolShareSubQuery.select(survToolShareCase.get(Case.ID));
-			survToolShareSubQuery.where(cb.equal(survToolShareCase, from.get(Case.ID)));
-			survToolShareSubQuery.groupBy(survToolShareCase.get(Case.ID));
-			survToolShareSubQuery.having(createChangeDateFilter(cb, from, latestShareDate, false));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(survToolShareSubQuery));
+			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
 		}
 
 		return filter;
@@ -1037,28 +1029,61 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	/**
 	 * Creates a filter that checks whether the case has "started" within the time frame specified by {@code fromDate} and {@code toDate}.
-	 * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
+	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	private Predicate createNewCaseFilter(CriteriaBuilder cb, From<?, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
+	private Predicate createNewCaseFilter(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		From<?, Case> caze,
+		Date fromDate,
+		Date toDate,
+		CaseCriteriaDateType dateType) {
 
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		toDate = DateHelper.getEndOfDay(toDate);
+		Date toDateEndOfDay = DateHelper.getEndOfDay(toDate);
 
-		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
-		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
+		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDateEndOfDay);
+		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDateEndOfDay);
 
 		Predicate newCaseFilter = null;
-		if (newCaseDateType == null || newCaseDateType == NewCaseDateType.MOST_RELEVANT) {
+		if (dateType == null || dateType == NewCaseDateType.MOST_RELEVANT) {
 			newCaseFilter = cb.or(onsetDateFilter, cb.and(cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), reportDateFilter));
-		} else if (newCaseDateType == NewCaseDateType.ONSET) {
+		} else if (dateType == NewCaseDateType.ONSET) {
 			newCaseFilter = onsetDateFilter;
-		} else {
+		} else if (dateType == NewCaseDateType.REPORT) {
 			newCaseFilter = reportDateFilter;
+		} else if (dateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
+			newCaseFilter =
+				buildLatestSurvToolShareDateFilter(cq, cb, caze, (latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
 		}
 
 		return newCaseFilter;
+	}
+
+	private Predicate buildLatestSurvToolShareDateFilter(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		From<?, Case> caze,
+		Function<Expression<Timestamp>, Predicate> shareDatePredicateBuilder) {
+
+		Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
+		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+		Join<Object, Object> survToolShareCase = survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT);
+		@SuppressWarnings({
+			"unchecked",
+			"rawtypes" })
+		Expression<Timestamp> latestShareDate =
+			// double conversion because hibernate doesn't know the `max` function for timestamps
+			(Expression<Timestamp>) ((Expression) cb.max(survToolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
+
+		survToolShareSubQuery.select(survToolShareCase.get(Case.ID));
+		survToolShareSubQuery.where(cb.equal(survToolShareCase, caze.get(Case.ID)));
+		survToolShareSubQuery.groupBy(survToolShareCase.get(Case.ID));
+		survToolShareSubQuery.having(shareDatePredicateBuilder.apply(latestShareDate));
+
+		return cb.exists(survToolShareSubQuery);
 	}
 
 	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<Case> joins) {
