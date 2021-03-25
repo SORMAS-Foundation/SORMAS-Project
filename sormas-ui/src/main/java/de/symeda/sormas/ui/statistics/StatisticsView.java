@@ -977,9 +977,10 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		// sort polygon array, so that polygons which are completely contained by another appear on top
 		List<Integer[]> indexesToSwap = new ArrayList<>();
-		int poly1index = 0, poly2index = 0;
-		for (LeafletPolygon poly1 : resultPolygons) {
-			for (LeafletPolygon poly2 : resultPolygons) {
+		for (int poly1index = 0; poly1index < resultPolygons.size(); poly1index++) {
+			LeafletPolygon poly1 = resultPolygons.get(poly1index);
+			for (int poly2index = poly1index; poly2index < resultPolygons.size(); poly2index++) {
+				LeafletPolygon poly2 = resultPolygons.get(poly2index);
 				if (poly1index == poly2index) {
 					continue;
 				}
@@ -995,9 +996,7 @@ public class StatisticsView extends AbstractStatisticsView {
 							poly1index,
 							poly2index });
 				}
-				poly2index++;
 			}
-			poly1index++;
 		}
 		for (Integer[] swaps : indexesToSwap) {
 			Collections.swap(resultPolygons, swaps[0], swaps[1]);
