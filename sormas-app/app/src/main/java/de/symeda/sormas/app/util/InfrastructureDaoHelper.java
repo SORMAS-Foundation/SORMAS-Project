@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.app.util;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -48,10 +52,6 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadContinents() {
@@ -72,9 +72,7 @@ public final class InfrastructureDaoHelper {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
-		items.addAll(
-				mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao()
-					.queryActiveForAll(Subcontinent.DEFAULT_NAME, true)));
+		items.addAll(mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true)));
 		return items;
 	}
 
@@ -82,28 +80,22 @@ public final class InfrastructureDaoHelper {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
-		items.addAll(
-				mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao()
-						.queryActiveByContinent(continent)));
+		items.addAll(mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao().queryActiveByContinent(continent)));
 		return items;
 	}
 
 	private static List<Item<Subcontinent>> mapToDisplaySubcontinentNames(List<Subcontinent> subcontinents) {
-		return subcontinents
-				.stream()
-				.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
-				.sorted(Comparator.comparing(Item::getKey))
-				.collect(Collectors.toList());
+		return subcontinents.stream()
+			.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
+			.sorted(Comparator.comparing(Item::getKey))
+			.collect(Collectors.toList());
 	}
-
 
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
-		items.addAll(
-				mapToDisplayCountryNames(DatabaseHelper.getCountryDao()
-						.queryActiveForAll(Country.ISO_CODE, true)));
+		items.addAll(mapToDisplayCountryNames(DatabaseHelper.getCountryDao().queryActiveForAll(Country.ISO_CODE, true)));
 
 		return items;
 	}
@@ -112,9 +104,7 @@ public final class InfrastructureDaoHelper {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
-		items.addAll(
-				mapToDisplayCountryNames(DatabaseHelper.getCountryDao()
-						.queryActiveBySubcontinent(subcontinent)));
+		items.addAll(mapToDisplayCountryNames(DatabaseHelper.getCountryDao().queryActiveBySubcontinent(subcontinent)));
 
 		return items;
 	}
@@ -122,19 +112,17 @@ public final class InfrastructureDaoHelper {
 	public static List<Item> loadCountriesByContinent(Continent continent) {
 		List<Item> items = new ArrayList<>();
 
-		List<Subcontinent> subcontinents = DatabaseHelper.getSubcontinentDao()
-				.queryActiveByContinent(continent);
+		List<Subcontinent> subcontinents = DatabaseHelper.getSubcontinentDao().queryActiveByContinent(continent);
 		subcontinents.forEach(subcontinent -> items.addAll(loadCountriesBySubcontinent(subcontinent)));
 
 		return items;
 	}
 
 	private static List<Item<Country>> mapToDisplayCountryNames(List<Country> countries) {
-		return countries
-				.stream()
-				.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
-				.sorted(Comparator.comparing(Item::getKey))
-				.collect(Collectors.toList());
+		return countries.stream()
+			.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
+			.sorted(Comparator.comparing(Item::getKey))
+			.collect(Collectors.toList());
 	}
 
 	public static List<Item> loadRegionsByServerCountry() {
@@ -285,7 +273,9 @@ public final class InfrastructureDaoHelper {
 			Continent selectedContinent = (Continent) field.getValue();
 			if (selectedContinent != null) {
 				List<Item> newSubcontinents = loadSubcontinentsByContinent(selectedContinent);
-				if (initialSubcontinent != null && selectedContinent.equals(initialSubcontinent.getContinent()) && !newSubcontinents.contains(subcontinentItem)) {
+				if (initialSubcontinent != null
+					&& selectedContinent.equals(initialSubcontinent.getContinent())
+					&& !newSubcontinents.contains(subcontinentItem)) {
 					newSubcontinents.add(subcontinentItem);
 				}
 				subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
@@ -326,8 +316,8 @@ public final class InfrastructureDaoHelper {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
 			boolean isServerCountry = serverCountryName == null
-					? selectedCountry == null
-					: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
+				? selectedCountry == null
+				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 
 			List<Item> newRegions = isServerCountry ? loadRegionsByServerCountry() : loadRegionsByCountry(selectedCountry);
 			regionField.setSpinnerData(newRegions, regionField.getValue());
@@ -572,9 +562,10 @@ public final class InfrastructureDaoHelper {
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
 					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
 					facilityField.setValue(noneFacility);
-					if (caze != null)
+					if (caze != null) {
 						caze.setHealthFacility(noneFacility);
-					caze.setFacilityType(null);
+						caze.setFacilityType(null);
+					}
 				} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
 					typeGroupField.setSpinnerData(typeGroups);
 					facilityDetailsField.setVisibility(GONE);
