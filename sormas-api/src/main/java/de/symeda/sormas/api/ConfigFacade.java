@@ -128,4 +128,20 @@ public interface ConfigFacade {
 	boolean isAuditorAttributeLoggingEnabled();
 
 	int getStepSizeForCsvExport();
+
+	boolean isViewTabsCasesHospitalizationEnabled();
+
+	boolean isViewTabsCasesSymptomsEnabled();
+
+	boolean isViewTabsCasesEpidemiologicalDataEnabled();
+
+	boolean isViewTabsCasesTherapyEnabled();
+
+	boolean isViewTabsCasesFollowUpEnabled();
+
+	boolean isViewTabsCasesClinicalCourseEnabled();
+
+	boolean isViewTabsContactsEpidemiologicalDataEnabled();
+
+	boolean isViewTabsContactsFollowUpVisitsEnabled();
 }

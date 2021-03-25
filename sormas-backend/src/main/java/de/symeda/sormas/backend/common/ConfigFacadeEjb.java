@@ -139,6 +139,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
+	private static final String VIEW_TABS_CASES_HOSPITALIZATION = "viewTabs.cases.hospitalization";
+	private static final String VIEW_TABS_CASES_SYMPTOMS = "viewTabs.cases.symptoms";
+	private static final String VIEW_TABS_CASES_EPIDEMIOLOGICAL_DATA = "viewTabs.cases.epidemiologicalData";
+	private static final String VIEW_TABS_CASES_THERAPY = "viewTabs.cases.therapy";
+	private static final String VIEW_TABS_CASES_FOLLOW_UP = "viewTabs.cases.followUp";
+	private static final String VIEW_TABS_CASES_CLINICAL_COURSE = "viewTabs.cases.clinicalCourse";
+
+	private static final String VIEW_TABS_CONTACTS_EPIDEMIOLOGICAL_DATA = "viewTabs.contacts.epidemiologicalData";
+	private static final String VIEW_TABS_CONTACTS_FOLLOW_UP_VISITS = "viewTabs.contacts.followUpVisits";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -582,12 +592,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
-	@LocalBean
-	@Stateless
-	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
-
-	}
-
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
@@ -598,4 +602,49 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
+	@Override
+	public boolean isViewTabsCasesHospitalizationEnabled() {
+		return getBoolean(VIEW_TABS_CASES_HOSPITALIZATION, true);
+	}
+
+	@Override
+	public boolean isViewTabsCasesSymptomsEnabled() {
+		return getBoolean(VIEW_TABS_CASES_SYMPTOMS, true);
+	}
+
+	@Override
+	public boolean isViewTabsCasesEpidemiologicalDataEnabled() {
+		return getBoolean(VIEW_TABS_CASES_EPIDEMIOLOGICAL_DATA, true);
+	}
+
+	@Override
+	public boolean isViewTabsCasesTherapyEnabled() {
+		return getBoolean(VIEW_TABS_CASES_THERAPY, true);
+	}
+
+	@Override
+	public boolean isViewTabsCasesFollowUpEnabled() {
+		return getBoolean(VIEW_TABS_CASES_FOLLOW_UP, true);
+	}
+
+	@Override
+	public boolean isViewTabsCasesClinicalCourseEnabled() {
+		return getBoolean(VIEW_TABS_CASES_CLINICAL_COURSE, true);
+	}
+
+	@Override
+	public boolean isViewTabsContactsEpidemiologicalDataEnabled() {
+		return getBoolean(VIEW_TABS_CONTACTS_EPIDEMIOLOGICAL_DATA, true);
+	}
+
+	@Override
+	public boolean isViewTabsContactsFollowUpVisitsEnabled() {
+		return getBoolean(VIEW_TABS_CONTACTS_FOLLOW_UP_VISITS, true);
+	}
+
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+
+	}
 }
