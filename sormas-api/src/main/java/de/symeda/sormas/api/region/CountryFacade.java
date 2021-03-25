@@ -7,6 +7,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface CountryFacade {
@@ -26,6 +27,8 @@ public interface CountryFacade {
 	long count(CountryCriteria criteria);
 
 	String saveCountry(CountryDto dto);
+
+	String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	void archive(String countryUuid);
 

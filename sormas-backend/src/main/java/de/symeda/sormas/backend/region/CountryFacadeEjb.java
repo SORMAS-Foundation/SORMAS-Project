@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -49,6 +50,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+
 	@EJB
 	private ContinentService continentService;
 	@EJB
@@ -165,15 +167,29 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
+		return saveCountry(dto, false);
+	}
+
+	@Override
+	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
 
 		Country country = countryService.getByUuid(dto.getUuid());
 
-		if (country == null
-			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent() || countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+		if (country == null) {
+			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);
+			Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
+			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
+				if (allowMerge) {
+					country = byIsoCode.isPresent() ? byIsoCode.get() : byUnoCode.get();
+					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+				}
+			}
 		}
 
 		country = fillOrBuildEntity(dto, country, true);

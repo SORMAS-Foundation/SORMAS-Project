@@ -233,6 +233,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.REPORT_DATE:
 		case CaseIndexDto.CREATION_DATE:
 		case CaseIndexDto.OUTCOME:
+		case CaseIndexDetailedDto.RE_INFECTION:
 		case CaseIndexDto.QUARANTINE_TO:
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:

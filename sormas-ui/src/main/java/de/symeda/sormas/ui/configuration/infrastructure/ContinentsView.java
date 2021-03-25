@@ -43,6 +43,7 @@ public class ContinentsView extends AbstractConfigurationView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/continents";
 	protected Button createButton;
 	protected Button importButton;
+	protected Button importDefaultContinentsButton;
 	private ContinentCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 	// Filter
@@ -80,6 +81,13 @@ public class ContinentsView extends AbstractConfigurationView {
 				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
+
+			importDefaultContinentsButton = ButtonHelper.createIconButton(Captions.actionImportAllContinents, VaadinIcons.UPLOAD, e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultContinentsLayout());
+				window.setCaption(I18nProperties.getString(Strings.headingImportAllContinents));
+				window.addCloseListener(c -> grid.reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(importDefaultContinentsButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
