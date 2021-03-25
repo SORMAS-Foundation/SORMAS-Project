@@ -7095,4 +7095,11 @@ ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (355, '2020-03-19 Add continent and subcontinent to location #4777');
 
+
+-- 2021-03-22 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
+ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -97,6 +97,7 @@ public interface Captions {
 	String ActivityAsCase_startDate = "ActivityAsCase.startDate";
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";
 	String ActivityAsCase_typeOfPlaceDetails = "ActivityAsCase.typeOfPlaceDetails";
+	String ActivityAsCase_typeOfPlaceIfSG = "ActivityAsCase.typeOfPlaceIfSG";
 	String ActivityAsCase_workEnvironment = "ActivityAsCase.workEnvironment";
 	String activityAsCaseFlightNumber = "activityAsCaseFlightNumber";
 	String AdditionalTest = "AdditionalTest";
@@ -404,6 +405,7 @@ public interface Captions {
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
@@ -1076,6 +1078,7 @@ public interface Captions {
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
+	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";

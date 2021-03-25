@@ -860,7 +860,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 
-		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
+		List<LeafletPolygon> outlinePolygones = new ArrayList<>();
 
 		// draw outlines of all regions
 		for (RegionReferenceDto region : regions) {
@@ -870,23 +870,20 @@ public class StatisticsView extends AbstractStatisticsView {
 				continue;
 			}
 
-			for (int part = 0; part < regionShape.length; part++) {
-				GeoLatLon[] regionShapePart = regionShape[part];
+			// fillOpacity is used, so we can still hover the region
+			Arrays.stream(regionShape).forEach(regionShapePart -> {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				// fillOpacity is used, so we can still hover the region
 				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
 				polygon.setLatLons(regionShapePart);
 				outlinePolygones.add(polygon);
-			}
+			});
 		}
 
 		map.addPolygonGroup("outlines", outlinePolygones);
 
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			resultData.sort((a, b) -> {
-				return Integer.compare(a.getCaseCount(), b.getCaseCount());
-			});
+			resultData.sort(Comparator.comparingInt(StatisticsCaseCountDto::getCaseCount));
 		} else {
 			resultData.sort((a, b) -> {
 				BigDecimal incidenceA = a.getIncidence(incidenceDivisor);
