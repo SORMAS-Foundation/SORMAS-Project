@@ -50,7 +50,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 				result[0] != null ? ((Number) result[0]).longValue() : null))
 			.collect(Collectors.toList());
 
-		if (shouldPopulateArea(criteria.getGroupingLevel())) {
+		if (shouldIncludeArea(criteria.getGroupingLevel())) {
 			Map<String, String> names = ((Stream<Object[]>) fetchAreaNamesQuery().getResultStream())
 				.collect(Collectors.toMap(tuple -> (String) tuple[0], tuple -> (String) tuple[1]));
 
@@ -93,11 +93,12 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", ")
 			.append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
-			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
-			.append(", ")
-			.append(buildSelectField(Region.TABLE_NAME, Region.NAME));
+			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME));
 
 		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
+		if (shouldIncludeRegion(groupingLevel)) {
+			selectBuilder.append(", ").append(buildSelectField(Region.TABLE_NAME, Region.NAME));
+		}
 		if (shouldIncludeDistrict(groupingLevel)) {
 			selectBuilder.append(", ").append(buildSelectField(District.TABLE_NAME, District.NAME));
 		}
@@ -200,11 +201,10 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", ")
 			.append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
-			.append(CampaignFormMeta.FORM_NAME)
-			.append(", ")
-			.append(Region.TABLE_NAME)
-			.append(".")
-			.append(Region.NAME);
+			.append(CampaignFormMeta.FORM_NAME);
+		if (shouldIncludeRegion(groupingLevel)) {
+			groupByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
+		}
 		if (shouldIncludeDistrict(groupingLevel)) {
 			groupByFilter.append(", ").append(District.TABLE_NAME).append(".").append(District.NAME);
 		}
@@ -224,11 +224,10 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", ")
 			.append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
-			.append(CampaignFormMeta.FORM_NAME)
-			.append(", ")
-			.append(Region.TABLE_NAME)
-			.append(".")
-			.append(Region.NAME);
+			.append(CampaignFormMeta.FORM_NAME);
+		if (shouldIncludeRegion(groupingLevel)) {
+			orderByFilter.append(", ").append(Region.TABLE_NAME).append(".").append(Region.NAME);
+		}
 		if (shouldIncludeDistrict(groupingLevel)) {
 			orderByFilter.append(", ").append(District.TABLE_NAME).append(".").append(District.NAME);
 		}
@@ -259,10 +258,17 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		return em.createNativeQuery(fetchAreaQueryBuilder.toString());
 	}
 
-	private boolean shouldPopulateArea(CampaignJurisdictionLevel groupingLevel) {
+	private boolean shouldIncludeArea(CampaignJurisdictionLevel groupingLevel) {
 		return groupingLevel == null
 			|| CampaignJurisdictionLevel.AREA.equals(groupingLevel)
 			|| CampaignJurisdictionLevel.REGION.equals(groupingLevel);
+	}
+
+	private boolean shouldIncludeRegion(CampaignJurisdictionLevel groupingLevel) {
+		return CampaignJurisdictionLevel.AREA.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.REGION.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel)
+			|| CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel);
 	}
 
 	private boolean shouldIncludeDistrict(CampaignJurisdictionLevel groupingLevel) {

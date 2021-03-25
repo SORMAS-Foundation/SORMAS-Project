@@ -23,6 +23,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 		setCriteria(criteria);
 
 		addDefaultColumns();
+		setColumnsVisibility(criteria.getGroupingLevel());
 	}
 
 	protected void addDefaultColumns() {

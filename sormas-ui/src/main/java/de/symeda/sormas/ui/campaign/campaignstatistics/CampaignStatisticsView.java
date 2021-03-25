@@ -56,8 +56,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		addHeaderComponent(campaignLayout);
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignStatisticsCriteria.class);
+		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
 		grid = new CampaignStatisticsGrid(criteria);
-		grid.setColumnsVisibility(CampaignJurisdictionLevel.AREA);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
