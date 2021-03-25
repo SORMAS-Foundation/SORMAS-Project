@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -78,6 +79,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox typeGroupFilter;
 	private ComboBox typeFilter;
+	private ComboBox countryFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -98,7 +100,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(getClass()).get(FacilityCriteria.class);
+		criteria = ViewModelProviders.of(getClass())
+			.get(FacilityCriteria.class, new FacilityCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -258,6 +261,18 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(typeFilter);
 
+		countryFilter = new CountryCombo((country, isServerCountry) -> {
+			criteria.country(country);
+			grid.reload();
+
+			if (isServerCountry) {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			} else {
+				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
+			}
+		});
+		filterLayout.addComponent(countryFilter);
+
 		regionFilter = new ComboBox();
 		regionFilter.setId(FacilityDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
@@ -394,6 +409,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.setValue(criteria.getNameCityLike());
 		typeGroupFilter.setValue(criteria.getTypeGroup());
 		typeFilter.setValue(criteria.getType());
+		countryFilter.setValue(criteria.getCountry());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		communityFilter.setValue(criteria.getCommunity());

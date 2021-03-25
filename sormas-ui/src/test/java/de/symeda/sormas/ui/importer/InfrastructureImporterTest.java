@@ -47,7 +47,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
-		RegionReferenceDto region = getRegionFacade().getByName("Region with ä", false).get(0);
+		RegionReferenceDto region = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
 
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").toURI());
@@ -84,9 +84,9 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_iso_8859_1.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
-		RegionReferenceDto region1 = getRegionFacade().getByName("Region with ä", false).get(0);
+		RegionReferenceDto region1 = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
 		assertEquals("Region with ä", region1.getCaption());
-		RegionReferenceDto region2 = getRegionFacade().getByName("Region with ß", false).get(0);
+		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Region with ß", false).get(0);
 		assertEquals("Region with ß", region2.getCaption());
 	}
 
@@ -100,9 +100,9 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_windows_1252.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
-		RegionReferenceDto region1 = getRegionFacade().getByName("Region with ä", false).get(0);
+		RegionReferenceDto region1 = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
 		assertEquals("Region with ä", region1.getCaption());
-		RegionReferenceDto region2 = getRegionFacade().getByName("Region with ß", false).get(0);
+		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Region with ß", false).get(0);
 		assertEquals("Region with ß", region2.getCaption());
 	}
 
@@ -116,7 +116,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
-		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
 		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
 	}
 
@@ -131,7 +131,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
-		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
 		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
 	}
 
@@ -147,7 +147,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		importer.runImport();
 
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
-		RegionReferenceDto region2 = getRegionFacade().getByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
+		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
 		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
 	}
 

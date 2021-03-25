@@ -97,6 +97,7 @@ public interface Captions {
 	String ActivityAsCase_startDate = "ActivityAsCase.startDate";
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";
 	String ActivityAsCase_typeOfPlaceDetails = "ActivityAsCase.typeOfPlaceDetails";
+	String ActivityAsCase_typeOfPlaceIfSG = "ActivityAsCase.typeOfPlaceIfSG";
 	String ActivityAsCase_workEnvironment = "ActivityAsCase.workEnvironment";
 	String activityAsCaseFlightNumber = "activityAsCaseFlightNumber";
 	String AdditionalTest = "AdditionalTest";
@@ -406,6 +407,7 @@ public interface Captions {
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
@@ -639,6 +641,13 @@ public interface Captions {
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
 	String contactSourceCase = "contactSourceCase";
+	String Continent_archived = "Continent.archived";
+	String Continent_defaultName = "Continent.defaultName";
+	String Continent_displayName = "Continent.displayName";
+	String Continent_externalId = "Continent.externalId";
+	String continentActiveContinents = "continentActiveContinents";
+	String continentAllContinents = "continentAllContinents";
+	String continentArchivedContinents = "continentArchivedContinents";
 	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String country = "country";
@@ -647,6 +656,7 @@ public interface Captions {
 	String Country_displayName = "Country.displayName";
 	String Country_externalId = "Country.externalId";
 	String Country_isoCode = "Country.isoCode";
+	String Country_subcontinent = "Country.subcontinent";
 	String Country_unoCode = "Country.unoCode";
 	String countryActiveCountries = "countryActiveCountries";
 	String countryAllCountries = "countryAllCountries";
@@ -1073,6 +1083,7 @@ public interface Captions {
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
+	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
@@ -1437,6 +1448,9 @@ public interface Captions {
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
+	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
+	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
+	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
@@ -1496,6 +1510,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String region = "region";
 	String Region_archived = "Region.archived";
+	String Region_country = "Region.country";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
@@ -1699,6 +1714,14 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String Subcontinent_archived = "Subcontinent.archived";
+	String Subcontinent_continent = "Subcontinent.continent";
+	String Subcontinent_defaultName = "Subcontinent.defaultName";
+	String Subcontinent_displayName = "Subcontinent.displayName";
+	String Subcontinent_externalId = "Subcontinent.externalId";
+	String subcontinentActiveSubcontinents = "subcontinentActiveSubcontinents";
+	String subcontinentAllSubcontinents = "subcontinentAllSubcontinents";
+	String subcontinentArchivedSubcontinents = "subcontinentArchivedSubcontinents";
 	String SurveillanceReport = "SurveillanceReport";
 	String SurveillanceReport_creatingUser = "SurveillanceReport.creatingUser";
 	String SurveillanceReport_dateOfDiagnosis = "SurveillanceReport.dateOfDiagnosis";
@@ -2012,6 +2035,8 @@ public interface Captions {
 	String View_configuration_areas_short = "View.configuration.areas.short";
 	String View_configuration_communities = "View.configuration.communities";
 	String View_configuration_communities_short = "View.configuration.communities.short";
+	String View_configuration_continents = "View.configuration.continents";
+	String View_configuration_continents_short = "View.configuration.continents.short";
 	String View_configuration_countries = "View.configuration.countries";
 	String View_configuration_countries_short = "View.configuration.countries.short";
 	String View_configuration_devMode = "View.configuration.devMode";
@@ -2034,6 +2059,8 @@ public interface Captions {
 	String View_configuration_populationdata_short = "View.configuration.populationdata.short";
 	String View_configuration_regions = "View.configuration.regions";
 	String View_configuration_regions_short = "View.configuration.regions.short";
+	String View_configuration_subcontinents = "View.configuration.subcontinents";
+	String View_configuration_subcontinents_short = "View.configuration.subcontinents.short";
 	String View_configuration_templates = "View.configuration.templates";
 	String View_configuration_templates_short = "View.configuration.templates.short";
 	String View_configuration_userrights = "View.configuration.userrights";

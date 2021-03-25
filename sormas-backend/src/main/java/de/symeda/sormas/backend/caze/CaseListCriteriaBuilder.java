@@ -233,6 +233,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.REPORT_DATE:
 		case CaseIndexDto.CREATION_DATE:
 		case CaseIndexDto.OUTCOME:
+		case CaseIndexDetailedDto.RE_INFECTION:
 		case CaseIndexDto.QUARANTINE_TO:
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
@@ -276,6 +277,7 @@ public class CaseListCriteriaBuilder {
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
+				caze.get(Case.RE_INFECTION),
 				joins.getAddress().get(Location.CITY),
 				joins.getAddress().get(Location.STREET),
 				joins.getAddress().get(Location.HOUSE_NUMBER),

@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
@@ -34,6 +35,7 @@ public class RegionDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
+	public static final String COUNTRY = "country";
 
 	private String name;
 	private String epidCode;
@@ -42,6 +44,7 @@ public class RegionDto extends EntityDto {
 	private String externalID;
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;
+	private CountryReferenceDto country;
 
 	public RegionDto(
 		Date creationDate,
@@ -51,7 +54,10 @@ public class RegionDto extends EntityDto {
 		String name,
 		String epidCode,
 		Float growthRate,
-		String externalID) {
+		String externalID,
+		String countryUuid,
+		String countryName,
+		String countryIsoCode) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -59,6 +65,10 @@ public class RegionDto extends EntityDto {
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
 		this.externalID = externalID;
+
+		if (countryUuid != null) {
+			this.country = new CountryReferenceDto(countryUuid, I18nProperties.getCountryName(countryIsoCode, countryName), countryIsoCode);
+		}
 	}
 
 	public RegionDto() {
@@ -117,6 +127,14 @@ public class RegionDto extends EntityDto {
 
 	public void setArea(AreaReferenceDto area) {
 		this.area = area;
+	}
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryReferenceDto country) {
+		this.country = country;
 	}
 
 	public RegionReferenceDto toReference() {

@@ -170,7 +170,7 @@ public class AggregateReportsView extends AbstractView {
 			if (user.getRegion() == null) {
 				cbRegionFilter.setWidth(200, Unit.PIXELS);
 				cbRegionFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 				binder.bind(cbRegionFilter, AggregateReportCriteria.REGION);
 				hlFirstFilterRow.addComponent(cbRegionFilter);
 			}

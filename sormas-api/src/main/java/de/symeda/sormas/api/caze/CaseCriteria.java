@@ -69,6 +69,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String ONLY_CASES_WITH_REINFECTION = "onlyCasesWithReinfection";
 	public static final String ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesNotSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesChangedSinceLastSharedWithExternalSurvTool";
@@ -121,6 +122,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsFromOtherInstances;
+	private Boolean onlyCasesWithReinfection;
 	private Boolean onlyCasesNotSharedWithExternalSurvTool;
 	private Boolean onlyCasesSharedWithExternalSurvTool;
 	private Boolean onlyCasesChangedSinceLastSharedWithExternalSurvTool;
@@ -601,6 +603,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Boolean getOnlyCasesWithReinfection() {
+		return onlyCasesWithReinfection;
+	}
+
+	public void setOnlyCasesWithReinfection(Boolean onlyCasesWithReinfection) {
+		this.onlyCasesWithReinfection = onlyCasesWithReinfection;
 	}
 
 	public Boolean getOnlyCasesNotSharedWithExternalSurvTool() {
