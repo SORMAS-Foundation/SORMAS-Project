@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
@@ -27,6 +28,7 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -44,6 +46,11 @@ public class Facility extends InfrastructureAdo {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String CITY = "city";
+	public static final String POSTAL_CODE = "postalCode";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
+	public static final String AREA_TYPE = "areaType";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";
@@ -55,6 +62,11 @@ public class Facility extends InfrastructureAdo {
 	private District district;
 	private Community community;
 	private String city;
+	private String postalCode;
+	private String street;
+	private String houseNumber;
+	private String additionalInformation;
+	private AreaType areaType;
 	private Double latitude;
 	private Double longitude;
 	private FacilityType type;
@@ -103,6 +115,51 @@ public class Facility extends InfrastructureAdo {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AreaType getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
 	}
 
 	public Double getLatitude() {

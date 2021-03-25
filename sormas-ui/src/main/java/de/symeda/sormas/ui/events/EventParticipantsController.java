@@ -221,7 +221,7 @@ public class EventParticipantsController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
-				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
+				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}
 

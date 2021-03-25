@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
@@ -45,27 +48,21 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
 
-	private static final long serialVersionUID = -8558187171374254398L;
-
 	public static final String I18N_PREFIX = "Person";
-
 	public static final String SEX = "sex";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
-
 	public static final String SALUTATION = "salutation";
 	public static final String OTHER_SALUTATION = "otherSalutation";
-
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String BIRTH_DATE = "birthdate";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
-
 	public static final String APPROXIMATE_AGE = "approximateAge";
+	public static final String APPROXIMATE_AGE_GROUP = "approximateAgeGroup";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	public static final String APPROXIMATE_AGE_REFERENCE_DATE = "approximateAgeReferenceDate";
-
 	public static final String CAUSE_OF_DEATH = "causeOfDeath";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
@@ -76,21 +73,17 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String BURIAL_DATE = "burialDate";
 	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
 	public static final String BURIAL_CONDUCTOR = "burialConductor";
-
 	public static final String BIRTH_NAME = "birthName";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
-
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
-
 	public static final String EDUCATION_TYPE = "educationType";
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
-
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
 	public static final String NAMES_OF_GUARDIANS = "namesOfGuardians";
@@ -101,26 +94,23 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
-
-	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OTHER_CONTACT_DETAILS = "otherContactDetails";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
-
+	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-
 	public static final String HAS_COVID_APP = "hasCovidApp";
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
-
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
+	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
-
 	@Outbreaks
 	@Required
 	@PersonalData(mandatoryField = true)
@@ -272,15 +262,9 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private BurialConductor burialConductor;
-	@SensitiveData
-	private String phone;
-	@SensitiveData
-	private String phoneOwner;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	private LocationDto address;
-	@SensitiveData
-	private String emailAddress;
 
 	private EducationType educationType;
 	@SensitiveData
@@ -293,12 +277,11 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
-	private String generalPractitionerDetails;
-	@SensitiveData
 	private String passportNumber;
 	@SensitiveData
 	private String nationalHealthId;
 	private List<LocationDto> addresses = new ArrayList<>();
+	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
@@ -315,9 +298,31 @@ public class PersonDto extends PseudonymizableDto {
 	private String externalToken;
 
 	@HideForCountriesExcept
+	@SensitiveData
 	private CountryReferenceDto birthCountry;
 	@HideForCountriesExcept
+	@SensitiveData
 	private CountryReferenceDto citizenship;
+
+	@SuppressWarnings("serial")
+	public static class SeveralNonPrimaryContactDetailsException extends Exception {
+
+		public SeveralNonPrimaryContactDetailsException(String message) {
+			super(message);
+		}
+	}
+
+	public static String buildCaption(String firstName, String lastName) {
+		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
+	}
+
+	public static PersonDto build() {
+
+		PersonDto person = new PersonDto();
+		person.setUuid(DataHelper.createUuid());
+		person.setAddress(LocationDto.build());
+		return person;
+	}
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -455,20 +460,140 @@ public class PersonDto extends PseudonymizableDto {
 		this.deathDate = deathDate;
 	}
 
+	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
+		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
+			if (contactDetailDto.getPersonContactDetailType() == personContactDetailType && contactDetailDto.isPrimaryContact()) {
+				contactDetailDto.setPrimaryContact(false);
+			}
+		}
+		final PersonContactDetailDto pcd =
+			PersonContactDetailDto.build(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
+		getPersonContactDetails().add(pcd);
+	}
+
+	/**
+	 *
+	 * @return the String representation of the PRIMARY phone number. Phone numbers set with the {@link #setPhone(String)} method
+	 *         automatically become primary.
+	 *         A phone number entered in the personEditForm is not, and thus does not become primary phone number unless the user
+	 *         specifically sets it.
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone() {
-		return phone;
+		return getPersonContactInformation(PersonContactDetailType.PHONE);
 	}
 
+	/**
+	 *
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getPhone()}. Otherwise, this method tries to return the only phone
+	 *            number for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there are
+	 *            several phone numbers.
+	 * @return String representation of the only phone number to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
+		String primaryPhone = getPhone();
+		if (onlyPrimary || !(primaryPhone.equals(""))) {
+			return primaryPhone;
+		} else {
+			List<String> allPhones = getAllPhoneNumbers();
+			if (allPhones.size() == 0) {
+				return "";
+			} else if (allPhones.size() > 1) {
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allPhones.get(0);
+			}
+		}
+	}
+
+	@JsonIgnore
+	public ArrayList<String> getAllPhoneNumbers() {
+		ArrayList<String> result = new ArrayList<>();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param phone
+	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
+	 */
 	public void setPhone(String phone) {
-		this.phone = phone;
+		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
 	}
 
-	public String getPhoneOwner() {
-		return phoneOwner;
+	/**
+	 * 
+	 * @return the PRIMARY email address. Email addresses set with the {@link #setEmailAddress(String)} method automatically become primary.
+	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
+	 *         specifically sets it.
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public String getEmailAddress() {
+		return getPersonContactInformation(PersonContactDetailType.EMAIL);
 	}
 
-	public void setPhoneOwner(String phoneOwner) {
-		this.phoneOwner = phoneOwner;
+	/**
+	 * 
+	 * @param onlyPrimary
+	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
+	 *            address for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there
+	 *            are several email
+	 *            addresses.
+	 * @return the only email address to be used.
+	 * @throws SeveralNonPrimaryContactDetailsException
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
+		String primaryEmail = getEmailAddress();
+		if (onlyPrimary || !(primaryEmail.equals(""))) {
+			return primaryEmail;
+		} else {
+			List<String> allEmails = getAllEmailAddresses();
+			if (allEmails.size() == 0) {
+				return "";
+			} else if (allEmails.size() > 1) {
+				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
+			} else {
+				return allEmails.get(0);
+			}
+		}
+	}
+
+	@JsonIgnore
+	public ArrayList<String> getAllEmailAddresses() {
+		ArrayList<String> result = new ArrayList<>();
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
+				result.add(pcd.getContactInformation());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param email
+	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
+	 */
+	public void setEmailAddress(String email) {
+		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
+	}
+
+	private String getPersonContactInformation(PersonContactDetailType personContactDetailType) {
+		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
+			if (pcd.isPrimaryContact() && pcd.getPersonContactDetailType() == personContactDetailType) {
+				return pcd.getContactInformation();
+			}
+		}
+		return "";
 	}
 
 	public LocationDto getAddress() {
@@ -655,22 +780,6 @@ public class PersonDto extends PseudonymizableDto {
 		this.birthWeight = birthWeight;
 	}
 
-	public String getGeneralPractitionerDetails() {
-		return generalPractitionerDetails;
-	}
-
-	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
-		this.generalPractitionerDetails = generalPractitionerDetails;
-	}
-
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
 	public String getPassportNumber() {
 		return passportNumber;
 	}
@@ -704,6 +813,15 @@ public class PersonDto extends PseudonymizableDto {
 		this.addresses = addresses;
 	}
 
+	@ImportIgnore
+	public List<PersonContactDetailDto> getPersonContactDetails() {
+		return personContactDetails;
+	}
+
+	public void setPersonContactDetails(List<PersonContactDetailDto> personContactDetails) {
+		this.personContactDetails = personContactDetails;
+	}
+
 	public SymptomJournalStatus getSymptomJournalStatus() {
 		return symptomJournalStatus;
 	}
@@ -712,6 +830,7 @@ public class PersonDto extends PseudonymizableDto {
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	@JsonIgnore
 	public boolean isEnrolledInExternalJournal() {
 		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
 	}
@@ -771,17 +890,5 @@ public class PersonDto extends PseudonymizableDto {
 
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
-	}
-
-	public static String buildCaption(String firstName, String lastName) {
-		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
-	}
-
-	public static PersonDto build() {
-
-		PersonDto person = new PersonDto();
-		person.setUuid(DataHelper.createUuid());
-		person.setAddress(LocationDto.build());
-		return person;
 	}
 }

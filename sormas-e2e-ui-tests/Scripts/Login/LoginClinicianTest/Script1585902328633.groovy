@@ -1,6 +1,5 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -26,6 +25,8 @@ try {
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Reports'), 2)
 
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Statistics'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Persons'), 2)
 
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_About'), 2)
 

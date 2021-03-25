@@ -40,9 +40,11 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -70,6 +72,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 	private List<Item> sampleSourceList;
 	private List<Facility> labList;
 	private List<Item> samplePurposeList;
+	private List<Item> samplingReasonList;
 	private List<String> requestedPathogenTests = new ArrayList<>();
 	private List<String> requestedAdditionalTests = new ArrayList<>();
 	private List<Item> finalTestResults;
@@ -79,7 +82,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			SampleEditFragment.class,
 			null,
 			activityRootData,
-			null,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -164,6 +167,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 		samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
+		samplingReasonList = DataUtils.getEnumItems(SamplingReason.class, true, getFieldVisibilityCheckers());
 
 		for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
 			requestedPathogenTests.clear();
@@ -179,10 +183,16 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		}
 
 		if (record.getId() != null) {
-			if (DatabaseHelper.getSampleTestDao().queryBySample(record).stream().allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING)) {
+			if (DatabaseHelper.getSampleTestDao()
+				.queryBySample(record)
+				.stream()
+				.allMatch(pathogenTest -> pathogenTest.getTestResult() == PathogenTestResultType.PENDING)) {
 				finalTestResults = DataUtils.toItems(Arrays.asList(PathogenTestResultType.values()));
 			} else {
-				finalTestResults = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList()));
+				finalTestResults = DataUtils.toItems(
+					Arrays.stream(PathogenTestResultType.values())
+						.filter(type -> type != PathogenTestResultType.NOT_DONE)
+						.collect(Collectors.toList()));
 			}
 		}
 	}
@@ -241,6 +251,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
 			}
 		});
+
+		contentBinding.sampleSamplingReason.initializeSpinner(samplingReasonList);
 
 		// Initialize ControlDateFields and ControlDateTimeFields
 		contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -241,7 +242,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.setDisease(Disease.EVD);
-		List<EventExportDto> results = getEventFacade().getExportList(eventCriteria, 0, 100);
+		List<EventExportDto> results = getEventFacade().getExportList(eventCriteria, Collections.emptySet(), 0, 100);
 
 		// List should have one entry
 		assertThat(results, Matchers.hasSize(1));

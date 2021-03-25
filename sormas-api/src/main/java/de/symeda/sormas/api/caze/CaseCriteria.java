@@ -69,6 +69,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String ONLY_CASES_WITH_REINFECTION = "onlyCasesWithReinfection";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -118,6 +119,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsFromOtherInstances;
+	private Boolean onlyCasesWithReinfection;
 
 	@Override
 	public CaseCriteria clone() {
@@ -595,5 +597,13 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Boolean getOnlyCasesWithReinfection() {
+		return onlyCasesWithReinfection;
+	}
+
+	public void setOnlyCasesWithReinfection(Boolean onlyCasesWithReinfection) {
+		this.onlyCasesWithReinfection = onlyCasesWithReinfection;
 	}
 }

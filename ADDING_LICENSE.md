@@ -3,7 +3,7 @@
 ## License Header
 Use the following header for all newly created source files:
 
-```
+```markdown
 SORMAS® - Surveillance Outbreak Response Management & Analysis System
 Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
 
@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 ```
 
 ## Eclipse
-- Use eclipse's Releng tool to automatically add license headers to all relevant source files (see https://www.codejava.net/ides/eclipse/how-to-add-copyright-license-header-for-java-source-files-in-eclipse for a usage guide)
+- Use eclipse's Releng tool to automatically add license headers to all relevant source files (see [here](https://www.codejava.net/ides/eclipse/how-to-add-copyright-license-header-for-java-source-files-in-eclipse) for a usage guide)
 - After installing the tool from the marketplace, open Window > Preferences > Copyright Tool and paste the license header from above into the template text area
 - Make sure to select "Replace all existing copyright comments with this copyright template" and especially "Skip over XML files" (to make sure that headers don't get added to e.g. build files)
 - Whenever you create a new source file: Right click on the file and select "Fix Copyrights"

@@ -33,6 +33,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean ownershipHandedOver;
 	private boolean withAssociatedContacts;
 	private boolean withSamples;
+	private boolean withEvenParticipants;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
 	private String comment;
@@ -99,6 +100,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setWithSamples(boolean withSamples) {
 		this.withSamples = withSamples;
+	}
+
+	public boolean isWithEvenParticipants() {
+		return withEvenParticipants;
+	}
+
+	public void setWithEvenParticipants(boolean withEvenParticipants) {
+		this.withEvenParticipants = withEvenParticipants;
 	}
 
 	public boolean isPseudonymizedPersonalData() {

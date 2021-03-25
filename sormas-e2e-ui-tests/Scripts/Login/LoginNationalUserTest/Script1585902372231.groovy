@@ -27,6 +27,8 @@ try {
 
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Statistics'), 2)
 	
+	WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Persons'), 2)
+	
 	WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Configuration'), 2)
 
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_About'), 2)

@@ -30,6 +30,10 @@
         <variable name="exposureList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.exposure.Exposure&gt;" />
         <variable name="exposureItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="exposureListBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
+
+        <variable name="activityascaseList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.activityascase.ActivityAsCase&gt;" />
+        <variable name="activityascaseItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="activityascaseListBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
     <ScrollView
@@ -92,6 +96,37 @@
                         app:entries="@{exposureList}"
                         app:layout="@{@layout/row_epid_exposure_layout}"
                         app:bindCallback="@{exposureListBindCallback}"/>
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_activityAsCaseDetailsKnown"
+                    app:value="@{data.activityAsCaseDetailsKnown}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:id="@+id/activitiesascase_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/formListSectionBackground"
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                    android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                    android:paddingTop="@dimen/parentLayoutVerticalMargin">
+
+                    <LinearLayout
+                        android:id="@+id/list_activitiesAsCase"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:orientation="vertical"
+                        android:padding="@dimen/rowListItemParentPadding"
+                        app:callback="@{activityascaseItemClickCallback}"
+                        app:entries="@{activityascaseList}"
+                        app:layout="@{@layout/row_epid_activity_as_case_layout}"
+                        app:bindCallback="@{activityascaseListBindCallback}"/>
 
                 </LinearLayout>
 

@@ -396,14 +396,13 @@ public final class CssStyles {
 			return "background-disease-congenital-rubella";
 		case ANTHRAX:
 			return "background-disease-anthrax";
-		case UNDEFINED:
-			return "background-disease-undefined";
 		case RABIES:
 			return "background-disease-rabies";
 		case CORONAVIRUS:
 			return "background-disease-coronavirus";
+		case UNDEFINED:
 		default:
-			throw new IllegalArgumentException(disease.toString());
+			return "background-disease-undefined";
 		}
 	}
 }

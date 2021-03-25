@@ -9,9 +9,19 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface LabMessageFacade {
 
-	void save(LabMessageDto dto);
+	LabMessageDto save(LabMessageDto dto);
 
 	LabMessageDto getByUuid(String uuid);
+
+	/**
+	 * This method is used to check whether a labMessage is marked processed in the database.
+	 * It can be used to check for recent changes.
+	 *
+	 * @param uuid
+	 *            of the labMessage
+	 * @return true if the labMessage is marked processed in the database, false otherwise.
+	 */
+	Boolean isProcessed(String uuid);
 
 	long count(LabMessageCriteria criteria);
 
@@ -19,7 +29,11 @@ public interface LabMessageFacade {
 
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.
-	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the object.
+	 * 
+	 * @return a {@link LabMessageFetchResult LabMessageFetchResult}. If any error occurred, an appropriate message is provided in the
+	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages();
+
+	boolean exists(String uuid);
 }

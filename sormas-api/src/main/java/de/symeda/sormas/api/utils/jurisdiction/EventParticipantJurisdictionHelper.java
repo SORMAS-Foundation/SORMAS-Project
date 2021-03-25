@@ -34,7 +34,7 @@ public class EventParticipantJurisdictionHelper {
 
 	public static boolean isOwned(UserJurisdiction userJurisdiction, EventParticipantJurisdictionDto eventParticipantJurisdiction) {
 
-		if (eventParticipantJurisdiction.getReportingUserUuid() != null
+		if (eventParticipantJurisdiction != null && eventParticipantJurisdiction.getReportingUserUuid() != null
 			&& DataHelper.equal(userJurisdiction.getUuid(), eventParticipantJurisdiction.getReportingUserUuid())) {
 			return true;
 		}

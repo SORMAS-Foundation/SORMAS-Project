@@ -16,7 +16,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Password for user in Surveillance Supervisor section</description>
-      <initValue>'SurvSup'</initValue>
+      <initValue>'SurvSup38118'</initValue>
       <name>gPasswordSurveillanceSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -36,7 +36,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Password for Contact Supervisor</description>
-      <initValue>'ContSup'</initValue>
+      <initValue>'ContSup38118'</initValue>
       <name>gPasswordContactSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -56,7 +56,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'EveOff'</initValue>
+      <initValue>'EveOff38118'</initValue>
       <name>gPasswordEventOfficer</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -66,7 +66,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'PoeSup'</initValue>
+      <initValue>'PoeSup38118'</initValue>
       <name>gPasswordPoeSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -76,7 +76,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'LabOff'</initValue>
+      <initValue>'LabOff38118'</initValue>
       <name>gPasswordLabOfficer</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -86,7 +86,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'NatUser'</initValue>
+      <initValue>'NatUser38118'</initValue>
       <name>gPasswordNationalUser</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -96,7 +96,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'NatClin'</initValue>
+      <initValue>'NatClin38118'</initValue>
       <name>gPasswordNationalClinician</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>

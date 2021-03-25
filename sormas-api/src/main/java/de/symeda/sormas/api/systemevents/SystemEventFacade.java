@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.systemevents;
 
 import javax.ejb.Remote;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -9,10 +10,16 @@ import java.util.Date;
 @Remote
 public interface SystemEventFacade {
 
-	Date getLatestSuccessByType(SystemEventType type);
+	SystemEventDto getLatestSuccessByType(SystemEventType type);
 
 	void saveSystemEvent(SystemEventDto dto);
 
 	void deleteAllDeletableSystemEvents(int daysAfterSystemEventGetsDeleted);
+
+	void reportSuccess(SystemEventDto systemEvent, String message, Date end);
+
+	void reportSuccess(SystemEventDto systemEvent, Date end);
+
+	void reportError(SystemEventDto systemEvent, String errorMessage, Date end);
 
 }

@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -453,11 +454,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testIncludeContactsFromOtherJurisdictionsFilter() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RegionReferenceDto regionReferenceDto = getRegionFacade().getByName("Region", false).get(0);
+		RegionReferenceDto regionReferenceDto = getRegionFacade().getReferencesByName("Region", false).get(0);
 		DistrictReferenceDto districtReferenceDto = getDistrictFacade().getByName("District", regionReferenceDto, false).get(0);
 
 		RDCFEntities rdcf2 = creator.createRDCFEntities("NewRegion", "NewDistrict", "Community2", "Facility2");
-		RegionReferenceDto region2ReferenceDto = getRegionFacade().getByName("NewRegion", false).get(0);
+		RegionReferenceDto region2ReferenceDto = getRegionFacade().getReferencesByName("NewRegion", false).get(0);
 		DistrictReferenceDto district2ReferenceDto = getDistrictFacade().getByName("NewDistrict", region2ReferenceDto, false).get(0);
 
 		// "mainUser" is the user which executes the grid query
@@ -958,7 +959,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(visit);
 
 		List<ContactExportDto> results;
-		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -997,7 +998,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
-		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 		assertThat(results, hasSize(1));
 		{
 			ContactExportDto dto = results.get(0);
@@ -1051,7 +1052,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		visit21.getSymptoms().setBackache(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
 
-		final List<VisitSummaryExportDto> results = getContactFacade().getVisitSummaryExportList(null, 0, 100, Language.EN);
+		final List<VisitSummaryExportDto> results = getContactFacade().getVisitSummaryExportList(null, Collections.emptySet(), 0, 100, Language.EN);
 		assertNotNull(results);
 		assertEquals(3, results.size());
 
@@ -1297,5 +1298,30 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(savedContact.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedContact.getHealthConditions().getUuid(), not(isEmptyOrNullString()));
+	}
+
+	@Test
+	public void testGetContactsByPersonUuids() {
+
+		UserReferenceDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		ContactDto contact1 = getContactFacade().saveContact(creator.createContact(user, person1));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		ContactDto contact2 = getContactFacade().saveContact(creator.createContact(user, person2));
+
+		List<ContactDto> contactsByPerson = getContactFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
+
+		assertEquals(1, contactsByPerson.size());
+		assertEquals(contact1.getUuid(), contactsByPerson.get(0).getUuid());
+		assertNotEquals(contact2.getUuid(), contactsByPerson.get(0).getUuid());
+
+		contactsByPerson = getContactFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+
+		assertEquals(2, contactsByPerson.size());
+		assertEquals(contact1.getUuid(), contactsByPerson.get(0).getUuid());
+		assertEquals(contact2.getUuid(), contactsByPerson.get(1).getUuid());
+
 	}
 }

@@ -60,6 +60,8 @@ public class Exposure extends PseudonymizableAdo {
 	private EpiData epiData;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
+	@DatabaseField
+	private boolean probableInfectionEnvironment;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date startDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -169,6 +171,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String deceasedPersonName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String deceasedPersonRelation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown largeAttendanceNumber;
 
 	@Override
 	public String getI18nPrefix() {
@@ -189,6 +193,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	public Date getStartDate() {
@@ -589,5 +601,13 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	public YesNoUnknown getLargeAttendanceNumber() {
+		return largeAttendanceNumber;
+	}
+
+	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
+		this.largeAttendanceNumber = largeAttendanceNumber;
 	}
 }

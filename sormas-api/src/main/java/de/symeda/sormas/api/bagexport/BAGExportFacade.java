@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.bagexport;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -22,7 +23,7 @@ import javax.ejb.Remote;
 @Remote
 public interface BAGExportFacade {
 
-	List<BAGExportCaseDto> getCaseExportList(int first, int max);
+	List<BAGExportCaseDto> getCaseExportList(Collection<String> selectedRows, int first, int max);
 
-	List<BAGExportContactDto> getContactExportList(int first, int max);
+	List<BAGExportContactDto> getContactExportList(Collection<String> selectedRows, int first, int max);
 }

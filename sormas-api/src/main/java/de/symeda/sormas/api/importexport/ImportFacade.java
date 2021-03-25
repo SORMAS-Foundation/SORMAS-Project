@@ -34,6 +34,8 @@ public interface ImportFacade {
 	 */
 	void generateCaseImportTemplateFile() throws IOException;
 
+	void generateEventImportTemplateFile() throws IOException;
+
 	void generateEventParticipantImportTemplateFile() throws IOException;
 
 	void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException;
@@ -47,6 +49,10 @@ public interface ImportFacade {
 	void generatePopulationDataImportTemplateFile() throws IOException;
 
 	void generateAreaImportTemplateFile() throws IOException;
+
+	void generateContinentImportTemplateFile() throws IOException;
+
+	void generateSubcontinentImportTemplateFile() throws IOException;
 
 	void generateCountryImportTemplateFile() throws IOException;
 
@@ -62,6 +68,8 @@ public interface ImportFacade {
 
 	String getCaseImportTemplateFilePath();
 
+	String getEventImportTemplateFilePath();
+
 	String getEventParticipantImportTemplateFilePath();
 
 	String getCampaignFormImportTemplateFilePath();
@@ -74,9 +82,17 @@ public interface ImportFacade {
 
 	String getAreaImportTemplateFilePath();
 
+	String getContinentImportTemplateFilePath();
+
+	String getSubcontinentImportTemplateFilePath();
+
 	String getCountryImportTemplateFilePath();
 
 	URI getAllCountriesImportFilePath();
+
+	URI getAllSubcontinentsImportFilePath();
+
+	URI getAllContinentsImportFilePath();
 
 	String getRegionImportTemplateFilePath();
 

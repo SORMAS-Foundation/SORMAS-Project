@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 
 @SuppressWarnings("serial")
@@ -113,9 +114,7 @@ public class AggregateReportsView extends AbstractView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				grid,
-				"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}
@@ -171,7 +170,7 @@ public class AggregateReportsView extends AbstractView {
 			if (user.getRegion() == null) {
 				cbRegionFilter.setWidth(200, Unit.PIXELS);
 				cbRegionFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 				binder.bind(cbRegionFilter, AggregateReportCriteria.REGION);
 				hlFirstFilterRow.addComponent(cbRegionFilter);
 			}

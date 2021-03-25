@@ -17,22 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.Date;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.PathogenTestResultTypeRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -81,6 +89,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 					return NO_CASE_CREATE != uuid;
 				}));
 
+		Language userLanguage = I18nProperties.getUserLanguage();
 		setColumns(
 			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
@@ -90,16 +99,20 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			EventParticipantIndexDto.APPROXIMATE_AGE,
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
 			CASE_ID,
-			EventParticipantIndexDto.CONTACT_COUNT);
-
+			EventParticipantIndexDto.CONTACT_COUNT,
+			SampleIndexDto.PATHOGEN_TEST_RESULT,
+			SampleIndexDto.SAMPLE_DATE_TIME);
+		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
+		final Column<EventParticipantIndexDto, PathogenTestResultType> pathogenTestResultColumn =
+			(Column<EventParticipantIndexDto, PathogenTestResultType>) getColumn(SampleIndexDto.PATHOGEN_TEST_RESULT);
+		pathogenTestResultColumn.setRenderer(new PathogenTestResultTypeRenderer());
 		for (Column<EventParticipantIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
-
+			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
-
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {

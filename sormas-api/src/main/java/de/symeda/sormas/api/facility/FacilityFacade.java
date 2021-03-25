@@ -32,7 +32,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface FacilityFacade {
 
-	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<FacilityIndexDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
 
 	long count(FacilityCriteria criteria);
 
@@ -69,6 +71,8 @@ public interface FacilityFacade {
 	List<String> getAllUuids();
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
+
+	void saveFacility(FacilityDto value, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<FacilityReferenceDto> getByNameAndType(
 		String name,

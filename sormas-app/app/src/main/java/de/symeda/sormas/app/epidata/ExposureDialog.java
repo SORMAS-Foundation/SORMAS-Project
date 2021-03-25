@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.epidata;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +29,7 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
@@ -41,6 +39,9 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogExposureEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class ExposureDialog extends FormDialog {
 
@@ -58,7 +59,7 @@ public class ExposureDialog extends FormDialog {
 			-1,
 			false,
 			UiFieldAccessCheckers.forSensitiveData(exposure.isPseudonymized()),
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)));
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()));
 
 		this.data = exposure;
 		this.create = create;
@@ -83,6 +84,7 @@ public class ExposureDialog extends FormDialog {
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
 		locationDialog.setFacilityFieldsVisible(data.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+		locationDialog.updateContinentFieldsVisibility();
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.exposureLocation.setValue(locationClone);
@@ -117,7 +119,7 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureTypeOfAnimal.initializeSpinner(DataUtils.getEnumItems(TypeOfAnimal.class, true));
 		contentBinding.exposureAnimalCondition.initializeSpinner(DataUtils.getEnumItems(AnimalCondition.class, true));
 		contentBinding.exposureAnimalContactType.initializeSpinner(DataUtils.getEnumItems(AnimalContactType.class, true));
-		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
+		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true, fieldVisibilityCheckers));
 		contentBinding.exposureMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
 		contentBinding.exposureExposureRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
 		contentBinding.exposureWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));

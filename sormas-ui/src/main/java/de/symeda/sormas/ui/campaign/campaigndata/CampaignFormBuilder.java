@@ -38,10 +38,10 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -84,7 +84,7 @@ public class CampaignFormBuilder {
 				.ifPresent(
 					filteredTranslations -> userTranslations = filteredTranslations.getTranslations()
 						.stream()
-						.collect(Collectors.toMap(CampaignFormTranslation::getElementId, CampaignFormTranslation::getCaption)));
+						.collect(Collectors.toMap(TranslationElement::getElementId, TranslationElement::getCaption)));
 		}
 	}
 
@@ -269,7 +269,7 @@ public class CampaignFormBuilder {
 		return Integer.parseInt(colStyle.substring(colStyle.indexOf("-") + 1)) / 12f * 100;
 	}
 
-	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
+	public  <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
@@ -320,7 +320,7 @@ public class CampaignFormBuilder {
 		}
 	}
 
-	private String get18nCaption(String elementId, String defaultCaption) {
+	public String get18nCaption(String elementId, String defaultCaption) {
 		if (userTranslations != null && userTranslations.containsKey(elementId)) {
 			return userTranslations.get(elementId);
 		}
@@ -352,4 +352,11 @@ public class CampaignFormBuilder {
 		});
 	}
 
+	public List<CampaignFormElement> getFormElements() {
+		return formElements;
+	}
+
+	public Map<String, Field<?>> getFields() {
+		return fields;
+	}
 }

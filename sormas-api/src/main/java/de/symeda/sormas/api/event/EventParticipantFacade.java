@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -77,9 +78,16 @@ public interface EventParticipantFacade {
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 
-	List<EventParticipantExportDto> getExportList(EventParticipantCriteria eventParticipantCriteria, int first, int max, Language userLanguage);
+	List<EventParticipantExportDto> getExportList(
+		EventParticipantCriteria eventParticipantCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		Language userLanguage);
 
 	List<EventParticipantDto> getByEventUuids(List<String> eventUuids);
 
 	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
+
+    List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 }

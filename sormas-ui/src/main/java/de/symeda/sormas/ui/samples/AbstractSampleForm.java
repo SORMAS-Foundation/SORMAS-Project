@@ -10,11 +10,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
@@ -42,10 +42,12 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -74,6 +76,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
+					fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
                     fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
@@ -104,11 +107,16 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
     //@formatter:on
 
 	public AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix);
+		super(type, propertyI18nPrefix, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(type, propertyI18nPrefix, true, null, fieldAccessCheckers);
+		super(
+			type,
+			propertyI18nPrefix,
+			true,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			fieldAccessCheckers);
 	}
 
 	protected void addCommonFields() {
@@ -144,6 +152,15 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.RECEIVED, CheckBox.class);
 
 		addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+
+		addFields(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			SampleDto.SAMPLING_REASON_DETAILS,
+			SampleDto.SAMPLING_REASON,
+			Collections.singletonList(SamplingReason.OTHER_REASON),
+			true);
+
 	}
 
 	protected void defaultValueChangeListener() {

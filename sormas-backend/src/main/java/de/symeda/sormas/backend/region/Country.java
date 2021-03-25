@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend.region;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
@@ -15,11 +18,13 @@ public class Country extends InfrastructureAdo {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
+	public static final String SUBCONTINENT = "subcontinent";
 
 	private String defaultName;
 	private String externalId;
 	private String isoCode;
 	private String unoCode;
+	private Subcontinent subcontinent;
 
 	public String getDefaultName() {
 		return defaultName;
@@ -51,6 +56,15 @@ public class Country extends InfrastructureAdo {
 
 	public void setUnoCode(String unoCode) {
 		this.unoCode = unoCode;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	public Subcontinent getSubcontinent() {
+		return subcontinent;
+	}
+
+	public void setSubcontinent(Subcontinent subcontinent) {
+		this.subcontinent = subcontinent;
 	}
 
 	@Override

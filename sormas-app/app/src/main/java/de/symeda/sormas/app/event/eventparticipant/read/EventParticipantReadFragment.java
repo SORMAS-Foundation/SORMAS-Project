@@ -32,7 +32,6 @@ import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBindin
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
-import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 

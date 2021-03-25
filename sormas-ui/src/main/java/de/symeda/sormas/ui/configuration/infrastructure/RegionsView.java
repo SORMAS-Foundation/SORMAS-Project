@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -33,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -40,14 +39,15 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
@@ -66,6 +66,7 @@ public class RegionsView extends AbstractConfigurationView {
 	// Filter
 	private SearchField searchField;
 	private ComboBox relevanceStatusFilter;
+	private ComboBox countryFilter;
 	private Button resetButton;
 
 	private HorizontalLayout filterLayout;
@@ -80,7 +81,8 @@ public class RegionsView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(RegionsView.class).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(RegionsView.class).get(RegionCriteria.class);
+		criteria = ViewModelProviders.of(RegionsView.class)
+			.get(RegionCriteria.class, new RegionCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -112,10 +114,7 @@ public class RegionsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				grid,
-				"sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				RegionsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -175,6 +174,12 @@ public class RegionsView extends AbstractConfigurationView {
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
+
+		countryFilter = new CountryCombo((country, isServerCountry) -> {
+			criteria.country(country);
+			grid.reload();
+		});
+		filterLayout.addComponent(countryFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(RegionsView.class).remove(RegionCriteria.class);
@@ -261,6 +266,7 @@ public class RegionsView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameEpidLike());
+		countryFilter.setValue(criteria.getCountry());
 
 		applyingCriteria = false;
 	}

@@ -30,6 +30,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
@@ -50,7 +52,8 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		Predicate filter = null;
 
 		if (criteria.getCaze() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 
 		if (criteria.getContact() != null) {
@@ -61,8 +64,22 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		}
 
 		if (criteria.getSample() != null) {
-			filter = CriteriaBuilderHelper.
-				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
+		}
+
+		if (criteria.getEvent() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.EVENT, JoinType.LEFT).get(Event.UUID), criteria.getEvent().getUuid()));
+		}
+
+		if (criteria.getEventParticipant() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(SormasToSormasShareInfo.EVENT_PARTICIPANT, JoinType.LEFT).get(EventParticipant.UUID),
+					criteria.getEventParticipant().getUuid()));
 		}
 
 		return filter;
@@ -72,6 +89,19 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return exists(
 			(cb, root) -> cb
 				.and(cb.equal(root.get(SormasToSormasShareInfo.CAZE), caze), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+	}
+
+	public boolean isEventOwnershipHandedOver(Event event) {
+		return exists(
+			(cb, root) -> cb
+				.and(cb.equal(root.get(SormasToSormasShareInfo.EVENT), event), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+	}
+
+	public boolean isEventOwnershipHandedOver(EventParticipant eventParticipant) {
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(SormasToSormasShareInfo.EVENT_PARTICIPANT), eventParticipant),
+				cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 	}
 
 	public boolean isContactOwnershipHandedOver(Contact contact) {
@@ -108,6 +138,34 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 		cq.where(
 			cb.equal(from.get(SormasToSormasShareInfo.CONTACT).get(Contact.UUID), contactUuid),
+			cb.equal(from.get(SormasToSormasShareInfo.ORGANIZATION_ID), organizationId));
+
+		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
+
+		return q.getResultList().stream().findFirst().orElse(null);
+	}
+
+	public SormasToSormasShareInfo getByEventAndOrganization(String eventUuid, String organizationId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
+		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
+
+		cq.where(
+			cb.equal(from.get(SormasToSormasShareInfo.EVENT).get(Contact.UUID), eventUuid),
+			cb.equal(from.get(SormasToSormasShareInfo.ORGANIZATION_ID), organizationId));
+
+		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
+
+		return q.getResultList().stream().findFirst().orElse(null);
+	}
+
+	public SormasToSormasShareInfo getByEventParticipantAndOrganization(String eventParticipantUuid, String organizationId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
+		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
+
+		cq.where(
+			cb.equal(from.get(SormasToSormasShareInfo.EVENT_PARTICIPANT).get(Contact.UUID), eventParticipantUuid),
 			cb.equal(from.get(SormasToSormasShareInfo.ORGANIZATION_ID), organizationId));
 
 		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);

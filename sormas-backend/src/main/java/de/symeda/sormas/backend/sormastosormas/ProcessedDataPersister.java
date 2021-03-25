@@ -20,9 +20,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 
 public interface ProcessedDataPersister<P> {
 
-	void persistSharedData(P prcessedData) throws SormasToSormasValidationException;
+	void persistSharedData(P processedData) throws SormasToSormasValidationException;
 
-	void persistReturnedData(P prcessedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
+	void persistReturnedData(P processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
 
-	void persistSyncData(P prcessedData) throws SormasToSormasValidationException;
+	void persistSyncData(P processedData) throws SormasToSormasValidationException;
 }

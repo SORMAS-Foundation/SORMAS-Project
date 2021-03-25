@@ -19,6 +19,7 @@ import java.util.Date;
 
 import com.j256.ormlite.dao.Dao;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -68,6 +69,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 
 	private EpiData initLazyData(EpiData epiData) {
 		epiData.setExposures(DatabaseHelper.getExposureDao().getByEpiData(epiData));
+		epiData.setActivitiesAsCase(DatabaseHelper.getActivityAsCaseDao().getByEpiData(epiData));
 
 		return epiData;
 	}
@@ -78,6 +80,8 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 		EpiData snapshot = super.saveAndSnapshot(ado);
 
 		DatabaseHelper.getExposureDao().saveCollectionWithSnapshot(DatabaseHelper.getExposureDao().getByEpiData(ado), ado.getExposures(), ado);
+		DatabaseHelper.getActivityAsCaseDao()
+			.saveCollectionWithSnapshot(DatabaseHelper.getActivityAsCaseDao().getByEpiData(ado), ado.getActivitiesAsCase(), ado);
 
 		return snapshot;
 	}
@@ -89,10 +93,8 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 			return null;
 		}
 
-		Date exposureDate = DatabaseHelper.getExposureDao().getLatestChangeDate();
-		if (exposureDate != null && exposureDate.after(date)) {
-			date = exposureDate;
-		}
+		date = DateHelper.getLatestDate(date, DatabaseHelper.getExposureDao().getLatestChangeDate());
+		date = DateHelper.getLatestDate(date, DatabaseHelper.getActivityAsCaseDao().getLatestChangeDate());
 
 		return date;
 	}

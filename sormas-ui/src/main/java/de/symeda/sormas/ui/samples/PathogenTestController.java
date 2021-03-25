@@ -228,7 +228,7 @@ public class PathogenTestController {
 
 	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant, Disease testedDisease) {
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-		final boolean differentDiseases = !event.getDisease().equals(testedDisease);
+		final boolean differentDiseases = event.getDisease() == null || !event.getDisease().equals(testedDisease);
 		Label dialogContent = differentDiseases
 			? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseDifferentDiseases))
 			: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));

@@ -27,18 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -70,10 +68,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.caze.importer.CaseImporter;
-import de.symeda.sormas.ui.contact.importer.ContactImporter;
-import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
-import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.caze.importer.CaseImporterTest.CaseImporterExtension;
+import de.symeda.sormas.ui.contact.importer.ContactImporterTest.ContactImporterExtension;
 import de.symeda.sormas.ui.utils.CaseDownloadUtil;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 
@@ -136,7 +132,8 @@ public class ImportExportTest extends AbstractBeanTest {
 
 		getPersonFacade().savePerson(person);
 
-		StreamResource exportStreamResource = CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, null);
+		StreamResource exportStreamResource =
+			CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), Collections::emptySet, CaseExportType.CASE_SURVEILLANCE, null);
 
 		List<String[]> rows = getCsvReader(exportStreamResource.getStreamSource().getStream()).readAll();
 
@@ -277,7 +274,7 @@ public class ImportExportTest extends AbstractBeanTest {
 
 		getPersonFacade().savePerson(person);
 
-		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), null);
+		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), Collections::emptySet, null);
 
 		List<String[]> rows = getCsvReader(exportStreamResource.getStreamSource().getStream()).readAll();
 
@@ -356,43 +353,5 @@ public class ImportExportTest extends AbstractBeanTest {
 		Reader reader = new InputStreamReader(bomInputStream, decoder);
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		return CSVUtils.createCSVReader(bufferedReader, ',');
-	}
-
-	class CaseImporterExtension extends CaseImporter {
-
-		private StringBuilder stringBuilder = new StringBuilder("");
-		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
-
-		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
-		}
-
-		protected Writer createErrorReportWriter() {
-			return writer;
-		}
-	}
-
-	class ContactImporterExtension extends ContactImporter {
-
-		private StringBuilder stringBuilder = new StringBuilder("");
-		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
-
-		public ContactImporterExtension(File inputFile, UserDto currentUser) {
-			super(inputFile, false, currentUser, null);
-		}
-
-		protected Writer createErrorReportWriter() {
-			return writer;
-		}
-
-		@Override
-		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-		}
-
-		@Override
-		protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-		}
 	}
 }

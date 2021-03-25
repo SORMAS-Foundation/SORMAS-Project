@@ -1,62 +1,48 @@
 package de.symeda.sormas.api.person;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class SimilarPersonDto implements Serializable {
 
 	public static final String I18N_PREFIX = "Person";
+	public static final String I18N_PREFIX_LOCATION = "Location";
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String NICKNAME = "nickname";
-	public static final String APPROXIMATE_AGE = "approximateAge";
+	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String SEX = "sex";
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String PHONE = "phone";
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String COMMUNITY_NAME = "communityName";
+	public static final String POSTAL_CODE = "postalCode";
 	public static final String CITY = "city";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PASSPORT_NUMBER = "passportNumber";
+
+	private static final List<String> LOCATION_DETAILS = Arrays.asList(POSTAL_CODE, CITY, STREET, HOUSE_NUMBER);
 
 	private String uuid;
 	private String firstName;
 	private String lastName;
 	private String nickname;
-	private Integer approximateAge;
+	private String ageAndBirthDate;
 	private Sex sex;
 	private PresentCondition presentCondition;
+	private String phone;
 	private String districtName;
 	private String communityName;
+	private String postalCode;
 	private String city;
+	private String street;
+	private String houseNumber;
 	private String nationalHealthId;
 	private String passportNumber;
-
-	public SimilarPersonDto(
-		String uuid,
-		String firstName,
-		String lastName,
-		String nickname,
-		Integer approximateAge,
-		Sex sex,
-		PresentCondition presentCondition,
-		String districtName,
-		String communityName,
-		String city,
-		String nationalHealthId,
-		String passportNumber) {
-		this.uuid = uuid;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.nickname = nickname;
-		this.approximateAge = approximateAge;
-		this.sex = sex;
-		this.presentCondition = presentCondition;
-		this.districtName = districtName;
-		this.communityName = communityName;
-		this.city = city;
-		this.nationalHealthId = nationalHealthId;
-		this.passportNumber = passportNumber;
-	}
 
 	public String getUuid() {
 		return uuid;
@@ -90,12 +76,12 @@ public class SimilarPersonDto implements Serializable {
 		this.nickname = nickname;
 	}
 
-	public Integer getApproximateAge() {
-		return approximateAge;
+	public String getAgeAndBirthDate() {
+		return ageAndBirthDate;
 	}
 
-	public void setApproximateAge(Integer approximateAge) {
-		this.approximateAge = approximateAge;
+	public void setAgeAndBirthDate(String ageAndBirthDate) {
+		this.ageAndBirthDate = ageAndBirthDate;
 	}
 
 	public Sex getSex() {
@@ -114,6 +100,14 @@ public class SimilarPersonDto implements Serializable {
 		this.presentCondition = presentCondition;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public String getDistrictName() {
 		return districtName;
 	}
@@ -130,12 +124,36 @@ public class SimilarPersonDto implements Serializable {
 		this.communityName = communityName;
 	}
 
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	public String getCity() {
 		return city;
 	}
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
 	}
 
 	public String getNationalHealthId() {
@@ -161,5 +179,9 @@ public class SimilarPersonDto implements Serializable {
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
+	}
+
+	public static String getI18nPrefix(String propertyId) {
+		return LOCATION_DETAILS.contains(propertyId) ? I18N_PREFIX_LOCATION : I18N_PREFIX;
 	}
 }

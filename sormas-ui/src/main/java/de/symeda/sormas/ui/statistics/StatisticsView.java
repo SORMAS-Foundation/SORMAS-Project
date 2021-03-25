@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.utils.HtmlHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -83,8 +82,8 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -95,6 +94,7 @@ import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisu
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -435,8 +435,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
 			statisticsCaseGrid.getContainerDataSource(),
 			statisticsCaseGrid.getColumns(),
-			"sormas_statistics",
-			"sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			ExportEntityName.STATISTICS);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 	}
@@ -859,9 +858,9 @@ public class StatisticsView extends AbstractStatisticsView {
 			LeafletMapUtil.addOtherCountriesOverlay(map);
 		}
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 
-		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
+		List<LeafletPolygon> outlinePolygones = new ArrayList<>();
 
 		// draw outlines of all regions
 		for (RegionReferenceDto region : regions) {
@@ -871,23 +870,20 @@ public class StatisticsView extends AbstractStatisticsView {
 				continue;
 			}
 
-			for (int part = 0; part < regionShape.length; part++) {
-				GeoLatLon[] regionShapePart = regionShape[part];
+			// fillOpacity is used, so we can still hover the region
+			Arrays.stream(regionShape).forEach(regionShapePart -> {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				// fillOpacity is used, so we can still hover the region
 				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
 				polygon.setLatLons(regionShapePart);
 				outlinePolygones.add(polygon);
-			}
+			});
 		}
 
 		map.addPolygonGroup("outlines", outlinePolygones);
 
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			resultData.sort((a, b) -> {
-				return Integer.compare(a.getCaseCount(), b.getCaseCount());
-			});
+			resultData.sort(Comparator.comparingInt(StatisticsCaseCountDto::getCaseCount));
 		} else {
 			resultData.sort((a, b) -> {
 				BigDecimal incidenceA = a.getIncidence(incidenceDivisor);

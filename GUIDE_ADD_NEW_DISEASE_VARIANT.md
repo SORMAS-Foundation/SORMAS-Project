@@ -38,7 +38,7 @@ VALUES
 ```
 
 In case PostgreSQL complains about unknown function ```gen_random_uuid()```, it means the ```pgcrypto``` extension is not enabled.
-To enable it, please login with a superadmin account on your PostgreSQL server and execute the following query: 
+To enable it, please login with a superadmin account on your PostgreSQL server and execute the following query:
 
 ```sql
 create extension pgcrypto;

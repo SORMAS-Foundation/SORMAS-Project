@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
         <import type="de.symeda.sormas.api.sample.SamplePurpose" />
+        <import type="de.symeda.sormas.api.sample.SamplingReason" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="android.view.View" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
@@ -127,6 +128,18 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/sample_samplingReason"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.samplingReason}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/sample_samplingReasonDetails"
+                    app:dependencyParentField="@{sampleSamplingReason}"
+                    app:dependencyParentValue="@{SamplingReason.OTHER_REASON}"
+                    app:value="@={data.samplingReasonDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

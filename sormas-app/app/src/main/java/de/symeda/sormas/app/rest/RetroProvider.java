@@ -87,6 +87,8 @@ public final class RetroProvider {
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
+	private ContinentFacadeRetro continentFacadeRetro;
+	private SubcontinentFacadeRetro subcontinentFacadeRetro;
 	private CountryFacadeRetro countryFacadeRetro;
 	private RegionFacadeRetro regionFacadeRetro;
 	private FacilityFacadeRetro facilityFacadeRetro;
@@ -507,6 +509,32 @@ public final class RetroProvider {
 			}
 		}
 		return instance.districtFacadeRetro;
+	}
+
+	public static ContinentFacadeRetro getContinentFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.continentFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.continentFacadeRetro == null) {
+					instance.continentFacadeRetro = instance.retrofit.create(ContinentFacadeRetro.class);
+				}
+			}
+		}
+		return instance.continentFacadeRetro;
+	}
+
+	public static SubcontinentFacadeRetro getSubcontinentFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.subcontinentFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.subcontinentFacadeRetro == null) {
+					instance.subcontinentFacadeRetro = instance.retrofit.create(SubcontinentFacadeRetro.class);
+				}
+			}
+		}
+		return instance.subcontinentFacadeRetro;
 	}
 
 	public static CountryFacadeRetro getCountryFacade() throws NoConnectionException {

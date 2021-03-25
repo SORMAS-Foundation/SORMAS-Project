@@ -22,7 +22,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -38,6 +37,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -53,12 +53,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String EDIT_LOC = "edit";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String CONTACTS_LOC = "contacts";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
 		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 
@@ -90,6 +92,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 	@Override
 	protected void initView(String params) {
+		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
+
 		setHeightUndefined();
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -110,14 +114,6 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				EventParticipantEditForm eventParticipantEditForm = (EventParticipantEditForm) editComponent.getWrappedComponent();
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantEditForm.getValue().toReference());
-				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEventParticipant));
-		}
 
 		layout.addComponent(editComponent, EDIT_LOC);
 
@@ -152,6 +148,19 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			contactsLayout.addComponent(contactList);
 
 			layout.addComponent(contactsLayout, CONTACTS_LOC);
+		}
+
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(eventParticipant, sormasToSormasEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		CaseDocumentsComponent.addComponentToLayout(layout, eventParticipantRef);

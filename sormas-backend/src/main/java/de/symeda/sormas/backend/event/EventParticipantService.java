@@ -18,7 +18,10 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,22 +31,31 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 
 @Stateless
@@ -56,6 +68,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -145,10 +161,15 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return resultList;
 	}
 
-	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, CriteriaBuilder cb, Root<EventParticipant> from) {
+	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, EventParticipantQueryContext eventParticipantQueryContext) {
 
+		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
+		Root<EventParticipant> from = (Root<EventParticipant>) eventParticipantQueryContext.getRoot();
+		CriteriaQuery cq = eventParticipantQueryContext.getQuery();
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
@@ -165,7 +186,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter));
+						phoneNumberPredicate(
+							cb,
+							(Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+							textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
@@ -179,6 +203,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 		if (criteria.getBirthdateDD() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
+		}
+		if (criteria.getPathogenTestResult() != null) {
+			Join<EventParticipant, Sample> samples = from.join(EventParticipant.SAMPLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
@@ -210,33 +238,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
 		// can see the participants of all accessible events
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		Predicate eventFilter =
-			eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
-
-		// can see participants that are directly assigned to user's jurisdiction
-		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-
-		Predicate eventParticipantFilter = null;
-		switch (jurisdictionLevel) {
-		case REGION:
-			if (currentUser.getRegion() != null) {
-				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.REGION), currentUser.getRegion());
-			}
-			break;
-		case DISTRICT:
-			if (currentUser.getDistrict() != null) {
-				eventParticipantFilter = cb.equal(eventParticipantPath.get(EventParticipant.DISTRICT), currentUser.getDistrict());
-			}
-			break;
-		default:
-			break;
-		}
-
-		return CriteriaBuilderHelper.or(cb, eventFilter, eventParticipantFilter);
+		return eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {
@@ -288,7 +293,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Join<EventParticipant, Event> event = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
 		Predicate filter =
@@ -325,8 +330,9 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
-		Predicate filter = buildCriteriaFilter(criteria, cb, eventParticipant);
+		Predicate filter = buildCriteriaFilter(criteria, eventParticipantQueryContext);
 		cq.where(filter);
 		cq.orderBy(cb.asc(eventParticipant.get(EventParticipant.UUID)));
 
@@ -355,7 +361,45 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
 		dateFilter =
 			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
+
+	}
+
+	public boolean isEventParticiapntEditAllowed(EventParticipant eventParticipant) {
+		if (eventParticipant.getSormasToSormasOriginInfo() != null) {
+			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant)
+			&& !sormasToSormasShareInfoService.isEventOwnershipHandedOver(eventParticipant);
+	}
+
+	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
+		if (CollectionUtils.isEmpty(personUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<EventParticipant> eventParticipants = new LinkedList<>();
+			IterableHelper.executeBatched(
+				personUuids,
+				ModelConstants.PARAMETER_LIMIT,
+				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
+			return eventParticipants;
+		} else {
+			return getEventParticipantsByPersonUuids(personUuids);
+		}
+	}
+
+	private List<EventParticipant> getEventParticipantsByPersonUuids(List<String> personUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

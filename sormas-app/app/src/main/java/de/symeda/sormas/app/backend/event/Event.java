@@ -32,17 +32,23 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.InfectionPathCertainty;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Event.TABLE_NAME)
@@ -56,6 +62,7 @@ public class Event extends PseudonymizableAdo {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -213,6 +220,26 @@ public class Event extends PseudonymizableAdo {
 	private YesNoUnknown transregionalOutbreak;
 	@Enumerated(EnumType.STRING)
 	private DiseaseTransmissionMode diseaseTransmissionMode;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	@DatabaseField
+	private boolean ownershipHandedOver;
+
+	@Enumerated(EnumType.STRING)
+	private EventManagementStatus eventManagementStatus;
+
+	@Enumerated(EnumType.STRING)
+	private InfectionPathCertainty infectionPathCertainty;
+	@Enumerated(EnumType.STRING)
+	private HumanTransmissionMode humanTransmissionMode;
+	@Enumerated(EnumType.STRING)
+	private ParenteralTransmissionMode parenteralTransmissionMode;
+	@Enumerated(EnumType.STRING)
+	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
+
+	@Column(columnDefinition = "text")
+	private String internalId;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -566,5 +593,69 @@ public class Event extends PseudonymizableAdo {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public InfectionPathCertainty getInfectionPathCertainty() {
+		return infectionPathCertainty;
+	}
+
+	public void setInfectionPathCertainty(InfectionPathCertainty infectionPathCertainty) {
+		this.infectionPathCertainty = infectionPathCertainty;
+	}
+
+	public HumanTransmissionMode getHumanTransmissionMode() {
+		return humanTransmissionMode;
+	}
+
+	public void setHumanTransmissionMode(HumanTransmissionMode humanTransmissionMode) {
+		this.humanTransmissionMode = humanTransmissionMode;
+	}
+
+	public ParenteralTransmissionMode getParenteralTransmissionMode() {
+		return parenteralTransmissionMode;
+	}
+
+	public void setParenteralTransmissionMode(ParenteralTransmissionMode parenteralTransmissionMode) {
+		this.parenteralTransmissionMode = parenteralTransmissionMode;
+	}
+
+	public MedicallyAssociatedTransmissionMode getMedicallyAssociatedTransmissionMode() {
+		return medicallyAssociatedTransmissionMode;
+	}
+
+	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
+		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }

@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.ui.customexport;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -30,24 +31,22 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportGroupType;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CustomExportController {
 
-	public void openContactExportWindow(ContactCriteria contactCriteria) {
+	public void openContactExportWindow(ContactCriteria contactCriteria, Supplier<Collection<String>> selectedRows) {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
-			ImportExportUtils.getContactExportProperties(),
-			ContactDownloadUtil::getPropertyCaption,
+			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, exportConfig), null, true);
+			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true);
 		});
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
@@ -58,21 +57,19 @@ public class CustomExportController {
 	public void openEditExportConfigurationWindow(
 		ExportConfigurationsGrid grid,
 		ExportConfigurationDto config,
-		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCationProvider) {
+		List<ExportPropertyMetaInfo> availableProperties) {
 
 		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		ExportConfigurationEditLayout editLayout =
-			new ExportConfigurationEditLayout(config, availableProperties, propertyCationProvider, (exportConfiguration) -> {
-				FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
-				newExportWindow.close();
-				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
-					.show(Page.getCurrent());
-				grid.reload(false);
-			}, () -> {
-				newExportWindow.close();
-				grid.reload(false);
-			});
+		ExportConfigurationEditLayout editLayout = new ExportConfigurationEditLayout(config, availableProperties, (exportConfiguration) -> {
+			FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
+			newExportWindow.close();
+			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
+				.show(Page.getCurrent());
+			grid.reload(false);
+		}, () -> {
+			newExportWindow.close();
+			grid.reload(false);
+		});
 		newExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
 		newExportWindow.setContent(editLayout);

@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,11 +51,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.AuthProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
@@ -64,6 +66,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -81,13 +84,15 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -148,6 +153,10 @@ public class StartupShutdownService {
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
 	private ServerAccessDataService serverAccessDataService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private CountryService countryService;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -198,6 +207,11 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
+		if (!configFacade.isCreateDefaultEntities()) {
+			// return if isCreateDefaultEntities() is false
+			logger.info("Skipping the creation of default infrastructure data");
+			return;
+		}
 
 		// Region
 		Region region = null;
@@ -315,9 +329,9 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
-			if (!configFacade.isCreateDefaultUsers()) {
-				// return if getCreateDefaultUsers() is false
-				logger.info("Skipping the creation of default users");
+			if (!configFacade.isCreateDefaultEntities()) {
+				// return if isCreateDefaultEntities() is false
+				logger.info("Skipping the creation of default entities");
 				return;
 			}
 
@@ -404,6 +418,15 @@ public class StartupShutdownService {
 			userService.persist(hospitalInformant);
 			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
 
+			// Create Community Officer
+			User communityOfficer = MockDataGenerator.createUser(UserRole.COMMUNITY_OFFICER, "Community", "Officer", "CommOff");
+			communityOfficer.setUserName("CommOff");
+			communityOfficer.setRegion(region);
+			communityOfficer.setDistrict(district);
+			communityOfficer.setCommunity(community);
+			userService.persist(communityOfficer);
+			userUpdateEvent.fire(new UserUpdateEvent(communityOfficer));
+
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
 			poeInformant.setRegion(region);
@@ -436,7 +459,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -488,6 +511,7 @@ public class StartupShutdownService {
 
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 * 
 	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
@@ -500,7 +524,7 @@ public class StartupShutdownService {
 			return;
 		}
 
-		if(!authProvider.isUserSyncAtStartupEnabled()) {
+		if (!authProvider.isUserSyncAtStartupEnabled()) {
 			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
 			return;
 		}
@@ -651,6 +675,17 @@ public class StartupShutdownService {
 					contactService.udpateContactStatus(contact);
 				}
 				break;
+			case 354:
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (serverCountry != null) {
+					Country country = countryService.getByUuid(serverCountry.getUuid());
+					em.createQuery("UPDATE Region set country = :server_country, changeDate = :change_date WHERE country is null")
+						.setParameter("server_country", country)
+						.setParameter("change_date", new Timestamp(new Date().getTime()))
+						.executeUpdate();
+				}
+				break;
 
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
@@ -710,6 +745,18 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateContinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create continent import template .csv file.");
+		}
+
+		try {
+			importFacade.generateSubcontinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create subcontinent import template .csv file.");
+		}
+
+		try {
 			importFacade.generateCountryImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create country import template .csv file.");
@@ -734,6 +781,13 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
+
+		try {
+			importFacade.generateEventImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create event import template .csv file.");
+		}
+
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {
@@ -742,9 +796,8 @@ public class StartupShutdownService {
 	}
 
 	private void createMissingDiseaseConfigurations() {
-
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);

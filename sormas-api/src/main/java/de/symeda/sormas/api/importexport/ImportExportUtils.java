@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.utils.Order;
 
 public final class ImportExportUtils {
@@ -43,7 +43,10 @@ public final class ImportExportUtils {
 	public static final String FILE_PREFIX = "sormas";
 	public static final String TEMP_FILE_PREFIX = "sormas_temp";
 
-	public static List<Pair<String, ExportGroupType>> getCaseExportProperties(final boolean withFollowUp, final boolean withCaseManagement) {
+	public static List<ExportPropertyMetaInfo> getCaseExportProperties(
+		PropertyCaptionProvider propertyCaptionProvider,
+		final boolean withFollowUp,
+		final boolean withCaseManagement) {
 		return getExportProperties(CaseExportDto.class, new PropertyTypeFilter() {
 
 			@Override
@@ -58,20 +61,33 @@ public final class ImportExportUtils {
 
 				return true;
 			}
-		});
+		}, propertyCaptionProvider);
 	}
 
-	public static List<Pair<String, ExportGroupType>> getContactExportProperties() {
+	public static List<ExportPropertyMetaInfo> getContactExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
 		return getExportProperties(ContactExportDto.class, new PropertyTypeFilter() {
 
 			@Override
 			public boolean accept(ExportGroupType type) {
 				return true;
 			}
-		});
+		}, propertyCaptionProvider);
 	}
 
-	private static List<Pair<String, ExportGroupType>> getExportProperties(Class<?> exportDtoClass, PropertyTypeFilter filterExportGroup) {
+	public static List<ExportPropertyMetaInfo> getEventParticipantExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
+		return getExportProperties(EventParticipantExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		}, propertyCaptionProvider);
+	}
+
+	private static List<ExportPropertyMetaInfo> getExportProperties(
+		Class<?> exportDtoClass,
+		PropertyTypeFilter filterExportGroup,
+		PropertyCaptionProvider propertyCaptionProvider) {
 		List<Method> readMethods = new ArrayList<>();
 		for (Method method : exportDtoClass.getDeclaredMethods()) {
 			if ((!method.getName().startsWith("get") && !method.getName().startsWith("is")) || !method.isAnnotationPresent(ExportGroup.class)) {
@@ -88,7 +104,7 @@ public final class ImportExportUtils {
 		});
 
 		Set<String> combinedProperties = new HashSet<>();
-		List<Pair<String, ExportGroupType>> properties = new ArrayList<>();
+		List<ExportPropertyMetaInfo> properties = new ArrayList<>();
 		for (Method method : readMethods) {
 			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
 
@@ -96,14 +112,15 @@ public final class ImportExportUtils {
 				continue;
 			}
 
-			String property = StringUtils.join(method.getAnnotation(ExportProperty.class).value(), ".");
+			String[] propertyPath = method.getAnnotation(ExportProperty.class).value();
+			String property = StringUtils.join(propertyPath, ".");
 			if (method.getAnnotation(ExportProperty.class).combined()) {
 				if (!combinedProperties.add(property)) {
 					continue;
 				}
 			}
 
-			properties.add(Pair.createPair(property, groupType));
+			properties.add(new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1]), groupType));
 		}
 
 		return properties;
@@ -130,5 +147,10 @@ public final class ImportExportUtils {
 	public interface PropertyTypeFilter {
 
 		boolean accept(ExportGroupType type);
+	}
+
+	public interface PropertyCaptionProvider {
+
+		String get(String propertyId);
 	}
 }
