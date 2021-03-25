@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -67,6 +70,7 @@ import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -84,6 +88,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private GeocodingService geocodingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
@@ -156,7 +162,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Case> caseJoin = personFrom.join(Person.CASES, JoinType.LEFT);
 		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
 		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
-		
+
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
@@ -169,7 +175,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
 		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
 
-		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
+		return CriteriaBuilderHelper.or(
+			cb,
+			caseFilter,
+			contactFilter,
+			eventParticipantFilter,
+			cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -553,5 +564,34 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
+
+		long updatedCount = 0;
+		List<Person> persons = getByUuids(personUuids);
+		for (Person person : persons) {
+			if (updateGeoLocation(person, overwriteExistingCoordinates)) {
+				updatedCount++;
+			}
+		}
+		return updatedCount;
+	}
+
+	public boolean updateGeoLocation(Person person, boolean overwriteExistingCoordinates) {
+
+		boolean geoLocationUpdated = false;
+		if (person.getAddress() != null
+			&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
+			GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
+			if (latLon != null) {
+				person.getAddress().setLatitude(latLon.getLat());
+				person.getAddress().setLongitude(latLon.getLon());
+				ensurePersisted(person);
+				geoLocationUpdated = true;
+			}
+		}
+		return geoLocationUpdated;
 	}
 }

@@ -84,7 +84,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -104,11 +103,9 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
@@ -122,6 +119,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -152,10 +150,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CommunityService communityService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
-	@EJB
-	private LocationService locationService;
-	@EJB
-	private GeocodingService geocodingService;
 	@EJB
 	private PersonContactDetailService personContactDetailService;
 	@EJB
@@ -735,35 +729,21 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
-		long changedPersons = 0;
 
-		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
-		if (indexList == null) {
-			return 0;
-		}
-		List<Person> personsList = personService.getByUuids(indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
-		if (personsList == null) {
+		// The list is automatically filtered by the users jurisdiction
+		List<PersonIndexDto> indexList = getIndexList(null, null, null, null);
+		if (CollectionUtils.isEmpty(indexList)) {
 			return 0;
 		}
 
-		for (Person person : personsList) {
+		// Run updates in batches to avoid large JPA cache
+		List<String> personUuidList = indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList());
+		List<Long> batchResults = new ArrayList<>();
+		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
+			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
+		});
 
-			if (person.getAddress() != null
-				&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
-				try {
-					GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
-					if (latLon != null) {
-						person.getAddress().setLatitude(latLon.getLat());
-						person.getAddress().setLongitude(latLon.getLon());
-						changedPersons++;
-					}
-				} catch (Exception e) {
-					// This exception might be called when an invalid addess was entered, resulting in a server timeou
-					e.printStackTrace();
-				}
-			}
-		}
-
+		Long changedPersons = batchResults.stream().reduce(0L, Long::sum);
 		return changedPersons;
 	}
 
