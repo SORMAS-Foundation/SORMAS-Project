@@ -46,6 +46,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -72,28 +73,58 @@ public final class InfrastructureDaoHelper {
 
 		items.add(new Item<>("", null));
 		items.addAll(
-			DatabaseHelper.getSubcontinentDao()
-				.queryActiveForAll(Subcontinent.DEFAULT_NAME, true)
+				mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao()
+					.queryActiveForAll(Subcontinent.DEFAULT_NAME, true)));
+		return items;
+	}
+
+	public static List<Item> loadSubcontinentsByContinent(Continent continent) {
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+				mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao()
+						.queryActiveByContinent(continent)));
+		return items;
+	}
+
+	private static List<Item<Subcontinent>> mapToDisplaySubcontinentNames(List<Subcontinent> subcontinents) {
+		return subcontinents
 				.stream()
 				.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
 				.sorted(Comparator.comparing(Item::getKey))
-				.collect(Collectors.toList()));
-		return items;
+				.collect(Collectors.toList());
 	}
+
 
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
 		items.addAll(
-			DatabaseHelper.getCountryDao()
-				.queryActiveForAll(Country.ISO_CODE, true)
+				mapToDisplayCountryNames(DatabaseHelper.getCountryDao()
+						.queryActiveForAll(Country.ISO_CODE, true)));
+
+		return items;
+	}
+
+	public static List<Item> loadCountriesBySubcontinent(Subcontinent subcontinent) {
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+				mapToDisplayCountryNames(DatabaseHelper.getCountryDao()
+						.queryActiveBySubcontinent(subcontinent)));
+
+		return items;
+	}
+
+	private static List<Item<Country>> mapToDisplayCountryNames(List<Country> countries) {
+		return countries
 				.stream()
 				.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
 				.sorted(Comparator.comparing(Item::getKey))
-				.collect(Collectors.toList()));
-
-		return items;
+				.collect(Collectors.toList());
 	}
 
 	public static List<Item> loadRegionsByServerCountry() {
@@ -228,22 +259,55 @@ public final class InfrastructureDaoHelper {
 		if (continentItem != null && !continents.contains(continentItem)) {
 			continents.add(continentItem);
 		}
-		continentField.initializeSpinner(continents);
-		continentField.setValue(initialContinent);
-		continentField.setVisibility(GONE);
-
 		Item subcontinentItem = initialSubcontinent != null ? DataUtils.toItem(initialSubcontinent) : null;
 		if (subcontinentItem != null && !continents.contains(subcontinentItem)) {
 			subcontinents.add(subcontinentItem);
 		}
-		subcontinentField.initializeSpinner(subcontinents);
-		subcontinentField.setValue(initialSubcontinent);
-		subcontinentField.setVisibility(GONE);
-
 		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
 		if (countryItem != null && !countries.contains(countryItem)) {
 			countries.add(countryItem);
 		}
+
+		continentField.initializeSpinner(continents);
+		continentField.setValue(initialContinent);
+		continentField.setVisibility(GONE);
+		ValueChangeListener continentValueChangeListener = field -> {
+			Continent selectedContinent = (Continent) field.getValue();
+			if (selectedContinent != null) {
+				List<Item> newSubcontinents = loadSubcontinentsByContinent(selectedContinent);
+				if (initialSubcontinent != null && selectedContinent.equals(initialSubcontinent.getContinent()) && !newSubcontinents.contains(subcontinentItem)) {
+					newSubcontinents.add(subcontinentItem);
+				}
+				subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
+			} else {
+				subcontinentField.setSpinnerData(null);
+			}
+		};
+		continentField.initializeSpinner(continents, continentValueChangeListener);
+
+		subcontinentField.initializeSpinner(subcontinents);
+		subcontinentField.setValue(initialSubcontinent);
+		subcontinentField.setVisibility(GONE);
+		ValueChangeListener subcontinentValueChangeListener = field -> {
+			Subcontinent selectedSubcontinent = (Subcontinent) field.getValue();
+			if (selectedSubcontinent != null) {
+				List<Item> newCountries = loadCountriesBySubcontinent(selectedSubcontinent);
+				if (initialCountry != null && selectedSubcontinent.equals(initialCountry.getSubcontinent()) && !newCountries.contains(countryItem)) {
+					newCountries.add(countryItem);
+				}
+				countryField.setSpinnerData(newCountries, countryField.getValue());
+			} else {
+				countryField.setSpinnerData(null);
+			}
+			if (selectedSubcontinent != null) {
+				continentField.unregisterListener(continentValueChangeListener);
+				continentField.setValue(selectedSubcontinent.getContinent());
+				continentField.registerListener(continentValueChangeListener);
+			}
+		};
+		subcontinentField.initializeSpinner(subcontinents, subcontinentValueChangeListener);
+
+
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
@@ -255,9 +319,13 @@ public final class InfrastructureDaoHelper {
 			regionField.setSpinnerData(newRegions, regionField.getValue());
 			if (selectedCountry != null) {
 				final Subcontinent subcontinent = selectedCountry.getSubcontinent();
+				subcontinentField.unregisterListener(subcontinentValueChangeListener);
 				subcontinentField.setValue(subcontinent);
+				subcontinentField.registerListener(subcontinentValueChangeListener);
 				if (subcontinent != null) {
+					continentField.unregisterListener(continentValueChangeListener);
 					continentField.setValue(subcontinent.getContinent());
+					continentField.registerListener(continentValueChangeListener);
 				}
 			}
 		});
