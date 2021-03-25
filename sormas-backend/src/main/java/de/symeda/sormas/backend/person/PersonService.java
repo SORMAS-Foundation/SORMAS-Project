@@ -48,6 +48,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.person.*;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -517,8 +518,16 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 
 		if (criteria.getSex() != null) {
-			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
+			Expression<Sex> sexExpr = cb.literal(criteria.getSex());
+
+			Predicate sexFilter = cb.or(
+				cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.isNull(sexExpr)),
+				cb.or(cb.equal(personFrom.get(Person.SEX), Sex.UNKNOWN), cb.equal(sexExpr, Sex.UNKNOWN)),
+				cb.equal(personFrom.get(Person.SEX), sexExpr));
+
+			filter = and(cb, filter, sexFilter);
 		}
+
 		if (criteria.getBirthdateYYYY() != null) {
 			filter = and(
 				cb,
