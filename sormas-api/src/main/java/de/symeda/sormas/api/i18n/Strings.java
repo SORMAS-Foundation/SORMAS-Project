@@ -394,7 +394,9 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingImportAllContinents = "headingImportAllContinents";
 	String headingImportAllCountries = "headingImportAllCountries";
+	String headingImportAllSubcontinents = "headingImportAllSubcontinents";
 	String headingImportAreas = "headingImportAreas";
 	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
@@ -565,8 +567,11 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
+	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
+	String infoImportAllSubcontinents = "infoImportAllSubcontinents";
 	String infoImportCsvFile = "infoImportCsvFile";
+	String infoImportInfrastructureAllowOverwrite = "infoImportInfrastructureAllowOverwrite";
 	String infoImportProcess = "infoImportProcess";
 	String infoImportSimilarity = "infoImportSimilarity";
 	String infoLineListingConfigurationNation = "infoLineListingConfigurationNation";

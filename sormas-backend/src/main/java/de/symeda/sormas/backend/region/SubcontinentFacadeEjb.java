@@ -188,11 +188,26 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public void save(SubcontinentDto dto) {
+		save(dto, false);
+	}
+
+	@Override
+	public void save(SubcontinentDto dto, boolean allowMerge) {
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 
-		if (subcontinent == null && !subcontinentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
+		if (subcontinent == null) {
+			List<SubcontinentReferenceDto> duplicates = getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					subcontinent = subcontinentService.getByUuid(uuid);
+					SubcontinentDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
+				}
+			}
 		}
 
 		subcontinent = fillOrBuildEntity(dto, subcontinent, true);

@@ -166,11 +166,25 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public void save(ContinentDto dto) {
+		save(dto, false);
+	}
+
+	@Override
+	public void save(ContinentDto dto, boolean allowMerge) {
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
-		if (continent == null && !continentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
+		if (continent == null) {
+			List<Continent> duplicates = continentService.getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					continent = duplicates.get(0);
+					ContinentDto dtoToMerge = getByUuid(continent.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
+				}
+			}
 		}
 
 		continent = fillOrBuildEntity(dto, continent, true);

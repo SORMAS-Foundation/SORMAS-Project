@@ -46,9 +46,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -423,6 +425,32 @@ public abstract class DataImporter {
 					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
 				pd.getWriteMethod().invoke(element, areas.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
+			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);
+			if (subcontinents.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (subcontinents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, subcontinents.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(ContinentReferenceDto.class)) {
+			List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getByDefaultName(entry, false);
+			if (continents.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (continents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, continents.get(0));
 				return true;
 			}
 		}

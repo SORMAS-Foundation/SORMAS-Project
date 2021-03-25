@@ -12,4 +12,5 @@ public interface ContinentFacade extends BaseFacade<ContinentDto, ContinentIndex
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> continentUuids);
 
+	void save(ContinentDto dto, boolean allowMerge);
 }

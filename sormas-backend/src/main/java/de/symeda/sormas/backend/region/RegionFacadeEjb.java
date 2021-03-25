@@ -329,11 +329,25 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
+		saveRegion(dto, false);
+	}
+
+	@Override
+	public void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		Region region = regionService.getByUuid(dto.getUuid());
 
-		if (region == null && !regionService.getByName(dto.getName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
+		if (region == null) {
+			List<Region> duplicates = regionService.getByName(dto.getName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					region = duplicates.get(0);
+					RegionDto dtoToMerge = getRegionByUuid(region.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
+				}
+			}
 		}
 
 		region = fillOrBuildEntity(dto, region, true);
