@@ -229,31 +229,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		ValueChangeListener continentValueListener = e -> {
 			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
+			if (subcontinent.getValue() == null) {
+				FieldHelper.updateItems(
+						country,
+						continentReferenceDto != null
+								? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+								: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+				country.setValue(null);
+			}
+			subcontinent.setValue(null);
 			FieldHelper.updateItems(
 				subcontinent,
 				continentReferenceDto != null
 					? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
 					: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
-			if (subcontinent.getValue() == null) {
-				FieldHelper.updateItems(
-					country,
-					continentReferenceDto != null
-						? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-						: FacadeProvider.getCountryFacade().getAllActiveAsReference());
-				country.setValue(null);
-			}
-			subcontinent.setValue(null);
 		};
 
 		ValueChangeListener subContinentValueListener = e -> {
 			SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(
-				country,
-				subcontinentReferenceDto != null
-					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
-					: FacadeProvider.getCountryFacade().getAllActiveAsReference());
-
-			country.setValue(null);
 
 			if (subcontinentReferenceDto != null) {
 				if (continent.getValue() == null) {
@@ -262,6 +255,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					continent.addValueChangeListener(continentValueListener);
 				}
 			}
+
+			country.setValue(null);
+
+			FieldHelper.updateItems(
+				country,
+				subcontinentReferenceDto != null
+					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
+					: FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		};
 
 		continent.addValueChangeListener(continentValueListener);
