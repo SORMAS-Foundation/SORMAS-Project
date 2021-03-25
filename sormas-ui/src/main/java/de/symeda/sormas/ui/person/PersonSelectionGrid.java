@@ -35,6 +35,12 @@ import de.symeda.sormas.ui.UserProvider;
 @SuppressWarnings("serial")
 public class PersonSelectionGrid extends Grid {
 
+	/**
+	 * Create a grid of persons listing all persons similar to the given criteria.
+	 * 
+	 * @param criteria
+	 *            The criteria used to query for similar persons.
+	 */
 	public PersonSelectionGrid(PersonSimilarityCriteria criteria) {
 		buildGrid();
 		loadData(criteria);
@@ -77,6 +83,12 @@ public class PersonSelectionGrid extends Grid {
 		return (BeanItemContainer<SimilarPersonDto>) container.getWrappedContainer();
 	}
 
+	/**
+	 * Load similar persons for the given criteria.
+	 * 
+	 * @param criteria
+	 *            The person criteria.
+	 */
 	private void loadData(PersonSimilarityCriteria criteria) {
 		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
 			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)
