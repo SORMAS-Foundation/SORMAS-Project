@@ -76,6 +76,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -584,6 +585,45 @@ public class PersonFacadeEjb implements PersonFacade {
 		return true;
 	}
 
+	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
+
+		Integer approximateAge = entity.getApproximateAge();
+		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
+		if (entity.getBirthdateYYYY() != null) {
+			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
+				.getApproximateAge(entity.getBirthdateYYYY(), entity.getBirthdateMM(), entity.getBirthdateDD(), entity.getDeathDate());
+			approximateAge = pair.getElement0();
+			approximateAgeType = pair.getElement1();
+		}
+
+		SimilarPersonDto similarPersonDto = new SimilarPersonDto();
+		similarPersonDto.setUuid(entity.getUuid());
+		similarPersonDto.setFirstName(entity.getFirstName());
+		similarPersonDto.setLastName(entity.getLastName());
+		similarPersonDto.setNickname(entity.getNickname());
+		similarPersonDto.setAgeAndBirthDate(
+			PersonHelper.getAgeAndBirthdateString(
+				approximateAge,
+				approximateAgeType,
+				entity.getBirthdateDD(),
+				entity.getBirthdateMM(),
+				entity.getBirthdateYYYY(),
+				I18nProperties.getUserLanguage()));
+		similarPersonDto.setSex(entity.getSex());
+		similarPersonDto.setPresentCondition(entity.getPresentCondition());
+		similarPersonDto.setPhone(entity.getPhone());
+		similarPersonDto.setDistrictName(entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null);
+		similarPersonDto.setCommunityName(entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null);
+		similarPersonDto.setPostalCode(entity.getAddress().getPostalCode());
+		similarPersonDto.setCity(entity.getAddress().getCity());
+		similarPersonDto.setStreet(entity.getAddress().getStreet());
+		similarPersonDto.setHouseNumber(entity.getAddress().getHouseNumber());
+		similarPersonDto.setNationalHealthId(entity.getNationalHealthId());
+		similarPersonDto.setPassportNumber(entity.getPassportNumber());
+
+		return similarPersonDto;
+	}
+
 	public static PersonDto toDto(Person source) {
 
 		if (source == null) {
@@ -1016,23 +1056,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			return null;
 		}
 		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
-	}
-
-	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
-
-		return new SimilarPersonDto(
-			entity.getUuid(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getNickname(),
-			entity.getApproximateAge(),
-			entity.getSex(),
-			entity.getPresentCondition(),
-			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
-			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity(),
-			entity.getNationalHealthId(),
-			entity.getPassportNumber());
 	}
 
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
