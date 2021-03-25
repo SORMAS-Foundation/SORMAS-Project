@@ -271,14 +271,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		country.addValueChangeListener(e -> {
 			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
 			if (countryDto != null) {
-				if (continent.getValue() == null) {
+				final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade().getByCountry(countryDto);
+				final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
+				if (continent.getValue() == null && countryContinent != null) {
 					continent.removeValueChangeListener(continentValueListener);
-					continent.setValue(FacadeProvider.getContinentFacade().getByCountry(countryDto));
+					continent.setValue(countryContinent);
 					continent.addValueChangeListener(continentValueListener);
 				}
-				if (subcontinent.getValue() == null) {
+				if (subcontinent.getValue() == null && countrySubcontinent != null) {
 					subcontinent.removeValueChangeListener(subContinentValueListener);
-					subcontinent.setValue(FacadeProvider.getSubcontinentFacade().getByCountry(countryDto));
+					subcontinent.setValue(countrySubcontinent);
 					subcontinent.addValueChangeListener(subContinentValueListener);
 				}
 			}

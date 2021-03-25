@@ -119,6 +119,16 @@ public final class InfrastructureDaoHelper {
 		return items;
 	}
 
+	public static List<Item> loadCountriesByContinent(Continent continent) {
+		List<Item> items = new ArrayList<>();
+
+		List<Subcontinent> subcontinents = DatabaseHelper.getSubcontinentDao()
+				.queryActiveByContinent(continent);
+		subcontinents.forEach(subcontinent -> items.addAll(loadCountriesBySubcontinent(subcontinent)));
+
+		return items;
+	}
+
 	private static List<Item<Country>> mapToDisplayCountryNames(List<Country> countries) {
 		return countries
 				.stream()
@@ -280,7 +290,7 @@ public final class InfrastructureDaoHelper {
 				}
 				subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
 			} else {
-				subcontinentField.setSpinnerData(null);
+				subcontinentField.setSpinnerData(loadSubcontinents(), null);
 			}
 		};
 		continentField.initializeSpinner(continents, continentValueChangeListener);
@@ -297,7 +307,12 @@ public final class InfrastructureDaoHelper {
 				}
 				countryField.setSpinnerData(newCountries, countryField.getValue());
 			} else {
-				countryField.setSpinnerData(null);
+				Continent continentFieldValue = (Continent) continentField.getValue();
+				if (continentFieldValue != null) {
+					countryField.setSpinnerData(loadCountriesByContinent(continentFieldValue), null);
+				} else {
+					countryField.setSpinnerData(loadCountries(), null);
+				}
 			}
 			if (selectedSubcontinent != null) {
 				continentField.unregisterListener(continentValueChangeListener);
@@ -307,24 +322,25 @@ public final class InfrastructureDaoHelper {
 		};
 		subcontinentField.initializeSpinner(subcontinents, subcontinentValueChangeListener);
 
-
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
 			boolean isServerCountry = serverCountryName == null
-				? selectedCountry == null
-				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
+					? selectedCountry == null
+					: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 
 			List<Item> newRegions = isServerCountry ? loadRegionsByServerCountry() : loadRegionsByCountry(selectedCountry);
 			regionField.setSpinnerData(newRegions, regionField.getValue());
 			if (selectedCountry != null) {
 				final Subcontinent subcontinent = selectedCountry.getSubcontinent();
-				subcontinentField.unregisterListener(subcontinentValueChangeListener);
-				subcontinentField.setValue(subcontinent);
-				subcontinentField.registerListener(subcontinentValueChangeListener);
-				if (subcontinent != null) {
+				if (subcontinentField.getValue() == null && subcontinent != null) {
+					subcontinentField.unregisterListener(subcontinentValueChangeListener);
+					subcontinentField.setValue(subcontinent);
+					subcontinentField.registerListener(subcontinentValueChangeListener);
+				}
+				if (continentField.getValue() == null && !(subcontinent == null || subcontinent.getContinent() == null)) {
 					continentField.unregisterListener(continentValueChangeListener);
-					continentField.setValue(subcontinent.getContinent());
+					continentField.setValue(subcontinent != null ? subcontinent.getContinent() : null);
 					continentField.registerListener(continentValueChangeListener);
 				}
 			}
