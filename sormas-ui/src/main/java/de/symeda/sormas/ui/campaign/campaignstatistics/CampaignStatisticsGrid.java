@@ -6,6 +6,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -60,7 +61,30 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 		setSelectionMode(SelectionMode.NONE);
 	}
 
-	public void showAreaColumn(boolean shouldShow) {
-		getColumn(CampaignStatisticsDto.AREA).setHidden(!shouldShow);
+	public void setColumnsVisibility(CampaignJurisdictionLevel groupingLevel) {
+		setAreaColumnVisible(CampaignJurisdictionLevel.AREA.equals(groupingLevel) || CampaignJurisdictionLevel.REGION.equals(groupingLevel));
+		setRegionColumnVisible(
+			CampaignJurisdictionLevel.REGION.equals(groupingLevel)
+				|| CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel)
+				|| CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel));
+		setDistrictColumnVisible(
+			CampaignJurisdictionLevel.DISTRICT.equals(groupingLevel) || CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel));
+		setCommunityColumnVisible(CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel));
+	}
+
+	private void setAreaColumnVisible(boolean visible) {
+		getColumn(CampaignStatisticsDto.AREA).setHidden(!visible);
+	}
+
+	private void setRegionColumnVisible(boolean visible) {
+		getColumn(CampaignStatisticsDto.REGION).setHidden(!visible);
+	}
+
+	private void setDistrictColumnVisible(boolean visible) {
+		getColumn(CampaignStatisticsDto.DISTRICT).setHidden(!visible);
+	}
+
+	private void setCommunityColumnVisible(boolean visible) {
+		getColumn(CampaignStatisticsDto.COMMUNITY).setHidden(!visible);
 	}
 }

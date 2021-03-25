@@ -57,6 +57,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignStatisticsCriteria.class);
 		grid = new CampaignStatisticsGrid(criteria);
+		grid.setColumnsVisibility(CampaignJurisdictionLevel.AREA);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -82,9 +83,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		jurisdictionSelector.addValueChangeListener(e -> {
 			CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
 			criteria.setGroupingLevel(groupingValue);
-			boolean shouldShowAreaColumn =
-				CampaignJurisdictionLevel.AREA.equals(groupingValue) || CampaignJurisdictionLevel.REGION.equals(groupingValue);
-			grid.showAreaColumn(shouldShowAreaColumn);
+			grid.setColumnsVisibility(groupingValue);
 			grid.reload();
 		});
 		jurisdictionLayout.addComponent(jurisdictionSelector);
