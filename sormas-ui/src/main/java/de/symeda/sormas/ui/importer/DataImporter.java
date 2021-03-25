@@ -441,6 +441,19 @@ public abstract class DataImporter {
 				return true;
 			}
 		}
+		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
+			List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getByDefaultName(entry, false);
+			if (countries.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (countries.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, countries.get(0));
+				return true;
+			}
+		}
 		if (propertyType.isAssignableFrom(ContinentReferenceDto.class)) {
 			List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getByDefaultName(entry, false);
 			if (continents.isEmpty()) {
