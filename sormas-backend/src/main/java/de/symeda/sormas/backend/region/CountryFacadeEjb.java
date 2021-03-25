@@ -52,6 +52,8 @@ public class CountryFacadeEjb implements CountryFacade {
 	private CountryService countryService;
 
 	@EJB
+	private ContinentService continentService;
+	@EJB
 	private SubcontinentService subcontinentService;
 
 	@EJB
@@ -76,6 +78,21 @@ public class CountryFacadeEjb implements CountryFacade {
 	@Override
 	public CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities) {
 		return countryService.getByIsoCode(isoCode, includeArchivedEntities).map(this::toDto).orElse(null);
+	}
+
+	@Override
+	public List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid) {
+		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
+		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CountryReferenceDto> getAllActiveByContinent(String uuid) {
+		Continent continent = continentService.getByUuid(uuid);
+		return continent.getSubcontinents()
+			.stream()
+			.flatMap(subcontinent -> subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)))
+			.collect(Collectors.toList());
 	}
 
 	@Override

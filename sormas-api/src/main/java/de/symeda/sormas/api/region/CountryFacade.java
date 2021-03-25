@@ -18,6 +18,10 @@ public interface CountryFacade {
 
 	CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities);
 
+	List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid);
+
+	List<CountryReferenceDto> getAllActiveByContinent(String uuid);
+
 	List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CountryCriteria criteria);
@@ -41,5 +45,4 @@ public interface CountryFacade {
 	CountryReferenceDto getServerCountry();
 
 	boolean hasArchivedParentInfrastructure(Collection<String> countryUuids);
-
 }

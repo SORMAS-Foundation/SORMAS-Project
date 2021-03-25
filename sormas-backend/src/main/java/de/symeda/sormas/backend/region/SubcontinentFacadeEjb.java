@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.region.SubcontinentFacade;
@@ -44,6 +46,8 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	private SubcontinentService subcontinentService;
 	@EJB
 	private ContinentService continentService;
+	@EJB
+	private CountryService countryService;
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
 		if (entity == null) {
@@ -65,6 +69,18 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+
+	@Override
+	public SubcontinentReferenceDto getByCountry(CountryReferenceDto countryDto) {
+		return toReferenceDto(countryService.getByUuid(countryDto.getUuid()).getSubcontinent());
+	}
+
+	@Override
+	public List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid) {
+		Continent continent = continentService.getByUuid(uuid);
+		return continent.getSubcontinents().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override

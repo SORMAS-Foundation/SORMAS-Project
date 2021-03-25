@@ -7084,12 +7084,21 @@ ALTER TABLE region ADD CONSTRAINT fk_region_country_id FOREIGN KEY (country_id) 
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (354, 'Add a country field to regions #4784', true);
 
-
-
 -- 2021-03-22 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
 ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+
+-- 2020-03-19 Add continent and subcontinent to location #4777
+
+ALTER TABLE location ADD COLUMN continent_id BIGINT;
+ALTER TABLE location ADD COLUMN subcontinent_id BIGINT;
+ALTER TABLE location ADD CONSTRAINT fk_location_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
+ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
+ALTER TABLE location_history ADD COLUMN continent_id BIGINT;
+ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (356, '2020-03-19 Add continent and subcontinent to location #4777');
 
 -- *** Insert new sql commands BEFORE this line ***
