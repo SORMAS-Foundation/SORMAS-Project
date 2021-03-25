@@ -6,6 +6,7 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.SEVERAL_PHONES_OR_EMAILS;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -29,7 +30,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -46,7 +46,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
@@ -189,7 +188,7 @@ public class ExternalJournalService {
 	 * @param personUuid
 	 *            uuid of person already registered in the external journal
 	 * @param newFollowUpUntilDate
-	 * 			  the updated follow-up end date
+	 *            the updated follow-up end date
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
@@ -368,8 +367,25 @@ public class ExternalJournalService {
 	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
-		String email = person.getEmailAddress();
-		String phone = person.getPhone();
+		boolean severalEmails = false, severalPhones = false;
+		String phone = "", email = "";
+
+		try {
+			email = person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalEmails = true;
+		}
+
+		try {
+			phone = person.getPhone(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalPhones = true;
+		}
+
+		if (severalEmails && severalPhones || (severalEmails && phone == "") || (severalPhones && email == "")) {
+			validationErrors.add(SEVERAL_PHONES_OR_EMAILS);
+		}
+
 		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
 		if (!hasPhoneOrEmail) {
 			validationErrors.add(NO_PHONE_OR_EMAIL);
@@ -486,7 +502,8 @@ public class ExternalJournalService {
 			.collect(Collectors.joining("\n"));
 	}
 
-	/** Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	/**
+	 * Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to DELETED if successful.
 	 *
 	 * @param person

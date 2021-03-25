@@ -31,7 +31,7 @@ import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -75,7 +75,7 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	@SensitiveData
 	private String activityAsCaseTypeDetails;
 	private LocationDto location;
-	@HideForCountriesExcept
+	@HideForCountries
 	private ExposureRole role;
 
 	// Type of Place
@@ -96,7 +96,9 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	private GatheringType gatheringType;
 	@SensitiveData
 	private String gatheringDetails;
+	@HideForCountries
 	private HabitationType habitationType;
+	@HideForCountries
 	@SensitiveData
 	private String habitationDetails;
 
