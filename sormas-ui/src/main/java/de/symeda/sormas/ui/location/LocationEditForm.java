@@ -258,11 +258,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 			country.setValue(null);
 
+			ContinentReferenceDto continentValue = (ContinentReferenceDto) continent.getValue();
 			FieldHelper.updateItems(
 				country,
 				subcontinentReferenceDto != null
 					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
-					: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+					: continentValue == null
+						? FacadeProvider.getCountryFacade().getAllActiveAsReference()
+						: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
 		};
 
 		continent.addValueChangeListener(continentValueListener);
