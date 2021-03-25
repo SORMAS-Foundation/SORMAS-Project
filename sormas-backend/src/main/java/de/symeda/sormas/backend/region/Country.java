@@ -58,8 +58,7 @@ public class Country extends InfrastructureAdo {
 		this.unoCode = unoCode;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
-	@JoinColumn(nullable = false)
+	@ManyToOne(cascade = CascadeType.REFRESH)
 	public Subcontinent getSubcontinent() {
 		return subcontinent;
 	}
