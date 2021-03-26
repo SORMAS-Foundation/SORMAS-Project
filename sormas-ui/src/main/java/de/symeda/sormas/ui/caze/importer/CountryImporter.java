@@ -35,7 +35,11 @@ import de.symeda.sormas.ui.importer.InfrastructureImporter;
 public class CountryImporter extends InfrastructureImporter {
 
 	public CountryImporter(File inputFile, UserDto currentUser) {
-		super(inputFile, currentUser, InfrastructureType.COUNTRY);
+		this(inputFile, currentUser, false);
+	}
+
+	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite) {
+		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite);
 	}
 
 	@Override
@@ -66,7 +70,7 @@ public class CountryImporter extends InfrastructureImporter {
 
 		if (!iHasImportError) {
 			try {
-				FacadeProvider.getCountryFacade().saveCountry(newEntityDto);
+				FacadeProvider.getCountryFacade().saveCountry(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
 			} catch (EmptyValueException e) {
 				writeImportError(values, e.getMessage());

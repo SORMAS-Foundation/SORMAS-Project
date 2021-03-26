@@ -50,30 +50,79 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
-public final class InfrastructureHelper {
+public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadContinents() {
-		return toItems(DatabaseHelper.getContinentDao().queryActiveForAll(Continent.DEFAULT_NAME, true));
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+			DatabaseHelper.getContinentDao()
+				.queryActiveForAll(Continent.DEFAULT_NAME, true)
+				.stream()
+				.map(c -> new Item<>(I18nProperties.getContinentName(c.getDefaultName()), c))
+				.sorted(Comparator.comparing(Item::getKey))
+				.collect(Collectors.toList()));
+		return items;
 	}
 
 	public static List<Item> loadSubcontinents() {
-		return toItems(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true));
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao().queryActiveForAll(Subcontinent.DEFAULT_NAME, true)));
+		return items;
+	}
+
+	public static List<Item> loadSubcontinentsByContinent(Continent continent) {
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(mapToDisplaySubcontinentNames(DatabaseHelper.getSubcontinentDao().queryActiveByContinent(continent)));
+		return items;
+	}
+
+	private static List<Item<Subcontinent>> mapToDisplaySubcontinentNames(List<Subcontinent> subcontinents) {
+		return subcontinents.stream()
+			.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.getDefaultName()), c))
+			.sorted(Comparator.comparing(Item::getKey))
+			.collect(Collectors.toList());
 	}
 
 	public static List<Item> loadCountries() {
 		List<Item> items = new ArrayList<>();
 
 		items.add(new Item<>("", null));
-		items.addAll(
-			DatabaseHelper.getCountryDao()
-				.queryActiveForAll(Country.ISO_CODE, true)
-				.stream()
-				.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
-				.sorted(Comparator.comparing(Item::getKey))
-				.collect(Collectors.toList()));
+		items.addAll(mapToDisplayCountryNames(DatabaseHelper.getCountryDao().queryActiveForAll(Country.ISO_CODE, true)));
 
 		return items;
+	}
+
+	public static List<Item> loadCountriesBySubcontinent(Subcontinent subcontinent) {
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(mapToDisplayCountryNames(DatabaseHelper.getCountryDao().queryActiveBySubcontinent(subcontinent)));
+
+		return items;
+	}
+
+	public static List<Item> loadCountriesByContinent(Continent continent) {
+		List<Item> items = new ArrayList<>();
+
+		List<Subcontinent> subcontinents = DatabaseHelper.getSubcontinentDao().queryActiveByContinent(continent);
+		subcontinents.forEach(subcontinent -> items.addAll(loadCountriesBySubcontinent(subcontinent)));
+
+		return items;
+	}
+
+	private static List<Item<Country>> mapToDisplayCountryNames(List<Country> countries) {
+		return countries.stream()
+			.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
+			.sorted(Comparator.comparing(Item::getKey))
+			.collect(Collectors.toList());
 	}
 
 	public static List<Item> loadRegionsByServerCountry() {
@@ -174,6 +223,12 @@ public final class InfrastructureHelper {
 
 	public static void initializeFacilityFields(
 		AbstractDomainObject entity,
+		final ControlSpinnerField continentField,
+		List<Item> continents,
+		Continent initialContinent,
+		final ControlSpinnerField subcontinentField,
+		List<Item> subcontinents,
+		Subcontinent initialSubcontinent,
 		final ControlSpinnerField countryField,
 		List<Item> countries,
 		Country initialCountry,
@@ -197,10 +252,66 @@ public final class InfrastructureHelper {
 		Facility initialFacility,
 		final ControlTextEditField facilityDetailsField,
 		boolean withLaboratory) {
+
+		Item continentItem = initialContinent != null ? DataUtils.toItem(initialContinent) : null;
+		if (continentItem != null && !continents.contains(continentItem)) {
+			continents.add(continentItem);
+		}
+		Item subcontinentItem = initialSubcontinent != null ? DataUtils.toItem(initialSubcontinent) : null;
+		if (subcontinentItem != null && !continents.contains(subcontinentItem)) {
+			subcontinents.add(subcontinentItem);
+		}
 		Item countryItem = initialCountry != null ? DataUtils.toItem(initialCountry) : null;
 		if (countryItem != null && !countries.contains(countryItem)) {
 			countries.add(countryItem);
 		}
+
+		continentField.initializeSpinner(continents);
+		continentField.setValue(initialContinent);
+		continentField.setVisibility(GONE);
+		ValueChangeListener continentValueChangeListener = field -> {
+			Continent selectedContinent = (Continent) field.getValue();
+			if (selectedContinent != null) {
+				List<Item> newSubcontinents = loadSubcontinentsByContinent(selectedContinent);
+				if (initialSubcontinent != null
+					&& selectedContinent.equals(initialSubcontinent.getContinent())
+					&& !newSubcontinents.contains(subcontinentItem)) {
+					newSubcontinents.add(subcontinentItem);
+				}
+				subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
+			} else {
+				subcontinentField.setSpinnerData(loadSubcontinents(), null);
+			}
+		};
+		continentField.initializeSpinner(continents, continentValueChangeListener);
+
+		subcontinentField.initializeSpinner(subcontinents);
+		subcontinentField.setValue(initialSubcontinent);
+		subcontinentField.setVisibility(GONE);
+		ValueChangeListener subcontinentValueChangeListener = field -> {
+			Subcontinent selectedSubcontinent = (Subcontinent) field.getValue();
+			if (selectedSubcontinent != null) {
+				List<Item> newCountries = loadCountriesBySubcontinent(selectedSubcontinent);
+				if (initialCountry != null && selectedSubcontinent.equals(initialCountry.getSubcontinent()) && !newCountries.contains(countryItem)) {
+					newCountries.add(countryItem);
+				}
+				countryField.setSpinnerData(newCountries, countryField.getValue());
+			} else {
+				Continent continentFieldValue = (Continent) continentField.getValue();
+				if (continentFieldValue != null) {
+					countryField.setSpinnerData(loadCountriesByContinent(continentFieldValue), null);
+				} else {
+					countryField.setSpinnerData(loadCountries(), null);
+				}
+			}
+			if (selectedSubcontinent != null) {
+				continentField.unregisterListener(continentValueChangeListener);
+				continentField.setValue(selectedSubcontinent.getContinent());
+				continentField.registerListener(continentValueChangeListener);
+			}
+		};
+		subcontinentField.initializeSpinner(subcontinents, subcontinentValueChangeListener);
+
 		countryField.initializeSpinner(countries, field -> {
 			Country selectedCountry = (Country) field.getValue();
 			String serverCountryName = ConfigProvider.getServerCountryName();
@@ -208,9 +319,21 @@ public final class InfrastructureHelper {
 				? selectedCountry == null
 				: selectedCountry == null || serverCountryName.equalsIgnoreCase(selectedCountry.getName());
 
-			List<Item> newRegions =
-				isServerCountry ? InfrastructureHelper.loadRegionsByServerCountry() : InfrastructureHelper.loadRegionsByCountry(selectedCountry);
+			List<Item> newRegions = isServerCountry ? loadRegionsByServerCountry() : loadRegionsByCountry(selectedCountry);
 			regionField.setSpinnerData(newRegions, regionField.getValue());
+			if (selectedCountry != null) {
+				final Subcontinent subcontinent = selectedCountry.getSubcontinent();
+				if (subcontinentField.getValue() == null && subcontinent != null) {
+					subcontinentField.unregisterListener(subcontinentValueChangeListener);
+					subcontinentField.setValue(subcontinent);
+					subcontinentField.registerListener(subcontinentValueChangeListener);
+				}
+				if (continentField.getValue() == null && !(subcontinent == null || subcontinent.getContinent() == null)) {
+					continentField.unregisterListener(continentValueChangeListener);
+					continentField.setValue(subcontinent != null ? subcontinent.getContinent() : null);
+					continentField.registerListener(continentValueChangeListener);
+				}
+			}
 		});
 		countryField.setValue(initialCountry);
 		initializeFacilityFields(
@@ -439,9 +562,10 @@ public final class InfrastructureHelper {
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
 					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
 					facilityField.setValue(noneFacility);
-					if (caze != null)
+					if (caze != null) {
 						caze.setHealthFacility(noneFacility);
-					caze.setFacilityType(null);
+						caze.setFacilityType(null);
+					}
 				} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
 					typeGroupField.setSpinnerData(typeGroups);
 					facilityDetailsField.setVisibility(GONE);

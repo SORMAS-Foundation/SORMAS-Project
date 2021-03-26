@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
@@ -50,21 +49,17 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
-import de.symeda.sormas.ui.person.PersonSelectionField;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 /**
  * Data importer that is used to import event participant.
@@ -162,7 +157,12 @@ public class EventParticipantImporter extends DataImporter {
 				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
-					handleSimilarity(newPerson, result -> consumer.onImportResult(result, personSelectLock));
+					handlePersonSimilarity(
+						newPerson,
+						result -> consumer.onImportResult(result, personSelectLock),
+						(person, similarityResultOption) -> new PersonImportSimilarityResult(person, similarityResultOption),
+						Strings.infoSelectOrCreatePersonForEventParticipantImport,
+						currentUI);
 
 					try {
 						if (!personSelectLock.wasNotified) {
@@ -230,44 +230,6 @@ public class EventParticipantImporter extends DataImporter {
 		} else {
 			return ImportLineResult.ERROR;
 		}
-	}
-
-	/**
-	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
-	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
-	 */
-	protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-
-		currentUI.accessSynchronously(() -> {
-			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
-			personSelect.setWidth(1024, Unit.PIXELS);
-
-			if (personSelect.hasMatches()) {
-				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
-				component.addCommitListener(() -> {
-					SimilarPersonDto person = personSelect.getValue();
-					if (person == null) {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-					} else {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
-					}
-				});
-
-				component.addDiscardListener(
-					() -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
-
-				personSelect.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
-
-				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
-
-				personSelect.selectBestMatch();
-			} else {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-			}
-		});
 	}
 
 	/**
@@ -388,9 +350,9 @@ public class EventParticipantImporter extends DataImporter {
 
 	private class EventParticipantImportConsumer {
 
-		protected EventParticipantImportSimilarityResult result;
+		protected PersonImportSimilarityResult result;
 
-		private void onImportResult(EventParticipantImportSimilarityResult result, EventParticipantImportLock LOCK) {
+		private void onImportResult(PersonImportSimilarityResult result, EventParticipantImportLock LOCK) {
 			this.result = result;
 			synchronized (LOCK) {
 				LOCK.notify();
