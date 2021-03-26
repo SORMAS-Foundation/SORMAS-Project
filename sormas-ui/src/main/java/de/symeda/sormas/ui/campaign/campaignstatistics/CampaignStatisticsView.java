@@ -193,6 +193,10 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 						if (caption == null) {
 							caption = element.getCaption();
 						}
+
+						if (caption != null) {
+							grid.addCustomColumn(element.getId(), caption);
+						}
 					}
 				}
 			}

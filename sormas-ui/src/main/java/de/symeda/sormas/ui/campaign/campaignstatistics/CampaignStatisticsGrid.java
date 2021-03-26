@@ -73,6 +73,14 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 		setCommunityColumnVisible(CampaignJurisdictionLevel.COMMUNITY.equals(groupingLevel));
 	}
 
+	public void addCustomColumn(String property, String caption) {
+		Column<CampaignStatisticsDto, Object> newColumn =
+			addColumn(e -> e.getStatisticsData().stream().filter(v -> v.getField().equals(property)).findFirst().orElse(null));
+		newColumn.setSortable(false);
+		newColumn.setCaption(caption);
+		newColumn.setId(property);
+	}
+
 	private void setAreaColumnVisible(boolean visible) {
 		getColumn(CampaignStatisticsDto.AREA).setHidden(!visible);
 	}

@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.campaign.statistics;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CampaignStatisticsDto implements Serializable, Cloneable {
 
@@ -22,6 +24,8 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 	private String community;
 	private long formCount;
 
+	private List<CampaignStatisticsDataDto> statisticsData;
+
 	public CampaignStatisticsDto(String campaign, String form, String area, String region, String district, String community, long formCount) {
 		this.campaign = campaign;
 		this.form = form;
@@ -30,6 +34,8 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 		this.district = district;
 		this.community = community;
 		this.formCount = formCount;
+
+		this.statisticsData = new ArrayList<>();
 	}
 
 	public String getCampaign() {
@@ -86,5 +92,17 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	public void setFormCount(long formCount) {
 		this.formCount = formCount;
+	}
+
+	public List<CampaignStatisticsDataDto> getStatisticsData() {
+		return statisticsData;
+	}
+
+	public void setStatisticsData(List<CampaignStatisticsDataDto> statisticsData) {
+		this.statisticsData = statisticsData;
+	}
+
+	public void addDataValue(CampaignStatisticsDataDto value) {
+		statisticsData.add(value);
 	}
 }
