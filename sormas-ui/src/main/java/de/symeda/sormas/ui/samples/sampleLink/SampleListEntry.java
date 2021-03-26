@@ -27,6 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
@@ -48,6 +49,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 	private final SampleIndexDto sample;
 	private Button editButton;
+	private Button sourceSampleButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
 
@@ -164,7 +166,7 @@ public class SampleListEntry extends HorizontalLayout {
 				"edit-sample-" + sample.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
-				null,
+				editClickListener,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
 
@@ -172,8 +174,23 @@ public class SampleListEntry extends HorizontalLayout {
 			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
+	}
 
-		editButton.addClickListener(editClickListener);
+	public void addSourceSampleListener(ClickListener sourceSampleClickListener) {
+		if (sourceSampleButton == null) {
+			sourceSampleButton = ButtonHelper.createIconButtonWithCaption(
+				"see-source-sample-" + sample.getUuid(),
+				null,
+				VaadinIcons.EYE,
+				sourceSampleClickListener,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
+
+			addComponent(sourceSampleButton);
+			setComponentAlignment(sourceSampleButton, Alignment.TOP_RIGHT);
+			setExpandRatio(sourceSampleButton, 0);
+			sourceSampleButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
+		}
 	}
 
 	public SampleIndexDto getSample() {

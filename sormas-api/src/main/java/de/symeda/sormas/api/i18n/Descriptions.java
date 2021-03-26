@@ -131,6 +131,7 @@ public interface Descriptions {
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
+	String Sample_sourceLabMessage = "Sample.sourceLabMessage";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
