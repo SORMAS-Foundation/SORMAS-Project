@@ -111,6 +111,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filterForm.getField(CampaignStatisticsCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
+			grid.setColumnsVisibility(criteria.getGroupingLevel());
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
