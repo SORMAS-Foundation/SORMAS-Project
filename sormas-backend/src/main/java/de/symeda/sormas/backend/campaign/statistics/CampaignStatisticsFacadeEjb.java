@@ -15,7 +15,6 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
-import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDataDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -53,7 +52,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "",
 				result[0] != null ? ((Number) result[0]).intValue() : null);
 			int length = result.length;
-			campaignStatisticsDto.addDataValue(new CampaignStatisticsDataDto((String) result[length - 2], ((Number) result[length - 1]).intValue()));
+			campaignStatisticsDto.addDataValue(new CampaignFormDataEntry((String) result[length - 2], result[length - 1]));
 			return campaignStatisticsDto;
 		}).collect(Collectors.toList());
 		return results;
@@ -280,9 +279,9 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 
 	private String buildJsonSelectExpression() {
 		StringBuilder jsonQueryExpression = new StringBuilder();
-		jsonQueryExpression.append(", jsonMeta->>'")
-			.append(CampaignFormElement.CAPTION)
-			.append("' as fieldCaption, ")
+		jsonQueryExpression.append(", jsonData->>'")
+			.append(CampaignFormElement.ID)
+			.append("' as fieldId, ")
 			.append("CASE WHEN (jsonMeta ->> '")
 			.append(CampaignFormElement.TYPE)
 			.append("') = '")
@@ -324,15 +323,13 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 			.append(", jsonData->>'")
 			.append(CampaignFormDataEntry.ID)
 			.append("', jsonMeta->>'")
-			.append(CampaignFormElement.CAPTION)
-			.append("', jsonMeta->>'")
 			.append(CampaignFormElement.TYPE)
 			.append("'")
 			.toString();
 	}
 
 	private String buildJsonOrderByExpression() {
-		return new StringBuilder().append(", jsonMeta->>'").append(CampaignFormElement.CAPTION).append("'").toString();
+		return new StringBuilder().append(", jsonData->>'").append(CampaignFormElement.ID).append("'").toString();
 	}
 
 	@LocalBean

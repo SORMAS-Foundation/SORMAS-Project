@@ -75,7 +75,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 
 	public void addCustomColumn(String property, String caption) {
 		Column<CampaignStatisticsDto, Object> newColumn =
-			addColumn(e -> e.getStatisticsData().stream().filter(v -> v.getField().equals(property)).findFirst().orElse(null));
+			addColumn(e -> e.getStatisticsData().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
 		newColumn.setSortable(false);
 		newColumn.setCaption(caption);
 		newColumn.setId(property);
