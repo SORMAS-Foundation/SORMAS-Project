@@ -597,6 +597,8 @@ public class CaseController {
 		CaseSimilarityCriteria criteria =
 			new CaseSimilarityCriteria().personUuid(person.getUuid()).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
 
+		// Check for similar cases for the **given person**.
+		// This is a case similarity check for a fixed person and will not return cases where persons are similar.
 		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {

@@ -76,6 +76,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -84,7 +85,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -104,11 +104,9 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
@@ -122,6 +120,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -152,10 +151,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CommunityService communityService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
-	@EJB
-	private LocationService locationService;
-	@EJB
-	private GeocodingService geocodingService;
 	@EJB
 	private PersonContactDetailService personContactDetailService;
 	@EJB
@@ -590,6 +585,45 @@ public class PersonFacadeEjb implements PersonFacade {
 		return true;
 	}
 
+	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
+
+		Integer approximateAge = entity.getApproximateAge();
+		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
+		if (entity.getBirthdateYYYY() != null) {
+			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
+				.getApproximateAge(entity.getBirthdateYYYY(), entity.getBirthdateMM(), entity.getBirthdateDD(), entity.getDeathDate());
+			approximateAge = pair.getElement0();
+			approximateAgeType = pair.getElement1();
+		}
+
+		SimilarPersonDto similarPersonDto = new SimilarPersonDto();
+		similarPersonDto.setUuid(entity.getUuid());
+		similarPersonDto.setFirstName(entity.getFirstName());
+		similarPersonDto.setLastName(entity.getLastName());
+		similarPersonDto.setNickname(entity.getNickname());
+		similarPersonDto.setAgeAndBirthDate(
+			PersonHelper.getAgeAndBirthdateString(
+				approximateAge,
+				approximateAgeType,
+				entity.getBirthdateDD(),
+				entity.getBirthdateMM(),
+				entity.getBirthdateYYYY(),
+				I18nProperties.getUserLanguage()));
+		similarPersonDto.setSex(entity.getSex());
+		similarPersonDto.setPresentCondition(entity.getPresentCondition());
+		similarPersonDto.setPhone(entity.getPhone());
+		similarPersonDto.setDistrictName(entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null);
+		similarPersonDto.setCommunityName(entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null);
+		similarPersonDto.setPostalCode(entity.getAddress().getPostalCode());
+		similarPersonDto.setCity(entity.getAddress().getCity());
+		similarPersonDto.setStreet(entity.getAddress().getStreet());
+		similarPersonDto.setHouseNumber(entity.getAddress().getHouseNumber());
+		similarPersonDto.setNationalHealthId(entity.getNationalHealthId());
+		similarPersonDto.setPassportNumber(entity.getPassportNumber());
+
+		return similarPersonDto;
+	}
+
 	public static PersonDto toDto(Person source) {
 
 		if (source == null) {
@@ -735,35 +769,21 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
-		long changedPersons = 0;
 
-		List<PersonIndexDto> indexList = getIndexList(null, null, null, null); // this is automatically filtered by the users jurisdiction
-		if (indexList == null) {
-			return 0;
-		}
-		List<Person> personsList = personService.getByUuids(indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
-		if (personsList == null) {
+		// The list is automatically filtered by the users jurisdiction
+		List<PersonIndexDto> indexList = getIndexList(null, null, null, null);
+		if (CollectionUtils.isEmpty(indexList)) {
 			return 0;
 		}
 
-		for (Person person : personsList) {
+		// Run updates in batches to avoid large JPA cache
+		List<String> personUuidList = indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList());
+		List<Long> batchResults = new ArrayList<>();
+		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
+			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
+		});
 
-			if (person.getAddress() != null
-				&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
-				try {
-					GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
-					if (latLon != null) {
-						person.getAddress().setLatitude(latLon.getLat());
-						person.getAddress().setLongitude(latLon.getLon());
-						changedPersons++;
-					}
-				} catch (Exception e) {
-					// This exception might be called when an invalid addess was entered, resulting in a server timeou
-					e.printStackTrace();
-				}
-			}
-		}
-
+		Long changedPersons = batchResults.stream().reduce(0L, Long::sum);
 		return changedPersons;
 	}
 
@@ -1036,23 +1056,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			return null;
 		}
 		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
-	}
-
-	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
-
-		return new SimilarPersonDto(
-			entity.getUuid(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getNickname(),
-			entity.getApproximateAge(),
-			entity.getSex(),
-			entity.getPresentCondition(),
-			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
-			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity(),
-			entity.getNationalHealthId(),
-			entity.getPassportNumber());
 	}
 
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {

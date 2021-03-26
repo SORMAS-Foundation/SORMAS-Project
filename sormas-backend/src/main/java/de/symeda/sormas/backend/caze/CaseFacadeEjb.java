@@ -463,7 +463,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
 		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, page * size, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
-		return new Page<CaseIndexDetailedDto>(caseIndexDetailedList, page, size, totalElementCount);
+		return new Page<>(caseIndexDetailedList, page, size, totalElementCount);
 	}
 
 	@Override
@@ -1321,7 +1321,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		selectIndexDtoFields(cq, root);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
+
+		// In case you wonder: At this point in time the **person** duplicate check has already happen.
+		// Here, we really just check if there is a similar case to the current one, therefore it is allowed to just
+		// check if a case exists which references the same person to make sure that we are really talking about
+		// the same case.
 		Predicate personSimilarityFilter = criteria.getPersonUuid() != null ? cb.equal(person.get(Person.UUID), criteria.getPersonUuid()) : null;
+
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null
@@ -1388,6 +1394,8 @@ public class CaseFacadeEjb implements CaseFacade {
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
 			SECONDS_30_DAYS);
+
+		// // todo this should use PersonService.buildSimilarityCriteriaFilter
 		// Sex filter: only when sex is filled in for both cases
 		Predicate sexFilter = cb.or(
 			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
@@ -3628,7 +3636,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			externalTokenPredicate =
 				and(cb, cb.isNotNull(externalToken), cb.equal(cb.trim(cb.lower(externalToken)), searchCaze.getExternalToken().toLowerCase().trim()));
 		}
-
+		// todo this should use PersonService.buildSimilarityCriteriaFilter
 		Predicate combinedPredicate = null;
 		if (searchPerson.getFirstName() != null
 			&& searchPerson.getLastName() != null

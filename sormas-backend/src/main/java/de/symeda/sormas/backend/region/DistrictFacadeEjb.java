@@ -251,14 +251,30 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
+		saveDistrict(dto, false);
+	}
 
-		District district = districtService.getByUuid(dto.getUuid());
-		if (district == null && !getByName(dto.getName(), dto.getRegion(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
-		}
+	@Override
+	public void saveDistrict(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+
+		District district = districtService.getByUuid(dto.getUuid());
+
+		if (district == null) {
+			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					district = districtService.getByUuid(uuid);
+					DistrictDto dtoToMerge = getDistrictByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
+				}
+			}
 		}
 
 		district = fillOrBuildEntity(dto, district, true);

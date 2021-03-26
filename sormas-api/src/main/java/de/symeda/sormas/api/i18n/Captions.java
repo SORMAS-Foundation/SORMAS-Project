@@ -58,7 +58,9 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
@@ -97,6 +99,7 @@ public interface Captions {
 	String ActivityAsCase_startDate = "ActivityAsCase.startDate";
 	String ActivityAsCase_typeOfPlace = "ActivityAsCase.typeOfPlace";
 	String ActivityAsCase_typeOfPlaceDetails = "ActivityAsCase.typeOfPlaceDetails";
+	String ActivityAsCase_typeOfPlaceIfSG = "ActivityAsCase.typeOfPlaceIfSG";
 	String ActivityAsCase_workEnvironment = "ActivityAsCase.workEnvironment";
 	String activityAsCaseFlightNumber = "activityAsCaseFlightNumber";
 	String AdditionalTest = "AdditionalTest";
@@ -404,6 +407,7 @@ public interface Captions {
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
@@ -1180,6 +1184,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
+	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";

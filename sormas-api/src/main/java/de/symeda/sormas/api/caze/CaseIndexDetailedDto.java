@@ -12,6 +12,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
@@ -19,6 +20,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	private static final long serialVersionUID = -3722694511897383913L;
 
+	public static final String RE_INFECTION = "reInfection";
 	public static final String SEX = "sex";
 	public static final String CITY = "city";
 	public static final String STREET = "street";
@@ -35,6 +37,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String SAMPLE_COUNT = "sampleCount";
 	public static final String SYMPTOM_ONSET_DATE = "symptomOnsetDate";
 
+	private YesNoUnknown reInfection;
 	@PersonalData
 	@SensitiveData
 	private String city;
@@ -72,7 +75,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId,
-								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
+								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
@@ -83,6 +86,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, visitCount);
 		//@formatter:on
 
+		this.reInfection = reInfection;
 		this.city = city;
 		this.street = street;
 		this.houseNumber = houseNumber;
@@ -94,6 +98,14 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.latestSampleDateTime = latestSampleDateTime;
 		this.sampleCount = sampleCount;
 		this.symptomOnsetDate = symptomOnsetDate;
+	}
+
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
 	}
 
 	public String getCity() {

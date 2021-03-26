@@ -15,9 +15,18 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import com.j256.ormlite.dao.Dao;
+import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
 public class SubcontinentDao extends AbstractInfrastructureAdoDao<Subcontinent> {
 
@@ -33,5 +42,21 @@ public class SubcontinentDao extends AbstractInfrastructureAdoDao<Subcontinent> 
 	@Override
 	public String getTableName() {
 		return Subcontinent.TABLE_NAME;
+	}
+
+	public List<Subcontinent> queryActiveByContinent(Continent continent) {
+		try {
+			QueryBuilder<Subcontinent, Long> builder = queryBuilder();
+			Where<Subcontinent, Long> where = builder.where();
+			where.and(
+					where.eq(AbstractDomainObject.SNAPSHOT, false),
+					where.eq(InfrastructureAdo.ARCHIVED, false),
+					where.eq(Subcontinent.CONTINENT + "_id", continent));
+
+			return builder.orderBy(Subcontinent.DEFAULT_NAME, true).query();
+		} catch (SQLException | IllegalArgumentException e) {
+			Log.e(getTableName(), "Could not perform queryActiveByContinent");
+			throw new RuntimeException(e);
+		}
 	}
 }

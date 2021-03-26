@@ -745,6 +745,18 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateContinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create continent import template .csv file.");
+		}
+
+		try {
+			importFacade.generateSubcontinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create subcontinent import template .csv file.");
+		}
+
+		try {
 			importFacade.generateCountryImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create country import template .csv file.");

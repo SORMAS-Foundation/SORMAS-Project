@@ -29,7 +29,6 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -42,7 +41,6 @@ import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
-import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -147,9 +145,12 @@ public class ContactImporter extends DataImporter {
 				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
-					handleSimilarity(newPerson, result -> {
-						consumer.onImportResult(result, personSelectLock);
-					});
+					handlePersonSimilarity(
+						newPerson,
+						result -> consumer.onImportResult(result, personSelectLock),
+						(person, similarityResultOption) -> new ContactImportSimilarityResult(person, null, similarityResultOption),
+						Strings.infoSelectOrCreatePersonForContactImport,
+						currentUI);
 
 					try {
 						if (!personSelectLock.wasNotified) {
@@ -217,44 +218,6 @@ public class ContactImporter extends DataImporter {
 		} else {
 			return ImportLineResult.ERROR;
 		}
-	}
-
-	/**
-	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
-	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
-	 */
-	protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-
-		currentUI.accessSynchronously(() -> {
-			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
-			personSelect.setWidth(1024, Unit.PIXELS);
-
-			if (personSelect.hasMatches()) {
-				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
-				component.addCommitListener(() -> {
-					SimilarPersonDto person = personSelect.getValue();
-					if (person == null) {
-						resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-					} else {
-						resultConsumer.accept(new ContactImportSimilarityResult(person, null, ImportSimilarityResultOption.PICK));
-					}
-				});
-
-				component.addDiscardListener(
-					() -> resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP)));
-
-				personSelect.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
-
-				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
-
-				personSelect.selectBestMatch();
-			} else {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-			}
-		});
 	}
 
 	protected void handleContactSimilarity(ContactDto newContact, PersonDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {

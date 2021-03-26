@@ -47,7 +47,7 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
@@ -66,9 +66,9 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 	private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(CaseDataDto.class, contentBinding.mainContent);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
 		// Vaccination date
