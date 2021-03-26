@@ -195,6 +195,7 @@ public interface Strings {
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
+	String entityUserRoles = "entityUserRoles";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";

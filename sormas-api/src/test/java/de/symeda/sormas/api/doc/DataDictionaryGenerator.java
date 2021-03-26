@@ -26,9 +26,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.action.ActionDto;
-import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.event.EventActionIndexDto;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -44,7 +41,9 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -78,6 +77,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.XssfHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 
 /**
