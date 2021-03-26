@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -130,6 +131,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
@@ -700,7 +703,12 @@ public class TaskFacadeEjb implements TaskFacade {
 						: String.format(
 							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
 							task.getTaskType().toString(),
-							context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
+
+					String associatedEntityLinkMessagePart = getAssociatedEntityLinkMessagePart(context, associatedEntity);
+					if (associatedEntityLinkMessagePart != null) {
+						content += "\n" + associatedEntityLinkMessagePart;
+					}
 
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
@@ -733,6 +741,11 @@ public class TaskFacadeEjb implements TaskFacade {
 							task.getTaskType().toString(),
 							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
 
+					String associatedEntityLinkMessagePart = getAssociatedEntityLinkMessagePart(context, associatedEntity);
+					if (associatedEntityLinkMessagePart != null) {
+						content += "\n" + associatedEntityLinkMessagePart;
+					}
+
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
 						MessageSubject.TASK_DUE,
@@ -761,6 +774,37 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (task.getTaskContext() == TaskContext.EVENT && task.getEvent() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingEventLink));
 		}
+	}
+
+	private String getAssociatedEntityLinkMessagePart(TaskContext taskContext, AbstractDomainObject entity) {
+		if (taskContext.getUrlPattern() == null || entity == null) {
+			return null;
+		}
+
+		String url = getUiUrl(taskContext, entity.getUuid());
+		if (url == null) {
+			return null;
+		}
+
+		String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
+		return String.format(I18nProperties.getString(associatedEntityLinkMessage), url);
+	}
+
+	private String getUiUrl(TaskContext taskContext, String uuid) {
+		if (taskContext.getUrlPattern() == null || uuid == null) {
+			return null;
+		}
+
+		String uiUrl = configFacade.getUiUrl();
+		if (uiUrl == null) {
+			return null;
+		}
+
+		StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
+		if (!uiUrl.endsWith("/")) {
+			uiUrlBuilder.append("/");
+		}
+		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
 	}
 
 	@LocalBean
