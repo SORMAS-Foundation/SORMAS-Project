@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -191,7 +193,7 @@ public class SampleController {
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
-			if (cqValue != null) {
+			if (cqValue != null && !StringUtils.isBlank(cqValue)) {
 				cqValue = cqValue.replaceAll(",", "."); // Replace , with . to make sure that the value can be parsed
 				try {
 					pathogenTest.setCqValue(Float.parseFloat(cqValue));
