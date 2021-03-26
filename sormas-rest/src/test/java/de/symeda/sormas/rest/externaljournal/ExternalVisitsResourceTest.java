@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest;
+package de.symeda.sormas.rest.externaljournal;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ExternalVisitsResourceTest {
 
 	@Test
+	@Ignore
 	/*
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any

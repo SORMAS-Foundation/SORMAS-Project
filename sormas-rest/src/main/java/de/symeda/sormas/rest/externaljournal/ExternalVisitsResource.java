@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest;
+package de.symeda.sormas.rest.externaljournal;
 
 import java.util.Date;
 import java.util.List;

@@ -126,6 +126,27 @@
 							<goal>generate</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>generate-swagger-for-journal</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<outputFilename>external_journal_API</outputFilename>
+							<swaggerConfig>
+								<info>
+									<title>SORMAS external symptom journal API</title>
+									<description>
+										The purpose of this API is to enable communication between SORMAS and other symptom journals. Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. For technical details please contact the dev team on gitter. Authentication is done using basic auth, with the user and password.
+									</description>
+								</info>
+							</swaggerConfig>
+							<resourcePackages>
+								<resourcePackage>de.symeda.sormas.rest.externaljournal</resourcePackage>
+							</resourcePackages>
+						</configuration>
+					</execution>
 				</executions>
 				<configuration>
 					<!-- Swagger Generation Config -->
