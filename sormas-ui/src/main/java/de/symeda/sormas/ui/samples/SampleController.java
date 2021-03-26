@@ -52,6 +52,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -63,6 +64,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -190,7 +192,15 @@ public class SampleController {
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
 			if (cqValue != null) {
-				pathogenTest.setCqValue(Float.parseFloat(cqValue));
+				cqValue = cqValue.replaceAll(",", "."); // Replace , with . to make sure that the value can be parsed
+				try {
+					pathogenTest.setCqValue(Float.parseFloat(cqValue));
+				} catch (NumberFormatException e) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.onlyNumbersAllowed,
+							I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE)));
+				}
 			}
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
 			FacadeProvider.getSampleFacade().saveSample(newSample);

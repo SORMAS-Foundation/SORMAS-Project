@@ -65,7 +65,7 @@ public final class DtoHelper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public static <T extends EntityDto> void copyDtoValues(T target, T source, boolean overrideValues) {
+	public static <T extends EntityDto> T copyDtoValues(T target, T source, boolean overrideValues) {
 
 		try {
 			PropertyDescriptor[] pds = Introspector.getBeanInfo(target.getClass(), EntityDto.class).getPropertyDescriptors();
@@ -142,6 +142,7 @@ public final class DtoHelper {
 			| InstantiationException e) {
 			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
+		return target;
 	}
 
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {

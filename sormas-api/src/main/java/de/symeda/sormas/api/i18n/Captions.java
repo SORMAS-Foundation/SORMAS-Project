@@ -58,7 +58,9 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
@@ -1185,6 +1187,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
+	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
