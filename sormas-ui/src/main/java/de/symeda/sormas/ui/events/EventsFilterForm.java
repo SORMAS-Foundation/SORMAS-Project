@@ -44,6 +44,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -79,7 +80,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private final boolean hideActionFilters;
 
 	protected EventsFilterForm(boolean hideEventStatusFilter, boolean hideActionFilters) {
-		super(EventCriteria.class, EventIndexDto.I18N_PREFIX);
+		super(
+			EventCriteria.class,
+			EventIndexDto.I18N_PREFIX,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 		this.hideEventStatusFilter = hideEventStatusFilter;
 		this.hideActionFilters = hideActionFilters;
 
