@@ -121,14 +121,14 @@
 				<executions>
 					<execution>
 						<id>generate-swagger</id>
-						<phase>generate-test-resources</phase>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 					</execution>
 					<execution>
 						<id>generate-swagger-for-journal</id>
-						<phase>generate-resources</phase>
+						<phase>generate-test-resources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
