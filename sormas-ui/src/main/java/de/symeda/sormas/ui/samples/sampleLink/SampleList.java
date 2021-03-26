@@ -75,16 +75,17 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<SampleIndexDto> displayedEntries = getDisplayedEntries();
-		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			SampleIndexDto sample = displayedEntries.get(i);
+		for (SampleIndexDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
-			}
+			addEditButton(listEntry);
 			listLayout.addComponent(listEntry);
+		}
+	}
+
+	private void addEditButton(SampleListEntry listEntry) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			listEntry.addEditListener(
+				(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
 		}
 	}
 }

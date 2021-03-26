@@ -158,10 +158,10 @@ public class SampleListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-sample-" + rowIndex,
+				"edit-sample-" + sample.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
 				null,
