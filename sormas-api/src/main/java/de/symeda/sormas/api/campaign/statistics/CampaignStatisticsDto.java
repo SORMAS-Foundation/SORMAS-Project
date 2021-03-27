@@ -19,74 +19,40 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 	public static final String COMMUNITY = "community";
 	public static final String FORM_COUNT = "formCount";
 
-	private String campaign;
-	private String form;
-	private String area;
-	private String region;
-	private String district;
-	private String community;
+	private final CampaignStatisticsGroupingDto campaignStatisticsGroupingDto;
 	private long formCount;
 
 	private List<CampaignFormDataEntry> statisticsData;
 
-	public CampaignStatisticsDto(String campaign, String form, String area, String region, String district, String community, long formCount) {
-		this.campaign = campaign;
-		this.form = form;
-		this.area = area;
-		this.region = region;
-		this.district = district;
-		this.community = community;
+	public CampaignStatisticsDto(CampaignStatisticsGroupingDto campaignStatisticsGroupingDto, long formCount) {
+		this.campaignStatisticsGroupingDto = campaignStatisticsGroupingDto;
 		this.formCount = formCount;
 
 		this.statisticsData = new ArrayList<>();
 	}
 
 	public String getCampaign() {
-		return campaign;
-	}
-
-	public void setCampaign(String campaign) {
-		this.campaign = campaign;
+		return campaignStatisticsGroupingDto.getCampaign();
 	}
 
 	public String getForm() {
-		return form;
-	}
-
-	public void setForm(String form) {
-		this.form = form;
+		return campaignStatisticsGroupingDto.getForm();
 	}
 
 	public String getArea() {
-		return area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
+		return campaignStatisticsGroupingDto.getArea();
 	}
 
 	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
+		return campaignStatisticsGroupingDto.getRegion();
 	}
 
 	public String getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(String district) {
-		this.district = district;
+		return campaignStatisticsGroupingDto.getDistrict();
 	}
 
 	public String getCommunity() {
-		return community;
-	}
-
-	public void setCommunity(String community) {
-		this.community = community;
+		return campaignStatisticsGroupingDto.getCommunity();
 	}
 
 	public long getFormCount() {
@@ -107,7 +73,7 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(campaign, form, area, region, district, community);
+		return Objects.hash(campaignStatisticsGroupingDto);
 	}
 
 	@Override
@@ -116,11 +82,6 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 			return false;
 		}
 		CampaignStatisticsDto campaignStatisticsDto = (CampaignStatisticsDto) o;
-		return this.campaign.equals(campaignStatisticsDto.getCampaign())
-			&& this.form.equals(campaignStatisticsDto.getForm())
-			&& this.area.equals(campaignStatisticsDto.getArea())
-			&& this.region.equals(campaignStatisticsDto.getRegion())
-			&& this.district.equals(campaignStatisticsDto.getDistrict())
-			&& this.community.equals(campaignStatisticsDto.getCommunity());
+		return this.campaignStatisticsGroupingDto.equals(campaignStatisticsDto);
 	}
 }

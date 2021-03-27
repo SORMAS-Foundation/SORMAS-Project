@@ -19,6 +19,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsGroupingDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
@@ -46,14 +47,15 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
 		Map<CampaignStatisticsDto, List<CampaignFormDataEntry>> results = new HashMap<>();
 		((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).forEach(result -> {
-			CampaignStatisticsDto campaignStatisticsDto = new CampaignStatisticsDto(
+			CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = new CampaignStatisticsGroupingDto(
 				(String) result[1],
 				(String) result[2],
 				(String) result[3],
 				shouldIncludeRegion(groupingLevel) ? (String) result[4] : "",
 				shouldIncludeDistrict(groupingLevel) ? (String) result[5] : "",
-				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "",
-				result[0] != null ? ((Number) result[0]).intValue() : null);
+				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "");
+			CampaignStatisticsDto campaignStatisticsDto =
+				new CampaignStatisticsDto(campaignStatisticsGroupingDto, result[0] != null ? ((Number) result[0]).intValue() : null);
 			int length = result.length;
 			CampaignFormDataEntry campaignFormDataEntry = new CampaignFormDataEntry((String) result[length - 2], result[length - 1]);
 			if (results.get(campaignStatisticsDto) == null) {
