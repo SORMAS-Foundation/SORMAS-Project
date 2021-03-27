@@ -316,11 +316,14 @@ public class CampaignStatisticsService {
 			.append(CampaignFormElementType.NUMBER.toString())
 			.append("' THEN sum(cast_to_int(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
-			.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'")
-			.append(CampaignFormDataEntry.VALUE)
+			.append("', 0))")
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
 			.append("') = '")
-			.append("Yes")
-			.append("' THEN 1 ELSE 0 END) END as sumValue");
+			.append(CampaignFormElementType.YES_NO.toString())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END) END as sumValue");
 		return jsonQueryExpression.toString();
 	}
 
