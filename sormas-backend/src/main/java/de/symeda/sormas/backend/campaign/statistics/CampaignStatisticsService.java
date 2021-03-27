@@ -66,12 +66,45 @@ public class CampaignStatisticsService {
 	}
 
 	public long count(CampaignStatisticsCriteria criteria) {
-		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
-		return campaignsStatisticsQuery.getResultStream().count();
+		Query campaignsStatisticsQuery = em.createNativeQuery(buildCountStatisticsQuery(criteria));
+		Number numberOfRows = (Number) campaignsStatisticsQuery.getSingleResult();
+		if (numberOfRows != null) {
+			return numberOfRows.longValue();
+		}
+		return 0;
 	}
 
 	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria) {
-		String selectExpression = buildSelectExpression(criteria);
+		String selectExpression = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
+			.append(".")
+			.append(CampaignFormMeta.UUID)
+			.append(")")
+			.append(", ")
+			.append(buildSelectExpression(criteria))
+			.append(buildJsonSelectExpression())
+			.append(" FROM ")
+			.append(CampaignFormData.TABLE_NAME)
+			.toString();
+		String joinExpression = new StringBuilder().append(buildJoinExpression()).append(buildJsonJoinExpression()).toString();
+
+		StringBuilder queryBuilder = new StringBuilder();
+		queryBuilder.append(selectExpression).append(joinExpression);
+
+		String whereExpression = buildWhereExpression(criteria);
+		if (!whereExpression.isEmpty()) {
+			queryBuilder.append(" WHERE ").append(whereExpression).append(" AND ").append(buildJsonWhereExpression());
+		}
+
+		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
+
+		return queryBuilder.toString();
+	}
+
+	private String buildCountStatisticsQuery(CampaignStatisticsCriteria criteria) {
+		String selectExpression = new StringBuilder("SELECT COUNT(*) from (select ").append(buildSelectExpression(criteria))
+			.append(" FROM ")
+			.append(CampaignFormData.TABLE_NAME)
+			.toString();
 		String joinExpression = buildJoinExpression();
 
 		StringBuilder queryBuilder = new StringBuilder();
@@ -83,18 +116,13 @@ public class CampaignStatisticsService {
 			queryBuilder.append(whereExpression);
 		}
 
-		queryBuilder.append(buildGroupByExpression(criteria)).append(buildOrderByExpression(criteria));
+		queryBuilder.append(buildGroupByExpression(criteria)).append(") as rules");
 
 		return queryBuilder.toString();
 	}
 
 	private String buildSelectExpression(CampaignStatisticsCriteria criteria) {
-		StringBuilder selectBuilder = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
-			.append(".")
-			.append(CampaignFormMeta.UUID)
-			.append(")")
-			.append(", ")
-			.append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
+		StringBuilder selectBuilder = new StringBuilder().append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
 			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
 			.append(", ")
@@ -110,8 +138,6 @@ public class CampaignStatisticsService {
 		if (shouldIncludeCommunity(groupingLevel)) {
 			selectBuilder.append(", ").append(buildSelectField(Community.TABLE_NAME, Community.NAME));
 		}
-		selectBuilder.append(buildJsonSelectExpression());
-		selectBuilder.append(" FROM ").append(CampaignFormData.TABLE_NAME);
 
 		return selectBuilder.toString();
 	}
@@ -139,7 +165,6 @@ public class CampaignStatisticsService {
 			.append(Area.TABLE_NAME)
 			.append(".")
 			.append(Area.ID);
-		joinBuilder.append(buildJsonJoinExpression());
 		return joinBuilder.toString();
 	}
 
@@ -206,10 +231,6 @@ public class CampaignStatisticsService {
 				.append(criteria.getCommunity().getUuid())
 				.append("'");
 		}
-		if (whereBuilder.length() > 0) {
-			whereBuilder.append(" AND ");
-		}
-		whereBuilder.append(buildJsonWhereExpression());
 		return whereBuilder.toString();
 	}
 
@@ -236,7 +257,6 @@ public class CampaignStatisticsService {
 		if (shouldIncludeCommunity(groupingLevel)) {
 			groupByFilter.append(", ").append(Community.TABLE_NAME).append(".").append(Community.NAME);
 		}
-		groupByFilter.append(buildJsonGroupByExpression());
 
 		return groupByFilter.toString();
 	}
