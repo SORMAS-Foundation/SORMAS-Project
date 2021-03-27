@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -15,10 +16,12 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -27,6 +30,7 @@ import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
@@ -45,7 +49,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import of 5 cases because of errors
@@ -61,8 +65,13 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
+				resultConsumer.accept((T) new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -76,9 +85,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
 				resultConsumer.accept(
-					new CaseImportSimilarityResult(
+					(T) new CaseImportSimilarityResult(
 						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
@@ -100,8 +114,13 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CANCEL));
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
+				resultConsumer.accept((T) new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CANCEL));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -115,9 +134,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
 				resultConsumer.accept(
-					new CaseImportSimilarityResult(
+					(T) new CaseImportSimilarityResult(
 						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
@@ -139,9 +163,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
 				resultConsumer.accept(
-					new CaseImportSimilarityResult(
+					(T) new CaseImportSimilarityResult(
 						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
@@ -166,18 +195,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		// Similarity: create -> pass
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
-		caseImporter = new CaseImporterExtension(csvFile, true, user) {
-
-			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-			}
-
-			@Override
-			protected void handleCaseSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-			}
-		};
+		caseImporter = new CaseImporterExtension(csvFile, true, user);
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -201,7 +219,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(12, getCaseFacade().count(null));
 	}
 
@@ -216,7 +234,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, false, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Successful import of 5 cases from commented CSV file
@@ -224,27 +242,35 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, false, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(10, getCaseFacade().count(null));
 	}
 
-	private static class CaseImporterExtension extends CaseImporter {
+	public static class CaseImporterExtension extends CaseImporter {
 
-		private StringBuilder errors = new StringBuilder("");
-		private StringBuilderWriter writer = new StringBuilderWriter(errors);
+		public StringBuilder stringBuilder = new StringBuilder("");
+		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		private CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
 			super(inputFile, hasEntityClassRow, currentUser);
 		}
 
-		protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		@Override
+		protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+			PersonDto newPerson,
+			Consumer<T> resultConsumer,
+			BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+			String infoText,
+			UI currentUI) {
+			resultConsumer.accept((T) new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
+		@Override
 		protected void handleCaseSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 			resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
+		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
 		}

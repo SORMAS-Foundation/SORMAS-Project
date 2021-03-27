@@ -41,9 +41,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Continent;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.Subcontinent;
 
 @Entity
 @Audited
@@ -56,6 +58,8 @@ public class Location extends AbstractDomainObject {
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
+	public static final String CONTINENT = "continent";
+	public static final String SUB_CONTINENT = "subcontinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -77,6 +81,8 @@ public class Location extends AbstractDomainObject {
 	private String city;
 	private AreaType areaType;
 
+	private Continent continent;
+	private Subcontinent subcontinent;
 	private Country country;
 	private Region region;
 	private District district;
@@ -125,7 +131,7 @@ public class Location extends AbstractDomainObject {
 		this.areaType = areaType;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Country getCountry() {
 		return country;
 	}
@@ -134,7 +140,25 @@ public class Location extends AbstractDomainObject {
 		this.country = country;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
+	public Continent getContinent() {
+		return continent;
+	}
+
+	public void setContinent(Continent continent) {
+		this.continent = continent;
+	}
+
+	@ManyToOne()
+	public Subcontinent getSubcontinent() {
+		return subcontinent;
+	}
+
+	public void setSubcontinent(Subcontinent subcontinent) {
+		this.subcontinent = subcontinent;
+	}
+
+	@ManyToOne()
 	public Region getRegion() {
 		return region;
 	}
@@ -143,7 +167,7 @@ public class Location extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public District getDistrict() {
 		return district;
 	}
@@ -152,7 +176,7 @@ public class Location extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Community getCommunity() {
 		return community;
 	}

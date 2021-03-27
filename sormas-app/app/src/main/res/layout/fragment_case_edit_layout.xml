@@ -376,6 +376,7 @@
                         android:id="@+id/facilityOrHome"
                         app:caption="@string/caption_facility_or_home"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -411,6 +412,7 @@
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{facilityOrHome}"
                     app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
+                    app:dependencyParentClearOnHide="@{false}"
                     app:required="true"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     app:value="@={data.healthFacility}" />

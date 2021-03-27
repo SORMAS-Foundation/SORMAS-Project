@@ -72,6 +72,8 @@ public interface FacilityFacade {
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
 
+	void saveFacility(FacilityDto value, boolean allowMerge) throws ValidationRuntimeException;
+
 	List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,

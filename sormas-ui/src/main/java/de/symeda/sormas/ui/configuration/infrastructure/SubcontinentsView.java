@@ -46,6 +46,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/subcontinents";
 	protected Button createButton;
 	protected Button importButton;
+	protected Button importDefaultSubcontinentsButton;
 	private SubcontinentCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 	// Filter
@@ -84,6 +85,13 @@ public class SubcontinentsView extends AbstractConfigurationView {
 				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
+
+			importDefaultSubcontinentsButton = ButtonHelper.createIconButton(Captions.actionImportAllSubcontinents, VaadinIcons.UPLOAD, e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultSubcontinentsLayout());
+				window.setCaption(I18nProperties.getString(Strings.headingImportAllSubcontinents));
+				window.addCloseListener(c -> grid.reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(importDefaultSubcontinentsButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {

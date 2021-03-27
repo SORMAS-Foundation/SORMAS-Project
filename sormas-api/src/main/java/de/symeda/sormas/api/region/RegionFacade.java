@@ -55,6 +55,8 @@ public interface RegionFacade {
 
 	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
 
+	void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException;
+
 	List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities);
 
 	List<RegionDto> getByName(String name, boolean includeArchivedEntities);

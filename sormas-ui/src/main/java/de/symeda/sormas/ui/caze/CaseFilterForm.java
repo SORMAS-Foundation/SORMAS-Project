@@ -22,6 +22,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -93,6 +94,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
 			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
 		+ loc(WEEK_AND_DATE_FILTER);
 
@@ -126,9 +128,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
-		ComboBox diseaseVariantField = addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
 
-		if (isConfiguredServer("de")) {
+		addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
 		} else {
 			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -303,7 +305,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterOnlyFromOtherInstances),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(((SormasUI)getUI()).getUserProvider().getUserRoles());
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			addField(
+					moreFiltersContainer,
+					CheckBox.class,
+					FieldConfiguration.withCaptionAndStyle(
+							CaseCriteria.ONLY_CASES_WITH_REINFECTION,
+							I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
+							I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
+							CssStyles.CHECKBOX_FILTER_INLINE));
+		}
+
+		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
@@ -583,7 +596,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					if (community != null) {
 						facilityField
 							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
-					} else if (district != null) {
+					} else {
 						facilityField
 							.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
 					}
@@ -736,10 +749,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	public void setValue(CaseCriteria newCriteria) throws ReadOnlyException, Converter.ConversionException {
 
 		super.setValue(newCriteria);
-		ComboBox typeField = (ComboBox) getField(CaseCriteria.FACILITY_TYPE);
+		ComboBox typeField = getField(CaseCriteria.FACILITY_TYPE);
 		if (newCriteria.getFacilityType() != null && typeField != null) {
 			typeField.setValue(newCriteria.getFacilityType());
-			ComboBox facilityField = (ComboBox) getField(CaseDataDto.HEALTH_FACILITY);
+			ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
 			if (newCriteria.getHealthFacility() != null && facilityField != null) {
 				facilityField.setValue(newCriteria.getHealthFacility());
 			}
