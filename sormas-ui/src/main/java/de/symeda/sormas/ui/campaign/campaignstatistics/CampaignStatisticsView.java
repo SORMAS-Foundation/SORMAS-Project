@@ -71,7 +71,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				StreamResource streamResource =
+					GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
