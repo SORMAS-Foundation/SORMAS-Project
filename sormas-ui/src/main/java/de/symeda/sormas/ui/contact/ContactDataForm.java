@@ -30,7 +30,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-import de.symeda.sormas.ui.SormasUI;
+import javax.validation.constraints.NotNull;
+
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -81,7 +82,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -94,8 +95,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
-
-import javax.validation.constraints.NotNull;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -196,7 +195,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			return;
 		}
 
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 
 		Label contactDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactData));
 		contactDataHeadingLabel.addStyleName(H3);
@@ -569,7 +568,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.headingContactConfirmationRequired),
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
-								ControllerProvider.getCaseController().createFromContact(ui, getValue());
+								ControllerProvider.getCaseController().createFromContact(getValue());
 							}
 						}, ValoTheme.BUTTON_LINK);
 

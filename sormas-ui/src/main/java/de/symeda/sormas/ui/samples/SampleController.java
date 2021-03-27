@@ -75,17 +75,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import javax.validation.constraints.NotNull;
-
 public class SampleController {
 
 	public SampleController() {
 	}
 
-	public void registerViews(@NotNull final SormasUI ui, Navigator navigator) {
+	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
-		if (ui.getUserProvider().hasUserRight(UserRight.LAB_MESSAGES)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
 			navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
 		}
 	}
@@ -95,35 +93,34 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(@NotNull final SormasUI ui, CaseReferenceDto caseRef, Runnable callback) {
-		createSample(ui, callback, SampleDto.build(ui.getUserProvider().getUserReference(), caseRef));
+	public void create(CaseReferenceDto caseRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
 	}
 
-	public void create(@NotNull final SormasUI ui, ContactReferenceDto contactRef, Runnable callback) {
-		createSample(ui, callback, SampleDto.build(ui.getUserProvider().getUserReference(), contactRef));
+	public void create(ContactReferenceDto contactRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
 	}
 
-	public void create(@NotNull final SormasUI ui, EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
-		createSample(ui, callback, SampleDto.build(ui.getUserProvider().getUserReference(), eventParticipantRef));
+	public void create(EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef));
 	}
 
-	private void createSample(@NotNull final SormasUI ui, Runnable callback, SampleDto sampleDto) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(ui, sampleDto, callback);
+	private void createSample(Runnable callback, SampleDto sampleDto) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, callback);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-			@NotNull final SormasUI ui, SampleDto sampleDto, Runnable callback) {
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(ui, createForm);
+				saveSample(createForm);
 				callback.run();
 			}
 		});
@@ -131,19 +128,19 @@ public class SampleController {
 		return editView;
 	}
 
-	public void createReferral(@NotNull final SormasUI ui, SampleDto sample) {
+	public void createReferral(SampleDto sample) {
 
 		final SampleCreateForm createForm = new SampleCreateForm();
-		final SampleDto referralSample = SampleDto.buildReferral(ui.getUserProvider().getUserReference(), sample);
+		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE),
 			createForm.getFieldGroup());
 
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(ui, createForm);
+				saveSample(createForm);
 
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
@@ -165,12 +162,12 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	private void saveSample(@NotNull final SormasUI ui, SampleCreateForm createForm) {
+	private void saveSample(SampleCreateForm createForm) {
 
 		final SampleDto newSample = createForm.getValue();
 		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
 		if (testResult != null) {
-			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, ui.getUserProvider().getUser());
+			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
 			newSample.setPathogenTestResult(testResult);
@@ -208,7 +205,7 @@ public class SampleController {
 					newSample.setPathogenTestResult(testResult);
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
-					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(ui, eventParticipant, testedDisease);
+					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
 				}
 			}
 		} else {
@@ -216,8 +213,7 @@ public class SampleController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
-			@NotNull final SormasUI ui, final String sampleUuid, boolean isPseudonymized) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -225,7 +221,7 @@ public class SampleController {
 		form.setValue(dto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(
 			form,
-			ui.getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT),
 			form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -237,15 +233,15 @@ public class SampleController {
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
-					&& ui.getUserProvider().hasUserRight(UserRight.TASK_CREATE)) {
-					requestSampleCollectionTaskCreation(ui, changedDto, form);
+					&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+					requestSampleCollectionTaskCreation(changedDto, form);
 				} else {
 					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 				}
 			}
 		});
 
-		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
@@ -255,7 +251,7 @@ public class SampleController {
 		// Initialize 'Refer to another laboratory' button or link to referred sample
 		Button referOrLinkToOtherLabButton = null;
 		if (dto.getReferredTo() == null) {
-			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && ui.getUserProvider().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton = ButtonHelper
 					.createButtonWithCaption("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 
@@ -267,7 +263,7 @@ public class SampleController {
 								form.commit();
 								SampleDto sampleDto = form.getValue();
 								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-								createReferral(ui, sampleDto);
+								createReferral(sampleDto);
 							} catch (SourceException | InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 							}
@@ -307,7 +303,7 @@ public class SampleController {
 		return editView;
 	}
 
-	private void requestSampleCollectionTaskCreation(@NotNull final SormasUI ui, SampleDto dto, SampleEditForm form) {
+	private void requestSampleCollectionTaskCreation(SampleDto dto, SampleEditForm form) {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -335,15 +331,14 @@ public class SampleController {
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
 				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
 				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
-				boolean hasUserRightTaskCreate = ui.getUserProvider().hasUserRight(UserRight.TASK_CREATE);
 				if (associatedCase != null) {
-					ControllerProvider.getTaskController().createSampleCollectionTask(ui, TaskContext.CASE, associatedCase, dto, hasUserRightTaskCreate);
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto);
 				} else if (associatedContact != null) {
-					ControllerProvider.getTaskController().createSampleCollectionTask(ui, TaskContext.CONTACT, associatedContact, dto, hasUserRightTaskCreate);
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto);
 				} else if (associatedEventParticipant != null) {
 					final EventParticipantDto eventParticipantDto =
 						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-					ControllerProvider.getTaskController().createSampleCollectionTask(ui, TaskContext.EVENT, eventParticipantDto.getEvent(), dto, hasUserRightTaskCreate);
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto);
 				}
 			}
 		});

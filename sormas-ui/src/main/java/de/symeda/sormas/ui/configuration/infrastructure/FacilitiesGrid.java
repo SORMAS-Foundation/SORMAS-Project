@@ -41,7 +41,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 
 	public FacilitiesGrid(FacilityCriteria criteria) {
 		super(FacilityIndexDto.class);
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 
 		setSizeFull();
 
@@ -68,7 +68,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityIndexDto, FacilityCrite
 			FacilityIndexDto.EXTERNAL_ID);
 
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(ui, e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

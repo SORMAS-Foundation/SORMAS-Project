@@ -124,7 +124,7 @@ public class RegionsView extends AbstractConfigurationView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createRegion(ui),
+				e -> ControllerProvider.getInfrastructureController().createRegion(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

@@ -37,7 +37,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -122,7 +121,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
 			} else {
 				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
-				ControllerProvider.getCaseController().createFromEventParticipant(ui, eventParticipant);
+				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}
 		}));
 		addItemClickListener(

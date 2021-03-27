@@ -57,9 +57,9 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 
 		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(ui, e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

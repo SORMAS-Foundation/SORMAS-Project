@@ -40,6 +40,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -72,10 +73,10 @@ public class EventList extends PaginationList<EventIndexDto> {
 								EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
 								CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseReferenceDto.getUuid());
 								ControllerProvider.getEventController()
-										.removeLinkCaseEventParticipant(
-												selectedEvent,
-												caseDataDto,
-												I18nProperties.getString(Strings.messageEventParticipationUnlinked));
+									.removeLinkCaseEventParticipant(
+										selectedEvent,
+										caseDataDto,
+										I18nProperties.getString(Strings.messageEventParticipationUnlinked));
 								reload();
 							}
 						});
@@ -110,11 +111,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
 					ControllerProvider.getEventController()
-						.removeSuperordinateEvent(
-							((SormasUI) getUI()),
-							selectedEvent,
-							false,
-							I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
+						.removeSuperordinateEvent(selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
 					reload();
 				});
 			}
@@ -148,8 +145,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 				}
 				listEntry.addEditListener(
 					i,
-					(ClickListener) clickEvent -> ControllerProvider.getEventController()
-						.navigateToData(((SormasUI) getUI()), listEntry.getEvent().getUuid()));
+					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
 			}
 			listLayout.addComponent(listEntry);
 		}

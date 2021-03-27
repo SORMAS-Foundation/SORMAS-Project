@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -39,6 +36,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -95,7 +93,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		}
 
 		addItemClickListener(
-			new ShowDetailsListener<>(EventActionIndexDto.EVENT_UUID, e -> ControllerProvider.getEventController().navigateToData(((SormasUI)getUI()), e.getEventUuid())));
+			new ShowDetailsListener<>(EventActionIndexDto.EVENT_UUID, e -> ControllerProvider.getEventController().navigateToData(e.getEventUuid())));
 	}
 
 	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {

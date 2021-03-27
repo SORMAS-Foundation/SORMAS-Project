@@ -34,27 +34,24 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import javax.validation.constraints.NotNull;
-
 public class SuperordinateEventComponent extends VerticalLayout {
 
 	private final EventDto subordinateEvent;
 	private final Runnable discardChangesCallback;
 
-	public SuperordinateEventComponent(@NotNull final SormasUI ui, EventDto subordinateEvent, Runnable discardChangesCallback) {
+	public SuperordinateEventComponent(EventDto subordinateEvent, Runnable discardChangesCallback) {
 		this.subordinateEvent = subordinateEvent;
 		this.discardChangesCallback = discardChangesCallback;
-		initialize(ui);
+		initialize();
 	}
 
-	private void initialize(@NotNull final SormasUI ui) {
+	private void initialize() {
 		setWidthFull();
 		setMargin(false);
 		setSpacing(false);
@@ -73,14 +70,14 @@ public class SuperordinateEventComponent extends VerticalLayout {
 			addComponent(
 				new SuperordinateEventInfoLayout(FacadeProvider.getEventFacade().getEventByUuid(subordinateEvent.getSuperordinateEvent().getUuid())));
 
-			if (ui.getUserProvider().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
 				Button btnUnlinkEvent = ButtonHelper.createIconButtonWithCaption(
 					"unlinkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.eventUnlinkEvent),
 					VaadinIcons.UNLINK,
 					e -> createEventWithConfirmationWindow(
 						() -> ControllerProvider.getEventController()
-							.removeSuperordinateEvent(ui,
+							.removeSuperordinateEvent(
 								subordinateEvent,
 								true,
 								I18nProperties.getString(Strings.messageEventSuperordinateEventUnlinked))),
@@ -92,7 +89,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 					"openSuperordinateEvent",
 					I18nProperties.getCaption(Captions.eventOpenSuperordinateEvent),
 					VaadinIcons.EYE,
-					e -> ControllerProvider.getEventController().navigateToData(ui, subordinateEvent.getSuperordinateEvent().getUuid()),
+					e -> ControllerProvider.getEventController().navigateToData(subordinateEvent.getSuperordinateEvent().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 				btnOpenEvent.setWidthFull();
 				buttonLayout.addComponent(btnOpenEvent);
@@ -100,7 +97,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		} else {
 			addComponent(new Label(I18nProperties.getString(Strings.infoNoSuperordinateEvent)));
 
-			if (ui.getUserProvider().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
 				Button btnLinkEvent = ButtonHelper.createIconButtonWithCaption(
 					"linkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.linkEvent),
@@ -109,10 +106,10 @@ public class SuperordinateEventComponent extends VerticalLayout {
 						long events = FacadeProvider.getEventFacade().count(new EventCriteria());
 						if (events > 0) {
 							createEventWithConfirmationWindow(
-								() -> ControllerProvider.getEventController().selectOrCreateSuperordinateEvent(ui, subordinateEvent.toReference()));
+								() -> ControllerProvider.getEventController().selectOrCreateSuperordinateEvent(subordinateEvent.toReference()));
 						} else {
 							createEventWithConfirmationWindow(
-								() -> ControllerProvider.getEventController().createSuperordinateEvent(ui, subordinateEvent.toReference()));
+								() -> ControllerProvider.getEventController().createSuperordinateEvent(subordinateEvent.toReference()));
 						}
 					},
 					ValoTheme.BUTTON_PRIMARY);

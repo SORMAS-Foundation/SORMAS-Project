@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -59,7 +57,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
@@ -247,11 +244,11 @@ public class CaseContactsView extends AbstractCaseView {
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
 					ControllerProvider.getContactController()
-						.cancelFollowUpOfAllSelectedItems(sormasUI(), grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
 					ControllerProvider.getContactController()
-						.setAllSelectedItemsToLostToFollowUp(sormasUI(), grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 					ControllerProvider.getContactController()
@@ -329,7 +326,7 @@ public class CaseContactsView extends AbstractCaseView {
 				Captions.contactNewContact,
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(((SormasUI) getUI()), this.getCaseRef()),
+				e -> ControllerProvider.getContactController().create(this.getCaseRef()),
 				ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(newButton);
@@ -348,7 +345,7 @@ public class CaseContactsView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		criteria.caze(getCaseRef());
 

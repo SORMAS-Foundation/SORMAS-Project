@@ -11,7 +11,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -91,7 +90,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				ContactIndexDetailedDto.LATEST_EVENT_ID,
-				c -> ControllerProvider.getEventController().navigateToData(((SormasUI)getUI()), c.getLatestEventId())));
+				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
 
 	}
 }

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -43,7 +45,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
@@ -57,8 +58,6 @@ import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import javax.validation.constraints.NotNull;
 
 public class DistrictsView extends AbstractConfigurationView {
 
@@ -86,7 +85,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	public DistrictsView() {
 		super(VIEW_NAME);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(DistrictsView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(DistrictsView.class)
@@ -123,7 +122,8 @@ public class DistrictsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+			StreamResource streamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -132,7 +132,7 @@ public class DistrictsView extends AbstractConfigurationView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createDistrict(ui),
+				e -> ControllerProvider.getInfrastructureController().createDistrict(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

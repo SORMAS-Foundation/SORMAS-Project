@@ -43,8 +43,6 @@ import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -54,8 +52,6 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
-
-import javax.validation.constraints.NotNull;
 
 public class ContactVisitsView extends AbstractContactView {
 
@@ -149,7 +145,7 @@ public class ContactVisitsView extends AbstractContactView {
 			newButton = ButtonHelper.createIconButton(
 				Captions.visitNewVisit,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getVisitController().createVisit(sormasUI(),this.getContactRef(), r -> navigateTo(criteria)),
+				e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)),
 				ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -176,7 +172,7 @@ public class ContactVisitsView extends AbstractContactView {
 //	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null

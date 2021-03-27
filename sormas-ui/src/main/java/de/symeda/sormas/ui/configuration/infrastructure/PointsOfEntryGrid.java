@@ -48,9 +48,9 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			PointOfEntryDto.EXTERNAL_ID,
 			PointOfEntryDto.ACTIVE);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editPointOfEntry(ui, e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editPointOfEntry(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

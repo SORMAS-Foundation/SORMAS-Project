@@ -89,7 +89,7 @@ public class CampaignsView extends AbstractCampaignView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.campaignNewCampaign,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCampaignController().createOrEditCampaign((SormasUI) getUI(), null),
+				e -> ControllerProvider.getCampaignController().createOrEditCampaign(null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

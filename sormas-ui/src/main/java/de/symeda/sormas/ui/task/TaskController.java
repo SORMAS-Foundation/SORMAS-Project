@@ -34,14 +34,12 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 public class TaskController {
@@ -50,12 +48,13 @@ public class TaskController {
 
 	}
 
-	public void create(@NotNull SormasUI ui, TaskContext context, ReferenceDto entityRef, Runnable callback) {
+	public void create(TaskContext context, ReferenceDto entityRef, Runnable callback) {
+
 		TaskEditForm createForm = new TaskEditForm(true, false);
-		createForm.setValue(createNewTask(ui, context, entityRef));
+		createForm.setValue(createNewTask(context, entityRef));
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(
 			createForm,
-			ui.getUserProvider().hasUserRight(UserRight.TASK_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -73,12 +72,10 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void createSampleCollectionTask(
-			@NotNull final SormasUI ui,
-			TaskContext context, ReferenceDto entityRef, SampleDto sample, boolean hasUserRightTaskCreate) {
+	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
 
 		TaskEditForm createForm = new TaskEditForm(true, false);
-		TaskDto taskDto = createNewTask(ui, context, entityRef);
+		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
 		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
 		taskDto.setAssigneeUser(sample.getReportingUser());
@@ -86,7 +83,7 @@ public class TaskController {
 
 		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(
 			createForm,
-			hasUserRightTaskCreate,
+			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
 			createForm.getFieldGroup());
 		createView.addCommitListener(new CommitListener() {
 
@@ -102,7 +99,7 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void edit(@NotNull final SormasUI ui, TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid) {
+	public void edit(TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid) {
 
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
@@ -110,7 +107,7 @@ public class TaskController {
 		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
-			new CommitDiscardWrapperComponent<TaskEditForm>(form, ui.getUserProvider().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<TaskEditForm>(form, UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
 
@@ -134,7 +131,7 @@ public class TaskController {
 
 		editView.addDiscardListener(() -> popupWindow.close());
 
-		if (ui.getUserProvider().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 
 				@Override
@@ -147,9 +144,9 @@ public class TaskController {
 		}
 	}
 
-	private TaskDto createNewTask(@NotNull final SormasUI ui, TaskContext context, ReferenceDto entityRef) {
+	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
 		TaskDto task = TaskDto.build(context, entityRef);
-		task.setCreatorUser(ui.getUserProvider().getUserReference());
+		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
 		return task;
 	}
 

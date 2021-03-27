@@ -73,8 +73,8 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		navigateToCampaignColumn.setSortable(false);
 		navigateToCampaignColumn.setWidth(20);
 
-		addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId,
-				e -> ControllerProvider.getCampaignController().navigateToCampaign(getUI().getNavigator(), e.getUuid())));
+		addItemClickListener(
+			new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 
 		setColumns(navigateToCampaignColumnId, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();

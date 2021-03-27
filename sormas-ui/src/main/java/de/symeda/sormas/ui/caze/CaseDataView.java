@@ -31,8 +31,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
@@ -46,8 +44,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
@@ -74,7 +70,7 @@ public class CaseDataView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		setHeightUndefined();
 
@@ -106,7 +102,7 @@ public class CaseDataView extends AbstractCaseView {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);
 		//		} else {
-		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(ui, getCaseRef().getUuid(), ViewMode.NORMAL);
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		//		}
 
 		// setSubComponent(editComponent);
@@ -159,7 +155,7 @@ public class CaseDataView extends AbstractCaseView {
 			eventLayout.setMargin(false);
 			eventLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(ui, getCaseRef());
+			EventListComponent eventList = new EventListComponent(getCaseRef());
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventLayout.addComponent(eventList);
 			layout.addComponent(eventLayout, EVENTS_LOC);
@@ -191,7 +187,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(ui.getUserProvider(), layout, caze);
+		CaseDocumentsComponent.addComponentToLayout(sormasUI().getUserProvider(), layout, caze);
 
 		setCaseEditPermission(container);
 	}

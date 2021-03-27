@@ -134,7 +134,7 @@ public class CaseVisitsView extends AbstractCaseView {
 
 		if (ui.getUserProvider().hasUserRight(UserRight.VISIT_CREATE)) {
 			Button newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getVisitController().createVisit(ui, this.getCaseRef(), r -> navigateTo(criteria));
+				ControllerProvider.getVisitController().createVisit(this.getCaseRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -145,7 +145,7 @@ public class CaseVisitsView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 		criteria.caze(getCaseRef());
 
 		if (grid == null) {

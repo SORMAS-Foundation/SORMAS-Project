@@ -32,15 +32,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class AggregateReportsView extends AbstractView {
@@ -83,7 +80,7 @@ public class AggregateReportsView extends AbstractView {
 		grid = new AggregateReportsGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar(ui, user));
+		gridLayout.addComponent(createFilterBar(user));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -145,7 +142,7 @@ public class AggregateReportsView extends AbstractView {
 		}
 	}
 
-	private VerticalLayout createFilterBar(@NotNull final SormasUI ui, UserDto user) {
+	private VerticalLayout createFilterBar(UserDto user) {
 
 		VerticalLayout filterLayout = new VerticalLayout();
 		filterLayout.setSpacing(false);
@@ -211,7 +208,7 @@ public class AggregateReportsView extends AbstractView {
 
 			cbFacilityFilter = new ComboBox<>();
 			cbFacilityFilter.setId(AggregateReportCriteria.HEALTH_FACILITY);
-			if (!UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
+			if (!UserRole.isPortHealthUser(sormasUI().getUserProvider().getUserRoles())) {
 				cbFacilityFilter.addValueChangeListener(e -> updateButtonVisibility());
 				cbFacilityFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbFacilityFilter, cbPoeFilter));
 				cbFacilityFilter.setWidth(200, Unit.PIXELS);
@@ -223,7 +220,7 @@ public class AggregateReportsView extends AbstractView {
 
 			cbPoeFilter = new ComboBox<>();
 			cbPoeFilter.setId(AggregateReportCriteria.POINT_OF_ENTRY);
-			if (ui.getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				cbPoeFilter.addValueChangeListener(e -> updateButtonVisibility());
 				cbPoeFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbPoeFilter, cbFacilityFilter));
 				cbPoeFilter.setWidth(200, Unit.PIXELS);

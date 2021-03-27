@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewBeforeLeaveEvent;
@@ -13,8 +12,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * A detail view shows specific details of an object identified by the URL parameter.
@@ -38,12 +35,12 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 	 * @param event
 	 *            Passed by {@link #enter(ViewChangeEvent)}.
 	 */
-	protected void initOrRedirect(@NotNull SormasUI ui, ViewChangeEvent event) {
+	protected void initOrRedirect(ViewChangeEvent event) {
 
 		if (getReference() == null) {
 			UI.getCurrent().getNavigator().navigateTo(getRootViewName());
 		} else {
-			initView(ui, event.getParameters().trim());
+			initView(event.getParameters().trim());
 		}
 	}
 
@@ -147,5 +144,5 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 	 * @param params
 	 *            The URL parameters String
 	 */
-	protected abstract void initView(@NotNull final SormasUI ui, String params);
+	protected abstract void initView(String params);
 }

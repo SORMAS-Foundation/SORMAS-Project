@@ -40,8 +40,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
@@ -55,8 +53,6 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import javax.validation.constraints.NotNull;
 
 public class ContactDataView extends AbstractContactView {
 
@@ -79,7 +75,7 @@ public class ContactDataView extends AbstractContactView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		setHeightUndefined();
 
@@ -107,7 +103,7 @@ public class ContactDataView extends AbstractContactView {
 		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 
 		editComponent = ControllerProvider.getContactController()
-			.getContactDataEditComponent(ui, getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
+			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -118,7 +114,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(createCaseInfoLayout(contactDto.getCaze().getUuid()), CASE_LOC);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
@@ -202,7 +198,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(taskList, TASKS_LOC);
 		}
 
-		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -211,7 +207,7 @@ public class ContactDataView extends AbstractContactView {
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
 				sampleLocLayout.addComponent(
 					new Label(
 						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
@@ -222,12 +218,13 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-			&& ui.getUserProvider().hasUserRight(UserRight.EVENT_VIEW)) {
+			&& sormasUI().getUserProvider().hasUserRight(UserRight.EVENT_VIEW)) {
 			VerticalLayout eventsLayout = new VerticalLayout();
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(ui, getContactRef(), ui.getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE));
+			EventListComponent eventList =
+				new EventListComponent(sormasUI(), getContactRef(), sormasUI().getUserProvider().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE));
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventsLayout.addComponent(eventList);
 
@@ -247,7 +244,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(ui.getUserProvider(), layout, contactDto);
+		CaseDocumentsComponent.addComponentToLayout(sormasUI().getUserProvider(), layout, contactDto);
 
 		setContactEditPermission(container);
 	}

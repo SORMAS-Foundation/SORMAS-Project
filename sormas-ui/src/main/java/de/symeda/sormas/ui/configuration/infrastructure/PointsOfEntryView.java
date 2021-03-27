@@ -29,7 +29,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
@@ -73,7 +72,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	public PointsOfEntryView() {
 
 		super(VIEW_NAME);
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(PointsOfEntryView.class)
@@ -110,7 +109,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
+			StreamResource streamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -119,7 +119,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createPointOfEntry(ui),
+				e -> ControllerProvider.getInfrastructureController().createPointOfEntry(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

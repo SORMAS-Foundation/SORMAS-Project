@@ -33,7 +33,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
@@ -52,7 +51,7 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
+		initOrRedirect(event);
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		final SampleDto sampleByUuid = FacadeProvider.getSampleFacade().getSampleByUuid(params);
 		final CaseReferenceDto caseRef = sampleByUuid.getAssociatedCase();
 		if (caseRef != null && ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {

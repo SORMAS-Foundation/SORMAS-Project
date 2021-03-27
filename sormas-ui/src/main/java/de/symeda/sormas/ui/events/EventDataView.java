@@ -51,8 +51,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
-import javax.validation.constraints.NotNull;
-
 public class EventDataView extends AbstractEventView {
 
 	private static final long serialVersionUID = -1L;
@@ -76,7 +74,7 @@ public class EventDataView extends AbstractEventView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
 
@@ -137,11 +135,11 @@ public class EventDataView extends AbstractEventView {
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
-		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(ui, event, () -> editComponent.discard());
+		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
 		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-		EventListComponent subordinateEventList = new EventListComponent(ui, event.toReference());
+		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 
@@ -166,7 +164,7 @@ public class EventDataView extends AbstractEventView {
 			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
-				thisEvent -> ControllerProvider.getCaseController().navigateTo(ui, new CaseCriteria().eventLike(getEventRef().getUuid())),
+				thisEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
 				ValoTheme.BUTTON_PRIMARY);
 			shortcutLinksLayout.addComponent(seeEventCasesBtn);
 		}

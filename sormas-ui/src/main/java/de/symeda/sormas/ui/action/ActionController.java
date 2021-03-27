@@ -26,15 +26,11 @@ import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class ActionController {
 
@@ -48,13 +44,13 @@ public class ActionController {
 	 * @param entityRef of the action
 	 * @param callback on save
 	 */
-	public void create(@NotNull SormasUI ui, ActionContext context, ReferenceDto entityRef, Runnable callback) {
+	public void create(ActionContext context, ReferenceDto entityRef, Runnable callback) {
 
 		ActionEditForm createForm = new ActionEditForm(true);
-		createForm.setValue(createNewAction(ui.getUserProvider().getUserReference(), context, entityRef));
+		createForm.setValue(createNewAction(context, entityRef));
 		final CommitDiscardWrapperComponent<ActionEditForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			ui.getUserProvider().hasUserRight(UserRight.ACTION_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.ACTION_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -74,7 +70,7 @@ public class ActionController {
 	 * @param dto of the action
 	 * @param callback on save
 	 */
-	public void edit(SormasUI ui, ActionDto dto, Runnable callback) {
+	public void edit(ActionDto dto, Runnable callback) {
 
 		// get fresh data
 		ActionDto newDto = FacadeProvider.getActionFacade().getByUuid(dto.getUuid());
@@ -82,7 +78,7 @@ public class ActionController {
 		ActionEditForm form = new ActionEditForm(false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<ActionEditForm> editView =
-			new CommitDiscardWrapperComponent<>(form, ui.getUserProvider().hasUserRight(UserRight.ACTION_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.ACTION_EDIT), form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditAction));
 
@@ -97,7 +93,7 @@ public class ActionController {
 		});
 
 		// Add delete button if user has role
-		if (ui.getUserProvider().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getActionFacade().deleteAction(newDto);
 				UI.getCurrent().removeWindow(popupWindow);
@@ -108,9 +104,9 @@ public class ActionController {
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private ActionDto createNewAction(@NotNull UserReferenceDto userReferenceDto, ActionContext context, ReferenceDto entityRef) {
+	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {
 		ActionDto action = ActionDto.build(context, entityRef);
-		action.setCreatorUser(userReferenceDto);
+		action.setCreatorUser(UserProvider.getCurrent().getUserReference());
 		return action;
 	}
 }

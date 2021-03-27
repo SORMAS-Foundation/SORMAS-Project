@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -65,11 +64,11 @@ public class PathogenTestListComponent extends VerticalLayout {
 		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
 
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		if (ui.getUserProvider().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(Captions.pathogenTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
 				if (createOrEditAllowedCallback.get()) {
-					ControllerProvider.getPathogenTestController().create(ui, sampleRef, 0, list::reload, onSavedPathogenTest);
+					ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest);
 				} else {
 					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 				}

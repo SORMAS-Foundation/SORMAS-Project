@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -75,8 +77,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -319,7 +319,7 @@ public class ContactsView extends AbstractView {
 			Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(ui),
+				e -> ControllerProvider.getContactController().create(),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnNewContact);
 		}
@@ -439,7 +439,7 @@ public class ContactsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkCancelFollowUp),
 						VaadinIcons.CLOSE,
 						mi -> ControllerProvider.getContactController()
-							.cancelFollowUpOfAllSelectedItems(ui,
+							.cancelFollowUpOfAllSelectedItems(
 								((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(),
 								() -> navigateTo(criteria)),
 						hasBulkOperationsRight),
@@ -447,7 +447,7 @@ public class ContactsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkLostToFollowUp),
 						VaadinIcons.UNLINK,
 						mi -> ControllerProvider.getContactController()
-							.setAllSelectedItemsToLostToFollowUp(ui,
+							.setAllSelectedItemsToLostToFollowUp(
 								((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(),
 								() -> navigateTo(criteria)),
 						hasBulkOperationsRight),
@@ -544,8 +544,7 @@ public class ContactsView extends AbstractView {
 
 	private boolean isBulkEditAllowed(@NotNull final SormasUI ui) {
 		return viewConfiguration.getViewType().isContactOverview()
-			&& (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled());
+			&& (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || FacadeProvider.getSormasToSormasFacade().isFeatureEnabled());
 	}
 
 	private HorizontalLayout buildScrollLayout() {

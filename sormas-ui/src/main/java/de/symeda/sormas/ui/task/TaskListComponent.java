@@ -33,7 +33,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -62,12 +61,12 @@ public class TaskListComponent extends VerticalLayout {
 		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		if (ui.getUserProvider().hasUserRight(UserRight.TASK_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.taskNewTask,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getTaskController().create(ui, context, entityRef, this::reload),
+				e -> ControllerProvider.getTaskController().create(context, entityRef, this::reload),
 				ValoTheme.BUTTON_PRIMARY);
 
 			componentHeader.addComponent(createButton);

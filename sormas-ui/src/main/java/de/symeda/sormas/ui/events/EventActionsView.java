@@ -31,14 +31,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionList;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-
-import javax.validation.constraints.NotNull;
 
 public class EventActionsView extends AbstractEventView {
 
@@ -61,7 +57,7 @@ public class EventActionsView extends AbstractEventView {
 	/**
 	 * Creates the top bar component with header and create button.
 	 */
-	private HorizontalLayout createTopBar(@NotNull SormasUI ui) {
+	private HorizontalLayout createTopBar() {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
@@ -72,9 +68,9 @@ public class EventActionsView extends AbstractEventView {
 		topLayout.addComponent(header);
 
 		// add create button if user has role
-		if (ui.getUserProvider().hasUserRight(UserRight.ACTION_CREATE)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.ACTION_CREATE)) {
 			addButton = ButtonHelper.createIconButton(Captions.actionCreate, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getActionController().create(ui, ActionContext.EVENT, this.getEventRef(), this::reload);
+				ControllerProvider.getActionController().create(ActionContext.EVENT, this.getEventRef(), this::reload);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(addButton);
@@ -103,7 +99,7 @@ public class EventActionsView extends AbstractEventView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		if (params.contains("?")) {
 			criteria.fromUrlParams(params.substring(params.indexOf("?") + 1));
@@ -116,7 +112,7 @@ public class EventActionsView extends AbstractEventView {
 			listLayout.setSizeFull();
 			listLayout.setMargin(true);
 			listLayout.setSpacing(false);
-			listLayout.addComponent(createTopBar(ui));
+			listLayout.addComponent(createTopBar());
 			listLayout.addComponent(createFilterBar());
 			listLayout.addComponent(list);
 			listLayout.setExpandRatio(list, 1);

@@ -72,7 +72,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		addItemClickListener(e -> {
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitEditForm(ui, (ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
+					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
 			}
 		});
 	}

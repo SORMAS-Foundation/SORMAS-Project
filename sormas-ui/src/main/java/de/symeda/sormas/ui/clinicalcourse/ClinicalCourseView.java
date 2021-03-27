@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.clinicalcourse;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -45,8 +47,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
-import javax.validation.constraints.NotNull;
-
 @SuppressWarnings("serial")
 public class ClinicalCourseView extends AbstractCaseView {
 
@@ -63,6 +63,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
 
+	@NotNull
 	private VerticalLayout createClinicalVisitsHeader() {
 		SormasUI ui = sormasUI();
 
@@ -101,7 +102,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 			Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitCreateForm(ui, clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
+					.openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			headlineRow.addComponent(newClinicalVisitButton);
@@ -126,7 +127,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		// TODO: Remove this once a proper ViewModel system has been introduced
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
@@ -148,7 +149,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
 
-		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(ui, getCaseRef().getUuid());
+		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid());
 		editComponent.setMargin(false);
 		container.addComponent(editComponent);
 

@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.utils.ExportEntityName;
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -55,15 +55,15 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -244,7 +244,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
 				Button campaignFormButton = ButtonHelper.createButton(
 					campaignForm.toString(),
-					e -> ControllerProvider.getCampaignController().createCampaignDataForm(ui, criteria.getCampaign(), campaignForm));
+					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				newFormLayout.addComponent(campaignFormButton);
 			}

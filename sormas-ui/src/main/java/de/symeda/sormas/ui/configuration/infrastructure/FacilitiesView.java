@@ -19,7 +19,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
 
-import de.symeda.sormas.ui.SormasUI;
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
@@ -65,8 +67,6 @@ import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import javax.validation.constraints.NotNull;
 
 public class FacilitiesView extends AbstractConfigurationView {
 
@@ -100,7 +100,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	public FacilitiesView() {
 
 		super(VIEW_NAME);
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(getClass())
@@ -143,39 +143,40 @@ public class FacilitiesView extends AbstractConfigurationView {
 			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			StreamResource basicExportStreamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource basicExportStreamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
-					basicExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.TABLE,
-					Captions.exportBasic,
-					Strings.infoBasicExport);
+				basicExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.TABLE,
+				Captions.exportBasic,
+				Strings.infoBasicExport);
 
 			// Detailed export
 
 			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-					FacilityExportDto.class,
-					null,
-					(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					ExportEntityName.FACILITIES,
-					null);
+				FacilityExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				ExportEntityName.FACILITIES,
+				null);
 
 			addExportButton(
-					detailedExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.FILE_TEXT,
-					Captions.exportDetailed,
-					Strings.infoDetailedExport);
+				detailedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
 		}
 
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
@@ -183,7 +184,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				"create",
 				I18nProperties.getCaption(Captions.actionNewEntry),
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createFacility(ui),
+				e -> ControllerProvider.getInfrastructureController().createFacility(),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}

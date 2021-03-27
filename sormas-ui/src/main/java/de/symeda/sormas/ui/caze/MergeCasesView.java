@@ -83,7 +83,7 @@ public class MergeCasesView extends AbstractView {
 		Button btnBack = ButtonHelper.createIconButton(
 			Captions.caseBackToDirectory,
 			VaadinIcons.ARROW_BACKWARD,
-			e -> ControllerProvider.getCaseController().navigateToIndex(sormasUI()),
+			e -> ControllerProvider.getCaseController().navigateToIndex(),
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);

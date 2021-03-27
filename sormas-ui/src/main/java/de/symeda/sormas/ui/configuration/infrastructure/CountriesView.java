@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Collections;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -29,7 +31,6 @@ import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -41,8 +42,6 @@ import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import javax.validation.constraints.NotNull;
 
 public class CountriesView extends AbstractConfigurationView {
 
@@ -70,7 +69,7 @@ public class CountriesView extends AbstractConfigurationView {
 	public CountriesView() {
 		super(VIEW_NAME);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(CountriesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CountriesView.class).get(CountryCriteria.class);
@@ -122,7 +121,7 @@ public class CountriesView extends AbstractConfigurationView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createCountry(ui),
+				e -> ControllerProvider.getInfrastructureController().createCountry(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

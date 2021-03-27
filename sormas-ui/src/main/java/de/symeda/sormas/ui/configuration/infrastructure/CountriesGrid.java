@@ -50,7 +50,7 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 
 		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCountry(ui, e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCountry(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

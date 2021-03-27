@@ -20,6 +20,8 @@
 
 package de.symeda.sormas.ui.events.eventLink;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -41,14 +43,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import javax.validation.constraints.NotNull;
 
 public class EventListComponent extends VerticalLayout {
 
-	public EventListComponent(@NotNull final SormasUI ui, CaseReferenceDto caseRef) {
+	public EventListComponent(CaseReferenceDto caseRef) {
 
 		createEventListComponent(new EventList(caseRef), I18nProperties.getString(Strings.entityEvents), e -> {
 
@@ -57,9 +56,9 @@ public class EventListComponent extends VerticalLayout {
 			//check if there are active events in the database
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateEvent(ui, caseRef);
+				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
 			} else {
-				ControllerProvider.getEventController().create(ui, caseRef);
+				ControllerProvider.getEventController().create(caseRef);
 			}
 		});
 
@@ -78,9 +77,9 @@ public class EventListComponent extends VerticalLayout {
 			//check if there are active events in the database
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateEvent(ui, contact);
+				ControllerProvider.getEventController().selectOrCreateEvent(contact);
 			} else {
-				ControllerProvider.getEventController().create(ui, contact);
+				ControllerProvider.getEventController().create(contact);
 			}
 		});
 
@@ -100,16 +99,16 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	public EventListComponent(@NotNull final SormasUI ui, EventReferenceDto superordinateEvent) {
+	public EventListComponent(EventReferenceDto superordinateEvent) {
 
 		EventList eventList = new EventList(superordinateEvent);
 		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), e -> {
 			EventCriteria eventCriteria = new EventCriteria();
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
-				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(ui, superordinateEvent);
+				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(superordinateEvent);
 			} else {
-				ControllerProvider.getEventController().createSubordinateEvent(ui, superordinateEvent);
+				ControllerProvider.getEventController().createSubordinateEvent(superordinateEvent);
 			}
 		});
 	}
@@ -132,7 +131,7 @@ public class EventListComponent extends VerticalLayout {
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE)) {
 			Button createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);

@@ -18,26 +18,23 @@
 package de.symeda.sormas.ui.caze.maternalhistory;
 
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class MaternalHistoryView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/maternalhistory";
 
-	public MaternalHistoryView(@NotNull final SormasUI ui) {
+	public MaternalHistoryView() {
 		super(VIEW_NAME, true);
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<MaternalHistoryForm> maternalHistoryComponent =
-			ControllerProvider.getCaseController().getMaternalHistoryComponent(ui, getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getMaternalHistoryComponent(getCaseRef().getUuid(), getViewMode());
 		setSubComponent(maternalHistoryComponent);
 
 		setCaseEditPermission(maternalHistoryComponent);

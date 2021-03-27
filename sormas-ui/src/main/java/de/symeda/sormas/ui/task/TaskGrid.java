@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.task;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -45,7 +47,6 @@ import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -54,8 +55,6 @@ import de.symeda.sormas.ui.utils.ReferenceDtoHtmlProvider;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
@@ -68,7 +67,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -77,7 +76,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getTaskController().edit(ui, e, this::reload, true));
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, true));
 
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -214,7 +213,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			ControllerProvider.getContactController().navigateToData(task.getContact().getUuid());
 			return;
 		case EVENT:
-			ControllerProvider.getEventController().navigateToData(ui, task.getEvent().getUuid());
+			ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
 			return;
 		case GENERAL:
 			return;

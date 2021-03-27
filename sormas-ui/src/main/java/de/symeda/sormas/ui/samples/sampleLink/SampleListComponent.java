@@ -34,7 +34,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -43,24 +42,24 @@ public class SampleListComponent extends VerticalLayout {
 	private SampleList list;
 
 	public SampleListComponent(ContactReferenceDto contactRef) {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		createSampleListComponent(
 			new SampleList(contactRef),
-			e -> ControllerProvider.getSampleController().create(ui, contactRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(contactRef, () -> SormasUI.refreshView()));
 	}
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		createSampleListComponent(
 			new SampleList(caseRef),
-			e -> ControllerProvider.getSampleController().create(ui, caseRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView()));
 	}
 
 	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef) {
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 		createSampleListComponent(
 			new SampleList(eventParticipantRef),
-			e -> ControllerProvider.getSampleController().create(ui, eventParticipantRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(eventParticipantRef, () -> SormasUI.refreshView()));
 	}
 
 	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {
@@ -82,7 +81,7 @@ public class SampleListComponent extends VerticalLayout {
 		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
-		if (((SormasUI)getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
+		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_CREATE)) {
 			Button createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

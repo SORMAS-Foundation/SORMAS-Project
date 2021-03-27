@@ -17,12 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-
-import javax.validation.constraints.NotNull;
 
 public class CaseSymptomsView extends AbstractCaseView {
 
@@ -35,10 +35,10 @@ public class CaseSymptomsView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent =
-			ControllerProvider.getCaseController().getSymptomsEditComponent(ui, getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
 		setSubComponent(caseSymptomsComponent);
 		setCaseEditPermission(caseSymptomsComponent);
 	}

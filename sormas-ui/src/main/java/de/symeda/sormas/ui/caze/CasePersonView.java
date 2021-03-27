@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonContext;
@@ -25,8 +27,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class CasePersonView extends AbstractCaseView {
@@ -38,12 +38,11 @@ public class CasePersonView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
-					ui,
 				PersonContext.CASE,
 				caseData.getPerson().getUuid(),
 				caseData.getDisease(),

@@ -35,7 +35,6 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -66,7 +65,7 @@ public class TasksView extends AbstractView {
 		taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
 		addComponent(taskListComponent);
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.TASK_EXPORT)) {
 			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
@@ -114,7 +113,7 @@ public class TasksView extends AbstractView {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.taskNewTask,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getTaskController().create(ui, TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
+				e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

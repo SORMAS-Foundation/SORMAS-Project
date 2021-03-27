@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -47,7 +46,6 @@ import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
@@ -60,8 +58,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -200,7 +196,7 @@ public class EventParticipantsView extends AbstractEventView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		criteria.event(getEventRef());
 
@@ -244,8 +240,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			Button addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getEventParticipantController().createEventParticipant(
-						sormasUI(), this.getEventRef(), r -> navigateTo(criteria));
+				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(addButton);

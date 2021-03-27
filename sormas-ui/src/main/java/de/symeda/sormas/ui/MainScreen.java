@@ -150,7 +150,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (permitted(ui, FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
-			ControllerProvider.getCaseController().registerViews(ui, navigator);
+			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (permitted(ui, FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {
@@ -170,7 +170,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 		if (permitted(ui, FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
-			ControllerProvider.getSampleController().registerViews(ui, navigator);
+			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 		if (permitted(ui, FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
@@ -185,7 +185,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
 		if (permitted(ui, FeatureType.CASE_SURVEILANCE, UserRight.STATISTICS_ACCESS)) {
-			ControllerProvider.getStatisticsController().registerViews(ui, navigator);
+			ControllerProvider.getStatisticsController().registerViews(navigator);
 			menu.addView(
 				StatisticsView.class,
 				AbstractStatisticsView.ROOT_VIEW_NAME,
@@ -200,7 +200,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 		if (permitted(ui, UserRight.CONFIGURATION_ACCESS)) {
-			AbstractConfigurationView.registerViews(ui, navigator);
+			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
 				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,

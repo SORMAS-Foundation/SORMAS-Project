@@ -14,7 +14,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -29,7 +28,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(AreasView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		SormasUI ui = (SormasUI)getUI();
+		SormasUI ui = (SormasUI) getUI();
 		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -41,7 +40,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 		setColumns(AreaDto.NAME, AreaDto.EXTERNAL_ID);
 
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editArea(ui, e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

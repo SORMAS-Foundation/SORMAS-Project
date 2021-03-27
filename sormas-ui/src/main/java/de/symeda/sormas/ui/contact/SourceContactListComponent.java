@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -33,11 +35,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import javax.validation.constraints.NotNull;
 
 public class SourceContactListComponent extends VerticalLayout {
 
@@ -74,7 +73,7 @@ public class SourceContactListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(ui, caseReference, true, SormasUI::refreshView),
+				e -> ControllerProvider.getContactController().create(caseReference, true, SormasUI::refreshView),
 				ValoTheme.BUTTON_PRIMARY);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

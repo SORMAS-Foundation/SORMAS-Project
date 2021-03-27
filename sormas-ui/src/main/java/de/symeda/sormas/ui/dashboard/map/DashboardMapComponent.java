@@ -31,7 +31,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.SormasUI;
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -81,7 +82,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
@@ -93,8 +94,6 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class DashboardMapComponent extends VerticalLayout {
@@ -152,7 +151,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		SormasUI ui = ((SormasUI)getUI());
+		SormasUI ui = ((SormasUI) getUI());
 
 		setMargin(false);
 		setSpacing(false);
@@ -1436,7 +1435,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			break;
 		case EVENTS_GROUP_ID:
 			DashboardEventDto event = markerEvents.get(markerIndex);
-			ControllerProvider.getEventController().navigateToData((SormasUI)getUI(), event.getUuid(), true);
+			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
 			break;
 		}
 	}

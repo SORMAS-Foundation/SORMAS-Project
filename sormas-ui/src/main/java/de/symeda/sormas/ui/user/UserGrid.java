@@ -66,8 +66,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			});
 		setDataProvider(dataProvider);
 
-		SormasUI ui = ((SormasUI)getUI());
-		addEditColumn(e -> ControllerProvider.getUserController().edit(ui, e));
+		SormasUI ui = ((SormasUI) getUI());
+		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
 
 		setColumns(
 			EDIT_BTN_ID,

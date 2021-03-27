@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.therapy;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,15 +45,12 @@ import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class TherapyView extends AbstractCaseView {
@@ -77,7 +76,7 @@ public class TherapyView extends AbstractCaseView {
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);
 	}
 
-	private VerticalLayout createPrescriptionsHeader(@NotNull final SormasUI ui) {
+	private VerticalLayout createPrescriptionsHeader() {
 
 		VerticalLayout prescriptionsHeader = new VerticalLayout();
 		prescriptionsHeader.setMargin(false);
@@ -95,7 +94,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(prescriptionsLabel, 1);
 
 			// Bulk operations
-			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -112,7 +111,7 @@ public class TherapyView extends AbstractCaseView {
 			}
 
 			Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
-				ControllerProvider.getTherapyController().openPrescriptionCreateForm(ui, prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
+				ControllerProvider.getTherapyController().openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			headlineRow.addComponent(newPrescriptionButton);
@@ -150,7 +149,7 @@ public class TherapyView extends AbstractCaseView {
 		return prescriptionsHeader;
 	}
 
-	private VerticalLayout createTreatmentsHeader(@NotNull final SormasUI ui) {
+	private VerticalLayout createTreatmentsHeader() {
 		VerticalLayout treatmentsHeader = new VerticalLayout();
 		treatmentsHeader.setMargin(false);
 		treatmentsHeader.setSpacing(false);
@@ -167,7 +166,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(treatmentsLabel, 1);
 
 			// Bulk operations
-			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -184,7 +183,7 @@ public class TherapyView extends AbstractCaseView {
 			}
 
 			Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
-				ControllerProvider.getTherapyController().openTreatmentCreateForm(ui, treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
+				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 			});
 
 			headlineRow.addComponent(newTreatmentButton);
@@ -252,7 +251,7 @@ public class TherapyView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> null);
@@ -260,7 +259,7 @@ public class TherapyView extends AbstractCaseView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 
-		container.addComponent(createPrescriptionsHeader(ui));
+		container.addComponent(createPrescriptionsHeader());
 
 		prescriptionGrid = new PrescriptionGrid(this, caze.isPseudonymized());
 		prescriptionGrid.setCriteria(prescriptionCriteria);
@@ -268,7 +267,7 @@ public class TherapyView extends AbstractCaseView {
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
 		container.addComponent(prescriptionGrid);
 
-		container.addComponent(createTreatmentsHeader(ui));
+		container.addComponent(createTreatmentsHeader());
 
 		treatmentGrid = new TreatmentGrid(caze.isPseudonymized());
 		treatmentGrid.setCriteria(treatmentCriteria);

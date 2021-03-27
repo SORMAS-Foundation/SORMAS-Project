@@ -32,9 +32,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -44,8 +42,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
 
@@ -90,11 +86,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
+		initOrRedirect(event);
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
 
 		setHeightUndefined();
@@ -112,8 +108,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
 
-		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(
-				ui, eventParticipantRef.getUuid());
+		editComponent = ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

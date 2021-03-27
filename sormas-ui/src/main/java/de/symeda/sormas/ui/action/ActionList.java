@@ -69,7 +69,7 @@ public class ActionList extends PaginationList<ActionDto> {
 			if (hasUserRightActionEdit) {
 				listEntry.addEditListener(
 					i,
-					(ClickListener) event -> ControllerProvider.getActionController().edit(ui, listEntry.getAction(), ActionList.this::reload));
+					(ClickListener) event -> ControllerProvider.getActionController().edit(listEntry.getAction(), ActionList.this::reload));
 			}
 			listLayout.addComponent(listEntry);
 		}

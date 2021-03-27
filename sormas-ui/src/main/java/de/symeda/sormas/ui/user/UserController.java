@@ -53,21 +53,19 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import javax.validation.constraints.NotNull;
-
 public class UserController {
 
-	public void create(@NotNull final SormasUI ui) {
-		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent(ui);
+	public void create() {
+		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
 		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
 		// user form is too big for typical screens
 		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
 		window.setHeight(90, Unit.PERCENTAGE);
 	}
 
-	public void edit(@NotNull final SormasUI ui, UserDto user) {
+	public void edit(UserDto user) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(ui, user.getUuid(), window::close);
+		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
 		window.setCaption(I18nProperties.getString(Strings.headingEditUser));
 		window.setContent(userComponent);
 		// user form is too big for typical screens
@@ -76,9 +74,9 @@ public class UserController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	public void overview(@NotNull final SormasUI ui) {
+	public void overview() {
 		String navigationState = UsersView.VIEW_NAME;
-		ui.getNavigator().navigateTo(navigationState);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	/**
@@ -96,14 +94,13 @@ public class UserController {
 		page.setUriFragment("!" + UsersView.VIEW_NAME + "/" + fragmentParameter, false);
 	}
 
-	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(
-			@NotNull final SormasUI ui, final String userUuid, Runnable closeWindowCallback) {
+	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid, Runnable closeWindowCallback) {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
 			userEditForm,
-			ui.getUserProvider().hasUserRight(UserRight.USER_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT),
 			userEditForm.getFieldGroup());
 
 		// Add reset password button
@@ -150,13 +147,13 @@ public class UserController {
 		refreshView();
 	}
 
-	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent(@NotNull final SormasUI ui) {
+	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
 
 		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
 			createForm,
-			ui.getUserProvider().hasUserRight(UserRight.USER_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -284,10 +281,9 @@ public class UserController {
 		return resetPasswordConfirmationComponent;
 	}
 
-	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(
-			@NotNull final SormasUI ui, @NotNull Runnable commitOrDiscardCallback) {
+	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(ui.getUserProvider().getUuid());
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());

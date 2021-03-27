@@ -34,9 +34,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -56,7 +54,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	public void enter(ViewChangeEvent event) {
 
 		super.enter(event);
-		initOrRedirect((SormasUI)event.getNavigator().getUI(), event);
+		initOrRedirect(event);
 	}
 
 	@Override

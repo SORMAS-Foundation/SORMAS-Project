@@ -37,7 +37,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
@@ -212,7 +211,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
 			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else {
-			initView((SormasUI) event.getNavigator().getUI(), event.getParameters().trim());
+			initView(event.getParameters().trim());
 		}
 	}
 

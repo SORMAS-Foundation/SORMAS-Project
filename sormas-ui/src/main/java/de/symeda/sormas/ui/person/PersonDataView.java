@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import javax.validation.constraints.NotNull;
-
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -14,7 +12,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
@@ -57,7 +54,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		setHeightUndefined();
 
@@ -78,7 +75,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		editComponent = ControllerProvider.getPersonController().getPersonEditComponent(ui, getReference().getUuid(), UserRight.PERSON_EDIT);
+		editComponent = ControllerProvider.getPersonController().getPersonEditComponent(getReference().getUuid(), UserRight.PERSON_EDIT);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -136,6 +133,6 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
-		initOrRedirect(sormasUI(), event);
+		initOrRedirect(event);
 	}
 }

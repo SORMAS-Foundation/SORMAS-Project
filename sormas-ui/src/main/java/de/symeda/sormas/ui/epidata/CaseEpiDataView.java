@@ -37,8 +37,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
-import javax.validation.constraints.NotNull;
-
 @SuppressWarnings("serial")
 public class CaseEpiDataView extends AbstractCaseView {
 
@@ -54,7 +52,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 
 		setHeightUndefined();
 
@@ -72,13 +70,13 @@ public class CaseEpiDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		boolean sourceContactsVisible = ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW);
+		boolean sourceContactsVisible = sormasUI().getUserProvider().hasUserRight(UserRight.CONTACT_VIEW);
 		VerticalLayout sourceContactsLayout = new VerticalLayout();
 		Consumer<Boolean> sourceContactsToggleCallback = (visible) -> {
 			sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 		};
 
-		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(ui, getCaseRef().getUuid(), sourceContactsToggleCallback);
+		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback);
 		epiDataComponent.setMargin(false);
 		epiDataComponent.setWidth(100, Unit.PERCENTAGE);
 		epiDataComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -89,11 +87,11 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactsLayout.setMargin(false);
 			sourceContactsLayout.setSpacing(false);
 
-			final SourceContactListComponent sourceContactList = new SourceContactListComponent(ui, getCaseRef());
+			final SourceContactListComponent sourceContactList = new SourceContactListComponent(sormasUI(), getCaseRef());
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
-			if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
 				sourceContactList.addStyleName(CssStyles.VSPACE_NONE);
 				Label contactCreationDisclaimer = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewContactDiscardsChanges),

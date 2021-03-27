@@ -44,11 +44,9 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class VisitController {
 
@@ -56,11 +54,7 @@ public class VisitController {
 
 	}
 
-	public void editVisit(@NotNull final SormasUI ui,
-						  String visitUuid,
-						  ContactReferenceDto contactRef,
-						  CaseReferenceDto caseRef,
-						  Consumer<VisitReferenceDto> doneConsumer) {
+	public void editVisit(String visitUuid, ContactReferenceDto contactRef, CaseReferenceDto caseRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
 		VisitEditForm editForm;
 		if (contactRef != null) {
@@ -76,14 +70,14 @@ public class VisitController {
 		}
 		editForm.setValue(visit);
 		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin());
-		editVisit(ui, editForm, visit.toReference(), doneConsumer, canEdit);
+		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
 	}
 
-	private void editVisit(@NotNull final SormasUI ui, VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
+	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
 
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
-			ui.getUserProvider().hasUserRight(UserRight.VISIT_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT),
 			editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
@@ -105,7 +99,7 @@ public class VisitController {
 			}
 		});
 
-		if (ui.getUserProvider().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
 				UI.getCurrent().removeWindow(window);
@@ -116,10 +110,10 @@ public class VisitController {
 		}
 	}
 
-	private void createVisit(@NotNull final SormasUI ui, VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer) {
+	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer) {
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
 				createForm,
-				ui.getUserProvider().hasUserRight(UserRight.VISIT_CREATE),
+				UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
 				createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -138,41 +132,41 @@ public class VisitController {
 		window.setHeight(80, Unit.PERCENTAGE);
 	}
 	
-	public void createVisit(@NotNull final SormasUI ui, ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
-		VisitDto visit = createNewVisit(ui, contactRef);
+	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
+		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true);
 		createForm.setValue(visit);
 
-		createVisit(ui, createForm, doneConsumer);
+		createVisit(createForm, doneConsumer);
 	}
 
-	public void createVisit(@NotNull final SormasUI ui, CaseReferenceDto caseRef, Consumer<VisitReferenceDto> doneConsumer) {
-		VisitDto visit = createNewVisit(ui, caseRef);
+	public void createVisit(CaseReferenceDto caseRef, Consumer<VisitReferenceDto> doneConsumer) {
+		VisitDto visit = createNewVisit(caseRef);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true, true);
 		createForm.setValue(visit);
 
-		createVisit(ui, createForm, doneConsumer);
+		createVisit(createForm, doneConsumer);
 	}
 
-	private VisitDto createNewVisit(@NotNull final SormasUI ui, PersonReferenceDto personRef, Disease disease) {
+	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {
 		VisitDto visit = VisitDto.build(personRef, disease, VisitOrigin.USER);
-		UserReferenceDto userReference = ui.getUserProvider().getUserReference();
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		visit.setVisitUser(userReference);
 		return visit;
 	}
 
-	private VisitDto createNewVisit(@NotNull final SormasUI ui, ContactReferenceDto contactRef) {
+	private VisitDto createNewVisit(ContactReferenceDto contactRef) {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
-		return createNewVisit(ui, contact.getPerson(), contact.getDisease());
+		return createNewVisit(contact.getPerson(), contact.getDisease());
 	}
 
-	private VisitDto createNewVisit(@NotNull final SormasUI ui, CaseReferenceDto caseRef) {
+	private VisitDto createNewVisit(CaseReferenceDto caseRef) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
-		return createNewVisit(ui, caze.getPerson(), caze.getDisease());
+		return createNewVisit(caze.getPerson(), caze.getDisease());
 	}
 
 	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, Runnable callback) {

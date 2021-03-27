@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -62,7 +64,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -76,8 +77,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.validation.constraints.NotNull;
 
 public class EventsView extends AbstractView {
 
@@ -281,10 +280,10 @@ public class EventsView extends AbstractView {
 
 		if (ui.getUserProvider().hasUserRight(UserRight.EVENT_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(
-					Captions.eventNewEvent,
-					VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getEventController().create(ui, (CaseReferenceDto) null),
-					ValoTheme.BUTTON_PRIMARY);
+				Captions.eventNewEvent,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -351,7 +350,7 @@ public class EventsView extends AbstractView {
 			String foundEventUuid = FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchField.getValue());
 
 			if (foundEventUuid != null) {
-				ControllerProvider.getEventController().navigateToData(ui, foundEventUuid);
+				ControllerProvider.getEventController().navigateToData(foundEventUuid);
 				window.close();
 			} else {
 				VaadinUiUtil.showSimplePopupWindow(
@@ -464,7 +463,7 @@ public class EventsView extends AbstractView {
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-						ControllerProvider.getEventController().showBulkEventDataEditComponent(ui, eventGrid.asMultiSelect().getSelectedItems());
+						ControllerProvider.getEventController().showBulkEventDataEditComponent(eventGrid.asMultiSelect().getSelectedItems());
 					}),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getEventController()
@@ -482,9 +481,9 @@ public class EventsView extends AbstractView {
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,
 						selectedItem -> {
-						ControllerProvider.getEventController()
-							.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}));
+							ControllerProvider.getEventController()
+								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");

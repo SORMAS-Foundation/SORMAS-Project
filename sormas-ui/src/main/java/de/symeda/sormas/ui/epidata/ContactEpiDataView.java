@@ -18,11 +18,8 @@
 package de.symeda.sormas.ui.epidata;
 
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.contact.AbstractContactView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class ContactEpiDataView extends AbstractContactView {
@@ -34,9 +31,9 @@ public class ContactEpiDataView extends AbstractContactView {
 	}
 
 	@Override
-	protected void initView(@NotNull final SormasUI ui, String params) {
+	protected void initView(String params) {
 		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getContactController().getEpiDataComponent(ui, getContactRef().getUuid());
+			ControllerProvider.getContactController().getEpiDataComponent(getContactRef().getUuid());
 		setSubComponent(epidDataForm);
 		setContactEditPermission(epidDataForm);
 	}

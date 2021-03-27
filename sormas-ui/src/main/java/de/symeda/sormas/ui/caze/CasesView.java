@@ -428,7 +428,7 @@ public class CasesView extends AbstractView {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.caseMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
-				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(sormasUI()),
+				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
 				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
 			moreLayout.addComponent(mergeDuplicatesButton);
@@ -446,7 +446,7 @@ public class CasesView extends AbstractView {
 			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().openLineListingWindow(sormasUI()),
+				e -> ControllerProvider.getCaseController().openLineListingWindow(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(lineListingButton);
@@ -454,7 +454,7 @@ public class CasesView extends AbstractView {
 			final Button createButton = ButtonHelper.createIconButton(
 				Captions.caseNewCase,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().create(sormasUI()),
+				e -> ControllerProvider.getCaseController().create(),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
@@ -649,8 +649,7 @@ public class CasesView extends AbstractView {
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkEdit),
 							VaadinIcons.ELLIPSIS_H,
-							mi -> ControllerProvider.getCaseController()
-								.showBulkCaseDataEditComponent((SormasUI) getUI(), caseGrid.asMultiSelect().getSelectedItems()),
+							mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(caseGrid.asMultiSelect().getSelectedItems()),
 							hasBulkOperationsRight));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
