@@ -52,15 +52,15 @@ public class CampaignStatisticsGroupingDto implements Serializable, Cloneable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof CampaignStatisticsDto)) {
+		if (!(o instanceof CampaignStatisticsGroupingDto)) {
 			return false;
 		}
-		CampaignStatisticsDto campaignStatisticsDto = (CampaignStatisticsDto) o;
-		return this.campaign.equals(campaignStatisticsDto.getCampaign())
-			&& this.form.equals(campaignStatisticsDto.getForm())
-			&& this.area.equals(campaignStatisticsDto.getArea())
-			&& this.region.equals(campaignStatisticsDto.getRegion())
-			&& this.district.equals(campaignStatisticsDto.getDistrict())
-			&& this.community.equals(campaignStatisticsDto.getCommunity());
+		CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = (CampaignStatisticsGroupingDto) o;
+		return this.campaign.equals(campaignStatisticsGroupingDto.getCampaign())
+			&& this.form.equals(campaignStatisticsGroupingDto.getForm())
+			&& this.area.equals(campaignStatisticsGroupingDto.getArea())
+			&& this.region.equals(campaignStatisticsGroupingDto.getRegion())
+			&& this.district.equals(campaignStatisticsGroupingDto.getDistrict())
+			&& this.community.equals(campaignStatisticsGroupingDto.getCommunity());
 	}
 }

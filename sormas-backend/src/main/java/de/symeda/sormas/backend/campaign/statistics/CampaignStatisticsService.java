@@ -1,9 +1,9 @@
 package de.symeda.sormas.backend.campaign.statistics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.LocalBean;
@@ -44,7 +44,7 @@ public class CampaignStatisticsService {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
-		Map<CampaignStatisticsDto, List<CampaignFormDataEntry>> results = new HashMap<>();
+		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new HashMap<>();
 		((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).forEach(result -> {
 			CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = new CampaignStatisticsGroupingDto(
 				(String) result[1],
@@ -53,22 +53,16 @@ public class CampaignStatisticsService {
 				shouldIncludeRegion(groupingLevel) ? (String) result[4] : "",
 				shouldIncludeDistrict(groupingLevel) ? (String) result[5] : "",
 				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "");
-			CampaignStatisticsDto campaignStatisticsDto =
-				new CampaignStatisticsDto(campaignStatisticsGroupingDto, result[0] != null ? ((Number) result[0]).intValue() : null);
+			if (!results.containsKey(campaignStatisticsGroupingDto)) {
+				CampaignStatisticsDto campaignStatisticsDto =
+					new CampaignStatisticsDto(campaignStatisticsGroupingDto, result[0] != null ? ((Number) result[0]).intValue() : null);
+				results.put(campaignStatisticsGroupingDto, campaignStatisticsDto);
+			}
 			int length = result.length;
 			CampaignFormDataEntry campaignFormDataEntry = new CampaignFormDataEntry((String) result[length - 2], result[length - 1]);
-			if (results.get(campaignStatisticsDto) == null) {
-				results.put(campaignStatisticsDto, new ArrayList<>());
-			}
-			results.get(campaignStatisticsDto).add(campaignFormDataEntry);
+			results.get(campaignStatisticsGroupingDto).addStatisticsData(campaignFormDataEntry);
 		});
-		List<CampaignStatisticsDto> data = new ArrayList<>();
-		results.entrySet().forEach(result -> {
-			CampaignStatisticsDto campaignStatisticsDto = result.getKey();
-			campaignStatisticsDto.setStatisticsData(result.getValue());
-			data.add(campaignStatisticsDto);
-		});
-		return data;
+		return results.values().stream().collect(Collectors.toList());
 	}
 
 	public long count(CampaignStatisticsCriteria criteria) {
