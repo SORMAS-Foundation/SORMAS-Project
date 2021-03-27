@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.campaign.statistics;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.ejb.LocalBean;
@@ -42,7 +44,8 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
-		List<CampaignStatisticsDto> results = ((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).map(result -> {
+		Map<CampaignStatisticsDto, List<CampaignFormDataEntry>> results = new HashMap<>();
+		((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).forEach(result -> {
 			CampaignStatisticsDto campaignStatisticsDto = new CampaignStatisticsDto(
 				(String) result[1],
 				(String) result[2],
@@ -52,10 +55,19 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 				shouldIncludeCommunity(groupingLevel) ? (String) result[6] : "",
 				result[0] != null ? ((Number) result[0]).intValue() : null);
 			int length = result.length;
-			campaignStatisticsDto.addDataValue(new CampaignFormDataEntry((String) result[length - 2], result[length - 1]));
-			return campaignStatisticsDto;
-		}).collect(Collectors.toList());
-		return results;
+			CampaignFormDataEntry campaignFormDataEntry = new CampaignFormDataEntry((String) result[length - 2], result[length - 1]);
+			if (results.get(campaignStatisticsDto) == null) {
+				results.put(campaignStatisticsDto, new ArrayList<>());
+			}
+			results.get(campaignStatisticsDto).add(campaignFormDataEntry);
+		});
+		List<CampaignStatisticsDto> data = new ArrayList<>();
+		results.entrySet().forEach(result -> {
+			CampaignStatisticsDto campaignStatisticsDto = result.getKey();
+			campaignStatisticsDto.setStatisticsData(result.getValue());
+			data.add(campaignStatisticsDto);
+		});
+		return data;
 	}
 
 	@Override

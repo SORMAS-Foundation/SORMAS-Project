@@ -3,6 +3,7 @@ package de.symeda.sormas.api.campaign.statistics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 
@@ -104,7 +105,22 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 		this.statisticsData = statisticsData;
 	}
 
-	public void addDataValue(CampaignFormDataEntry value) {
-		statisticsData.add(value);
+	@Override
+	public int hashCode() {
+		return Objects.hash(campaign, form, area, region, district, community);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof CampaignStatisticsDto)) {
+			return false;
+		}
+		CampaignStatisticsDto campaignStatisticsDto = (CampaignStatisticsDto) o;
+		return this.campaign.equals(campaignStatisticsDto.getCampaign())
+			&& this.form.equals(campaignStatisticsDto.getForm())
+			&& this.area.equals(campaignStatisticsDto.getArea())
+			&& this.region.equals(campaignStatisticsDto.getRegion())
+			&& this.district.equals(campaignStatisticsDto.getDistrict())
+			&& this.community.equals(campaignStatisticsDto.getCommunity());
 	}
 }
