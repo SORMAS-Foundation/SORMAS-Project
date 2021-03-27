@@ -90,10 +90,12 @@ public class CampaignStatisticsService {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append(selectExpression).append(joinExpression);
 
+		queryBuilder.append(" WHERE ");
 		String whereExpression = buildWhereExpression(criteria);
 		if (!whereExpression.isEmpty()) {
-			queryBuilder.append(" WHERE ").append(whereExpression).append(" AND ").append(buildJsonWhereExpression());
+			queryBuilder.append(whereExpression).append(" AND ");
 		}
+		queryBuilder.append(buildJsonWhereExpression());
 
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
 
