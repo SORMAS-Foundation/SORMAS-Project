@@ -429,18 +429,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				}
 			}
 		});
-		final List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getAllActiveAsReference();
-		if (continents.isEmpty()) {
-			continent.setVisible(false);
-		} else {
-			continent.addItems(continents);
-		}
-		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
-		if (subcontinents.isEmpty()) {
-			subcontinent.setVisible(false);
-		} else {
-			subcontinent.addItems(subcontinents);
-		}
+		setContinentFieldsVisibility();
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		updateRegionCombo(region, country);
 		country.addValueChangeListener(e -> {
@@ -609,13 +598,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 	}
 
-	public void setContinentFieldsVisible(boolean visible, boolean clearOnHidden) {
-		continent.setVisible(visible);
-		subcontinent.setVisible(visible);
-
-		if (!visible && clearOnHidden) {
+	public void setContinentFieldsVisibility() {
+		final List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getAllActiveAsReference();
+		if (continents.isEmpty()) {
+			continent.setVisible(false);
 			continent.clear();
+		} else {
+			continent.setVisible(true);
+		}
+		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
+		if (subcontinents.isEmpty()) {
+			subcontinent.setVisible(false);
 			subcontinent.clear();
+		} else {
+			subcontinent.setVisible(true);
 		}
 	}
 
