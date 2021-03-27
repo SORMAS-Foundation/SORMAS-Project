@@ -202,6 +202,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 					}
 				}
 			}
+			grid.setColumnsVisibility(criteria.getGroupingLevel());
 		};
 	}
 
