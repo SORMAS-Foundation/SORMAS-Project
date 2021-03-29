@@ -136,6 +136,7 @@ public class ContactsView extends AbstractView {
 			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
 				? new ContactGridDetailed(criteria, getClass())
 				: new ContactGrid(criteria, getClass());
+			((AbstractContactGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());

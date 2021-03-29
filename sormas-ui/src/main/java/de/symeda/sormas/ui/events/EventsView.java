@@ -125,6 +125,7 @@ public class EventsView extends AbstractView {
 
 		if (isDefaultViewType()) {
 			grid = new EventGrid(criteria, getClass());
+			((EventGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 		} else {
 			grid = new EventActionsGrid(criteria, getClass());
@@ -266,15 +267,14 @@ public class EventsView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
-				viewConfiguration.setInEagerMode(true);
+				ViewModelProviders.of(EventsView.class).get(EventsViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				((EventGrid) grid).setEagerDataProvider();
 				((EventGrid) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(EventsView.class).get(EventsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(criteria);
@@ -483,9 +483,9 @@ public class EventsView extends AbstractView {
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,
 						selectedItem -> {
-						ControllerProvider.getEventController()
-							.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}));
+							ControllerProvider.getEventController()
+								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");
