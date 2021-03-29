@@ -36,6 +36,8 @@ For bugs without security implications, change and feature requests, please [cre
 ### Which Browsers and Android Versions Are Supported?
 SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11; see <https://vaadin.com/faq>).
 
+Making use of the SORMAS web application through a mobile device web browser is possible and acceptable also in countries that are subject to the General Data Protection Regulation (GDPR) as enforced by the European Union. However, in such countries that are subject to the GDPR, the Android application (.apk file) for SORMAS should not be used on mobile devices until further notice.
+
 ### Is there a ReST API documentation?
 Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation (e.g. <https://editor.swagger.io/>).
 <br/>
