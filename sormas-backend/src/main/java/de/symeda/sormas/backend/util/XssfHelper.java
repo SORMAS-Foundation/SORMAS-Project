@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.api.utils;
+package de.symeda.sormas.backend.util;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -20,6 +20,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFTable;
 import org.apache.poi.xssf.usermodel.XSSFTableStyleInfo;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import de.symeda.sormas.api.utils.InfoProvider;
 
 public final class XssfHelper {
 

@@ -13,14 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.user;
+package de.symeda.sormas.backend.user;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -34,23 +43,46 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.XssfHelper;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRightsFacade;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.util.XssfHelper;
 
-public class UserRightsDocumentGenerator {
+@Stateless(name = "UserRightsFacade")
+public class UserRightsFacadeEjb implements UserRightsFacade {
 
-	public static void generate(OutputStream outStream) throws IOException {
-		generate(FacadeProvider.getUserRoleConfigFacade().getAllAsMap(), outStream);
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	@Override
+	public String generateUserRightsDocument(boolean withDbOverrides) throws IOException {
+		Path documentPath = generateUserRightsDocumentTempPath();
+
+		if (Files.exists(documentPath)) {
+			throw new IOException("File already exists: " + documentPath);
+		}
+
+		try (OutputStream fos = Files.newOutputStream(documentPath)) {
+			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getAllAsMap() : new HashMap<>(0), fos);
+		} catch (IOException e) {
+			Files.deleteIfExists(documentPath);
+			throw e;
+		}
+
+		return documentPath.toString();
 	}
 
-	public static void generateDefault(OutputStream outStream) throws IOException {
-		generate(new HashMap<UserRole, Set<UserRight>>(0), outStream);
-	}
-
-	private static void generate(Map<UserRole, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
+	private void generateUserRightsDocument(Map<UserRole, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Create User Rights sheet
@@ -153,5 +185,20 @@ public class UserRightsDocumentGenerator {
 
 		workbook.write(outStream);
 		workbook.close();
+	}
+
+	private Path generateUserRightsDocumentTempPath() {
+
+		Path path = Paths.get(configFacade.getTempFilesPath());
+		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_userrights_" + DateHelper.formatDateForExport(new Date()) + "_"
+			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
+
+		return path.resolve(fileName);
+	}
+
+	@LocalBean
+	@Stateless
+	public static class UserRightsFacadeEjbLocal extends UserRightsFacadeEjb {
+
 	}
 }

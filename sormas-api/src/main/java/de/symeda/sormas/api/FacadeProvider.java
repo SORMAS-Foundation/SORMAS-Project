@@ -86,6 +86,7 @@ import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
@@ -410,6 +411,10 @@ public class FacadeProvider {
 
 	public static I18nFacade getI18nFacade() {
 		return get().lookupEjbRemote(I18nFacade.class);
+	}
+
+	public static UserRightsFacade getUserRightsFacade() {
+		return get().lookupEjbRemote(UserRightsFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

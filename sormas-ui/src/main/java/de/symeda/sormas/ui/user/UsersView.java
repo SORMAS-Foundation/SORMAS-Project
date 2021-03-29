@@ -17,14 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -42,7 +50,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRightsDocumentGenerator;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -120,7 +127,19 @@ public class UsersView extends AbstractView {
 			Button exportUserRightsButton =
 				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
-			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream(UserRightsDocumentGenerator::generate, (e) -> {
+			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+				try {
+					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
+					IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+				} catch (IOException e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					new Notification(
+						I18nProperties.getString(Strings.headingExportUserRightsFailed),
+						I18nProperties.getString(Strings.messageUserRightsExportFailed),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}, (e) -> {
 			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
 
 			addHeaderComponent(exportUserRightsButton);

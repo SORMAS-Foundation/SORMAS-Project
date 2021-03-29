@@ -381,6 +381,7 @@ public interface Strings {
 	String headingEventsSentToExternalSurveillanceTool = "headingEventsSentToExternalSurveillanceTool";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
+	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
@@ -883,6 +884,7 @@ public interface Strings {
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	String messageUploadSuccessful = "messageUploadSuccessful";
+	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";
 	String messageUserSyncCanceledErrors = "messageUserSyncCanceledErrors";

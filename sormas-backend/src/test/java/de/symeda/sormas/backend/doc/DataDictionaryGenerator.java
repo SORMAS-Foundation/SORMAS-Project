@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.doc;
+package de.symeda.sormas.backend.doc;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,8 +77,8 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.XssfHelper;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.backend.util.XssfHelper;
 
 /**
  * Intentionally named *Generator because we don't want Maven to execute this
@@ -121,7 +121,7 @@ public class DataDictionaryGenerator {
 
 		XssfHelper.addAboutSheet(workbook);
 
-		String filePath = "src/main/resources/doc/SORMAS_Data_Dictionary.xlsx";
+		String filePath = "../sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx";
 		try (OutputStream fileOut = new FileOutputStream(filePath)) {
 			workbook.write(fileOut);
 		}
