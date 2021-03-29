@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -73,6 +72,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -344,11 +344,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SCREENING_TYPE);
 
 		FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				CaseDataDto.SCREENING_TYPE,
-				CaseDataDto.CASE_IDENTIFICATION_SOURCE,
-				Collections.singletonList(CaseIdentificationSource.SCREENING),
-				true);
+			getFieldGroup(),
+			CaseDataDto.SCREENING_TYPE,
+			CaseDataDto.CASE_IDENTIFICATION_SOURCE,
+			Collections.singletonList(CaseIdentificationSource.SCREENING),
+			true);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
 		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
@@ -393,12 +393,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.NOT_A_CASE_REASON_DETAILS, TextField.class);
 
 			FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					Arrays.asList(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
-							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER),
-					CaseDataDto.CASE_CLASSIFICATION,
-					CaseClassification.NO_CASE,
-					true);
+				getFieldGroup(),
+				Arrays.asList(
+					CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST,
+					CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
+					CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN,
+					CaseDataDto.NOT_A_CASE_REASON_OTHER),
+				CaseDataDto.CASE_CLASSIFICATION,
+				CaseClassification.NO_CASE,
+				true);
 
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.NOT_A_CASE_REASON_DETAILS, CaseDataDto.NOT_A_CASE_REASON_OTHER, true, true);
 		} else {
@@ -418,17 +421,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			boolean extendedClassificationMulti = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassificationMulti(disease);
 
 			if (extendedClassificationMulti) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					Arrays.asList(
-						CaseDataDto.CLINICAL_CONFIRMATION,
-						CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
-						CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION),
-					CaseDataDto.CASE_CLASSIFICATION,
-					CaseClassification.CONFIRMED,
-					true);
 				caseConfirmationBasisCombo.setVisible(false);
-
 			} else {
 				caseConfirmationBasisCombo.addValueChangeListener(field -> {
 					clinicalConfirmationCombo.setValue(null);
