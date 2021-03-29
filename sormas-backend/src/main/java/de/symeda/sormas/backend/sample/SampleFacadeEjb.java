@@ -90,7 +90,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
@@ -99,8 +98,10 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.labmessage.LabMessage;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -123,7 +124,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
-	public static final String CONTACT_CASE_REGION = "contactCaseRegion";
 	public static final String CONTACT_CASE_DISTRICT = "contactCaseDistrict";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
@@ -141,7 +141,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private PathogenTestService pathogenTestService;
+	private LabMessageService labMessageService;
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
@@ -161,8 +161,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private MessagingService messagingService;
 	@EJB
-	private LocationService locationService;
-	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
@@ -172,8 +170,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
@@ -376,6 +372,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<Location, District> eventDistrict = joins.getEventDistrict();
 
+		final Join<Sample, LabMessage> labMessage = joins.getLabMessage();
+
 		Expression<Object> diseaseSelect = cb.selectCase()
 			.when(cb.isNotNull(caze), caze.get(Case.DISEASE))
 			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE)).otherwise(event.get(Event.DISEASE)));
@@ -400,6 +398,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				labMessage.get(LabMessage.UUID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SHIPPED),
 				sample.get(Sample.SHIPMENT_DATE),
@@ -491,6 +490,9 @@ public class SampleFacadeEjb implements SampleFacade {
 					break;
 				case SampleIndexDto.LAB:
 					expression = joins.getLab().get(Facility.NAME);
+					break;
+				case SampleIndexDto.SOURCE_LAB_MESSAGE:
+					expression = joins.getLabMessage().get(LabMessage.UUID);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -856,6 +858,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
 		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
+		target.setSourceLabMessage(labMessageService.getByReferenceDto(source.getSourceLabMessage()));
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
@@ -993,6 +996,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
 		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
+		target.setSourceLabMessage(LabMessageFacadeEjb.toReferenceDto(source.getSourceLabMessage()));
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
@@ -1038,8 +1042,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 
-		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new SampleReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {

@@ -227,6 +227,7 @@ public class LabMessageController {
 	private SampleSimilarityCriteria createSampleCriteria(LabMessageDto labMessageDto) {
 		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
 		sampleCriteria.setLabSampleId(labMessageDto.getLabSampleId());
+		sampleCriteria.setSourceLabMessage(labMessageDto.toReferenceDto());
 		sampleCriteria.setSampleDateTime(labMessageDto.getSampleDateTime());
 		sampleCriteria.setSampleMaterial(labMessageDto.getSampleMaterial());
 		return sampleCriteria;
@@ -575,6 +576,7 @@ public class LabMessageController {
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getTestLabName());
+		sampleDto.setSourceLabMessage(labMessageDto.toReferenceDto());
 	}
 
 	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {

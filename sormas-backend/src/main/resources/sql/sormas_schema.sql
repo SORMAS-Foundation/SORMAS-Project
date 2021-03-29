@@ -7106,4 +7106,11 @@ ALTER TABLE populationdata ADD COLUMN community_id bigint;
 ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
 ALTER TABLE community ADD COLUMN growthRate real;
 INSERT INTO schema_version (version_number, comment) VALUES (357, 'Add Community reference to PopulationData entity #4271');
+
+-- 2021-03-26 [DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853
+ALTER TABLE samples ADD COLUMN sourcelabmessage_id BIGINT;
+ALTER TABLE samples ADD CONSTRAINT fk_sample_source_lab_message FOREIGN KEY(sourcelabmessage_id) REFERENCES labmessage(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE samples_history ADD COLUMN sourcelabmessage_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (357, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 -- *** Insert new sql commands BEFORE this line ***

@@ -27,6 +27,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -41,6 +42,9 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	private Join<Sample, Sample> referredSample;
 	private Join<Sample, Facility> lab;
 	private Join<Sample, Case> caze;
+	private Join<Sample, EventParticipant> eventParticipant;
+	private Join<Sample, Contact> contact;
+	private Join<Sample, LabMessage> labMessage;
 	private Join<Case, Person> casePerson;
 	private Join<Case, User> caseReportingUser;
 	private Join<Case, Region> caseRegion;
@@ -48,34 +52,32 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	private Join<Case, Community> caseCommunity;
 	private Join<Case, Facility> caseFacility;
 	private Join<Case, PointOfEntry> casePointOfEntry;
-	private Join<Sample, Contact> contact;
-	private Join<Contact, Person> contactPerson;
-	private Join<Contact, User> contactReportingUser;
-	private Join<Contact, Region> contactRegion;
-	private Join<Contact, District> contactDistrict;
-	private Join<Contact, Community> contactCommunity;
-	private Join<Contact, Case> contactCase;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
 	private Join<Case, District> contactCaseDistrict;
 	private Join<Case, Community> contactCaseCommunity;
 	private Join<Case, Facility> contactCaseHealthFacility;
 	private Join<Case, PointOfEntry> contactCasePointOfEntry;
+	private Join<Contact, Person> contactPerson;
+	private Join<Contact, User> contactReportingUser;
+	private Join<Contact, Region> contactRegion;
+	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Community> contactCommunity;
+	private Join<Contact, Case> contactCase;
 	private Join<Person, Location> casePersonAddress;
+	private Join<Person, Location> contactPersonAddress;
 	private Join<Location, Region> casePersonAddressRegion;
 	private Join<Location, District> casePersonAddressDistrict;
 	private Join<Location, Community> casePersonAddressCommunity;
-	private Join<Person, Location> contactPersonAddress;
 	private Join<Location, Region> contactPersonAddressRegion;
 	private Join<Location, District> contactPersonAddressDistrict;
 	private Join<Location, Community> contactPersonAddressCommunity;
-	private Join<Sample, EventParticipant> eventParticipant;
-	private Join<EventParticipant, Person> eventParticipantPerson;
-	private Join<EventParticipant, Event> event;
-	private Join<Event, Location> eventLocation;
 	private Join<Location, Region> eventRegion;
 	private Join<Location, District> eventDistrict;
 	private Join<Location, Community> eventCommunity;
+	private Join<EventParticipant, Person> eventParticipantPerson;
+	private Join<EventParticipant, Event> event;
+	private Join<Event, Location> eventLocation;
 	private Join<Event, User> eventReportingUser;
 	private Join<Event, User> eventResponsibleUser;
 
@@ -430,5 +432,13 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 
 	public void setContactPersonAddressCommunity(Join<Location, Community> contactPersonAddressCommunity) {
 		this.contactPersonAddressCommunity = contactPersonAddressCommunity;
+	}
+
+	public Join<Sample, LabMessage> getLabMessage() {
+		return getOrCreate(labMessage, Sample.SOURCE_LAB_MESSAGE, JoinType.LEFT, this::setLabMessage);
+	}
+
+	public void setLabMessage(Join<Sample, LabMessage> labMessage) {
+		this.labMessage = labMessage;
 	}
 }

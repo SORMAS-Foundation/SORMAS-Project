@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -57,7 +58,6 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
-	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";
@@ -74,6 +74,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	private ContactReferenceDto associatedContact;
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String labSampleID;
+	private LabMessageReferenceDto sourceLabMessage;
 	private String fieldSampleID;
 	@Required
 	private Date sampleDateTime;
@@ -161,6 +162,14 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
+	}
+
+	public LabMessageReferenceDto getSourceLabMessage() {
+		return sourceLabMessage;
+	}
+
+	public void setSourceLabMessage(LabMessageReferenceDto sourceLabMessage) {
+		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	public String getFieldSampleID() {

@@ -50,6 +50,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -479,6 +480,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id");
+			s.setSourceLabMessage(new LabMessageReferenceDto("uuid1"));
 			s.setSampleDateTime(sampleDateTime1);
 			s.setSampleMaterial(SampleMaterial.BLOOD);
 		});
@@ -486,6 +488,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date sampleDateTime2 = DateHelper.parseDate("08.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id_2");
+			s.setSourceLabMessage(new LabMessageReferenceDto("uuid2"));
 			s.setSampleDateTime(sampleDateTime2);
 			s.setSampleMaterial(SampleMaterial.BLOOD);
 		});
@@ -503,15 +506,17 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		criteria.caze(caze.toReference());
 
 		criteria.setLabSampleId("case_sample_id");
+		criteria.setSourceLabMessage(new LabMessageReferenceDto("uuid1"));
 		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(1));
 
 		// should return all samples for unknown lab sample id and missing date and material
 		criteria.setLabSampleId("unknown_id");
+		criteria.setSourceLabMessage(new LabMessageReferenceDto("uuid3"));
 		similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(2));
 
-		criteria.setLabSampleId(null);
+		criteria.setSourceLabMessage(null);
 		criteria.setSampleMaterial(SampleMaterial.BLOOD);
 
 		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime2, 1));

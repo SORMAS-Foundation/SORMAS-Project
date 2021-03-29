@@ -325,4 +325,8 @@ public class LabMessageDto extends EntityDto {
 		labMessage.setUuid(DataHelper.createUuid());
 		return labMessage;
 	}
+
+	public LabMessageReferenceDto toReferenceDto() {
+		return new LabMessageReferenceDto(getUuid());
+	}
 }
