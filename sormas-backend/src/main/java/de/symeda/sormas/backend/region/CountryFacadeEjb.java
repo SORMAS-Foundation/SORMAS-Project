@@ -85,7 +85,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
 		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<CountryReferenceDto> getAllActiveByContinent(String uuid) {
 		Continent continent = continentService.getByUuid(uuid);
@@ -100,12 +100,12 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
-		Join<Object, Object> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
+		Join<Country, Subcontinent> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {

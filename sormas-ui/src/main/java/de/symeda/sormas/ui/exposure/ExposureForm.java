@@ -324,7 +324,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
-		locationForm.setContinentFieldsVisible(true, true);
+		locationForm.setContinentFieldsVisibility();
 	}
 
 	private void setUpRequirements() {

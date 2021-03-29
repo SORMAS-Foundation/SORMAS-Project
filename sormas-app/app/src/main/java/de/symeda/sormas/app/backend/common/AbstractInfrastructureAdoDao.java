@@ -1,13 +1,13 @@
 package de.symeda.sormas.app.backend.common;
 
-import java.sql.SQLException;
-import java.util.List;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.List;
 
 public abstract class AbstractInfrastructureAdoDao<ADO extends InfrastructureAdo> extends AbstractAdoDao<ADO> {
 
@@ -51,4 +51,17 @@ public abstract class AbstractInfrastructureAdoDao<ADO extends InfrastructureAdo
 			throw new RuntimeException(e);
 		}
 	}
+
+	public long countOfActive() {
+		try {
+			QueryBuilder<ADO, Long> builder = queryBuilder();
+			Where<ADO, Long> where = builder.where();
+			where.and(where.eq(AbstractDomainObject.SNAPSHOT, false), where.eq(InfrastructureAdo.ARCHIVED, false));
+			return builder.countOf();
+		} catch (SQLException | IllegalArgumentException e) {
+			Log.e(getTableName(), "Could not perform queryForEq");
+			throw new RuntimeException(e);
+		}
+	}
+
 }
