@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.campaign.statistics;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +44,7 @@ public class CampaignStatisticsService {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
-		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new HashMap<>();
+		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new LinkedHashMap<>();
 		((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).forEach(result -> {
 			CampaignStatisticsGroupingDto campaignStatisticsGroupingDto = new CampaignStatisticsGroupingDto(
 				(String) result[1],
@@ -286,7 +286,6 @@ public class CampaignStatisticsService {
 		if (shouldIncludeCommunity(groupingLevel)) {
 			orderByFilter.append(", ").append(Community.TABLE_NAME).append(".").append(Community.NAME);
 		}
-		orderByFilter.append(buildJsonOrderByExpression());
 
 		return orderByFilter.toString();
 	}
@@ -357,9 +356,5 @@ public class CampaignStatisticsService {
 			.append(CampaignFormElement.TYPE)
 			.append("'")
 			.toString();
-	}
-
-	private String buildJsonOrderByExpression() {
-		return new StringBuilder().append(", jsonData->>'").append(CampaignFormElement.ID).append("'").toString();
 	}
 }
