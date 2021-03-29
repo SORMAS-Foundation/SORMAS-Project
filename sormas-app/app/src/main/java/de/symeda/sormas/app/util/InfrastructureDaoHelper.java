@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,6 +47,10 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 public final class InfrastructureDaoHelper {
 
@@ -296,6 +296,10 @@ public final class InfrastructureDaoHelper {
 					newCountries.add(countryItem);
 				}
 				countryField.setSpinnerData(newCountries, countryField.getValue());
+
+				continentField.unregisterListener(continentValueChangeListener);
+				continentField.setValue(selectedSubcontinent.getContinent());
+				continentField.registerListener(continentValueChangeListener);
 			} else {
 				Continent continentFieldValue = (Continent) continentField.getValue();
 				if (continentFieldValue != null) {
@@ -303,11 +307,6 @@ public final class InfrastructureDaoHelper {
 				} else {
 					countryField.setSpinnerData(loadCountries(), null);
 				}
-			}
-			if (selectedSubcontinent != null) {
-				continentField.unregisterListener(continentValueChangeListener);
-				continentField.setValue(selectedSubcontinent.getContinent());
-				continentField.registerListener(continentValueChangeListener);
 			}
 		};
 		subcontinentField.initializeSpinner(subcontinents, subcontinentValueChangeListener);
@@ -323,12 +322,12 @@ public final class InfrastructureDaoHelper {
 			regionField.setSpinnerData(newRegions, regionField.getValue());
 			if (selectedCountry != null) {
 				final Subcontinent subcontinent = selectedCountry.getSubcontinent();
-				if (subcontinentField.getValue() == null && subcontinent != null) {
+				if (subcontinent != null) {
 					subcontinentField.unregisterListener(subcontinentValueChangeListener);
 					subcontinentField.setValue(subcontinent);
 					subcontinentField.registerListener(subcontinentValueChangeListener);
 				}
-				if (continentField.getValue() == null && !(subcontinent == null || subcontinent.getContinent() == null)) {
+				if (!(subcontinent == null || subcontinent.getContinent() == null)) {
 					continentField.unregisterListener(continentValueChangeListener);
 					continentField.setValue(subcontinent != null ? subcontinent.getContinent() : null);
 					continentField.registerListener(continentValueChangeListener);
