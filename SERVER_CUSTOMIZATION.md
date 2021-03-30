@@ -134,6 +134,7 @@ The following features are currently configurable:
 * **Case Follow-Up** `CASE_FOLLOWUP`: Enables the contact follow-up module for cases as well to allow a more detailed daily documentation of symptoms.
 * **Line Listing** `LINE_LISTING`: Whether or not using line listing for case entry is enabled in the specified jurisdiction for the specified disease. Configurable from the UI, no database interaction needed.
 * **Documents** `DOCUMENTS`: Enables document storage.
+* **GDPR Popup** `GDPR_CONSENT_POPUP`: Enables a popup which informs new users about the General Data Protection Regulation (GDPR) of the European Union
 
 ## Proxy Settings
 Some SORMAS integrations support proxy settings:

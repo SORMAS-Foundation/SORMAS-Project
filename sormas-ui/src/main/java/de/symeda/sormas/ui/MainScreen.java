@@ -213,7 +213,7 @@ public class MainScreen extends HorizontalLayout {
 		// Add GDPR window
 		// possible to desactivate it with check
 		UserDto user = UserProvider.getCurrent().getUser();
-		if (!user.isHasConsentedToGdpr()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
 			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);
