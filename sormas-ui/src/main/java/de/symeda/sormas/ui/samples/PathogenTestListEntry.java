@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -44,6 +45,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	private final PathogenTestDto pathogenTest;
 	private Button editButton;
+	private Button sourceSampleButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
@@ -127,6 +129,24 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 		editButton.addClickListener(editClickListener);
 	}
+
+	public void addSourceSampleListener(ClickListener sourceSampleClickListener) {
+		if (sourceSampleButton == null) {
+			sourceSampleButton = ButtonHelper.createIconButtonWithCaption(
+					"see-source-sample-" + pathogenTest.getUuid(),
+					null,
+					VaadinIcons.EYE,
+					sourceSampleClickListener,
+					ValoTheme.BUTTON_LINK,
+					CssStyles.BUTTON_COMPACT);
+
+			addComponent(sourceSampleButton);
+			setComponentAlignment(sourceSampleButton, Alignment.TOP_RIGHT);
+			setExpandRatio(sourceSampleButton, 0);
+			sourceSampleButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
+		}
+	}
+
 
 	public PathogenTestDto getPathogenTest() {
 		return pathogenTest;

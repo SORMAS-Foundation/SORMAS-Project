@@ -28,6 +28,7 @@ import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -73,6 +74,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			addEditButton(pathogenTest, listEntry);
+			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
 		}
 	}
@@ -87,6 +89,15 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 				}
 			});
+		}
+	}
+
+	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
+		LabMessageReferenceDto labMessage = listEntry.getPathogenTest().getSourceLabMessage();
+		if (labMessage != null) {
+			listEntry.addSourceSampleListener(
+					(ClickListener) event -> ControllerProvider.getLabMessageController().showLabMessage(labMessage.getUuid(), PathogenTestList.this::reload)
+			);
 		}
 	}
 }
