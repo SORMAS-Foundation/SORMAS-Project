@@ -139,6 +139,7 @@ The following features are currently configurable:
 * **Notifications related to confirmed cases of event participants** `EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS`: Enables email and SMS notifications sent to surveillance officers of events when the case of an event participant is confirmed
 * **Other notifications** `OTHER_NOTIFICATIONS`: Enables other email and SMS notifications (other than those impacted by `TASK_NOTIFICATIONS` and `EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS`)
 * **Event groups** `EVENT_GROUPS`: Enables Event Groups management.
+* **Event groups modification notifications** `EVENT_GROUPS_MODIFICATION_NOTIFICATIONS`: Enables Event Groups notifications fired when creating a new Event Group or when adding or removing an Event from an Event Group.
 
 ## Proxy Settings
 Some SORMAS integrations support proxy settings:

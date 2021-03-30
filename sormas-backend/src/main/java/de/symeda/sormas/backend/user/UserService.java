@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -52,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -293,6 +295,21 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public Map<String, User> getAllByEventUuids(List<String> eventUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
+
+		cq.where(cb.and(createDefaultFilter(cb, responsibleUserJoin), eventRoot.get(Event.UUID).in(eventUuids)));
+		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
+
+		cq.orderBy(cb.asc(eventRoot.get(Event.UUID)));
+
+		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1]));
 	}
 
 	public boolean isLoginUnique(String uuid, String userName) {

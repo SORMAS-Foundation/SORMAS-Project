@@ -60,4 +60,10 @@ public interface EventGroupFacade {
     void archiveOrDearchiveEventGroup(String uuid, boolean archive);
 
     List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
+
+    void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+
+    void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+
+    void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 }

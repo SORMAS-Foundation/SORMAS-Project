@@ -72,6 +72,9 @@ public class MessagingService {
 	public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
 	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
 	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
+	public static final String CONTENT_EVENT_GROUP_CREATED = "notificationEventGroupCreated";
+	public static final String CONTENT_EVENT_ADDED_TO_EVENT_GROUP = "notificationEventAddedToEventGroup";
+	public static final String CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP = "notificationEventRemovedFromEventGroup";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

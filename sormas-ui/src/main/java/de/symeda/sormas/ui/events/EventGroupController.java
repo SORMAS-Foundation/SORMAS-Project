@@ -35,6 +35,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventGroupDto;
+import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -84,6 +85,7 @@ public class EventGroupController {
 			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
 			if (selectedEventGroup != null) {
 				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
+				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(selectedEventGroup.toReference(), eventReferences);
 
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 
@@ -117,6 +119,7 @@ public class EventGroupController {
 			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
 			if (selectedEventGroup != null) {
 				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
+				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(selectedEventGroup.toReference(), eventReferences);
 
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 
@@ -150,8 +153,10 @@ public class EventGroupController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				EventGroupDto dto = createForm.getValue();
-				dto = FacadeProvider.getEventGroupFacade().saveEventGroup(dto);
-				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, dto.toReference());
+				EventGroupFacade eventGroupFacade = FacadeProvider.getEventGroupFacade();
+				dto = eventGroupFacade.saveEventGroup(dto);
+				eventGroupFacade.linkEventsToGroup(eventReferences, dto.toReference());
+				eventGroupFacade.notifyEventEventGroupCreated(dto.toReference(), eventReferences);
 				Notification.show(I18nProperties.getString(Strings.messageEventGroupCreated), Type.WARNING_MESSAGE);
 
 				if (callback != null) {
@@ -167,6 +172,7 @@ public class EventGroupController {
 
 	public void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
 		FacadeProvider.getEventGroupFacade().unlinkEventGroup(eventReference, eventGroupReference);
+		FacadeProvider.getEventGroupFacade().notifyEventRemovedFromEventGroup(eventGroupReference, Collections.singletonList(eventReference));
 
 		Notification.show(I18nProperties.getString(Strings.messageEventToEventGroupUnlinked), Type.TRAY_NOTIFICATION);
 	}

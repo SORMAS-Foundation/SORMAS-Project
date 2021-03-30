@@ -935,7 +935,11 @@ public interface Strings {
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
+	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
+	String notificationEventGroupCreated = "notificationEventGroupCreated";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
+	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
+	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
 	String notificationLabResultArrived = "notificationLabResultArrived";
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";
