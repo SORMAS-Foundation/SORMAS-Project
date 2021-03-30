@@ -643,6 +643,7 @@ public class LabMessageController {
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
 		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
+		pathogenTestDto.setSourceLabMessage(labMessageDto.toReferenceDto());
 		return pathogenTestDto;
 	}
 
@@ -663,7 +664,7 @@ public class LabMessageController {
 
 	private void showFormWithLabMessage(
 		LabMessageDto labMessageDto,
-		CommitDiscardWrapperComponent createComponent,
+		CommitDiscardWrapperComponent<? extends Component> createComponent,
 		Window window,
 		String heading,
 		boolean entityCreated) {
@@ -754,7 +755,7 @@ public class LabMessageController {
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");
 	}
 
-	private void addProcessedInMeantimeCheck(CommitDiscardWrapperComponent createComponent, LabMessageDto labMessageDto, boolean entityCreated) {
+	private void addProcessedInMeantimeCheck(CommitDiscardWrapperComponent<? extends Component> createComponent, LabMessageDto labMessageDto, boolean entityCreated) {
 		createComponent.setPrimaryCommitListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
 				createComponent.getCommitButton().setEnabled(false);
