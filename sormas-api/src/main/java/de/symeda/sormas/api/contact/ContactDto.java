@@ -53,7 +53,7 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
@@ -155,16 +155,15 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
-	@Required
+	@NotNull
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private DiseaseVariant diseaseVariant;
 
-	@Required
+	@NotNull
 	private Date reportDateTime;
-
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
@@ -182,10 +181,10 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	@Required
+	@NotNull
 	private boolean multiDayContact;
 	private Date firstContactDate;
-	@Required
+	@NotNull
 	private Date lastContactDate;
 	@HideForCountriesExcept
 	private ContactIdentificationSource contactIdentificationSource;
@@ -208,7 +207,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@Diseases({
 		Disease.CORONAVIRUS })
 	private ContactCategory contactCategory;
-	@Required
+	@NotNull
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -251,7 +250,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
-	@Required
+	@NotNull
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 
@@ -307,10 +306,10 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
-	@Required
+	@NotNull
 	private EpiDataDto epiData;
 	@Valid
-	@Required
+	@NotNull
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown returningTraveler;
 

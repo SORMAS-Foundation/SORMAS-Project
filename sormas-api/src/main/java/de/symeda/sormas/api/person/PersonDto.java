@@ -53,7 +53,7 @@ import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -131,13 +131,13 @@ public class PersonDto extends PseudonymizableDto {
 
 	// Fields are declared in the order they should appear in the import template
 	@Outbreaks
-	@Required
+	@NotNull
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@Outbreaks
-	@Required
+	@NotNull
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

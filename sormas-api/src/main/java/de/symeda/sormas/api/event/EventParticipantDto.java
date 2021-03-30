@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
@@ -58,9 +58,9 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private UserReferenceDto reportingUser;
-	@Required
+	@NotNull
 	private EventReferenceDto event;
-	@Required
+	@NotNull
 	@EmbeddedPersonalData
 	@Valid
 	private PersonDto person;

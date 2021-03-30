@@ -36,7 +36,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -113,7 +113,7 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
-	@Required
+	@NotNull
 	private ExposureType exposureType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)

@@ -77,7 +77,7 @@ import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
@@ -229,7 +229,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
-	@Required
+	@NotNull
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
@@ -250,7 +250,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.RABIES })
 	@Outbreaks
 	private RabiesType rabiesType;
-	@Required
+	@NotNull
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
@@ -260,7 +260,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String epidNumber;
 	@Outbreaks
-	@Required
+	@NotNull
 	private Date reportDate;
 	@Outbreaks
 	private UserReferenceDto reportingUser;
@@ -281,7 +281,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
-	@Required
+	@NotNull
 	private CaseClassification caseClassification;
 	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
@@ -301,7 +301,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	@Outbreaks
-	@Required
+	@NotNull
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;
@@ -324,10 +324,10 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks
-	@Required
+	@NotNull
 	private RegionReferenceDto region;
 	@Outbreaks
-	@Required
+	@NotNull
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData
@@ -337,7 +337,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
-	@Required
+	@NotNull
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;

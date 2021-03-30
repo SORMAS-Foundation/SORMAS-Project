@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 
 @DependingOnFeatureType(featureType = FeatureType.TASK_MANAGEMENT)
 public class TaskDto extends EntityDto {
@@ -71,7 +71,7 @@ public class TaskDto extends EntityDto {
 	public static final String TRAVEL_ENTRY = "travelEntry";
 	public static final String OBSERVER_USERS = "observerUsers";
 
-	@Required
+	@NotNull
 	private TaskContext taskContext;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
@@ -87,10 +87,10 @@ public class TaskDto extends EntityDto {
 	@EmbeddedSensitiveData
 	private TravelEntryReferenceDto travelEntry;
 
-	@Required
+	@NotNull
 	private TaskType taskType;
 	private TaskPriority priority;
-	@Required
+	@NotNull
 	private Date dueDate;
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
@@ -100,7 +100,7 @@ public class TaskDto extends EntityDto {
 	private UserReferenceDto creatorUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String creatorComment;
-	@Required
+	@NotNull
 	private UserReferenceDto assigneeUser;
 	private UserReferenceDto assignedByUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)

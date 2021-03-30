@@ -37,7 +37,7 @@ import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -77,9 +77,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@Required
+	@NotNull
 	private SampleReferenceDto sample;
-	@Required
+	@NotNull
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -88,29 +88,29 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String testedDiseaseVariantDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
-	@Required
+	@NotNull
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testTypeText;
-	@Required
+	@NotNull
 	private Date testDateTime;
-	@Required
+	@NotNull
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
-	@Required
+	@NotNull
 	@SensitiveData
 	private UserReferenceDto labUser;
-	@Required
+	@NotNull
 	private PathogenTestResultType testResult;
-	@Required
+	@NotNull
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String testResultText;
-	@Required
+	@NotNull
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
