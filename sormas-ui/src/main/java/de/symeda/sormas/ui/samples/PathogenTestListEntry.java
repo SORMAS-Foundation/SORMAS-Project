@@ -109,11 +109,11 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		labelLayout.addComponent(labelBottom);
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(ClickListener editClickListener) {
 
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-test-" + rowIndex,
+				"edit-test-" + pathogenTest.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
 				null,

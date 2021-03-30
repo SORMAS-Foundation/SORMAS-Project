@@ -38,10 +38,9 @@ import de.symeda.sormas.ui.utils.PaginationList;
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
-	private SampleReferenceDto sampleRef;
-	private int caseSampleCount;
-	private BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
-	private Supplier<Boolean> createOrEditAllowedCallback;
+	private final SampleReferenceDto sampleRef;
+	private final BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
+	private final Supplier<Boolean> createOrEditAllowedCallback;
 
 	public PathogenTestList(
 		SampleReferenceDto sampleRef,
@@ -71,20 +70,23 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
-		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			PathogenTestDto pathogenTest = displayedEntries.get(i);
+		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-				listEntry.addEditListener(i, (ClickListener) event -> {
-					if (createOrEditAllowedCallback.get()) {
-						ControllerProvider.getPathogenTestController()
-							.edit(pathogenTest, caseSampleCount, PathogenTestList.this::reload, onSavedPathogenTest);
-					} else {
-						Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-					}
-				});
-			}
+			addEditButton(pathogenTest, listEntry);
 			listLayout.addComponent(listEntry);
+		}
+	}
+
+	private void addEditButton(PathogenTestDto pathogenTest, PathogenTestListEntry listEntry) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
+			listEntry.addEditListener((ClickListener) event -> {
+				if (createOrEditAllowedCallback.get()) {
+					ControllerProvider.getPathogenTestController()
+						.edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
+				} else {
+					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+				}
+			});
 		}
 	}
 }
