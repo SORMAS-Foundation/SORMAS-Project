@@ -418,7 +418,7 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			PathogenTestDto testDto = selectField.getValue();
 			if (testDto != null) {
-				editPatogenTest(sampleDto, testDto, caseSampleCount, labMessageDto.getTestedDisease(), labMessageDto);
+				editPathogenTest(sampleDto, testDto, caseSampleCount, labMessageDto.getTestedDisease(), labMessageDto);
 			} else {
 				createPathogenTest(sampleDto, labMessageDto);
 			}
@@ -431,17 +431,13 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreatePathogenTest), false);
 	}
 
-	private void editPatogenTest(SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount, Disease disease, LabMessageDto labMessageDto) {
+	private void editPathogenTest(SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount, Disease disease, LabMessageDto labMessageDto) {
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			if (pathogenTestDto != null
-				&& pathogenTestDto.getTestResult() != null
-				&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
-				&& pathogenTestDto.getTestedDisease() == disease) {
+			if (isValidPathogenTest(disease, pathogenTestDto)) {
 				if (pathogenTestDto.getTestResult() != sampleDto.getPathogenTestResult()) {
-					final SampleCreateForm createForm = new SampleCreateForm();
 					ControllerProvider.getSampleController()
 						.showChangePathogenTestResultWindow(
-							new CommitDiscardWrapperComponent<>(createForm),
+							new CommitDiscardWrapperComponent<>(new SampleCreateForm()),
 							sampleDto.getUuid(),
 							pathogenTestDto.getTestResult(),
 							callback);
@@ -470,6 +466,13 @@ public class LabMessageController {
 			window,
 			I18nProperties.getString(Strings.headingEditPathogenTestResult),
 			false);
+	}
+
+	private boolean isValidPathogenTest(Disease disease, PathogenTestDto pathogenTestDto) {
+		return pathogenTestDto != null
+			&& pathogenTestDto.getTestResult() != null
+			&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
+			&& pathogenTestDto.getTestedDisease() == disease;
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
@@ -594,8 +597,7 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		Window window) {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> {
-			});
+			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> {});
 
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
 		includeTestCheckbox.setValue(Boolean.TRUE);

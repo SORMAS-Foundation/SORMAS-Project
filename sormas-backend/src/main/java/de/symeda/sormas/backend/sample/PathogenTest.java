@@ -29,6 +29,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -49,6 +51,7 @@ public class PathogenTest extends CoreAdo {
 	public static final String TABLE_NAME = "pathogentest";
 
 	public static final String SAMPLE = "sample";
+	public static final String SOURCE_LAB_MESSAGE = "sourceLabMessage";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
@@ -66,6 +69,7 @@ public class PathogenTest extends CoreAdo {
 	public static final String REPORT_DATE = "reportDate";
 
 	private Sample sample;
+	private LabMessage sourceLabMessage;
 	private Disease testedDisease;
 	private String testedDiseaseDetails;
 	private String typingId;
@@ -92,6 +96,16 @@ public class PathogenTest extends CoreAdo {
 
 	public void setSample(Sample sample) {
 		this.sample = sample;
+	}
+
+	@OneToOne
+	@JoinColumn
+	public LabMessage getSourceLabMessage() {
+		return sourceLabMessage;
+	}
+
+	public void setSourceLabMessage(LabMessage sourceLabMessage) {
+		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -150,7 +164,7 @@ public class PathogenTest extends CoreAdo {
 		this.testDateTime = testDateTime;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn
 	public Facility getLab() {
 		return lab;
@@ -169,7 +183,7 @@ public class PathogenTest extends CoreAdo {
 		this.labDetails = labDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn
 	public User getLabUser() {
 		return labUser;

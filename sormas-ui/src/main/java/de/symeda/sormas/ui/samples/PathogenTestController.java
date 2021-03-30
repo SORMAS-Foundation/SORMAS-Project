@@ -180,10 +180,15 @@ public class PathogenTestController {
 				showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
 			}
 		};
-		onSavedPathogenTest.accept(dto, () -> {
+		if (onSavedPathogenTest != null) {
+			onSavedPathogenTest.accept(dto, () -> {
+				confirmCaseCallback.run();
+				caseCloningCallback.run();
+			});
+		} else {
 			confirmCaseCallback.run();
 			caseCloningCallback.run();
-		});
+		}
 	}
 
 	private void handleAssociatedContact(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest, ContactReferenceDto associatedContact) {
@@ -200,7 +205,11 @@ public class PathogenTestController {
 				}
 			}
 		};
-		onSavedPathogenTest.accept(dto, contactConvertToCaseCallback);
+		if (onSavedPathogenTest != null) {
+			onSavedPathogenTest.accept(dto, contactConvertToCaseCallback);
+		} else {
+			contactConvertToCaseCallback.run();
+		}
 	}
 
 	private void handleAssociatedEventParticipant(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest, EventParticipantReferenceDto associatedEventParticipant) {
@@ -211,7 +220,11 @@ public class PathogenTestController {
 				showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease());
 			}
 		};
-		onSavedPathogenTest.accept(dto, eventParticipantConvertToCaseCallback);
+		if (onSavedPathogenTest != null) {
+			onSavedPathogenTest.accept(dto, eventParticipantConvertToCaseCallback);
+		} else {
+			eventParticipantConvertToCaseCallback.run();
+		}
 	}
 
 	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant, Disease testedDisease) {

@@ -37,6 +37,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
+	@EJB
+	private LabMessageService labMessageService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -155,7 +159,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		return pathogenTestService.getDeletedUuidsSince(user, since);
+		return pathogenTestService.getDeletedUuidsSince(since);
 	}
 
 	@Override
@@ -277,6 +281,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		target.setSourceLabMessage(labMessageService.getByReferenceDto(source.getSourceLabMessage()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
@@ -330,6 +335,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setSourceLabMessage(LabMessageFacadeEjb.toReferenceDto(source.getSourceLabMessage()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());

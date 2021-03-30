@@ -172,6 +172,7 @@ public class SampleController {
 		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
 		if (testResult != null) {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
+			pathogenTest.setSourceLabMessage(newSample.getSourceLabMessage());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
 			newSample.setPathogenTestResult(testResult);

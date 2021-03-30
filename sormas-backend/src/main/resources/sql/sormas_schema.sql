@@ -7111,6 +7111,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (357, 'Add Community
 ALTER TABLE samples ADD COLUMN sourcelabmessage_id BIGINT;
 ALTER TABLE samples ADD CONSTRAINT fk_sample_source_lab_message FOREIGN KEY(sourcelabmessage_id) REFERENCES labmessage(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE samples_history ADD COLUMN sourcelabmessage_id BIGINT;
+ALTER TABLE pathogentest ADD COLUMN sourcelabmessage_id BIGINT;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogen_test_source_lab_message FOREIGN KEY(sourcelabmessage_id) REFERENCES labmessage(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE pathogentest_history ADD COLUMN sourcelabmessage_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (357, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 -- *** Insert new sql commands BEFORE this line ***

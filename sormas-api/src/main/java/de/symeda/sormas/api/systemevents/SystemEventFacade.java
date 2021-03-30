@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.systemevents;
 
 import javax.ejb.Remote;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
