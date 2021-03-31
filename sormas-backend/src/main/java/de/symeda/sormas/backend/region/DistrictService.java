@@ -96,9 +96,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(District.NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(District.NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), name.trim());
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
 		}
@@ -117,10 +115,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(District.EXTERNAL_ID)), externalId.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(District.EXTERNAL_ID))), externalId.trim().toLowerCase()));
-
+		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(District.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -161,13 +156,15 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		}
 		if (criteria.getNameEpidLike() != null) {
 			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(District.NAME)), textFilter), cb.like(cb.lower(from.get(District.EPID_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(District.EPID_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
