@@ -169,16 +169,15 @@ public class SamplesView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				sampleListComponent.getBulkOperationsDropdown().setVisible(true);
-				viewConfiguration.setInEagerMode(true);
+				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				sampleListComponent.getSearchField().setEnabled(false);
-				sampleListComponent.getGrid().setEagerDataProvider();
 				sampleListComponent.getGrid().reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				sampleListComponent.getBulkOperationsDropdown().setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				sampleListComponent.getSearchField().setEnabled(true);

@@ -33,6 +33,7 @@ public interface Descriptions {
 	String Contact_region = "Contact.region";
 	String Contact_relationToCase = "Contact.relationToCase";
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
+	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
 	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";

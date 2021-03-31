@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -45,10 +46,14 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -56,6 +61,8 @@ import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.CharsetHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.person.PersonSelectionField;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -426,6 +433,45 @@ public abstract class DataImporter {
 				return true;
 			}
 		}
+		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
+			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);
+			if (subcontinents.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (subcontinents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, subcontinents.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
+			List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getByDefaultName(entry, false);
+			if (countries.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (countries.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, countries.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(ContinentReferenceDto.class)) {
+			List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getByDefaultName(entry, false);
+			if (continents.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (continents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, continents.get(0));
+				return true;
+			}
+		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
 			if (regions.isEmpty()) {
@@ -520,6 +566,46 @@ public abstract class DataImporter {
 		}
 
 		return dataHasImportError;
+	}
+
+	/**
+	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
+	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
+	 */
+	protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+		PersonDto newPerson,
+		Consumer<T> resultConsumer,
+		BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+		String infoText,
+		UI currentUI) {
+		currentUI.accessSynchronously(() -> {
+			PersonSelectionField personSelect = new PersonSelectionField(newPerson, I18nProperties.getString(infoText));
+			personSelect.setWidth(1024, Unit.PIXELS);
+
+			if (personSelect.hasMatches()) {
+				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
+				component.addCommitListener(() -> {
+					SimilarPersonDto person = personSelect.getValue();
+					if (person == null) {
+						resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(createSimilarityResult.apply(person, ImportSimilarityResultOption.PICK));
+					}
+				});
+
+				component.addDiscardListener(() -> resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.SKIP)));
+
+				personSelect.setSelectionChangeCallback((commitAllowed) -> {
+					component.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+
+				personSelect.selectBestMatch();
+			} else {
+				resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.CREATE));
+			}
+		});
 	}
 
 	protected FacilityType getTypeOfFacility(String propertyName, Object currentElement)

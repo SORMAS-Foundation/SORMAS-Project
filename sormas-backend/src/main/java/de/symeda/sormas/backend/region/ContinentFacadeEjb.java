@@ -27,6 +27,8 @@ import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.ContinentIndexDto;
 import de.symeda.sormas.api.region.ContinentReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -40,6 +42,10 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@EJB
 	private ContinentService continentService;
+	@EJB
+	private CountryService countryService;
+	@EJB
+	private SubcontinentService subcontinentService;
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
 		if (entity == null) {
@@ -69,6 +75,18 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
+	public ContinentReferenceDto getBySubcontinent(SubcontinentReferenceDto subcontinentReferenceDto) {
+		return toReferenceDto(subcontinentService.getByUuid(subcontinentReferenceDto.getUuid()).getContinent());
+	}
+
+	@Override
+	public ContinentReferenceDto getByCountry(CountryReferenceDto countryReferenceDto) {
+		final Country country = countryService.getByUuid(countryReferenceDto.getUuid());
+		final Subcontinent subcontinent = country.getSubcontinent();
+		return subcontinent != null ? toReferenceDto(subcontinent.getContinent()) : null;
+	}
+
+	@Override
 	public ContinentDto getByUuid(String uuid) {
 		return toDto(continentService.getByUuid(uuid));
 	}
@@ -90,8 +108,10 @@ public class ContinentFacadeEjb implements ContinentFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case ContinentIndexDto.DISPLAY_NAME:
+					expression = continent.get(Continent.DEFAULT_NAME);
+					break;
 				case ContinentDto.EXTERNAL_ID:
-				case ContinentDto.DEFAULT_NAME:
 					expression = continent.get(sortProperty.propertyName);
 					break;
 				default:
@@ -166,11 +186,25 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public void save(ContinentDto dto) {
+		save(dto, false);
+	}
+
+	@Override
+	public void save(ContinentDto dto, boolean allowMerge) {
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
-		if (continent == null && !continentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
+		if (continent == null) {
+			List<Continent> duplicates = continentService.getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					continent = duplicates.get(0);
+					ContinentDto dtoToMerge = getByUuid(continent.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
+				}
+			}
 		}
 
 		continent = fillOrBuildEntity(dto, continent, true);

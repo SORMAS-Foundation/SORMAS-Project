@@ -46,9 +46,9 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -168,7 +168,7 @@ public class EventImporter extends DataImporter {
 	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
 	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
 	 */
-	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
+	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(() -> {
 			PersonSelectionField personSelect =
 				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
@@ -179,33 +179,31 @@ public class EventImporter extends DataImporter {
 				component.addCommitListener(() -> {
 					SimilarPersonDto person = personSelect.getValue();
 					if (person == null) {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+						resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 					} else {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
+						resultConsumer.accept(new PersonImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
 					}
 				});
 
-				component.addDiscardListener(
-					() -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
+				component.addDiscardListener(() -> resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
 
 				personSelect.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 				Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
-				window.addCloseListener(
-					event -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
+				window.addCloseListener(event -> resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
 
 				personSelect.selectBestMatch();
 			} else {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 			}
 		});
 	}
 
 	private class EventImportConsumer {
 
-		protected EventParticipantImportSimilarityResult result;
+		protected PersonImportSimilarityResult result;
 
-		private void onImportResult(EventParticipantImportSimilarityResult result, EventImportLock LOCK) {
+		private void onImportResult(PersonImportSimilarityResult result, EventImportLock LOCK) {
 			this.result = result;
 			synchronized (LOCK) {
 				LOCK.notify();

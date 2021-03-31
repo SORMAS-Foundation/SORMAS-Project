@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.contact.AbstractContactGrid;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -362,6 +363,11 @@ public class CaseContactsView extends AbstractCaseView {
 			gridLayout.setSpacing(false);
 			gridLayout.setSizeFull();
 			gridLayout.setExpandRatio(grid, 1);
+
+			if (viewConfiguration.isInEagerMode()) {
+				grid.setEagerDataProvider();
+			}
+
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 			setSubComponent(gridLayout);

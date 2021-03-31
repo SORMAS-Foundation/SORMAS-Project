@@ -3,30 +3,19 @@ package de.symeda.sormas.ui.importer;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 
-public class ContactImportSimilarityResult {
+public class ContactImportSimilarityResult extends PersonImportSimilarityResult {
 
-	private final SimilarPersonDto matchingPerson;
 	private final SimilarContactDto matchingContact;
-	private final ImportSimilarityResultOption resultOption;
 
 	public ContactImportSimilarityResult(
 		SimilarPersonDto matchingPerson,
 		SimilarContactDto matchingContact,
 		ImportSimilarityResultOption resultOption) {
-		this.matchingPerson = matchingPerson;
-		this.resultOption = resultOption;
+		super(matchingPerson, resultOption);
 		this.matchingContact = matchingContact;
 	}
 
 	public SimilarContactDto getMatchingContact() {
 		return matchingContact;
-	}
-
-	public SimilarPersonDto getMatchingPerson() {
-		return matchingPerson;
-	}
-
-	public ImportSimilarityResultOption getResultOption() {
-		return resultOption;
 	}
 }

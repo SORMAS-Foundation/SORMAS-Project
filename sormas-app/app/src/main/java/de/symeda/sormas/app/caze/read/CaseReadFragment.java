@@ -47,7 +47,7 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
@@ -66,9 +66,9 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 	private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(CaseDataDto.class, contentBinding.mainContent);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
 		// Vaccination date
@@ -147,28 +147,21 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 	private void updateCaseConfirmationFields(FragmentCaseReadLayoutBinding contentBinding) {
 
-		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			Disease disease = record.getDisease();
-			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
-
-			if (extendedClassification) {
-				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
-				if (extendedClassificationMulti) {
-					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
-				} else {
-					contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
-					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
-					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-					contentBinding.caseDataCaseConfirmationBasis.setVisibility(VISIBLE);
-				}
+		Disease disease = record.getDisease();
+		boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+		if (extendedClassification) {
+			boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+			if (extendedClassificationMulti) {
+				contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
 			} else {
 				contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-				contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
+				contentBinding.caseDataCaseConfirmationBasis
+					.setVisibility(record.getCaseClassification() == CaseClassification.CONFIRMED ? VISIBLE : GONE);
 			}
 		} else {
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);

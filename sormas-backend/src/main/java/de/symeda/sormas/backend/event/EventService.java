@@ -624,6 +624,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(from.get(Event.UUID)), textFilter),
+						cb.like(cb.lower(from.get(Event.EXTERNAL_ID)), textFilter),
+						cb.like(cb.lower(from.get(Event.EXTERNAL_TOKEN)), textFilter),
 						cb.like(cb.lower(from.get(Event.EVENT_TITLE)), textFilter),
 						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter),
 						cb.like(cb.lower(from.get(Event.SRC_FIRST_NAME)), textFilter),

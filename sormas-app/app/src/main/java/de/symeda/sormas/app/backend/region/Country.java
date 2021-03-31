@@ -1,13 +1,13 @@
 package de.symeda.sormas.app.backend.region;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
@@ -22,6 +22,7 @@ public class Country extends InfrastructureAdo {
 
 	public static final String NAME = "name";
 	public static final String ISO_CODE = "isoCode";
+	public static final String SUBCONTINENT = "subcontinent";
 
 	@Column
 	private String name;

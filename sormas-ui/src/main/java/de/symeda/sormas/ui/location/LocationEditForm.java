@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +48,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -58,9 +60,14 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentCriteria;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -84,6 +91,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT, ""),
 			fluidRowLocs(LocationDto.COUNTRY, "", ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
@@ -104,8 +112,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox facilityType;
 	private ComboBox facility;
 	private TextField facilityDetails;
+	private ComboBox continent;
+	private ComboBox subcontinent;
 
 	private boolean districtRequiredOnDefaultCountry;
+	private boolean skipCountryValueChange;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -195,18 +206,23 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		final TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
-		final TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
-		final TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
 		final StringToAngularLocationConverter stringToAngularLocationConverter = new StringToAngularLocationConverter();
 		tfLatitude.setConverter(stringToAngularLocationConverter);
 		tfLongitude.setConverter(stringToAngularLocationConverter);
 		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
+		continent = addInfrastructureField(LocationDto.CONTINENT);
+		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
+
+		continent.setVisible(false);
+		subcontinent.setVisible(false);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -214,6 +230,75 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
 			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
 		}
+
+		ValueChangeListener continentValueListener = e -> {
+			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
+			if (subcontinent.getValue() == null) {
+				FieldHelper.updateItems(
+						country,
+						continentReferenceDto != null
+								? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+								: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+				country.setValue(null);
+			}
+			subcontinent.setValue(null);
+			FieldHelper.updateItems(
+				subcontinent,
+				continentReferenceDto != null
+					? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+					: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
+		};
+
+		ValueChangeListener subContinentValueListener = e -> {
+			SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
+
+			if (subcontinentReferenceDto != null) {
+				continent.removeValueChangeListener(continentValueListener);
+				continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
+				continent.addValueChangeListener(continentValueListener);
+			}
+
+			country.setValue(null);
+
+			ContinentReferenceDto continentValue = (ContinentReferenceDto) continent.getValue();
+			FieldHelper.updateItems(
+				country,
+				subcontinentReferenceDto != null
+					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
+					: continentValue == null
+						? FacadeProvider.getCountryFacade().getAllActiveAsReference()
+						: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
+		};
+
+		continent.addValueChangeListener(continentValueListener);
+		subcontinent.addValueChangeListener(subContinentValueListener);
+		skipCountryValueChange = false;
+		country.addValueChangeListener(e -> {
+			if (!skipCountryValueChange) {
+				CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
+				if (countryDto != null) {
+					final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade().getByCountry(countryDto);
+					final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
+					if (countryContinent != null) {
+						continent.removeValueChangeListener(continentValueListener);
+						skipCountryValueChange = true;
+						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						skipCountryValueChange = false;
+						continent.setValue(countryContinent);
+						continent.addValueChangeListener(continentValueListener);
+					}
+					if (countrySubcontinent != null) {
+						subcontinent.removeValueChangeListener(subContinentValueListener);
+						skipCountryValueChange = true;
+						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
+						skipCountryValueChange = false;
+						subcontinent.setValue(countrySubcontinent);
+						FieldHelper.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						subcontinent.addValueChangeListener(subContinentValueListener);
+					}
+				}
+			}
+		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -355,7 +440,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				}
 			}
 		});
-
+		final List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getAllActiveAsReference();
+		if (continents.isEmpty()) {
+			continent.setVisible(false);
+			continent.clear();
+		} else {
+			continent.addItems(continents);
+		}
+		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
+		if (subcontinents.isEmpty()) {
+			subcontinent.setVisible(false);
+			subcontinent.clear();
+		} else {
+			subcontinent.addItems(subcontinents);
+		}
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 		updateRegionCombo(region, country);
 		country.addValueChangeListener(e -> {
@@ -383,8 +481,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
-		((TextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
-		((TextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
+		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
+		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
 
 	private void setOldFacilityValuesIfPossible(
@@ -503,6 +601,46 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		return HTML_LAYOUT;
 	}
 
+	@Override
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+		field.addValueChangeListener(e -> fireValueChange(false));
+
+		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
+			facilityTypeGroup.clear();
+		}
+	}
+
+	public void setContinentFieldsVisibility() {
+		if (FacadeProvider.getContinentFacade().count(new ContinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+			continent.setVisible(false);
+			continent.clear();
+		} else {
+			continent.setVisible(true);
+		}
+		if (FacadeProvider.getSubcontinentFacade().count(new SubcontinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+			subcontinent.setVisible(false);
+			subcontinent.clear();
+		} else {
+			subcontinent.setVisible(true);
+		}
+	}
+
+	private boolean areFacilityDetailsRequired() {
+		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+	}
+
 	private static class MapPopupView extends PopupView {
 
 		private static final long serialVersionUID = 6119339732442336000L;
@@ -553,30 +691,5 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		public void setCoordinates(GeoLatLon coordinates) {
 			this.coordinates = coordinates;
 		}
-	}
-
-	@Override
-	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
-		field.addValueChangeListener(e -> fireValueChange(false));
-
-		return super.addFieldToLayout(layout, propertyId, field);
-	}
-
-	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
-		facility.setVisible(visible);
-		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
-		facilityType.setVisible(visible);
-		facilityTypeGroup.setVisible(visible);
-
-		if (!visible && clearOnHidden) {
-			facility.clear();
-			facilityDetails.clear();
-			facilityType.clear();
-			facilityTypeGroup.clear();
-		}
-	}
-
-	private boolean areFacilityDetailsRequired() {
-		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 	}
 }

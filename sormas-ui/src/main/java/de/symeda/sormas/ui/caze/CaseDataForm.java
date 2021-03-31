@@ -113,6 +113,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -420,17 +421,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			boolean extendedClassificationMulti = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassificationMulti(disease);
 
 			if (extendedClassificationMulti) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					Arrays.asList(
-						CaseDataDto.CLINICAL_CONFIRMATION,
-						CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
-						CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION),
-					CaseDataDto.CASE_CLASSIFICATION,
-					CaseClassification.CONFIRMED,
-					true);
 				caseConfirmationBasisCombo.setVisible(false);
-
 			} else {
 				caseConfirmationBasisCombo.addValueChangeListener(field -> {
 					clinicalConfirmationCombo.setValue(null);
@@ -568,7 +559,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -688,9 +679,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
-		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
+		AccessibleTextField tfReportLat = addField(CaseDataDto.REPORT_LAT, AccessibleTextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
-		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
+		AccessibleTextField tfReportLon = addField(CaseDataDto.REPORT_LON, AccessibleTextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 

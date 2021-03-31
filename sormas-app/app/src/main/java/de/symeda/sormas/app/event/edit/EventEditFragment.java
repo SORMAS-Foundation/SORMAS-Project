@@ -171,7 +171,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
-		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
+		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true, getFieldVisibilityCheckers());
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
 		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
