@@ -50,8 +50,6 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 			query -> FacadeProvider.getCampaignStatisticsFacade()
 				.getCampaignStatistics(
 					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
 					query.getSortOrders()
 						.stream()
 						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))

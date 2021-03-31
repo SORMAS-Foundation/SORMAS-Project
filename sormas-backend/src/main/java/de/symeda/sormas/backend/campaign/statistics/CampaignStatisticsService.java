@@ -36,11 +36,7 @@ public class CampaignStatisticsService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	public List<CampaignStatisticsDto> getCampaignStatistics(
-		CampaignStatisticsCriteria criteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties) {
+	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
 
 		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria, sortProperties));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
