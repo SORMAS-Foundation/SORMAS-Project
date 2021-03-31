@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -26,21 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -108,6 +108,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.backend.person.PersonContactDetailDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.region.Area;
+import de.symeda.sormas.app.backend.region.AreaDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
 import de.symeda.sormas.app.backend.region.Continent;
@@ -166,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 294;
+	public static final int DATABASE_VERSION = 295;
 
 	private static DatabaseHelper instance = null;
 
@@ -251,6 +253,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Subcontinent.class);
 				TableUtils.clearTable(connectionSource, Country.class);
 				TableUtils.clearTable(connectionSource, Region.class);
+				TableUtils.clearTable(connectionSource, Area.class);
 				TableUtils.clearTable(connectionSource, Campaign.class);
 				TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
 
@@ -280,6 +283,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Continent.class);
 			TableUtils.createTable(connectionSource, Subcontinent.class);
 			TableUtils.createTable(connectionSource, Country.class);
+			TableUtils.createTable(connectionSource, Area.class);
 			TableUtils.createTable(connectionSource, Region.class);
 			TableUtils.createTable(connectionSource, District.class);
 			TableUtils.createTable(connectionSource, Community.class);
@@ -2117,6 +2121,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN continent_id BIGINT REFERENCES continent(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
 
+			case 294:
+				currentVersion = 294;
+				TableUtils.createTable(connectionSource, Area.class);
+				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -2476,6 +2484,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Continent.class, true);
 			TableUtils.dropTable(connectionSource, Subcontinent.class, true);
 			TableUtils.dropTable(connectionSource, Country.class, true);
+			TableUtils.dropTable(connectionSource, Area.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
 			TableUtils.dropTable(connectionSource, District.class, true);
 			TableUtils.dropTable(connectionSource, Community.class, true);
@@ -2557,6 +2566,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new SubcontinentDao((Dao<Subcontinent, Long>) innerDao);
 				} else if (type.equals(Country.class)) {
 					dao = (AbstractAdoDao<ADO>) new CountryDao((Dao<Country, Long>) innerDao);
+				} else if (type.equals(Area.class)) {
+					dao = (AbstractAdoDao<ADO>) new AreaDao((Dao<Area, Long>) innerDao);
 				} else if (type.equals(Region.class)) {
 					dao = (AbstractAdoDao<ADO>) new RegionDao((Dao<Region, Long>) innerDao);
 				} else if (type.equals(District.class)) {
@@ -2761,6 +2772,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static RegionDao getRegionDao() {
 		return (RegionDao) getAdoDao(Region.class);
+	}
+
+	public static AreaDao getAreaDao() {
+		return (AreaDao) getAdoDao(Area.class);
 	}
 
 	public static DistrictDao getDistrictDao() {

@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.AreaDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
@@ -431,6 +432,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			new CampaignDtoHelper().pullEntities(false);
 			new CampaignFormMetaDtoHelper().pullEntities(false);
+			new AreaDtoHelper().pullEntities(false);
 		}
 
 		ConfigProvider.setInitialSyncRequired(false);
@@ -663,15 +665,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
 		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			// campaigns
-			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
-			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
-			// campaignFormMetas
-			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-		}
-
 		// order is important, due to dependencies
 
 		new ContinentDtoHelper().pullMissing(continentUuids);
@@ -687,9 +680,21 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new DiseaseVariantDtoHelper().pullMissing(diseaseVariantUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
+
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullMissing(featureConfigurationUuids);
-			new CampaignFormMetaDtoHelper().pullMissing(featureConfigurationUuids);
+			// campaigns
+			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
+			// campaignFormMetas
+			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+			// areas
+			List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
+			DatabaseHelper.getAreaDao().deleteInvalid(regionUuids);
+
+			new CampaignDtoHelper().pullMissing(campaignUuids);
+			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
+			new AreaDtoHelper().pullMissing(areaUuids);
 		}
 	}
 

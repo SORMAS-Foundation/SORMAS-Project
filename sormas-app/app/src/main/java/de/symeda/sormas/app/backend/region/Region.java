@@ -15,14 +15,14 @@
 
 package de.symeda.sormas.app.backend.region;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
@@ -45,6 +45,11 @@ public class Region extends InfrastructureAdo {
 	@Column
 	private String epidCode;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn(nullable = false)
+	private Area area;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Country country;
 
@@ -62,6 +67,14 @@ public class Region extends InfrastructureAdo {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
+	}
+
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
 	}
 
 	public Country getCountry() {
