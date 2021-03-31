@@ -458,6 +458,10 @@ public class LabMessageController {
 			}, onSavedPathogenTest);
 
 		pathogenTestEditComponent.addDiscardListener(window::close);
+		pathogenTestEditComponent.addCommitListener(() -> {
+			testDto.setSourceLabMessage(labMessageDto.toReferenceDto());
+			FacadeProvider.getPathogenTestFacade().savePathogenTest(testDto);
+		});
 		pathogenTestEditComponent.getWrappedComponent().setValue(testDto);
 
 		showFormWithLabMessage(
