@@ -283,13 +283,13 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 							return false;
 						}
 						return districtExtID.contains(shapeDistrictId)
-							|| shapeDistrictId.contains(districtExtID)
-							|| GeoShapeHelper.similarity(shapeDistrictId, districtExtID) > 0.8f;
+							|| shapeDistrictId.contains(districtExtID);
 					}).reduce((r1, r2) -> {
 						// take the result that best fits
-						if (r1.getExternalId().equals(shapeDistrictId))
+						// in germany, the external IDs in SORMAS usually contain a leading '110'
+						if (r1.getExternalId().equals(shapeDistrictId) || r1.getExternalId().equals("110" + shapeDistrictId))
 							return r1;
-						if (r2.getExternalId().equals(shapeDistrictId))
+						if (r2.getExternalId().equals(shapeDistrictId) || r2.getExternalId().equals("110" + shapeDistrictId))
 							return r2;
 
 						return Double.compare(
