@@ -198,7 +198,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.labSampleID = labSampleID;
 	}
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn
 	public LabMessage getSourceLabMessage() { return sourceLabMessage; }
 
