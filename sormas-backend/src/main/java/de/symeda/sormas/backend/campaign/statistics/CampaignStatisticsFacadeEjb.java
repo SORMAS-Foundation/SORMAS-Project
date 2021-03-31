@@ -18,7 +18,7 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	private CampaignStatisticsService campaignStatisticsService;
 
 	@Override
-	public List<CampaignStatisticsDto> queryCampaignStatistics(
+	public List<CampaignStatisticsDto> getCampaignStatistics(
 		CampaignStatisticsCriteria criteria,
 		Integer first,
 		Integer max,
