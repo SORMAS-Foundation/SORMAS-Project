@@ -85,6 +85,10 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),
+	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
 	TASK_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {

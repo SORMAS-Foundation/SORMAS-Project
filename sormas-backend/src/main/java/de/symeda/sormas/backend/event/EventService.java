@@ -194,6 +194,31 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
+	public Map<String, User> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, String excludedEventUuid, Disease disease, Date date) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.INNER);
+
+		Timestamp timestamp = DateHelper.toTimestampUpper(date);
+		Predicate filter = cb.and(
+			cb.equal(personJoin.get(Person.UUID), personUuid),
+			cb.not(cb.equal(eventRoot.get(Event.UUID), excludedEventUuid)),
+			cb.equal(eventRoot.get(Event.DISEASE), disease),
+			createActiveEventsFilter(cb, eventRoot),
+			cb.or(
+				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.START_DATE), timestamp),
+				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.END_DATE), timestamp)),
+			cb.isNotNull(responsibleUserJoin.get(User.USER_EMAIL)));
+		cq.where(filter);
+		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
+		return em.createQuery(cq).getResultList()
+			.stream()
+			.collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1]));
+	}
+
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

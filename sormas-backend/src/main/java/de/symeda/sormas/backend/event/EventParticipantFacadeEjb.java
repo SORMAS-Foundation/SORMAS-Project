@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.event;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +45,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -60,12 +65,15 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
@@ -73,6 +81,9 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageSubject;
+import de.symeda.sormas.backend.common.messaging.MessagingService;
+import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
@@ -103,6 +114,8 @@ import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.Vaccina
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -124,6 +137,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private MessagingService messagingService;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
@@ -227,7 +242,68 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipant entity = fromDto(dto, checkChangeDate);
 		eventParticipantService.ensurePersisted(entity);
 
+		if (existingParticipant == null) {
+			// The Event Participant is newly created, let's check if the related person is related to other events
+			// In that case, let's notify corresponding responsible Users of this relation
+			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
+		}
+
 		return convertToDto(entity, pseudonymizer);
+	}
+
+	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
+		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+		Map<String, User> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+			eventParticipant.getPerson().getUuid(), event.getUuid(), event.getDisease(), fromDate);
+		for (Map.Entry<String, User> entry : responsibleUserByEventUuid.entrySet()) {
+			try {
+				messagingService.sendMessage(
+					entry.getValue(),
+					MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+					String.format(
+						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+						DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+						DataHelper.getShortUuid(eventParticipant.getUuid()),
+						DataHelper.getShortUuid(event.getUuid()),
+						buildCaptionForUserInNotification(event.getResponsibleUser()),
+						buildCaptionForUserInNotification(userService.getCurrentUser()),
+						buildEventListContentForNotification(responsibleUserByEventUuid)),
+					MessageType.EMAIL,
+					MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+						entry.getValue().getUuid()));
+			}
+		}
+	}
+
+	private String buildEventListContentForNotification(Map<String, User> responsibleUserByEventUuid) {
+		return responsibleUserByEventUuid.entrySet()
+			.stream()
+			.map(entry -> buildEventListContentForNotification(entry.getKey(), entry.getValue()))
+			.collect(Collectors.joining("\n* ", "* ", ""));
+	}
+
+	private String buildEventListContentForNotification(String eventUuid, User responsibleUser) {
+		return String.format(
+			I18nProperties.getString(Strings.notificationEventWithResponsibleUserLine),
+			DataHelper.getShortUuid(eventUuid),
+			buildCaptionForUserInNotification(responsibleUser));
+	}
+
+	private String buildCaptionForUserInNotification(User user) {
+		if (user == null) {
+			return "-";
+		}
+
+		String caption = user.getFirstName() + " " + user.getLastName();
+		if (user.getUserEmail() != null) {
+			caption += " (" + user.getUserEmail() + ")";
+		}
+		return caption;
 	}
 
 	@Override
