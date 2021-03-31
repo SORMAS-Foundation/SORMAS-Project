@@ -166,6 +166,7 @@ public class CasesView extends AbstractView {
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
+			((AbstractCaseGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -697,11 +698,11 @@ public class CasesView extends AbstractView {
 							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.SurvnetGateway_sendShort),
+							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
 							mi -> ControllerProvider.getCaseController()
-								.sendCasesToSurvnet(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()));
+								.sendCasesToExternalSurveillanceTool(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 
@@ -725,7 +726,7 @@ public class CasesView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 
-		if (viewConfiguration.isInEagerMode()) {
+		if (viewConfiguration.isInEagerMode() && viewConfiguration.getViewType() != CasesViewType.FOLLOW_UP_VISITS_OVERVIEW) {
 			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 			caseGrid.setEagerDataProvider();
 		}

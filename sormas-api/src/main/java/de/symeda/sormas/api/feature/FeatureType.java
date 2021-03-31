@@ -65,7 +65,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
-			EVENT_SURVEILLANCE });
+			EVENT_SURVEILLANCE }),
+	GDPR_CONSENT_POPUP(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

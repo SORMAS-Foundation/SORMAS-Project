@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.labmessage;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import javax.naming.CannotProceedException;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -73,8 +75,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.naming.CannotProceedException;
 
 public class LabMessageController {
 
@@ -209,10 +209,7 @@ public class LabMessageController {
 				List<SampleDto> samples =
 					FacadeProvider.getSampleFacade().getSimilarSamples(createSampleCriteria(labMessageDto).eventParticipant(eventParticipantRef));
 				if (samples.isEmpty()) {
-					createSample(
-						SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef),
-						labMessageDto,
-						false);
+					createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), labMessageDto, false);
 				} else {
 					pickOrCreateSample(eventParticipantDto, labMessageDto, samples);
 				}
@@ -671,7 +668,6 @@ public class LabMessageController {
 
 		addProcessedInMeantimeCheck(createComponent, labMessageDto, entityCreated);
 		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
-		form.setValue(labMessageDto);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
@@ -691,6 +687,8 @@ public class LabMessageController {
 		window.setContent(layout);
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
+
+		form.setValue(labMessageDto);
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto) {

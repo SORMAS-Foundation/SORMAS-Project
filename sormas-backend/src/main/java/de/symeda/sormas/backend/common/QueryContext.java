@@ -1,104 +1,58 @@
 package de.symeda.sormas.backend.common;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.ARRAY_AGG;
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.ARRAY_TO_STRING;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonContactDetail;
+import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class QueryContext<ADO extends AbstractDomainObject> {
+public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private CriteriaQuery<?> query;
 	private CriteriaBuilder criteriaBuilder;
-	private From<ADO, ADO> root;
-	private Map<String, Join<?, ?>> joins;
+	private From<?, ADO> root;
+	private AbstractDomainObjectJoins<T, ADO> joins;
 	private Map<String, Expression<?>> subqueryExpressions;
-	private Map<String, Path<?>> paths;
 
-	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<ADO, ADO> root) {
+	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, AbstractDomainObjectJoins<T, ADO> joins) {
 		this.root = root;
-		this.joins = new HashMap<>();
+		this.joins = joins;
 		this.subqueryExpressions = new HashMap<>();
-		this.paths = new HashMap<>();
 		this.query = query;
 		this.criteriaBuilder = cb;
 	}
 
-	public <JE, JWE> Join<JE, JWE> addJoin(Supplier<Join<JE, JWE>> joinSupplier) {
-		return addJoin(joinSupplier, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <JE, JWE> Join<JE, JWE> addJoin(Supplier<Join<JE, JWE>> joinSupplier, String alias) {
-
-		final Join<JE, JWE> join = joinSupplier.get();
-		final Class<JE> joinEntityClass = (Class<JE>) join.getParent().getJavaType();
-		final Class<JWE> joinWithEntityClass = (Class<JWE>) join.getJavaType();
-		return addJoin(joinEntityClass, joinWithEntityClass, join, alias);
-	}
-
-	private <JE, JWE> Join<JE, JWE> addJoin(Class<JE> joinEntity, Class<JWE> joinWithEntity, Join<JE, JWE> join, final String alias) {
-
-		final String joinEntitySimpleName = joinEntity.getSimpleName();
-		final String joinWithEntitySimpleName = joinWithEntity.getSimpleName();
-		final Join<JE, JWE> existingJoin = getJoin(joinEntity, joinWithEntity, alias);
-		if (existingJoin == null) {
-			final String joinName = joinEntitySimpleName + joinWithEntitySimpleName + (StringUtils.isNotEmpty(alias) ? alias : "");
-			joins.put(joinName, join);
-			return join;
-		}
-		logger.warn(
-			"Joining of entities [{}] and [{}] is already defined for this query, returning existing join!",
-			joinEntitySimpleName,
-			joinWithEntitySimpleName);
-		return existingJoin;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Expression addExpression(String name, Expression<?> expression) {
+	protected Expression addSubqueryExpression(String name, Expression<?> expression) {
 		subqueryExpressions.put(name, expression);
 		return expression;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <JE, JWE> Join<JE, JWE> getJoin(Class<JE> joinEntity, Class<JWE> joinWithEntity) {
-		return (Join<JE, JWE>) joins.get(joinEntity.getSimpleName() + joinWithEntity.getSimpleName());
-	}
-
-	@SuppressWarnings("unchecked")
-	public <JE, JWE> Join<JE, JWE> getJoin(Class<JE> joinEntity, Class<JWE> joinWithEntity, final String aliasSuffix) {
-		if (StringUtils.isNotEmpty(aliasSuffix)) {
-			return (Join<JE, JWE>) joins.get(joinEntity.getSimpleName() + joinWithEntity.getSimpleName() + aliasSuffix);
+	public Expression<?> getSubqueryExpression(String name) {
+		if (subqueryExpressions.containsKey(name)) {
+			return subqueryExpressions.get(name);
 		}
-		return (Join<JE, JWE>) joins.get(joinEntity.getSimpleName() + joinWithEntity.getSimpleName());
+		return createExpression(name);
 	}
 
-	public Expression<?> getExpression(String name) {
-		return subqueryExpressions.get(name);
-	}
+	protected abstract Expression<?> createExpression(String name);
 
-	public From<?, ?> getRoot() {
+	public From<?, ADO> getRoot() {
 		return root;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Path addPath(String pathName, Path<?> path) {
-		paths.put(pathName, path);
-		return path;
-	}
-
-	public Path<?> getPath(String pathName) {
-		return paths.get(pathName);
 	}
 
 	public CriteriaQuery<?> getQuery() {
@@ -107,5 +61,60 @@ public class QueryContext<ADO extends AbstractDomainObject> {
 
 	public CriteriaBuilder getCriteriaBuilder() {
 		return criteriaBuilder;
+	}
+
+	public AbstractDomainObjectJoins<T, ADO> getJoins() {
+		return joins;
+	}
+
+	protected Subquery<String> getPersonContactDetailSubquery(PersonContactDetailType personContactDetailType, From<?, Person> from) {
+		final Subquery<String> pcdSubQuery = query.subquery(String.class);
+		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
+		pcdSubQuery.where(
+			criteriaBuilder.and(
+				criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
+				criteriaBuilder.isTrue(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				criteriaBuilder.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), personContactDetailType)));
+		pcdSubQuery.select(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION));
+		return pcdSubQuery;
+	}
+
+	protected Subquery<String> getPersonOtherContactDetailsSubQuery(From<?, Person> from) {
+		final Subquery<String> pcdSubQuery = getQuery().subquery(String.class);
+		final Root<PersonContactDetail> pcdRoot = pcdSubQuery.from(PersonContactDetail.class);
+		CriteriaBuilder cb = getCriteriaBuilder();
+		pcdSubQuery.where(
+			cb.and(
+				cb.equal(pcdRoot.get(PersonContactDetail.PERSON), from),
+				cb.or(
+					cb.isFalse(pcdRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+					cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER))));
+		final Expression<String> infoWithTypeOther = cb
+			.concat(cb.concat(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION), " ("), cb.concat(pcdRoot.get(PersonContactDetail.DETAILS), ")"));
+		final Expression<String> infoWithType = cb.concat(
+			cb.concat(pcdRoot.get(PersonContactDetail.CONTACT_INFORMATION), " ("),
+			cb.concat(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), ")"));
+		final Expression<Object> otherContactDetailsExpression = cb.selectCase()
+			.when(cb.equal(pcdRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.OTHER), infoWithTypeOther)
+			.otherwise(infoWithType);
+		pcdSubQuery
+			.select(cb.function(ARRAY_TO_STRING, String.class, cb.function(ARRAY_AGG, List.class, otherContactDetailsExpression), cb.literal(", ")));
+		return pcdSubQuery;
+	}
+
+	protected Subquery<Object> phoneOwnerSubquery(From<?, Person> from) {
+		final Subquery<Object> phoneOwnerSubQuery = getQuery().subquery(Object.class);
+		final Root<PersonContactDetail> phoneRoot = phoneOwnerSubQuery.from(PersonContactDetail.class);
+		CriteriaBuilder cb = getCriteriaBuilder();
+		phoneOwnerSubQuery.where(
+			cb.and(
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON), from),
+				cb.isTrue(phoneRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phoneRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+		phoneOwnerSubQuery.select(
+			cb.selectCase()
+				.when(cb.isTrue(phoneRoot.get(PersonContactDetail.THIRD_PARTY)), phoneRoot.get(PersonContactDetail.THIRD_PARTY_NAME))
+				.otherwise(cb.literal(I18nProperties.getCaption(Captions.personContactDetailThisPerson))));
+		return phoneOwnerSubQuery;
 	}
 }

@@ -58,6 +58,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
 	public static final String HOSPITALIZATION = "hospitalization";
+	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
+	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
+	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -71,6 +74,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private Hospitalization hospitalization;
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
+	private YesNoUnknown intensiveCareUnit;
+	private Date intensiveCareUnitStart;
+	private Date intensiveCareUnitEnd;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -163,20 +169,47 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
-    @Enumerated(EnumType.STRING)
-    public HospitalizationReasonType getHospitalizationReason() {
-        return hospitalizationReason;
-    }
+	@Enumerated(EnumType.STRING)
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
+	}
 
-    public void setHospitalizationReason(HospitalizationReasonType reasonForHospitalization) {
-        this.hospitalizationReason = reasonForHospitalization;
-    }
+	public void setHospitalizationReason(HospitalizationReasonType reasonForHospitalization) {
+		this.hospitalizationReason = reasonForHospitalization;
+	}
 
-    public String getOtherHospitalizationReason() {
-        return otherHospitalizationReason;
-    }
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
+	}
 
-    public void setOtherHospitalizationReason(String otherReasonForHospitalization) {
-        this.otherHospitalizationReason = otherReasonForHospitalization;
-    }
+	public void setOtherHospitalizationReason(String otherReasonForHospitalization) {
+		this.otherHospitalizationReason = otherReasonForHospitalization;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getIntensiveCareUnit() {
+		return intensiveCareUnit;
+	}
+
+	public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+		this.intensiveCareUnit = intensiveCareUnit;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getIntensiveCareUnitStart() {
+		return intensiveCareUnitStart;
+	}
+
+	public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+		this.intensiveCareUnitStart = intensiveCareUnitStart;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getIntensiveCareUnitEnd() {
+		return intensiveCareUnitEnd;
+	}
+
+	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
+	}
 }

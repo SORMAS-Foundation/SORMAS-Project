@@ -7,16 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -24,16 +20,18 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.events.importer.EventImporter;
-import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EventImporterTest extends AbstractBeanTest {
@@ -57,9 +55,8 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(3, getPersonFacade().count(null));
 
 		List<EventDto> events = getEventFacade().getAllActiveEventsAfter(null);
-		Optional<EventDto> optionalEventWith2Participants = events.stream()
-			.filter(event -> "Event title with 2 participants".equals(event.getEventTitle()))
-			.findFirst();
+		Optional<EventDto> optionalEventWith2Participants =
+			events.stream().filter(event -> "Event title with 2 participants".equals(event.getEventTitle())).findFirst();
 		assertTrue(optionalEventWith2Participants.isPresent());
 		optionalEventWith2Participants.ifPresent(event -> {
 			List<EventParticipantDto> participants = getEventParticipantFacade().getAllActiveEventParticipantsByEvent(event.getUuid());
@@ -71,8 +68,8 @@ public class EventImporterTest extends AbstractBeanTest {
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
+			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = eventImporter.runImport();
@@ -86,13 +83,15 @@ public class EventImporterTest extends AbstractBeanTest {
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
+			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
 				Optional<SimilarPersonDto> optionalPerson = getPersonFacade().getSimilarPersonsByUuids(getPersonFacade().getAllUuids())
 					.stream()
-					.filter(person -> Objects.equals(person.getFirstName(), newPerson.getFirstName()) && Objects.equals(person.getLastName(), newPerson.getLastName()))
+					.filter(
+						person -> Objects.equals(person.getFirstName(), newPerson.getFirstName())
+							&& Objects.equals(person.getLastName(), newPerson.getLastName()))
 					.findFirst();
 				assertTrue(optionalPerson.isPresent());
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(optionalPerson.get(), ImportSimilarityResultOption.PICK));
+				resultConsumer.accept(new PersonImportSimilarityResult(optionalPerson.get(), ImportSimilarityResultOption.PICK));
 			}
 		};
 		importResult = eventImporter.runImport();
@@ -106,8 +105,8 @@ public class EventImporterTest extends AbstractBeanTest {
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
+			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
 			}
 		};
 		importResult = eventImporter.runImport();
@@ -121,8 +120,8 @@ public class EventImporterTest extends AbstractBeanTest {
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 
 			@Override
-			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 			}
 		};
 		importResult = eventImporter.runImport();
@@ -149,8 +148,8 @@ public class EventImporterTest extends AbstractBeanTest {
 			super(inputFile, hasEntityClassRow, currentUser);
 		}
 
-		protected void handlePersonSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+		protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
+			resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 		}
 
 		protected Writer createErrorReportWriter() {

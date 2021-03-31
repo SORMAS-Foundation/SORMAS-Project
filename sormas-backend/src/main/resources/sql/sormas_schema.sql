@@ -6879,4 +6879,226 @@ ALTER TABLE events_history ADD COLUMN internalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (348, '[SurvNet Interface] Events > Add new field "Internal ID" #4668');
 
+-- 2020-02-19 Person contact details #2744
+create table personcontactdetail(
+     id bigint not null,
+     uuid varchar(36) not null unique,
+     changedate timestamp not null,
+     creationdate timestamp not null,
+     person_id bigint not null,
+     primarycontact boolean DEFAULT false,
+     personcontactdetailtype varchar(255),
+     phonenumbertype varchar(255),
+     details text,
+     contactInformation text,
+     additionalInformation text,
+     thirdParty boolean DEFAULT false,
+     thirdPartyRole text,
+     thirdPartyName text
+);
+ALTER TABLE personcontactdetail OWNER TO sormas_user;
+
+ALTER TABLE personcontactdetail
+    ADD CONSTRAINT fk_personcontactdetail_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+
+ALTER TABLE personcontactdetail ADD COLUMN sys_period tstzrange;
+CREATE TABLE personcontactdetail_history (LIKE personcontactdetail);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'personcontactdetail_history', true);
+ALTER TABLE personcontactdetail_history OWNER TO sormas_user;
+
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_person_id ON personcontactdetail (person_id);
+CREATE INDEX IF NOT EXISTS idx_personcontactdetail_primarycontact ON personcontactdetail (primarycontact);
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'PHONE', phone, false
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS FALSE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, true, 'EMAIL', emailaddress, false
+FROM person WHERE (emailaddress <> '' AND emailaddress IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, contactinformation, thirdparty, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'PHONE', phone, true, phoneowner
+FROM person WHERE (phone <> '' AND phone IS NOT NULL) IS TRUE AND (phoneowner <> '' AND phoneowner IS NOT NULL) IS TRUE;
+
+INSERT INTO personcontactdetail(id, uuid, changedate, creationdate, person_id, primarycontact, personcontactdetailtype, additionalinformation, thirdparty, thirdpartyrole, thirdpartyname)
+SELECT nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), id, false, 'OTHER', generalpractitionerdetails, true, 'General practitioner', generalpractitionerdetails
+FROM person WHERE (generalpractitionerdetails <> '' AND generalpractitionerdetails IS NOT NULL) IS TRUE;
+
+ALTER TABLE person DROP COLUMN phone;
+ALTER TABLE person DROP COLUMN phoneowner;
+ALTER TABLE person DROP COLUMN emailaddress;
+ALTER TABLE person DROP COLUMN generalpractitionerdetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (349, 'Person contact details #2744');
+
+-- 2021-03-12 Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771
+
+CREATE TABLE externalshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    event_id bigint,
+    sender_id bigint,
+    status varchar(255),
+    primary key(id)
+);
+
+ALTER TABLE externalshareinfo OWNER TO sormas_user;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalshareinfo ADD CONSTRAINT fk_externalshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (350, 'Show "sent to SurvNet" including the last Date of sending bellow the Send to SurvNet Button #4771');
+
+-- 2021-03-09 Add fields for intensive care unit to previous hospitalization #4591
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE previoushospitalization ADD COLUMN intensivecareunitend timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN intensivecareunitend timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (351, 'Add fields for intensive care unit to previous hospitalization #4591');
+
+-- 2020-03-17 Create continent and subcontinent #4775
+CREATE TABLE continent (
+                           id bigint NOT NULL,
+                           uuid varchar(36) not null unique,
+                           creationdate timestamp without time zone NOT NULL,
+                           changedate timestamp not null,
+                           archived boolean not null default false,
+                           defaultname varchar(255) NOT NULL,
+                           externalid varchar(255),
+                           primary key(id)
+);
+
+CREATE TABLE subcontinent (
+                              id bigint NOT NULL,
+                              uuid varchar(36) not null unique,
+                              creationdate timestamp without time zone NOT NULL,
+                              changedate timestamp not null,
+                              archived boolean not null default false,
+                              defaultname varchar(255) NOT NULL,
+                              externalid varchar(255),
+                              continent_id bigint NOT NULL,
+                              primary key(id)
+);
+
+ALTER TABLE continent OWNER TO sormas_user;
+ALTER TABLE subcontinent OWNER TO sormas_user;
+
+ALTER TABLE subcontinent ADD CONSTRAINT fk_subcontinent_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
+
+ALTER TABLE country ADD COLUMN subcontinent_id BIGINT;
+ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
+
+-- 2021-03-22 Provide SQL function to generate a UUIDv4 encoded as base32 #4805
+DROP FUNCTION IF EXISTS encode_base32;
+DROP FUNCTION IF EXISTS generate_base32_uuid;
+
+/** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
+CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    byteCount int;
+
+    alphabet bytea = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; /* RFC 4648/3548 */
+    SHIFT int = 5; /* SHIFT is the number of bits per output character, so the length of the output is the length of the input multiplied by 8/SHIFT, rounded up.*/
+    MASK int = 31;
+
+    result text = '';
+    outputLength int;
+    buffer int;
+    next int;
+    bitsLeft int;
+    pad int;
+    index int;
+
+BEGIN
+    byteCount = length(bytes);
+    outputLength = (byteCount * 8 + SHIFT - 1) / SHIFT;
+    if (separatorBlockSize > 0) THEN
+        outputLength = outputLength + outputLength / separatorBlockSize - 1;
+    END IF;
+
+    buffer = get_byte(bytes,0);
+    next = 1;
+    bitsLeft = 8;
+    while bitsLeft > 0 OR next < byteCount LOOP
+            if (bitsLeft < SHIFT) THEN
+                if (next < byteCount) THEN
+                    buffer = buffer << 8;
+                    buffer = buffer | (get_byte(bytes, next) & 255);
+                    next = next+1;
+                    bitsLeft = bitsLeft + 8;
+                ELSE
+                    pad = SHIFT - bitsLeft;
+                    buffer = buffer << pad;
+                    bitsLeft = bitsLeft + pad;
+                END IF;
+            END IF;
+
+            index = MASK & (buffer >> (bitsLeft - SHIFT));
+            bitsLeft = bitsLeft - SHIFT;
+            result = result || chr(get_byte(alphabet,index));
+
+            IF (separatorBlockSize > 0
+                AND (length(result) + 1) % (separatorBlockSize + 1) = 0
+                AND outputLength - length(result) > separatorBlockSize / 2) THEN
+                result = result || '-';
+            END IF;
+        END LOOP;
+    RETURN result;
+END;
+$BODY$;
+
+CREATE FUNCTION generate_base32_uuid()
+    RETURNS text
+    LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+    uuidBytes bytea;
+
+BEGIN
+    uuidBytes = gen_random_bytes(16);
+    uuidBytes = set_byte(uuidBytes, 6, (get_byte(uuidBytes,6) & 15) | 64);  /* clear version, set to version 4 */
+    uuidBytes = set_byte(uuidBytes, 8, (get_byte(uuidBytes,8) & 63) | 128);  /* clear variant, set to to IETF variant */
+    return encode_base32(uuidBytes, 6);
+END;
+$BODY$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (353, 'Provide SQL function to generate a UUIDv4 encoded as base32 #4805');
+
+-- 2021-03-17 Add a country field to regions #4784
+ALTER TABLE region ADD COLUMN country_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_country_id FOREIGN KEY (country_id) REFERENCES country (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (354, 'Add a country field to regions #4784', true);
+
+-- 2021-03-22 [SurvNet Interface] Add checkbox "probable infection environment" to exposures
+ALTER TABLE exposures ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
+
+-- 2020-03-19 Add continent and subcontinent to location #4777
+
+ALTER TABLE location ADD COLUMN continent_id BIGINT;
+ALTER TABLE location ADD COLUMN subcontinent_id BIGINT;
+ALTER TABLE location ADD CONSTRAINT fk_location_continent_id FOREIGN KEY (continent_id) REFERENCES continent (id);
+ALTER TABLE location ADD CONSTRAINT fk_location_subcontinent_id FOREIGN KEY (subcontinent_id) REFERENCES subcontinent (id);
+ALTER TABLE location_history ADD COLUMN continent_id BIGINT;
+ALTER TABLE location_history ADD COLUMN subcontinent_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (356, '2020-03-19 Add continent and subcontinent to location #4777');
+
 -- *** Insert new sql commands BEFORE this line ***

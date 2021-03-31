@@ -76,7 +76,6 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -107,11 +106,16 @@ import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -189,9 +193,13 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
+	private static final String CONTINENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_continent_template.csv";
+	private static final String SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_subcontinent_template.csv";
 	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_area_template.csv";
 	private static final String COUNTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_country_template.csv";
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_countries.csv";
+	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_subcontinents.csv";
+	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_continents.csv";
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
@@ -401,6 +409,16 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateContinentImportTemplateFile() throws IOException {
+		generateImportTemplateFile(ContinentDto.class, Paths.get(getContinentImportTemplateFilePath()));
+	}
+
+	@Override
+	public void generateSubcontinentImportTemplateFile() throws IOException {
+		generateImportTemplateFile(SubcontinentDto.class, Paths.get(getSubcontinentImportTemplateFilePath()));
+	}
+
+	@Override
 	public void generateCountryImportTemplateFile() throws IOException {
 		generateImportTemplateFile(CountryDto.class, Paths.get(getCountryImportTemplateFilePath()));
 	}
@@ -510,6 +528,22 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public String getContinentImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CONTINENT_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getSubcontinentImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
 	public String getCountryImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(COUNTRY_IMPORT_TEMPLATE_FILE_NAME);
@@ -522,6 +556,26 @@ public class ImportFacadeEjb implements ImportFacade {
 			return this.getClass().getClassLoader().getResource(ALL_COUNTRIES_IMPORT_FILE_NAME).toURI();
 		} catch (URISyntaxException e) {
 			logger.warn("Cannot get countries import file path: ", e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public URI getAllSubcontinentsImportFilePath() {
+		try {
+			return this.getClass().getClassLoader().getResource(ALL_SUBCONTINENTS_IMPORT_FILE_NAME).toURI();
+		} catch (URISyntaxException e) {
+			logger.warn("Cannot get subcontinents import file path: ", e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public URI getAllContinentsImportFilePath() {
+		try {
+			return this.getClass().getClassLoader().getResource(ALL_CONTINENTS_IMPORT_FILE_NAME).toURI();
+		} catch (URISyntaxException e) {
+			logger.warn("Cannot get continents import file path: ", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -645,7 +699,10 @@ public class ImportFacadeEjb implements ImportFacade {
 			|| clazz == DistrictReferenceDto.class
 			|| clazz == CommunityReferenceDto.class
 			|| clazz == FacilityReferenceDto.class
-			|| clazz == PointOfEntryReferenceDto.class;
+			|| clazz == PointOfEntryReferenceDto.class
+			|| clazz == CountryReferenceDto.class
+			|| clazz == SubcontinentReferenceDto.class
+			|| clazz == ContinentReferenceDto.class;
 	}
 
 	/**
@@ -749,11 +806,7 @@ public class ImportFacadeEjb implements ImportFacade {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
 			} else {
-				Language language = userService.getCurrentUser().getLanguage();
-				if (language == null) {
-					language = Language.EN;
-				}
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, language.getDateFormat()));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 				return true;
 			}
 		}
@@ -787,7 +840,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = regionFacade.getByName(entry, false);
+			List<RegionReferenceDto> region = regionFacade.getReferencesByName(entry, false);
 			if (region.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
+import static java.util.Objects.nonNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
@@ -85,11 +87,13 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SimpleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -190,7 +194,7 @@ public class DevModeView extends AbstractConfigurationView {
 		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
 			seedField.setValue("performance");
 			useManualSeedCheckbox.setValue(true);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
 			caseGenerationConfig.loadPerformanceTestConfig();
@@ -213,7 +217,7 @@ public class DevModeView extends AbstractConfigurationView {
 		}, CssStyles.FORCE_CAPTION);
 		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
 			useManualSeedCheckbox.setValue(false);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveAsReference().get(0);
+			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
 			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
 
 			caseGenerationConfig.loadDefaultConfig();
@@ -282,7 +286,7 @@ public class DevModeView extends AbstractConfigurationView {
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseOptionsLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeCaseRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
@@ -351,7 +355,7 @@ public class DevModeView extends AbstractConfigurationView {
 		contactGeneratorConfigBinder.bind(diseaseField, ContactGenerationConfig::getDisease, ContactGenerationConfig::setDisease);
 		contactOptionsFirstLineLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
 		contactGeneratorConfigBinder.bind(regionField, ContactGenerationConfig::getRegion, ContactGenerationConfig::setRegion);
@@ -553,7 +557,7 @@ public class DevModeView extends AbstractConfigurationView {
 		diseaseField.setRequiredIndicatorVisible(true);
 		sampleOptionsFirstLineLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeSampleRegion));
 		sampleGeneratorConfigBinder.bind(regionField, SampleGenerationConfig::getRegion, SampleGenerationConfig::setRegion);
@@ -713,6 +717,13 @@ public class DevModeView extends AbstractConfigurationView {
 		"Dispatch is required within 1 months",
 		"Dispatch is required by the end of a day",
 		"Dispatch is very urgent",
+		"-" };
+	private final String[] otherPerformedTestsAndResultsSample = new String[] {
+		"Blood donation has been performed 1 week ago",
+		"Blood donation has been performed 2 weeks ago",
+		"Haemoglobin in urine was positive 1 week ago",
+		"Protein is urine was negative 1 month ago",
+		"Red blood cells in urine was indeterminate 2 weeks ago",
 		"-" };
 
 	private static void initializeRandomGenerator() {
@@ -965,80 +976,125 @@ public class DevModeView extends AbstractConfigurationView {
 				config.getSampleCount() * 2,
 				random());
 
-		for (int i = 0; i < config.getSampleCount(); i++) {
+		if (nonNull(cases)) {
+			for (int i = 0; i < config.getSampleCount(); i++) {
 
-			CaseReferenceDto caseReference = random(cases);
+				CaseReferenceDto caseReference = random(cases);
 
-			List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-			Disease disease = config.getDisease();
-			if (disease == null) {
-				disease = random(diseases);
-			}
-
-			LocalDateTime referenceDateTime =
-				getReferenceDateTime(i, config.getSampleCount(), baseOffset, config.getDisease(), config.getStartDate(), daysBetween);
-
-			SampleDto sample = SampleDto.build(user, caseReference);
-
-			sample.setSamplePurpose(config.getSamplePurpose());
-
-			Date date = java.util.Date.from(referenceDateTime.toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-			sample.setSampleDateTime(date);
-
-			sample.setSampleMaterial(config.getSampleMaterial());
-
-			sample.setFieldSampleID(UUID.randomUUID().toString());
-
-			sample.setComment(random(sampleComments));
-
-			sample.setLab(config.getLaboratory());
-
-			if (config.isRequestPathogenTestsToBePerformed()) {
-				Set set = new HashSet<PathogenTestType>();
-				int until = randomInt(1, PathogenTestType.values().length);
-				for (int j = 0; j < until; j++) {
-					set.add(PathogenTestType.values()[j]);
+				List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+				Disease disease = config.getDisease();
+				if (disease == null) {
+					disease = random(diseases);
+					config.setDisease(disease);
 				}
-				sample.setPathogenTestingRequested(true);
-				sample.setRequestedPathogenTests(set);
-			}
 
-			if (config.isRequestAdditionalTestsToBePerformed()) {
-				Set set = new HashSet<AdditionalTestType>();
-				int until = randomInt(1, AdditionalTestType.values().length);
-				for (int j = 0; j < until; j++) {
-					set.add(AdditionalTestType.values()[j]);
+				LocalDateTime referenceDateTime =
+					getReferenceDateTime(i, config.getSampleCount(), baseOffset, config.getDisease(), config.getStartDate(), daysBetween);
+
+				SampleDto sample = SampleDto.build(user, caseReference);
+
+				sample.setSamplePurpose(config.getSamplePurpose());
+
+				Date date = java.util.Date.from(referenceDateTime.toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+				sample.setSampleDateTime(date);
+
+				sample.setSampleMaterial(config.getSampleMaterial());
+
+				sample.setFieldSampleID(UUID.randomUUID().toString());
+
+				sample.setComment(random(sampleComments));
+
+				sample.setLab(config.getLaboratory());
+
+				if (config.isRequestPathogenTestsToBePerformed()) {
+					Set pathogenTestTypes = new HashSet<PathogenTestType>();
+					int until = randomInt(1, PathogenTestType.values().length);
+					for (int j = 0; j < until; j++) {
+						pathogenTestTypes.add(PathogenTestType.values()[j]);
+					}
+					sample.setPathogenTestingRequested(true);
+					sample.setRequestedPathogenTests(pathogenTestTypes);
 				}
-				sample.setAdditionalTestingRequested(true);
-				sample.setRequestedAdditionalTests(set);
+
+				if (config.isRequestAdditionalTestsToBePerformed()) {
+					Set additionalTestTypes = new HashSet<AdditionalTestType>();
+					int until = randomInt(1, AdditionalTestType.values().length);
+					for (int j = 0; j < until; j++) {
+						additionalTestTypes.add(AdditionalTestType.values()[j]);
+					}
+					sample.setAdditionalTestingRequested(true);
+					sample.setRequestedAdditionalTests(additionalTestTypes);
+				}
+
+				if (config.isSendDispatch()) {
+					sample.setShipped(true);
+					sample.setShipmentDate(date);
+					sample.setShipmentDetails(random(sampleShipmentDetails));
+				}
+
+				if (config.isReceived()) {
+					sample.setReceived(true);
+					sample.setReceivedDate(date);
+
+					sample.setSpecimenCondition(random(SpecimenCondition.values()));
+				}
+
+				SampleDto sampleDto = FacadeProvider.getSampleFacade().saveSample(sample);
+
+				if (config.isRequestAdditionalTestsToBePerformed()) {
+					createAdditionalTest(sampleDto, date);
+				}
+
 			}
 
-			if (config.isSendDispatch()) {
-				sample.setShipped(true);
-				sample.setShipmentDate(date);
-				sample.setShipmentDetails(random(sampleShipmentDetails));
-			}
-
-			if (config.isReceived()) {
-				sample.setReceived(true);
-				sample.setReceivedDate(date);
-
-				sample.setSpecimenCondition(random(SpecimenCondition.values()));
-			}
-
-			FacadeProvider.getSampleFacade().saveSample(sample);
-
+			dt = System.nanoTime() - dt;
+			long perSample = dt / config.getSampleCount();
+			String msg = String.format(
+				"Generating %d samples took %.2f  s (%.1f ms per sample)",
+				config.getSampleCount(),
+				(double) dt / 1_000_000_000,
+				(double) perSample / 1_000_000);
+			logger.info(msg);
+			Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
+		} else {
+			String msg = "No Sample has been generated because cases is null ";
+			logger.info(msg);
+			Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 		}
+	}
 
-		dt = System.nanoTime() - dt;
-		long perSample = dt / config.getSampleCount();
-		String msg = String.format(
-			"Generating %d samples took %.2f  s (%.1f ms per sample)",
-			config.getSampleCount(),
-			(double) dt / 1_000_000_000,
-			(double) perSample / 1_000_000);
-		logger.info(msg);
-		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
+	private void createAdditionalTest(SampleDto sample, Date date) {
+
+		AdditionalTestDto additionalTestDto = new AdditionalTestDto();
+		additionalTestDto.setUuid(UUID.randomUUID().toString());
+		additionalTestDto.setTestDateTime(date);
+		additionalTestDto.setHaemoglobinuria(random(SimpleTestResultType.values()));
+		additionalTestDto.setProteinuria(random(SimpleTestResultType.values()));
+		additionalTestDto.setHematuria(random(SimpleTestResultType.values()));
+
+		additionalTestDto.setArterialVenousGasPH(new Random().nextFloat());
+		additionalTestDto.setArterialVenousGasPco2(new Random().nextFloat());
+		additionalTestDto.setArterialVenousGasPao2(new Random().nextFloat());
+		additionalTestDto.setArterialVenousGasHco3(new Random().nextFloat());
+		additionalTestDto.setGasOxygenTherapy(new Random().nextFloat());
+
+		additionalTestDto.setAltSgpt(new Random().nextFloat());
+		additionalTestDto.setTotalBilirubin(new Random().nextFloat());
+		additionalTestDto.setAstSgot(new Random().nextFloat());
+		additionalTestDto.setConjBilirubin(new Random().nextFloat());
+		additionalTestDto.setCreatinine(new Random().nextFloat());
+		additionalTestDto.setWbcCount(new Random().nextFloat());
+		additionalTestDto.setPotassium(new Random().nextFloat());
+		additionalTestDto.setPlatelets(new Random().nextFloat());
+		additionalTestDto.setUrea(new Random().nextFloat());
+		additionalTestDto.setProthrombinTime(new Random().nextFloat());
+		additionalTestDto.setHaemoglobin(new Random().nextFloat());
+
+		additionalTestDto.setOtherTestResults(random(otherPerformedTestsAndResultsSample));
+
+		additionalTestDto.setSample(sample.toReference());
+
+		FacadeProvider.getAdditionalTestFacade().saveAdditionalTest(additionalTestDto);
 	}
 
 	private void generateContacts() {

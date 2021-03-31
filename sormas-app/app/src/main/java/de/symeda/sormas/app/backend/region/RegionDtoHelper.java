@@ -21,6 +21,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -56,6 +57,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 	public void fillInnerFromDto(Region ado, RegionDto dto) {
 		ado.setName(dto.getName());
 		ado.setEpidCode(dto.getEpidCode());
+		ado.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(dto.getCountry()));
 		ado.setArchived(dto.isArchived());
 	}
 

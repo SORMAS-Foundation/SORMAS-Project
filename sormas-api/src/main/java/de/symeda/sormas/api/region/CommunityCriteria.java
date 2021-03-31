@@ -27,10 +27,21 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 
 	private static final long serialVersionUID = 7815180508529134182L;
 
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String nameLike;
 	private EntityRelevanceStatus relevanceStatus;
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public CommunityCriteria country(CountryReferenceDto country) {
+		this.country = country;
+
+		return this;
+	}
 
 	public CommunityCriteria region(RegionReferenceDto region) {
 		this.region = region;

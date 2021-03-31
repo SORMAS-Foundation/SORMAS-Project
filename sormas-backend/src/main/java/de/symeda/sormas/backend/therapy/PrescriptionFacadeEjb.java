@@ -32,6 +32,7 @@ import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
@@ -205,8 +206,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				.collect(Collectors.toList()));
 
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
-		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);

@@ -35,6 +35,12 @@ import de.symeda.sormas.ui.UserProvider;
 @SuppressWarnings("serial")
 public class PersonSelectionGrid extends Grid {
 
+	/**
+	 * Create a grid of persons listing all persons similar to the given criteria.
+	 * 
+	 * @param criteria
+	 *            The criteria used to query for similar persons.
+	 */
 	public PersonSelectionGrid(PersonSimilarityCriteria criteria) {
 		buildGrid();
 		loadData(criteria);
@@ -53,18 +59,23 @@ public class PersonSelectionGrid extends Grid {
 			SimilarPersonDto.FIRST_NAME,
 			SimilarPersonDto.LAST_NAME,
 			SimilarPersonDto.NICKNAME,
-			SimilarPersonDto.APPROXIMATE_AGE,
+			SimilarPersonDto.AGE_AND_BIRTH_DATE,
 			SimilarPersonDto.SEX,
 			SimilarPersonDto.PRESENT_CONDITION,
+			SimilarPersonDto.PHONE,
 			SimilarPersonDto.DISTRICT_NAME,
 			SimilarPersonDto.COMMUNITY_NAME,
+			SimilarPersonDto.POSTAL_CODE,
 			SimilarPersonDto.CITY,
+			SimilarPersonDto.STREET,
+			SimilarPersonDto.HOUSE_NUMBER,
 			SimilarPersonDto.NATIONAL_HEALTH_ID,
 			SimilarPersonDto.PASSPORT_NUMBER);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(
-				I18nProperties.getPrefixCaption(SimilarPersonDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+			String propertyId = column.getPropertyId().toString();
+			String i18nPrefix = SimilarPersonDto.getI18nPrefix(propertyId);
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId, column.getHeaderCaption()));
 		}
 
 		getColumn(SimilarPersonDto.FIRST_NAME).setMinimumWidth(150);
@@ -77,6 +88,12 @@ public class PersonSelectionGrid extends Grid {
 		return (BeanItemContainer<SimilarPersonDto>) container.getWrappedContainer();
 	}
 
+	/**
+	 * Load similar persons for the given criteria.
+	 * 
+	 * @param criteria
+	 *            The person criteria.
+	 */
 	private void loadData(PersonSimilarityCriteria criteria) {
 		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
 			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)

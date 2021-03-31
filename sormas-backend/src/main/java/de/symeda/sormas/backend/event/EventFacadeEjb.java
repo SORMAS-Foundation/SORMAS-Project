@@ -234,7 +234,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -261,6 +261,8 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.multiselect(
 			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -303,7 +305,7 @@ public class EventFacadeEjb implements EventFacade {
 				eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -315,6 +317,8 @@ public class EventFacadeEjb implements EventFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
+				case EventIndexDto.EXTERNAL_ID:
+				case EventIndexDto.EXTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
@@ -531,7 +535,7 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));

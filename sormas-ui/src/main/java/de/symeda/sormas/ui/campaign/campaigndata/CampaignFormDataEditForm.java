@@ -93,7 +93,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			CampaignFormDataDto.COMMUNITY);
 
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
-		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
@@ -114,7 +114,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					cbRegion,
 					area != null
 						? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid())
-						: FacadeProvider.getRegionFacade().getAllActiveAsReference());
+						: FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			});
 			cbRegion.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

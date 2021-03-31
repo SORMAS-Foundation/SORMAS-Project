@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import java.lang.reflect.AccessibleObject;
+
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-
-import java.lang.reflect.AccessibleObject;
-import java.util.regex.Pattern;
 
 public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
@@ -37,40 +36,12 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 	public boolean isVisible(AccessibleObject accessibleObject) {
 		if (accessibleObject.isAnnotationPresent(HideForCountries.class)) {
 			String[] countries = accessibleObject.getAnnotation(HideForCountries.class).countries();
-			for (String country : countries) {
-				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
-				// otherwise check the first (language) part
-				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
-					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
-						return false;
-					}
-				} else {
-					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
-						return false;
-					}
-				}
-			}
-
-			return true;
+			return !CountryHelper.isInCountries(countryLocale, countries);
 		}
 
 		if (accessibleObject.isAnnotationPresent(HideForCountriesExcept.class)) {
 			String[] countries = accessibleObject.getAnnotation(HideForCountriesExcept.class).countries();
-			for (String country : countries) {
-				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
-				// otherwise check the first (language) part
-				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
-					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
-						return true;
-					}
-				} else {
-					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
-						return true;
-					}
-				}
-			}
-
-			return false;
+			return CountryHelper.isInCountries(countryLocale, countries);
 		}
 
 		return true;

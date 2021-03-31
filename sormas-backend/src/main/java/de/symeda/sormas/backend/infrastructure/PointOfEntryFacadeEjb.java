@@ -149,7 +149,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
-		return service.getByName(name, districtService.getByReferenceDto(district))
+		return service.getByName(name, districtService.getByReferenceDto(district), includeArchivedEntities)
 			.stream()
 			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -165,17 +165,32 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
+		save(dto, false);
+	}
+
+	@Override
+	public void save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+
+		validate(dto);
 
 		PointOfEntry pointOfEntry = null;
 		if (dto.getUuid() != null) {
 			pointOfEntry = service.getByUuid(dto.getUuid());
 		}
 
-		if (pointOfEntry == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
+		if (pointOfEntry == null) {
+			List<PointOfEntryReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					pointOfEntry = service.getByUuid(uuid);
+					PointOfEntryDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
+				}
+			}
 		}
-
-		validate(dto);
 
 		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
