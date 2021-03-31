@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
@@ -17,16 +18,22 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.LabMessageStatusRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageCriteria> {
+
+	private static final long serialVersionUID = 1772731113092823534L;
 
 	public static final String SHOW_MESSAGE = "show_message";
 	public static final String COLUMN_PROCESS = "process";
@@ -35,23 +42,16 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		super(LabMessageIndexDto.class);
 		setSizeFull();
 
-		setSelectionMode(SelectionMode.NONE);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(LabMessagesView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		DataProvider<LabMessageIndexDto, LabMessageCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getLabMessageFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getLabMessageFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-
-		setCriteria(criteria);
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
 
 		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
 
@@ -90,6 +90,32 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		editColumn.setWidth(20);
 
 		addItemClickListener(new ShowDetailsListener<>(SHOW_MESSAGE, e -> handler.accept(e)));
+	}
+
+	public void setEagerDataProvider() {
+
+		ListDataProvider<LabMessageIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getLabMessageFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
+	}
+
+	public void setLazyDataProvider() {
+		DataProvider<LabMessageIndexDto, LabMessageCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getLabMessageFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> (int) FacadeProvider.getLabMessageFacade().count(query.getFilter().orElse(null)));
+
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void reload() {

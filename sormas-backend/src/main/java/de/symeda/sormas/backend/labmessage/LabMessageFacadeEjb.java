@@ -170,6 +170,18 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	public void deleteLabMessage(String uuid) {
+		labMessageService.delete(labMessageService.getByUuid(uuid));
+	}
+
+	@Override
+	public void deleteLabMessages(List<String> uuids) {
+		for (String uuid : uuids) {
+			labMessageService.delete(labMessageService.getByUuid(uuid));
+		}
+	}
+
+	@Override
 	public Boolean isProcessed(String uuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

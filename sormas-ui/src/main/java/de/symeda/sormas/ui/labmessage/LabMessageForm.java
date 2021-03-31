@@ -1,50 +1,32 @@
 package de.symeda.sormas.ui.labmessage;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
+public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 
-	private static final String SORMAS_TO_SORMAS_BUTTON = "sormasToSormas";
+	private static final long serialVersionUID = -3859401780981133265L;
 
 	//@formatter:off
-    private static final String HTML_LAYOUT =
+	private static final String HTML_LAYOUT =
             fluidRowLocs(LabMessageDto.UUID, LabMessageDto.MESSAGE_DATE_TIME) +
-			fluidRowLocs(LabMessageDto.LAB_MESSAGE_DETAILS) +
-    		locCss(CssStyles.ALIGN_RIGHT + " " + CssStyles.VSPACE_TOP_3, SORMAS_TO_SORMAS_BUTTON);
+			fluidRowLocs(LabMessageDto.LAB_MESSAGE_DETAILS);
 	//@formatter:on
 
-	private final boolean readOnly;
 	private Label labMessageDetails;
 
-	public LabMessageEditForm(boolean readOnly, boolean isProcessed, Runnable shareCallback) {
-
+	public LabMessageForm() {
 		super(LabMessageDto.class, LabMessageDto.I18N_PREFIX);
-
-		this.readOnly = readOnly;
-
-		boolean shareEnabled = !isProcessed && shareCallback != null && FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
-		if (shareEnabled) {
-			addShareButton(shareCallback);
-		}
 	}
 
 	@Override
@@ -54,13 +36,6 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 		Panel detailsPanel = new Panel(labMessageDetails);
 		detailsPanel.setHeightFull();
 		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
-	}
-
-	private void addShareButton(Runnable shareCallback) {
-		Button shareButton = ButtonHelper.createIconButton(Captions.sormasToSormasSendLabMessage, VaadinIcons.SHARE, (e) -> {
-			ControllerProvider.getSormasToSormasController().shareLabMessage(getValue(), shareCallback);
-		}, ValoTheme.BUTTON_PRIMARY);
-		getContent().addComponent(shareButton, SORMAS_TO_SORMAS_BUTTON);
 	}
 
 	@Override
@@ -81,6 +56,7 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 			this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
 			VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
 		}
-		getFieldGroup().setReadOnly(readOnly);
+
+		getFieldGroup().setReadOnly(true);
 	}
 }
