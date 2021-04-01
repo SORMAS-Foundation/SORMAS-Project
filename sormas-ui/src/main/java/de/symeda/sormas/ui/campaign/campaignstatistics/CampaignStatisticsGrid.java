@@ -45,7 +45,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 
 	public void setDataProvider() {
 		ListDataProvider<CampaignStatisticsDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getCampaignStatisticsFacade().getCampaignStatistics(getCriteria(), null).stream());
+			DataProvider.fromStream(FacadeProvider.getCampaignStatisticsFacade().getCampaignStatistics(getCriteria()).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

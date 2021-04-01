@@ -19,7 +19,6 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsGroupingDto;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
@@ -36,9 +35,9 @@ public class CampaignStatisticsService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
+	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria) {
 
-		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria, sortProperties));
+		Query campaignsStatisticsQuery = em.createNativeQuery(buildStatisticsQuery(criteria));
 		final CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
 		Map<CampaignStatisticsGroupingDto, CampaignStatisticsDto> results = new LinkedHashMap<>();
 		((Stream<Object[]>) campaignsStatisticsQuery.getResultStream()).forEach(result -> {
@@ -61,7 +60,7 @@ public class CampaignStatisticsService {
 		return results.values().stream().collect(Collectors.toList());
 	}
 
-	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
+	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria) {
 		String selectExpression = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
 			.append(CampaignFormMeta.UUID)
@@ -84,9 +83,7 @@ public class CampaignStatisticsService {
 		}
 		queryBuilder.append(buildJsonWhereExpression());
 
-		queryBuilder.append(buildGroupByExpression(criteria))
-			.append(buildJsonGroupByExpression())
-			.append(buildOrderByExpression(criteria, sortProperties));
+		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
 
 		return queryBuilder.toString();
 	}
@@ -231,49 +228,8 @@ public class CampaignStatisticsService {
 		return groupByFilter.toString();
 	}
 
-	private String buildOrderByExpression(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
+	private String buildOrderByExpression(CampaignStatisticsCriteria criteria) {
 		CampaignJurisdictionLevel groupingLevel = criteria.getGroupingLevel();
-		if (sortProperties != null && sortProperties.size() > 0) {
-			return buildSortOrder(groupingLevel, sortProperties);
-		}
-		return buildDefaultSortOrder(groupingLevel);
-	}
-
-	private String buildSortOrder(CampaignJurisdictionLevel groupingLevel, List<SortProperty> sortProperties) {
-		StringBuilder orderByFilter = new StringBuilder(" ORDER BY ");
-		for (SortProperty sortProperty : sortProperties) {
-			switch (sortProperty.propertyName) {
-			case CampaignStatisticsDto.CAMPAIGN:
-				orderByFilter.append(Campaign.TABLE_NAME).append(".").append(Campaign.NAME);
-				break;
-			case CampaignStatisticsDto.FORM:
-				orderByFilter.append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_NAME);
-				break;
-			case CampaignStatisticsDto.AREA:
-				orderByFilter.append(Area.TABLE_NAME).append(".").append(Area.NAME);
-				break;
-			case CampaignStatisticsDto.REGION:
-				orderByFilter.append(Region.TABLE_NAME).append(".").append(Region.NAME);
-				break;
-			case CampaignStatisticsDto.DISTRICT:
-				orderByFilter.append(District.TABLE_NAME).append(".").append(District.NAME);
-				break;
-			case CampaignStatisticsDto.COMMUNITY:
-				orderByFilter.append(Community.TABLE_NAME).append(".").append(Community.NAME);
-				break;
-			case CampaignStatisticsDto.FORM_COUNT:
-				orderByFilter.append("formCount");
-				break;
-			default:
-				throw new IllegalArgumentException(sortProperty.propertyName);
-			}
-			orderByFilter.append(sortProperty.ascending == true ? " ASC " : " DESC ");
-		}
-
-		return orderByFilter.toString();
-	}
-
-	private String buildDefaultSortOrder(CampaignJurisdictionLevel groupingLevel) {
 		StringBuilder orderByFilter = new StringBuilder(" ORDER BY ");
 		orderByFilter.append(Campaign.TABLE_NAME)
 			.append(".")

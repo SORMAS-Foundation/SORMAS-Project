@@ -9,7 +9,6 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
-import de.symeda.sormas.api.utils.SortProperty;
 
 @Stateless(name = "CampaignStatisticsFacade")
 public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
@@ -18,9 +17,9 @@ public class CampaignStatisticsFacadeEjb implements CampaignStatisticsFacade {
 	private CampaignStatisticsService campaignStatisticsService;
 
 	@Override
-	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
+	public List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria) {
 
-		return campaignStatisticsService.getCampaignStatistics(criteria, sortProperties);
+		return campaignStatisticsService.getCampaignStatistics(criteria);
 	}
 
 	@LocalBean
