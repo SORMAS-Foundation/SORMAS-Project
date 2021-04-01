@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.campaign.campaignstatistics;
 
+import java.util.List;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 
@@ -40,12 +42,11 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 	}
 
 	public void reload() {
-		getDataProvider().refreshAll();
+		setItems(getGridData());
 	}
 
 	public void setDataProvider() {
-		ListDataProvider<CampaignStatisticsDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getCampaignStatisticsFacade().getCampaignStatistics(getCriteria()).stream());
+		ListDataProvider<CampaignStatisticsDto> dataProvider = DataProvider.fromStream(getGridData().stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
@@ -83,5 +84,9 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 
 	private void setCommunityColumnVisible(boolean visible) {
 		getColumn(CampaignStatisticsDto.COMMUNITY).setHidden(!visible);
+	}
+
+	private List<CampaignStatisticsDto> getGridData() {
+		return FacadeProvider.getCampaignStatisticsFacade().getCampaignStatistics(getCriteria());
 	}
 }

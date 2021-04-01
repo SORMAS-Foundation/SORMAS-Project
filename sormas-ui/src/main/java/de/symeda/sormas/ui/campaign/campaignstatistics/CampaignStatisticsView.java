@@ -134,7 +134,9 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaignFormMeta(null);
+			criteria.setCampaign(campaignSelector.getValue());
 			filterForm.setValue(criteria);
+			grid.reload();
 		});
 
 		addComponent(mainLayout);
@@ -156,10 +158,6 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign(campaignSelector.getValue());
-			grid.reload();
-		});
-		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
