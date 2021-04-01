@@ -1,16 +1,13 @@
 package de.symeda.sormas.ui.campaign.campaignstatistics;
 
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.data.provider.ListDataProvider;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, CampaignStatisticsCriteria> {
@@ -19,8 +16,9 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 		super(CampaignStatisticsDto.class);
 		setSizeFull();
 
-		setDataProvider();
+		setInEagerMode(true);
 		setCriteria(criteria);
+		setDataProvider();
 
 		addDefaultColumns();
 		setColumnsVisibility(criteria.getGroupingLevel());
@@ -46,16 +44,8 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 	}
 
 	public void setDataProvider() {
-		DataProvider<CampaignStatisticsDto, CampaignStatisticsCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getCampaignStatisticsFacade()
-				.getCampaignStatistics(
-					query.getFilter().orElse(null),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getCampaignStatisticsFacade().count(query.getFilter().orElse(null)));
+		ListDataProvider<CampaignStatisticsDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getCampaignStatisticsFacade().getCampaignStatistics(getCriteria(), null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
