@@ -42,6 +42,9 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaignstatistics";
 
+	private static final String ELEMENT_TYPE_NUMBER = "number";
+	private static final String ELEMENT_TYPE_YES_NO = "yes-no";
+
 	private final CampaignSelector campaignSelector;
 	private final CampaignStatisticsCriteria criteria;
 	private final CampaignStatisticsGrid grid;
@@ -185,7 +188,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
 						String type = element.getType();
-						if (type.equals("number") || type.equals("yes-no")) {
+						if (type.equals(ELEMENT_TYPE_NUMBER) || type.equals(ELEMENT_TYPE_YES_NO)) {
 							String caption = null;
 							if (translations != null) {
 								caption = translations.getTranslations()
