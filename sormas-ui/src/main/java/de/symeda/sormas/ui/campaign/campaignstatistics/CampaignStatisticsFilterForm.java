@@ -11,6 +11,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -33,7 +34,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 
 	protected CampaignStatisticsFilterForm() {
 
-		super(CampaignStatisticsCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		super(CampaignStatisticsCriteria.class, CampaignStatisticsDto.I18N_PREFIX);
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
@@ -70,7 +71,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		regionFilter = addField(
 			FieldConfiguration.withCaptionAndPixelSized(CampaignStatisticsCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		districtFilter = addField(
 			FieldConfiguration
