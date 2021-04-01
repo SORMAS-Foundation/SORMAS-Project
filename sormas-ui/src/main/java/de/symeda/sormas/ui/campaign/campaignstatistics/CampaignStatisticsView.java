@@ -117,6 +117,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 			grid.setColumnsVisibility(criteria.getGroupingLevel());
+			grid.reload();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
