@@ -15,15 +15,6 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.vaadin.hene.popupbutton.PopupButton;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
@@ -32,7 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -59,13 +49,21 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
-	private final CampaignSelector campaignLayout;
+	private final CampaignSelector campaignSelector;
 	private final CampaignFormDataCriteria criteria;
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
@@ -77,9 +75,9 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
-		campaignLayout = new CampaignSelector();
-		criteria.setCampaign(campaignLayout.getValue());
-		addHeaderComponent(campaignLayout);
+		campaignSelector = new CampaignSelector();
+		criteria.setCampaign(campaignSelector.getValue());
+		addHeaderComponent(campaignSelector);
 		grid = new CampaignDataGrid(criteria);
 
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -164,10 +162,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		importCampaignButton.setId("campaign-form-import");
 		createImportLayout(importFormLayout);
 		addHeaderComponent(importCampaignButton);
-		campaignLayout.addValueChangeListener(e -> {
+		campaignSelector.addValueChangeListener(e -> {
 			importFormLayout.removeAllComponents();
 			newFormLayout.removeAllComponents();
-			if (!Objects.isNull(campaignLayout.getValue())) {
+			if (!Objects.isNull(campaignSelector.getValue())) {
 				createImportLayout(importFormLayout);
 				createNewFormLayout(newFormLayout);
 				importCampaignButton.setEnabled(true);
@@ -180,7 +178,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			filterForm.setValue(criteria);
 		});
 
-		if (campaignLayout.getValue() == null) {
+		if (campaignSelector.getValue() == null) {
 			importCampaignButton.setEnabled(false);
 			newFormButton.setEnabled(false);
 		}
@@ -190,7 +188,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	private void createImportLayout(VerticalLayout importFormLayout) {
 
-		CampaignReferenceDto campaignReferenceDto = campaignLayout.getValue();
+		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
@@ -212,7 +210,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	private void createNewFormLayout(VerticalLayout newFormLayout) {
 
-		CampaignReferenceDto campaignReferenceDto = campaignLayout.getValue();
+		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
@@ -232,7 +230,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setCommunity(user.getCommunity());
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter() && campaignLayout == null) {
+			if (!filterForm.hasFilter() && campaignSelector == null) {
 				navigateTo(null);
 			}
 		});
@@ -241,11 +239,11 @@ public class CampaignDataView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign(campaignLayout.getValue());
+			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
-		campaignLayout.addValueChangeListener(e -> {
-			criteria.setCampaign(campaignLayout.getValue());
+		campaignSelector.addValueChangeListener(e -> {
+			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
@@ -300,7 +298,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
-			campaignLayout.setValue(criteria.getCampaign());
+			campaignSelector.setValue(criteria.getCampaign());
 		}
 
 		applyingCriteria = true;

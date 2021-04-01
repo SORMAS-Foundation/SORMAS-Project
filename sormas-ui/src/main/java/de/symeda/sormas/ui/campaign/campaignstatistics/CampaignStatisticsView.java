@@ -42,7 +42,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaignstatistics";
 
-	private final CampaignSelector campaignLayout;
+	private final CampaignSelector campaignSelector;
 	private final CampaignStatisticsCriteria criteria;
 	private final CampaignStatisticsGrid grid;
 
@@ -52,11 +52,12 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 	public CampaignStatisticsView() {
 		super(VIEW_NAME);
 
-		campaignLayout = new CampaignSelector();
-		addHeaderComponent(campaignLayout);
-
 		criteria = ViewModelProviders.of(getClass()).get(CampaignStatisticsCriteria.class);
+
+		campaignSelector = new CampaignSelector();
+		criteria.setCampaign(campaignSelector.getValue());
 		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
+		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
@@ -128,7 +129,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
-		campaignLayout.addValueChangeListener(e -> {
+		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaignFormMeta(null);
 			filterForm.setValue(criteria);
 		});
@@ -143,7 +144,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		criteria.setCommunity(user.getCommunity());
 		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter() && campaignLayout == null) {
+			if (!filterForm.hasFilter() && campaignSelector == null) {
 				navigateTo(null);
 			}
 		});
@@ -152,11 +153,11 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign(campaignLayout.getValue());
+			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
-		campaignLayout.addValueChangeListener(e -> {
-			criteria.setCampaign(campaignLayout.getValue());
+		campaignSelector.addValueChangeListener(e -> {
+			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
@@ -212,7 +213,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
-			campaignLayout.setValue(criteria.getCampaign());
+			campaignSelector.setValue(criteria.getCampaign());
 		}
 
 		applyingCriteria = true;
