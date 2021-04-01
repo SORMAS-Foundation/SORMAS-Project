@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import de.symeda.sormas.api.user.UserDto;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+
+import de.symeda.sormas.api.user.UserDto;
 
 public class DefaultUserHelper {
 
@@ -65,8 +64,8 @@ public class DefaultUserHelper {
 		return defaultUsersWithPassword.containsKey(username);
 	}
 
-	public static Optional<String> getDefaultPassword(String username) {
-		return Optional.ofNullable(defaultUsersWithPassword.get(username));
+	public static String getDefaultPassword(String username) {
+		return defaultUsersWithPassword.get(username);
 	}
 
 	public static Set<String> getDefaultUserNames() {
@@ -74,14 +73,19 @@ public class DefaultUserHelper {
 	}
 
 	public static boolean usesDefaultPassword(String username, String passwordHash, String seed) {
-		return getDefaultPassword(username).filter(s -> passwordHash.equals(PasswordHelper.encodePassword(s, seed))).isPresent();
+		String defaultPassword = getDefaultPassword(username);
+		if (defaultPassword == null) {
+			return false;
+		} else {
+			return passwordHash.equals(PasswordHelper.encodePassword(defaultPassword, seed));
+		}
 	}
 
 	public static boolean currentUserUsesDefaultPassword(List<UserDto> allUsersWithDefaultPassword, UserDto currentUser) {
 		return allUsersWithDefaultPassword.contains(currentUser);
 	}
 
-	public static boolean otherUsersWithDefaultPassword(List<UserDto> allUsersWithDefaultPassword, UserDto currentUser) {
+	public static boolean otherUsersUseDefaultPassword(List<UserDto> allUsersWithDefaultPassword, UserDto currentUser) {
 		return (allUsersWithDefaultPassword.contains(currentUser) && allUsersWithDefaultPassword.size() > 1)
 			|| (!allUsersWithDefaultPassword.contains(currentUser) && allUsersWithDefaultPassword.size() > 0);
 	}

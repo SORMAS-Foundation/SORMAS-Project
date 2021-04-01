@@ -32,9 +32,9 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DefaultPasswordOwnScreen extends Window {
+public class ChangeDefaultUserPasswordWindow extends Window {
 
-	public DefaultPasswordOwnScreen(Runnable onContinue, UserDto currentUser) {
+	public ChangeDefaultUserPasswordWindow(Runnable onContinue, UserDto currentUser) {
 		setCaption(" " + I18nProperties.getString(Strings.headingSecurityAlert));
 		setIcon(VaadinIcons.WARNING);
 		setWidth(40, Unit.PERCENTAGE);

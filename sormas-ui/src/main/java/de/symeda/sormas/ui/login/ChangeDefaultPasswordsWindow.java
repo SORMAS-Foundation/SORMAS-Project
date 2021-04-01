@@ -17,6 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.opencsv.CSVWriter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -31,6 +40,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -39,18 +49,9 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+public class ChangeDefaultPasswordsWindow extends Window {
 
-public class DefaultPasswordOtherScreen extends Window {
-
-	public DefaultPasswordOtherScreen(Runnable onContinue, List<UserDto> otherUsersWithDefaultPassword) {
+	public ChangeDefaultPasswordsWindow(Runnable onContinue, List<UserDto> otherUsersWithDefaultPassword) {
 		setCaption(" " + I18nProperties.getString(Strings.headingSecurityAlert));
 		setIcon(VaadinIcons.WARNING);
 		setWidth(40, Unit.PERCENTAGE);
