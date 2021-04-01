@@ -164,6 +164,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 		this.labSampleID = labSampleID;
 	}
 
+	@ImportIgnore
 	public LabMessageReferenceDto getSourceLabMessage() {
 		return sourceLabMessage;
 	}

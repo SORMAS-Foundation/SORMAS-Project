@@ -133,6 +133,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 		return testedDisease;
 	}
 
+	@ImportIgnore
 	public LabMessageReferenceDto getSourceLabMessage() {
 		return sourceLabMessage;
 	}
