@@ -25,12 +25,12 @@
 You can give SORMAS a try on our demo server at <https://demoversion.sormas-oegd.de>!
 
 ### How Can I Get Involved?
-Read through our [*Contributing Readme*](CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de or join our [developer chat on Gitter](https://gitter.im/SORMAS-Project) to learn how you can help to drive the development of SORMAS forward and to get development support from our core developers. SORMAS is a community-driven project, and we'd love to have you on board!
-If you want to contribute to the code, please strictly adhere to the [*Development Environment*](DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
-Please also make sure that you've read the [*Development Contributing Guidelines*](CONTRIBUTING.md#development-contributing-guidelines) before you start to develop, and either follow or regularly check our Twitter account <a href="https://twitter.com/SORMASDev" target="_blank">@SORMASDev</a> to stay up to date with our schedule, new releases, guideline changes and other announcements.
+Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de or join our [developer chat on Gitter](https://gitter.im/SORMAS-Project) to learn how you can help to drive the development of SORMAS forward and to get development support from our core developers. SORMAS is a community-driven project, and we'd love to have you on board!
+If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
+Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop, and either follow or regularly check our Twitter account <a href="https://twitter.com/SORMASDev" target="_blank">@SORMASDev</a> to stay up to date with our schedule, new releases, guideline changes and other announcements.
 
 ### How Can I Report a Bug or Request a Feature?
-If you want to report a **security issue**, please read and follow our [*Security Policies*](SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and read the [*Submitting an Issue*](CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
+If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and read the [*Submitting an Issue*](docs/CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
 
 ### Which Browsers and Android Versions Are Supported?
 SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11; see <https://vaadin.com/faq>).
@@ -61,6 +61,6 @@ The project consists of the following modules:
 
 ## Server Management
 
-* [Installing a SORMAS server](SERVER_SETUP.md)
-* [Updating a SORMAS server](SERVER_UPDATE.md)
-* [Customizing a SORMAS server](SERVER_CUSTOMIZATION.md)
+* [Installing a SORMAS server](docs/SERVER_SETUP.md)
+* [Updating a SORMAS server](docs/SERVER_UPDATE.md)
+* [Customizing a SORMAS server](docs/SERVER_CUSTOMIZATION.md)
