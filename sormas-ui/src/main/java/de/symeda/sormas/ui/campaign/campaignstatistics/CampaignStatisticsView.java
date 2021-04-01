@@ -184,21 +184,24 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
-						String caption = null;
-						if (translations != null) {
-							caption = translations.getTranslations()
-								.stream()
-								.filter(t -> t.getElementId().equals(element.getId()))
-								.map(TranslationElement::getCaption)
-								.findFirst()
-								.orElse(null);
-						}
-						if (caption == null) {
-							caption = element.getCaption();
-						}
+						String type = element.getType();
+						if (type.equals("number") || type.equals("yes-no")) {
+							String caption = null;
+							if (translations != null) {
+								caption = translations.getTranslations()
+									.stream()
+									.filter(t -> t.getElementId().equals(element.getId()))
+									.map(TranslationElement::getCaption)
+									.findFirst()
+									.orElse(null);
+							}
+							if (caption == null) {
+								caption = element.getCaption();
+							}
 
-						if (caption != null) {
-							grid.addCustomColumn(element.getId(), caption);
+							if (caption != null) {
+								grid.addCustomColumn(element.getId(), caption);
+							}
 						}
 					}
 				}
