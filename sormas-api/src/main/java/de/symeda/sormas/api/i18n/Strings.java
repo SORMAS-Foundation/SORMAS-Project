@@ -115,6 +115,8 @@ public interface Strings {
 	String confirmationDeleteVisits = "confirmationDeleteVisits";
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
+	String confirmationDisableUsers = "confirmationDisableUsers";
+	String confirmationEnableUsers = "confirmationEnableUsers";
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
@@ -320,6 +322,8 @@ public interface Strings {
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
 	String headingConfirmDeletion = "headingConfirmDeletion";
+	String headingConfirmDisabling = "headingConfirmDisabling";
+	String headingConfirmEnabling = "headingConfirmEnabling";
 	String headingConfirmManuallyForwardedLabMessage = "headingConfirmManuallyForwardedLabMessage";
 	String headingConfirmMerging = "headingConfirmMerging";
 	String headingConfirmUnclearLabMessage = "headingConfirmUnclearLabMessage";
@@ -492,6 +496,7 @@ public interface Strings {
 	String headingNoSamplesSelected = "headingNoSamplesSelected";
 	String headingNoTasksSelected = "headingNoTasksSelected";
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
+	String headingNoUsersSelected = "headingNoUsersSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
 	String headingOutbreakIn = "headingOutbreakIn";
 	String headingPaperFormDates = "headingPaperFormDates";
@@ -546,6 +551,8 @@ public interface Strings {
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
+	String headingUsersDisabled = "headingUsersDisabled";
+	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingVisits = "headingVisits";
@@ -880,6 +887,7 @@ public interface Strings {
 	String messageNoSamplesSelected = "messageNoSamplesSelected";
 	String messageNoTasksSelected = "messageNoTasksSelected";
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
+	String messageNoUsersSelected = "messageNoUsersSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
@@ -942,6 +950,8 @@ public interface Strings {
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
+	String messageUsersDisabled = "messageUsersDisabled";
+	String messageUsersEnabled = "messageUsersEnabled";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";
 	String messageUserSyncCanceledErrors = "messageUserSyncCanceledErrors";
 	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
