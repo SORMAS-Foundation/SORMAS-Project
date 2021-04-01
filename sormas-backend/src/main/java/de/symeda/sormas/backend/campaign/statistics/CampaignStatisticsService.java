@@ -61,15 +61,6 @@ public class CampaignStatisticsService {
 		return results.values().stream().collect(Collectors.toList());
 	}
 
-	public long count(CampaignStatisticsCriteria criteria) {
-		Query campaignsStatisticsQuery = em.createNativeQuery(buildCountStatisticsQuery(criteria));
-		Number numberOfRows = (Number) campaignsStatisticsQuery.getSingleResult();
-		if (numberOfRows != null) {
-			return numberOfRows.longValue();
-		}
-		return 0;
-	}
-
 	private String buildStatisticsQuery(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties) {
 		String selectExpression = new StringBuilder("SELECT COUNT(").append(CampaignFormMeta.TABLE_NAME)
 			.append(".")
@@ -96,27 +87,6 @@ public class CampaignStatisticsService {
 		queryBuilder.append(buildGroupByExpression(criteria))
 			.append(buildJsonGroupByExpression())
 			.append(buildOrderByExpression(criteria, sortProperties));
-
-		return queryBuilder.toString();
-	}
-
-	private String buildCountStatisticsQuery(CampaignStatisticsCriteria criteria) {
-		String selectExpression = new StringBuilder("SELECT COUNT(*) from (select ").append(buildSelectExpression(criteria))
-			.append(" FROM ")
-			.append(CampaignFormData.TABLE_NAME)
-			.toString();
-		String joinExpression = buildJoinExpression();
-
-		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append(selectExpression).append(joinExpression);
-
-		String whereExpression = buildWhereExpression(criteria);
-		if (!whereExpression.isEmpty()) {
-			queryBuilder.append(" WHERE ");
-			queryBuilder.append(whereExpression);
-		}
-
-		queryBuilder.append(buildGroupByExpression(criteria)).append(") as rules");
 
 		return queryBuilder.toString();
 	}

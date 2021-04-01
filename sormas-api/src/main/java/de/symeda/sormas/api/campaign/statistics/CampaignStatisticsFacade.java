@@ -10,6 +10,4 @@ import de.symeda.sormas.api.utils.SortProperty;
 public interface CampaignStatisticsFacade {
 
 	List<CampaignStatisticsDto> getCampaignStatistics(CampaignStatisticsCriteria criteria, List<SortProperty> sortProperties);
-
-	long count(CampaignStatisticsCriteria criteria);
 }
