@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.importexport;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,7 +121,22 @@ public final class ImportExportUtils {
 				}
 			}
 
-			properties.add(new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1]), groupType));
+			try {
+				ExportEntity MethodClassEntity = method.getAnnotation(ExportEntity.class); //.value();
+				if (MethodClassEntity != null) {
+					Class MethodClass = MethodClassEntity.value();
+					Field i18n_field = MethodClass.getDeclaredField("I18N_PREFIX");
+					properties.add(
+						new ExportPropertyMetaInfo(
+							property,
+							propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], (String) i18n_field.get(null)),
+							groupType));
+				}
+			} catch (NoSuchFieldException | IllegalAccessException ex) {
+				// Field doesn't exist or is private
+				properties
+					.add(new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], null), groupType));
+			}
 		}
 
 		return properties;
@@ -151,6 +167,6 @@ public final class ImportExportUtils {
 
 	public interface PropertyCaptionProvider {
 
-		String get(String propertyId);
+		String get(String propertyId, String prefixId);
 	}
 }

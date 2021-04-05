@@ -50,11 +50,14 @@ public class EventParticipantDownloadUtil {
 			(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
 				.getExportList(criteria, selectedRows.get(), start, max, I18nProperties.getUserLanguage()),
 			EventParticipantDownloadUtil::captionProvider,
-				ExportEntityName.EVENT_PARTICIPANTS,
+			ExportEntityName.EVENT_PARTICIPANTS,
 			exportConfiguration);
 	}
 
-	public static String getPropertyCaption(String propertyId) {
+	public static String getPropertyCaption(String propertyId, String prefixId) {
+		if (prefixId != null) {
+			return I18nProperties.getPrefixCaption(prefixId, propertyId);
+		}
 		return I18nProperties.findPrefixCaption(
 			propertyId,
 			EventDto.I18N_PREFIX,
@@ -66,7 +69,7 @@ public class EventParticipantDownloadUtil {
 	}
 
 	private static String captionProvider(String propertyId, Class<?> type) {
-		String caption = getPropertyCaption(propertyId);
+		String caption = getPropertyCaption(propertyId, null);
 		if (Date.class.isAssignableFrom(type)) {
 			caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 		}
