@@ -25,12 +25,13 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 
 	public PointsOfEntryGrid(PointOfEntryCriteria criteria) {
 		super(PointOfEntryDto.class);
+		SormasUI ui = (SormasUI) getUI();
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -48,7 +49,6 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			PointOfEntryDto.EXTERNAL_ID,
 			PointOfEntryDto.ACTIVE);
 
-		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editPointOfEntry(e.getUuid()));
 		}

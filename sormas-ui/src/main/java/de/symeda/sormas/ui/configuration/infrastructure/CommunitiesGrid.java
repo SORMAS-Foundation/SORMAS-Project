@@ -42,12 +42,13 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 	public CommunitiesGrid(CommunityCriteria criteria) {
 
 		super(CommunityDto.class);
+		SormasUI ui = (SormasUI) getUI();
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CommunitiesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -57,7 +58,6 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 
 		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
-		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
 		}

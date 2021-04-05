@@ -25,13 +25,14 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 
 	public CountriesGrid(CountryCriteria criteria) {
 		super(CountryIndexDto.class);
+		SormasUI ui = (SormasUI) getUI();
 
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CountriesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -48,7 +49,6 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 			CountryIndexDto.DEFAULT_NAME);
 		getColumn(CountryIndexDto.DEFAULT_NAME).setHidden(true);
 
-		SormasUI ui = (SormasUI) getUI();
 		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCountry(e.getUuid()));
 		}

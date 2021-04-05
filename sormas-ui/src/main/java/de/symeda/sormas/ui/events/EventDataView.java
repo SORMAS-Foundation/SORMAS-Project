@@ -35,7 +35,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -160,7 +159,7 @@ public class EventDataView extends AbstractEventView {
 		shortcutLinksLayout.setMargin(false);
 		shortcutLinksLayout.setSpacing(true);
 
-		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
@@ -169,7 +168,7 @@ public class EventDataView extends AbstractEventView {
 			shortcutLinksLayout.addComponent(seeEventCasesBtn);
 		}
 
-		if (((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.CONTACT_VIEW)) {
 			Button seeEventContactsBtn = ButtonHelper.createButtonWithCaption(
 				"eventLinkToContacts",
 				I18nProperties.getCaption(Captions.eventLinkToContacts),

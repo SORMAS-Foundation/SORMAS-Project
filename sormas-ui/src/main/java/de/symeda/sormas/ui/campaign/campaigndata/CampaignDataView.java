@@ -268,7 +268,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
-		final UserDto user = ((SormasUI) getUI()).getUserProvider().getUser();
+		final UserDto user = sormasUI().getUserProvider().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
@@ -301,7 +301,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
-				Language userLanguage = ((SormasUI) getUI()).getUserProvider().getUser().getLanguage();
+				Language userLanguage = sormasUI().getUserProvider().getUser().getLanguage();
 				CampaignFormTranslations translations = null;
 				if (userLanguage != null) {
 					translations = formMeta.getCampaignFormTranslations()

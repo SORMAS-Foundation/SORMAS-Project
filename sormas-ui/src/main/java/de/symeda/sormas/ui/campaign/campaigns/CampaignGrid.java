@@ -51,6 +51,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 	public CampaignGrid(CampaignCriteria criteria) {
 
 		super(CampaignIndexDto.class);
+		SormasUI ui = (SormasUI) getUI();
 
 		setSizeFull();
 
@@ -65,7 +66,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			setCriteria(criteria);
 		}
 
-		final boolean canEditCampaigns = ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CAMPAIGN_EDIT);
+		final boolean canEditCampaigns = ui.getUserProvider().hasUserRight(UserRight.CAMPAIGN_EDIT);
 		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml();
 		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
 		final String navigateToCampaignColumnId = canEditCampaigns ? EDIT_BTN_ID : OPEN_BTN_ID;

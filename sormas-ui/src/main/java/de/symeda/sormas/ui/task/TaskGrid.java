@@ -67,7 +67,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		SormasUI ui = ((SormasUI) getUI());
+		SormasUI ui = (SormasUI) getUI();
 		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
