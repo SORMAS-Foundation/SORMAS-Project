@@ -31,8 +31,6 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.messaging.ManualMessageLogDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -93,6 +91,8 @@ public interface CaseFacade {
 	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
+
+	CaseDataDto getByUuid(String uuid);
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
 

@@ -25,7 +25,6 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.region.SubcontinentFacade;
@@ -71,7 +70,6 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			.collect(Collectors.toList());
 	}
 
-
 	@Override
 	public SubcontinentReferenceDto getByCountry(CountryReferenceDto countryDto) {
 		return toReferenceDto(countryService.getByUuid(countryDto.getUuid()).getSubcontinent());
@@ -113,12 +111,12 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Subcontinent> cq = cb.createQuery(Subcontinent.class);
 		Root<Subcontinent> subcontinent = cq.from(Subcontinent.class);
-		Join<Object, Object> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
+		Join<Subcontinent, Continent> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
 
 		Predicate filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -126,10 +124,13 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case SubcontinentIndexDto.DISPLAY_NAME:
+					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
+					break;
 				case SubcontinentDto.CONTINENT:
 					expression = continent.get(Continent.DEFAULT_NAME);
+					break;
 				case SubcontinentDto.EXTERNAL_ID:
-				case SubcontinentDto.DEFAULT_NAME:
 					expression = subcontinent.get(sortProperty.propertyName);
 					break;
 				default:

@@ -1132,23 +1132,24 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			Join<Person, Location> location = joins.getAddress();
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i].toLowerCase());
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(from.get(Contact.UUID)), textFilter),
-						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
-						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter),
-						cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), textFilter),
-						cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
-						phoneNumberPredicate(cb, (Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
-						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
-						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(Contact.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
+					phoneNumberPredicate(cb, (Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyHighPriorityContacts())) {
@@ -1191,15 +1192,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
-				for (String s : textFilters) {
-					String textFilter = formatForLike(s);
-					if (!DataHelper.isNullOrEmpty(textFilter)) {
-						Predicate likeFilters = cb.or(
-							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
-							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
-							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
-						filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+				for (String textFilter : textFilters) {
+					if (DataHelper.isNullOrEmpty(textFilter)) {
+						continue;
 					}
+
+					Predicate likeFilters = cb.or(
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_DESC), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_TITLE), textFilter),
+						CriteriaBuilderHelper.ilike(cb, event.get(Event.UUID), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 			if (hasOnlyContactsSharingEventWithSourceCase) {

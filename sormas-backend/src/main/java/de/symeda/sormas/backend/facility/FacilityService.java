@@ -258,13 +258,15 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		}
 		if (facilityCriteria.getNameCityLike() != null) {
 			String[] textFilters = facilityCriteria.getNameCityLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Facility.NAME)), textFilter), cb.like(cb.lower(from.get(Facility.CITY)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.CITY), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (facilityCriteria.getType() != null) {

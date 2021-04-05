@@ -165,6 +165,7 @@ public class CasesView extends AbstractView {
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
+			((AbstractCaseGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -721,7 +722,7 @@ public class CasesView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 
-		if (viewConfiguration.isInEagerMode()) {
+		if (viewConfiguration.isInEagerMode() && viewConfiguration.getViewType() != CasesViewType.FOLLOW_UP_VISITS_OVERVIEW) {
 			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 			caseGrid.setEagerDataProvider();
 		}

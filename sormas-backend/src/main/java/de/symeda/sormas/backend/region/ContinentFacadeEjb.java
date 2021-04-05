@@ -108,8 +108,10 @@ public class ContinentFacadeEjb implements ContinentFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case ContinentIndexDto.DISPLAY_NAME:
+					expression = continent.get(Continent.DEFAULT_NAME);
+					break;
 				case ContinentDto.EXTERNAL_ID:
-				case ContinentDto.DEFAULT_NAME:
 					expression = continent.get(sortProperty.propertyName);
 					break;
 				default:

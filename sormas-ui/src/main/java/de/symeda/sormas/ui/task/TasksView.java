@@ -94,15 +94,14 @@ public class TasksView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				taskListComponent.getBulkOperationsDropdown().setVisible(true);
-				viewConfiguration.setInEagerMode(true);
+				ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				taskListComponent.getGrid().setEagerDataProvider();
 				taskListComponent.getGrid().reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				taskListComponent.getBulkOperationsDropdown().setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(taskListComponent.getCriteria());

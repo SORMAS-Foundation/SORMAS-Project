@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -52,7 +53,6 @@ import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
@@ -63,13 +63,15 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
+	private DataProviderListener<EventIndexDto> dataProviderListener;
+
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventGrid(EventCriteria criteria, Class<V> viewClass) {
 
 		super(EventIndexDto.class);
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		EventsViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(EventsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		SormasUI ui = (SormasUI) getUI();
@@ -226,7 +228,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			deselectAll();
 		}
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
+		EventsViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(EventsViewConfiguration.class);
 		if (viewConfiguration.isInEagerMode()) {
 			setEagerDataProvider();
 		}
@@ -257,5 +259,13 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<EventIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

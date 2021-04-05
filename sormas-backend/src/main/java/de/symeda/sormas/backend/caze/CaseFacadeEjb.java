@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,8 +70,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.Page;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -112,6 +111,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
@@ -138,6 +138,7 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -422,10 +423,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caseService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
-	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
-		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, page * size, size, sortProperties);
+	public CaseDataDto getByUuid(String uuid) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(caseService.getByUuid(uuid), pseudonymizer);
+	}
+
+	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, offset, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
-		return new Page<CaseIndexDto>(caseIndexList, page, size, totalElementCount);
+		return new Page<CaseIndexDto>(caseIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -3198,7 +3204,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			DtoHelper.copyDtoValues(leadPerson, otherPerson, cloning);
+			Set primaryContactDetailTypes = new HashSet<>();
+			for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
+				if (contactDetailDto.isPrimaryContact()) {
+					primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
+				}
+			}
+			for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
+				if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
+					contactDetailDto.setPrimaryContact(false);
+				}
+			}
+			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
 			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));

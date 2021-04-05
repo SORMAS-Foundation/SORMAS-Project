@@ -24,6 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.components.FormActionButtonsComponent;
 
@@ -43,8 +44,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	protected FormActionButtonsComponent formActionButtonsComponent;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
+		this(type, propertyI18nPrefix, null);
+	}
 
-		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(null, null), true);
+	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
+
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
