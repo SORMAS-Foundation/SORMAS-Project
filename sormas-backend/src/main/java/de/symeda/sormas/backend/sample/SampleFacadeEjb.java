@@ -372,8 +372,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<Location, District> eventDistrict = joins.getEventDistrict();
 
-		final Join<Sample, LabMessage> labMessage = joins.getLabMessage();
-
 		Expression<Object> diseaseSelect = cb.selectCase()
 			.when(cb.isNotNull(caze), caze.get(Case.DISEASE))
 			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE)).otherwise(event.get(Event.DISEASE)));
@@ -398,7 +396,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
-				labMessage.get(LabMessage.UUID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SHIPPED),
 				sample.get(Sample.SHIPMENT_DATE),
@@ -451,7 +448,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:
@@ -490,9 +486,6 @@ public class SampleFacadeEjb implements SampleFacade {
 					break;
 				case SampleIndexDto.LAB:
 					expression = joins.getLab().get(Facility.NAME);
-					break;
-				case SampleIndexDto.SOURCE_LAB_MESSAGE:
-					expression = joins.getLabMessage().get(LabMessage.UUID);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -858,7 +851,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
 		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
-		target.setSourceLabMessage(labMessageService.getByReferenceDto(source.getSourceLabMessage()));
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
@@ -996,7 +988,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
 		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
-		target.setSourceLabMessage(LabMessageFacadeEjb.toReferenceDto(source.getSourceLabMessage()));
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());

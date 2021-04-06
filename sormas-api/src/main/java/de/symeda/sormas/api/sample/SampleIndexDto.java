@@ -51,8 +51,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
-	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String SOURCE_LAB_MESSAGE = "sourceLabMessage";
 	public static final String DISTRICT = "district";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";
@@ -81,7 +79,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;
-	private LabMessageReferenceDto sourceLabMessage;
 	private Disease disease;
 	private String diseaseDetails;
 	private DistrictReferenceDto district;
@@ -103,7 +100,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private SampleJurisdictionDto jurisdiction;
 
 	//@formatter:off
-	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, String sourceMessageUuid, Date sampleDateTime,
+	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 						  String labName, String referredSampleUuid,
@@ -136,9 +133,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
-		if (sourceMessageUuid != null) {
-			this.sourceLabMessage = new LabMessageReferenceDto(sourceMessageUuid);
-		}
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.district =
@@ -291,14 +285,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
-	}
-
-	public LabMessageReferenceDto getSourceLabMessage() {
-		return sourceLabMessage;
-	}
-
-	public void setSourceLabMessage(LabMessageReferenceDto sourceLabMessage) {
-		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	public DistrictReferenceDto getDistrict() {

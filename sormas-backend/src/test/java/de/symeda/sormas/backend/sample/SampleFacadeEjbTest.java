@@ -480,7 +480,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id");
-			s.setSourceLabMessage(new LabMessageReferenceDto("uuid1"));
 			s.setSampleDateTime(sampleDateTime1);
 			s.setSampleMaterial(SampleMaterial.BLOOD);
 		});
@@ -488,7 +487,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date sampleDateTime2 = DateHelper.parseDate("08.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
 		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
 			s.setLabSampleID("case_sample_id_2");
-			s.setSourceLabMessage(new LabMessageReferenceDto("uuid2"));
 			s.setSampleDateTime(sampleDateTime2);
 			s.setSampleMaterial(SampleMaterial.BLOOD);
 		});

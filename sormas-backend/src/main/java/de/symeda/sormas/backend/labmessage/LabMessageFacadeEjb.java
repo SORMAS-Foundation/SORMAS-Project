@@ -47,6 +47,8 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -70,6 +72,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@EJB
 	private LabMessageService labMessageService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -118,6 +124,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
+		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 
 		return target;
 	}
@@ -172,6 +180,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
+		if (target.isProcessed()) {
+			target.setSample(source.getSample().toReference());
+			if (target.getPathogenTest() != null) {
+				target.setPathogenTest(source.getPathogenTest().toReference());
+			}
+		}
 
 		return target;
 	}

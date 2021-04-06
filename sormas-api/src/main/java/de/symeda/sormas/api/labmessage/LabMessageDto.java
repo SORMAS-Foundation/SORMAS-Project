@@ -5,9 +5,11 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -45,6 +47,8 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String TEST_RESULT_TEXT = "testResultText";
+	public static final String SAMPLE = "sample";
+	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -78,6 +82,8 @@ public class LabMessageDto extends EntityDto {
 
 	private boolean processed;
 	private String testResultText;
+	private SampleReferenceDto sample;
+	private PathogenTestReferenceDto pathogenTest;
 
 	public Date getMessageDateTime() {
 		return messageDateTime;
@@ -328,5 +334,21 @@ public class LabMessageDto extends EntityDto {
 
 	public LabMessageReferenceDto toReferenceDto() {
 		return new LabMessageReferenceDto(getUuid());
+	}
+
+	public SampleReferenceDto getSample() {
+		return sample;
+	}
+
+	public void setSample(SampleReferenceDto sample) {
+		this.sample = sample;
+	}
+
+	public PathogenTestReferenceDto getPathogenTest() {
+		return pathogenTest;
+	}
+
+	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
+		this.pathogenTest = pathogenTest;
 	}
 }

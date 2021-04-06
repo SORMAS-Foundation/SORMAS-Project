@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -114,7 +115,15 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer) {
+		return getSampleCreateComponent(sampleDto, consumer, ()-> {});
+	}
+
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
+		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {}, callback);
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer, Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -124,7 +133,7 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm);
+				saveSample(createForm, consumer);
 				callback.run();
 			}
 		});
@@ -167,12 +176,15 @@ public class SampleController {
 	}
 
 	private void saveSample(SampleCreateForm createForm) {
+		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {}));
+	}
+
+	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer) {
 
 		final SampleDto newSample = createForm.getValue();
 		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
 		if (testResult != null) {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
-			pathogenTest.setSourceLabMessage(newSample.getSourceLabMessage());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
 			newSample.setPathogenTestResult(testResult);
@@ -206,8 +218,9 @@ public class SampleController {
 				}
 			}
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
-			FacadeProvider.getSampleFacade().saveSample(newSample);
-			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
+			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+			consumer.accept(savedSample, savedPathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
@@ -222,7 +235,8 @@ public class SampleController {
 				}
 			}
 		} else {
-			FacadeProvider.getSampleFacade().saveSample(newSample);
+			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
+			consumer.accept(savedSample, null);
 		}
 	}
 

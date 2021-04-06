@@ -78,7 +78,6 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 	public static final String ASSOCIATED_CONTACT = "associatedContact";
 	public static final String ASSOCIATED_EVENT_PARTICIPANT = "associatedEventParticipant";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String SOURCE_LAB_MESSAGE = "sourceLabMessage";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -114,7 +113,6 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 	private Contact associatedContact;
 	private EventParticipant associatedEventParticipant;
 	private String labSampleID;
-	private LabMessage sourceLabMessage;
 	private String fieldSampleID;
 	private Date sampleDateTime;
 
@@ -196,14 +194,6 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
-	}
-
-	@ManyToOne
-	@JoinColumn
-	public LabMessage getSourceLabMessage() { return sourceLabMessage; }
-
-	public void setSourceLabMessage(LabMessage sourceLabMessage) {
-		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

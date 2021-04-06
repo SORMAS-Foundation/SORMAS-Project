@@ -74,7 +74,6 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	private ContactReferenceDto associatedContact;
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String labSampleID;
-	private LabMessageReferenceDto sourceLabMessage;
 	private String fieldSampleID;
 	@Required
 	private Date sampleDateTime;
@@ -162,15 +161,6 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
-	}
-
-	@ImportIgnore
-	public LabMessageReferenceDto getSourceLabMessage() {
-		return sourceLabMessage;
-	}
-
-	public void setSourceLabMessage(LabMessageReferenceDto sourceLabMessage) {
-		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	public String getFieldSampleID() {

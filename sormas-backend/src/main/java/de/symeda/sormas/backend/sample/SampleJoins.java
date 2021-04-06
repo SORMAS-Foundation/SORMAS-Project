@@ -44,7 +44,6 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	private Join<Sample, Case> caze;
 	private Join<Sample, EventParticipant> eventParticipant;
 	private Join<Sample, Contact> contact;
-	private Join<Sample, LabMessage> labMessage;
 	private Join<Case, Person> casePerson;
 	private Join<Case, User> caseReportingUser;
 	private Join<Case, Region> caseRegion;
@@ -434,11 +433,4 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 		this.contactPersonAddressCommunity = contactPersonAddressCommunity;
 	}
 
-	public Join<Sample, LabMessage> getLabMessage() {
-		return getOrCreate(labMessage, Sample.SOURCE_LAB_MESSAGE, JoinType.LEFT, this::setLabMessage);
-	}
-
-	public void setLabMessage(Join<Sample, LabMessage> labMessage) {
-		this.labMessage = labMessage;
-	}
 }
