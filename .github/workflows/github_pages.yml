@@ -1,5 +1,8 @@
 name: Publish GitHub Pages
 on:
+  pull_request:
+    branches:
+      - development
   push:
     branches:
       - master
