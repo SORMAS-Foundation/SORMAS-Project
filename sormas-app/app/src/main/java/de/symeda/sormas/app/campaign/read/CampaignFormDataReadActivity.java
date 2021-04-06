@@ -18,6 +18,9 @@
 
 package de.symeda.sormas.app.campaign.read;
 
+import android.content.Context;
+
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -27,6 +30,11 @@ import de.symeda.sormas.app.campaign.edit.CampaignFormDataEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
 public class CampaignFormDataReadActivity extends BaseReadActivity<CampaignFormData> {
+
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseActivity.startActivity(context, CampaignFormDataReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+    }
+
     @Override
     protected CampaignFormData queryRootEntity(String recordUuid) {
         return DatabaseHelper.getCampaignFormDataDao().queryUuidWithEmbedded(recordUuid);

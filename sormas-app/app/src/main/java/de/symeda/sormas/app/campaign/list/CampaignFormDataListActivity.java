@@ -7,19 +7,19 @@ import android.widget.AdapterView;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public class CampaignListActivity extends PagedBaseListActivity {
+public class CampaignFormDataListActivity extends PagedBaseListActivity<CampaignFormData> {
 
-    private CampaignListViewModel model;
+    private CampaignFormDataListViewModel model;
 
-    public static void startActivity(Context context, InvestigationStatus listFilter) {
-        BaseListActivity.startActivity(context, CampaignListActivity.class, buildBundle(0));
+    public static void startActivity(Context context) {
+        BaseListActivity.startActivity(context, CampaignFormDataListActivity.class, buildBundle(0));
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CampaignListActivity extends PagedBaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new CampaignListAdapter();
+        adapter = new CampaignFormDataListAdapter();
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -48,9 +48,9 @@ public class CampaignListActivity extends PagedBaseListActivity {
             }
         });
 
-        model = ViewModelProviders.of(this).get(CampaignListViewModel.class);
-        model.getCampaigns().observe(this, campaigns -> {
-            adapter.submitList(campaigns);
+        model = ViewModelProviders.of(this).get(CampaignFormDataListViewModel.class);
+        model.getCampaignFormDataList().observe(this, campaignFormData  -> {
+            adapter.submitList(campaignFormData);
             hidePreloader();
         });
     }
@@ -66,8 +66,8 @@ public class CampaignListActivity extends PagedBaseListActivity {
         super.onResume();
         if (getIntent().getBooleanExtra("refreshOnResume", false)) {
             showPreloader();
-            if (model.getCampaigns().getValue() != null) {
-                model.getCampaigns().getValue().getDataSource().invalidate();
+            if (model.getCampaignFormDataList().getValue() != null) {
+                model.getCampaignFormDataList().getValue().getDataSource().invalidate();
             }
         }
     }
@@ -84,7 +84,11 @@ public class CampaignListActivity extends PagedBaseListActivity {
 
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
-        return null;
+        return CampaignFormDataListFragment.newInstance();
+//        if (menuItem != null) {
+//
+//        }
+//        return null;
     }
 
     @Override
