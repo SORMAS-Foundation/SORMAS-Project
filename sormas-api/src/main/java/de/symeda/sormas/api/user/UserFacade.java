@@ -78,4 +78,6 @@ public interface UserFacade {
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
 	UserSyncResult syncUser(String userUuid);
+
+	List<UserDto> getUsersWithDefaultPassword();
 }
