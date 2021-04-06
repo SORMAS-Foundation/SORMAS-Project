@@ -209,9 +209,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 							I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 					}
 				});
-			} else if (admissionDateField.isValid()) {
+			} else {
+				// remove all invalidity-indicators and re-evaluate field
 				admissionDateField.setComponentError(null);
+				admissionDateField.markAsDirty();
 			}
+			// re-evaluate validity of dischargeDate (necessary because discharge has to be after admission)
+			dischargeDateField.markAsDirty();
 		});
 		admissionDateField.addValidator(
 			new DateComparisonValidator(
@@ -227,6 +231,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
+		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 		intensiveCareUnitStart.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitStart,
