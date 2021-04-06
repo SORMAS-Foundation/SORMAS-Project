@@ -95,12 +95,12 @@ public class PopulationDataImporter extends DataImporter {
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					community = null;
 				} else {
-					List<CommunityReferenceDto> communitys = FacadeProvider.getCommunityFacade().getByName(values[i], district, false);
-					if (communitys.size() != 1) {
+					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getByName(values[i], district, false);
+					if (communities.size() != 1) {
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 						return ImportLineResult.ERROR;
 					}
-					community = communitys.get(0);
+					community = communities.get(0);
 				}
 			}
 		}
