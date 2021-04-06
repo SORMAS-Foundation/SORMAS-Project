@@ -60,10 +60,10 @@ public class EventParticipantDownloadUtil {
 		}
 		return I18nProperties.findPrefixCaption(
 			propertyId,
-			EventDto.I18N_PREFIX,
-			PersonDto.I18N_PREFIX,
 			EventParticipantExportDto.I18N_PREFIX,
 			EventParticipantDto.I18N_PREFIX,
+			EventDto.I18N_PREFIX,
+			PersonDto.I18N_PREFIX,
 			CaseDataDto.I18N_PREFIX,
 			LocationDto.I18N_PREFIX);
 	}
