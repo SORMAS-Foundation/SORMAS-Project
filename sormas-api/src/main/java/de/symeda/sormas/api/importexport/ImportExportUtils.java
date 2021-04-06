@@ -18,7 +18,6 @@
 package de.symeda.sormas.api.importexport;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,22 +120,20 @@ public final class ImportExportUtils {
 				}
 			}
 
-			try {
-				ExportEntity MethodClassEntity = method.getAnnotation(ExportEntity.class); //.value();
-				if (MethodClassEntity != null) {
-					Class MethodClass = MethodClassEntity.value();
-					Field i18n_field = MethodClass.getDeclaredField("I18N_PREFIX");
-					properties.add(
-						new ExportPropertyMetaInfo(
-							property,
-							propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], (String) i18n_field.get(null)),
-							groupType));
+			// prepare ExportPropertyMetaInfo
+			// In order to get the correct caption, we try to fetch the i18n-prefix of the methods declaring class
+			String i18n_prefix = null;
+			ExportEntity MethodClassEntity = method.getAnnotation(ExportEntity.class);
+			if (MethodClassEntity != null) {
+				try {
+					i18n_prefix = (String) MethodClassEntity.value().getDeclaredField("I18N_PREFIX").get(null);
+				} catch (NoSuchFieldException | IllegalAccessException ex) {
+					// Field doesn't exist or is private
 				}
-			} catch (NoSuchFieldException | IllegalAccessException ex) {
-				// Field doesn't exist or is private
-				properties
-					.add(new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], null), groupType));
 			}
+			properties.add(
+				new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], i18n_prefix), groupType));
+
 		}
 
 		return properties;
