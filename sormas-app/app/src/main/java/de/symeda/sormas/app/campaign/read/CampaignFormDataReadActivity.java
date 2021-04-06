@@ -20,6 +20,7 @@ package de.symeda.sormas.app.campaign.read;
 
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.campaign.edit.CampaignFormDataEditActivity;
@@ -38,7 +39,7 @@ public class CampaignFormDataReadActivity extends BaseReadActivity<CampaignFormD
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, CampaignFormData activityRootData) {
-        return null;
+        return CampaignFormDataReadFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -48,6 +49,6 @@ public class CampaignFormDataReadActivity extends BaseReadActivity<CampaignFormD
 
     @Override
     protected int getActivityTitle() {
-        return 0;
+        return R.string.heading_campaign_form_data_read;
     }
 }

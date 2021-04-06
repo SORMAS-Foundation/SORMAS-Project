@@ -55,4 +55,14 @@ public class Area extends InfrastructureAdo {
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
 }
