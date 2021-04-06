@@ -61,8 +61,6 @@ If you're interested in participating in the development of SORMAS, you can use 
 
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
 * [Adding license headers](ADDING_LICENSE.md)
-* [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
-* [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)
 
 ### Development Contributing Guidelines
 

@@ -125,10 +125,10 @@ Keycloak can be set up in two ways:
 * SORMAS Server is installed
 * PostgreSQL is installed
 * Docker is installed
-* Open and edit [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) with your system's actual values *(on Windows use Git Bash)*.
+* Open and edit `sormas-base/setup/keycloak/keycloak-setup.sh` with your system's actual values *(on Windows use Git Bash)*.
 
 **Setup**
-* Run [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh)
+* Run `sormas-base/setup/keycloak/keycloak-setup.sh`
 * Update `sormas.properties` file in the SORMAS domain with the property `authentication.provider=KEYCLOAK`
 
 
@@ -145,8 +145,8 @@ Setting Keycloak up as a standalone installation [Server Installation and Config
 * Set up an Admin User
 * Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/11.0/server_development/#deploying-themes)
 * Deploy the `sormas-keycloak-service-provider` [Using Keycloak Deployer](https://www.keycloak.org/docs/11.0/server_development/#using-the-keycloak-deployer)
-* Update the [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) file by replacing the following placeholders: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
-* Create the SORMAS Realm by importing [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) see [Create a New Realm](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
+* Update the `sormas-base/setup/keycloak/SORMAS.json` file by replacing the following placeholders: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
+* Create the SORMAS Realm by importing `sormas-base/setup/keycloak/SORMAS.json` see [Create a New Realm](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
 * Update the `sormas-*` clients by generating new secrets for them
 * Update the realm's email settings to allow sending emails to users
 
@@ -384,8 +384,7 @@ chmod +x r-setup.sh
 ## SORMAS to SORMAS Certificate Setup
 
 To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
-up the certificate and the truststore. Please see the [related guide](GUIDE_SORMAS2SORMAS_CERTIFICATE.md) for detailed instructions regarding
-SORMAS to SORMAS setup.
+up the certificate and the truststore.
 <br/>
 
 ## Troubleshooting
