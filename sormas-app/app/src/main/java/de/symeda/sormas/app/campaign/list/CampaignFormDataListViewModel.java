@@ -15,12 +15,12 @@ import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
-public class CampaignListViewModel extends ViewModel {
+public class CampaignFormDataListViewModel extends ViewModel {
 
     private LiveData<PagedList<CampaignFormData>> campaignsList;
     private CampaignsDataFactory campaignsDataFactory;
 
-    public CampaignListViewModel() {
+    public CampaignFormDataListViewModel() {
         campaignsDataFactory = new CampaignsDataFactory();
         CampaignFormDataCriteria campaignFormDataCriteria = new CampaignFormDataCriteria();
         campaignsDataFactory.setCampaignFormDataCriteria(campaignFormDataCriteria);

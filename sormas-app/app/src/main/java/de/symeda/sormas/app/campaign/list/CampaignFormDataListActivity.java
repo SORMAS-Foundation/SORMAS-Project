@@ -14,12 +14,12 @@ import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public class CampaignListActivity extends PagedBaseListActivity {
+public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
-    private CampaignListViewModel model;
+    private CampaignFormDataListViewModel model;
 
     public static void startActivity(Context context, InvestigationStatus listFilter) {
-        BaseListActivity.startActivity(context, CampaignListActivity.class, buildBundle(0));
+        BaseListActivity.startActivity(context, CampaignFormDataListActivity.class, buildBundle(0));
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CampaignListActivity extends PagedBaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new CampaignListAdapter();
+        adapter = new CampaignFormDataListAdapter();
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -48,7 +48,7 @@ public class CampaignListActivity extends PagedBaseListActivity {
             }
         });
 
-        model = ViewModelProviders.of(this).get(CampaignListViewModel.class);
+        model = ViewModelProviders.of(this).get(CampaignFormDataListViewModel.class);
         model.getCampaigns().observe(this, campaigns -> {
             adapter.submitList(campaigns);
             hidePreloader();

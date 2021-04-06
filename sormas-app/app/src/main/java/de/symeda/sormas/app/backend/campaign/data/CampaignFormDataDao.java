@@ -44,7 +44,7 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		return CampaignFormData.TABLE_NAME;
 	}
 
-	public List<CampaignFormData> queryByCriteria(CampaignFormCriteria criteria, long offset, long limit) {
+	public List<CampaignFormData> queryByCriteria(CampaignFormDataCriteria criteria, long offset, long limit) {
 		try {
 			return buildQueryBuilder(criteria).orderBy(CampaignFormData.FORM_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
@@ -53,7 +53,7 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		}
 	}
 
-	public long countByCriteria(CampaignFormCriteria criteria) {
+	public long countByCriteria(CampaignFormDataCriteria criteria) {
 		try {
 			return buildQueryBuilder(criteria).countOf();
 		} catch (SQLException e) {
@@ -62,7 +62,7 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		}
 	}
 
-	private QueryBuilder<CampaignFormData, Long> buildQueryBuilder(CampaignFormCriteria criteria) throws SQLException {
+	private QueryBuilder<CampaignFormData, Long> buildQueryBuilder(CampaignFormDataCriteria criteria) throws SQLException {
 		QueryBuilder<CampaignFormData, Long> queryBuilder = queryBuilder();
 
 		List<Where<CampaignFormData, Long>> whereStatements = new ArrayList<>();

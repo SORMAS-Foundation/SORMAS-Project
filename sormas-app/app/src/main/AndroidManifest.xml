@@ -271,7 +271,7 @@
         </activity>
 
         <activity
-            android:name=".campaign.list.CampaignListActivity"
+            android:name=".campaign.list.CampaignFormDataListActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">

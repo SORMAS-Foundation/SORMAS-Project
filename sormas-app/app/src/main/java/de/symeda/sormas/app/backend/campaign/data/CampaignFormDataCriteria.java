@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.app.backend.campaign.Campaign;
 
-public class CampaignFormCriteria implements Serializable {
+public class CampaignFormDataCriteria implements Serializable {
 
     private Campaign campaign;
 
