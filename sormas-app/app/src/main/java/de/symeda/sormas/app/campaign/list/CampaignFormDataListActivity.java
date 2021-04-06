@@ -53,6 +53,11 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             adapter.submitList(campaignFormData);
             hidePreloader();
         });
+
+        setOpenPageCallback(p -> {
+            showPreloader();
+            model.notifyCriteriaUpdated();
+        });
     }
 
     @Override
