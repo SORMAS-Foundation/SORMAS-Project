@@ -51,8 +51,8 @@ If you want to learn more about the development and contribution process, settin
 * [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the configuration file.
 * [Internationalization](docs/I18N.md) - SORMAS can be translated in any language by using the open source tool [Crowdin](https://crowdin.com/project/sormas); this resource explains how this process is working.
 * [Disease Definition Instructions](docs/SOP_DISEASES.md) - We already support a large number of diseases, but not all of them are fully configured for case-based surveillance, and some might not be part of SORMAS at all yet; if you need SORMAS to support a specific disease, please use these instructions to give us all the information we need in order to extend the software with your requested disease.
-* [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them
-* [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using
+* [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
+* [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
 If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following guides:
 * [Installing a SORMAS Server](docs/SERVER_SETUP.md)
