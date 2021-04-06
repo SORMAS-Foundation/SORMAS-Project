@@ -731,13 +731,25 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		hcjs.append("],");
 
-		hcjs.append(
-			"exporting: {\n" + "        buttons: {\n" + "            contextButton: {\n" + "                menuItems: [\n"
-				+ "                    'printChart',\n" + "                    'separator',\n" + "                    'downloadPNG',\n"
-				+ "                    'downloadJPEG',\n" + "                    'downloadPDF',\n" + "                    'downloadSVG',\n"
-				+ "                    'downloadCSV',\n" + "                    'downloadXLS'\n" + "                ]\n" + "            }\n"
-				+ "        }\n" + "    }");
+		//@formatter:off
+		hcjs.append("exporting: {\n" +
+						"        buttons: {\n" +
+						"            contextButton: {\n" +
+						"                menuItems: [\n" +
+						"                    'printChart',\n" +
+						"                    'separator',\n" +
+						"                    'downloadPNG',\n" +
+						"                    'downloadJPEG',\n" +
+						"                    'downloadPDF',\n" +
+						"                    'downloadSVG',\n" +
+						"                    'downloadCSV',\n" +
+						"                    'downloadXLS'\n" +
+						"                ]\n" +
+						"            }\n" +
+						"        }\n" +
+						"    }");
 		hcjs.append("};");
+		//@formatter:on
 
 		chart.setHcjs(hcjs.toString());
 		resultsLayout.addComponent(chart);
