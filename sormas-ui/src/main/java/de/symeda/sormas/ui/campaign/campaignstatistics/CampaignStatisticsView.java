@@ -19,6 +19,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
@@ -41,9 +42,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 public class CampaignStatisticsView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaignstatistics";
-
-	private static final String ELEMENT_TYPE_NUMBER = "number";
-	private static final String ELEMENT_TYPE_YES_NO = "yes-no";
 
 	private final CampaignSelector campaignSelector;
 	private final CampaignStatisticsCriteria criteria;
@@ -187,22 +185,26 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				for (CampaignFormElement element : campaignFormElements) {
 					if (element.isImportant() || !onlyImportantFormElements) {
 						String type = element.getType();
-						if (type.equals(ELEMENT_TYPE_NUMBER) || type.equals(ELEMENT_TYPE_YES_NO)) {
-							String caption = null;
-							if (translations != null) {
-								caption = translations.getTranslations()
-									.stream()
-									.filter(t -> t.getElementId().equals(element.getId()))
-									.map(TranslationElement::getCaption)
-									.findFirst()
-									.orElse(null);
-							}
-							if (caption == null) {
-								caption = element.getCaption();
-							}
+						if (type != null) {
+							CampaignFormElementType campaignFormElementType = CampaignFormElementType.fromString(type);
+							if (campaignFormElementType == CampaignFormElementType.NUMBER
+								|| campaignFormElementType == CampaignFormElementType.YES_NO) {
+								String caption = null;
+								if (translations != null) {
+									caption = translations.getTranslations()
+										.stream()
+										.filter(t -> t.getElementId().equals(element.getId()))
+										.map(TranslationElement::getCaption)
+										.findFirst()
+										.orElse(null);
+								}
+								if (caption == null) {
+									caption = element.getCaption();
+								}
 
-							if (caption != null) {
-								grid.addCustomColumn(element.getId(), caption);
+								if (caption != null) {
+									grid.addCustomColumn(element.getId(), caption);
+								}
 							}
 						}
 					}
