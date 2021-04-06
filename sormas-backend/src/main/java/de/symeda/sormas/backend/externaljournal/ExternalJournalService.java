@@ -396,7 +396,7 @@ public class ExternalJournalService {
 			if (!validator.isValid(email)) {
 				validationErrors.add(INVALID_EMAIL);
 			}
-			if (!isEmailAvailable(person)) {
+			if (!isEmailAvailable(email, person)) {
 				validationErrors.add(EMAIL_TAKEN);
 			}
 		}
@@ -428,8 +428,8 @@ public class ExternalJournalService {
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(PersonDto person) {
-		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+	private boolean isEmailAvailable(String email, PersonDto person) {
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, email)
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()

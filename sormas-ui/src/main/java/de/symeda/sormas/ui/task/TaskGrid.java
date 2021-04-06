@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -56,6 +57,8 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
+
+	private DataProviderListener<TaskIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public TaskGrid(TaskCriteria criteria) {
@@ -197,6 +200,10 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			deselectAll();
 		}
 
+		if (ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 
@@ -241,5 +248,13 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<TaskIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

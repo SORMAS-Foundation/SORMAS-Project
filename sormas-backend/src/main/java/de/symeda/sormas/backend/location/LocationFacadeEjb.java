@@ -28,12 +28,16 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
+import de.symeda.sormas.backend.region.ContinentService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.region.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.region.SubcontinentService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "LocationFacade")
@@ -42,6 +46,10 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private LocationService locationService;
 	@EJB
+	private ContinentService continentService;
+	@EJB
+	private SubcontinentService subcontinentService;
+	@EJB
 	private CountryService countryService;
 	@EJB
 	private RegionService regionService;
@@ -49,8 +57,6 @@ public class LocationFacadeEjb implements LocationFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
-	@EJB
-	private PersonService personService;
 	@EJB
 	private FacilityService facilityService;
 
@@ -66,6 +72,8 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+		target.setSubcontinent(subcontinentService.getByReferenceDto(source.getSubcontinent()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -101,6 +109,8 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 
+		target.setContinent(ContinentFacadeEjb.toReferenceDto(source.getContinent()));
+		target.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(source.getSubcontinent()));
 		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

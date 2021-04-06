@@ -57,6 +57,16 @@
                 app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_continent"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.continent}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_subcontinent"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.subcontinent}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_country"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.country}" />

@@ -38,7 +38,7 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class PreviousHospitalizationDialog extends FormDialog {
 
@@ -86,10 +86,10 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			setLiveValidationDisabled(true);
 		}
 
-		List<Item> initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
-		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
+		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
 		List<Item> hospitalizationReasons = DataUtils.getEnumItems(HospitalizationReasonType.class, true);
 
 		contentBinding.casePreviousHospitalizationHospitalizationReason.initializeSpinner(hospitalizationReasons);
@@ -101,10 +101,10 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			this.contentBinding.casePreviousHospitalizationDistrict.setEnabled(false);
 		}
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
 			data,
 			contentBinding.casePreviousHospitalizationRegion,
 			initialRegions,

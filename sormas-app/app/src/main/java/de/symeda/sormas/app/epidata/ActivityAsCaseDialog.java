@@ -44,6 +44,9 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogActivityAsCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+
 public class ActivityAsCaseDialog extends FormDialog {
 
 	private final ActivityAsCase data;
@@ -72,6 +75,7 @@ public class ActivityAsCaseDialog extends FormDialog {
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
 		locationDialog.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(data.getTypeOfPlace()), true);
+		locationDialog.updateContinentFieldsVisibility();
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.activityAsCaseLocation.setValue(locationClone);

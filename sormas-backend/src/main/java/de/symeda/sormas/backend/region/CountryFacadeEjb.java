@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -49,6 +50,9 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+
+	@EJB
+	private ContinentService continentService;
 	@EJB
 	private SubcontinentService subcontinentService;
 
@@ -77,16 +81,31 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
+	public List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid) {
+		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
+		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CountryReferenceDto> getAllActiveByContinent(String uuid) {
+		Continent continent = continentService.getByUuid(uuid);
+		return continent.getSubcontinents()
+			.stream()
+			.flatMap(subcontinent -> subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
-		Join<Object, Object> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
+		Join<Country, Subcontinent> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -148,15 +167,29 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
+		return saveCountry(dto, false);
+	}
+
+	@Override
+	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
 
 		Country country = countryService.getByUuid(dto.getUuid());
 
-		if (country == null
-			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent() || countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+		if (country == null) {
+			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);
+			Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
+			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
+				if (allowMerge) {
+					country = byIsoCode.isPresent() ? byIsoCode.get() : byUnoCode.get();
+					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+				}
+			}
 		}
 
 		country = fillOrBuildEntity(dto, country, true);

@@ -103,15 +103,29 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
-	public void saveArea(AreaDto area) {
-		Area entity = service.getByUuid(area.getUuid());
+	public void saveArea(AreaDto dto) {
+		saveArea(dto, false);
+	}
 
-		if (entity == null && !service.getByName(area.getName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
+	@Override
+	public void saveArea(AreaDto dto, boolean allowMerge) {
+		Area area = service.getByUuid(dto.getUuid());
+
+		if (area == null) {
+			List<Area> duplicates = service.getByName(dto.getName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					area = duplicates.get(0);
+					AreaDto dtoToMerge = getAreaByUuid(area.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
+				}
+			}
 		}
 
-		entity = fromDto(area, entity, true);
-		service.ensurePersisted(entity);
+		area = fromDto(dto, area, true);
+		service.ensurePersisted(area);
 	}
 
 	@Override
