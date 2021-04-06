@@ -277,7 +277,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 */
 	public void testGetPersonForJournal() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER, UserRole.CONTACT_SUPERVISOR);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.CONTACT_SUPERVISOR);
 
 		final PersonDto person = creator.createPerson();
 		person.setFirstName("Klaus");

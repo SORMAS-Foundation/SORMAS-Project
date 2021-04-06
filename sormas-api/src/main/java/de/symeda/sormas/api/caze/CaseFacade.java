@@ -93,6 +93,8 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 
+	CaseDataDto getByUuid(String uuid);
+
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
 
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);

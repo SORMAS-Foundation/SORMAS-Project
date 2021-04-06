@@ -32,8 +32,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		CriteriaQuery<Continent> cq = cb.createQuery(getElementClass());
 		Root<Continent> from = cq.from(getElementClass());
 
-		Predicate filter = cb
-				.or(cb.equal(cb.trim(from.get(Continent.DEFAULT_NAME)), name.trim()), cb.equal(cb.lower(cb.trim(from.get(Continent.DEFAULT_NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Continent.DEFAULT_NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

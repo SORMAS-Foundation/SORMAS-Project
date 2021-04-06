@@ -52,6 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
+import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -213,7 +214,7 @@ public class MainScreen extends HorizontalLayout {
 		// Add GDPR window
 		// possible to desactivate it with check
 		UserDto user = UserProvider.getCurrent().getUser();
-		if (!user.isHasConsentedToGdpr()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
 			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);
@@ -276,6 +277,7 @@ public class MainScreen extends HorizontalLayout {
 				SamplesView.VIEW_NAME,
 				CampaignsView.VIEW_NAME,
 				CampaignDataView.VIEW_NAME,
+				CampaignStatisticsView.VIEW_NAME,
 				ReportsView.VIEW_NAME,
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,

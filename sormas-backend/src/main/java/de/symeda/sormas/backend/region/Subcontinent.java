@@ -2,9 +2,16 @@ package de.symeda.sormas.backend.region;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
+import de.symeda.sormas.api.i18n.Countries;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
+
+import java.util.List;
 
 @Entity
 public class Subcontinent extends InfrastructureAdo {
@@ -18,6 +25,7 @@ public class Subcontinent extends InfrastructureAdo {
 	private String defaultName;
 	private String externalId;
 	private Continent continent;
+	private List<Country> countries;
 
 	public String getDefaultName() {
 		return defaultName;
@@ -35,13 +43,24 @@ public class Subcontinent extends InfrastructureAdo {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH)
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn(nullable = false)
 	public Continent getContinent() {
 		return continent;
 	}
 
 	public void setContinent(Continent continent) {
 		this.continent = continent;
+	}
+
+	@OneToMany(mappedBy = Country.SUBCONTINENT, cascade = {}, fetch = FetchType.LAZY)
+	@OrderBy(Country.SUBCONTINENT)
+	public List<Country> getCountries() {
+		return countries;
+	}
+
+	public void setCountries(List<Country> countries) {
+		this.countries = countries;
 	}
 
 	@Override

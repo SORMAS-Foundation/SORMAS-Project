@@ -56,9 +56,13 @@ public interface Captions {
 	String actionDismiss = "actionDismiss";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionGenerate = "actionGenerate";
+	String actionGenerateNewPassword = "actionGenerateNewPassword";
+	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
@@ -70,6 +74,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -172,6 +177,7 @@ public interface Captions {
 	String Campaign_district = "Campaign.district";
 	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
+	String Campaign_grouping = "Campaign.grouping";
 	String Campaign_name = "Campaign.name";
 	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
@@ -1188,6 +1194,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
+	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
@@ -2017,6 +2024,8 @@ public interface Captions {
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
+	String View_campaign_campaignstatistics = "View.campaign.campaignstatistics";
+	String View_campaign_campaignstatistics_short = "View.campaign.campaignstatistics.short";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";
