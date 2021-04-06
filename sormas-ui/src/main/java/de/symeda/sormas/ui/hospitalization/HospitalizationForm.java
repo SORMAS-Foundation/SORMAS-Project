@@ -125,11 +125,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		final DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
 		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
-		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
 		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
@@ -186,6 +187,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			true);
 
 		// Validations
+		// TODO: this fails at the moment because now an admission date before the symptom onset cannot be saved
 		admissionDateField.addValidator(
 			new DateComparisonValidator(
 				admissionDateField,
@@ -203,7 +205,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true,
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
-		admissionDateField.setInvalidCommitted(true);
+		//admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(
 			new DateComparisonValidator(
 				dischargeDateField,
@@ -216,38 +218,31 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				intensiveCareUnitStart,
 				admissionDateField,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
 		intensiveCareUnitStart.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitStart,
 				intensiveCareUnitEnd,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
 		intensiveCareUnitEnd.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitEnd,
 				intensiveCareUnitStart,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
 		intensiveCareUnitEnd.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitEnd,
 				dischargeDateField,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
-	}
-
-	private void setDateFieldVisibilties() {
-
-		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getNullableValue());
-		intensiveCareUnitStart.setVisible(visible);
-		intensiveCareUnitEnd.setVisible(visible);
 	}
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {

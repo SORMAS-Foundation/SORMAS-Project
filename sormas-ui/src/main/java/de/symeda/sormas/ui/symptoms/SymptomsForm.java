@@ -152,7 +152,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 											MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK))
 					);
 	//@formatter:on
-	
+
 	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
 
 		final Predicate<java.lang.reflect.Field> groupSymptoms =
@@ -165,9 +165,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		symptomGroupMap.put(loc, symptomLocations);
 
-		return loc(loc) + fluidRow(
-			fluidColumn(6, -1, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(0, symptomLocations.size() / 2)))),
-			fluidColumn(6, 0, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(symptomLocations.size() / 2, symptomLocations.size())))));
+		return loc(loc)
+			+ fluidRow(
+				fluidColumn(6, -1, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(0, symptomLocations.size() / 2)))),
+				fluidColumn(
+					6,
+					0,
+					locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(symptomLocations.size() / 2, symptomLocations.size())))));
 	}
 
 	private final CaseDataDto caze;
@@ -254,7 +258,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 						Validations.beforeDateSoft,
 						onsetDateField.getCaption(),
 						I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE))));
-			onsetDateField.setInvalidCommitted(true);
+			//onsetDateField.setInvalidCommitted(true);
 		}
 
 		ComboBox temperature = addField(TEMPERATURE, ComboBox.class);
@@ -312,7 +316,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONJUNCTIVITIS,
 			EYE_PAIN_LIGHT_SENSITIVE,
 			KOPLIKS_SPOTS,
-            THROBOCYTOPENIA,
+			THROBOCYTOPENIA,
 			OTITIS_MEDIA,
 			HEARINGLOSS,
 			DEHYDRATION,
