@@ -82,24 +82,24 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		if (earlierOrSame) {
 			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) <= 0) {
 				if (changeInvalidCommitted) {
-					dateField.setInvalidCommitted(true);// allow saving
+					dateField.setInvalidCommitted(true);
 				}
 				return true;
 			} else {
 				if (changeInvalidCommitted) {
-					dateField.setInvalidCommitted(false);// block saving
+					dateField.setInvalidCommitted(false);
 				}
 				return false;
 			}
 		} else {
 			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) >= 0) {
 				if (changeInvalidCommitted) {
-					dateField.setInvalidCommitted(true); // allow saving
+					dateField.setInvalidCommitted(true);
 				}
 				return true;
 			} else {
 				if (changeInvalidCommitted) {
-					dateField.setInvalidCommitted(false); // block saving
+					dateField.setInvalidCommitted(false);
 				}
 				return false;
 			}

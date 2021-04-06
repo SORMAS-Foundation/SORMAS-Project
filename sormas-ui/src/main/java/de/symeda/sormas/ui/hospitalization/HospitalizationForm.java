@@ -29,7 +29,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import org.joda.time.DateTimeComparator;
+
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -187,17 +191,28 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			true);
 
 		// Validations
-		// TODO: this fails at the moment because now an admission date before the symptom onset cannot be saved
-		admissionDateField.addValidator(
-			new DateComparisonValidator(
-				admissionDateField,
-				caze.getSymptoms().getOnsetDate(),
-				false,
-				false,
-				I18nProperties.getValidationError(
-					Validations.afterDateSoft,
-					admissionDateField.getCaption(),
-					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
+		// Add a visual-only validator to check if symptomonsetdate<admissiondate, as saving should be possible either way
+		admissionDateField.addValueChangeListener(event -> {
+			if (DateTimeComparator.getDateOnlyInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
+				admissionDateField.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return I18nProperties.getValidationError(
+							Validations.afterDateSoft,
+							admissionDateField.getCaption(),
+							I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+					}
+				});
+			} else if (admissionDateField.isValid()) {
+				admissionDateField.setComponentError(null);
+			}
+		});
 		admissionDateField.addValidator(
 			new DateComparisonValidator(
 				admissionDateField,
@@ -205,7 +220,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true,
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
-		//admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(
 			new DateComparisonValidator(
 				dischargeDateField,

@@ -43,8 +43,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.joda.time.DateTimeComparator;
+
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -88,7 +92,6 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
@@ -248,17 +251,28 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
 		if (symptomsContext == SymptomsContext.CASE) {
-			onsetDateField.addValidator(
-				new DateComparisonValidator(
-					onsetDateField,
-					caze.getHospitalization().getAdmissionDate(),
-					true,
-					false,
-					I18nProperties.getValidationError(
-						Validations.beforeDateSoft,
-						onsetDateField.getCaption(),
-						I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE))));
-			//onsetDateField.setInvalidCommitted(true);
+			// If the symptom onset date is after the hospital admission date, show a warning but don't prevent the user from saving
+			onsetDateField.addValueChangeListener(event -> {
+				if (DateTimeComparator.getDateOnlyInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue()) < 0) {
+					onsetDateField.setComponentError(new ErrorMessage() {
+
+						@Override
+						public ErrorLevel getErrorLevel() {
+							return ErrorLevel.INFO;
+						}
+
+						@Override
+						public String getFormattedHtmlMessage() {
+							return I18nProperties.getValidationError(
+								Validations.beforeDateSoft,
+								onsetDateField.getCaption(),
+								I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE));
+						}
+					});
+				} else if (onsetDateField.isValid()) {
+					onsetDateField.setComponentError(null);
+				}
+			});
 		}
 
 		ComboBox temperature = addField(TEMPERATURE, ComboBox.class);
