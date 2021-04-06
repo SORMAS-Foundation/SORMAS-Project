@@ -353,18 +353,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 		if (userCriteria.getFreeText() != null) {
 			String[] textFilters = userCriteria.getFreeText().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
-						cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
-						cb.like(cb.lower(from.get(User.PHONE)), textFilter),
-						cb.like(cb.lower(from.get(User.UUID)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.USER_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(User.USER_EMAIL), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(User.PHONE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(User.UUID), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

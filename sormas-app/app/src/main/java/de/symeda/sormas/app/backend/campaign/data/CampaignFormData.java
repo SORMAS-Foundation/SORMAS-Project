@@ -48,6 +48,9 @@ public class CampaignFormData extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "campaignFormData";
 	public static final String I18N_PREFIX = "CampaignFormData";
 
+	public static final String CAMPAIGN = "campaign";
+	public static final String FORM_DATE = "formDate";
+
 	@Column(name = "formValues")
 	private String formValuesJson;
 	private List<CampaignFormDataEntry> formValues;
