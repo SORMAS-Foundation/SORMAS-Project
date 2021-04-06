@@ -60,7 +60,7 @@ public enum UserRole
 	POE_SUPERVISOR(true, false, false, true, JurisdictionLevel.REGION),
 	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
-	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
+	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
 	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
