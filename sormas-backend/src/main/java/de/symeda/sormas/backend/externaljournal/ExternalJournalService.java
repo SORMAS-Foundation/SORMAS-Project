@@ -6,6 +6,7 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.SEVERAL_PHONES_OR_EMAILS;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -366,8 +367,25 @@ public class ExternalJournalService {
 	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
-		String email = person.getEmailAddress();
-		String phone = person.getPhone();
+		boolean severalEmails = false, severalPhones = false;
+		String phone = "", email = "";
+
+		try {
+			email = person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalEmails = true;
+		}
+
+		try {
+			phone = person.getPhone(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalPhones = true;
+		}
+
+		if (severalEmails && severalPhones || (severalEmails && phone == "") || (severalPhones && email == "")) {
+			validationErrors.add(SEVERAL_PHONES_OR_EMAILS);
+		}
+
 		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
 		if (!hasPhoneOrEmail) {
 			validationErrors.add(NO_PHONE_OR_EMAIL);
@@ -378,7 +396,7 @@ public class ExternalJournalService {
 			if (!validator.isValid(email)) {
 				validationErrors.add(INVALID_EMAIL);
 			}
-			if (!isEmailAvailable(person)) {
+			if (!isEmailAvailable(email, person)) {
 				validationErrors.add(EMAIL_TAKEN);
 			}
 		}
@@ -410,8 +428,8 @@ public class ExternalJournalService {
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(PersonDto person) {
-		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+	private boolean isEmailAvailable(String email, PersonDto person) {
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, email)
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()

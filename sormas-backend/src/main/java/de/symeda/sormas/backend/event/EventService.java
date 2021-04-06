@@ -619,19 +619,22 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (StringUtils.isNotEmpty(eventCriteria.getFreeText())) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(from.get(Event.UUID)), textFilter),
-						cb.like(cb.lower(from.get(Event.EVENT_TITLE)), textFilter),
-						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter),
-						cb.like(cb.lower(from.get(Event.SRC_FIRST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(Event.SRC_LAST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(Event.SRC_EMAIL)), textFilter),
-						cb.like(cb.lower(from.get(Event.SRC_TEL_NO)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(Event.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_TITLE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_DESC), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Event.SRC_EMAIL), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Event.SRC_TEL_NO), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventParticipants())) {
@@ -641,17 +644,19 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, eventQueryContext.getQuery(), personJoin);
 
 			String[] textFilters = eventCriteria.getFreeTextEventParticipants().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(eventParticipantJoin.get(EventParticipant.UUID)), textFilter),
-						cb.like(cb.lower(personJoin.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(personJoin.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower((Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY)), textFilter),
-						cb.like(cb.lower((Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, eventParticipantJoin.get(EventParticipant.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, (Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, (Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}

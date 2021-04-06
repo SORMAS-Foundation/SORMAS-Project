@@ -49,6 +49,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -58,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -119,8 +121,6 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -499,8 +499,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-	public <T extends AbstractDomainObject> Predicate createCriteriaFilter(
-		CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
+	public <T extends AbstractDomainObject> Predicate createCriteriaFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
 
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
@@ -668,25 +667,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
 			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
-						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
-						cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
-						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter),
-						cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), textFilter),
-						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
-						phoneNumberPredicate(cb, (Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
-						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
-						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, facility.get(Facility.NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
+					phoneNumberPredicate(cb, (Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
+
 		boolean hasEventLikeCriteria = caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty();
 		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
 		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
@@ -702,15 +703,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
-				for (int i = 0; i < textFilters.length; i++) {
-					String textFilter = formatForLike(textFilters[i]);
-					if (!DataHelper.isNullOrEmpty(textFilter)) {
-						Predicate likeFilters = cb.or(
-							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
-							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
-							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
-						filter = CriteriaBuilderHelper.and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
-					}
+				for (String textFilter : textFilters) {
+					Predicate likeFilters = cb.or(
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_DESC), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_TITLE), textFilter),
+						CriteriaBuilderHelper.ilike(cb, event.get(Event.UUID), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 				}
 			}
 			if (hasOnlyCasesWithEventsCriteria) {
@@ -719,30 +717,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getReportingUserLike() != null) {
 			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-				}
+			for (String textFilter : textFilters) {
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (caseCriteria.getSourceCaseInfoLike() != null) {
 			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
-						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
-						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-				}
+			for (String textFilter : textFilters) {
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (caseCriteria.getBirthdateYYYY() != null) {
@@ -761,6 +753,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb.or(
 					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CAZE)),
 					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
 		}
 
 		return filter;
@@ -1125,7 +1120,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
-			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
+			LocalDate beginDate = DateHelper8.toLocalDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
 			LocalDate untilDate =
 				caze.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(caze.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 

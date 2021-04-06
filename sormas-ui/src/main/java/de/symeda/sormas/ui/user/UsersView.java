@@ -161,7 +161,7 @@ public class UsersView extends AbstractView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 

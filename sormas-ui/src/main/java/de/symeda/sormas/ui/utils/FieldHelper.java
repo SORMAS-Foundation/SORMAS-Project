@@ -121,6 +121,21 @@ public final class FieldHelper {
 		});
 	}
 
+	public static void setVisibleWithCheckersWhen(
+		FieldGroup fieldGroup,
+		Class<?> targetClass,
+		String targetPropertyId,
+		Object sourcePropertyId,
+		Object sourceValue,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		boolean clearOnHidden) {
+		if (fieldVisibilityCheckers.isVisible(targetClass, targetPropertyId)) {
+			FieldHelper.setVisibleWhen(fieldGroup, targetPropertyId, sourcePropertyId, sourceValue, clearOnHidden);
+		} else {
+			fieldGroup.getField(targetPropertyId).setVisible(false);
+		}
+	}
+
 	public static void setVisibleWhen(
 		FieldGroup fieldGroup,
 		String targetPropertyId,
@@ -222,7 +237,11 @@ public final class FieldHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields, Function<Field, Boolean> isVisibleFunction, boolean clearOnHidden) {
+	public static void setVisibleWhen(
+		Field sourceField,
+		List<? extends Field<?>> targetFields,
+		Function<Field, Boolean> isVisibleFunction,
+		boolean clearOnHidden) {
 		if (sourceField != null) {
 			if (sourceField instanceof AbstractField<?>) {
 				((AbstractField) sourceField).setImmediate(true);

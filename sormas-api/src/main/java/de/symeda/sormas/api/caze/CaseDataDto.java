@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -631,10 +633,21 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		return caze;
 	}
 
+	/**
+	 * 
+	 * @param contact
+	 *            leads to the returned case
+	 * @return dto that contains the contacts information. If the contact has one exposure, this marked as the probable infection
+	 *         environment.
+	 */
 	public static CaseDataDto buildFromContact(ContactDto contact) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
 		migratesAttributes(contact, cazeData);
+		List<ExposureDto> exposures = cazeData.getEpiData().getExposures();
+		if (exposures.size() == 1) {
+			exposures.get(0).setProbableInfectionEnvironment(true);
+		}
 		return cazeData;
 	}
 

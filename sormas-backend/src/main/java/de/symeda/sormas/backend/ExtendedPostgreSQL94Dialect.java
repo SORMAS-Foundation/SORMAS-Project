@@ -14,6 +14,8 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String SIMILARITY_OPERATOR = "similarity_operator";
 	public final static String ARRAY_TO_STRING = "array_to_string";
 	public final static String ARRAY_AGG = "array_agg";
+	public final static String UNACCENT = "unaccent";
+	public final static String ILIKE = "ilike";
 
 	public ExtendedPostgreSQL94Dialect() {
 		super();
@@ -23,5 +25,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 		registerFunction(ARRAY_AGG, new StandardSQLFunction(ARRAY_AGG));
 		registerHibernateType(Types.OTHER, JsonStringType.class.getName());
 		registerFunction(SIMILARITY_OPERATOR, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 % ?2"));
+		registerFunction(UNACCENT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "unaccent(?1)"));
+		registerFunction(ILIKE, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 ILIKE ?2"));
 	}
 }

@@ -27,6 +27,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -34,10 +35,13 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
@@ -52,6 +56,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 
 	public FacilityService() {
 		super(Facility.class);
@@ -220,6 +227,21 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
 		Predicate filter = null;
+
+		CountryReferenceDto country = facilityCriteria.getCountry();
+		if (country != null) {
+			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+			Path<Object> countryUuid = from.join(Facility.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
+
+			if (country.equals(serverCountry)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
+			} else {
+				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
+			}
+		}
+
 		if (facilityCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));
@@ -236,13 +258,15 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		}
 		if (facilityCriteria.getNameCityLike() != null) {
 			String[] textFilters = facilityCriteria.getNameCityLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Facility.NAME)), textFilter), cb.like(cb.lower(from.get(Facility.CITY)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Facility.CITY), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (facilityCriteria.getType() != null) {

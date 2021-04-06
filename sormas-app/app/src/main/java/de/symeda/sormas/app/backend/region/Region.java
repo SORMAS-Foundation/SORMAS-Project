@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.app.backend.region;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
@@ -33,12 +37,16 @@ public class Region extends InfrastructureAdo {
 
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
+	public static final String COUNTRY = "country";
 
 	@Column
 	private String name;
 
 	@Column
 	private String epidCode;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country country;
 
 	public String getName() {
 		return name;
@@ -54,6 +62,14 @@ public class Region extends InfrastructureAdo {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 
 	@Override

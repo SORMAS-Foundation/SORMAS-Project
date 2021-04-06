@@ -76,7 +76,7 @@ import de.symeda.sormas.app.person.PersonContactDetailDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
@@ -132,19 +132,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
 		List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
-		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
-
-		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
-		List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
+		List<Item> initialPlaceOfBirthRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialPlaceOfBirthDistricts = InfrastructureDaoHelper.loadDistricts(record.getPlaceOfBirthRegion());
+		List<Item> initialPlaceOfBirthCommunities = InfrastructureDaoHelper.loadCommunities(record.getPlaceOfBirthDistrict());
 		List<Item> initialPlaceOfBirthFacilities =
-			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
+			InfrastructureDaoHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
-		List<Item> countryList = InfrastructureHelper.loadCountries();
+		List<Item> countryList = InfrastructureDaoHelper.loadCountries();
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);
 		initializeCauseOfDeathDetailsFieldVisibility(
@@ -153,7 +151,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeathDetails);
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,

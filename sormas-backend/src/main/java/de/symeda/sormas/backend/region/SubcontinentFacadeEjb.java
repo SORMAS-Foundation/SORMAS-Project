@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.region.SubcontinentFacade;
@@ -44,6 +45,8 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	private SubcontinentService subcontinentService;
 	@EJB
 	private ContinentService continentService;
+	@EJB
+	private CountryService countryService;
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
 		if (entity == null) {
@@ -65,6 +68,17 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public SubcontinentReferenceDto getByCountry(CountryReferenceDto countryDto) {
+		return toReferenceDto(countryService.getByUuid(countryDto.getUuid()).getSubcontinent());
+	}
+
+	@Override
+	public List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid) {
+		Continent continent = continentService.getByUuid(uuid);
+		return continent.getSubcontinents().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -97,12 +111,12 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Subcontinent> cq = cb.createQuery(Subcontinent.class);
 		Root<Subcontinent> subcontinent = cq.from(Subcontinent.class);
-		Join<Object, Object> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
+		Join<Subcontinent, Continent> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
 
 		Predicate filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -110,10 +124,13 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case SubcontinentIndexDto.DISPLAY_NAME:
+					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
+					break;
 				case SubcontinentDto.CONTINENT:
 					expression = continent.get(Continent.DEFAULT_NAME);
+					break;
 				case SubcontinentDto.EXTERNAL_ID:
-				case SubcontinentDto.DEFAULT_NAME:
 					expression = subcontinent.get(sortProperty.propertyName);
 					break;
 				default:
@@ -188,11 +205,26 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public void save(SubcontinentDto dto) {
+		save(dto, false);
+	}
+
+	@Override
+	public void save(SubcontinentDto dto, boolean allowMerge) {
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 
-		if (subcontinent == null && !subcontinentService.getByDefaultName(dto.getDefaultName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
+		if (subcontinent == null) {
+			List<SubcontinentReferenceDto> duplicates = getByDefaultName(dto.getDefaultName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					subcontinent = subcontinentService.getByUuid(uuid);
+					SubcontinentDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
+				}
+			}
 		}
 
 		subcontinent = fillOrBuildEntity(dto, subcontinent, true);

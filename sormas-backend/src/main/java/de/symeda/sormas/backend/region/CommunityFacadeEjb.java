@@ -261,17 +261,31 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
+		saveCommunity(dto, false);
+	}
 
-		Community community = communityService.getByUuid(dto.getUuid());
-
-		if (community == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
-		}
+	@Override
+	public void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
+		Community community = communityService.getByUuid(dto.getUuid());
+
+		if (community == null) {
+			List<CommunityReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					String uuid = duplicates.get(0).getUuid();
+					community = communityService.getByUuid(uuid);
+					CommunityDto dtoToMerge = getByUuid(uuid);
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
+				}
+			}
+		}
 		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
 	}

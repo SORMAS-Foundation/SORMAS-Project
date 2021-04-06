@@ -45,7 +45,7 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 import static android.view.View.GONE;
 
@@ -105,7 +105,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		AbstractDomainObject rootData) {
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);
 		PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(

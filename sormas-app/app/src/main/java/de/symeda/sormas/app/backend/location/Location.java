@@ -15,18 +15,15 @@
 
 package de.symeda.sormas.app.backend.location;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import androidx.databinding.Bindable;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
@@ -38,9 +35,14 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.Subcontinent;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
@@ -61,6 +63,10 @@ public class Location extends PseudonymizableAdo {
 	@Column
 	private AreaType areaType;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Continent continent;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Subcontinent subcontinent;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Country country;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -128,6 +134,22 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	public Continent getContinent() {
+		return continent;
+	}
+
+	public void setContinent(Continent continent) {
+		this.continent = continent;
+	}
+
+	public Subcontinent getSubcontinent() {
+		return subcontinent;
+	}
+
+	public void setSubcontinent(Subcontinent subcontinent) {
+		this.subcontinent = subcontinent;
 	}
 
 	public Country getCountry() {

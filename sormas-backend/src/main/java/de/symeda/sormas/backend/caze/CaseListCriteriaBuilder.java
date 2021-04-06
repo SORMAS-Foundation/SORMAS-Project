@@ -137,7 +137,7 @@ public class CaseListCriteriaBuilder {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, caze, joins)
+					orderExpressionProvider.forProperty(sortProperty, caze, joins, cb)
 						.stream()
 						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
 						.collect(Collectors.toList()));
@@ -218,7 +218,7 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.ID:
@@ -233,6 +233,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.REPORT_DATE:
 		case CaseIndexDto.CREATION_DATE:
 		case CaseIndexDto.OUTCOME:
+		case CaseIndexDetailedDto.RE_INFECTION:
 		case CaseIndexDto.QUARANTINE_TO:
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
@@ -276,6 +277,7 @@ public class CaseListCriteriaBuilder {
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
+				caze.get(Case.RE_INFECTION),
 				joins.getAddress().get(Location.CITY),
 				joins.getAddress().get(Location.STREET),
 				joins.getAddress().get(Location.HOUSE_NUMBER),
@@ -289,7 +291,7 @@ public class CaseListCriteriaBuilder {
 		return selections;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
@@ -299,13 +301,13 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.literal(49));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
-			return getIndexOrders(sortProperty, caze, joins);
+			return getIndexOrders(sortProperty, caze, joins, cb);
 		}
 	}
 
@@ -322,6 +324,6 @@ public class CaseListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb);
 	}
 }

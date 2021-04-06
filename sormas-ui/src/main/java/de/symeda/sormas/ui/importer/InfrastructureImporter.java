@@ -20,9 +20,11 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -32,10 +34,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public class InfrastructureImporter extends DataImporter {
 
 	private final InfrastructureType type;
+	protected final boolean allowOverwrite;
 
 	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type) {
+		this(inputFile, currentUser, type, false);
+	}
+
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite) {
 		super(inputFile, false, currentUser);
 		this.type = type;
+		this.allowOverwrite = allowOverwrite;
 	}
 
 	@Override
@@ -74,6 +82,12 @@ public class InfrastructureImporter extends DataImporter {
 		case AREA:
 			newEntityDto = AreaDto.build();
 			break;
+		case SUBCONTINENT:
+			newEntityDto = SubcontinentDto.build();
+			break;
+		case CONTINENT:
+			newEntityDto = ContinentDto.build();
+			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
 		}
@@ -97,22 +111,28 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				switch (type) {
 				case COMMUNITY:
-					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto);
+					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto, allowOverwrite);
 					break;
 				case DISTRICT:
-					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto);
+					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto, allowOverwrite);
 					break;
 				case FACILITY:
-					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto);
+					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto, allowOverwrite);
 					break;
 				case POINT_OF_ENTRY:
-					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
+					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto, allowOverwrite);
 					break;
 				case REGION:
-					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);
+					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto, allowOverwrite);
 					break;
 				case AREA:
-					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto);
+					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto, allowOverwrite);
+					break;
+				case SUBCONTINENT:
+					FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto, allowOverwrite);
+					break;
+				case CONTINENT:
+					FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto, allowOverwrite);
 					break;
 				default:
 					throw new IllegalArgumentException(type.toString());
