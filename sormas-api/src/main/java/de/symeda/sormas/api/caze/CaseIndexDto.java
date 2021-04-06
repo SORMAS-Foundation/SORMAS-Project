@@ -29,6 +29,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -71,6 +72,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
+	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
 	private long id;
 	private String uuid;
@@ -111,6 +113,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	private Date surveillanceToolLastShareDate;
 	private Long surveillanceToolShareCount;
+	private ExternalShareStatus surveillanceToolStatus;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -173,8 +176,6 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
-
-		this.surveillanceToolShareCount = surveillanceToolShareCount;
 
 		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -439,5 +440,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setSurveillanceToolShareCount(Long surveillanceToolShareCount) {
 		this.surveillanceToolShareCount = surveillanceToolShareCount;
+	}
+
+	public ExternalShareStatus getSurveillanceToolStatus() {
+		return surveillanceToolStatus;
+	}
+
+	public void setSurveillanceToolStatus(ExternalShareStatus surveillanceToolStatus) {
+		this.surveillanceToolStatus = surveillanceToolStatus;
 	}
 }

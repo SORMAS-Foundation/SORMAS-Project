@@ -121,6 +121,7 @@ import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -501,6 +502,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (survToolShareCountAndDate != null) {
 					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
 					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
+					caze.setSurveillanceToolStatus(survToolShareCountAndDate.getLatestStatus());
 				}
 			}
 
@@ -547,6 +549,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (survToolShareCountAndDate != null) {
 					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
 					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
+					caze.setSurveillanceToolStatus(survToolShareCountAndDate.getLatestStatus());
 				}
 			}
 
@@ -2334,7 +2337,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public void deleteCase(String caseUuid) {
+	public void deleteCase(String caseUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.CASE_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
@@ -2343,12 +2346,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(caseUuid);
 
 		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && externalShareInfoService.isCaseShared(caze.getId())) {
+			externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
+		}
 
 		caseService.delete(caze);
 	}
 
 	@Override
-	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException {
 
 		Case caze = caseService.getByUuid(caseUuid);
 		Case duplicateOfCase = caseService.getByUuid(duplicateOfCaseUuid);

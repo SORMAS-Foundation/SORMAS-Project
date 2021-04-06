@@ -242,11 +242,15 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
+	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
+	String ExternalSurveillanceToolGateway_deletedAt = "ExternalSurveillanceToolGateway.deletedAt";
+	String ExternalSurveillanceToolGateway_notificationEntriesDeleted = "ExternalSurveillanceToolGateway.notificationEntriesDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntriesSent = "ExternalSurveillanceToolGateway.notificationEntriesSent";
 	String ExternalSurveillanceToolGateway_notificationEntryNotDeleted = "ExternalSurveillanceToolGateway.notificationEntryNotDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntryNotSent = "ExternalSurveillanceToolGateway.notificationEntryNotSent";
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
+	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";

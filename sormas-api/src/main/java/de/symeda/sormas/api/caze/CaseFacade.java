@@ -31,11 +31,10 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.messaging.ManualMessageLogDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -120,9 +119,9 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	void deleteCase(String caseUuid);
+	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
 
-	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();
 
