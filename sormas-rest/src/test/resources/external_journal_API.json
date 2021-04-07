@@ -143,12 +143,14 @@
         },
         "responses" : {
           "default" : {
-            "description" : "OK when visit was successfully saved, ERROR otherwise.",
+            "description" : "default response",
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
-                  "example" : "OK"
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PushResult"
+                  }
                 }
               }
             }

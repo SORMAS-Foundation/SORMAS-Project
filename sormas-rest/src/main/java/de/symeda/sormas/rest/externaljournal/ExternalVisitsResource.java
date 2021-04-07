@@ -109,10 +109,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@POST
 	@Path("/")
 	@Tag(name = "External Visits Controller")
-	@Operation(summary = "Save visits",
-		description = "Upload visits with all symptom and disease related data to SORMAS.",
-		responses = @ApiResponse(description = "OK when visit was successfully saved, ERROR otherwise.",
-			content = @Content(schema = @Schema(name = "processing", example = "OK"))))
+	@Operation(summary = "Save visits", description = "Upload visits with all symptom and disease related data to SORMAS.")
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
 	}

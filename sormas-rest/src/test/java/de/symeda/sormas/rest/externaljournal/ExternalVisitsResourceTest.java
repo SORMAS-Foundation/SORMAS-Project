@@ -29,9 +29,9 @@ public class ExternalVisitsResourceTest {
 	public void testIfRelevantSwaggerDocumentationIsUnchanged() throws IOException {
 
 		//load released and new swagger docu information
-		Map<String, Object> releasedSwaggerDocuMap = loadJson("./src/test/resources/external_journal_API.json");
+		Map<String, Object> releasedSwaggerDocuMap = loadJson("src/test/resources/external_journal_API.json");
 
-		Map<String, Object> newSwaggerDocuMap = loadJson("./target/external_journal_API.json");
+		Map<String, Object> newSwaggerDocuMap = loadJson("target/external_journal_API.json");
 
 		assertThat(newSwaggerDocuMap, equalTo(releasedSwaggerDocuMap));
 
