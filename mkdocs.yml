@@ -21,9 +21,9 @@ nav:
   - Offical Website: "https://sormas.org"
   - Home: index.md
   - Contributing: CONTRIBUTING.md
-  - Demo: DEMO_APP.md
+  - Demo App: DEMO_APP.md
   - REST: sormas-rest/README.md
-  - Development: DEVELOPMENT_ENVIRONMENT.md
+  - Development Environment: DEVELOPMENT_ENVIRONMENT.md
   - Cargo Server: sormas-cargoserver/README.md
   - Keycloak: sormas-base/doc/keycloak.md
   - Keycloak Service Provider: sormas-keycloak-service-provider/README.md
