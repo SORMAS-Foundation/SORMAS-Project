@@ -93,6 +93,7 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		previousHospitalization.setDistrict(caze.getDistrict());
 		previousHospitalization.setCommunity(caze.getCommunity());
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
+		previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
 		previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
 		previousHospitalization.setOtherHospitalizationReason(hospitalization.getOtherHospitalizationReason());

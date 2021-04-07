@@ -6,7 +6,7 @@ import java.util.List;
 public class Page<T> implements Serializable {
 
 	List<T> elements;
-	int pageNumber = 0;
+	int offset = 0;
 	int size = 50;
 	long totalElementCount = 0;
 	boolean hasNext = false;
@@ -18,12 +18,12 @@ public class Page<T> implements Serializable {
 	private Page() {
 	}
 
-	public Page(List<T> elements, int pageNumber, int size, Long totalElementCount) {
+	public Page(List<T> elements, int offset, int size, Long totalElementCount) {
 		this.elements = elements;
 		this.totalElementCount = totalElementCount;
-		this.pageNumber = pageNumber;
+		this.offset = offset;
 		this.size = size;
-		hasNext = totalElementCount > (pageNumber + 1) * size;
+		hasNext = totalElementCount > offset + size;
 	}
 
 	public List<T> getElements() {
@@ -34,12 +34,12 @@ public class Page<T> implements Serializable {
 		this.elements = elements;
 	}
 
-	public int getPageNumber() {
-		return pageNumber;
+	public int getOffset() {
+		return offset;
 	}
 
-	public void setPageNumber(int pageNumber) {
-		this.pageNumber = pageNumber;
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 
 	public int getSize() {

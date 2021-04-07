@@ -108,19 +108,25 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/indexList")
 	public Page<CaseIndexDto> getIndexList(
 		@RequestBody CriteriaWithSorting<CaseCriteria> criteriaWithSorting,
-		@QueryParam("page") int page,
+		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
-		return FacadeProvider.getCaseFacade().getIndexPage(criteriaWithSorting.getCriteria(), page, size, criteriaWithSorting.getSortProperties());
+		return FacadeProvider.getCaseFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
 	@Path("/detailedIndexList")
 	public Page<CaseIndexDetailedDto> getIndexDetailedList(
 		@RequestBody CriteriaWithSorting<CaseCriteria> criteriaWithSorting,
-		@QueryParam("page") int page,
+		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
 		return FacadeProvider.getCaseFacade()
-			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), page, size, criteriaWithSorting.getSortProperties());
+			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@GET
+	@Path("/{uuid}")
+	public CaseDataDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getCaseFacade().getByUuid(uuid);
 	}
 
 }

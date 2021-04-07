@@ -719,6 +719,12 @@
 				<version>0.3.0</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.wcs.wcslib</groupId>
+				<artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
+				<version>4.0</version>
+			</dependency>
+
 			<!-- ** Vaadin END ** -->
 
 			<!-- *** Compile dependencies END *** -->

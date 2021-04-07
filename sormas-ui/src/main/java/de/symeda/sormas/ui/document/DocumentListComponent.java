@@ -18,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
@@ -28,9 +30,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.wcs.wcslib.vaadin.widget.multifileupload.ui.MultiFileUpload;
+import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -43,13 +46,13 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.importer.DocumentReceiver;
+import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
+import de.symeda.sormas.ui.importer.DocumentUploadFinishedHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentListComponent extends VerticalLayout {
-
 	private final DocumentRelatedEntityType relatedEntityType;
 	private final ReferenceDto entityRef;
 	private final UserRight editRight;
@@ -93,17 +96,26 @@ public class DocumentListComponent extends VerticalLayout {
 		uploadLayout.setSpacing(true);
 		uploadLayout.setMargin(true);
 		uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		uploadLayout.setWidth(250, Unit.PIXELS);
 
-		DocumentReceiver receiver = new DocumentReceiver(relatedEntityType, entityRef.getUuid(), this::reload);
-		Upload upload = new Upload("", receiver);
-		receiver.setUpload(upload);
-		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
-		CssStyles.style(upload, CssStyles.VSPACE_2);
+		PopupButton mainButton =
+			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
-		uploadLayout.addComponentsAndExpand(upload);
+		UploadStateWindow uploadStateWindow = new UploadStateWindow();
+		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
+			mainButton.setButtonClickTogglesPopupVisibility(false);
+			mainButton.setClosePopupOnOutsideClick(false);
+		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow);
+		multiFileUpload
+			.setUploadButtonCaptions(I18nProperties.getCaption(Captions.importImportData), I18nProperties.getCaption(Captions.importImportData));
+		multiFileUpload.setAllUploadFinishedHandler(() -> {
+			mainButton.setButtonClickTogglesPopupVisibility(true);
+			mainButton.setClosePopupOnOutsideClick(true);
+			mainButton.setPopupVisible(false);
+		});
 
-		return ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
+		uploadLayout.addComponentsAndExpand(multiFileUpload);
+
+		return mainButton;
 	}
 
 	private void reload() {

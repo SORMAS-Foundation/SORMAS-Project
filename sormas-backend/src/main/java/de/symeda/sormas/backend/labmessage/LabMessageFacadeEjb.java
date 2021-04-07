@@ -220,10 +220,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
 			labMessage.get(LabMessage.MESSAGE_DATE_TIME),
+			labMessage.get(LabMessage.TEST_LAB_NAME),
+			labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE),
 			labMessage.get(LabMessage.TESTED_DISEASE),
 			labMessage.get(LabMessage.TEST_RESULT),
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
+			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
 			labMessage.get(LabMessage.PROCESSED));
 
 		criteriaHandler(criteria, cb, cq, labMessage);

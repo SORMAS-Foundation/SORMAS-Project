@@ -60,7 +60,6 @@ Even as a non-developer, there are a lot of things that you can help us with. If
 If you're interested in participating in the development of SORMAS, you can use the following guides to get started. If you have problems setting up your development environment or don't know what you can work on, don't hesitate to contact us at sormas@helmholtz-hzi.de!
 
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
-* [Performing load tests on a SORMAS server](LOAD_TESTING.md)
 * [Adding license headers](ADDING_LICENSE.md)
 * [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
 * [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)

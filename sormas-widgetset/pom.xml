@@ -35,6 +35,11 @@
 		   <groupId>org.vaadin.addons</groupId>
 		   <artifactId>extended-token-field</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.wcs.wcslib</groupId>
+			<artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
+		</dependency>
     </dependencies>
     <build>
         <plugins>

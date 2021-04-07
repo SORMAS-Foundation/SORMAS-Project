@@ -48,6 +48,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -59,11 +60,13 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentCriteria;
 import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentCriteria;
 import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -113,6 +116,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox subcontinent;
 
 	private boolean districtRequiredOnDefaultCountry;
+	private boolean skipCountryValueChange;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -202,9 +206,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		final TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
-		final TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
-		final TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
 		final StringToAngularLocationConverter stringToAngularLocationConverter = new StringToAngularLocationConverter();
 		tfLatitude.setConverter(stringToAngularLocationConverter);
 		tfLongitude.setConverter(stringToAngularLocationConverter);
@@ -249,11 +253,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
 
 			if (subcontinentReferenceDto != null) {
-				if (continent.getValue() == null) {
-					continent.removeValueChangeListener(continentValueListener);
-					continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
-					continent.addValueChangeListener(continentValueListener);
-				}
+				continent.removeValueChangeListener(continentValueListener);
+				continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
+				continent.addValueChangeListener(continentValueListener);
 			}
 
 			country.setValue(null);
@@ -270,21 +272,30 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		continent.addValueChangeListener(continentValueListener);
 		subcontinent.addValueChangeListener(subContinentValueListener);
-
+		skipCountryValueChange = false;
 		country.addValueChangeListener(e -> {
-			CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
-			if (countryDto != null) {
-				final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade().getByCountry(countryDto);
-				final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
-				if (continent.getValue() == null && countryContinent != null) {
-					continent.removeValueChangeListener(continentValueListener);
-					continent.setValue(countryContinent);
-					continent.addValueChangeListener(continentValueListener);
-				}
-				if (subcontinent.getValue() == null && countrySubcontinent != null) {
-					subcontinent.removeValueChangeListener(subContinentValueListener);
-					subcontinent.setValue(countrySubcontinent);
-					subcontinent.addValueChangeListener(subContinentValueListener);
+			if (!skipCountryValueChange) {
+				CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
+				if (countryDto != null) {
+					final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade().getByCountry(countryDto);
+					final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
+					if (countryContinent != null) {
+						continent.removeValueChangeListener(continentValueListener);
+						skipCountryValueChange = true;
+						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						skipCountryValueChange = false;
+						continent.setValue(countryContinent);
+						continent.addValueChangeListener(continentValueListener);
+					}
+					if (countrySubcontinent != null) {
+						subcontinent.removeValueChangeListener(subContinentValueListener);
+						skipCountryValueChange = true;
+						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
+						skipCountryValueChange = false;
+						subcontinent.setValue(countrySubcontinent);
+						FieldHelper.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						subcontinent.addValueChangeListener(subContinentValueListener);
+					}
 				}
 			}
 		});
@@ -432,12 +443,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		final List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getAllActiveAsReference();
 		if (continents.isEmpty()) {
 			continent.setVisible(false);
+			continent.clear();
 		} else {
 			continent.addItems(continents);
 		}
 		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
 		if (subcontinents.isEmpty()) {
 			subcontinent.setVisible(false);
+			subcontinent.clear();
 		} else {
 			subcontinent.addItems(subcontinents);
 		}
@@ -468,8 +481,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
-		((TextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
-		((TextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
+		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
+		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
 
 	private void setOldFacilityValuesIfPossible(
@@ -609,13 +622,18 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 	}
 
-	public void setContinentFieldsVisible(boolean visible, boolean clearOnHidden) {
-		continent.setVisible(visible);
-		subcontinent.setVisible(visible);
-
-		if (!visible && clearOnHidden) {
+	public void setContinentFieldsVisibility() {
+		if (FacadeProvider.getContinentFacade().count(new ContinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+			continent.setVisible(false);
 			continent.clear();
+		} else {
+			continent.setVisible(true);
+		}
+		if (FacadeProvider.getSubcontinentFacade().count(new SubcontinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+			subcontinent.setVisible(false);
 			subcontinent.clear();
+		} else {
+			subcontinent.setVisible(true);
 		}
 	}
 
