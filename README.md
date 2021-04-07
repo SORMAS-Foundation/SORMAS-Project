@@ -45,7 +45,7 @@ Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SO
 ## Guidelines and Resources
 If you want to learn more about the development and contribution process, setting up or customizing your own system, or technical details, please consider the following guides and resources available in this repository:
 
-* [GitHub Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) - Our wiki contains additional guides for server customization and development instructions. Please have a look at it if you need information on anything that this readme does not contain.
+* **[GitHub Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) - Our wiki contains additional guides for server customization and development instructions. Please have a look at it if you need information on anything that this readme does not contain.**
 * [Contributing Guidelines](docs/CONTRIBUTING.md) - These are mandatory literature if you want to contribute to this respository in any way (e.g. by submitting issues, developing code, or translating SORMAS into new languages).
 * [Development Environment Setup Instructions](docs/DEVELOPMENT_ENVIRONMENT.md) - If you want to get involved with development, this guide tells you how to correctly set up your system in order to contribute to the code in adherence with codestyle guidelines, development practices, etc.
 * [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the configuration file.
