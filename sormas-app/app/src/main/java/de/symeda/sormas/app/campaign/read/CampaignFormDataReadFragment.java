@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.campaign.read;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -59,16 +60,19 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
     protected void onLayoutBinding(FragmentCampaignDataReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
 
-        final LinearLayout dynamicLayout = getView().findViewById(R.id.dynamicLayout);
-        final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
-        final List<CampaignFormDataEntry> formValues = record.getFormValues();
-        final Map<String, Object> formValuesMap = new HashMap<>();
-        formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue()));
-        campaignFormMeta.getCampaignFormElements().forEach(campaignFormElement -> {
-            ControlTextReadField controlTextReadField = new ControlTextReadField(getActivity());
-            controlTextReadField.setValue(formValuesMap.get(campaignFormElement.getId()));
-            dynamicLayout.addView(controlTextReadField);
-        });
+        final View view = getRootView();
+        if (view != null) {
+            final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
+            final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
+            final List<CampaignFormDataEntry> formValues = record.getFormValues();
+            final Map<String, Object> formValuesMap = new HashMap<>();
+            formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue()));
+            campaignFormMeta.getCampaignFormElements().forEach(campaignFormElement -> {
+                ControlTextReadField controlTextReadField = new ControlTextReadField(getActivity());
+                controlTextReadField.setValue(formValuesMap.get(campaignFormElement.getId()));
+                dynamicLayout.addView(controlTextReadField);
+            });
+        }
     }
 
     @Override
