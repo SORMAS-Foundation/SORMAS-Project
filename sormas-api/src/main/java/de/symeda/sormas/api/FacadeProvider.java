@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
+import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
@@ -324,6 +325,10 @@ public class FacadeProvider {
 
 	public static CampaignFormDataFacade getCampaignFormDataFacade() {
 		return get().lookupEjbRemote(CampaignFormDataFacade.class);
+	}
+
+	public static CampaignStatisticsFacade getCampaignStatisticsFacade() {
+		return get().lookupEjbRemote(CampaignStatisticsFacade.class);
 	}
 
 	public static SormasToSormasFacade getSormasToSormasFacade() {

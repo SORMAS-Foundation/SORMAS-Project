@@ -94,11 +94,7 @@ public class MessagingService {
 		throws NotificationDeliveryFailedException {
 
 		// Don't send notifications if the feature is disabled for the current MessageSubject
-		if ((MessageSubject.TASK_DUE.equals(subject) || MessageSubject.TASK_START.equals(subject))
-			&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)
-			|| !MessageSubject.TASK_DUE.equals(subject)
-				&& !MessageSubject.TASK_START.equals(subject)
-				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.OTHER_NOTIFICATIONS)) {
+		if (!featureConfigurationFacade.isFeatureEnabled(subject.getRelatedFeatureType())) {
 			return;
 		}
 
@@ -119,11 +115,7 @@ public class MessagingService {
 			throws NotificationDeliveryFailedException {
 
 		// Don't send notifications if the feature is disabled for the current MessageSubject
-		if ((MessageSubject.TASK_DUE.equals(subject) || MessageSubject.TASK_START.equals(subject))
-				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)
-				|| !MessageSubject.TASK_DUE.equals(subject)
-				&& !MessageSubject.TASK_START.equals(subject)
-				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.OTHER_NOTIFICATIONS)) {
+		if (!featureConfigurationFacade.isFeatureEnabled(subject.getRelatedFeatureType())) {
 			return;
 		}
 

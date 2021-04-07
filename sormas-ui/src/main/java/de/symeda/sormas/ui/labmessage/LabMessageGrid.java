@@ -63,10 +63,13 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			SHOW_MESSAGE,
 			LabMessageIndexDto.UUID,
 			LabMessageIndexDto.MESSAGE_DATE_TIME,
+			LabMessageIndexDto.TEST_LAB_NAME,
+			LabMessageIndexDto.TEST_LAB_POSTAL_CODE,
 			LabMessageIndexDto.TESTED_DISEASE,
 			LabMessageIndexDto.TEST_RESULT,
 			LabMessageIndexDto.PERSON_FIRST_NAME,
 			LabMessageIndexDto.PERSON_LAST_NAME,
+			LabMessageIndexDto.PERSON_POSTAL_CODE,
 			LabMessageIndexDto.PROCESSED,
 			COLUMN_PROCESS);
 

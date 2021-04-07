@@ -277,46 +277,50 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getContact().get(Contact.UUID)), textFilter),
-						cb.like(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getEvent().get(Event.UUID)), textFilter),
-						cb.like(cb.lower(joins.getEvent().get(Event.EVENT_TITLE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getContact().get(Contact.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getEvent().get(Event.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (taskCriteria.getAssigneeUserLike() != null) {
 			String[] textFilters = taskCriteria.getAssigneeUserLike().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getAssignee().get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getAssignee().get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getAssignee().get(User.USER_NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (taskCriteria.getCreatorUserLike() != null) {
 			String[] textFilters = taskCriteria.getCreatorUserLike().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCreator().get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCreator().get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCreator().get(User.USER_NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

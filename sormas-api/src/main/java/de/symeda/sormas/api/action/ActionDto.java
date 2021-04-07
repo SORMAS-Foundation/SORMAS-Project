@@ -180,6 +180,10 @@ public class ActionDto extends EntityDto {
 		this.actionMeasure = actionMeasure;
 	}
 
+	public ActionReferenceDto toReference() {
+		return new ActionReferenceDto(getUuid(), getTitle());
+	}
+
 	public ReferenceDto getContextReference() {
 
 		switch (actionContext) {

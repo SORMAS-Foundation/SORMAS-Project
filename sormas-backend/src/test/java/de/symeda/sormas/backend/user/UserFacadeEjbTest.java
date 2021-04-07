@@ -4,18 +4,28 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -29,6 +39,17 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
+
+	@InjectMocks
+	private UserFacadeEjb userFacadeEjb;
+
+	@Mock
+	private UserService userService;
+
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void testGetUsersByRegionAndRoles() {
@@ -100,5 +121,58 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
 		assertThat(validLoginRoles, nullValue());
+
+		//Important: release static mock.
+		mockAuthProvider.closeOnDemand();
+	}
+
+	@Test
+	public void testGetExistentDefaultUsers() {
+		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(true);
+		Set<User> randomUsers = UserTestHelper.generateRandomUsers(30);
+
+		List<User> testUsers = new ArrayList<>();
+		testUsers.addAll(defaultUsers);
+		testUsers.addAll(randomUsers);
+
+		for (User user : testUsers) {
+			Mockito.when(userService.getCurrentUser()).thenReturn(user);
+			Mockito.when(userService.getAllDefaultUsers()).thenReturn(Arrays.asList(user));
+			if (defaultUsers.contains(user)) {
+				assertEquals(1, userFacadeEjb.getUsersWithDefaultPassword().size());
+				assertEquals(UserFacadeEjb.toDto(user), userFacadeEjb.getUsersWithDefaultPassword().get(0));
+			} else {
+				assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
+			}
+
+			Mockito.when(userService.getAllDefaultUsers()).thenReturn(testUsers);
+			if (user.hasAnyUserRole(UserRole.ADMIN)) {
+				assertEquals(defaultUsers.size(), userFacadeEjb.getUsersWithDefaultPassword().size());
+				for (User defUser : defaultUsers) {
+					assertTrue(userFacadeEjb.getUsersWithDefaultPassword().contains(UserFacadeEjb.toDto(defUser)));
+				}
+				for (User randomUser : randomUsers) {
+					assertFalse(userFacadeEjb.getUsersWithDefaultPassword().contains(UserFacadeEjb.toDto(randomUser)));
+				}
+
+			} else if (defaultUsers.contains(user)) {
+				assertEquals(1, userFacadeEjb.getUsersWithDefaultPassword().size());
+				assertEquals(UserFacadeEjb.toDto(user), userFacadeEjb.getUsersWithDefaultPassword().get(0));
+			} else {
+				assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
+			}
+		}
+	}
+
+	@Test
+	public void testGetExistentDefaultUsersUpperCase() {
+		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(true);
+		for (User user : defaultUsers) {
+			user.setUserName(user.getUserName().toUpperCase());
+			Mockito.when(userService.getCurrentUser()).thenReturn(user);
+			Mockito.when(userService.getAllDefaultUsers()).thenReturn(Arrays.asList(user));
+			assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
+		}
+
 	}
 }

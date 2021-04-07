@@ -461,19 +461,20 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (criteria.getCaseCodeIdLike() != null) {
 			String[] textFilters = criteria.getCaseCodeIdLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCaze().get(Case.EPID_NUMBER)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.LAB_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.FIELD_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(joins.getLab().get(Facility.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.LAB_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.FIELD_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getLab().get(Facility.NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

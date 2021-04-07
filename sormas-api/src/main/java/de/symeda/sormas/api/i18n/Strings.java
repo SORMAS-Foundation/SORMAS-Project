@@ -133,6 +133,15 @@ public interface Strings {
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
 	String day = "day";
+	String DefaultPassword_newPassword = "DefaultPassword.newPassword";
+	String DefaultPassword_newPasswordPlaceholder = "DefaultPassword.newPasswordPlaceholder";
+	String DefaultPassword_otherUsersAction = "DefaultPassword.otherUsersAction";
+	String DefaultPassword_otherUsersIntroduction = "DefaultPassword.otherUsersIntroduction";
+	String DefaultPassword_otherUsersNewPasswordSetHints = "DefaultPassword.otherUsersNewPasswordSetHints";
+	String DefaultPassword_ownUserAction = "DefaultPassword.ownUserAction";
+	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
+	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
+	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
 	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
@@ -485,6 +494,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
