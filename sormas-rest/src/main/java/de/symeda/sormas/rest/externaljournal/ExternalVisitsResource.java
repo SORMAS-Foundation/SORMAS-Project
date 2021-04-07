@@ -31,7 +31,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
+	/**
+	 * ATTENTION: If you modify the version number here, take take to also modify it in the pom.xml of the sormas-rest module.
+	 * It must show in the external_journal_API.yaml and external_journal_API.json.
+	 */
+	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.1";
 
 	@GET
 	@Path("/person/{personUuid}")
