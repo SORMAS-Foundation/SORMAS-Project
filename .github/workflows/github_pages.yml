@@ -1,11 +1,8 @@
 name: Publish GitHub Pages
 on:
-  pull_request:
-    branches:
-      - development
   push:
     branches:
-      - master
+      - development
 
 jobs:
   build:
@@ -31,6 +28,7 @@ jobs:
 
           mkdir -p docs/sormas-base/doc/
           cp sormas-base/doc/keycloak.md docs/sormas-base/doc/
+
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
