@@ -21,6 +21,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.AgeGroup;
@@ -57,6 +60,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 
 	@Override
 	public Integer getRegionPopulation(String regionUuid) {
@@ -65,11 +70,11 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
-		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true)
-				.sexIsNull(true)
-				.districtIsNull(true)
-				.region(new RegionReferenceDto(regionUuid, null, null));
+		PopulationDataCriteria criteria = new PopulationDataCriteria().ageGroupIsNull(true)
+			.sexIsNull(true)
+			.districtIsNull(true)
+			.communityIsNull(true)
+			.region(new RegionReferenceDto(regionUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
@@ -94,11 +99,11 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
-		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true)
-				.sexIsNull(true)
-				.districtIsNull(true)
-				.region(new RegionReferenceDto(regionUuid, null, null));
+		PopulationDataCriteria criteria = new PopulationDataCriteria().ageGroupIsNull(true)
+			.sexIsNull(true)
+			.districtIsNull(true)
+			.communityIsNull(true)
+			.region(new RegionReferenceDto(regionUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 
@@ -185,12 +190,17 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		//@formatter:off
 		return em.createNativeQuery("SELECT " + Region.TABLE_NAME + "." + Region.NAME + " AS regionname, "
-				+ District.TABLE_NAME + "." + District.NAME + " AS districtname, " + PopulationData.AGE_GROUP + ", " 
-				+ PopulationData.SEX + ", " + PopulationData.POPULATION + " FROM " + PopulationData.TABLE_NAME
+				+ District.TABLE_NAME + "." + District.NAME + " AS districtname, "
+				+ Community.TABLE_NAME + "." + Community.NAME + " AS communityname, " + PopulationData.AGE_GROUP + ", "
+				+ PopulationData.SEX + ", " + PopulationData.POPULATION
+				+ " FROM " + PopulationData.TABLE_NAME
 				+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + PopulationData.REGION + "_id = "
-				+ Region.TABLE_NAME + "." + Region.ID + " LEFT JOIN " + District.TABLE_NAME + " ON "
-				+ PopulationData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
-				+ " ORDER BY regionname, districtname asc NULLS FIRST").getResultList();
+					+ Region.TABLE_NAME + "." + Region.ID
+				+ " LEFT JOIN " + District.TABLE_NAME + " ON "
+					+ PopulationData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
+				+ " LEFT JOIN " + Community.TABLE_NAME + " ON "
+					+ PopulationData.COMMUNITY + "_id = " + Community.TABLE_NAME + "." + Community.ID
+				+ " ORDER BY regionname, districtname, communityname asc NULLS FIRST").getResultList();
 		//@formatter:on
 	}
 
@@ -309,6 +319,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		target.setAgeGroup(source.getAgeGroup());
 		target.setSex(source.getSex());
 		target.setPopulation(source.getPopulation());
@@ -327,6 +338,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
 		target.setAgeGroup(source.getAgeGroup());
 		target.setSex(source.getSex());
 		target.setPopulation(source.getPopulation());
