@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
 import java.time.LocalDate;
@@ -703,6 +704,12 @@ public class CasesView extends AbstractView {
 							mi -> ControllerProvider.getCaseController()
 								.sendCasesToExternalSurveillanceTool(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
 							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+
+					if (isDocGenerationAllowed()) {
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+							}));
+					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 

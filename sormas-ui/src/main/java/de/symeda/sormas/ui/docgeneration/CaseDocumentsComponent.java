@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
+
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseDocumentsComponent extends AbstractDocumentGenerationComponent {
@@ -38,20 +39,17 @@ public class CaseDocumentsComponent extends AbstractDocumentGenerationComponent 
 	}
 
 	public static void addComponentToLayout(CustomLayout targetLayout, ReferenceDto referenceDto) {
-		if (isQuarantineOrderAvailable()) {
+		if (isDocGenerationAllowed()) {
 			CaseDocumentsComponent docgenerationComponent = new CaseDocumentsComponent(referenceDto);
 			docgenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			targetLayout.addComponent(docgenerationComponent, QUARANTINE_LOC);
 		}
 	}
 
-	private static boolean isQuarantineOrderAvailable() {
-		UserProvider currentUser = UserProvider.getCurrent();
-		return currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
-	}
-
 	public CaseDocumentsComponent(ReferenceDto referenceDto) {
 		super();
-		addDocumentBar(() -> new QuarantineOrderLayout(referenceDto), Captions.DocumentTemplate_QuarantineOrder);
+		addDocumentBar(() -> {
+			ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto);
+		}, Captions.DocumentTemplate_QuarantineOrder);
 	}
 }
