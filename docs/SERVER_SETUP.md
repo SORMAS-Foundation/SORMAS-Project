@@ -384,7 +384,7 @@ chmod +x r-setup.sh
 ## SORMAS to SORMAS Certificate Setup
 
 To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
-up the certificate and the truststore.
+up the certificate and the truststore. Please see the [related guide](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Creating-a-SORMAS2SORMAS-Certificate) for detailed instructions regarding SORMAS to SORMAS setup.
 <br/>
 
 ## Troubleshooting
