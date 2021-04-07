@@ -7,7 +7,6 @@ import android.widget.AdapterView;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
@@ -18,7 +17,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
     private CampaignFormDataListViewModel model;
 
-    public static void startActivity(Context context, InvestigationStatus listFilter) {
+    public static void startActivity(Context context) {
         BaseListActivity.startActivity(context, CampaignFormDataListActivity.class, buildBundle(0));
     }
 
@@ -84,7 +83,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
-        return null;
+        return CampaignFormDataListFragment.newInstance();
     }
 
     @Override

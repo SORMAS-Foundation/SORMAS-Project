@@ -77,7 +77,7 @@ public class NavigationHelper {
 	}
 
 	public static void goToCampaigns(Context context) {
-		CampaignFormDataListActivity.startActivity(context, null);
+		CampaignFormDataListActivity.startActivity(context);
 	}
 
 	public static void goToReports(Context context) {
