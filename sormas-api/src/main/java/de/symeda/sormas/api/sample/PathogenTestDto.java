@@ -60,7 +60,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	@Required
 	private SampleReferenceDto sample;
-	private LabMessageReferenceDto sourceLabMessage;
 	@Required
 	private Disease testedDisease;
 	private String testedDiseaseDetails;
@@ -131,15 +130,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public Disease getTestedDisease() {
 		return testedDisease;
-	}
-
-	@ImportIgnore
-	public LabMessageReferenceDto getSourceLabMessage() {
-		return sourceLabMessage;
-	}
-
-	public void setSourceLabMessage(LabMessageReferenceDto sourceLabMessage) {
-		this.sourceLabMessage = sourceLabMessage;
 	}
 
 	public void setTestedDisease(Disease testedDisease) {

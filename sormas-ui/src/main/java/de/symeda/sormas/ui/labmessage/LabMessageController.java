@@ -453,15 +453,9 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestEditComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(testDto, caseSampleCount, () -> {
-				window.close();
-			}, onSavedPathogenTest);
+			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(testDto, caseSampleCount, window::close, onSavedPathogenTest);
 
 		pathogenTestEditComponent.addDiscardListener(window::close);
-		pathogenTestEditComponent.addCommitListener(() -> {
-			testDto.setSourceLabMessage(labMessageDto.toReferenceDto());
-			FacadeProvider.getPathogenTestFacade().savePathogenTest(testDto);
-		});
 		pathogenTestEditComponent.getWrappedComponent().setValue(testDto);
 
 		showFormWithLabMessage(
@@ -650,7 +644,6 @@ public class LabMessageController {
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
 		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
-		pathogenTestDto.setSourceLabMessage(labMessageDto.toReferenceDto());
 		return pathogenTestDto;
 	}
 

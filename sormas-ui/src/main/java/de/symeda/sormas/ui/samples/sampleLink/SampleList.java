@@ -28,7 +28,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -92,10 +92,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		LabMessageReferenceDto labMessage = listEntry.getSample().getSourceLabMessage();
-		if (labMessage != null) {
-			listEntry.addSourceSampleListener(
-					(ClickListener) event -> ControllerProvider.getLabMessageController().showLabMessage(labMessage.getUuid(), this::reload));
-		}
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getBySampleUuid(listEntry.getSample().getUuid());
+		listEntry.addSourceSampleListener(clickEvent -> System.out.println(labMessages.size()));
 	}
 }

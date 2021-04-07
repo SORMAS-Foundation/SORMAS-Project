@@ -20,12 +20,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,6 +196,29 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<LabMessageDto> getBySampleUuid(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		cq.where(cb.equal(from.join(LabMessage.SAMPLE, JoinType.INNER).get(Sample.UUID), sampleUuid));
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+
+	@Override
+	public List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		System.out.println(em.createQuery(cq).unwrap(org.hibernate.query.Query.class).getQueryString());
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
 
 	@Override

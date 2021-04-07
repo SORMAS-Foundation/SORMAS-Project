@@ -26,8 +26,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -93,11 +95,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	}
 
 	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
-		LabMessageReferenceDto labMessage = listEntry.getPathogenTest().getSourceLabMessage();
-		if (labMessage != null) {
-			listEntry.addSourceSampleListener(
-					(ClickListener) event -> ControllerProvider.getLabMessageController().showLabMessage(labMessage.getUuid(), PathogenTestList.this::reload)
-			);
-		}
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
+		listEntry.addSourceSampleListener(clickEvent -> System.out.println(labMessages.size()));
 	}
 }

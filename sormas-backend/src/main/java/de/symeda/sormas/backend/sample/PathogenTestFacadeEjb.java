@@ -281,7 +281,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
-		target.setSourceLabMessage(labMessageService.getByReferenceDto(source.getSourceLabMessage()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
@@ -335,7 +334,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
-		target.setSourceLabMessage(LabMessageFacadeEjb.toReferenceDto(source.getSourceLabMessage()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
