@@ -9,7 +9,7 @@ jobs:
     name: Deploy page
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: Checkout development
         uses: actions/checkout@v1
       - name: Copy files
         run: |
