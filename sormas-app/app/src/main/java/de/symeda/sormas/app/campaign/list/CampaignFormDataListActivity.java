@@ -7,10 +7,14 @@ import android.widget.AdapterView;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
 public class CampaignFormDataListActivity extends PagedBaseListActivity {
@@ -18,7 +22,9 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
     private CampaignFormDataListViewModel model;
 
     public static void startActivity(Context context) {
-        BaseListActivity.startActivity(context, CampaignFormDataListActivity.class, buildBundle(0));
+        List<Campaign> activeCampaigns = DatabaseHelper.getCampaignDao().getAllActive();
+        int pageMenuPosition = activeCampaigns.size() > 0 ? 1 : 0;
+        BaseListActivity.startActivity(context, CampaignFormDataListActivity.class, buildBundle(pageMenuPosition));
     }
 
     @Override
