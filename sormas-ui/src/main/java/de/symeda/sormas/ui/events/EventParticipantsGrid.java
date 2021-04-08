@@ -114,6 +114,10 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
+		getColumn(SampleIndexDto.PATHOGEN_TEST_RESULT)
+			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_RESULT));
+		getColumn(SampleIndexDto.SAMPLE_DATE_TIME)
+			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.SAMPLE_DATE_TIME));
 
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {

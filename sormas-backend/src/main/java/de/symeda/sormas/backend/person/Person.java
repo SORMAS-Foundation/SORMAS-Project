@@ -592,7 +592,7 @@ public class Person extends AbstractDomainObject {
 		this.addresses = addresses;
 	}
 
-	@OneToMany(mappedBy = PersonContactDetail.PERSON, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = PersonContactDetail.PERSON, fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	public Set<PersonContactDetail> getPersonContactDetails() {
 		return personContactDetails;
 	}
@@ -655,7 +655,9 @@ public class Person extends AbstractDomainObject {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@ManyToOne
 	public Country getBirthCountry() {
