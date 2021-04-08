@@ -118,6 +118,7 @@
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
+				<version>2.1.2</version>
 				<executions>
 					<execution>
 						<id>generate-swagger</id>
