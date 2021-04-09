@@ -19,13 +19,13 @@ package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
@@ -49,16 +49,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.contact.ContactQueryContext;
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -78,7 +75,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -87,6 +84,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseVariant;
@@ -120,8 +118,10 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
@@ -156,6 +156,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -681,7 +685,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
-					phoneNumberPredicate(cb, (Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
@@ -832,7 +839,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * 
 	 * @param cb
 	 * @param casePath
 	 * @param date
@@ -1108,56 +1114,41 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * at the last date of case tracing, we need to do an additional visit.</li>
 	 * </ul>
 	 */
-	public void updateFollowUpUntilAndStatus(Case caze) {
+	public void updateFollowUpDetails(Case caze, boolean followUpStatusChangedByUser) {
 
-		Disease disease = caze.getDisease();
 		boolean changeStatus = caze.getFollowUpStatus() != FollowUpStatus.CANCELED && caze.getFollowUpStatus() != FollowUpStatus.LOST;
+		boolean statusChangedBySystem = false;
 
-		if (!diseaseConfigurationFacade.hasFollowUp(disease)) {
+		if (!diseaseConfigurationFacade.hasFollowUp(caze.getDisease())) {
 			caze.setFollowUpUntil(null);
 			if (changeStatus) {
 				caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+				statusChangedBySystem = true;
 			}
 		} else {
-			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
-			LocalDate beginDate = DateHelper8.toLocalDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
-			LocalDate untilDate =
-				caze.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(caze.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
-
-			Visit lastVisit;
-			boolean additionalVisitNeeded;
-			do {
-				additionalVisitNeeded = false;
-				lastVisit = caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
-				if (lastVisit != null) {
-					// if the last visit was not cooperative and happened at the last date of
-					// contact tracing ..
-					if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE
-						&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
-						// .. we need to do an additional visit
-						additionalVisitNeeded = true;
-						untilDate = untilDate.plusDays(1);
-					}
-					// if the last visit was cooperative and happened at the last date of contact tracing,
-					// revert the follow-up until date back to the original
-					if (!caze.isOverwriteFollowUpUntil()
-						&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
-						&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(beginDate.plusDays(followUpDuration))) {
-						additionalVisitNeeded = false;
-						untilDate = beginDate.plusDays(followUpDuration);
-					}
-				}
-			}
-			while (additionalVisitNeeded);
-
-			caze.setFollowUpUntil(DateHelper8.toDate(untilDate));
+			CaseDataDto caseDto = caseFacade.toDto(caze);
+			Date untilDate = CaseLogic.getFollowUpUntilDate(
+				caseDto,
+				caze.getVisits().stream().map(visit -> visitFacade.convertToDto(visit, null)).collect(Collectors.toList()));
+			caze.setFollowUpUntil(untilDate);
 			if (changeStatus) {
-				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper8.toDate(untilDate))) {
+
+				Visit lastVisit = caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
+				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), untilDate)) {
 					caze.setFollowUpStatus(FollowUpStatus.COMPLETED);
 				} else {
 					caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 				}
+				statusChangedBySystem = true;
 			}
+		}
+
+		if (statusChangedBySystem) {
+			caze.setFollowUpStatusChangeDate(null);
+			caze.setFollowUpStatusChangeUser(null);
+		} else if (followUpStatusChangedByUser) {
+			caze.setFollowUpStatusChangeDate(new Date());
+			caze.setFollowUpStatusChangeUser(getCurrentUser());
 		}
 
 		ensurePersisted(caze);
