@@ -12,6 +12,7 @@ public enum ExportEntityName {
 	BAG_CASES("entityBagCases", "bag cases"),
 	BAG_CONTACTS("entityBagContacts", "bag contacts"),
 	CAMPAIGN_DATA("entityCampaignData", "campaign data"),
+	CAMPAIGN_STATISTICS("entityCampaignStatistics", "campaign statistics"),
 	CASES("entityCases", "cases"),
 	CASE_MANAGEMENT("entityCaseManagement", "case management"),
 	CASE_VISITS("entityCaseVisits", "case visits"),
