@@ -226,7 +226,8 @@ public class LocationDialog extends FormDialog {
 					|| StringUtils.isNotEmpty(facility.getAdditionalInformation())
 					|| facility.getAreaType() != null
 					|| facility.getLatitude() != null
-					|| facility.getLongitude() != null)) {
+					|| facility.getLongitude() != null
+					||(StringUtils.isNotEmpty(facility.getContactPersonFirstName()) && StringUtils.isNotEmpty(facility.getContactPersonLastName())))) {
 				if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue())
 					&& !contentBinding.locationCity.getValue().equals(facility.getCity()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue())
@@ -238,6 +239,7 @@ public class LocationDialog extends FormDialog {
 					|| (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue())
 						&& !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
 					|| (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
+					|| (contentBinding.locationContactPersonFirstName.getValue()!=null && contentBinding.locationContactPersonLastName.getValue()!=null)
 					|| (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue())
 						&& !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue())
@@ -261,6 +263,10 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationHouseNumber.setValue(facility.getHouseNumber());
 		contentBinding.locationAdditionalInformation.setValue(facility.getAdditionalInformation());
 		contentBinding.locationAreaType.setValue(facility.getAreaType());
+		contentBinding.locationContactPersonFirstName.setValue(facility.getContactPersonFirstName());
+		contentBinding.locationContactPersonLastName.setValue(facility.getContactPersonLastName());
+		contentBinding.locationContactPersonPhone.setValue(facility.getContactPersonPhone());
+		contentBinding.locationContactPersonEmail.setValue(facility.getContactPersonEmail());
 		contentBinding.locationLatitude.setDoubleValue(facility.getLatitude());
 		contentBinding.locationLongitude.setDoubleValue(facility.getLongitude());
 	}

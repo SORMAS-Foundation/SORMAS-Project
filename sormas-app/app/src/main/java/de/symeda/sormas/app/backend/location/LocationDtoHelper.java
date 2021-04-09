@@ -89,6 +89,10 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 	}
 
 	@Override
@@ -143,5 +147,9 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setFacility(FacilityDtoHelper.toReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 	}
 }

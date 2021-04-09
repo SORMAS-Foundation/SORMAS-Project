@@ -72,6 +72,14 @@ public class Facility extends InfrastructureAdo {
 	private String additionalInformation;
 	@Enumerated(EnumType.STRING)
 	private AreaType areaType;
+	@Column
+	private String contactPersonFirstName;
+	@Column
+	private String contactPersonLastName;
+	@Column
+	private String contactPersonPhone;
+	@Column
+	private String contactPersonEmail;
 
 	@DatabaseField
 	private Double latitude;
@@ -162,6 +170,38 @@ public class Facility extends InfrastructureAdo {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	public Double getLatitude() {

@@ -102,6 +102,15 @@ public class Location extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String facilityDetails;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String contactPersonFirstName;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String contactPersonLastName;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String contactPersonPhone;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String contactPersonEmail;
+
 	/**
 	 * Dirty fix for person-location association; doing this with a JoinTable is not
 	 * easy in SQLite; only locations that are part of the addresses field of a person
@@ -275,6 +284,38 @@ public class Location extends PseudonymizableAdo {
 		this.facilityDetails = facilityDetails;
 	}
 
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
+	}
+
 	@JoinTableReference
 	public Person getPerson() {
 		return person;
@@ -331,6 +372,40 @@ public class Location extends PseudonymizableAdo {
 				sb.append("\n");
 			}
 			sb.append(getDetails());
+		}
+
+		if (getContactPersonFirstName()!=null || getContactPersonLastName()!=null){
+			if (sb.length()>0){
+				sb.append("\n");
+			}
+		}
+
+		if (getContactPersonFirstName()!=null && !getContactPersonFirstName().isEmpty()){
+			sb.append(getContactPersonFirstName());
+		}
+
+		if (getContactPersonLastName()!=null && !getContactPersonLastName().isEmpty()){
+			if (sb.length()>0){
+				sb.append(", ");
+			}
+			sb.append(getContactPersonLastName());
+		}
+
+		if (getContactPersonPhone()!=null || getContactPersonEmail()!=null){
+			if (sb.length()>0){
+				sb.append("\n");
+			}
+		}
+
+		if (getContactPersonPhone()!=null && !getContactPersonPhone().isEmpty()){
+			sb.append(getContactPersonPhone());
+		}
+
+		if (getContactPersonEmail()!=null && !getContactPersonEmail().isEmpty()){
+			if (sb.length()>0){
+				sb.append(", ");
+			}
+			sb.append(getContactPersonEmail());
 		}
 
 		String latLonString = getLatLonString();
