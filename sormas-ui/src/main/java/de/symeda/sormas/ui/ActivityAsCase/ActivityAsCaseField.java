@@ -45,7 +45,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -166,7 +166,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 		final CommitDiscardWrapperComponent<ActivityAsCaseForm> component = new CommitDiscardWrapperComponent<>(
 			activityAsCaseForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT),
 			activityAsCaseForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
@@ -190,7 +190,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 
 	@Override
 	protected ActivityAsCaseDto createEntry() {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI) getUI()).getUserProvider().getUser();
 		ActivityAsCaseDto activityAsCase = ActivityAsCaseDto.build(null);
 		activityAsCase.getLocation().setRegion(user.getRegion());
 		activityAsCase.getLocation().setDistrict(user.getDistrict());

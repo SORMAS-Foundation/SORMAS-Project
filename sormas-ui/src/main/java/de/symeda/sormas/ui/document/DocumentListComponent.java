@@ -45,157 +45,163 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
 import de.symeda.sormas.ui.importer.DocumentUploadFinishedHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.validation.constraints.NotNull;
+
 public class DocumentListComponent extends VerticalLayout {
-	private final DocumentRelatedEntityType relatedEntityType;
-	private final ReferenceDto entityRef;
-	private final UserRight editRight;
+    private final DocumentRelatedEntityType relatedEntityType;
+    private final ReferenceDto entityRef;
+    private final UserRight editRight;
 
-	private final VerticalLayout listLayout;
+    private final VerticalLayout listLayout;
 
-	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight) {
-		setWidth(100, Unit.PERCENTAGE);
-		setMargin(false);
-		setSpacing(false);
+    public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight) {
+        setWidth(100, Unit.PERCENTAGE);
+        setMargin(false);
+        setSpacing(false);
 
-		this.relatedEntityType = relatedEntityType;
-		this.entityRef = entityRef;
-		this.editRight = editRight;
+        this.relatedEntityType = relatedEntityType;
+        this.entityRef = entityRef;
+        this.editRight = editRight;
 
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Unit.PERCENTAGE);
-		addComponent(componentHeader);
+        HorizontalLayout componentHeader = new HorizontalLayout();
+        componentHeader.setMargin(false);
+        componentHeader.setSpacing(false);
+        componentHeader.setWidth(100, Unit.PERCENTAGE);
+        addComponent(componentHeader);
 
-		listLayout = new VerticalLayout();
-		listLayout.setSpacing(true);
-		listLayout.setMargin(false);
-		addComponent(listLayout);
-		reload();
+        listLayout = new VerticalLayout();
+        listLayout.setSpacing(true);
+        listLayout.setMargin(false);
+        addComponent(listLayout);
+        reload();
 
-		Label documentsHeader = new Label(I18nProperties.getString(Strings.entityDocuments));
-		documentsHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(documentsHeader);
+        Label documentsHeader = new Label(I18nProperties.getString(Strings.entityDocuments));
+        documentsHeader.addStyleName(CssStyles.H3);
+        componentHeader.addComponent(documentsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(editRight)) {
-			Button uploadButton = buildUploadButton();
-			componentHeader.addComponent(uploadButton);
-			componentHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
-		}
-	}
+        if (((SormasUI) getUI()).getUserProvider().hasUserRight(editRight)) {
+            Button uploadButton = buildUploadButton();
+            componentHeader.addComponent(uploadButton);
+            componentHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
+        }
+    }
 
-	private Button buildUploadButton() {
-		VerticalLayout uploadLayout = new VerticalLayout();
-		uploadLayout.setSpacing(true);
-		uploadLayout.setMargin(true);
-		uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+    @NotNull
+    private Button buildUploadButton() {
+        VerticalLayout uploadLayout = new VerticalLayout();
+        uploadLayout.setSpacing(true);
+        uploadLayout.setMargin(true);
+        uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 
-		PopupButton mainButton =
-			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
+        PopupButton mainButton =
+                ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
-		UploadStateWindow uploadStateWindow = new UploadStateWindow();
-		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
-			mainButton.setButtonClickTogglesPopupVisibility(false);
-			mainButton.setClosePopupOnOutsideClick(false);
-		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow);
-		multiFileUpload
-			.setUploadButtonCaptions(I18nProperties.getCaption(Captions.importImportData), I18nProperties.getCaption(Captions.importImportData));
-		multiFileUpload.setAllUploadFinishedHandler(() -> {
-			mainButton.setButtonClickTogglesPopupVisibility(true);
-			mainButton.setClosePopupOnOutsideClick(true);
-			mainButton.setPopupVisible(false);
-		});
+        UploadStateWindow uploadStateWindow = new UploadStateWindow();
+        MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
+            mainButton.setButtonClickTogglesPopupVisibility(false);
+            mainButton.setClosePopupOnOutsideClick(false);
+        }, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow);
+        multiFileUpload
+                .setUploadButtonCaptions(I18nProperties.getCaption(Captions.importImportData), I18nProperties.getCaption(Captions.importImportData));
+        multiFileUpload.setAllUploadFinishedHandler(() -> {
+            mainButton.setButtonClickTogglesPopupVisibility(true);
+            mainButton.setClosePopupOnOutsideClick(true);
+            mainButton.setPopupVisible(false);
+        });
 
-		uploadLayout.addComponentsAndExpand(multiFileUpload);
+        uploadLayout.addComponentsAndExpand(multiFileUpload);
 
-		return mainButton;
-	}
+        return mainButton;
+    }
 
-	private void reload() {
-		List<DocumentDto> docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(relatedEntityType, entityRef.getUuid());
-		listLayout.removeAllComponents();
-		if (docs.isEmpty()) {
-			Label noActionsLabel = new Label(String.format(I18nProperties.getCaption(Captions.documentNoDocuments), relatedEntityType.toString()));
-			setSpacing(false);
-			listLayout.addComponent(noActionsLabel);
-		} else {
-			setSpacing(true);
-			listLayout.addComponents(docs.stream().map(this::toComponent).toArray(Component[]::new));
-		}
-	}
+    private void reload() {
+        List<DocumentDto> docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(relatedEntityType, entityRef.getUuid());
+        listLayout.removeAllComponents();
+        if (docs.isEmpty()) {
+            Label noActionsLabel = new Label(String.format(I18nProperties.getCaption(Captions.documentNoDocuments), relatedEntityType.toString()));
+            setSpacing(false);
+            listLayout.addComponent(noActionsLabel);
+        } else {
+            setSpacing(true);
+            listLayout.addComponents(docs.stream().map(this::toComponent).toArray(Component[]::new));
+        }
+    }
 
-	private Component toComponent(DocumentDto document) {
-		HorizontalLayout res = new HorizontalLayout();
-		res.setSpacing(true);
-		res.setMargin(false);
-		res.setWidth(100, Unit.PERCENTAGE);
+    @NotNull
+    private Component toComponent(DocumentDto document) {
+        HorizontalLayout res = new HorizontalLayout();
+        res.setSpacing(true);
+        res.setMargin(false);
+        res.setWidth(100, Unit.PERCENTAGE);
 
-		// TODO: show content-type and/or size?
-		Label nameLabel = new Label(DataHelper.toStringNullable(document.getName()));
-		res.addComponent(nameLabel);
-		res.setExpandRatio(nameLabel, 1);
+        // TODO: show content-type and/or size?
+        Label nameLabel = new Label(DataHelper.toStringNullable(document.getName()));
+        res.addComponent(nameLabel);
+        res.setExpandRatio(nameLabel, 1);
 
-		Button downloadButton = buildDownloadButton(document);
-		res.addComponent(downloadButton);
-		res.setExpandRatio(downloadButton, 0);
+        Button downloadButton = buildDownloadButton(document);
+        res.addComponent(downloadButton);
+        res.setExpandRatio(downloadButton, 0);
 
-		if (UserProvider.getCurrent().hasUserRight(editRight)) {
-			Button deleteButton = buildDeleteButton(document);
-			res.addComponent(deleteButton);
-			res.setExpandRatio(deleteButton, 0);
-		}
+        if (((SormasUI) getUI()).getUserProvider().hasUserRight(editRight)) {
+            Button deleteButton = buildDeleteButton(document);
+            res.addComponent(deleteButton);
+            res.setExpandRatio(deleteButton, 0);
+        }
 
-		return res;
-	}
+        return res;
+    }
 
-	private Button buildDownloadButton(DocumentDto document) {
-		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
+    @NotNull
+    private Button buildDownloadButton(DocumentDto document) {
+        Button viewButton = new Button(VaadinIcons.DOWNLOAD);
 
-		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
-			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
-			try {
-				return new ByteArrayInputStream(documentFacade.read(document.getUuid()));
-			} catch (IOException | IllegalArgumentException e) {
-				new Notification(
-					String.format(I18nProperties.getString(Strings.errorReadingDocument), document),
-					e.getMessage(),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-				return null;
-			}
-		}, document.getName());
-		streamResource.setMIMEType(document.getMimeType());
+        StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
+            DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
+            try {
+                return new ByteArrayInputStream(documentFacade.read(document.getUuid()));
+            } catch (IOException | IllegalArgumentException e) {
+                new Notification(
+                        String.format(I18nProperties.getString(Strings.errorReadingDocument), document),
+                        e.getMessage(),
+                        Notification.Type.ERROR_MESSAGE,
+                        false).show(Page.getCurrent());
+                return null;
+            }
+        }, document.getName());
+        streamResource.setMIMEType(document.getMimeType());
 
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(viewButton);
-		fileDownloader.setFileDownloadResource(streamResource);
+        FileDownloader fileDownloader = new FileDownloader(streamResource);
+        fileDownloader.extend(viewButton);
+        fileDownloader.setFileDownloadResource(streamResource);
 
-		return viewButton;
-	}
+        return viewButton;
+    }
 
-	private Button buildDeleteButton(DocumentDto document) {
-		return ButtonHelper.createIconButton(
-			"",
-			VaadinIcons.TRASH,
-			e -> VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), document.getName()), () -> {
-					try {
-						FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid());
-					} catch (IllegalArgumentException ex) {
-						new Notification(
-							I18nProperties.getString(Strings.errorDeletingDocument),
-							ex.getMessage(),
-							Notification.Type.ERROR_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-					reload();
-				}));
-	}
+    @NotNull
+    private Button buildDeleteButton(DocumentDto document) {
+        return ButtonHelper.createIconButton(
+                "",
+                VaadinIcons.TRASH,
+                e -> VaadinUiUtil
+                        .showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), document.getName()), () -> {
+                            try {
+                                FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid());
+                            } catch (IllegalArgumentException ex) {
+                                new Notification(
+                                        I18nProperties.getString(Strings.errorDeletingDocument),
+                                        ex.getMessage(),
+                                        Notification.Type.ERROR_MESSAGE,
+                                        false).show(Page.getCurrent());
+                            }
+                            reload();
+                        }));
+    }
 }

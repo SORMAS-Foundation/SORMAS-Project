@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -60,7 +62,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
@@ -117,6 +118,7 @@ public class ContactsView extends AbstractView {
 
 	public ContactsView() {
 		super(VIEW_NAME);
+		SormasUI ui = sormasUI();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -170,7 +172,7 @@ public class ContactsView extends AbstractView {
 			ContactsViewType viewType = (ContactsViewType) e.getProperty().getValue();
 
 			viewConfiguration.setViewType(viewType);
-			SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
+			ui.getNavigator().navigateTo(ContactsView.VIEW_NAME);
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
@@ -184,7 +186,7 @@ public class ContactsView extends AbstractView {
 		moreLayout.setWidth(250, Unit.PIXELS);
 		moreButton.setContent(moreLayout);
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+		if (viewConfiguration.getViewType().isContactOverview() && ui.getUserProvider().hasUserRight(UserRight.CONTACT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
@@ -198,7 +200,7 @@ public class ContactsView extends AbstractView {
 			moreLayout.addComponent(importButton);
 		}
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (viewConfiguration.getViewType().isContactOverview() && ui.getUserProvider().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -230,7 +232,7 @@ public class ContactsView extends AbstractView {
 					Descriptions.descDetailedExportButton);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.VISIT_EXPORT)) {
 				StreamResource followUpVisitsExportStreamResource =
 					DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACT_FOLLOW_UPS);
 
@@ -253,7 +255,7 @@ public class ContactsView extends AbstractView {
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				&& ui.getUserProvider().hasUserRight(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportContactDto.class,
 					null,
@@ -277,7 +279,7 @@ public class ContactsView extends AbstractView {
 			}
 		}
 
-		if (isBulkEditAllowed()) {
+		if (isBulkEditAllowed(ui)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
@@ -314,7 +316,7 @@ public class ContactsView extends AbstractView {
 			});
 		}
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (viewConfiguration.getViewType().isContactOverview() && (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE))) {
 			Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
@@ -359,6 +361,7 @@ public class ContactsView extends AbstractView {
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
+		SormasUI ui = sormasUI();
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setMargin(false);
 		statusFilterLayout.setSpacing(true);
@@ -403,7 +406,7 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			if (viewConfiguration.getViewType().isContactOverview() && ui.getUserProvider().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
@@ -420,10 +423,10 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (isBulkEditAllowed()) {
+			if (isBulkEditAllowed(ui)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
+				boolean hasBulkOperationsRight = ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
@@ -540,10 +543,9 @@ public class ContactsView extends AbstractView {
 		}
 	}
 
-	private boolean isBulkEditAllowed() {
+	private boolean isBulkEditAllowed(@NotNull final SormasUI ui) {
 		return viewConfiguration.getViewType().isContactOverview()
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled());
+			&& (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || FacadeProvider.getSormasToSormasFacade().isFeatureEnabled());
 	}
 
 	private HorizontalLayout buildScrollLayout() {

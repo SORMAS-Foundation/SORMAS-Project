@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.task;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
@@ -45,7 +47,7 @@ import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -68,7 +70,8 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		SormasUI ui = (SormasUI) getUI();
+		if (isInEagerMode() && ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -166,7 +169,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
 		getColumn(TaskIndexDto.CONTEXT_REFERENCE).setStyleGenerator(new FieldAccessColumnStyleGenerator<>(task -> {
 
-			UserDto currentUser = UserProvider.getCurrent().getUser();
+			UserDto currentUser = ui.getUserProvider().getUser();
 			boolean isInJurisdiction = true;
 			switch (task.getTaskContext()) {
 			case CASE:
@@ -192,7 +195,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
 		}));
 
-		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));
+		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(ui, e)));
 	}
 
 	public void reload() {
@@ -207,7 +210,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		getDataProvider().refreshAll();
 	}
 
-	private void navigateToData(TaskIndexDto task) {
+	private void navigateToData(@NotNull final SormasUI ui, TaskIndexDto task) {
 
 		switch (task.getTaskContext()) {
 		case CASE:

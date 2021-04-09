@@ -43,7 +43,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -79,7 +79,7 @@ public class UsersView extends AbstractView {
 	private ComboBox districtFilter;
 	private TextField searchField;
 
-	private RowCount rowsCount;
+	private final RowCount rowsCount;
 
 	public UsersView() {
 		super(VIEW_NAME);
@@ -103,7 +103,8 @@ public class UsersView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
+		SormasUI ui = sormasUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.USER_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
@@ -146,14 +147,14 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(sormasUI().getUserProvider(), Collections.emptySet()));
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(userRolesFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = sormasUI().getUserProvider().getUser();
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(CaseDataDto.REGION);
@@ -220,7 +221,7 @@ public class UsersView extends AbstractView {
 	public void updateFilterComponents() {
 
 		applyingCriteria = true;
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = sormasUI().getUserProvider().getUser();
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());

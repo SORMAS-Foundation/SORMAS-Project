@@ -36,7 +36,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -51,15 +51,16 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 	private static final String NO_CASE_CREATE = null;
 
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
-
 		super(EventParticipantIndexDto.class);
+		SormasUI ui = (SormasUI)getUI();
+
 		setSizeFull();
 
 		setInEagerMode(true);
 		setCriteria(criteria);
 		setEagerDataProvider();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -72,7 +73,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
 				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
-				UserProvider.getCurrent().getUser(),
+				ui.getUserProvider().getUser(),
 				entry.getJurisdiction());
 			if (!isInJurisdiction) {
 				return NO_CASE_CREATE;

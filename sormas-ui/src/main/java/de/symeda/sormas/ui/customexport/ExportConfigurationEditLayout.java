@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -124,8 +125,8 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private boolean hasManagePublicExportRights() {
-		return Objects.requireNonNull(UserProvider.getCurrent()).hasUserRight(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
-				&& (UserProvider.getCurrent().getUserReference().equals(this.exportConfiguration.getUser()));
+		return ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
+				&& (((SormasUI) getUI()).getUserProvider().getUserReference().equals(this.exportConfiguration.getUser()));
 	}
 
 	private int buildCheckBoxGroups(List<ExportPropertyMetaInfo> exportExportProperties) {

@@ -38,7 +38,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -72,6 +73,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
+		SormasUI ui = (SormasUI) getUI();
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
@@ -118,7 +120,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -147,7 +149,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
 			newFormButton.setId("new-form");
 
-			createNewFormLayout(newFormLayout);
+			createNewFormLayout(ui, newFormLayout);
 
 			addHeaderComponent(newFormButton);
 		}
@@ -167,7 +169,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormLayout.removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
 				createImportLayout(importFormLayout);
-				createNewFormLayout(newFormLayout);
+				createNewFormLayout(ui, newFormLayout);
 				importCampaignButton.setEnabled(true);
 				newFormButton.setEnabled(true);
 			} else {
@@ -208,7 +210,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 	}
 
-	private void createNewFormLayout(VerticalLayout newFormLayout) {
+	private void createNewFormLayout(@NotNull final SormasUI ui, VerticalLayout newFormLayout) {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
@@ -224,7 +226,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = sormasUI().getUserProvider().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
@@ -257,7 +259,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
-				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+				Language userLanguage = sormasUI().getUserProvider().getUser().getLanguage();
 				CampaignFormTranslations translations = null;
 				if (userLanguage != null) {
 					translations = formMeta.getCampaignFormTranslations()

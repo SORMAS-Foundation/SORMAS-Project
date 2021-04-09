@@ -17,8 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import com.vaadin.event.ContextClickEvent;
-import com.vaadin.event.MouseEvents;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -36,6 +43,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -47,12 +55,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.StringUtils;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -63,13 +65,13 @@ public class Menu extends CssLayout {
 	private static final String VALO_MENUITEMS = "valo-menuitems";
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
-	private Navigator navigator;
-	private Map<String, Button> viewButtons = new HashMap<String, Button>();
+	private final Navigator navigator;
+	private final Map<String, Button> viewButtons = new HashMap<String, Button>();
 
-	private CssLayout menuItemsLayout;
-	private CssLayout menuPart;
+	private final CssLayout menuItemsLayout;
+	private final CssLayout menuPart;
 
-	public Menu(Navigator navigator) {
+	public Menu(@NotNull Navigator navigator, @NotNull String userName) {
 
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
@@ -95,7 +97,7 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
-		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		top.addLayoutClickListener(listener -> navigator.navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 
 		// button for toggling the visibility of the menu when on a small screen
@@ -126,7 +128,7 @@ public class Menu extends CssLayout {
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
-			I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+			I18nProperties.getCaption(Captions.actionLogout) + " (" + userName + ")",
 			VaadinIcons.SIGN_OUT,
 			(Command) selectedItem -> LoginHelper.logout());
 
@@ -142,6 +144,7 @@ public class Menu extends CssLayout {
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
+		SormasUI ui = (SormasUI) window.getUI();
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
 			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
 

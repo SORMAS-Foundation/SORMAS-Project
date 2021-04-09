@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -80,7 +82,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -192,6 +194,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (viewMode == null) {
 			return;
 		}
+
+		SormasUI ui = ((SormasUI) getUI());
 
 		Label contactDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactData));
 		contactDataHeadingLabel.addStyleName(H3);
@@ -541,7 +545,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 				updateLastContactDateValidator();
 				updateDiseaseConfiguration(getValue().getDisease());
-				updateFollowUpStatusComponents();
+				updateFollowUpStatusComponents(ui);
 
 				DistrictReferenceDto referenceDistrict =
 					getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
@@ -557,7 +561,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						.createLinkToData(getValue().getResultingCase().getUuid(), I18nProperties.getCaption(Captions.contactOpenContactCase));
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
-					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
+					if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CONVERT)) {
 						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
 							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
 								VaadinUiUtil.showSimplePopupWindow(
@@ -652,14 +656,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void updateFollowUpStatusComponents() {
+	private void updateFollowUpStatusComponents(@NotNull final SormasUI ui) {
 
 		getContent().removeComponent(CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 		getContent().removeComponent(LOST_FOLLOW_UP_BTN_LOC);
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (followUpVisible && ui.getUserProvider().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
@@ -668,7 +672,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					statusField1.setReadOnly(false);
 					statusField1.setValue(FollowUpStatus.CANCELED);
 					statusField1.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				});
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
@@ -678,7 +682,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					statusField12.setReadOnly(false);
 					statusField12.setValue(FollowUpStatus.LOST);
 					statusField12.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				});
 				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
@@ -690,7 +694,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					statusField13.setReadOnly(false);
 					statusField13.setValue(FollowUpStatus.FOLLOW_UP);
 					statusField13.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					updateFollowUpStatusComponents(ui);
 				}, CssStyles.FORCE_CAPTION);
 				resumeButton.setWidth(100, Unit.PERCENTAGE);
 

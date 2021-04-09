@@ -30,7 +30,6 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-
 		super.enter(event);
 		initOrRedirect(event);
 	}

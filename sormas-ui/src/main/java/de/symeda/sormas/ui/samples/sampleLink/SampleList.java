@@ -32,7 +32,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -75,11 +75,12 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		boolean hasUserRight = ((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT);
 		List<SampleIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SampleIndexDto sample = displayedEntries.get(i);
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			if (hasUserRight) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));

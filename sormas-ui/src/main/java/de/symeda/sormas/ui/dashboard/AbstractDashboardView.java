@@ -47,18 +47,20 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		super(viewName);
 
+		SormasUI ui = (SormasUI)getUI();
+
 		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);
 
 		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (permitted(ui, FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SURVEILLANCE);
 			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE, I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
 		}
-		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		if (permitted(ui, FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CONTACTS);
 			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS, I18nProperties.getEnumCaption(DashboardType.CONTACTS));
 		}
-		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+		if (permitted(ui, FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CAMPAIGNS);
 			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
 		}

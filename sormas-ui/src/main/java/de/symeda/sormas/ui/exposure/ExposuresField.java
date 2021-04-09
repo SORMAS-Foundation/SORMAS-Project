@@ -21,19 +21,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.label.ContentMode;
@@ -50,15 +43,18 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -226,7 +222,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		final CommitDiscardWrapperComponent<ExposureForm> component = new CommitDiscardWrapperComponent<>(
 			exposureForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			((SormasUI) getUI()).getUserProvider().hasUserRight(UserRight.CASE_EDIT),
 			exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 		component.addCommitListener(() -> {
@@ -263,7 +259,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	@Override
 	protected ExposureDto createEntry() {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = ((SormasUI) getUI()).getUserProvider().getUser();
 		ExposureDto exposure = ExposureDto.build(null);
 		exposure.getLocation().setRegion(user.getRegion());
 		exposure.getLocation().setDistrict(user.getDistrict());

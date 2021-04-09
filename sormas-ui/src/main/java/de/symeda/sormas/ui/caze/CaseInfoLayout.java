@@ -33,8 +33,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
@@ -48,10 +51,10 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 		setSpacing(true);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
-		updateCaseInfo();
+		updateCaseInfo(((SormasUI)getUI()));
 	}
 
-	private void updateCaseInfo() {
+	private void updateCaseInfo(@NotNull final SormasUI ui) {
 
 		this.removeAllComponents();
 
@@ -88,7 +91,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)).setDescription(caseDto.getEpidNumber());
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.PERSON,
@@ -113,7 +116,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 				leftColumnLayout.addComponent(ageSexLayout);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.CLINICIAN_NAME,
@@ -135,7 +138,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(
 					rightColumnLayout,
 					CaseDataDto.CASE_CLASSIFICATION,

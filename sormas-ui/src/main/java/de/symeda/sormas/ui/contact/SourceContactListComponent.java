@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -33,7 +35,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -44,12 +45,12 @@ public class SourceContactListComponent extends VerticalLayout {
 	private SourceContactList list;
 	private final CaseReferenceDto caseReference;
 
-	public SourceContactListComponent(CaseReferenceDto caseReference) {
+	public SourceContactListComponent(@NotNull final SormasUI ui, CaseReferenceDto caseReference) {
 		this.caseReference = caseReference;
-		createSourceContactListComponent(new SourceContactList(caseReference));
+		createSourceContactListComponent(ui, new SourceContactList(caseReference));
 	}
 
-	private void createSourceContactListComponent(SourceContactList sourceContactList) {
+	private void createSourceContactListComponent(@NotNull final SormasUI ui, SourceContactList sourceContactList) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -68,7 +69,7 @@ public class SourceContactListComponent extends VerticalLayout {
 		sourceContactsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(sourceContactsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,

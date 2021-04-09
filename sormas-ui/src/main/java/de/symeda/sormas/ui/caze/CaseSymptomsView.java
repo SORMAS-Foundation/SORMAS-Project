@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
@@ -27,7 +30,7 @@ public class CaseSymptomsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/symptoms";
 
-	public CaseSymptomsView() {
+	public CaseSymptomsView(@NotNull final SormasUI ui) {
 		super(VIEW_NAME, true);
 	}
 

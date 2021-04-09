@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -48,9 +49,9 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	public CampaignDashboardView() {
 		super(VIEW_NAME);
-
+		SormasUI ui = (SormasUI)getUI();
 		dataProvider = new CampaignDashboardDataProvider();
-		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
+		filterLayout = new CampaignDashboardFilterLayout(ui, this, dataProvider);
 		dashboardLayout.addComponent(filterLayout);
 		dashboardLayout.setMargin(false);
 

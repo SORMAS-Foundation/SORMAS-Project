@@ -2,8 +2,6 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -24,9 +22,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -59,6 +56,8 @@ public class AreasView extends AbstractConfigurationView {
 	public AreasView() {
 		super(VIEW_NAME);
 
+		SormasUI ui = (SormasUI) getUI();
+
 		viewConfiguration = ViewModelProviders.of(AreasView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(AreasView.class).get(AreaCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
@@ -67,7 +66,7 @@ public class AreasView extends AbstractConfigurationView {
 
 		grid = new AreasGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createFilterBar(ui));
 		gridLayout.addComponent(new RowCount(Strings.labelNumberOfAreas, grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -76,7 +75,7 @@ public class AreasView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.AREA));
 				window.setCaption(I18nProperties.getString(Strings.headingImportAreas));
@@ -88,7 +87,7 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(btnImport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);
@@ -98,7 +97,7 @@ public class AreasView extends AbstractConfigurationView {
 			fileDownloader.extend(btnExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -108,7 +107,7 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(btnCreate);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -140,7 +139,7 @@ public class AreasView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
-	private HorizontalLayout createFilterBar() {
+	private HorizontalLayout createFilterBar(SormasUI ui) {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
@@ -164,7 +163,7 @@ public class AreasView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
 				filterRelevanceStatus = new ComboBox<>();
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);
@@ -187,7 +186,7 @@ public class AreasView extends AbstractConfigurationView {
 				actionButtonsLayout.addComponent(filterRelevanceStatus);
 
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					dropdownBulkOperations = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {

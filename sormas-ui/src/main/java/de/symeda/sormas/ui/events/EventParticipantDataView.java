@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -117,7 +116,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -126,7 +125,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (hasUserRight(UserRight.SAMPLE_CREATE)) {
 				Label infoSample = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
 					ContentMode.HTML);
@@ -138,7 +137,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (hasUserRight(UserRight.CONTACT_VIEW)) {
 			VerticalLayout contactsLayout = new VerticalLayout();
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
@@ -163,7 +162,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, eventParticipantRef);
+		CaseDocumentsComponent.addComponentToLayout(sormasUI().getUserProvider(), layout, eventParticipantRef);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {

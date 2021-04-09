@@ -31,7 +31,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionList;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -69,7 +68,7 @@ public class EventActionsView extends AbstractEventView {
 		topLayout.addComponent(header);
 
 		// add create button if user has role
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_CREATE)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.ACTION_CREATE)) {
 			addButton = ButtonHelper.createIconButton(Captions.actionCreate, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getActionController().create(ActionContext.EVENT, this.getEventRef(), this::reload);
 			}, ValoTheme.BUTTON_PRIMARY);

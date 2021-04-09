@@ -32,7 +32,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -71,10 +71,12 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
+		SormasUI ui = ((SormasUI) getUI());
+		boolean hasUserRightPathogenTestEdit = ui.getUserProvider().hasUserRight(UserRight.PATHOGEN_TEST_EDIT);
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			PathogenTestDto pathogenTest = displayedEntries.get(i);
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
+			if (hasUserRightPathogenTestEdit) {
 				listEntry.addEditListener(i, (ClickListener) event -> {
 					if (createOrEditAllowedCallback.get()) {
 						ControllerProvider.getPathogenTestController()

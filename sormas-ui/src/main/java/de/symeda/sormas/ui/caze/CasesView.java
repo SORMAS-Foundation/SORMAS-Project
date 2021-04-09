@@ -79,7 +79,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
@@ -149,7 +148,7 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
+		hasCaseManagementRight = hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -216,7 +215,7 @@ public class CasesView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
+		ExportConfigurationDto config = ExportConfigurationDto.build(sormasUI().getUserProvider().getUserReference(), ExportType.CASE);
 
 		config.setProperties(
 			ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight)
@@ -249,7 +248,7 @@ public class CasesView extends AbstractView {
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(openGuideButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
 			{
 				importLayout.setSpacing(true);
@@ -265,7 +264,7 @@ public class CasesView extends AbstractView {
 			addImportButton(importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (hasUserRight(UserRight.CASE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -343,8 +342,7 @@ public class CasesView extends AbstractView {
 					Strings.infoSampleExport);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND) && hasUserRight(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
 					null,
@@ -427,7 +425,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+		if (hasUserRight(UserRight.CASE_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.caseMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
@@ -445,7 +443,7 @@ public class CasesView extends AbstractView {
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
 		moreLayout.addComponent(searchSpecificCaseButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+		if (hasUserRight(UserRight.CASE_CREATE)) {
 			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
@@ -612,7 +610,7 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -644,7 +642,7 @@ public class CasesView extends AbstractView {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -664,9 +662,7 @@ public class CasesView extends AbstractView {
 					final boolean externalMessagesEnabled =
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-					if (isSmsServiceSetUp
-						&& externalMessagesEnabled
-						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+					if (isSmsServiceSetUp && externalMessagesEnabled && hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.messagesSendSMS),
@@ -765,8 +761,7 @@ public class CasesView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
-			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		return hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES) || FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 
 	private HorizontalLayout buildScrollLayout() {

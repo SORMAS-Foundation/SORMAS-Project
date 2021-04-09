@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -42,7 +44,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
@@ -81,8 +83,9 @@ public class DistrictsView extends AbstractConfigurationView {
 	private MenuBar bulkOperationsDropdown;
 
 	public DistrictsView() {
-
 		super(VIEW_NAME);
+
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(DistrictsView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(DistrictsView.class)
@@ -93,7 +96,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 		grid = new DistrictsGrid(criteria);
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createFilterBar(ui));
 		gridLayout.addComponent(new RowCount(Strings.labelNumberOfDistricts, grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -102,7 +105,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.DISTRICT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportDistricts));
@@ -114,17 +117,18 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+			StreamResource streamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -134,7 +138,7 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(createButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -167,7 +171,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
-	private HorizontalLayout createFilterBar() {
+	private HorizontalLayout createFilterBar(@NotNull SormasUI ui) {
 
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
@@ -216,7 +220,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
@@ -232,7 +236,7 @@ public class DistrictsView extends AbstractConfigurationView {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {

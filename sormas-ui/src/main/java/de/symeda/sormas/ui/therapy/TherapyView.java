@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.therapy;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,7 +44,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -67,7 +69,7 @@ public class TherapyView extends AbstractCaseView {
 	private ComboBox treatmentTypeFilter;
 	private TextField treatmentTextFilter;
 
-	public TherapyView() {
+	public TherapyView(@NotNull final SormasUI ui) {
 		super(VIEW_NAME, false);
 
 		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
@@ -92,7 +94,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(prescriptionsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -164,7 +166,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(treatmentsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (sormasUI().getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {

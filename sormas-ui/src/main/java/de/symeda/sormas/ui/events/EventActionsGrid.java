@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -38,6 +36,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;

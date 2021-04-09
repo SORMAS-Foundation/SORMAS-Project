@@ -48,6 +48,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -285,7 +286,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
-        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+        SormasUI ui = (SormasUI)getUI();
+        userRoles.addItems(UserUiHelper.getAssignableRoles(ui.getUserProvider(), userDto.getUserRoles()));
         
         super.setValue(userDto);
     }

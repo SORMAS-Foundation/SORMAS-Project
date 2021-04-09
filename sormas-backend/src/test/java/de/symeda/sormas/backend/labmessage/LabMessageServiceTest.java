@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.labmessage;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -11,7 +12,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,6 +39,6 @@ public class LabMessageServiceTest {
 
         Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
 
-        assertEquals(predicate, result);
+        Assert.assertEquals(predicate, result);
     }
 }

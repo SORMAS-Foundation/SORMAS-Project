@@ -22,32 +22,34 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+
+import javax.validation.constraints.NotNull;
 
 public class CaseDocumentsComponent extends AbstractDocumentGenerationComponent {
 
 	public static final String QUARANTINE_LOC = "quarantine";
 
-	public static void addComponentToLayout(CustomLayout targetLayout, CaseDataDto caseDataDto) {
-		addComponentToLayout(targetLayout, caseDataDto.toReference());
+	public static void addComponentToLayout(@NotNull UserProvider currentUser, CustomLayout targetLayout, CaseDataDto caseDataDto) {
+		addComponentToLayout(currentUser, targetLayout, caseDataDto.toReference());
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ContactDto contactDto) {
-		addComponentToLayout(targetLayout, contactDto.toReference());
+	public static void addComponentToLayout(@NotNull UserProvider currentUser, CustomLayout targetLayout, ContactDto contactDto) {
+		addComponentToLayout(currentUser, targetLayout, contactDto.toReference());
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ReferenceDto referenceDto) {
-		if (isQuarantineOrderAvailable()) {
+	public static void addComponentToLayout(@NotNull UserProvider currentUser, CustomLayout targetLayout, ReferenceDto referenceDto) {
+		if (isQuarantineOrderAvailable(currentUser)) {
 			CaseDocumentsComponent docgenerationComponent = new CaseDocumentsComponent(referenceDto);
 			docgenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			targetLayout.addComponent(docgenerationComponent, QUARANTINE_LOC);
 		}
 	}
 
-	private static boolean isQuarantineOrderAvailable() {
-		UserProvider currentUser = UserProvider.getCurrent();
-		return currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
+	private static boolean isQuarantineOrderAvailable(@NotNull UserProvider currentUser) {
+		return currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
 	}
 
 	public CaseDocumentsComponent(ReferenceDto referenceDto) {

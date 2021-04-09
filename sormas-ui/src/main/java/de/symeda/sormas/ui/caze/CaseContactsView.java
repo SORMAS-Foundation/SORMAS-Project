@@ -58,7 +58,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
@@ -79,8 +78,8 @@ public class CaseContactsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
-	private ContactCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private final ContactCriteria criteria;
+	private final ViewConfiguration viewConfiguration;
 
 	private ContactGrid grid;
 
@@ -93,8 +92,6 @@ public class CaseContactsView extends AbstractCaseView {
 	private Button resetButton;
 	private Button applyButton;
 
-	private Button newButton;
-	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -120,7 +117,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = sormasUI().getUserProvider().getUser();
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
@@ -237,7 +234,7 @@ public class CaseContactsView extends AbstractCaseView {
 		statusFilterLayout.setExpandRatio(statusFilterLayout.getComponent(statusFilterLayout.getComponentCount() - 1), 1);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -264,7 +261,7 @@ public class CaseContactsView extends AbstractCaseView {
 			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+		if (hasUserRight(UserRight.CONTACT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil
 					.showPopupWindow(new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
@@ -274,12 +271,12 @@ public class CaseContactsView extends AbstractCaseView {
 
 			statusFilterLayout.addComponent(importButton);
 			statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(importButton, 1);
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (hasUserRight(UserRight.CONTACT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -290,7 +287,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 			statusFilterLayout.addComponent(exportButton);
 			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
@@ -325,8 +322,8 @@ public class CaseContactsView extends AbstractCaseView {
 			exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			newButton = ButtonHelper.createIconButtonWithCaption(
+		if (hasUserRight(UserRight.CONTACT_CREATE)) {
+			Button newButton = ButtonHelper.createIconButtonWithCaption(
 				Captions.contactNewContact,
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
 				VaadinIcons.PLUS_CIRCLE,
@@ -355,7 +352,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		if (grid == null) {
 			grid = new ContactGrid(criteria, getClass());
-			gridLayout = new DetailSubComponentWrapper(() -> null);
+			DetailSubComponentWrapper gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.addComponent(createFilterBar());
 			gridLayout.addComponent(createStatusFilterBar());
 			gridLayout.addComponent(grid);

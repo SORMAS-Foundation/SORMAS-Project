@@ -49,6 +49,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -58,6 +59,8 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+
+import javax.validation.constraints.NotNull;
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -120,11 +123,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	}
 
 	protected void addCommonFields() {
-
+		SormasUI ui = ((SormasUI)getUI());
 		final NullableOptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, NullableOptionGroup.class);
 		addField(SampleDto.UUID).setReadOnly(true);
 		addField(SampleDto.REPORTING_USER).setReadOnly(true);
-		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields());
+		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields(ui));
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		sampleDateField.setInvalidCommitted(false);
@@ -164,6 +167,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	}
 
 	protected void defaultValueChangeListener() {
+		SormasUI ui = ((SormasUI)getUI());
 
 		final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
 		final Field<?> receivedField = getField(SampleDto.RECEIVED);
@@ -205,8 +209,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-			|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()))) {
+		if (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
+			|| (reportingUser != null && ((SormasUI)getUI()).getUserProvider().getUuid().equals(reportingUser.getUuid()))) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
@@ -357,6 +361,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	}
 
 	protected void initializeRequestedTestFields() {
+		SormasUI ui = ((SormasUI)getUI());
 
 		// Information texts for users that can edit the requested tests
 		Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
@@ -367,11 +372,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		// Yes/No fields for requesting pathogen/additional tests
 		CheckBox pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, CheckBox.class);
 		pathogenTestingRequestedField.setWidthUndefined();
-		pathogenTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields());
+		pathogenTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields(ui));
 
 		CheckBox additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, CheckBox.class);
 		additionalTestingRequestedField.setWidthUndefined();
-		additionalTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields());
+		additionalTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields(ui));
 
 		// CheckBox groups to select the requested pathogen/additional tests
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
@@ -400,18 +405,18 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		CssStyles.style(additionalTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, VSPACE_4);
 		getContent().addComponent(additionalTestsHeading, ADDITIONAL_TESTING_READ_HEADLINE_LOC);
 
-		updateRequestedTestFields();
+		updateRequestedTestFields(ui);
 	}
 
-	private void updateRequestedTestFields() {
+	private void updateRequestedTestFields(@NotNull final SormasUI ui) {
 
 		boolean showRequestFields = getField(SampleDto.SAMPLE_PURPOSE).getValue() != SamplePurpose.INTERNAL;
 		UserReferenceDto reportingUser = getValue() != null ? getValue().getReportingUser() : null;
 		boolean canEditRequest = showRequestFields
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()));
+			&& (ui.getUserProvider().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
+				|| reportingUser != null && ((SormasUI)getUI()).getUserProvider().getUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
-		boolean canUseAdditionalTests = UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW);
+		boolean canUseAdditionalTests = ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW);
 
 		Field<?> pathogenTestingField = getField(SampleDto.PATHOGEN_TESTING_REQUESTED);
 		pathogenTestingField.setVisible(canEditRequest);

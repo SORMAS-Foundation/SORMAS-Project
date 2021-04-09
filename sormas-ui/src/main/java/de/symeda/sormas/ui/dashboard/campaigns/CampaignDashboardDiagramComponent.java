@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.SormasUI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -433,7 +434,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private CampaignDiagramTranslations getCampaignDiagramTranslations() {
-		Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+		Language userLanguage = ((SormasUI)getUI()).getUserProvider().getUser().getLanguage();
 		CampaignDiagramTranslations translations = null;
 		if (userLanguage != null && diagramDefinition.getCampaignDiagramTranslations() != null) {
 			translations = diagramDefinition.getCampaignDiagramTranslations()

@@ -13,17 +13,17 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class AdditionalTestListComponent extends VerticalLayout {
 
-	private AdditionalTestList list;
-	private Button createButton;
+	private final AdditionalTestList list;
 
 	public AdditionalTestListComponent(String sampleUuid) {
+		SormasUI ui = ((SormasUI) getUI());
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
@@ -38,8 +38,8 @@ public class AdditionalTestListComponent extends VerticalLayout {
 		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.additionalTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
+		if (ui.getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
+			Button createButton = ButtonHelper.createIconButton(Captions.additionalTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getAdditionalTestController().openCreateComponent(sampleUuid, list::reload);
 			}, ValoTheme.BUTTON_PRIMARY);
 

@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
@@ -112,7 +111,7 @@ public class SampleDataView extends AbstractSampleView {
 			disease = contactDto.getDisease();
 
 			final ContactInfoLayout contactInfoLayout =
-				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
+				new ContactInfoLayout(sormasUI(), contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
@@ -170,7 +169,7 @@ public class SampleDataView extends AbstractSampleView {
 		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (sormasUI().getUserProvider().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);

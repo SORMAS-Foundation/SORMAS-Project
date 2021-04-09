@@ -31,7 +31,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
@@ -121,14 +120,14 @@ public class CaseDataView extends AbstractCaseView {
 
 		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-		if (isSmsServiceSetUp && externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+		if (isSmsServiceSetUp && externalMessagesEnabled && hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
@@ -138,7 +137,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+			if (hasUserRight(UserRight.SAMPLE_CREATE)) {
 				sampleList.addStyleName(CssStyles.VSPACE_NONE);
 				Label sampleInfo = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
@@ -188,7 +187,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, caze);
+		CaseDocumentsComponent.addComponentToLayout(sormasUI().getUserProvider(), layout, caze);
 
 		setCaseEditPermission(container);
 	}

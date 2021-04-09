@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -49,7 +51,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
@@ -98,6 +100,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	public FacilitiesView() {
 
 		super(VIEW_NAME);
+		SormasUI ui = (SormasUI) getUI();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(getClass())
@@ -109,7 +112,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		grid = new FacilitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
-		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createFilterBar(ui));
 		gridLayout.addComponent(new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -118,7 +121,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.FACILITY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
@@ -130,7 +133,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -140,42 +143,43 @@ public class FacilitiesView extends AbstractConfigurationView {
 			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			StreamResource basicExportStreamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource basicExportStreamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
-					basicExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.TABLE,
-					Captions.exportBasic,
-					Strings.infoBasicExport);
+				basicExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.TABLE,
+				Captions.exportBasic,
+				Strings.infoBasicExport);
 
 			// Detailed export
 
 			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-					FacilityExportDto.class,
-					null,
-					(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					ExportEntityName.FACILITIES,
-					null);
+				FacilityExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				ExportEntityName.FACILITIES,
+				null);
 
 			addExportButton(
-					detailedExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.FILE_TEXT,
-					Captions.exportDetailed,
-					Strings.infoDetailedExport);
+				detailedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButtonWithCaption(
 				"create",
 				I18nProperties.getCaption(Captions.actionNewEntry),
@@ -185,7 +189,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 			addHeaderComponent(createButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -227,7 +231,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	//		return headerLayout;
 	//	}
 
-	private HorizontalLayout createFilterBar() {
+	private HorizontalLayout createFilterBar(@NotNull final SormasUI ui) {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
@@ -324,7 +328,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
@@ -342,7 +346,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {

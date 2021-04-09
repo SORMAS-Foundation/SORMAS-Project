@@ -45,6 +45,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -74,7 +75,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class);
-		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
+		setInEagerMode(viewConfiguration.isInEagerMode() && ((SormasUI)(getUI())).getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
 			setCriteria(criteria);

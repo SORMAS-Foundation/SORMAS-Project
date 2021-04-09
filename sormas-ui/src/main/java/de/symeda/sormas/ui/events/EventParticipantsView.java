@@ -46,7 +46,6 @@ import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
@@ -70,8 +69,6 @@ public class EventParticipantsView extends AbstractEventView {
 	private final EventParticipantCriteria criteria;
 
 	private EventParticipantsGrid grid;
-	private Button addButton;
-	private DetailSubComponentWrapper gridLayout;
 	private Button activeStatusButton;
 	private EventParticipantsFilterForm filterForm;
 
@@ -99,7 +96,7 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 
 		// import
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
+		if (hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
@@ -174,7 +171,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.addComponent(filterForm);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -205,7 +202,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);
-			gridLayout = new DetailSubComponentWrapper(() -> null);
+			DetailSubComponentWrapper gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(false);
@@ -241,8 +238,8 @@ public class EventParticipantsView extends AbstractEventView {
 		statusFilterLayout.addComponent(statusAll);
 		activeStatusButton = statusAll;
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
+		if (hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+			Button addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 

@@ -43,7 +43,6 @@ import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -82,7 +81,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -101,7 +100,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+		if (hasUserRight(UserRight.VISIT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
@@ -142,7 +141,7 @@ public class ContactVisitsView extends AbstractContactView {
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
+		if (hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = ButtonHelper.createIconButton(
 				Captions.visitNewVisit,
 				VaadinIcons.PLUS_CIRCLE,

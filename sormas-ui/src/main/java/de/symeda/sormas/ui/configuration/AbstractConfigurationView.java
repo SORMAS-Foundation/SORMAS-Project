@@ -20,11 +20,13 @@ package de.symeda.sormas.ui.configuration;
 import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
@@ -42,6 +44,8 @@ import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationVie
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
+
+import javax.validation.constraints.NotNull;
 
 public abstract class AbstractConfigurationView extends AbstractSubNavigationView<DirtyStateComponent> {
 
@@ -121,7 +125,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
 			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		SormasUI ui = (SormasUI)getUI();
+		if (ui.getUserProvider().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (isAnySurveillanceEnabled) {
 				menu.addView(
 					ContinentsView.VIEW_NAME,
@@ -176,7 +181,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					false);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				menu.addView(
 					PopulationDataView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -190,22 +195,22 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
-			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
+		if (isCaseSurveillanceEnabled && ui.getUserProvider().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			RegionReferenceDto region = ui.getUserProvider().getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				region != null ? region.getUuid() : null,
 				false);
 		}
-		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled && ui.getUserProvider().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
 				DocumentTemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
 		}
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && ui.getUserProvider().hasUserRole(UserRole.ADMIN)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

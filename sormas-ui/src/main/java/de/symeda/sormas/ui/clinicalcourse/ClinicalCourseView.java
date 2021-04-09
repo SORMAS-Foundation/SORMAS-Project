@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.clinicalcourse;
 
+import javax.validation.constraints.NotNull;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -36,7 +38,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -55,14 +57,15 @@ public class ClinicalCourseView extends AbstractCaseView {
 	private ClinicalVisitCriteria clinicalVisitCriteria;
 	private ClinicalVisitGrid clinicalVisitGrid;
 
-	public ClinicalCourseView() {
-
+	public ClinicalCourseView(@NotNull final SormasUI ui) {
 		super(VIEW_NAME, true);
 
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
 
+	@NotNull
 	private VerticalLayout createClinicalVisitsHeader() {
+		SormasUI ui = sormasUI();
 
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
 		clinicalVisitsHeader.setMargin(false);
@@ -80,7 +83,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 			headlineRow.setExpandRatio(clinicalVisitsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (ui.getUserProvider().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {

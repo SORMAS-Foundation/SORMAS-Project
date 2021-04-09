@@ -52,6 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -122,8 +123,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	@Override
 	protected void addFields() {
-
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		SormasUI ui = (SormasUI)getUI();
+		if (!UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
@@ -151,7 +152,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
-
+		SormasUI ui = (SormasUI)getUI();
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
@@ -167,7 +168,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.COMMUNITY, 140));
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserRole.isPortHealthUser(ui.getUserProvider().getUserRoles())) {
 
 			ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.FACILITY_TYPE_GROUP, 140));
 			typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -182,7 +183,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			ComboBox pointOfEntryField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.POINT_OF_ENTRY, 140));
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
@@ -237,7 +238,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -248,7 +249,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (ui.getUserProvider().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -538,9 +539,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	@Override
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
-
+		SormasUI ui = (SormasUI)getUI();
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(ui.getUserProvider().getUserRoles());
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);

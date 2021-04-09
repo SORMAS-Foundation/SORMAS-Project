@@ -34,7 +34,7 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -80,11 +80,12 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 	protected void drawDisplayedEntries() {
 
 		List<TaskIndexDto> displayedEntries = getDisplayedEntries();
-
+		SormasUI ui = (SormasUI) getUI();
+		boolean hasUserRightTaskEdit = ui.getUserProvider().hasUserRight(UserRight.TASK_EDIT);
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			TaskIndexDto task = displayedEntries.get(i);
 			TaskListEntry listEntry = new TaskListEntry(task);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)) {
+			if (hasUserRightTaskEdit) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload, false));
