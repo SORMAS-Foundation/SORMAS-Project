@@ -1117,6 +1117,10 @@ public interface Captions {
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
+	String Facility_contactPersonEmail = "Facility.contactPersonEmail";
+	String Facility_contactPersonFirstName = "Facility.contactPersonFirstName";
+	String Facility_contactPersonLastName = "Facility.contactPersonLastName";
+	String Facility_contactPersonPhone = "Facility.contactPersonPhone";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_houseNumber = "Facility.houseNumber";
@@ -1243,6 +1247,10 @@ public interface Captions {
 	String Location_addressType = "Location.addressType";
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
+	String Location_contactPersonEmail = "Location.contactPersonEmail";
+	String Location_contactPersonFirstName = "Location.contactPersonFirstName";
+	String Location_contactPersonLastName = "Location.contactPersonLastName";
+	String Location_contactPersonPhone = "Location.contactPersonPhone";
 	String Location_details = "Location.details";
 	String Location_facility = "Location.facility";
 	String Location_facilityDetails = "Location.facilityDetails";
