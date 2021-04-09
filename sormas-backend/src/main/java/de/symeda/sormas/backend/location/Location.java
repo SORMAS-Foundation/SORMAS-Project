@@ -17,19 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -46,6 +33,19 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.Subcontinent;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
 
 @Entity
 @Audited
@@ -75,6 +75,10 @@ public class Location extends AbstractDomainObject {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String CONTACT_PERSON_FIRST_NAME="contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME="contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE="contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL="contactPersonEmail";
 	public static final String PERSON = "person";
 
 	private String details;
@@ -101,6 +105,11 @@ public class Location extends AbstractDomainObject {
 	private FacilityType facilityType;
 	private Facility facility;
 	private String facilityDetails;
+
+	private String contactPersonFirstName;
+	private String contactPersonLastName;
+	private String contactPersonPhone;
+	private String contactPersonEmail;
 
 	private Person person;
 
@@ -288,6 +297,42 @@ public class Location extends AbstractDomainObject {
 
 	public void setFacilityDetails(String facilityDetails) {
 		this.facilityDetails = facilityDetails;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

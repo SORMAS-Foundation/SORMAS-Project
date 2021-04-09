@@ -17,32 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.collections.CollectionUtils;
-
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -70,6 +44,30 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.collections.CollectionUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb implements FacilityFacade {
@@ -217,6 +215,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			root.get(Facility.HOUSE_NUMBER),
 			root.get(Facility.ADDITIONAL_INFORMATION),
 			root.get(Facility.AREA_TYPE),
+			root.get(Facility.CONTACT_PERSON_FIRST_NAME),
+			root.get(Facility.CONTACT_PERSON_LAST_NAME),
+			root.get(Facility.CONTACT_PERSON_PHONE),
+			root.get(Facility.CONTACT_PERSON_EMAIL),
 			root.get(Facility.LATITUDE),
 			root.get(Facility.LONGITUDE),
 			root.get(Facility.TYPE),
@@ -395,6 +397,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setHouseNumber(entity.getHouseNumber());
 		dto.setAdditionalInformation(entity.getAdditionalInformation());
 		dto.setAreaType(entity.getAreaType());
+		dto.setContactPersonFirstName(entity.getContactPersonFirstName());
+		dto.setContactPersonLastName(entity.getContactPersonLastName());
+		dto.setContactPersonPhone(entity.getContactPersonPhone());
+		dto.setContactPersonEmail(entity.getContactPersonEmail());
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
@@ -511,6 +517,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			facility.get(Facility.HOUSE_NUMBER),
 			facility.get(Facility.ADDITIONAL_INFORMATION),
 			facility.get(Facility.AREA_TYPE),
+			facility.get(Facility.CONTACT_PERSON_FIRST_NAME),
+			facility.get(Facility.CONTACT_PERSON_LAST_NAME),
+			facility.get(Facility.CONTACT_PERSON_PHONE),
+			facility.get(Facility.CONTACT_PERSON_EMAIL),
 			facility.get(Facility.LATITUDE),
 			facility.get(Facility.LONGITUDE),
 			facility.get(Facility.EXTERNAL_ID));
@@ -624,6 +634,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setHouseNumber(source.getHouseNumber());
 		target.setAdditionalInformation(source.getAdditionalInformation());
 		target.setAreaType(source.getAreaType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 

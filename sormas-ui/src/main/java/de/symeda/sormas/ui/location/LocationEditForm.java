@@ -17,21 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
@@ -47,7 +32,6 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -79,6 +63,20 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -98,6 +96,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
 			fluidRow(
 				loc(LocationDto.DETAILS),
 				fluidRow(
@@ -205,6 +205,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		TextField postalCodeField = addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
+
+		TextField contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
+		TextField contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
+		TextField contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		TextField contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -406,7 +411,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
 						|| facilityDto.getAreaType() != null
 						|| facilityDto.getLatitude() != null
-						|| facilityDto.getLongitude() != null) {
+						|| facilityDto.getLongitude() != null
+					||(StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName()) && StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
 
 						// Show a confirmation popup if the location's address is already set and different from the facility one
 						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
@@ -417,6 +423,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
 								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
 							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
+							|| (contactPersonFirstName.getValue()!=null && contactPersonLastName.getValue()!=null)
 							|| (tfLatitude.getConvertedValue() != null
 								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
 							|| (tfLongitude.getConvertedValue() != null
@@ -481,6 +488,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
+		((TextField) getField(LocationDto.CONTACT_PERSON_FIRST_NAME)).setValue(facilityDto.getContactPersonFirstName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_LAST_NAME)).setValue(facilityDto.getContactPersonLastName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_PHONE)).setValue(facilityDto.getContactPersonPhone());
+		((TextField) getField(LocationDto.CONTACT_PERSON_EMAIL)).setValue(facilityDto.getContactPersonEmail());
 		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
 		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}

@@ -17,15 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
@@ -33,6 +24,15 @@ import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity
 public class Facility extends InfrastructureAdo {
@@ -51,6 +51,10 @@ public class Facility extends InfrastructureAdo {
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String AREA_TYPE = "areaType";
+	public static final String CONTACT_PERSON_FIRST_NAME="contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME="contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE="contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL="contactPersonEmail";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";
@@ -67,6 +71,10 @@ public class Facility extends InfrastructureAdo {
 	private String houseNumber;
 	private String additionalInformation;
 	private AreaType areaType;
+	private String contactPersonFirstName;
+	private String contactPersonLastName;
+	private String contactPersonPhone;
+	private String contactPersonEmail;
 	private Double latitude;
 	private Double longitude;
 	private FacilityType type;
@@ -160,6 +168,42 @@ public class Facility extends InfrastructureAdo {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	public Double getLatitude() {
