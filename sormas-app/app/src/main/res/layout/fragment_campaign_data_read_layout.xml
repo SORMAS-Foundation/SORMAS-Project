@@ -37,7 +37,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            style="@style/LayoutSingleContentSpaceBelowStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -45,12 +46,12 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_campaign"
+                    android:id="@+id/campaignFormData_campaign"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.campaign}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_formDate"
+                    android:id="@+id/campaignFormData_formDate"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.formDate}" />
 
@@ -62,12 +63,12 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_area"
+                    android:id="@+id/campaignFormData_area"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.area}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_region"
+                    android:id="@+id/campaignFormData_region"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.region}" />
 
@@ -79,12 +80,12 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_district"
+                    android:id="@+id/campaignFormData_district"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.district}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_community"
+                    android:id="@+id/campaignFormData_community"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.community}" />
 
@@ -94,7 +95,7 @@
                 android:id="@+id/dynamicLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
             </LinearLayout>
 
