@@ -18,15 +18,14 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.SampleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
@@ -43,6 +42,10 @@ public class LabMessageFacadeEjbTest {
 	private EntityManager em;
 	@Mock
 	private LabMessageService labMessageService;
+	@Mock
+	private SampleService sampleService;
+	@Mock
+	private PathogenTestService pathogenTestService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 

@@ -7113,6 +7113,5 @@ ALTER TABLE labmessage ADD COLUMN pathogentest_id BIGINT;
 ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_samples FOREIGN KEY(sample_id) REFERENCES samples(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pathogentest_id) REFERENCES pathogentest(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-
-INSERT INTO schema_version (version_number, comment) VALUES (357, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
+INSERT INTO schema_version (version_number, comment) VALUES (358, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 -- *** Insert new sql commands BEFORE this line ***

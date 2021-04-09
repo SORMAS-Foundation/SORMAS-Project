@@ -99,6 +99,10 @@ public class LabMessageController {
 		form.setValue(newDto);
 	}
 
+	public void showLabMessagesSlider(List<LabMessageDto> labMessages, Runnable onShare) {
+		new LabMessageSlider(onShare, labMessages);
+	}
+
 	public void processLabMessage(String labMessageUuid) {
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		final PersonDto personDto = buildPerson(labMessageDto);

@@ -28,7 +28,6 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +50,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -183,9 +183,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
-		if (target.isProcessed()) {
-			target.setSample(source.getSample().toReference());
-			if (target.getPathogenTest() != null) {
+		if (source.isProcessed()) {
+			if (source.getSample() != null) {
+				target.setSample(source.getSample().toReference());
+			}
+			if (source.getPathogenTest() != null) {
 				target.setPathogenTest(source.getPathogenTest().toReference());
 			}
 		}
@@ -205,6 +207,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Root<LabMessage> from = cq.from(LabMessage.class);
 
 		cq.where(cb.equal(from.join(LabMessage.SAMPLE, JoinType.INNER).get(Sample.UUID), sampleUuid));
+		cq.orderBy(cb.desc(from.get(LabMessage.MESSAGE_DATE_TIME)), cb.desc(from.get(LabMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
@@ -216,7 +219,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
 		Root<LabMessage> from = cq.from(LabMessage.class);
 
-		System.out.println(em.createQuery(cq).unwrap(org.hibernate.query.Query.class).getQueryString());
+		cq.where(cb.equal(from.join(LabMessage.PATHOGEN_TEST, JoinType.INNER).get(PathogenTest.UUID), pathogenTestUuid));
+		cq.orderBy(cb.desc(from.get(LabMessage.MESSAGE_DATE_TIME)), cb.desc(from.get(LabMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}

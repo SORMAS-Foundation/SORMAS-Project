@@ -30,7 +30,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -96,6 +95,9 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
 		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
-		listEntry.addSourceSampleListener(clickEvent -> System.out.println(labMessages.size()));
+		if (!labMessages.isEmpty()) {
+			listEntry
+				.addSourceSampleListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages, this::reload));
+		}
 	}
 }
