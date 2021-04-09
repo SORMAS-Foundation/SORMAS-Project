@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
