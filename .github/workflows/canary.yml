@@ -5,30 +5,24 @@ env:
 
 on:
   push:
+    branches: [ development, master ]
+  pull_request:
     branches: [ development ]
 
 jobs:
   test:
     name: mvn verify
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Commit OpenAPI specification files
         uses: actions/checkout@v2
-
-      - name: Set up JDK ${{ env.java }}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ env.java }}
-
-      - name: Cache Maven packages
-        # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-java-${{ env.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
-          restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
-
-      - name: Run mvn verify
-        # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
-        working-directory: ./sormas-base
-        run: mvn verify -B -ntp
+        if: github.event_name == 'push' && github.ref == 'development'
+        run: |
+          mkdir openapi
+          cp sormas-rest/target/swagger.yaml openapi
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add openapi
+          git commit -m "update openapi specification files"
+          git push
