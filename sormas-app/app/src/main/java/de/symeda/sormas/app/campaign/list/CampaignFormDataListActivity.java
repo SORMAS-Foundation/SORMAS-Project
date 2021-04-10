@@ -18,6 +18,7 @@ import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -134,6 +135,11 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
         List<Item> campaigns = campaignsToItems(DatabaseHelper.getCampaignDao().getAllActive());
         filterBinding.campaignFilter.initializeSpinner(campaigns);
+        filterBinding.campaignFilter.addValueChangedListener(e -> {
+            Campaign campaign = (Campaign) e.getValue();
+            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsforCampaign(campaign));
+            filterBinding.campaignFormFilter.initializeSpinner(forms);
+        });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);
 
@@ -147,6 +153,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
             showPreloader();
             pageMenu.hideAll();
             model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
+            model.getCriteria().setCampaignFormMeta(null);
             filterBinding.invalidateAll();
             filterBinding.executePendingBindings();
             model.notifyCriteriaUpdated();
@@ -158,6 +165,15 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         listOut.add(new Item<Integer>("", null));
         for (Campaign campaign : campaigns) {
             listOut.add(new Item<>(campaign.getName(), campaign));
+        }
+        return listOut;
+    }
+
+    private List<Item> campaignFormMetasToItems(List<CampaignFormMeta> campaignFormMetas) {
+        List<Item> listOut = new ArrayList<>();
+        listOut.add(new Item<Integer>("", null));
+        for (CampaignFormMeta campaignFormMeta : campaignFormMetas) {
+            listOut.add(new Item<>(campaignFormMeta.getFormName(), campaignFormMeta));
         }
         return listOut;
     }

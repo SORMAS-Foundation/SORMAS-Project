@@ -22,9 +22,7 @@
     android:id="@+id/campaign_list_filters">
 
     <data>
-        <import type="de.symeda.sormas.api.task.TaskAssignee" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
-        <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.campaign.data.CampaignFormDataDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 
@@ -47,6 +45,13 @@
                 app:hint="@{I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN)}"
                 app:showCaption="false"
                 app:value="@={criteria.campaign}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/campaign_form_filter"
+                app:hint="@{I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META)}"
+                app:showCaption="false"
+                app:value="@={criteria.campaignFormMeta}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

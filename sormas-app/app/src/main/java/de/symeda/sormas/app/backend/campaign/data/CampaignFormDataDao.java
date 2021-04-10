@@ -73,6 +73,10 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN_ID, criteria.getCampaign().getId()));
 		}
 
+		if (criteria.getCampaignFormMeta() != null) {
+			whereStatements.add((where.eq(CampaignFormData.CAMPAIGN_FORM_META_ID, criteria.getCampaignFormMeta().getId())));
+		}
+
 		if (!whereStatements.isEmpty()) {
 			Where<CampaignFormData, Long> whereStatement = where.and(whereStatements.size());
 			queryBuilder.setWhere(whereStatement);
