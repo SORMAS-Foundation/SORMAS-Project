@@ -100,12 +100,6 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
     }
 
     @Override
-    public List<PageMenuItem> getPageMenuData() {
-        //return PageMenuItem.fromEnum(statusFilters, getContext());
-        return new ArrayList<>();
-    }
-
-    @Override
     protected Callback getSynchronizeResultCallback() {
         // Reload the list after a synchronization has been done
         return () -> {

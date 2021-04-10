@@ -239,16 +239,19 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	protected void updatePageMenu() {
 		List<PageMenuItem> menuItems = getPageMenuData();
-		if (pageMenu != null && menuItems != null) {
+		if (pageMenu != null) {
 			ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 			pageMenu.hide();
 
 			List<PageMenuItem> displayedMenuItems = new ArrayList<>();
-			for (PageMenuItem item : menuItems) {
-				if (item != null) {
-					displayedMenuItems.add(item);
+			if (menuItems != null) {
+				for (PageMenuItem item : menuItems) {
+					if (item != null) {
+						displayedMenuItems.add(item);
+					}
 				}
 			}
+
 			pageMenu.setMenuData(displayedMenuItems);
 			pageMenu.markActiveMenuItem(initializePageMenu(menuItems));
 		}
