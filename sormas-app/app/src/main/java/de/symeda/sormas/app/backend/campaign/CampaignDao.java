@@ -61,4 +61,23 @@ public class CampaignDao extends AbstractAdoDao<Campaign> {
             throw new RuntimeException(e);
         }
     }
+
+    public Campaign getLastStartedCampaign() {
+        try {
+            QueryBuilder<Campaign, Long> queryBuilder = queryBuilder();
+
+            List<Where<Campaign, Long>> whereStatements = new ArrayList<>();
+            Where<Campaign, Long> where = queryBuilder.where();
+            whereStatements.add(where.eq(Campaign.ARCHIVED, false));
+
+            if (!whereStatements.isEmpty()) {
+                Where<Campaign, Long> whereStatement = where.and(whereStatements.size());
+                queryBuilder.setWhere(whereStatement);
+            }
+            return queryBuilder.orderBy(Campaign.START_DATE, false).queryForFirst();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getAllActive on Campaign");
+            throw new RuntimeException(e);
+        }
+    }
 }

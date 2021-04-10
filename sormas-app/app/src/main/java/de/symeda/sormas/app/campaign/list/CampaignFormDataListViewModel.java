@@ -34,6 +34,19 @@ public class CampaignFormDataListViewModel extends ViewModel {
         return campaignsList;
     }
 
+    void notifyCriteriaUpdated() {
+        if (campaignsList.getValue() != null) {
+            campaignsList.getValue().getDataSource().invalidate();
+            if (!campaignsList.getValue().isEmpty()) {
+                campaignsList.getValue().loadAround(0);
+            }
+        }
+    }
+
+    public CampaignFormDataCriteria getCriteria() {
+        return campaignsDataFactory.getCampaignFormDataCriteria();
+    }
+
     public static class CampaignDataSource extends PositionalDataSource<CampaignFormData> {
 
         private CampaignFormDataCriteria campaignFormDataCriteria;

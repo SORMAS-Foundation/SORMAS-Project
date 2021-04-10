@@ -70,7 +70,7 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
 		if (criteria.getCampaign() != null) {
-			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN, criteria.getCampaign()));
+			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN_ID, criteria.getCampaign().getId()));
 		}
 
 		if (!whereStatements.isEmpty()) {
