@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
@@ -134,6 +137,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
             Campaign campaign = (Campaign) e.getValue();
             List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsforCampaign(campaign));
             filterBinding.campaignFormFilter.initializeSpinner(forms);
+            setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
         });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);
