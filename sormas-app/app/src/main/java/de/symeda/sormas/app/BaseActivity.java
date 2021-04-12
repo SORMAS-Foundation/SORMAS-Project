@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.android.material.navigation.NavigationView;
@@ -735,7 +736,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	private PageMenuItem initializePageMenu(List<PageMenuItem> menuList) {
 		this.pageItems = menuList;
-		if (menuList != null && !menuList.isEmpty()) {
+		if (menuList != null && CollectionUtils.isNotEmpty(menuList)) {
 			activePageItem = menuList.get(0);
 			for (int i = 0; i < menuList.size(); i++) {
 				if (i == activePagePosition) {

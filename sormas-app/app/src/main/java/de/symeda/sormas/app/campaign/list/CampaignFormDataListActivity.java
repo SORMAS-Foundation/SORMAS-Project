@@ -30,11 +30,6 @@ import de.symeda.sormas.app.util.Callback;
 
 public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
-    private static InvestigationStatus[] statusFilters = new InvestigationStatus[] {
-            null,
-            InvestigationStatus.PENDING,
-            InvestigationStatus.DONE };
-
     private CampaignFormDataListViewModel model;
     private FilterCampaignFormDataListLayoutBinding filterBinding;
 
@@ -135,7 +130,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         filterBinding.campaignFilter.initializeSpinner(campaigns);
         filterBinding.campaignFilter.addValueChangedListener(e -> {
             Campaign campaign = (Campaign) e.getValue();
-            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsforCampaign(campaign));
+            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
             filterBinding.campaignFormFilter.initializeSpinner(forms);
             setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
         });

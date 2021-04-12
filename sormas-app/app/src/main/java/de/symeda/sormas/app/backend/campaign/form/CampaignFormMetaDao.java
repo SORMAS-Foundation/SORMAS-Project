@@ -44,7 +44,7 @@ public class CampaignFormMetaDao extends AbstractAdoDao<CampaignFormMeta> {
 		return CampaignFormMeta.TABLE_NAME;
 	}
 
-	public List<CampaignFormMeta> getAllFormsforCampaign(Campaign campaign) {
+	public List<CampaignFormMeta> getAllFormsForCampaign(Campaign campaign) {
 		try {
 			QueryBuilder<CampaignFormMeta, Long> queryBuilder = queryBuilder();
 
@@ -56,7 +56,7 @@ public class CampaignFormMetaDao extends AbstractAdoDao<CampaignFormMeta> {
 
 			return queryBuilder.join(campaignFormDataQueryBuilder).orderBy(CampaignFormMeta.FORM_NAME, false).query();
 		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getAllCampaignFormMetas on CampaignFormMeta");
+			Log.e(getTableName(), "Could not perform getAllFormsForCampaign on CampaignFormMeta");
 			throw new RuntimeException(e);
 		}
 	}
