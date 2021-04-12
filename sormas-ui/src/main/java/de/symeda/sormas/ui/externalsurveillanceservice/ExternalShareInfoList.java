@@ -90,7 +90,7 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 			addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
 			CustomLayout infoLayout = new CustomLayout();
-§			infoLayout.setTemplateContents(buildLayout(shareInfo.getStatus()));
+			infoLayout.setTemplateContents(buildLayout(shareInfo.getStatus()));
 			infoLayout.setWidth(100, Unit.PERCENTAGE);
 
 			Label senderLabel = new Label(
