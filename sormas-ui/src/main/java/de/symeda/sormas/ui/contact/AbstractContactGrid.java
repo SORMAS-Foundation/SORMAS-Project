@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -59,6 +60,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	public static final String NUMBER_OF_VISITS = Captions.Contact_numberOfVisits;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+
+	private DataProviderListener<IndexDto> dataProviderListener;
 
 	@SuppressWarnings("rawtypes")
 	Class viewClass;
@@ -225,6 +228,14 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 
 	protected abstract List<IndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

@@ -298,13 +298,13 @@ public class LocationDialog extends FormDialog {
 	}
 
 	public void updateContinentFieldsVisibility() {
-		if (DatabaseHelper.getContinentDao().countOf() == 0) {
+		if (DatabaseHelper.getContinentDao().countOfActive() == 0) {
 			contentBinding.locationContinent.setVisibility(GONE);
 			contentBinding.locationContinent.setValue(null);
 		} else {
 			contentBinding.locationContinent.setVisibility(VISIBLE);
 		}
-		if (DatabaseHelper.getSubcontinentDao().countOf() == 0) {
+		if (DatabaseHelper.getSubcontinentDao().countOfActive() == 0) {
 			contentBinding.locationSubcontinent.setVisibility(GONE);
 			contentBinding.locationSubcontinent.setValue(null);
 		} else {

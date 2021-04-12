@@ -28,6 +28,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -162,12 +163,12 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				I18nProperties.getCaption(Captions.actionCancel),
 				640,
 				confirmed -> {
-					if (confirmed.booleanValue()) {
+					if (confirmed) {
 						CaseIndexDto caseToMergeAndDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
 						FacadeProvider.getCaseFacade().mergeCase(caze.getUuid(), caseToMergeAndDelete.getUuid());
-						FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid());
+						boolean deletePerformed = deleteCaseAsDuplicate(caze, caseToMergeAndDelete);
 
-						if (FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
+						if (deletePerformed && FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
 							reload();
 							new Notification(I18nProperties.getString(Strings.messageCasesMerged), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
 						} else {
@@ -184,11 +185,11 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				I18nProperties.getCaption(Captions.actionCancel),
 				640,
 				confirmed -> {
-					if (confirmed.booleanValue()) {
+					if (confirmed) {
 						CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
-						FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid());
+						boolean deletePerformed = deleteCaseAsDuplicate(caze, caseToDelete);
 
-						if (FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
+						if (deletePerformed && FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
 							data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
 							dataProvider.refreshAll();
 							new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Type.TRAY_NOTIFICATION)
@@ -232,6 +233,16 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}
 
 		return layout;
+	}
+
+	private boolean deleteCaseAsDuplicate(CaseIndexDto caze, CaseIndexDto caseToMergeAndDelete) {
+		try {
+			FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid());
+		} catch (ExternalSurveillanceToolException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -56,6 +56,8 @@ public interface Captions {
 	String actionDismiss = "actionDismiss";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionGenerate = "actionGenerate";
+	String actionGenerateNewPassword = "actionGenerateNewPassword";
+	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllContinents = "actionImportAllContinents";
@@ -72,6 +74,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -144,6 +147,7 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String area = "area";
 	String Area_archived = "Area.archived";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";
@@ -174,6 +178,7 @@ public interface Captions {
 	String Campaign_district = "Campaign.district";
 	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
+	String Campaign_grouping = "Campaign.grouping";
 	String Campaign_name = "Campaign.name";
 	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
@@ -338,6 +343,8 @@ public interface Captions {
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
+	String CaseData_surveillanceToolLastShareDate = "CaseData.surveillanceToolLastShareDate";
+	String CaseData_surveillanceToolShareCount = "CaseData.surveillanceToolShareCount";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
@@ -410,6 +417,9 @@ public interface Captions {
 	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -1101,6 +1111,7 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
 	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";
@@ -2020,6 +2031,8 @@ public interface Captions {
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
+	String View_campaign_campaignstatistics = "View.campaign.campaignstatistics";
+	String View_campaign_campaignstatistics_short = "View.campaign.campaignstatistics.short";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";

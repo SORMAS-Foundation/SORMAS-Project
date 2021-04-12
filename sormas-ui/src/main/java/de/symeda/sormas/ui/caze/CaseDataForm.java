@@ -113,6 +113,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -176,8 +177,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE)),
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
+					fluidRowLocs(CaseDataDto.RE_INFECTION, CaseDataDto.PREVIOUS_INFECTION_DATE) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
-					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORTING_DISTRICT, "") +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
@@ -186,10 +187,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
-					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
-					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
-					fluidRowLocs(CaseDataDto.RE_INFECTION, CaseDataDto.PREVIOUS_INFECTION_DATE) +
+					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
@@ -205,6 +205,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
+					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
 					fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
 					fluidRowLocs(CaseDataDto.VACCINE, "") +
@@ -215,7 +216,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.VACCINE_INN, CaseDataDto.VACCINE_BATCH_NUMBER) +
 					fluidRowLocs(CaseDataDto.VACCINE_UNII_CODE, CaseDataDto.VACCINE_ATC_CODE) +
 					fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
-					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
+					fluidRowLocs(6, CaseDataDto.CLINICIAN_NAME) +
 					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 					loc(CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC) +
@@ -230,7 +231,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 
 	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
-			loc(PAPER_FORM_DATES_LOC) +
+			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
+					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	//@formatter:on
@@ -420,17 +422,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			boolean extendedClassificationMulti = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassificationMulti(disease);
 
 			if (extendedClassificationMulti) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					Arrays.asList(
-						CaseDataDto.CLINICAL_CONFIRMATION,
-						CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
-						CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION),
-					CaseDataDto.CASE_CLASSIFICATION,
-					CaseClassification.CONFIRMED,
-					true);
 				caseConfirmationBasisCombo.setVisible(false);
-
 			} else {
 				caseConfirmationBasisCombo.addValueChangeListener(field -> {
 					clinicalConfirmationCombo.setValue(null);
@@ -688,9 +680,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
-		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
+		AccessibleTextField tfReportLat = addField(CaseDataDto.REPORT_LAT, AccessibleTextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
-		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
+		AccessibleTextField tfReportLon = addField(CaseDataDto.REPORT_LON, AccessibleTextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 

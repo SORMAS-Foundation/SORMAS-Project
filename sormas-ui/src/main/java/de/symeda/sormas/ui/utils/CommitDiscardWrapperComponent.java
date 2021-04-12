@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.naming.CannotProceedException;
+
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
@@ -50,8 +52,11 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-
-import javax.naming.CannotProceedException;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.location.AccessibleTextField;
+import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.person.PersonEditForm;
 
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
@@ -182,11 +187,61 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected void addDirtyHandler(FieldGroup[] fieldGroups) {
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
-				if (isModified()) {
+				final Object source = ((Field.ValueChangeEvent) ev).getSource();
+				if (source instanceof PersonEditForm) {
+					final PersonEditForm personEditForm = (PersonEditForm) source;
+					final LocationEditForm locationEditForm = personEditForm.getField(PersonDto.ADDRESS);
+					if (atLeastOneFieldModified(
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					} else if (locationEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					} else if (personEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof LocationEditForm) {
+					final LocationEditForm locationEditForm = (LocationEditForm) source;
+					if (atLeastOneFieldModified(
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					} else if (locationEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof AccessibleTextField) {
+					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
+					if (accessibleTextField.isModified()) {
+						dirty = true;
+					}
+				} else {
 					dirty = true;
 				}
 			})));
 		}
+	}
+
+	private boolean atLeastOneFieldModified(AccessibleTextField... fields) {
+		for (AccessibleTextField field : fields) {
+			if (field.getState().modified) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected Stream<Field<?>> getFieldsStream() {
@@ -562,7 +617,21 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} catch (IllegalStateException e) {
 			super.setEnabled(readOnly);
 		}
+		//
+		//		getWrappedComponent().setReadOnly(readOnly);
+		//		if (fieldGroups != null) {
+		//			for (FieldGroup fieldGroup : fieldGroups) {
+		//				fieldGroup.setReadOnly(readOnly);
+		//			}
+		//		}
+		//
+		//		buttonsPanel.setVisible(!readOnly);
 	}
+
+	//	@Override
+	//	public boolean isReadOnly() {
+	//		return getWrappedComponent().isReadOnly();
+	//	}
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 

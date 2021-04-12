@@ -1,5 +1,9 @@
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,10 +20,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public class CriteriaBuilderHelper {
 
@@ -62,6 +67,10 @@ public class CriteriaBuilderHelper {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Expression<? extends Timestamp> date) {
+		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
+	}
+
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
 		From<?, ? extends AbstractDomainObject> entityFrom,
@@ -97,5 +106,23 @@ public class CriteriaBuilderHelper {
 			}
 		}
 		return CriteriaBuilderHelper.and(cb, filter, or);
+	}
+
+	public static Predicate unaccentedIlike(CriteriaBuilder cb, Expression<String> valueExpression, String pattern) {
+		return unaccentedIlike(cb, valueExpression, cb.literal("%" + pattern + "%"));
+	}
+
+	public static Predicate unaccentedIlike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
+		Expression<String> unaccentedValueExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, valueExpression);
+		Expression<String> unaccentedPatternExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, patternExpression);
+		return ilike(cb, unaccentedValueExpression, unaccentedPatternExpression);
+	}
+
+	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, String pattern) {
+		return ilike(cb, valueExpression, cb.literal("%" + pattern + "%"));
+	}
+
+	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
+		return cb.isTrue(cb.function(ExtendedPostgreSQL94Dialect.ILIKE, Boolean.class, valueExpression, patternExpression));
 	}
 }

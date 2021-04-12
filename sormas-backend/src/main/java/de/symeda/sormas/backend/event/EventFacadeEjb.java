@@ -64,6 +64,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -75,6 +76,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -84,12 +86,12 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -108,8 +110,6 @@ public class EventFacadeEjb implements EventFacade {
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
@@ -119,6 +119,10 @@ public class EventFacadeEjb implements EventFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolFacade;
+	@EJB
+	private ExternalShareInfoService externalShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -211,13 +215,21 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public void deleteEvent(String eventUuid) {
+	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
-		eventService.delete(eventService.getByUuid(eventUuid));
+		Event event = eventService.getByUuid(eventUuid);
+
+		if (event.getEventStatus() == EventStatus.CLUSTER
+			&& externalSurveillanceToolFacade.isFeatureEnabled()
+			&& externalShareInfoService.isEventShared(event.getId())) {
+			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
+		}
+
+		eventService.delete(event);
 	}
 
 	@Override
@@ -942,7 +954,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
-		
+
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));

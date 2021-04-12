@@ -200,26 +200,30 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateMM(), Person.BIRTHDATE_MM);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateDD(), Person.BIRTHDATE_DD);
 		if (personCriteria.getNameAddressPhoneEmailLike() != null) {
+
 			String[] textFilters = personCriteria.getNameAddressPhoneEmailLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
-						cb.like(
-							cb.lower((Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY)),
-							textFilter),
-						phoneNumberPredicate(
-							cb,
-							(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-							textFilter),
-						cb.like(cb.lower(location.get(Location.STREET)), textFilter),
-						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
-						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
+						textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		filter = andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
