@@ -56,12 +56,14 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -708,6 +710,21 @@ public class CasesView extends AbstractView {
 					if (isDocGenerationAllowed()) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+								List<ReferenceDto> references =
+									caseGrid.asMultiSelect().getSelectedItems().stream().map(CaseIndexDto::toReference).collect(Collectors.toList());
+
+								if (references.size() == 0) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoCasesSelected),
+										I18nProperties.getString(Strings.messageNoCasesSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+
+									return;
+								}
+
+								ControllerProvider.getDocGenerationController()
+									.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
 							}));
 					}
 

@@ -33,7 +33,8 @@ public enum ExportEntityName {
 	POINTS_OF_ENTRY("entityPointsOfEntry", "points of entry"),
 	REGIONS("entityRegions", "regions"),
 	SAMPLES("entitySamples", "samples"),
-	TASKS("entityTasks", "tasks");
+	TASKS("entityTasks", "tasks"),
+	DOCUMENTS("entityDocuments", "documents");
 
 	private final String languageKey;
 	private final String defaultName;

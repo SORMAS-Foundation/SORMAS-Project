@@ -20,36 +20,42 @@ import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerat
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CaseDocumentsComponent extends AbstractDocumentGenerationComponent {
+public class QuarantineOrderDocumentsComponent extends AbstractDocumentGenerationComponent {
 
 	public static final String QUARANTINE_LOC = "quarantine";
 
-	public static void addComponentToLayout(CustomLayout targetLayout, CaseDataDto caseDataDto) {
-		addComponentToLayout(targetLayout, caseDataDto.toReference());
+	public static void addComponentToLayout(CustomLayout targetLayout, CaseReferenceDto caze) {
+		addComponentToLayout(targetLayout, caze, DocumentWorkflow.QUARANTINE_ORDER_CASE, new SampleCriteria().caze(caze));
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ContactDto contactDto) {
-		addComponentToLayout(targetLayout, contactDto.toReference());
+	public static void addComponentToLayout(CustomLayout targetLayout, ContactReferenceDto contact) {
+		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_CONTACT, new SampleCriteria().contact(contact));
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ReferenceDto referenceDto) {
+	public static void addComponentToLayout(
+		CustomLayout targetLayout,
+		ReferenceDto referenceDto,
+		DocumentWorkflow workflow,
+		SampleCriteria sampleCriteria) {
 		if (isDocGenerationAllowed()) {
-			CaseDocumentsComponent docgenerationComponent = new CaseDocumentsComponent(referenceDto);
+			QuarantineOrderDocumentsComponent docgenerationComponent = new QuarantineOrderDocumentsComponent(referenceDto, workflow, sampleCriteria);
 			docgenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			targetLayout.addComponent(docgenerationComponent, QUARANTINE_LOC);
 		}
 	}
 
-	public CaseDocumentsComponent(ReferenceDto referenceDto) {
+	public QuarantineOrderDocumentsComponent(ReferenceDto referenceDto, DocumentWorkflow workflow, SampleCriteria sampleCriteria) {
 		super();
 		addDocumentBar(() -> {
-			ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto);
+			ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria);
 		}, Captions.DocumentTemplate_QuarantineOrder);
 	}
 }

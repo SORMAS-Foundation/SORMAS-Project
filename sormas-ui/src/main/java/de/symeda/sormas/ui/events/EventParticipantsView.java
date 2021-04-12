@@ -17,7 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,12 +34,15 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -177,12 +184,35 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-				Captions.bulkActions,
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getEventParticipantController()
-						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-				}));
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>(
+				Collections
+					.singletonList(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getEventParticipantController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					})));
+
+			if (isDocGenerationAllowed()) {
+				bulkActions
+					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+						List<ReferenceDto> references =
+							grid.asMultiSelect().getSelectedItems().stream().map(EventParticipantIndexDto::toReference).collect(Collectors.toList());
+
+						if (references.size() == 0) {
+							new Notification(
+								I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+								I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+								Notification.Type.WARNING_MESSAGE,
+								false).show(Page.getCurrent());
+
+							return;
+						}
+
+						ControllerProvider.getDocGenerationController()
+							.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT);
+					}));
+			}
+
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);

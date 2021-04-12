@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -108,6 +107,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
@@ -554,6 +554,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 
 		return natUser;
+	}
+
+	protected void loginWith(UserDto user) {
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
 	public PathogenTestService getPathogenTestService() {
