@@ -147,6 +147,7 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String area = "area";
 	String Area_archived = "Area.archived";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";

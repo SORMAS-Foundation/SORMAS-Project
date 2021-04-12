@@ -349,6 +349,20 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
+		if (source.getPersonContactDetails()
+			.stream()
+			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.PHONE)
+			.count()
+			> 1) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryPhoneNumbers));
+		}
+		if (source.getPersonContactDetails()
+			.stream()
+			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.EMAIL)
+			.count()
+			> 1) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
+		}
 	}
 
 	//@formatter:off
@@ -1101,8 +1115,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.getAddresses().clear();
 		target.getAddresses().addAll(locations);
 
-		Person finalTarget = target;
-		target.setPersonContactDetails(source.getPersonContactDetails().stream().map(dto -> {
+		final Person finalTarget = target;
+		List<PersonContactDetail> personContactDetails = source.getPersonContactDetails().stream().map(dto -> {
 			PersonContactDetail personContactDetail =
 				DtoHelper.fillOrBuildEntity(dto, personContactDetailService.getByUuid(dto.getUuid()), PersonContactDetail::new, checkChangeDate);
 			personContactDetail.setPerson(finalTarget);
@@ -1116,7 +1130,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			personContactDetail.setThirdPartyRole(dto.getThirdPartyRole());
 			personContactDetail.setThirdPartyName(dto.getThirdPartyName());
 			return personContactDetail;
-		}).collect(Collectors.toSet()));
+		}).collect(Collectors.toList());
+		if (!DataHelper.equal(target.getPersonContactDetails(), personContactDetails)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
+		target.getPersonContactDetails().clear();
+		target.getPersonContactDetails().addAll(personContactDetails);
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
