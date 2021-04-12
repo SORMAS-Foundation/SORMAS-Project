@@ -130,6 +130,7 @@ public class Person extends AbstractDomainObject {
 	public static final String CASES = "cases";
 	public static final String CONTACTS = "contacts";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 
 	private String firstName;
 	private String lastName;
@@ -195,6 +196,7 @@ public class Person extends AbstractDomainObject {
 
 	private Country birthCountry;
 	private Country citizenship;
+	private String additionalDetails;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -729,6 +731,14 @@ public class Person extends AbstractDomainObject {
 
 	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 
 	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {

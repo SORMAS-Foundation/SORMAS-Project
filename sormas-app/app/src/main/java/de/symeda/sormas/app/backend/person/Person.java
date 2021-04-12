@@ -15,11 +15,8 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import androidx.databinding.Bindable;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +26,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -49,8 +52,6 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Person.TABLE_NAME)
 @DatabaseTable(tableName = Person.TABLE_NAME)
@@ -182,6 +183,8 @@ public class Person extends PseudonymizableAdo {
 	private Country birthCountry;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Country citizenship;
+	@Column(length = COLUMN_LENGTH_BIG)
+	private String additionalDetails;
 
 	public Person() {
 	}
@@ -292,7 +295,6 @@ public class Person extends PseudonymizableAdo {
 	public void setAddress(Location address) {
 		this.address = address;
 	}
-
 
 	public Sex getSex() {
 		return sex;
@@ -571,9 +573,13 @@ public class Person extends PseudonymizableAdo {
 		this.externalId = externalId;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	public Country getBirthCountry() {
 		return birthCountry;
@@ -589,5 +595,13 @@ public class Person extends PseudonymizableAdo {
 
 	public void setCitizenship(Country citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 }
