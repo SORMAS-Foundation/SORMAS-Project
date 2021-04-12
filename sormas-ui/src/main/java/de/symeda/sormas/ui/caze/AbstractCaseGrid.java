@@ -213,7 +213,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				getSampleColumns(),
 				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME, CaseIndexDto.REPORT_DATE),
 				externalSurveillanceToolShareEnabled
-					? Stream.of(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE, CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT)
+					? Stream.of(
+						CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE,
+						CaseIndexDto.SURVEILLANCE_TOOL_STATUS,
+						CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT)
 					: Stream.<String> empty(),
 				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				getFollowUpColumns(),

@@ -33,6 +33,7 @@ public class ExternalShareInfo extends AbstractDomainObject {
 
 	public static final String CAZE = "caze";
 	public static final String EVENT = "event";
+	public static final String STATUS = "status";
 
 	private Case caze;
 

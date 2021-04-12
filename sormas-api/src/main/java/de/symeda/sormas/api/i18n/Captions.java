@@ -1109,6 +1109,7 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
 	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";

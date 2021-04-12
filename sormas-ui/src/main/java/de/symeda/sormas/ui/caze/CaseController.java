@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -106,7 +106,6 @@ import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
-import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceToolGatewayType;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
@@ -881,9 +880,10 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				if (deleteCase(caze)) {
+				try {
+					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				} else {
+				} catch (ExternalSurveillanceToolException e) {
 					Notification.show(
 						String.format(
 							I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -916,20 +916,6 @@ public class CaseController {
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
 		}
-	}
-
-	private boolean deleteCase(CaseDataDto caze) {
-		boolean deletable = true;
-		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
-			deletable = ExternalSurveillanceServiceGateway
-				.deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType.CASES, Collections.singletonList(caze));
-		}
-		if (deletable) {
-			FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
-			return true;
-		}
-		return false;
-
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
@@ -1234,7 +1220,9 @@ public class CaseController {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();
 					for (CaseIndexDto selectedRow : selectedRows) {
-						if (!deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedRow.getUuid()))) {
+						try {
+							FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
+						} catch (ExternalSurveillanceToolException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
 						}

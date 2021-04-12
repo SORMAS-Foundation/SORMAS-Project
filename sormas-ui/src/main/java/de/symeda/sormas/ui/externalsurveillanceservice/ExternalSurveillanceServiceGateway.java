@@ -3,8 +3,6 @@ package de.symeda.sormas.ui.externalsurveillanceservice;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +10,9 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,37 +38,44 @@ public class ExternalSurveillanceServiceGateway {
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
 		CustomLayout targetLayout,
 		DirtyStateComponent editComponent,
-		CaseReferenceDto caze) {
+		CaseDataDto caze) {
 		return addComponentToLayout(targetLayout, editComponent, I18nProperties.getString(Strings.entityCase), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
-		}, new ExternalShareInfoCriteria().caze(caze));
+		}, () -> {
+			FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
+		}, new ExternalShareInfoCriteria().caze(caze.toReference()));
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
 		CustomLayout targetLayout,
 		DirtyStateComponent editComponent,
-		EventReferenceDto event) {
+		EventDto event) {
 		return addComponentToLayout(targetLayout, editComponent, I18nProperties.getString(Strings.entityEvent), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()));
-		}, new ExternalShareInfoCriteria().event(event));
+		}, () -> {
+			FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
+		}, new ExternalShareInfoCriteria().event(event.toReference()));
 	}
 
 	private static ExternalSurveillanceShareComponent addComponentToLayout(
 		CustomLayout targetLayout,
 		DirtyStateComponent editComponent,
-		String entityString,
-		GatewayCall gatewayCall,
+		String entityName,
+		GatewayCall gatewaySendCall,
+		GatewayCall gatewayDeleteCall,
 		ExternalShareInfoCriteria shareInfoCriteria) {
 		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			return null;
 		}
 
-		ExternalSurveillanceShareComponent shareComponent = new ExternalSurveillanceShareComponent(entityString, () -> {
+		ExternalSurveillanceShareComponent shareComponent = new ExternalSurveillanceShareComponent(entityName, () -> {
 			sendToExternalSurveillanceTool(
-				entityString,
-				gatewayCall,
+				entityName,
+				gatewaySendCall,
 				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent),
 				SormasUI::refreshView);
+		}, () -> {
+			deleteInExternalSurveillanceTool(entityName, gatewayDeleteCall, SormasUI::refreshView);
 		}, shareInfoCriteria, editComponent);
 		targetLayout.addComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
 
@@ -125,29 +127,19 @@ public class ExternalSurveillanceServiceGateway {
 		Notification.show(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title), notificationMessage, notificationType);
 	}
 
-	public static <T extends EntityDto> boolean deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType gatewayType, List<T> entities) {
-		int statusCode;
-
-		switch (gatewayType) {
-		case CASES:
-			statusCode = FacadeProvider.getExternalSurveillanceToolFacade().deleteCases((List<CaseDataDto>) entities);
-			break;
-		case EVENTS:
-			statusCode = FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents((List<EventDto>) entities);
-			break;
-		default:
-			throw new IllegalArgumentException(gatewayType.toString());
-		}
-
-		switch (statusCode) {
-		case HttpServletResponse.SC_OK:
-		case HttpServletResponse.SC_NO_CONTENT:
-			return true;
-		case HttpServletResponse.SC_BAD_REQUEST:
-		default:
-			logger.warn("Cannot delete entities in the reporting tool due to {} response", statusCode);
-			return false;
-		}
+	public static void deleteInExternalSurveillanceTool(String entityString, GatewayCall gatewayCall, Runnable callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_confirmDelete),
+			new Label(String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDelete), entityString.toLowerCase())),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					handleGatewayCall(gatewayCall, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesDeleted));
+					callback.run();
+				}
+			});
 	}
 
 	public interface GatewayCall {
