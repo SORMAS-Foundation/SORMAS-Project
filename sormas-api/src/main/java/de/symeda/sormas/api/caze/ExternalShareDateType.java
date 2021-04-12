@@ -13,13 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.share;
+package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum ExternalShareStatus {
-	SHARED,
-	DELETED;
+public enum ExternalShareDateType
+	implements
+	CaseCriteriaDateType {
+
+	LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

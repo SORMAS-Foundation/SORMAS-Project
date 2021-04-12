@@ -83,6 +83,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
@@ -199,6 +200,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String EXTERNAL_SHARES = "externalShares";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
@@ -385,6 +387,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1641,5 +1644,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@OneToMany(mappedBy = ExternalShareInfo.CAZE, fetch = FetchType.LAZY)
+	public List<ExternalShareInfo> getExternalShares() {
+		return externalShares;
+	}
+
+	public void setExternalShares(List<ExternalShareInfo> externalShares) {
+		this.externalShares = externalShares;
 	}
 }

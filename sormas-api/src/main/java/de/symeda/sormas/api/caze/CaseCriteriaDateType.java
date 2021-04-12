@@ -13,15 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.share;
+package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+public interface CaseCriteriaDateType {
 
-public enum ExternalShareStatus {
-	SHARED,
-	DELETED;
-
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+	String name();
 }

@@ -31,8 +31,9 @@ import de.symeda.sormas.backend.user.User;
 @Entity(name = "externalshareinfo")
 public class ExternalShareInfo extends AbstractDomainObject {
 
-	public static String CAZE = "caze";
-	public static String EVENT = "event";
+	public static final String CAZE = "caze";
+	public static final String EVENT = "event";
+	public static final String STATUS = "status";
 
 	private Case caze;
 

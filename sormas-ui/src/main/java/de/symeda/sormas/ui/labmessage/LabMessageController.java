@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -735,7 +736,14 @@ public class LabMessageController {
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedCase,
-					e -> FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid()),
+					e -> {
+						try {
+							FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
+						} catch (ExternalSurveillanceToolException survToolException) {
+							// should not happen because the new case was not shared
+							throw new RuntimeException(survToolException);
+						}
+					},
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
