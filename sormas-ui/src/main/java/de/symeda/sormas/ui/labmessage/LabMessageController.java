@@ -813,8 +813,12 @@ public class LabMessageController {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.LabMessage)),
 				() -> {
-					FacadeProvider.getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
-					callback.run();
+					if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+						showAlreadyProcessedPopup(null, false);
+					} else {
+						FacadeProvider.getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+						callback.run();
+					}
 				});
 		}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 
