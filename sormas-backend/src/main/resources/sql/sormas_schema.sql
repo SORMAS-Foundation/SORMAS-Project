@@ -7107,7 +7107,7 @@ ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_community_id FOREIGN
 ALTER TABLE community ADD COLUMN growthRate real;
 INSERT INTO schema_version (version_number, comment) VALUES (357, 'Add Community reference to PopulationData entity #4271');
 
--- 2020-04-06 Add contact person details to facilities
+-- 2020-04-06 Add contact person details to facilities #4755
 ALTER TABLE facility ADD COLUMN contactPersonFirstName varchar(512);
 ALTER TABLE facility ADD COLUMN contactPersonLastName varchar(512);
 ALTER TABLE facility ADD COLUMN contactPersonPhone varchar(512);
@@ -7123,5 +7123,5 @@ ALTER TABLE location_history ADD COLUMN contactPersonLastName varchar(512);
 ALTER TABLE location_history ADD COLUMN contactPersonPhone varchar(512);
 ALTER TABLE location_history ADD COLUMN contactPersonEmail varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (358, '2020-04-06 Add contact person details to facilities');
+INSERT INTO schema_version (version_number, comment) VALUES (358, '#4755 Add contact person details to facilities');
 -- *** Insert new sql commands BEFORE this line ***
