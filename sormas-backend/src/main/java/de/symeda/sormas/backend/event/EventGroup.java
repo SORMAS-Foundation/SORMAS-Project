@@ -18,24 +18,20 @@
 
 package de.symeda.sormas.backend.event;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.visit.Visit;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
-import java.util.List;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
-@Entity(name = "event_groups")
+@Entity(name = "eventgroups")
 @Audited
-public class EventGroup extends CoreAdo {
+public class EventGroup extends AbstractDomainObject {
 
     private static final long serialVersionUID = -6609939162115335854L;
 
@@ -50,7 +46,7 @@ public class EventGroup extends CoreAdo {
 
     private boolean archived;
 
-    @Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+    @Column(columnDefinition = "text", nullable = false)
     public String getName() {
         return name;
     }

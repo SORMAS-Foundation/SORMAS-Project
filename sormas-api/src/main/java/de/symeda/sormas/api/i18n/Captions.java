@@ -904,6 +904,7 @@ public interface Captions {
 	String Event_endDate = "Event.endDate";
 	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
+	String Event_eventGroupCount = "Event.eventGroupCount";
 	String Event_eventGroups = "Event.eventGroups";
 	String Event_eventInvestigationEndDate = "Event.eventInvestigationEndDate";
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
@@ -923,6 +924,7 @@ public interface Captions {
 	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
 	String Event_internalId = "Event.internalId";
+	String Event_latestEventGroup = "Event.latestEventGroup";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
 	String Event_medicallyAssociatedTransmissionMode = "Event.medicallyAssociatedTransmissionMode";
@@ -989,7 +991,7 @@ public interface Captions {
 	String EventGroup_uuid = "EventGroup.uuid";
 	String eventGroupListEvents = "eventGroupListEvents";
 	String eventGroups = "eventGroups";
-	String eventGroupsSeveral = "eventGroupsSeveral";
+	String eventGroupsMultiple = "eventGroupsMultiple";
 	String eventGroupsView = "eventGroupsView";
 	String eventLinkToCases = "eventLinkToCases";
 	String eventLinkToContacts = "eventLinkToContacts";

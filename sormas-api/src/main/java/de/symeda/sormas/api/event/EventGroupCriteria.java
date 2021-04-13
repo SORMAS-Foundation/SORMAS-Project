@@ -53,7 +53,6 @@ public class EventGroupCriteria extends BaseCriteria implements Serializable {
 	private Boolean userFilterIncluded = true;
 	private Set<String> excludedUuids;
 	private EntityRelevanceStatus relevanceStatus;
-	private Boolean deleted = Boolean.FALSE;
 
 	public EventReferenceDto getEvent() {
 		return event;
@@ -209,19 +208,6 @@ public class EventGroupCriteria extends BaseCriteria implements Serializable {
 
 	public EventGroupCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
-		return this;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public EventGroupCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
 		return this;
 	}
 }

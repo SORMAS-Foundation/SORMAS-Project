@@ -38,7 +38,7 @@ public class EventGroupsValueProvider implements ValueProvider<EventGroupsIndexD
         if (eventGroups.getCount() != null && eventGroups.getCount() > 1L) {
 			html = html
 				+ "<span class=\"hspace-left-5\">"
-				+ HtmlHelper.buildTitle(String.format(I18nProperties.getCaption(Captions.eventGroupsSeveral), eventGroups.getCount()), "*")
+				+ HtmlHelper.buildTitle(String.format(I18nProperties.getCaption(Captions.eventGroupsMultiple), eventGroups.getCount()), "(" + eventGroups.getCount() + ")")
 				+ "</span>";
         }
         return html;

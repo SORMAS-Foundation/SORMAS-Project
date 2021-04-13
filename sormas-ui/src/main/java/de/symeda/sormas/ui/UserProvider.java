@@ -25,6 +25,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -76,8 +77,8 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
-	public boolean isNational() {
-		return getCurrent().hasUserRole(UserRole.NATIONAL_USER);
+	public boolean hasNationalJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {

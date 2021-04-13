@@ -30,7 +30,6 @@ public class EventExportDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventExport";
 
-	public static final String UUID = "uuid";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
@@ -44,7 +43,8 @@ public class EventExportDto implements Serializable {
 	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String PORT_GROUP_TYPE = "port_groupType";
+	public static final String LATEST_EVENT_GROUP = "latestEventGroup";
+	public static final String EVENT_GROUP_COUNT = "eventGroupCount";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String NOSOCOMIAL = "nosocomial";
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
@@ -94,7 +94,8 @@ public class EventExportDto implements Serializable {
 	private String evolutionComment;
 	private String eventTitle;
 	private String eventDesc;
-	private EventGroupsIndexDto eventGroups;
+	private EventGroupReferenceDto latestEventGroup;
+	private Long eventGroupCount;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 	private YesNoUnknown nosocomial;
 	private YesNoUnknown transregionalOutbreak;
@@ -213,7 +214,7 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(0)
-	@ExportProperty(UUID)
+	@ExportProperty(EventDto.UUID)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getUuid() {
 		return uuid;
@@ -359,45 +360,56 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(14)
-	@ExportProperty(PORT_GROUP_TYPE)
+	@ExportProperty(LATEST_EVENT_GROUP)
 	@ExportGroup(ExportGroupType.EVENT_GROUP)
-	public EventGroupsIndexDto getEventGroups() {
-		return eventGroups;
+	public EventGroupReferenceDto getLatestEventGroup() {
+		return latestEventGroup;
 	}
 
-	public void setEventGroups(EventGroupsIndexDto eventGroups) {
-		this.eventGroups = eventGroups;
+	public void setLatestEventGroup(EventGroupReferenceDto latestEventGroup) {
+		this.latestEventGroup = latestEventGroup;
 	}
 
 	@Order(15)
+	@ExportProperty(EVENT_GROUP_COUNT)
+	@ExportGroup(ExportGroupType.EVENT_GROUP)
+	public Long getEventGroupCount() {
+		return eventGroupCount;
+	}
+
+	public void setEventGroupCount(Long eventGroupCount) {
+		this.eventGroupCount = eventGroupCount;
+	}
+
+	@Order(16)
 	@ExportProperty(DISEASE_TRANSMISSION_MODE)
 	@ExportGroup(ExportGroupType.CORE)
 	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
 		return diseaseTransmissionMode;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportProperty(NOSOCOMIAL)
 	@ExportGroup(ExportGroupType.CORE)
 	public YesNoUnknown getNosocomial() {
 		return nosocomial;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportProperty(TRANSREGIONAL_OUTBREAK)
 	@ExportGroup(ExportGroupType.CORE)
 	public YesNoUnknown getTransregionalOutbreak() {
 		return transregionalOutbreak;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportProperty(MEANS_OF_TRANSPORT)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getMeansOfTransport() {
 		return meansOfTransport;
 	}
 
-	@Order(19)
+	@Order(20)
 	@ExportProperty(REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
@@ -408,7 +420,7 @@ public class EventExportDto implements Serializable {
 		this.region = region;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportProperty(DISTRICT)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getDistrict() {
@@ -419,7 +431,7 @@ public class EventExportDto implements Serializable {
 		this.district = district;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportProperty(COMMUNITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getCommunity() {
@@ -430,7 +442,7 @@ public class EventExportDto implements Serializable {
 		this.community = community;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportProperty(CITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getCity() {
@@ -441,7 +453,7 @@ public class EventExportDto implements Serializable {
 		this.city = city;
 	}
 
-	@Order(23)
+	@Order(24)
 	@ExportProperty(STREET)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getStreet() {
@@ -452,7 +464,7 @@ public class EventExportDto implements Serializable {
 		this.street = street;
 	}
 
-	@Order(24)
+	@Order(25)
 	@ExportProperty(HOUSE_NUMBER)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getHouseNumber() {
@@ -463,7 +475,7 @@ public class EventExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 	}
 
-	@Order(25)
+	@Order(26)
 	@ExportProperty(ADDITIONAL_INFORMATION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getAdditionalInformation() {
@@ -474,23 +486,23 @@ public class EventExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 	}
 
-	@Order(26)
+	@Order(27)
 	@ExportProperty(SRC_TYPE)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
 
-	@Order(27)
+	@Order(28)
 	@ExportProperty(SRC_INSTITUTIONAL_PARTNER_TYPE)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcInstitutionalPartnerType() {
 		return srcInstitutionalPartnerType;
 	}
 
-	@Order(28)
+	@Order(29)
 	@ExportProperty(SRC_FIRSTNAME)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -499,9 +511,9 @@ public class EventExportDto implements Serializable {
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Order(29)
+	@Order(30)
 	@ExportProperty(SRC_LASTNAME)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -510,9 +522,9 @@ public class EventExportDto implements Serializable {
 		this.srcLastName = srcLastName;
 	}
 
-	@Order(30)
+	@Order(31)
 	@ExportProperty(SRC_TEL_NO)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -521,35 +533,35 @@ public class EventExportDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Order(31)
+	@Order(32)
 	@ExportProperty(SRC_EMAIL)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
 
-	@Order(32)
+	@Order(33)
 	@ExportProperty(SRC_MEDIA_WEBSITE)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
 
-	@Order(33)
+	@Order(34)
 	@ExportProperty(SRC_MEDIA_NAME)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
 
-	@Order(34)
+	@Order(35)
 	@ExportProperty(SRC_MEDIA_DETAILS)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.EVENT_SOURCE)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
 
-	@Order(35)
+	@Order(36)
 	@ExportProperty(REPORT_DATETIME)
 	@ExportGroup(ExportGroupType.CORE)
 	public Date getReportDateTime() {
@@ -560,7 +572,7 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 	}
 
-	@Order(36)
+	@Order(37)
 	@ExportProperty(REPORTING_USER)
 	@ExportGroup(ExportGroupType.CORE)
 	public UserReferenceDto getReportingUser() {
@@ -571,7 +583,7 @@ public class EventExportDto implements Serializable {
 		this.reportingUser = reportingUser;
 	}
 
-	@Order(37)
+	@Order(38)
 	@ExportProperty(RESPONSIBLE_USER)
 	@ExportGroup(ExportGroupType.CORE)
 	public UserReferenceDto getResponsibleUser() {
@@ -582,7 +594,7 @@ public class EventExportDto implements Serializable {
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Order(38)
+	@Order(39)
 	@ExportProperty(PARTICIPANT_COUNT)
 	@ExportGroup(ExportGroupType.CORE)
 	public long getParticipantCount() {
@@ -593,7 +605,7 @@ public class EventExportDto implements Serializable {
 		this.participantCount = participantCount;
 	}
 
-	@Order(39)
+	@Order(40)
 	@ExportProperty(CASE_COUNT)
 	@ExportGroup(ExportGroupType.CORE)
 	public long getCaseCount() {
@@ -604,7 +616,7 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
-	@Order(40)
+	@Order(41)
 	@ExportProperty(DEATH_COUNT)
 	@ExportGroup(ExportGroupType.CORE)
 	public long getDeathCount() {
@@ -615,7 +627,7 @@ public class EventExportDto implements Serializable {
 		this.deathCount = deathCount;
 	}
 
-	@Order(41)
+	@Order(42)
 	@ExportProperty(CONTACT_COUNT)
 	@ExportGroup(ExportGroupType.CORE)
 	public long getContactCount() {
@@ -626,14 +638,14 @@ public class EventExportDto implements Serializable {
 		this.contactCount = contactCount;
 	}
 
-	@Order(42)
+	@Order(43)
 	@ExportProperty(CONTACT_COUNT_SOURCE_IN_EVENT)
 	@ExportGroup(ExportGroupType.CORE)
 	public long getContactCountSourceInEvent() {
 		return contactCountSourceInEvent;
 	}
 
-	@Order(43)
+	@Order(44)
 	@ExportProperty(EXTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {

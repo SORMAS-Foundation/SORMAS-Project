@@ -39,8 +39,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class EventGroupService extends AbstractCoreAdoService<EventGroup> {
+public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 
 	@EJB
 	private CaseService caseService;
@@ -174,9 +174,6 @@ public class EventGroupService extends AbstractCoreAdoService<EventGroup> {
 
 		Predicate filter = null;
 
-		if (eventGroupCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventGroup.DELETED), eventGroupCriteria.getDeleted()));
-		}
 		if (eventGroupCriteria.getRelevanceStatus() != null) {
 			if (eventGroupCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(EventGroup.ARCHIVED), false), cb.isNull(from.get(EventGroup.ARCHIVED))));
@@ -243,32 +240,34 @@ public class EventGroupService extends AbstractCoreAdoService<EventGroup> {
 		}
 		if (StringUtils.isNotEmpty(eventGroupCriteria.getFreeText())) {
 			String[] textFilters = eventGroupCriteria.getFreeText().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(from.get(EventGroup.UUID)), textFilter),
-						cb.like(cb.lower(from.get(EventGroup.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(EventGroup.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(EventGroup.NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (StringUtils.isNotEmpty(eventGroupCriteria.getFreeTextEvent())) {
 			String[] textFilters = eventGroupCriteria.getFreeTextEvent().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(eventJoin.get(Event.UUID)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.EVENT_TITLE)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.EVENT_DESC)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.SRC_FIRST_NAME)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.SRC_LAST_NAME)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.SRC_EMAIL)), textFilter),
-						cb.like(cb.lower(eventJoin.get(Event.SRC_TEL_NO)), textFilter),
-						cb.like(cb.lower(eventJoin.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.CITY)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, eventJoin.get(Event.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.get(Event.EVENT_TITLE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.get(Event.EVENT_DESC), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.get(Event.SRC_FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.get(Event.SRC_LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.get(Event.SRC_EMAIL), textFilter),
+					CriteriaBuilderHelper.ilike(cb, eventJoin.get(Event.SRC_TEL_NO), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, eventJoin.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.CITY), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

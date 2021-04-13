@@ -174,7 +174,7 @@ public class EventGroupController {
 		FacadeProvider.getEventGroupFacade().unlinkEventGroup(eventReference, eventGroupReference);
 		FacadeProvider.getEventGroupFacade().notifyEventRemovedFromEventGroup(eventGroupReference, Collections.singletonList(eventReference));
 
-		Notification.show(I18nProperties.getString(Strings.messageEventToEventGroupUnlinked), Type.TRAY_NOTIFICATION);
+		Notification.show(I18nProperties.getString(Strings.messageEventUnlinkedFromEventGroup), Type.TRAY_NOTIFICATION);
 	}
 
 	public CommitDiscardWrapperComponent<?> getEventGroupEditComponent(String uuid) {
@@ -189,7 +189,7 @@ public class EventGroupController {
 			eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
-		boolean hasRegion = user.isNational() || regions.stream().allMatch(user::hasRegion);
+		boolean hasRegion = user.hasNationalJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
 		editView.setReadOnly(hasRegion);
 
 		if (user.hasUserRight(UserRight.EVENTGROUP_EDIT) && hasRegion) {

@@ -74,7 +74,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public static final String TABLE_NAME = "events";
 
-	public static final String EVENTS_EVENT_GROUPS_TABLE_NAME = "events_event_groups";
+	public static final String EVENTS_EVENT_GROUPS_TABLE_NAME = "events_eventgroups";
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
@@ -699,7 +699,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME, joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "event_group_id"))
+	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME, joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "eventgroup_id"))
 	public List<EventGroup> getEventGroups() {
 		return eventGroups;
 	}

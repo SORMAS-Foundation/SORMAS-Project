@@ -68,7 +68,7 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
 	GDPR_CONSENT_POPUP(true, false, null),
-	EVENT_GROUPS(true, false, null),
+	EVENT_GROUPS(true, true, null),
 	EVENT_GROUPS_MODIFICATION_NOTIFICATIONS(true,
 		false,
 		new FeatureType[] {

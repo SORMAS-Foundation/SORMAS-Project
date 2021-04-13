@@ -14,7 +14,8 @@ public enum ExportGroupType {
 	FOLLOW_UP,
 	ADDITIONAL,
 	EVENT,
-	EVENT_GROUP;
+	EVENT_GROUP,
+	EVENT_SOURCE;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

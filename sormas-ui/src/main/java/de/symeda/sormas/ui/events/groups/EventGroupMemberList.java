@@ -21,14 +21,12 @@
 package de.symeda.sormas.ui.events.groups;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
-
 import com.vaadin.ui.Notification;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -81,12 +79,12 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			EventGroupMemberListEntry listEntry = new EventGroupMemberListEntry(event);
 
 			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENTGROUP_UNLINK)) {
+			if (user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
-					if (!user.isNational() && !user.hasRegion(new RegionReferenceDto(event.getJurisdiction().getRegionUuid()))) {
+					if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(new RegionReferenceDto(event.getJurisdiction().getRegionUuid()))) {
 						new Notification(
-							I18nProperties.getString(Strings.headingEventGroupUnlinkEvent),
-							I18nProperties.getString(Strings.messageEventGroupUnlinkEventFromAnotherJurisdiction),
+							I18nProperties.getString(Strings.headingEventGroupUnlinkEventIssue),
+							I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
 							Notification.Type.ERROR_MESSAGE,
 							false).show(Page.getCurrent());
 						return;

@@ -108,7 +108,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 	public EventSelectionField(EventGroupReferenceDto eventGroupReference, Set<String> excludedUuids) {
 		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent);
+		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
 		this.allowCreation = false;
 
 		this.criteria = new EventCriteria();

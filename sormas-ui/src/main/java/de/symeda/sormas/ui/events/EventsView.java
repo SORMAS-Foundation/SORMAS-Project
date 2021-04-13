@@ -568,10 +568,8 @@ public class EventsView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		if (isGroupViewType()) {
-			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			eventCriteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
 		} else {
-			ViewModelProviders.of(EventsView.class).remove(EventGroupCriteria.class);
 			eventGroupCriteria = ViewModelProviders.of(EventsView.class).get(EventGroupCriteria.class);
 		}
 		String params = event.getParameters().trim();
@@ -637,8 +635,6 @@ public class EventsView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		if (true)
-			return null;
 		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
 		boolean eventGroupFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		config.setProperties(

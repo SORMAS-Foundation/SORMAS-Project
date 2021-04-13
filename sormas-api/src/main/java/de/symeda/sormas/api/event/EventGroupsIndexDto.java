@@ -59,6 +59,6 @@ public class EventGroupsIndexDto implements Serializable {
         if (count <= 1) {
             return eventGroup.getUuid();
         }
-        return eventGroup.getUuid() + " *";
+        return eventGroup.getUuid() + " (" + count + ")";
     }
 }

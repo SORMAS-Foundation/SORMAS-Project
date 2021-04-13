@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.event;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +73,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "EventGroupFacade")
@@ -120,17 +124,20 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public List<EventGroupReferenceDto> getCommonEventGroupsByEvents(List<EventReferenceDto> eventReferences) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<EventGroup> from = cq.from(EventGroup.class);
-		Join<EventGroup, Event> eventJoin = from.join(EventGroup.EVENTS, JoinType.INNER);
-		Set<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
-		cq.where(eventJoin.get(Event.UUID).in(eventUuids));
-		cq.multiselect(eventJoin.get(Event.UUID), from.get(EventGroup.UUID));
-		Map<String, Set<String>> eventGroupsByEvent = em.createQuery(cq)
-			.getResultList()
-			.stream()
-			.collect(Collectors.groupingBy(row -> (String) row[0], Collectors.mapping(row -> (String) row[1], Collectors.toSet())));
+		Map<String, Set<String>> eventGroupsByEvent = new HashMap<>();
+		IterableHelper.executeBatched(eventReferences, ModelConstants.PARAMETER_LIMIT, batchedEventReferences -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			Root<EventGroup> from = cq.from(EventGroup.class);
+			Join<EventGroup, Event> eventJoin = from.join(EventGroup.EVENTS, JoinType.INNER);
+			Set<String> eventUuids = batchedEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+			cq.where(eventJoin.get(Event.UUID).in(eventUuids));
+			cq.multiselect(eventJoin.get(Event.UUID), from.get(EventGroup.UUID));
+			eventGroupsByEvent.putAll(em.createQuery(cq)
+				.getResultList()
+				.stream()
+				.collect(Collectors.groupingBy(row -> (String) row[0], Collectors.mapping(row -> (String) row[1], Collectors.toSet()))));
+		});
 
 		if (eventGroupsByEvent.isEmpty()) {
 			return Collections.emptyList();
@@ -287,7 +294,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to link events.");
 		}
 
-		if (eventReferences == null || eventReferences.isEmpty()) {
+		if (CollectionUtils.isEmpty(eventReferences)) {
 			return;
 		}
 
@@ -340,7 +347,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	public void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
 		User currentUser = userService.getCurrentUser();
-		if (!userService.hasRight(UserRight.EVENTGROUP_UNLINK)) {
+		if (!userService.hasRight(UserRight.EVENTGROUP_LINK)) {
 			throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to unlink events.");
 		}
 
@@ -390,6 +397,13 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				}
 			}
 		}
+
+		for (Event event : eventGroup.getEvents()) {
+			event.getEventGroups().remove(eventGroup);
+			eventService.ensurePersisted(event);
+		}
+		eventGroup.setEvents(Collections.emptyList());
+		eventGroupService.ensurePersisted(eventGroup);
 
 		eventGroupService.delete(eventGroup);
 	}
@@ -462,7 +476,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		User currentUser = userService.getCurrentUser();
 
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
-		Map<String, User> responsibleUserByEventUuid = userService.getAllByEventUuids(eventUuids);
+		Map<String, User> responsibleUserByEventUuid = userService.getResponsibleUsersByEventUuids(eventUuids);
 		for (Map.Entry<String, User> eventEntry : responsibleUserByEventUuid.entrySet()) {
 			User responsibleUser = eventEntry.getValue();
 			if (responsibleUser == null || responsibleUser.equals(currentUser)) {
@@ -511,7 +525,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		}
 
 		String caption = user.getFirstName() + " " + user.getLastName();
-		if (user.getUserEmail() != null) {
+		if (StringUtils.isNotEmpty(user.getUserEmail())) {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;

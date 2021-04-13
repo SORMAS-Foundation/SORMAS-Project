@@ -218,6 +218,8 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
+	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalSurveillanceToolCaseNotOwned = "errorExternalSurveillanceToolCaseNotOwned";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -388,8 +390,8 @@ public interface Strings {
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
-	String headingEventGroupLinkEvent = "headingEventGroupLinkEvent";
-	String headingEventGroupUnlinkEvent = "headingEventGroupUnlinkEvent";
+	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
+	String headingEventGroupUnlinkEventIssue = "headingEventGroupUnlinkEventIssue";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -777,7 +779,6 @@ public interface Strings {
 	String messageEventGroupCreated = "messageEventGroupCreated";
 	String messageEventGroupDearchived = "messageEventGroupDearchived";
 	String messageEventGroupSaved = "messageEventGroupSaved";
-	String messageEventGroupUnlinkEventFromAnotherJurisdiction = "messageEventGroupUnlinkEventFromAnotherJurisdiction";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
@@ -799,8 +800,7 @@ public interface Strings {
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
-	String messageEventToEventGroupUnlinked = "messageEventToEventGroupUnlinked";
-	String messageEventUnlinkEventGroupFromAnotherJurisdiction = "messageEventUnlinkEventGroupFromAnotherJurisdiction";
+	String messageEventUnlinkedFromEventGroup = "messageEventUnlinkedFromEventGroup";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
