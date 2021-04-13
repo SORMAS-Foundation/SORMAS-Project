@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -519,14 +520,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		return samples;
 	}
 
-	public List<SampleDto> getPositiveOrLatest(SampleCriteria criteria) {
+	public List<SampleDto> getPositiveOrLatest(SampleCriteria criteria, Function<Sample, AbstractDomainObject> associatedObjectFn) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), Sample.CREATION_DATE, false)
 			.stream()
 			.collect(
 				Collectors.toMap(
-					s -> s.getAssociatedCase().getUuid(),
+					s -> associatedObjectFn.apply(s).getUuid(),
 					(s) -> s,
 					(s1, s2) -> {
 

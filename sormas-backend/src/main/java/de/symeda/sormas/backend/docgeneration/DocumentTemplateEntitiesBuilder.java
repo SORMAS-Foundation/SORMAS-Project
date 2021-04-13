@@ -49,9 +49,11 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
@@ -121,30 +123,15 @@ public class DocumentTemplateEntitiesBuilder {
 		final BulkEntitiesBuilder<? extends EntityDto> builder;
 		switch (workflow) {
 		case QUARANTINE_ORDER_CASE:
-			builder = createBulkEntitiesBuilder(
-				ROOT_CASE,
-				caseFacade.getByUuids(entityUuids),
-				CaseDataDto::toReference,
-				CaseDataDto::getPerson,
-				new SampleCriteria().caseUuids(entityUuids));
+			builder = createBulkCaseEntitiesBuilder(entityUuids);
 
 			break;
 		case QUARANTINE_ORDER_CONTACT:
-			builder = createBulkEntitiesBuilder(
-				ROOT_CONTACT,
-				contactFacade.getByUuids(entityUuids),
-				ContactDto::toReference,
-				ContactDto::getPerson,
-				new SampleCriteria().contactUuids(entityUuids));
+			builder = createBulkContactEntitiesBuilder(entityUuids);
 
 			break;
 		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
-			builder = createBulkEntitiesBuilder(
-				ROOT_EVENT_PARTICIPANT,
-				eventParticipantFacade.getByUuids(entityUuids),
-				EventParticipantDto::toReference,
-				(EventParticipantDto e) -> e.getPerson().toReference(),
-				new SampleCriteria().eventParticipantUuids(entityUuids));
+			builder = createBulkEventParticipantEntitiesBuilder(entityUuids);
 
 			break;
 		default:
@@ -154,40 +141,73 @@ public class DocumentTemplateEntitiesBuilder {
 		return builder.build();
 	}
 
-	<T extends EntityDto> BulkEntitiesBuilder<T> createBulkEntitiesBuilder(
-		RootEntityType mainRootEntityType,
-		List<T> mainRootEntities,
-		Function<T, ReferenceDto> createReference,
-		Function<T, PersonReferenceDto> getEntityPerson,
-		SampleCriteria sampleCriteria) {
+	private BulkEntitiesBuilder<CaseDataDto> createBulkCaseEntitiesBuilder(List<String> caseUuids) {
 
-		return new BulkEntitiesBuilder<>(mainRootEntityType, mainRootEntities, createReference, getEntityPerson, sampleCriteria);
+		return new BulkEntitiesBuilder<>(
+			ROOT_CASE,
+			caseFacade.getByUuids(caseUuids),
+			CaseDataDto::toReference,
+			CaseDataDto::getPerson,
+			new SampleCriteria().caseUuids(caseUuids),
+			Sample::getAssociatedCase,
+			SampleDto::getAssociatedCase);
+	}
+
+	private BulkEntitiesBuilder<ContactDto> createBulkContactEntitiesBuilder(List<String> contactUuids) {
+
+		return new BulkEntitiesBuilder<>(
+			ROOT_CONTACT,
+			contactFacade.getByUuids(contactUuids),
+			ContactDto::toReference,
+			ContactDto::getPerson,
+			new SampleCriteria().contactUuids(contactUuids),
+			Sample::getAssociatedContact,
+			SampleDto::getAssociatedContact);
+	}
+
+	private BulkEntitiesBuilder<EventParticipantDto> createBulkEventParticipantEntitiesBuilder(List<String> eventParticipantUuids) {
+
+		return new BulkEntitiesBuilder<>(
+			ROOT_EVENT_PARTICIPANT,
+			eventParticipantFacade.getByUuids(eventParticipantUuids),
+			EventParticipantDto::toReference,
+			(EventParticipantDto e) -> e.getPerson().toReference(),
+			new SampleCriteria().eventParticipantUuids(eventParticipantUuids),
+			Sample::getAssociatedEventParticipant,
+			SampleDto::getAssociatedEventParticipant);
 	}
 
 	final class BulkEntitiesBuilder<T extends EntityDto> {
 
-		final RootEntityType mainRootEntityType;
-		final List<T> mainRootEntities;
-		final Function<T, ReferenceDto> createReference;
-		final Function<T, PersonReferenceDto> getEntityPerson;
-		final SampleCriteria sampleCriteria;
+		private final RootEntityType mainRootEntityType;
+		private final List<T> mainRootEntities;
+		private final Function<T, ReferenceDto> createReference;
+		private final Function<T, PersonReferenceDto> getEntityPerson;
+		private final SampleCriteria sampleCriteria;
+		private final Function<Sample, AbstractDomainObject> sampleAssociatedObjectFn;
+		private final Function<SampleDto, ReferenceDto> sampleDtoAssociatedObjectFn;
 
 		private BulkEntitiesBuilder(
 			RootEntityType mainRootEntityType,
 			List<T> mainRootEntities,
 			Function<T, ReferenceDto> createReference,
 			Function<T, PersonReferenceDto> getEntityPerson,
-			SampleCriteria sampleCriteria) {
+			SampleCriteria sampleCriteria,
+			Function<Sample, AbstractDomainObject> sampleAssociatedObjectFn,
+			Function<SampleDto, ReferenceDto> sampleDtoAssociatedObjectFn) {
 			this.mainRootEntityType = mainRootEntityType;
 			this.mainRootEntities = mainRootEntities;
 			this.createReference = createReference;
 			this.getEntityPerson = getEntityPerson;
 			this.sampleCriteria = sampleCriteria;
+			this.sampleAssociatedObjectFn = sampleAssociatedObjectFn;
+			this.sampleDtoAssociatedObjectFn = sampleDtoAssociatedObjectFn;
 		}
 
 		Map<ReferenceDto, DocumentTemplateEntities> build() {
-			Map<String, SampleDto> samples =
-				sampleFacadeEjb.getPositiveOrLatest(sampleCriteria).stream().collect(Collectors.toMap(s -> s.getAssociatedCase().getUuid(), s -> s));
+			Map<String, SampleDto> samples = sampleFacadeEjb.getPositiveOrLatest(sampleCriteria, sampleAssociatedObjectFn)
+				.stream()
+				.collect(Collectors.toMap(s -> sampleDtoAssociatedObjectFn.apply(s).getUuid(), s -> s));
 
 			Map<String, PathogenTestDto> pathogenTests = samples.size() > 0
 				? pathogenTestFacade.getPositiveOrLatest(samples.values().stream().map(SampleDto::getUuid).collect(Collectors.toList()))
