@@ -17,16 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class FacilityDto extends EntityDto {
 
@@ -49,10 +49,10 @@ public class FacilityDto extends EntityDto {
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String AREA_TYPE = "areaType";
-	public static final String CONTACT_PERSON_FIRST_NAME="contactPersonFirstName";
-	public static final String CONTACT_PERSON_LAST_NAME="contactPersonLastName";
-	public static final String CONTACT_PERSON_PHONE="contactPersonPhone";
-	public static final String CONTACT_PERSON_EMAIL="contactPersonEmail";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE_GROUP = "typeGroup";

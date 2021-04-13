@@ -17,10 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.utils.Order;
-
-import java.io.Serializable;
 
 public class FacilityExportDto implements Serializable {
 
@@ -37,10 +37,10 @@ public class FacilityExportDto implements Serializable {
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String AREA_TYPE = "areaType";
-	public static final String CONTACT_PERSON_FIRST_NAME="contactPersonFirstName";
-	public static final String CONTACT_PERSON_LAST_NAME="contactPersonLastName";
-	public static final String CONTACT_PERSON_PHONE="contactPersonPhone";
-	public static final String CONTACT_PERSON_EMAIL="contactPersonEmail";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";

@@ -2119,15 +2119,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 294:
 				currentVersion = 294;
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonFirstName varchar(512)");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonLastName varchar(512)");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonPhone varchar(512)");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonEmail varchar(512)");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonFirstName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonLastName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonPhone text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonEmail text");
 
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonFirstName varchar(512);");
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonLastName varchar(512);");
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone varchar(512);");
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail varchar(512);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonFirstName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonLastName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

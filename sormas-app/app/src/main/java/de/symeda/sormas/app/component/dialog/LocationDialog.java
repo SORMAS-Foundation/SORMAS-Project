@@ -15,6 +15,15 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +31,6 @@ import android.view.View;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
-import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -53,10 +57,6 @@ import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.LocationService;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class LocationDialog extends FormDialog {
 
@@ -227,7 +227,8 @@ public class LocationDialog extends FormDialog {
 					|| facility.getAreaType() != null
 					|| facility.getLatitude() != null
 					|| facility.getLongitude() != null
-					||(StringUtils.isNotEmpty(facility.getContactPersonFirstName()) && StringUtils.isNotEmpty(facility.getContactPersonLastName())))) {
+					|| (StringUtils.isNotEmpty(facility.getContactPersonFirstName())
+						&& StringUtils.isNotEmpty(facility.getContactPersonLastName())))) {
 				if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue())
 					&& !contentBinding.locationCity.getValue().equals(facility.getCity()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue())
@@ -239,7 +240,8 @@ public class LocationDialog extends FormDialog {
 					|| (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue())
 						&& !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
 					|| (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
-					|| (contentBinding.locationContactPersonFirstName.getValue()!=null && contentBinding.locationContactPersonLastName.getValue()!=null)
+					|| (StringUtils.isNotEmpty(contentBinding.locationContactPersonFirstName.getValue())
+						&& StringUtils.isNotEmpty(contentBinding.locationContactPersonLastName.getValue()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue())
 						&& !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue())

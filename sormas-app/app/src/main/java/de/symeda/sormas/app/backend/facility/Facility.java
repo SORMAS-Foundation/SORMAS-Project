@@ -72,13 +72,13 @@ public class Facility extends InfrastructureAdo {
 	private String additionalInformation;
 	@Enumerated(EnumType.STRING)
 	private AreaType areaType;
-	@Column
+	@Column(columnDefinition = "text")
 	private String contactPersonFirstName;
-	@Column
+	@Column(columnDefinition = "text")
 	private String contactPersonLastName;
-	@Column
+	@Column(columnDefinition = "text")
 	private String contactPersonPhone;
-	@Column
+	@Column(columnDefinition = "text")
 	private String contactPersonEmail;
 
 	@DatabaseField

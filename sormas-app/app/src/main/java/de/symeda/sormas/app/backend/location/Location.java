@@ -15,15 +15,20 @@
 
 package de.symeda.sormas.app.backend.location;
 
-import androidx.databinding.Bindable;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
@@ -40,9 +45,6 @@ import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.Subcontinent;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
@@ -102,13 +104,13 @@ public class Location extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String facilityDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String contactPersonFirstName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String contactPersonLastName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String contactPersonPhone;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String contactPersonEmail;
 
 	/**
@@ -374,38 +376,34 @@ public class Location extends PseudonymizableAdo {
 			sb.append(getDetails());
 		}
 
-		if (getContactPersonFirstName()!=null || getContactPersonLastName()!=null){
-			if (sb.length()>0){
-				sb.append("\n");
+		if (StringUtils.isNotEmpty(getContactPersonFirstName()) || StringUtils.isNotEmpty(getContactPersonLastName())) {
+			sb.append("\n");
+			StringBuilder contactNameRow = new StringBuilder();
+			if (StringUtils.isNotEmpty(getContactPersonFirstName())) {
+				contactNameRow.append(getContactPersonFirstName());
 			}
-		}
-
-		if (getContactPersonFirstName()!=null && !getContactPersonFirstName().isEmpty()){
-			sb.append(getContactPersonFirstName());
-		}
-
-		if (getContactPersonLastName()!=null && !getContactPersonLastName().isEmpty()){
-			if (sb.length()>0){
-				sb.append(", ");
+			if (StringUtils.isNotEmpty(getContactPersonLastName())) {
+				if (contactNameRow.length()>0){
+					contactNameRow.append(" ");
+				}
+				contactNameRow.append(getContactPersonLastName());
 			}
-			sb.append(getContactPersonLastName());
+			sb.append(contactNameRow);
 		}
 
-		if (getContactPersonPhone()!=null || getContactPersonEmail()!=null){
-			if (sb.length()>0){
-				sb.append("\n");
+		if (StringUtils.isNotEmpty(getContactPersonPhone()) || StringUtils.isNotEmpty(getContactPersonEmail())) {
+			sb.append("\n");
+			StringBuilder phoneAndEmailRow = new StringBuilder();
+			if (StringUtils.isNotEmpty(getContactPersonPhone())) {
+				phoneAndEmailRow.append(getContactPersonPhone());
 			}
-		}
-
-		if (getContactPersonPhone()!=null && !getContactPersonPhone().isEmpty()){
-			sb.append(getContactPersonPhone());
-		}
-
-		if (getContactPersonEmail()!=null && !getContactPersonEmail().isEmpty()){
-			if (sb.length()>0){
-				sb.append(", ");
+			if (StringUtils.isNotEmpty(getContactPersonEmail())) {
+				if (phoneAndEmailRow.length()>0){
+					phoneAndEmailRow.append(", ");
+				}
+				phoneAndEmailRow.append(getContactPersonEmail());
 			}
-			sb.append(getContactPersonEmail());
+			sb.append(phoneAndEmailRow);
 		}
 
 		String latLonString = getLatLonString();

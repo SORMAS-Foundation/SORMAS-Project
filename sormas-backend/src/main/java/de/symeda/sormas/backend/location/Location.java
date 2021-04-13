@@ -17,6 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -33,19 +46,6 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.Subcontinent;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
 
 @Entity
 @Audited
@@ -299,7 +299,7 @@ public class Location extends AbstractDomainObject {
 		this.facilityDetails = facilityDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getContactPersonFirstName() {
 		return contactPersonFirstName;
 	}
@@ -308,7 +308,7 @@ public class Location extends AbstractDomainObject {
 		this.contactPersonFirstName = contactPersonFirstName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getContactPersonLastName() {
 		return contactPersonLastName;
 	}
@@ -317,7 +317,7 @@ public class Location extends AbstractDomainObject {
 		this.contactPersonLastName = contactPersonLastName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getContactPersonPhone() {
 		return contactPersonPhone;
 	}
@@ -326,7 +326,7 @@ public class Location extends AbstractDomainObject {
 		this.contactPersonPhone = contactPersonPhone;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getContactPersonEmail() {
 		return contactPersonEmail;
 	}
