@@ -10,7 +10,7 @@ If you want to contribute to SORMAS by any means - for example by submitting a b
 
 ## Submitting an Issue
 
-**Before creating a new issue, please search the repository for similar issues first to avoid duplicates!** You can do this by using the search field in the menu bar. If you find an issue that already covers your request or seems very similar, please comment on that issue instead of opening a new one.
+**Before creating a new issue, please search the repository for similar issues first to avoid duplicates!** You can do this by using the search field in the menu bar. If you find an issue that already covers your request or seems very similar, please comment on that issue.
 
 Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and ideally contains all the information that we need. Please add information to every mandatory section of the issue templates, and try to fill in the optional sections if possible. Please note that we might have to close issues that are not created this way.
 
