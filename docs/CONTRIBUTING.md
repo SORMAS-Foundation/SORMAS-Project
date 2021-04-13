@@ -38,7 +38,7 @@ Bug reports cover everything that leads to the application behaving in an uninte
 
 Change requests cover features that are already part of SORMAS. This primarily includes aspects (or whole features) for which you would like to request an altered behavior, but also small extensions (e.g. additional values being added to a dropdown field).
 
-* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, namig it briefly might be enough. If it is about a very specific detail of said feature, please try to be a bit more specific.
+* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, namig it briefly might be enough. If it is about a very specific detail of said feature, please try to be more specific.
 * **Problem Description:** Tell us why you want us to change the feature and what you believe is wrong or could be improved about the way it is currently designed.
 * **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature and what the expected outcome of your request should look like.
 * **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
