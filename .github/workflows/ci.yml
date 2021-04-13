@@ -38,3 +38,17 @@ jobs:
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
+
+      - name: Commit openAPI spec to development
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+        run: |
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+
+            rm -rf openapi
+            mkdir openapi/
+            cp sormas-rest/target/swagger.* sormas-rest/target/external_journal_API.* openapi
+
+            git add openapi
+            git commit -m "[GitHub Actions] Update openAPI spec files"
+            git push
