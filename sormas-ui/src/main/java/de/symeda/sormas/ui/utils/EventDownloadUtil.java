@@ -50,7 +50,10 @@ public class EventDownloadUtil {
               exportConfiguration);
     }
 
-    public static String getPropertyCaption(String propertyId) {
+    public static String getPropertyCaption(String propertyId, String prefixId) {
+        if (prefixId != null) {
+            return I18nProperties.getPrefixCaption(prefixId, propertyId);
+        }
 
         return I18nProperties.findPrefixCaption(
               propertyId,
@@ -61,7 +64,7 @@ public class EventDownloadUtil {
     }
 
     private static String captionProvider(String propertyId, Class<?> type) {
-        String caption = getPropertyCaption(propertyId);
+        String caption = getPropertyCaption(propertyId, null);
 
         if (Date.class.isAssignableFrom(type)) {
             caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
