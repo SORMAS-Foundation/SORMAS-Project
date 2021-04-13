@@ -1485,11 +1485,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
 		}
 
-		expectedUntilDate.setValue(
-			DateHelper.formatLocalDate(
-				CaseLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByCase(getValue().toReference())),
-				I18nProperties.getUserLanguage()));
-		expectedUntilDate.setReadOnly(true);
+		if (caseFollowUpEnabled) {
+			expectedUntilDate.setValue(
+				DateHelper.formatLocalDate(
+					CaseLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByCase(getValue().toReference())),
+					I18nProperties.getUserLanguage()));
+			expectedUntilDate.setReadOnly(true);
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
