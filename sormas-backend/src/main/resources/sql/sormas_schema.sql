@@ -7121,6 +7121,6 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_followupstatuschangeuser_id FOREIG
 ALTER TABLE cases_history ADD CONSTRAINT fk_cases_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
 ALTER TABLE contact_history ADD CONSTRAINT fk_contact_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (357, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
+INSERT INTO schema_version (version_number, comment) VALUES (358, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
 
 -- *** Insert new sql commands BEFORE this line ***
