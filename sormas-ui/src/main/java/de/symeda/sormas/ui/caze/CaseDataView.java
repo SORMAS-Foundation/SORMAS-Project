@@ -175,7 +175,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, getCaseRef());
+		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
 			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());

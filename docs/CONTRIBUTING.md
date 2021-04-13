@@ -1,4 +1,6 @@
-# Contributing
+# Contribution Guidelines
+
+If you want to contribute to SORMAS by any means - for example by submitting a bug report, requesting a new feature, translating the application into a new language, or actively contributing to the source code -, please make sure to read through and follow these guidelines. This allows us to consider and process your contribution as quickly and smoothly as possible. If there is anything unclear to you or you think that this guide is lacking coverage of a specific topic, please create a support issue or get in touch with us via [Gitter](https://gitter.im/SORMAS-Project).
 
 ## Table of Contents
 
@@ -8,45 +10,52 @@
 
 ## Submitting an Issue
 
-Please read adhere to the following guidelines when submitting new issues. This allows us to process your request as quickly as possible. Make sure to always use the templates that are automatically provided when creating an issue.
+**Before creating a new issue, please search the repository for similar issues first to avoid duplicates!** You can do this by using the search field in the menu bar. If you find an issue that already covers your request or seems very similar, please comment on that issue.
 
-If you want to report a **security issue**, please follow our guideline for [*Responsible Disclosure*](SECURITY.md).
+Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and ideally contains all the information that we need. Please add information to every mandatory section of the issue templates, and try to fill in the optional sections if possible. Please note that we might have to close issues that are not created this way.
 
-**Important:** Whenever creating a new issue, **please search the repository for similar issues first** to avoid duplicates. You can do this manually or by using the search functionality in the header and limiting your results to the SORMAS repository.
+If you want to report a **security issue**, please follow our guidelines for [*Responsible Disclosure*](SECURITY.md).
+
+There are four types of issues based on our available templates:
 
 * [Bug Report](#bug-report)
 * [Change Request](#change-request)
 * [Feature Request](#feature-request)
+* [Support Request](#support-request)
 
 ### Bug Report
 
-When submitting a bug report, providing us with as much information as possible helps us to identify the root of the problem and fix it as fast as possible. Ideally, we would need the following details:
+Bug reports cover everything that leads to the application behaving in an unintended way, including crashes, unexpected error messages, data loss, etc. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead.
 
-* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible.
-* **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the bug occurred. This helps us to reproduce it on our system.
-* **Expected Behavior:** Quickly describe what you believe should've happened instead of the error you got.
-* **Screenshots:** If possible, make at least one screenshot of the bug and include it in your bug report. You can do this by simply dragging-and-dropping the image file into the template you're filling out.
-* **System Details:** Tell us which device you were using, on which SORMAS version the error occurred and, depending on whether you were using the mobile app or the web app, your Android version or the web browser.
-* **Additional Information:** If there is anything else you want to add to your request, you can put it here.
+* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you.
+* **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the bug occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex bugs.
+* **Expected Behavior:** Quickly describe what you believe should have happened instead of the error you got. *Optional* when the error is identified by a crash or an error message, but likely necessary if the bug is the result of a misbehavior of the application.
+* **Screenshots:** If possible, make at least one screenshot of the bug and include it in your bug report. You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
+* **System Details:** Tell us which device you were using, on which SORMAS version the error occurred and, depending on whether you were using the mobile app or the web app, your Android version or web browser.
+* **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
 
 ### Change Request
 
-When submitting a change request or a feature request, describing the feature you would like us to add or change in detail will make sure that we have an easier time to discuss it internally and get back to you as quickly as possible.
+Change requests cover features that are already part of SORMAS. This primarily includes aspects (or whole features) for which you would like to request an altered behavior, but also small extensions (e.g. additional values being added to a dropdown field).
 
-* **Feature Description:** Please describe the feature you would like us to change as it is in SORMAS right now so we know the subject of the issue.
-* **Problem Description:** Tell us why you want us to change the feature and what you believe is wrong with the way it's currently designed.
-* **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature.
-* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason.
-* **Additional Information:** If there is anything else you want to add to your request, you can put it here.
+* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, namig it briefly might be enough. If it is about a very specific detail of said feature, please try to be more specific.
+* **Problem Description:** Tell us why you want us to change the feature and what you believe is wrong or could be improved about the way it is currently designed.
+* **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature and what the expected outcome of your request should look like.
+* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
+* **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
 
 ### Feature Request
 
-When submitting a change request or a feature request, describing the feature you would like us to add or change in detail will make sure that we have an easier time to discuss it internally and get back to you as quickly as possible.
+These types of issue cover everything that involves adding new features to SORMAS. This includes both very large additions like completely new app sections, but also smaller ones like adding a new field to an existing form.
 
-* **Situation Description:** Please describe why your proposed feature is required and how exactly SORMAS is not able to do what you want it to do right now.
+* **Situation Description:** Please describe why your proposed feature is required, why SORMAS in its current state is not able to do what you want it to do, and in which way it would benefit from your feature being implemented.
 * **Feature Description:** Describe in as much detail as possible how your proposed feature should look like and what it should do.
-* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed feature can not be implemented in the way you outlined it for any reason.
-* **Additional Information:** If there is anything else you want to add to your request, you can put it here.
+* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed feature can not be implemented in the way you outlined it for any reason. This is generally *optional* but might be requested at a later point in time.
+* **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
+
+### Support Request
+
+If you have problems setting up a SORMAS server or your development environment, don't know how a specific functionality in SORMAS is supposed to work, or have any other request that is not directly associated with a bug report, change or feature request, a support request is likely the correct type of issue for your concern. Alternatively, you can join our [Gitter channel](https://gitter.im/SORMAS-Project) and ask your question over there which might potentially give you a quicker and more comfortable way to talk about your request. If your request is about a specific problem, please make sure to provide as much information as possible.
 
 ## Contributing to the Project
 

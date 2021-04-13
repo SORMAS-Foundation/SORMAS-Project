@@ -1,5 +1,5 @@
 
-# SORMAS Development Environment
+# Development Environment Setup
 
 This step-by-step guide explains how to set up your development environment, using either Eclipse or Intellij for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
 

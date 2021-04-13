@@ -334,7 +334,9 @@ public class ContactFacadeEjb implements ContactFacade {
 							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
 						.toString());
 			} else {
-				contactService.updateFollowUpUntilAndStatus(entity);
+				contactService.updateFollowUpDetails(
+					entity,
+					existingContactDto != null && entity.getFollowUpStatus() != existingContactDto.getFollowUpStatus());
 			}
 			contactService.udpateContactStatus(entity);
 
@@ -1457,6 +1459,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		target.setVaccinationInfo(VaccinationInfoFacadeEjb.toDto(source.getVaccinationInfo()));
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		if (source.getFollowUpStatusChangeUser() != null) {
+			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
+		}
 
 		return target;
 	}

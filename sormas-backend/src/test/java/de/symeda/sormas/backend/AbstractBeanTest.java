@@ -84,6 +84,7 @@ import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -172,6 +173,7 @@ import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -610,5 +612,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public ExternalShareInfoService getExternalShareInfoService() {
 		return getBean(ExternalShareInfoService.class);
+	}
+
+	public UserRightsFacade getUserRightsFacade() {
+		return getBean(UserRightsFacadeEjbLocal.class);
 	}
 }

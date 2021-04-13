@@ -83,6 +83,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
@@ -199,6 +200,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String EXTERNAL_SHARES = "externalShares";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
@@ -218,6 +220,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
 	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 
 	private Person person;
 	private String description;
@@ -382,9 +386,12 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	 * Blood/organ/tissue donation in the last 6 months
 	 */
 	private YesNoUnknown bloodOrganOrTissueDonated;
+	private Date followUpStatusChangeDate;
+	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1641,5 +1648,32 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@OneToMany(mappedBy = ExternalShareInfo.CAZE, fetch = FetchType.LAZY)
+	public List<ExternalShareInfo> getExternalShares() {
+		return externalShares;
+	}
+
+	public void setExternalShares(List<ExternalShareInfo> externalShares) {
+		this.externalShares = externalShares;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }
