@@ -411,7 +411,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(20)
 	@ExportProperty(REGION)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getRegion() {
 		return region;
 	}
@@ -422,7 +422,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(21)
 	@ExportProperty(DISTRICT)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getDistrict() {
 		return district;
 	}
@@ -433,7 +433,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(22)
 	@ExportProperty(COMMUNITY)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getCommunity() {
 		return community;
 	}
@@ -444,7 +444,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(23)
 	@ExportProperty(CITY)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getCity() {
 		return city;
 	}
@@ -455,7 +455,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(24)
 	@ExportProperty(STREET)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getStreet() {
 		return street;
 	}
@@ -466,7 +466,7 @@ public class EventExportDto implements Serializable {
 
 	@Order(25)
 	@ExportProperty(HOUSE_NUMBER)
-	@ExportGroup(ExportGroupType.CORE)
+	@ExportGroup(ExportGroupType.LOCATION)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
