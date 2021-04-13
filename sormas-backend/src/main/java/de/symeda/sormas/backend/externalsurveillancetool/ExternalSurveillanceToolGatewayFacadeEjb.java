@@ -142,7 +142,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 			.request()
 			.post(Entity.json(params));
 
-		int statusCode = HttpServletResponse.SC_OK;
+		int statusCode = response.getStatus();
 
 		switch (statusCode) {
 		case HttpServletResponse.SC_OK:
