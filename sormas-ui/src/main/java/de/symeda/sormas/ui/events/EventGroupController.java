@@ -34,6 +34,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
@@ -308,7 +311,60 @@ public class EventGroupController {
 			return;
 		}
 
+		UserProvider user = UserProvider.getCurrent();
+		if (!user.hasUserRight(UserRight.EVENTGROUP_CREATE) && !user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			new Notification(
+				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+				I18nProperties.getString(Strings.errorNotRequiredRights),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+		}
+
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
-		selectOrCreate(eventReferences, callback);
+		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+
+		if (!user.hasNationalJurisdictionLevel()) {
+			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionRelatedToEventUuids(eventUuids);
+			for (RegionReferenceDto region : regions) {
+				if (!user.hasRegion(region)) {
+					new Notification(
+						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+					return;
+				}
+			}
+		}
+
+		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
+		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
+			.getCommonEventGroupsByEvents(eventReferences)
+			.stream()
+			.map(EventGroupReferenceDto::getUuid)
+			.collect(Collectors.toSet());
+		eventGroupCriteria.setExcludedUuids(eventGroupUuids);
+		if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			long eventCount = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+			if (eventCount > 0) {
+				selectOrCreate(eventReferences, null);
+			} else {
+				create(eventReferences, null);
+			}
+		} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+			create(eventReferences, null);
+		} else {
+			long eventCount = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+			if (eventCount > 0) {
+				select(eventReferences, null);
+			} else {
+				new Notification(
+					I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+					I18nProperties.getString(Strings.errorNotRequiredRights),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			}
+		}
+
 	}
 }

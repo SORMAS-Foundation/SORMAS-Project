@@ -52,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.backend.util.IterableHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -1106,6 +1108,27 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
 		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
+	}
+
+	@Override
+	public Set<RegionReferenceDto> getAllRegionRelatedToEventUuids(List<String> uuids) {
+		Set<RegionReferenceDto> regionReferenceDtos = new HashSet<>();
+		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Event> eventRoot = cq.from(Event.class);
+			Join<Event, Location> locationJoin = eventRoot.join(Event.EVENT_LOCATION, JoinType.INNER);
+			Join<Location, Region> regionJoin = locationJoin.join(Location.REGION, JoinType.INNER);
+
+			cq.select(regionJoin.get(Region.UUID)).distinct(true);
+			cq.where(eventRoot.get(Event.UUID).in(batchedUuids));
+
+			em.createQuery(cq).getResultList()
+				.stream()
+				.map(RegionReferenceDto::new)
+				.forEach(regionReferenceDtos::add);
+		});
+		return regionReferenceDtos;
 	}
 
 	@LocalBean
