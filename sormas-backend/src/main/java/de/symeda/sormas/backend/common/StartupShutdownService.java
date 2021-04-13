@@ -725,7 +725,7 @@ public class StartupShutdownService {
 			case 95:
 				// update follow up and status for all contacts
 				for (Contact contact : contactService.getAll()) {
-					contactService.updateFollowUpUntilAndStatus(contact);
+					contactService.updateFollowUpDetails(contact, false);
 					contactService.udpateContactStatus(contact);
 				}
 				break;

@@ -22,16 +22,21 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 
 public final class CaseLogic {
 
@@ -125,5 +130,48 @@ public final class CaseLogic {
 		if (isTransfer && FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			caze.getHospitalization().setAdmissionDate(new Date());
 		}
+	}
+
+	public static Date getFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits) {
+
+		int followUpDuration = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(caze.getDisease());
+		Date beginDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
+		Date untilDate = caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : DateHelper.addDays(beginDate, followUpDuration);
+
+		VisitDto lastVisit = null;
+		boolean additionalVisitNeeded;
+		do {
+			additionalVisitNeeded = false;
+			if (visits != null) {
+				for (VisitDto visit : visits) {
+					if (lastVisit != null) {
+						if (lastVisit.getVisitDateTime().before(visit.getVisitDateTime())) {
+							lastVisit = visit;
+						}
+					} else {
+						lastVisit = visit;
+					}
+				}
+			}
+			if (lastVisit != null) {
+				// if the last visit was not cooperative and happened at the last date of
+				// contact tracing ..
+				if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE && lastVisit.getVisitDateTime().compareTo(untilDate) == 0) {
+					// .. we need to do an additional visit
+					additionalVisitNeeded = true;
+					untilDate = DateHelper.addDays(untilDate, 1);
+				}
+				// if the last visit was cooperative and happened at the last date of contact tracing,
+				// revert the follow-up until date back to the original
+				if (!caze.isOverwriteFollowUpUntil()
+					&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
+					&& lastVisit.getVisitDateTime().compareTo(DateHelper.addDays(beginDate, followUpDuration)) == 0) {
+					additionalVisitNeeded = false;
+					untilDate = DateHelper.addDays(beginDate, followUpDuration);
+				}
+			}
+		}
+		while (additionalVisitNeeded);
+		return untilDate;
 	}
 }

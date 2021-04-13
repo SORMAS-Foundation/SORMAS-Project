@@ -118,7 +118,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			false,
 			false,
 			null,
-			TaskDateType.class,
+			TaskDateType.values(),
 			I18nProperties.getString(Strings.promptTaskDateType),
 			TaskDateType.DUE_DATE,
 			this);
