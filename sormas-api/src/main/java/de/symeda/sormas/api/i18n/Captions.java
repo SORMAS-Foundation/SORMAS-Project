@@ -1055,6 +1055,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String exportUserRoles = "exportUserRoles";
 	String Exposure_animalCondition = "Exposure.animalCondition";
 	String Exposure_animalContactType = "Exposure.animalContactType";
 	String Exposure_animalContactTypeDetails = "Exposure.animalContactTypeDetails";
@@ -2002,6 +2003,11 @@ public interface Captions {
 	String User_uuid = "User.uuid";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
+	String userRight = "userRight";
+	String UserRight_description = "UserRight.description";
+	String UserRight_jurisdiction = "UserRight.jurisdiction";
+	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
+	String userRights = "userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String VaccinationInfo_firstVaccinationDate = "VaccinationInfo.firstVaccinationDate";
 	String VaccinationInfo_lastVaccinationDate = "VaccinationInfo.lastVaccinationDate";

@@ -15,38 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.user;
+package de.symeda.sormas.backend.doc;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
-import javax.ejb.Remote;
+import org.junit.Test;
 
-@Remote
-public interface UserRoleConfigFacade {
+import de.symeda.sormas.backend.AbstractBeanTest;
 
-	List<UserRoleConfigDto> getAllAfter(Date date);
+/**
+ * Intentionally named *Generator because we don't want Maven to execute this class automatically.
+ */
+public class UserRightsGenerator extends AbstractBeanTest {
 
-	List<UserRoleConfigDto> getAll();
+	@Test
+	public void generateUserRights() throws IOException {
+		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx");
 
-	List<String> getAllUuids();
+		String documentPath = getUserRightsFacade().generateUserRightsDocument(false);
 
-	List<String> getDeletedUuids(Date date);
+		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-	UserRoleConfigDto getByUuid(String uuid);
-
-	UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
-
-	void deleteUserRoleConfig(UserRoleConfigDto dto);
-
-	/**
-	 * Will fallback to default user rights for each role that has no configuration defined
-	 */
-	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
-
-	Set<UserRole> getEnabledUserRoles();
-
-	Map<UserRole, Set<UserRight>> getAllAsMap();
+//		Desktop.getDesktop().open(new File(filePath));
+	}
 }
