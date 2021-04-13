@@ -309,7 +309,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		try {
 			return person.getEmailAddress(false);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
-			logger.error("Error retrieving email address", e);
 			return StringUtils.EMPTY;
 		}
 	}
@@ -328,11 +327,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			} else {
 				return phoneNumber;
 			}
-		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
-			logger.error("Error retrieving phone number", e);
-			return StringUtils.EMPTY;
-		} catch (NumberParseException e) {
-			logger.error("Error while trying to parse phone number as INTERNATIONAL", e);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException | NumberParseException e) {
 			return StringUtils.EMPTY;
 		}
 	}
