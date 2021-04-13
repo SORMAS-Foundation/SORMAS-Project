@@ -78,7 +78,7 @@ In addition to the guidelines covered in the Development Environment Setup Instr
     - When defining a method, enter a blank line before starting to write its body (except for methods with only one line of code, e.g. most getters and setters).
     - Use a blank line to separate logical blocks of code within a method.
     - Apart from those, don't use blank lines where they are not necessarily needed to keep the code compact and readable.
-    - Don't use blankl ines after the last statement of a block, but a closing `}` with proper indentation in the next line instead.
+    - Don't use blank lines after the last statement of a block, but a closing `}` with proper indentation in the next line instead.
     - Don't use blank lines between two closing `}`.
 3. You can use `//@formatter:off` and `//@formatter:on` to encapsulate code blocks that you don't want automatic code formatting to be applied to, e.g. because it would mess up readability. Please only use this if really needed and try to use proper indentation nonetheless.
 4. Separate code and comments, i.e. write the comment in a separate line before the statement that you want to explain.
