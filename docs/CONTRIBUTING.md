@@ -27,7 +27,7 @@ There are four types of issues based on our available templates:
 
 Bug reports cover everything that leads to the application behaving in an unintended way, including crashes, unexpected error messages, data loss, etc. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead.
 
-* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible.
+* **Bug Description:** A description of what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you.
 * **Steps to Reproduce:** If possible, provide a step-by-step instruction on the order of actions you performed before the bug occurred. This helps us to reproduce it on our system. Generally *optional*, but likely necessary for more complex bugs.
 * **Expected Behavior:** Quickly describe what you believe should have happened instead of the error you got. *Optional* when the error is identified by a crash or an error message, but likely necessary if the bug is the result of a misbehavior of the application.
 * **Screenshots:** If possible, make at least one screenshot of the bug and include it in your bug report. You can do this by simply dragging-and-dropping the image file into the template you're filling out. *Optional*, but very helpful for us.
@@ -38,7 +38,7 @@ Bug reports cover everything that leads to the application behaving in an uninte
 
 Change requests cover features that are already part of SORMAS. This primarily includes aspects (or whole features) for which you would like to request an altered behavior, but also small extensions (e.g. additional values being added to a dropdown field).
 
-* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now, so we know the subject of the issue.
+* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, namig it briefly might be enough. If it is about a very specific detail of said feature, please try to be a bit more specific.
 * **Problem Description:** Tell us why you want us to change the feature and what you believe is wrong or could be improved about the way it is currently designed.
 * **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature and what the expected outcome of your request should look like.
 * **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
