@@ -50,6 +50,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -90,7 +91,7 @@ public class LabMessageController {
 		layout.setMargin(true);
 
 		Window window = VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
-		LabMessageEditForm form = new LabMessageEditForm(true, newDto.isProcessed(), () -> {
+		LabMessageEditForm form = new LabMessageEditForm(true, newDto.getStatus(), () -> {
 			window.close();
 			onShare.run();
 		});
@@ -668,7 +669,7 @@ public class LabMessageController {
 		boolean entityCreated) {
 
 		addProcessedInMeantimeCheck(createComponent, labMessageDto, entityCreated);
-		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
+		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.getStatus(), null);
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
@@ -693,7 +694,7 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto) {
-		labMessageDto.setProcessed(true);
+		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}

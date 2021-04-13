@@ -7107,3 +7107,18 @@ ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_community_id FOREIGN
 ALTER TABLE community ADD COLUMN growthRate real;
 INSERT INTO schema_version (version_number, comment) VALUES (357, 'Add Community reference to PopulationData entity #4271');
 -- *** Insert new sql commands BEFORE this line ***
+
+-- 2021-04-12 [DEMIS Interface] Introduce option to reject lab messages #4851
+
+ALTER TABLE labmessage ADD COLUMN status varchar(255);
+
+UPDATE labmessage SET status = CASE WHEN processed=true THEN 'PROCESSED'
+                                    ELSE 'UNPROCESSED'
+                                END;
+ALTER TABLE labmessage
+    ALTER COLUMN status SET NOT NULL,
+    DROP COLUMN processed;
+
+INSERT INTO schema_version (version_number, comment) VALUES (358, '[DEMIS Interface] Introduce option to reject lab messages #4851');
+
+-- *** Insert new sql commands BEFORE this line ***

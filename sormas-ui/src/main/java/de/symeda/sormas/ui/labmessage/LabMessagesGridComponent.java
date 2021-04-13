@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.labmessage;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -11,7 +13,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -61,12 +65,13 @@ public class LabMessagesGridComponent extends VerticalLayout {
 
 		statusButtons = new HashMap<>();
 
-		Button allButton = createAndAddProcessedButton(Captions.all, null, processStatusFilterLayout);
+		Button allButton = createAndAddStatusButton(null, processStatusFilterLayout);
 		activeStatusButton = allButton;
 
-		createAndAddProcessedButton(Captions.labMessageUnprocessed, Boolean.FALSE, processStatusFilterLayout);
-
-		createAndAddProcessedButton(Captions.labMessageProcessed, Boolean.TRUE, processStatusFilterLayout);
+		createAndAddStatusButton(LabMessageStatus.UNPROCESSED, processStatusFilterLayout);
+		createAndAddStatusButton(LabMessageStatus.PROCESSED, processStatusFilterLayout);
+		createAndAddStatusButton(LabMessageStatus.UNCLEAR, processStatusFilterLayout);
+		createAndAddStatusButton(LabMessageStatus.FORWARDED, processStatusFilterLayout);
 
 		return processStatusFilterLayout;
 	}
@@ -88,14 +93,16 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		grid.reload();
 	}
 
-	private Button createAndAddProcessedButton(String captionKey, Boolean processed, HorizontalLayout buttonLayout) {
-		Button button = ButtonHelper.createButton(captionKey, e -> {
-			criteria.processed(processed != null ? Boolean.valueOf(processed) : null);
+	private Button createAndAddStatusButton(@Nullable LabMessageStatus status, HorizontalLayout buttonLayout) {
+		Button button = ButtonHelper.createButton(status == null ? I18nProperties.getCaption(Captions.all) : status.toString(), e -> {
+			criteria.labMessageStatus(status);
 			labMessagesView.navigateTo(criteria);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-		if (processed != null) {
-			button.setData(processed);
+
+		if (status != null) {
+			button.setData(status);
 		}
+
 		button.setCaptionAsHtml(true);
 
 		buttonLayout.addComponent(button);
@@ -108,7 +115,7 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
-			if (b.getData() == criteria.getProcessed()) {
+			if (b.getData() == criteria.getLabMessageStatus()) {
 				activeStatusButton = b;
 			}
 		});
@@ -117,11 +124,9 @@ public class LabMessagesGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-		if (Boolean.TRUE.equals(activeStatusButton.getData())) {
-			grid.getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(true);
-		} else {
-			grid.getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(false);
-		}
+
+		LabMessageStatus activeStatus = (LabMessageStatus) activeStatusButton.getData();
+		grid.updateProcessColumnVisibility(activeStatus == null || activeStatus.isProcessable());
 	}
 
 	public void updateFilterComponents() {

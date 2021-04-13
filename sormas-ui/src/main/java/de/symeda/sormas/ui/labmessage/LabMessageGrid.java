@@ -22,14 +22,13 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.LabMessageStatusRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageCriteria> {
 
-	public static final String SHOW_MESSAGE = "show_message";
-	public static final String COLUMN_PROCESS = "process";
+	private static final String COLUMN_PROCESS = "process";
+	private static final String SHOW_MESSAGE = "show_message";
 
 	public LabMessageGrid(LabMessageCriteria criteria) {
 		super(LabMessageIndexDto.class);
@@ -55,9 +54,9 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
 
-		addComponentColumn(indexDto -> indexDto.isProcessed() ? null : ButtonHelper.createButton(Captions.labMessageProcess, e -> {
+		addComponentColumn(indexDto -> indexDto.getStatus().isProcessable() ? ButtonHelper.createButton(Captions.labMessageProcess, e -> {
 			ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid());
-		}, ValoTheme.BUTTON_PRIMARY)).setId(COLUMN_PROCESS);
+		}, ValoTheme.BUTTON_PRIMARY) : null).setId(COLUMN_PROCESS);
 
 		setColumns(
 			SHOW_MESSAGE,
@@ -70,13 +69,12 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			LabMessageIndexDto.PERSON_FIRST_NAME,
 			LabMessageIndexDto.PERSON_LAST_NAME,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
-			LabMessageIndexDto.PROCESSED,
+			LabMessageIndexDto.STATUS,
 			COLUMN_PROCESS);
 
 		((Column<LabMessageIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.MESSAGE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		((Column<LabMessageIndexDto, Boolean>) getColumn(LabMessageIndexDto.PROCESSED)).setRenderer(new LabMessageStatusRenderer());
 
 		getColumn(COLUMN_PROCESS).setSortable(false);
 
@@ -101,5 +99,9 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		}
 
 		getDataProvider().refreshAll();
+	}
+
+	public void updateProcessColumnVisibility(boolean visible) {
+		getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(!visible);
 	}
 }

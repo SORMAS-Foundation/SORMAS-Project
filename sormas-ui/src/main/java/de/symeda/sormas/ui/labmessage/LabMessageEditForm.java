@@ -15,6 +15,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -35,13 +36,14 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	private final boolean readOnly;
 	private Label labMessageDetails;
 
-	public LabMessageEditForm(boolean readOnly, boolean isProcessed, Runnable shareCallback) {
+	public LabMessageEditForm(boolean readOnly, LabMessageStatus labMessageStatus, Runnable shareCallback) {
 
 		super(LabMessageDto.class, LabMessageDto.I18N_PREFIX);
 
 		this.readOnly = readOnly;
 
-		boolean shareEnabled = !isProcessed && shareCallback != null && FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		boolean shareEnabled =
+			labMessageStatus == LabMessageStatus.UNPROCESSED && shareCallback != null && FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (shareEnabled) {
 			addShareButton(shareCallback);
 		}
