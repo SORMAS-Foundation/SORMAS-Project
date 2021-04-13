@@ -1,0 +1,35 @@
+name: Publish GitHub Pages
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    name: Deploy page
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development
+        uses: actions/checkout@v1
+      - name: Copy files
+        run: |
+          cp README.md docs/index.md
+          # remove wrong path prefix
+          sed -i -e 's/docs\///g' docs/index.md
+
+          mkdir docs/sormas-rest/
+          cp sormas-rest/README.md docs/sormas-rest/
+
+          mkdir docs/sormas-cargoserver/
+          cp sormas-cargoserver/README.md docs/sormas-cargoserver/
+
+          mkdir docs/sormas-keycloak-service-provider/
+          cp sormas-keycloak-service-provider/README.md docs/sormas-keycloak-service-provider/
+
+          mkdir -p docs/sormas-base/doc/
+          cp sormas-base/doc/keycloak.md docs/sormas-base/doc/
+
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1056,7 +1056,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			caseIncidencePossible = !hasIncidenceIncompatibleFilter() && !visualizationComponent.hasIncidenceIncompatibleGrouping();
 			missingPopulationDataNames = null;
 
-			if (caseIncidencePossible && !visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping()) {
+			if (caseIncidencePossible && !visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping() && !visualizationComponent.hasCommunityGrouping()) {
 				// we don't have a territorial grouping, so the system will sum up the population of all regions.
 				// make sure the user is informed about regions with missing population data
 
@@ -1167,8 +1167,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.JURISDICTION) {
 				StatisticsFilterJurisdictionElement filterElement = (StatisticsFilterJurisdictionElement) filterComponent.getFilterElement();
-				if (CollectionUtils.isNotEmpty(filterElement.getSelectedCommunities())
-					|| CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
+				if (CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
 					return true;
 				}
 			}

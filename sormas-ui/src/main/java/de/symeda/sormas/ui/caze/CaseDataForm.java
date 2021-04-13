@@ -149,6 +149,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
 	private static final String CASE_CONFIRMATION_BASIS = Captions.CaseData_caseConfirmationBasis;
+	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -177,8 +178,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE)),
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
+					fluidRowLocs(CaseDataDto.RE_INFECTION, CaseDataDto.PREVIOUS_INFECTION_DATE) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
-					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORTING_DISTRICT, "") +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
@@ -187,10 +188,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
-					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
-					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
-					fluidRowLocs(CaseDataDto.RE_INFECTION, CaseDataDto.PREVIOUS_INFECTION_DATE) +
+					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
@@ -206,6 +206,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
+					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
 					fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
 					fluidRowLocs(CaseDataDto.VACCINE, "") +
@@ -216,7 +217,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.VACCINE_INN, CaseDataDto.VACCINE_BATCH_NUMBER) +
 					fluidRowLocs(CaseDataDto.VACCINE_UNII_CODE, CaseDataDto.VACCINE_ATC_CODE) +
 					fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
-					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
+					fluidRowLocs(6, CaseDataDto.CLINICIAN_NAME) +
 					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 					loc(CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC) +
@@ -224,14 +225,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			;
 
-	private static final String FOLLOWUP_LAYOUT =
-			loc(FOLLOW_UP_STATUS_HEADING_LOC) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-					fluidRowLocs(4, CaseDataDto.FOLLOW_UP_UNTIL, 8, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
+    private static final String FOLLOWUP_LAYOUT =
+            loc(FOLLOW_UP_STATUS_HEADING_LOC) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 
 	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
-			loc(PAPER_FORM_DATES_LOC) +
+			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
+					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	//@formatter:on
@@ -252,6 +255,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
+	private TextField expectedUntilDate;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
@@ -688,12 +692,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField dfFollowUpUntil = null;
 		if (caseFollowUpEnabled) {
 			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
+			addField(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE);
+			addField(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
+			expectedUntilDate = new TextField();
+			expectedUntilDate.setCaption(I18nProperties.getCaption(Captions.CaseData_expectedFollowUpUntil));
+			getContent().addComponent(expectedUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
+
 			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
-			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
+			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
 			FieldHelper.setRequiredWhen(
 				getFieldGroup(),
@@ -712,6 +722,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
 				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
 				Arrays.asList(Boolean.TRUE));
+			FieldHelper.setVisibleWhenSourceNotNull(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER),
+				CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+				true);
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil));
@@ -1471,6 +1486,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
 		} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		}
+
+		if (caseFollowUpEnabled) {
+			expectedUntilDate.setValue(
+				DateHelper.formatLocalDate(
+					CaseLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByCase(getValue().toReference())),
+					I18nProperties.getUserLanguage()));
+			expectedUntilDate.setReadOnly(true);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.

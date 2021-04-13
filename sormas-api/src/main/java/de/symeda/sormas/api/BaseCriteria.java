@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import de.symeda.sormas.api.caze.CaseCriteriaDateType;
+import de.symeda.sormas.api.caze.CaseCriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -65,6 +67,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = String.valueOf(value);
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
 						stringValue = ((EpiWeek) value).toUrlString();
+					} else if (CaseCriteriaDateType.class.isAssignableFrom(type)) {
+						stringValue = CaseCriteriaDateTypeHelper.toUrlString((CaseCriteriaDateType) value);
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -171,6 +175,8 @@ public abstract class BaseCriteria implements Serializable {
 						value = Integer.valueOf(fieldParams.get(0));
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
 						value = EpiWeek.fromUrlString(fieldParams.get(0));
+					} else if (CaseCriteriaDateType.class.isAssignableFrom(type)) {
+						value = CaseCriteriaDateTypeHelper.valueOf(fieldParams.get(0));
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
