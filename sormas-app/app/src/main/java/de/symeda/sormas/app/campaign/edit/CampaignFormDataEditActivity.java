@@ -19,15 +19,26 @@
 package de.symeda.sormas.app.campaign.edit;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormData> {
+
+    private AsyncTask saveTask;
 
     public static void startActivity(Context context, String rootUuid) {
         BaseActivity.startActivity(context, CampaignFormDataEditActivity.class, buildBundle(rootUuid));
@@ -40,17 +51,44 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
 
     @Override
     protected CampaignFormData buildRootEntity() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, CampaignFormData activityRootData) {
-        return null;
+        return CampaignFormDataEditFragment.newInstance(activityRootData);
     }
 
     @Override
     public void saveData() {
 
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
+            return; // don't save multiple times
+        }
+
+        CampaignFormData campaignFormDataToSave = getStoredRootEntity();
+        campaignFormDataToSave.setFormValues(campaignFormDataToSave.getFormValues());
+
+        saveTask = new SavingAsyncTask(getRootView(), campaignFormDataToSave) {
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                DatabaseHelper.getCampaignFormDataDao().saveAndSnapshot(campaignFormDataToSave);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                super.onPostExecute(taskResult);
+
+                if (taskResult.getResultStatus().isSuccess()) {
+                    finish();
+                } else {
+                    onResume(); // reload data
+                }
+                saveTask = null;
+            }
+        }.executeOnThreadPool();
     }
 
     @Override
@@ -60,6 +98,14 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
 
     @Override
     protected int getActivityTitle() {
-        return 0;
+        return R.string.heading_campaign_form_data_edit;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (saveTask != null && !saveTask.isCancelled())
+            saveTask.cancel(true);
     }
 }

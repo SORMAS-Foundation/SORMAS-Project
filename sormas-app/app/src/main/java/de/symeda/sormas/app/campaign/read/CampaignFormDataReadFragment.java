@@ -129,7 +129,10 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
     @Override
     protected void onLayoutBinding(FragmentCampaignDataReadLayoutBinding contentBinding) {
+        record.setArea(record.getRegion().getArea());
         contentBinding.setData(record);
+
+//        contentBinding.campaignFormDataArea.setValue(record.getArea());
     }
 
     @Override

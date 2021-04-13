@@ -55,6 +55,7 @@ public class AreaDtoHelper extends AdoDtoHelper<Area, AreaDto> {
 
     @Override
     protected void fillInnerFromDto(Area area, AreaDto dto) {
+        area.setName(dto.getName());
         area.setExternalId(dto.getExternalId());
         area.setArchived(dto.isArchived());
     }

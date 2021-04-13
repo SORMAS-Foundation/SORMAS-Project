@@ -18,5 +18,229 @@
 
 package de.symeda.sormas.app.campaign.edit;
 
-public class CampaignFormDataEditFragment {
+import android.content.Context;
+import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.app.BaseEditFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
+import de.symeda.sormas.app.databinding.FragmentCampaignDataEditLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+
+public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampaignDataEditLayoutBinding, CampaignFormData, CampaignFormData> {
+
+    private CampaignFormData record;
+    private List<Item> initialCampaigns;
+    private List<Item> initialAreas;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
+    private List<Item> initialCommunities;
+
+    public static BaseEditFragment newInstance(CampaignFormData activityRootData) {
+        return newInstance(
+                CampaignFormDataEditFragment.class,
+                null,
+                activityRootData);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
+
+        final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
+        final List<CampaignFormDataEntry> formValues = record.getFormValues();
+        final Map<String, String> formValuesMap = new HashMap<>();
+        formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue().toString()));
+
+        for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
+            CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
+
+            if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
+                String value = formValuesMap.get(campaignFormElement.getId());
+                if (value != null) {
+                    ControlPropertyField dynamicField = null;
+                    if (type == CampaignFormElementType.YES_NO) {
+                        dynamicField = createControlCheckBoxField(campaignFormElement);
+                        ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
+                    } else {
+                        dynamicField = createControlTextEditField(campaignFormElement);
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
+                    }
+                    dynamicField.setShowCaption(true);
+                    dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                    dynamicField.addValueChangedListener(field -> {
+                        final CampaignFormDataEntry campaignFormDataEntry = getCampaignFormDataEntry(formValues, campaignFormElement);
+                        campaignFormDataEntry.setValue(field.getValue());
+                    });
+                } else {
+                    Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
+                }
+            }
+        }
+        return view;
+    }
+
+    private CampaignFormDataEntry getCampaignFormDataEntry(List<CampaignFormDataEntry> formValues, CampaignFormElement campaignFormElement) {
+        for (CampaignFormDataEntry campaignFormDataEntry : formValues) {
+            if (campaignFormDataEntry.getId().equals(campaignFormElement.getId())) {
+                return campaignFormDataEntry;
+            }
+        }
+        Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
+        throw new RuntimeException("No form value for element id : " + campaignFormElement.getId());
+    }
+
+    @Override
+    public int getEditLayout() {
+        return R.layout.fragment_campaign_data_edit_layout;
+    }
+
+    @Override
+    public CampaignFormData getPrimaryData() {
+        return record;
+    }
+
+    @Override
+    protected void prepareFragmentData() {
+        record = getActivityRootData();
+
+        initialCampaigns = DataUtils.toItems(DatabaseHelper.getCampaignDao().queryActiveForAll());
+
+        initialAreas = InfrastructureDaoHelper.loadAreas();
+        initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+        initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
+        initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
+    }
+
+    @Override
+    protected void onLayoutBinding(FragmentCampaignDataEditLayoutBinding contentBinding) {
+        record.setArea(record.getRegion().getArea());
+        contentBinding.setData(record);
+
+        Item campaignItem = record.getCampaign() != null ? DataUtils.toItem(record.getCampaign()) : null;
+
+        if (campaignItem != null && !initialCampaigns.contains(campaignItem)) {
+            initialCampaigns.add(campaignItem);
+        }
+
+        contentBinding.campaignFormDataCampaign.initializeSpinner(initialCampaigns, record.getCampaign());
+
+        InfrastructureDaoHelper.initializeRegionAreaFields(
+                contentBinding.campaignFormDataArea,
+                initialAreas,
+                record.getArea(),
+                contentBinding.campaignFormDataRegion,
+                initialRegions,
+                record.getRegion(),
+                contentBinding.campaignFormDataDistrict,
+                initialDistricts,
+                record.getDistrict(),
+                contentBinding.campaignFormDataCommunity,
+                initialCommunities,
+                record.getCommunity());
+    }
+
+    @Override
+    protected void onAfterLayoutBinding(FragmentCampaignDataEditLayoutBinding contentBinding) {
+        super.onAfterLayoutBinding(contentBinding);
+
+        contentBinding.campaignFormDataFormDate.initializeDateField(getFragmentManager());
+    }
+
+    private ControlTextEditField createControlTextEditField(CampaignFormElement campaignFormElement) {
+        return new ControlTextEditField(requireContext()) {
+            @Override
+            protected String getPrefixDescription() {
+                return campaignFormElement.getCaption();
+            }
+
+            @Override
+            protected String getPrefixCaption() {
+                return campaignFormElement.getCaption();
+            }
+
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
+
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            public int getMaxLines() {
+                return 1;
+            }
+
+            @Override
+            public int getMaxLength() {
+                return EntityDto.COLUMN_LENGTH_DEFAULT;
+            }
+
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initInput();
+            }
+        };
+    }
+
+    private ControlCheckBoxField createControlCheckBoxField(CampaignFormElement campaignFormElement) {
+        return new ControlCheckBoxField(requireContext()) {
+            @Override
+            protected String getPrefixDescription() {
+                return campaignFormElement.getCaption();
+            }
+
+            @Override
+            protected String getPrefixCaption() {
+                return campaignFormElement.getCaption();
+            }
+
+            @Override
+            public int getTextAlignment() {
+                return View.TEXT_ALIGNMENT_VIEW_START;
+            }
+
+            @Override
+            public int getGravity() {
+                return Gravity.CENTER_VERTICAL;
+            }
+
+            @Override
+            protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+                super.inflateView(context, attrs, defStyle);
+                initLabel();
+                initInput();
+            }
+        };
+    }
 }

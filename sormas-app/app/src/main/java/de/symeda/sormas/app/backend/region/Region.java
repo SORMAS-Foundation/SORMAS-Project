@@ -38,6 +38,7 @@ public class Region extends InfrastructureAdo {
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
 	public static final String COUNTRY = "country";
+	public static final String AREA = "area";
 
 	@Column
 	private String name;
