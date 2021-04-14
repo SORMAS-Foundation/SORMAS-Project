@@ -137,7 +137,7 @@
 							<outputFilename>external_visits_API</outputFilename>
 							<swaggerConfig>
 								<info>
-									<title>SORMAS external symptom journal API</title>
+									<title>SORMAS external visits journal API</title>
 									<description>
 										The purpose of this API is to enable communication between SORMAS and other symptom journals. Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. For technical details please contact the dev team on gitter. Authentication is done using basic auth, with the user and password.
 									</description>
