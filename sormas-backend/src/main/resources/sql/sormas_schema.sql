@@ -7136,6 +7136,6 @@ ALTER TABLE labmessage
     ALTER COLUMN status SET NOT NULL,
     DROP COLUMN processed;
 
-INSERT INTO schema_version (version_number, comment) VALUES (358, '[DEMIS Interface] Introduce option to reject lab messages #4851');
+INSERT INTO schema_version (version_number, comment) VALUES (359, '[DEMIS Interface] Introduce option to reject lab messages #4851');
 
 -- *** Insert new sql commands BEFORE this line ***

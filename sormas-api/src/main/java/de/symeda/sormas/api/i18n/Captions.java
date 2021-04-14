@@ -66,6 +66,7 @@ public interface Captions {
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
+	String actionManualForwardLabMessage = "actionManualForwardLabMessage";
 	String actionMerge = "actionMerge";
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
@@ -85,6 +86,7 @@ public interface Captions {
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
+	String actionUnclearLabMessage = "actionUnclearLabMessage";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
@@ -1221,11 +1223,11 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
-	String LabMessage_processed = "LabMessage.processed";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
+	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testDateTime = "LabMessage.testDateTime";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
 	String LabMessage_testLabCity = "LabMessage.testLabCity";
@@ -1237,8 +1239,6 @@ public interface Captions {
 	String labMessageFetch = "labMessageFetch";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
-	String labMessageProcessed = "labMessageProcessed";
-	String labMessageUnprocessed = "labMessageUnprocessed";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";

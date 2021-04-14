@@ -179,7 +179,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	public void deleteLabMessages(List<String> uuids) {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		for (LabMessage labMessage : labMessages) {
-			if (!labMessage.isProcessed()) {
+			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
 				labMessageService.delete(labMessage);
 			}
 		}
