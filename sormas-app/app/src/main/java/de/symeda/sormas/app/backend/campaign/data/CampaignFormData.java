@@ -49,6 +49,8 @@ public class CampaignFormData extends PseudonymizableAdo {
 
     public static final String CAMPAIGN = "campaign";
     public static final String FORM_DATE = "formDate";
+	public static final String CAMPAIGN_FORM_META = "campaignformmeta";
+	public static final String FORM_DATE = "formDate";
 
     @Column(name = "formValues")
     private String formValuesJson;
