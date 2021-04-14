@@ -69,6 +69,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
         model.getCampaigns().observe(this, campaigns -> {
             adapter.submitList(campaigns);
+            setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
             hidePreloader();
         });
 
@@ -132,7 +133,6 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
             Campaign campaign = (Campaign) e.getValue();
             List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
             filterBinding.campaignFormFilter.initializeSpinner(forms);
-            setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
         });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);
@@ -140,16 +140,19 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         filterBinding.applyFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
+            setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
             model.notifyCriteriaUpdated();
         });
 
         filterBinding.resetFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
-            model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
+            Campaign lastCampaign = DatabaseHelper.getCampaignDao().getLastStartedCampaign();
+            model.getCriteria().setCampaign(lastCampaign);
             model.getCriteria().setCampaignFormMeta(null);
             filterBinding.invalidateAll();
             filterBinding.executePendingBindings();
+            setSetSubHeadingTitleForCampaign(lastCampaign);
             model.notifyCriteriaUpdated();
         });
     }
@@ -170,5 +173,9 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
             listOut.add(new Item<>(campaignFormMeta.getFormName(), campaignFormMeta));
         }
         return listOut;
+    }
+
+    private void setSetSubHeadingTitleForCampaign(Campaign campaign) {
+        setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
     }
 }
