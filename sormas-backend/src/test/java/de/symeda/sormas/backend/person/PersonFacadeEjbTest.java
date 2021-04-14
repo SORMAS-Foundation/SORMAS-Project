@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -60,7 +61,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() {
+	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() throws ExternalSurveillanceToolException {
 		final RDCFEntities rdcf = creator.createRDCFEntities();
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 

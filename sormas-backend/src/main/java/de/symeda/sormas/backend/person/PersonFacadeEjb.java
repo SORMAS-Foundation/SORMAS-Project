@@ -349,6 +349,20 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
+		if (source.getPersonContactDetails()
+			.stream()
+			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.PHONE)
+			.count()
+			> 1) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryPhoneNumbers));
+		}
+		if (source.getPersonContactDetails()
+			.stream()
+			.filter(cd -> cd.isPrimaryContact() && cd.getPersonContactDetailType() == PersonContactDetailType.EMAIL)
+			.count()
+			> 1) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
+		}
 	}
 
 	//@formatter:off

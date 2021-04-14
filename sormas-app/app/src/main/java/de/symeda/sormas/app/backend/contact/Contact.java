@@ -246,6 +246,10 @@ public class Contact extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
+	@DatabaseField
+	private Date followUpStatusChangeDate;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User followUpStatusChangeUser;
 
 	// TODO [vaccination info] integrate vaccination info
 //	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -841,6 +845,22 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 
 	// TODO [vaccination info] integrate vaccination info

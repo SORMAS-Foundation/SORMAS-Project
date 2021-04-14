@@ -126,6 +126,8 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	public static final String VACCINATION_INFO = "vaccinationInfo";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -275,6 +277,8 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private DistrictReferenceDto reportingDistrict;
 
 	private VaccinationInfoDto vaccinationInfo;
+	private Date followUpStatusChangeDate;
+	private UserReferenceDto followUpStatusChangeUser;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -904,5 +908,21 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	public void setVaccinationInfo(VaccinationInfoDto vaccinationInfo) {
 		this.vaccinationInfo = vaccinationInfo;
+	}
+
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public UserReferenceDto getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(UserReferenceDto followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

@@ -40,7 +40,7 @@ public interface ExternalSurveillanceToolFacade {
 
 	void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException;
 
-    int deleteCases(List<CaseDataDto> cases);
+	void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException;
 
-	int deleteEvents(List<EventDto> events);
+	void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException;
 }

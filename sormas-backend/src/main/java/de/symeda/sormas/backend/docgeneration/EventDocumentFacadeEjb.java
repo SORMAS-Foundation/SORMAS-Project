@@ -2,9 +2,7 @@ package de.symeda.sormas.backend.docgeneration;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;
@@ -13,11 +11,12 @@ import javax.ejb.Stateless;
 import org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
-import de.symeda.sormas.api.docgeneneration.RootEntityName;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -44,13 +43,14 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	@Override
 	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties)
 		throws DocumentTemplateException {
-		Map<String, Object> entities = new HashMap<>();
-		entities.put(RootEntityName.ROOT_EVENT, eventReference);
+		DocumentTemplateEntities entities = new DocumentTemplateEntities();
+		entities.addEntity(RootEntityType.ROOT_EVENT, eventReference);
 
 		ActionCriteria actionCriteria = new ActionCriteria().event(eventReference);
-		entities.put(RootEntityName.ROOT_EVENT_ACTIONS, actionFacade.getActionList(actionCriteria, null, null));
+		entities.addEntity(RootEntityType.ROOT_EVENT_ACTIONS, actionFacade.getActionList(actionCriteria, null, null));
 
-		entities.put(RootEntityName.ROOT_EVENT_PARTICIPANTS, eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventReference.getUuid()));
+		entities
+			.addEntity(RootEntityType.ROOT_EVENT_PARTICIPANTS, eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventReference.getUuid()));
 
 		String body = documentTemplateFacade.generateDocumentTxtFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
 		return createStyledHtml(templateName, body);

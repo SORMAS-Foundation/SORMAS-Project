@@ -34,6 +34,8 @@ public interface VisitFacade {
 
 	List<VisitDto> getAllActiveVisitsAfter(Date date);
 
+	List<VisitDto> getVisitsByCase(CaseReferenceDto caseRef);
+
 	VisitDto getVisitByUuid(String uuid);
 
 	VisitDto saveVisit(@Valid VisitDto dto);
@@ -61,6 +63,8 @@ public interface VisitFacade {
 		ExportConfigurationDto exportConfiguration);
 
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
+
+	List<VisitDto> getVisitsByContact(ContactReferenceDto contactRef);
 
 	List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end);
 

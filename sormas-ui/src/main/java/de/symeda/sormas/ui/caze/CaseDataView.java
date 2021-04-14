@@ -34,7 +34,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
-import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
+import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -86,7 +86,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SURVEILLANCE_REPORTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CaseDocumentsComponent.QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QuarantineOrderDocumentsComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -175,7 +175,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, getCaseRef());
+		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SURVEILLANCE_REPORTS)) {
 			SurveillanceReportListComponent surveillanceReportList = new SurveillanceReportListComponent(caze.toReference());
@@ -188,7 +188,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, caze);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());
 
 		setCaseEditPermission(container);
 	}
