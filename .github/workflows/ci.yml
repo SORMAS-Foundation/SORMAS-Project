@@ -47,7 +47,7 @@ jobs:
 
             rm -rf openapi
             mkdir openapi/
-            cp sormas-rest/target/swagger.* sormas-rest/target/external_journal_API.* openapi
+            cp sormas-rest/target/swagger.* sormas-rest/target/external_visits_API.* openapi
 
             git add openapi
             git commit -m "[GitHub Actions] Update openAPI spec files"

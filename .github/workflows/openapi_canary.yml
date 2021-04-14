@@ -26,7 +26,7 @@ jobs:
       # --fail-on-incompatible is also possible
       - name: Run OpenAPI Diff for external journal API
         run: |
-          java -jar /app/openapi-diff.jar --fail-on-changed base/openapi/external_journal_API.yaml head/openapi/external_journal_API.yaml
+          java -jar /app/openapi-diff.jar --fail-on-changed base/openapi/external_visits_API.yaml head/openapi/external_visits_API.yaml
 
       - name: Run OpenAPI Diff for complete API
         run: |

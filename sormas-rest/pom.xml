@@ -134,7 +134,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<outputFilename>external_journal_API</outputFilename>
+							<outputFilename>external_visits_API</outputFilename>
 							<swaggerConfig>
 								<info>
 									<title>SORMAS external symptom journal API</title>
