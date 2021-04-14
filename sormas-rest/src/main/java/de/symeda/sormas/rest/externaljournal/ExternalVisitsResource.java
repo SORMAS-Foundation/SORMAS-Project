@@ -36,7 +36,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@GET
 	@Path("/person/{personUuid}")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Get person information", description = "Get some personal data for a specific person")
 	@ApiResponse(
 		description = "A selection of personal data, including first and last name, e-mail, phone number(s) and birth date if available"
@@ -66,7 +65,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@GET
 	@Path("/person/{personUuid}/isValid")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Check person validity", description = "Check if a the Uuid given as parameter exists in SORMAS.",
 		responses = 
 			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.", content = @Content(schema = @Schema(example = "true"))))
@@ -77,7 +75,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	//@formatter:off
 	@POST
 	@Path("/person/{personUuid}/status")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Save symptom journal status",
 		responses = 
 			@ApiResponse(description = "true if the status was set succesfully, false otherwise.",
@@ -104,7 +101,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@POST
 	@Path("/")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Save visits", description = "Upload visits with all symptom and disease related data to SORMAS.")
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
@@ -112,7 +108,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@GET
 	@Path("/version")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Get API version")
 	@ApiResponse(description = "The minimal version needed for compatibility with the external ReST API of SORMAS.",
 		content = @Content(schema = @Schema(type = "string", example = "1.37.0")))
@@ -122,7 +117,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@GET
 	@Path("/followUpEndDates/{since}")
-	@Tag(name = "External Visits Controller")
 	@Operation(summary = "Get follow up end dates",
 		description = "Get latest follow up end date assigned to the specified person. "
 			+ "Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! "
