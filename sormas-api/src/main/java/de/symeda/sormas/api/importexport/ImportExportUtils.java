@@ -120,7 +120,20 @@ public final class ImportExportUtils {
 				}
 			}
 
-			properties.add(new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1]), groupType));
+			// prepare ExportPropertyMetaInfo
+			// In order to get the correct caption, we try to fetch the i18n-prefix of the methods declaring class
+			String i18n_prefix = null;
+			ExportEntity MethodClassEntity = method.getAnnotation(ExportEntity.class);
+			if (MethodClassEntity != null) {
+				try {
+					i18n_prefix = (String) MethodClassEntity.value().getDeclaredField("I18N_PREFIX").get(null);
+				} catch (NoSuchFieldException | IllegalAccessException ex) {
+					// Field doesn't exist or is private
+				}
+			}
+			properties.add(
+				new ExportPropertyMetaInfo(property, propertyCaptionProvider.get(propertyPath[propertyPath.length - 1], i18n_prefix), groupType));
+
 		}
 
 		return properties;
@@ -151,6 +164,6 @@ public final class ImportExportUtils {
 
 	public interface PropertyCaptionProvider {
 
-		String get(String propertyId);
+		String get(String propertyId, String prefixId);
 	}
 }

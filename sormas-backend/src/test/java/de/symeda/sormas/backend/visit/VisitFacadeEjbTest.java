@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -246,7 +247,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveUuids() {
+	public void testGetAllActiveUuids() throws ExternalSurveillanceToolException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
@@ -285,7 +286,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveVisitsAfter() throws InterruptedException {
+	public void testGetAllActiveVisitsAfter() throws InterruptedException, ExternalSurveillanceToolException {
 
 		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		TestDataCreator.RDCF rdcf = creator.createRDCF();

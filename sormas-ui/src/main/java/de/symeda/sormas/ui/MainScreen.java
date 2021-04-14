@@ -52,6 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
+import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -148,6 +149,10 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
+		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
+			ControllerProvider.getPersonController().registerViews(navigator);
+			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
+		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
@@ -190,10 +195,6 @@ public class MainScreen extends HorizontalLayout {
 				AbstractStatisticsView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
-		}
-		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
-			ControllerProvider.getPersonController().registerViews(navigator);
-			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
 		}
 		if (permitted(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
@@ -276,6 +277,7 @@ public class MainScreen extends HorizontalLayout {
 				SamplesView.VIEW_NAME,
 				CampaignsView.VIEW_NAME,
 				CampaignDataView.VIEW_NAME,
+				CampaignStatisticsView.VIEW_NAME,
 				ReportsView.VIEW_NAME,
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,

@@ -56,6 +56,8 @@ public interface Captions {
 	String actionDismiss = "actionDismiss";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionGenerate = "actionGenerate";
+	String actionGenerateNewPassword = "actionGenerateNewPassword";
+	String actionGenerateNewPasswords = "actionGenerateNewPasswords";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllContinents = "actionImportAllContinents";
@@ -72,6 +74,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -144,12 +147,14 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String area = "area";
 	String Area_archived = "Area.archived";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
 	String BAGExport = "BAGExport";
+	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
@@ -174,6 +179,7 @@ public interface Captions {
 	String Campaign_district = "Campaign.district";
 	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
+	String Campaign_grouping = "Campaign.grouping";
 	String Campaign_name = "Campaign.name";
 	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
@@ -249,12 +255,15 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
+	String CaseData_expectedFollowUpUntil = "CaseData.expectedFollowUpUntil";
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_firstVaccinationDate = "CaseData.firstVaccinationDate";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
+	String CaseData_followUpStatusChangeDate = "CaseData.followUpStatusChangeDate";
+	String CaseData_followUpStatusChangeUser = "CaseData.followUpStatusChangeUser";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
@@ -338,6 +347,8 @@ public interface Captions {
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
+	String CaseData_surveillanceToolLastShareDate = "CaseData.surveillanceToolLastShareDate";
+	String CaseData_surveillanceToolShareCount = "CaseData.surveillanceToolShareCount";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
@@ -410,6 +421,9 @@ public interface Captions {
 	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
+	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -528,12 +542,15 @@ public interface Captions {
 	String Contact_endOfQuarantineReason = "Contact.endOfQuarantineReason";
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
+	String Contact_expectedFollowUpUntil = "Contact.expectedFollowUpUntil";
 	String Contact_externalID = "Contact.externalID";
 	String Contact_externalToken = "Contact.externalToken";
 	String Contact_firstContactDate = "Contact.firstContactDate";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
 	String Contact_followUpStatus = "Contact.followUpStatus";
+	String Contact_followUpStatusChangeDate = "Contact.followUpStatusChangeDate";
+	String Contact_followUpStatusChangeUser = "Contact.followUpStatusChangeUser";
 	String Contact_followUpUntil = "Contact.followUpUntil";
 	String Contact_highPriority = "Contact.highPriority";
 	String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
@@ -1045,6 +1062,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String exportUserRoles = "exportUserRoles";
 	String Exposure_animalCondition = "Exposure.animalCondition";
 	String Exposure_animalContactType = "Exposure.animalContactType";
 	String Exposure_animalContactTypeDetails = "Exposure.animalContactTypeDetails";
@@ -1100,6 +1118,7 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
 	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";
@@ -1991,6 +2010,11 @@ public interface Captions {
 	String User_uuid = "User.uuid";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
+	String userRight = "userRight";
+	String UserRight_description = "UserRight.description";
+	String UserRight_jurisdiction = "UserRight.jurisdiction";
+	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
+	String userRights = "userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String VaccinationInfo_firstVaccinationDate = "VaccinationInfo.firstVaccinationDate";
 	String VaccinationInfo_lastVaccinationDate = "VaccinationInfo.lastVaccinationDate";
@@ -2014,6 +2038,8 @@ public interface Captions {
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
+	String View_campaign_campaignstatistics = "View.campaign.campaignstatistics";
+	String View_campaign_campaignstatistics_short = "View.campaign.campaignstatistics.short";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";

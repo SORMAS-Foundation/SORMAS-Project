@@ -56,7 +56,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected FileDownloader fileDownloader;
 	protected DocumentVariables documentVariables;
 
-	public AbstractDocgenerationLayout(String captionTemplateSelector) {
+	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction) {
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -101,7 +101,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 						showTextfields();
 					}
 					performTemplateUpdates();
-					setStreamResource(templateFile);
+					setStreamResource(templateFile, fileNameFunction.apply(templateFile));
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					new Notification(I18nProperties.getString(Strings.errorOccurred), ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
@@ -172,9 +172,8 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		}
 	}
 
-	private void setStreamResource(String templateFile) {
-		String filename = generateFilename(templateFile);
-		StreamResource streamResource = createStreamResource(templateFile, filename);
+	private void setStreamResource(String templateFile, String fileName) {
+		StreamResource streamResource = createStreamResource(templateFile, fileName);
 		if (fileDownloader == null) {
 			fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(createButton);
@@ -188,8 +187,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	}
 
 	protected abstract List<String> getAvailableTemplates();
-
-	protected abstract String generateFilename(String templateFile);
 
 	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException, DocumentTemplateException;
 

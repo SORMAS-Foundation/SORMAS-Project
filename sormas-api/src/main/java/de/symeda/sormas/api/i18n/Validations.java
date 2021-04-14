@@ -113,6 +113,8 @@ public interface Validations {
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
+	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
+	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
 	String required = "required";
 	String softAddEntryToList = "softAddEntryToList";

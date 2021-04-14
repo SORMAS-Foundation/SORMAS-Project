@@ -12,6 +12,7 @@ public enum ExportEntityName {
 	BAG_CASES("entityBagCases", "bag cases"),
 	BAG_CONTACTS("entityBagContacts", "bag contacts"),
 	CAMPAIGN_DATA("entityCampaignData", "campaign data"),
+	CAMPAIGN_STATISTICS("entityCampaignStatistics", "campaign statistics"),
 	CASES("entityCases", "cases"),
 	CASE_MANAGEMENT("entityCaseManagement", "case management"),
 	CASE_VISITS("entityCaseVisits", "case visits"),
@@ -32,7 +33,9 @@ public enum ExportEntityName {
 	POINTS_OF_ENTRY("entityPointsOfEntry", "points of entry"),
 	REGIONS("entityRegions", "regions"),
 	SAMPLES("entitySamples", "samples"),
-	TASKS("entityTasks", "tasks");
+	TASKS("entityTasks", "tasks"),
+	USER_ROLES("entityUserRoles", "user roles"),
+	DOCUMENTS("entityDocuments", "documents");
 
 	private final String languageKey;
 	private final String defaultName;

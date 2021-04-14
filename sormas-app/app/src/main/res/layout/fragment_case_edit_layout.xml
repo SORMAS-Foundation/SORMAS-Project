@@ -194,12 +194,6 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/caseData_bloodOrganOrTissueDonated"
-                    app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@={data.bloodOrganOrTissueDonated}"
-                    style="@style/ControlSingleColumnStyle"/>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -284,6 +278,19 @@
                     android:id="@+id/caseData_diseaseVariant"
                     app:value="@={data.diseaseVariant}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_reInfection"
+                    style="@style/ControlSingleColumnStyle"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.reInfection}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_previousInfectionDate"
+                    style="@style/ControlSingleColumnStyle"
+                    app:dependencyParentField="@{caseDataReInfection}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.previousInfectionDate}" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
@@ -480,19 +487,6 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/caseData_reInfection"
-                    style="@style/ControlSingleColumnStyle"
-                    app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@={data.reInfection}" />
-
-                <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/caseData_previousInfectionDate"
-                    style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{caseDataReInfection}"
-                    app:dependencyParentValue="@{YesNoUnknown.YES}"
-                    app:value="@={data.previousInfectionDate}" />
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_quarantineHomePossible"
                     app:value="@={data.quarantineHomePossible}"
                     style="@style/ControlSingleColumnStyle" />
@@ -672,6 +666,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/heading_additional_medical_information"
                     style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_bloodOrganOrTissueDonated"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.bloodOrganOrTissueDonated}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_pregnant"

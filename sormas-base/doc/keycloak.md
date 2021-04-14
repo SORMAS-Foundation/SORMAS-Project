@@ -12,7 +12,7 @@ To set up Keycloak check the guide here [Keycloak Setup](../../SERVER_SETUP.md#k
 ## SORMAS Realm
 
 The SORMAS Realm in Keycloak contains all the configuration which are specific to the SORMAS Project.
-All the configuration is part of the [SORMAS.json](../setup/keycloak/SORMAS.json) file.
+All the configuration is part of the `setup/keycloak/SORMAS.json` file.
 
 ### Configuration summary
 

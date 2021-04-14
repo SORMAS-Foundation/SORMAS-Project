@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.docgeneneration;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.Remote;
@@ -12,14 +11,14 @@ public interface DocumentTemplateFacade {
 	byte[] generateDocumentDocxFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, Object> entities,
+		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
 	String generateDocumentTxtFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, Object> entities,
+		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
