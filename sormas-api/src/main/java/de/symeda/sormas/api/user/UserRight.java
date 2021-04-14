@@ -1333,7 +1333,10 @@ public enum UserRight {
 	LAB_MESSAGES(
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR
-	);
+	),
+	PERFORM_BULK_OPERATIONS_LAB_MESSAGES(
+			NATIONAL_USER
+	);	
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;
