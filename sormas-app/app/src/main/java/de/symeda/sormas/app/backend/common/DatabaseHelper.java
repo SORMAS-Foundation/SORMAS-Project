@@ -2119,10 +2119,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 294:
 				currentVersion = 294;
-				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followupstatuschangedate timestamp without time zone;");
-				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followupstatuschangeuser_id BIGINT REFERENCES users(id);");
-				getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN followupstatuschangedate timestamp without time zone;");
-				getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN followupstatuschangeuser_id BIGINT REFERENCES users(id);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
 
 				// ATTENTION: break should only be done after last version
 				break;

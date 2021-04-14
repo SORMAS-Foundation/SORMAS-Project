@@ -20,7 +20,6 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -39,9 +38,8 @@ public final class ContactLogic {
 		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}
 
-	public static Date getFollowUpUntilDate(ContactDto contact, List<VisitDto> visits) {
+	public static Date getFollowUpUntilDate(ContactDto contact, List<VisitDto> visits, int followUpDuration) {
 
-		int followUpDuration = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(contact.getDisease());
 		Date beginDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 		Date untilDate = contact.isOverwriteFollowUpUntil()
 			|| (contact.getFollowUpUntil() != null && contact.getFollowUpUntil().after(DateHelper.addDays(beginDate, followUpDuration)))
@@ -77,7 +75,7 @@ public final class ContactLogic {
 					&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
 					&& DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper.addDays(beginDate, followUpDuration))) {
 					additionalVisitNeeded = false;
-					untilDate = DateHelper.addDays(untilDate, followUpDuration);
+					untilDate = DateHelper.addDays(beginDate, followUpDuration);
 				}
 			}
 		}
