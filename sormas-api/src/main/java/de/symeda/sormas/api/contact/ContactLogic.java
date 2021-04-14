@@ -75,7 +75,7 @@ public final class ContactLogic {
 					&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
 					&& DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper.addDays(beginDate, followUpDuration))) {
 					additionalVisitNeeded = false;
-					untilDate = DateHelper.addDays(untilDate, followUpDuration);
+					untilDate = DateHelper.addDays(beginDate, followUpDuration);
 				}
 			}
 		}
