@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.icons.VaadinIcons;
@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,6 +44,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -68,6 +70,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String SAMPLES_LOC = "samples";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String EVENTS_LOC = "events";
+	public static final String DOCUMENTS_LOC = "documents";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -88,6 +91,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DOCUMENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CaseDocumentsComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -242,6 +246,12 @@ public class ContactDataView extends AbstractContactView {
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.CONTACT, getContactRef(), UserRight.CONTACT_EDIT, contactDto.isPseudonymized());
+			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
 		CaseDocumentsComponent.addComponentToLayout(layout, contactDto);
