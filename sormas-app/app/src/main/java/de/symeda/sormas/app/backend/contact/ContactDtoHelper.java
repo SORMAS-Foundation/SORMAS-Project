@@ -166,6 +166,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getFollowUpStatusChangeUser()));
 
 		// TODO [vaccination info] integrate vaccination info
 //		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
@@ -312,6 +314,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setReportingDistrict(null);
 		}
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
 
 		// TODO [vaccination info] integrate vaccination info
 //		if (source.getVaccinationInfo() != null) {

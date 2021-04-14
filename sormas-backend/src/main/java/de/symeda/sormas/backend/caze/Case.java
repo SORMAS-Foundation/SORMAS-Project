@@ -220,6 +220,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
 	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 
 	private Person person;
 	private String description;
@@ -384,6 +386,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	 * Blood/organ/tissue donation in the last 6 months
 	 */
 	private YesNoUnknown bloodOrganOrTissueDonated;
+	private Date followUpStatusChangeDate;
+	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -1653,5 +1657,23 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalShares(List<ExternalShareInfo> externalShares) {
 		this.externalShares = externalShares;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

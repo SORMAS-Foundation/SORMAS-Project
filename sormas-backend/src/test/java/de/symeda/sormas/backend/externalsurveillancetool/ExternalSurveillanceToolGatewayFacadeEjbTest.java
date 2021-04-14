@@ -143,12 +143,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	@Test
 	public void testDeleteEventsNotFound() throws ExternalSurveillanceToolException {
 		stubFor(
-			post(urlEqualTo("/delete")).withRequestBody(containing("Test"))
-				.withRequestBody(containing("Description"))
-				.withRequestBody(containing("John"))
-				.withRequestBody(containing("Doe"))
-				.withRequestBody(containing("123456"))
-				.withRequestBody(containing("events"))
+			post(urlEqualTo("/delete")).withRequestBody(containing("xyz"))
+				.withRequestBody(containing("nope"))
+				.withRequestBody(containing("Jane"))
+				.withRequestBody(containing("D"))
+				.withRequestBody(containing("111222333"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		EventDto event = createEventDto("xyz", "nope", "Jane", "D", "111222333");

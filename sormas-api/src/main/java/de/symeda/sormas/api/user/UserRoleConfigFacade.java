@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
@@ -46,4 +47,6 @@ public interface UserRoleConfigFacade {
 	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
 
 	Set<UserRole> getEnabledUserRoles();
+
+	Map<UserRole, Set<UserRight>> getAllAsMap();
 }

@@ -1745,7 +1745,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
-			caseService.updateFollowUpUntilAndStatus(caze);
+			caseService.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
 
 			onCaseChanged(existingCaseDto, caze);
 		}
@@ -1986,11 +1986,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			// Update follow-up until and status of all contacts
 			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
-				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.updateFollowUpDetails(contact, false);
 				contactService.udpateContactStatus(contact);
 			}
 			for (Contact contact : contactService.getAllByResultingCase(newCase)) {
-				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.updateFollowUpDetails(contact, false);
 				contactService.udpateContactStatus(contact);
 			}
 		}
@@ -2665,6 +2665,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		if (source.getFollowUpStatusChangeUser() != null) {
+			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
+		}
 
 		return target;
 	}
@@ -2806,6 +2810,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setFollowUpStatus(source.getFollowUpStatus());
 			target.setFollowUpUntil(source.getFollowUpUntil());
 			target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+			target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+			target.setFollowUpStatusChangeUser(userService.getByReferenceDto(source.getFollowUpStatusChangeUser()));
 		}
 
 		target.setCaseIdIsm(source.getCaseIdIsm());

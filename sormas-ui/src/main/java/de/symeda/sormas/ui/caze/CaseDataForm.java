@@ -149,6 +149,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
 	private static final String CASE_CONFIRMATION_BASIS = Captions.CaseData_caseConfirmationBasis;
+	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -224,11 +225,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			;
 
-	private static final String FOLLOWUP_LAYOUT =
-			loc(FOLLOW_UP_STATUS_HEADING_LOC) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-					fluidRowLocs(4, CaseDataDto.FOLLOW_UP_UNTIL, 8, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
+    private static final String FOLLOWUP_LAYOUT =
+            loc(FOLLOW_UP_STATUS_HEADING_LOC) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
+                    fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 
 	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
@@ -253,6 +255,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
+	private TextField expectedUntilDate;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
@@ -689,12 +692,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField dfFollowUpUntil = null;
 		if (caseFollowUpEnabled) {
 			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
+			addField(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE);
+			addField(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
+			expectedUntilDate = new TextField();
+			expectedUntilDate.setCaption(I18nProperties.getCaption(Captions.CaseData_expectedFollowUpUntil));
+			getContent().addComponent(expectedUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
+
 			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
-			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
+			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
 			FieldHelper.setRequiredWhen(
 				getFieldGroup(),
@@ -713,6 +722,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
 				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
 				Arrays.asList(Boolean.TRUE));
+			FieldHelper.setVisibleWhenSourceNotNull(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER),
+				CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+				true);
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil));
@@ -1472,6 +1486,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
 		} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
 			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		}
+
+		if (caseFollowUpEnabled) {
+			expectedUntilDate.setValue(
+				DateHelper.formatLocalDate(
+					CaseLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByCase(getValue().toReference())),
+					I18nProperties.getUserLanguage()));
+			expectedUntilDate.setReadOnly(true);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
