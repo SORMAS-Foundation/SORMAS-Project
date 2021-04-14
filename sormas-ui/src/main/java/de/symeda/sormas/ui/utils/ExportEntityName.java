@@ -34,7 +34,8 @@ public enum ExportEntityName {
 	REGIONS("entityRegions", "regions"),
 	SAMPLES("entitySamples", "samples"),
 	TASKS("entityTasks", "tasks"),
-	USER_ROLES("entityUserRoles", "user roles");
+	USER_ROLES("entityUserRoles", "user roles"),
+	DOCUMENTS("entityDocuments", "documents");
 
 	private final String languageKey;
 	private final String defaultName;
