@@ -1488,7 +1488,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (caseFollowUpEnabled) {
 			expectedUntilDate.setValue(
 				DateHelper.formatLocalDate(
-					CaseLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByCase(getValue().toReference())),
+					CaseLogic.getFollowUpUntilDate(
+						newFieldValue,
+						FacadeProvider.getVisitFacade().getVisitsByCase(newFieldValue.toReference()),
+						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(newFieldValue.getDisease())),
 					I18nProperties.getUserLanguage()));
 			expectedUntilDate.setReadOnly(true);
 		}

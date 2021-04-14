@@ -810,7 +810,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			ContactDto contactDto = contactFacade.toDto(contact);
 			Date untilDate = ContactLogic.getFollowUpUntilDate(
 				contactDto,
-				contact.getVisits().stream().map(visit -> visitFacade.convertToDto(visit, null)).collect(Collectors.toList()));
+				contact.getVisits().stream().map(visit -> visitFacade.convertToDto(visit, null)).collect(Collectors.toList()),
+				diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()));
 			contact.setFollowUpUntil(untilDate);
 			if (changeStatus) {
 				Visit lastVisit = contact.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);

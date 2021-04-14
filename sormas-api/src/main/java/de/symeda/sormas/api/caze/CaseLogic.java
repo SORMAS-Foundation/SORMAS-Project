@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -132,9 +131,8 @@ public final class CaseLogic {
 		}
 	}
 
-	public static Date getFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits) {
+	public static Date getFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits, int followUpDuration) {
 
-		int followUpDuration = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(caze.getDisease());
 		Date beginDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
 		Date untilDate = caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : DateHelper.addDays(beginDate, followUpDuration);
 
