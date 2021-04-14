@@ -317,18 +317,26 @@ public class PersonFacadeEjb implements PersonFacade {
 		try {
 			String phoneNumber = person.getPhone(false);
 			if (StringUtils.EMPTY.equals(phoneNumber)) {
-				return phoneNumber;
+				return StringUtils.EMPTY;
 			}
 
 			if (configFacade.getPatientDiaryConfig().isActive()) {
-				PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-				Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
-				return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+				return getInternationalPhoneNumber(phoneNumber);
 			} else {
 				return phoneNumber;
 			}
-		} catch (PersonDto.SeveralNonPrimaryContactDetailsException | NumberParseException e) {
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			return StringUtils.EMPTY;
+		}
+	}
+
+	public String getInternationalPhoneNumber(String phoneNumber) {
+		try {
+			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+			Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
+			return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+		} catch (NumberParseException e) {
+			return phoneNumber;
 		}
 	}
 
