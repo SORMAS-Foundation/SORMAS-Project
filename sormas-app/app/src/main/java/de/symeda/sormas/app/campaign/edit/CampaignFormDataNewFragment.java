@@ -18,14 +18,29 @@
 
 package de.symeda.sormas.app.campaign.edit;
 
+import java.util.List;
+
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataNewLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampaignDataNewLayoutBinding, CampaignFormData, CampaignFormData> {
 
     private CampaignFormData record;
+    private List<Item> initialCampaigns;
+    private List<Item> initialAreas;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
+    private List<Item> initialCommunities;
+
+    public static CampaignFormDataNewFragment newInstance(CampaignFormData activityRootData) {
+        return newInstance(CampaignFormDataNewFragment.class, null, activityRootData);
+    }
 
     @Override
     public int getEditLayout() {
@@ -39,11 +54,42 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
     @Override
     protected void prepareFragmentData() {
+
         record = getActivityRootData();
+
+        initialCampaigns = DataUtils.toItems(DatabaseHelper.getCampaignDao().queryActiveForAll());
+
+        initialAreas = InfrastructureDaoHelper.loadAreas();
+        initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+        initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
+        initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
     }
 
     @Override
     protected void onLayoutBinding(FragmentCampaignDataNewLayoutBinding contentBinding) {
+        record.setArea(record.getRegion().getArea());
         contentBinding.setData(record);
+
+        Item campaignItem = record.getCampaign() != null ? DataUtils.toItem(record.getCampaign()) : null;
+
+        if (campaignItem != null && !initialCampaigns.contains(campaignItem)) {
+            initialCampaigns.add(campaignItem);
+        }
+
+        contentBinding.campaignFormDataCampaign.initializeSpinner(initialCampaigns, record.getCampaign());
+
+        InfrastructureDaoHelper.initializeRegionAreaFields(
+                contentBinding.campaignFormDataArea,
+                initialAreas,
+                record.getArea(),
+                contentBinding.campaignFormDataRegion,
+                initialRegions,
+                record.getRegion(),
+                contentBinding.campaignFormDataDistrict,
+                initialDistricts,
+                record.getDistrict(),
+                contentBinding.campaignFormDataCommunity,
+                initialCommunities,
+                record.getCommunity());
     }
 }

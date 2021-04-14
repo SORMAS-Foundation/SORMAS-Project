@@ -7,11 +7,14 @@ import android.widget.AdapterView;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.campaign.edit.CampaignFormDataNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
 public class CampaignFormDataListActivity extends PagedBaseListActivity<CampaignFormData> {
@@ -90,10 +93,16 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         return CampaignFormDataListFragment.newInstance();
-//        if (menuItem != null) {
-//
-//        }
-//        return null;
+    }
+
+    @Override
+    public void goToNewView() {
+        CampaignFormDataNewActivity.startActivity(getContext());
+    }
+
+    @Override
+    public boolean isEntryCreateAllowed() {
+        return ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
     }
 
     @Override
