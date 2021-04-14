@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -26,14 +30,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
-import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
-import de.symeda.sormas.api.docgeneneration.RootEntityName;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -42,35 +42,33 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.ui.UserProvider;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
-	private final ReferenceDto referenceDto;
+	private final DocumentWorkflow workflow;
+	private final DocumentStreamSupplier documentStreamSupplier;
 
 	private ComboBox<SampleIndexDto> sampleSelector;
 	private ComboBox<PathogenTestDto> pathogenTestSelector;
 
-	public QuarantineOrderLayout(ReferenceDto referenceDto) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
-		this.referenceDto = referenceDto;
+	public QuarantineOrderLayout(
+		DocumentWorkflow workflow,
+		@Nullable SampleCriteria sampleCriteria,
+		DocumentStreamSupplier documentStreamSupplier,
+		Function<String, String> fileNameFunction) {
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), fileNameFunction);
+		this.workflow = workflow;
+		this.documentStreamSupplier = documentStreamSupplier;
+
 		init();
-		createSampleSelector(referenceDto);
+
+		if (sampleCriteria != null) {
+			createSampleSelector(sampleCriteria);
+		}
 	}
 
-	protected void createSampleSelector(ReferenceDto referenceDto) {
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		if (referenceDto instanceof CaseReferenceDto) {
-			sampleCriteria.caze((CaseReferenceDto) referenceDto);
-		} else if (referenceDto instanceof ContactReferenceDto) {
-			sampleCriteria.contact((ContactReferenceDto) referenceDto);
-		} else if (referenceDto instanceof EventParticipantReferenceDto) {
-			sampleCriteria.eventParticipant((EventParticipantReferenceDto) referenceDto);
-		}
-
+	protected void createSampleSelector(SampleCriteria sampleCriteria) {
 		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade()
 			.getIndexList(sampleCriteria, 0, 20, Collections.singletonList(new SortProperty("sampleDateTime", false)));
 
@@ -106,9 +104,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	@Override
 	protected List<String> getAvailableTemplates() {
 		try {
-			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(referenceDto);
+			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(workflow);
 		} catch (Exception e) {
-			e.printStackTrace();
 			new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
 			return Collections.emptyList();
@@ -116,32 +113,29 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected String generateFilename(String templateFile) {
-		return DataHelper.getShortUuid(referenceDto) + "_" + templateFile;
-	}
-
-	@Override
 	protected DocumentVariables getDocumentVariables(String templateFile) throws DocumentTemplateException {
-		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(referenceDto, templateFile);
+		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(workflow, templateFile);
 	}
 
 	@Override
 	protected StreamResource createStreamResource(String templateFile, String filename) {
 		return new StreamResource((StreamSource) () -> {
-			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-			UserReferenceDto userReference = UserProvider.getCurrent().getUser().toReference();
-			SampleReferenceDto sampleReference = sampleSelector.getValue() != null ? sampleSelector.getValue().toReference() : null;
+			SampleReferenceDto sampleReference =
+				sampleSelector != null && sampleSelector.getValue() != null ? sampleSelector.getValue().toReference() : null;
 			PathogenTestReferenceDto pathogenTestReference =
-				pathogenTestSelector.getValue() != null ? pathogenTestSelector.getValue().toReference() : null;
+				pathogenTestSelector != null && pathogenTestSelector.getValue() != null ? pathogenTestSelector.getValue().toReference() : null;
+
 			try {
-				return new ByteArrayInputStream(
-					quarantineOrderFacade.getGeneratedDocument(
-						templateFile,
-						referenceDto,
-						userReference,
-						sampleReference,
-						pathogenTestReference,
-						readAdditionalVariables()));
+				InputStream stream =
+					documentStreamSupplier.getStream(templateFile, sampleReference, pathogenTestReference, readAdditionalVariables());
+
+				new Notification(
+					I18nProperties.getString(Strings.headingDocumentCreated),
+					I18nProperties.getString(Strings.messageQuarantineOrderDocumentCreated),
+					Notification.Type.TRAY_NOTIFICATION,
+					false).show(Page.getCurrent());
+
+				return stream;
 			} catch (Exception e) {
 				e.printStackTrace();
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
@@ -159,10 +153,17 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	@Override
 	protected void performTemplateUpdates() {
 		if (documentVariables != null
-			&& (documentVariables.isUsedEntity(RootEntityName.ROOT_SAMPLE) || documentVariables.isUsedEntity(RootEntityName.ROOT_PATHOGEN_TEST))) {
+			&& (documentVariables.isUsedEntity(RootEntityType.ROOT_SAMPLE.getEntityName())
+				|| documentVariables.isUsedEntity(RootEntityType.ROOT_PATHOGEN_TEST.getEntityName()))) {
 			showAdditionalParameters();
 		} else {
 			hideAdditionalParameters();
 		}
+	}
+
+	interface DocumentStreamSupplier {
+
+		InputStream getStream(String templateFile, SampleReferenceDto sample, PathogenTestReferenceDto pathogenTest, Properties extraProperties)
+			throws DocumentTemplateException;
 	}
 }
