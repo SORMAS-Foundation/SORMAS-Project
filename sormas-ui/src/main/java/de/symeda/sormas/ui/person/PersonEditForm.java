@@ -303,7 +303,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
-			externalId.setReadOnly(true);
+			externalId.setEnabled(false);
 		}
 		TextField externalTokenField = addField(PersonDto.EXTERNAL_TOKEN);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonExternalTokenWarning));
