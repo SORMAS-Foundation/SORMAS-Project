@@ -356,6 +356,7 @@ public interface Strings {
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
+	String headingDocumentCreated = "headingDocumentCreated";
 	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
@@ -864,6 +865,7 @@ public interface Strings {
 	String messagePrescriptionCreated = "messagePrescriptionCreated";
 	String messagePrescriptionSaved = "messagePrescriptionSaved";
 	String messagePrescriptionsDeleted = "messagePrescriptionsDeleted";
+	String messageQuarantineOrderDocumentCreated = "messageQuarantineOrderDocumentCreated";
 	String messageRegionArchived = "messageRegionArchived";
 	String messageRegionArchivingNotPossible = "messageRegionArchivingNotPossible";
 	String messageRegionDearchived = "messageRegionDearchived";
