@@ -204,6 +204,7 @@ public interface Strings {
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
+	String entityUserRoles = "entityUserRoles";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
@@ -251,11 +252,15 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
+	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
+	String ExternalSurveillanceToolGateway_deletedAt = "ExternalSurveillanceToolGateway.deletedAt";
+	String ExternalSurveillanceToolGateway_notificationEntriesDeleted = "ExternalSurveillanceToolGateway.notificationEntriesDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntriesSent = "ExternalSurveillanceToolGateway.notificationEntriesSent";
 	String ExternalSurveillanceToolGateway_notificationEntryNotDeleted = "ExternalSurveillanceToolGateway.notificationEntryNotDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntryNotSent = "ExternalSurveillanceToolGateway.notificationEntryNotSent";
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
+	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
@@ -351,6 +356,7 @@ public interface Strings {
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
+	String headingDocumentCreated = "headingDocumentCreated";
 	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
@@ -389,6 +395,7 @@ public interface Strings {
 	String headingEventsSentToExternalSurveillanceTool = "headingEventsSentToExternalSurveillanceTool";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
+	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
@@ -858,6 +865,7 @@ public interface Strings {
 	String messagePrescriptionCreated = "messagePrescriptionCreated";
 	String messagePrescriptionSaved = "messagePrescriptionSaved";
 	String messagePrescriptionsDeleted = "messagePrescriptionsDeleted";
+	String messageQuarantineOrderDocumentCreated = "messageQuarantineOrderDocumentCreated";
 	String messageRegionArchived = "messageRegionArchived";
 	String messageRegionArchivingNotPossible = "messageRegionArchivingNotPossible";
 	String messageRegionDearchived = "messageRegionDearchived";
@@ -892,6 +900,7 @@ public interface Strings {
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	String messageUploadSuccessful = "messageUploadSuccessful";
+	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";
 	String messageUserSyncCanceledErrors = "messageUserSyncCanceledErrors";

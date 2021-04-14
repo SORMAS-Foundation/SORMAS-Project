@@ -20,10 +20,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public class CriteriaBuilderHelper {
 
@@ -63,6 +64,10 @@ public class CriteriaBuilderHelper {
 	}
 
 	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Timestamp date) {
+		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
+	}
+
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Expression<? extends Timestamp> date) {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 

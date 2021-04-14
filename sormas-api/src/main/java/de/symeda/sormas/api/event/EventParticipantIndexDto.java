@@ -175,4 +175,8 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
 	}
+
+	public EventParticipantReferenceDto toReference() {
+		return new EventParticipantReferenceDto(uuid, firstName, lastName);
+	}
 }

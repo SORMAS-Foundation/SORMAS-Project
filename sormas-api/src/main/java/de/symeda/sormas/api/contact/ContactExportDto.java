@@ -42,6 +42,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -204,6 +205,8 @@ public class ContactExportDto implements Serializable {
 	private String reportingDistrict;
 
 	private ContactJurisdictionDto jurisdiction;
+	private Date followUpStatusChangeDate;
+	private UserReferenceDto followUpStatusChangeUser;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,

@@ -49,6 +49,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum UserRight {
 
 	//@formatter:off
@@ -1349,5 +1351,9 @@ public enum UserRight {
 
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
+	}
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

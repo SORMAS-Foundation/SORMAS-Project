@@ -455,7 +455,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			false,
 			false,
 			null,
-			ContactDateType.class,
+			ContactDateType.values(),
 			I18nProperties.getString(Strings.promptContactDateType),
 			null,
 			this);

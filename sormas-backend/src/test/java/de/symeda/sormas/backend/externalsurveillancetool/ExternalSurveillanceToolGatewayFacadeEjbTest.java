@@ -8,15 +8,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.HttpStatus;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +39,8 @@ import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
+import de.symeda.sormas.api.share.ExternalShareInfoDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -116,7 +119,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	}
 
 	@Test
-	public void testDeleteEvents() {
+	public void testDeleteEvents() throws ExternalSurveillanceToolException {
 		stubFor(
 			post(urlEqualTo("/delete")).withRequestBody(containing("Test"))
 				.withRequestBody(containing("Description"))
@@ -125,33 +128,55 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("123456"))
 				.withRequestBody(containing("events"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		int result = subjectUnderTest.deleteEvents(Collections.singletonList(createEventDto("Test", "Description", "John", "Doe", "123456")));
-		assertThat(result, CoreMatchers.is(HttpStatus.SC_OK));
+		EventDto event = createEventDto("Test", "Description", "John", "Doe", "123456");
+
+		subjectUnderTest.deleteEvents(Collections.singletonList(event));
+
+		List<ExternalShareInfoDto> shareInfoList =
+			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event.toReference()), 0, 100);
+
+		assertThat(shareInfoList, hasSize(1));
+		assertThat(shareInfoList.get(0).getStatus(), is(ExternalShareStatus.DELETED));
+
 	}
 
 	@Test
-	public void testDeleteEventsNotFound() {
+	public void testDeleteEventsNotFound() throws ExternalSurveillanceToolException {
 		stubFor(
-			post(urlEqualTo("/delete")).withRequestBody(containing("Test"))
-				.withRequestBody(containing("Description"))
-				.withRequestBody(containing("John"))
-				.withRequestBody(containing("Doe"))
-				.withRequestBody(containing("123456"))
-				.withRequestBody(containing("events"))
+			post(urlEqualTo("/delete")).withRequestBody(containing("xyz"))
+				.withRequestBody(containing("nope"))
+				.withRequestBody(containing("Jane"))
+				.withRequestBody(containing("D"))
+				.withRequestBody(containing("111222333"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		int result = subjectUnderTest.deleteEvents(Collections.singletonList(createEventDto("xyz", "nope", "Jane", "D", "111222333")));
-		assertThat(result, CoreMatchers.is(HttpStatus.SC_NOT_FOUND));
+
+		EventDto event = createEventDto("xyz", "nope", "Jane", "D", "111222333");
+		subjectUnderTest.deleteEvents(Collections.singletonList(event));
+
+		List<ExternalShareInfoDto> shareInfoList =
+			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event.toReference()), 0, 100);
+
+		assertThat(shareInfoList, hasSize(1));
+		assertThat(shareInfoList.get(0).getStatus(), is(ExternalShareStatus.DELETED));
+
 	}
 
 	@Test
-	public void testDeleteCases() {
+	public void testDeleteCases() throws ExternalSurveillanceToolException {
 		stubFor(
 			post(urlEqualTo("/delete")).withRequestBody(containing("James"))
 				.withRequestBody(containing("Smith"))
 				.withRequestBody(containing("cases"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		int result = subjectUnderTest.deleteCases(Collections.singletonList(createCaseDataDto()));
-		assertThat(result, CoreMatchers.is(HttpStatus.SC_OK));
+		CaseDataDto caze = createCaseDataDto();
+
+		subjectUnderTest.deleteCases(Collections.singletonList(caze));
+
+		List<ExternalShareInfoDto> shareInfoList =
+			getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(caze.toReference()), 0, 100);
+
+		assertThat(shareInfoList, hasSize(1));
+		assertThat(shareInfoList.get(0).getStatus(), is(ExternalShareStatus.DELETED));
 	}
 
 	private void configureExternalSurvToolUrlForWireMock() {
