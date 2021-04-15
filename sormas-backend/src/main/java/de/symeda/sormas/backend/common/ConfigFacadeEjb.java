@@ -134,6 +134,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
+	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
+
 
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
@@ -553,6 +555,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public boolean isCreateDefaultEntities() {
 		return getBoolean(CREATE_DEFAULT_ENTITIES, false);
+	}
+
+	public boolean isSkipDefaultPasswordCheck() {
+		return getBoolean(SKIP_DEFAULT_PASSWORD_CHECK, false);
 	}
 
 	public String getDocgenerationNullReplacement() {
