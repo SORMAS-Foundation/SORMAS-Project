@@ -58,9 +58,7 @@ public class FacilityDto extends EntityDto {
 	public static final String DEPARTMENT = "department";
 	public static final String SECTOR = "sector";
 	public static final String DR_NAME = "drName";
-	public static final String STREET = "street";
 	public static final String HOUSE_NO = "houseNo";
-	public static final String POSTAL_CODE = "postalCode";
 	public static final String TEL_NO = "telNo";
 	public static final String FAX_NO = "faxNo";
 
@@ -84,9 +82,7 @@ public class FacilityDto extends EntityDto {
 	private String department;
 	private String sector;
 	private String drName;
-	private String street;
 	private String houseNo;
-	private String postalCode;
 	private String telNo;
 	private String faxNo;
 
@@ -302,28 +298,12 @@ public class FacilityDto extends EntityDto {
 		this.drName = drName;
 	}
 
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
 	public String getHouseNo() {
 		return houseNo;
 	}
 
 	public void setHouseNo(String houseNo) {
 		this.houseNo = houseNo;
-	}
-
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
 	}
 
 	public String getTelNo() {
