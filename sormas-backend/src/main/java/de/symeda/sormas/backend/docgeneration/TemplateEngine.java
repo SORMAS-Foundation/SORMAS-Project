@@ -76,8 +76,9 @@ public class TemplateEngine {
 
 	public TemplateEngine() {
 		xdocVelocityProperties = new Properties();
-		try {
-			xdocVelocityProperties.load(VelocityTemplateEngine.class.getClassLoader().getResourceAsStream("xdocreport-velocity.properties"));
+		try (InputStream velocityPropertiesFile =
+			VelocityTemplateEngine.class.getClassLoader().getResourceAsStream("xdocreport-velocity.properties")) {
+			xdocVelocityProperties.load(velocityPropertiesFile);
 		} catch (IOException e) {
 			logger.error("Could not read velocity properties.", e);
 		}

@@ -1202,9 +1202,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
+
 			Date untilDate = CaseLogic.getFollowUpUntilDate(
 				caseDto,
-				caze.getVisits().stream().map(visit -> visitFacade.convertToDto(visit, null)).collect(Collectors.toList()));
+				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()));
 			caze.setFollowUpUntil(untilDate);
 			if (changeStatus) {
 

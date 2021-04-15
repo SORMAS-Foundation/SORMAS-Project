@@ -988,7 +988,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		expectedUntilDate.setValue(
 			DateHelper.formatLocalDate(
-				ContactLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByContact(getValue().toReference())),
+				ContactLogic.getFollowUpUntilDate(
+					newFieldValue,
+					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease())),
 				I18nProperties.getUserLanguage()));
 		expectedUntilDate.setReadOnly(true);
 

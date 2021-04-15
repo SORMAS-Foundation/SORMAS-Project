@@ -558,6 +558,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return natUser;
 	}
 
+	protected void loginWith(UserDto user) {
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+	}
+
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
 	}
