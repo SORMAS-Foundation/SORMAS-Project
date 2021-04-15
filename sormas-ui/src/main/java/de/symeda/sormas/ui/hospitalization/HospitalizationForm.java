@@ -193,7 +193,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		// Validations
 		// Add a visual-only validator to check if symptomonsetdate<admissiondate, as saving should be possible either way
 		admissionDateField.addValueChangeListener(event -> {
-			if (DateTimeComparator.getDateOnlyInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
+			if (caze.getSymptoms().getOnsetDate() != null
+				&& DateTimeComparator.getDateOnlyInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
 				admissionDateField.setComponentError(new ErrorMessage() {
 
 					@Override
@@ -260,6 +261,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true,
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
+		intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
+		intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 	}

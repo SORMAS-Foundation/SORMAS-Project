@@ -253,7 +253,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if (symptomsContext == SymptomsContext.CASE) {
 			// If the symptom onset date is after the hospital admission date, show a warning but don't prevent the user from saving
 			onsetDateField.addValueChangeListener(event -> {
-				if (DateTimeComparator.getDateOnlyInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue()) < 0) {
+				if (caze.getHospitalization().getAdmissionDate() != null
+					&& DateTimeComparator.getDateOnlyInstance().compare(caze.getHospitalization().getAdmissionDate(), onsetDateField.getValue())
+						< 0) {
 					onsetDateField.setComponentError(new ErrorMessage() {
 
 						@Override
