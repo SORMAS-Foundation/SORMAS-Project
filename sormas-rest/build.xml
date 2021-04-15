@@ -19,6 +19,8 @@
 			<fileset dir="./target">
 				<include name="swagger.json" />
 				<include name="swagger.yaml" />
+				<include name="external_visits_API.json" />
+				<include name="external_visits_API.yaml" />
 			</fileset>
 			<mapper type="glob" from="swagger.*" to="sormas-rest.*" />
 		</copy>
