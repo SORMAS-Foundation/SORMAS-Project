@@ -786,7 +786,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		// Run updates in batches to avoid large JPA cache
 		// The list is automatically filtered by the users jurisdiction?
-		List<String> personUuidList = getAllUuids();
+		List<String> personUuidList = getAllUuidsBatched(100);
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
 			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
@@ -886,6 +886,31 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		cleanUp(newPerson);
+	}
+
+	private List<String> getAllUuidsBatched(Integer batchSize) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		cq.select(person.get(Person.UUID));
+		cq.where(personService.createUserFilter(cb, cq, person));
+		cq.orderBy(cb.desc(person.get(Person.UUID)));
+
+		// repeat the query as often as necessary until all data is retrieved
+		final int BATCH_SIZE = batchSize == null ? 100 : batchSize;
+		int first = 0;
+		int sizeOfLastBatch = 0;
+		List<String> personUuids = new ArrayList<>();
+		do {
+			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
+			sizeOfLastBatch = newPersonUuids.size();
+			first += sizeOfLastBatch;
+			personUuids = Stream.concat(personUuids.stream(), newPersonUuids.stream()).collect(Collectors.toList());
+		}
+		while (sizeOfLastBatch >= BATCH_SIZE);
+
+		return personUuids;
 	}
 
 	@Override
