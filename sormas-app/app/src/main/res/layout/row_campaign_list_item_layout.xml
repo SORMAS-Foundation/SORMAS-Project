@@ -21,6 +21,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.campaign.data.CampaignFormData"/>
     </data>
 
@@ -136,7 +138,7 @@
                 android:layout_marginRight="@dimen/listItemConentIndentRight"
                 >
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <TextView
                     android:id="@+id/campaignFormData_formDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -144,7 +146,7 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif"
-                    app:value="@{data.campaignFormMeta.creationDate}" />
+                    app:value="@{DateFormatHelper.formatLocalDate(data.campaignFormMeta.creationDate)}" />
 
             </LinearLayout>
 
