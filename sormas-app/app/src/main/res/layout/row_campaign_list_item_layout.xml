@@ -146,7 +146,7 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif"
-                    app:value="@{DateFormatHelper.formatLocalDate(data.campaignFormMeta.creationDate)}" />
+                    app:value="@{DateFormatHelper.formatLocalDate(data.formDate)}" />
 
             </LinearLayout>
 
