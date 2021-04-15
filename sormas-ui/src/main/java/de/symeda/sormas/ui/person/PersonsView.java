@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.person;
 
 import java.util.HashMap;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -55,14 +56,14 @@ public class PersonsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		// TODO disabled because of potential performance problems, see GitHub issue #4938
-//		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
-//			Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
-//				I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
-//				VaadinIcons.MAP_MARKER,
-//				e -> showMissingCoordinatesPopUp(),
-//				ValoTheme.BUTTON_PRIMARY);
-//			addHeaderComponent(setMissingCoordinatesButton);
-//		}
+		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
+			Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
+				I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
+				VaadinIcons.MAP_MARKER,
+				e -> showMissingCoordinatesPopUp(),
+				ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(setMissingCoordinatesButton);
+		}
 
 		grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
 

@@ -784,14 +784,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
 
-		// The list is automatically filtered by the users jurisdiction
-		List<PersonIndexDto> indexList = getIndexList(null, null, null, null);
-		if (CollectionUtils.isEmpty(indexList)) {
-			return 0;
-		}
-
 		// Run updates in batches to avoid large JPA cache
-		List<String> personUuidList = indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList());
+		// The list is automatically filtered by the users jurisdiction?
+		List<String> personUuidList = getAllUuids();
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
 			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
