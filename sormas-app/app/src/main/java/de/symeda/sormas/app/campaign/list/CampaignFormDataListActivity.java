@@ -2,6 +2,8 @@ package de.symeda.sormas.app.campaign.list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -115,6 +117,15 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         return CampaignFormDataListFragment.newInstance();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Menu _menu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dashboard_action_menu, menu);
+        menu.findItem(R.id.action_help).setVisible(false);
+        return true;
     }
 
     @Override
