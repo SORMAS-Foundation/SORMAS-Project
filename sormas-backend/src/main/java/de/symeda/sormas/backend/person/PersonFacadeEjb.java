@@ -288,8 +288,19 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
-			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress(false));
+			if (configFacade.getPatientDiaryConfig().isActive()) {
+				try {
+					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(false), "DE");
+					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+					exportPerson.setPhone(internationalPhone);
+				} catch (NumberParseException e) {
+					exportPerson.setPhone(detailedPerson.getPhone());
+				}
+			} else {
+				exportPerson.setPhone(detailedPerson.getPhone());
+			}
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -302,31 +313,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			return exportPerson;
 		} else {
 			return null;
-		}
-	}
-	
-	private String getJournalEmailAddress(PersonDto person) {
-		try {
-			return person.getEmailAddress(false);
-		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
-			return StringUtils.EMPTY;
-		}
-	}
-	
-	private String getJournalPhoneNumber(PersonDto person) {
-		try {
-			String phoneNumber = person.getPhone(false);
-			if (StringUtils.EMPTY.equals(phoneNumber)) {
-				return StringUtils.EMPTY;
-			}
-
-			if (configFacade.getPatientDiaryConfig().isActive()) {
-				return getInternationalPhoneNumber(phoneNumber);
-			} else {
-				return phoneNumber;
-			}
-		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
-			return StringUtils.EMPTY;
 		}
 	}
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import de.symeda.sormas.ui.SormasUI;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -92,7 +93,7 @@ public class ExternalJournalUtil {
 	private static Button createSymptomJournalRegisterButton(PersonDto person) {
 		Button btnCreateSymptomJournalAccount = new Button(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
 		CssStyles.style(btnCreateSymptomJournalAccount, ValoTheme.BUTTON_PRIMARY);
-		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> openSymptomJournalWindow(person));
+		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> enrollPatientInSymptomJournal(person));
 		return btnCreateSymptomJournalAccount;
 	}
 
@@ -121,6 +122,15 @@ public class ExternalJournalUtil {
 		return btnPatientDiaryAccount;
 	}
 
+	private static void enrollPatientInSymptomJournal(PersonDto person) {
+		ExternalJournalValidation validationResult = externalJournalFacade.validateSymptomJournalPerson(person);
+		if(!validationResult.isValid()) {
+			showExternalJournalWarningPopup(validationResult.getMessage());
+		} else {
+			openSymptomJournalWindow(person);
+		}
+	}
+
 	/**
 	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
 	 * The steps to build that iFrame are:
@@ -137,7 +147,7 @@ public class ExternalJournalUtil {
 			parameters.put("uuid", person.getUuid());
 			parameters.put("firstname", person.getFirstName());
 			parameters.put("lastname", person.getLastName());
-			parameters.put("email", person.getEmailAddress());
+			parameters.put("email", person.getEmailAddress(false));
 			byte[] document = createSymptomJournalForm(formUrl, parameters);
 
 			return new ByteArrayInputStream(document);
@@ -204,7 +214,7 @@ public class ExternalJournalUtil {
 	private static void enrollPatientInPatientDiary(PersonDto person) {
 		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
-			showPatientDiaryWarningPopup(validationResult.getMessage());
+			showExternalJournalWarningPopup(validationResult.getMessage());
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
@@ -214,7 +224,7 @@ public class ExternalJournalUtil {
 		}
 	}
 
-	private static void showPatientDiaryWarningPopup(String message) {
+	private static void showExternalJournalWarningPopup(String message) {
 		VerticalLayout warningLayout = new VerticalLayout();
 		warningLayout.setMargin(true);
 		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
