@@ -402,6 +402,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullEntities(false);
 		new SubcontinentDtoHelper().pullEntities(false);
 		new CountryDtoHelper().pullEntities(false);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullEntities(false);
+		}
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
@@ -432,7 +436,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			new CampaignDtoHelper().pullEntities(false);
 			new CampaignFormMetaDtoHelper().pullEntities(false);
-			new AreaDtoHelper().pullEntities(false);
 		}
 
 		ConfigProvider.setInitialSyncRequired(false);
@@ -655,6 +658,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// regions
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+		// areas
+		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
+		DatabaseHelper.getAreaDao().deleteInvalid(regionUuids);
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
@@ -670,6 +676,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullMissing(continentUuids);
 		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullMissing(areaUuids);
+		}
+
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);
@@ -688,13 +699,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			// campaignFormMetas
 			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
 			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-			// areas
-			List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
-			DatabaseHelper.getAreaDao().deleteInvalid(regionUuids);
 
 			new CampaignDtoHelper().pullMissing(campaignUuids);
 			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
-			new AreaDtoHelper().pullMissing(areaUuids);
 		}
 	}
 

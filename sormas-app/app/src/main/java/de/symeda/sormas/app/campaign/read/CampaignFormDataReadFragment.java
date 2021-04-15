@@ -26,7 +26,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataReadLayoutBinding;
+import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
 public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampaignDataReadLayoutBinding, CampaignFormData, CampaignFormData> {
 
@@ -81,6 +84,12 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 } else {
                     Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
                 }
+            } else if (type == CampaignFormElementType.SECTION) {
+                dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
+            } else if (type == CampaignFormElementType.LABEL) {
+                TextView textView = new TextView(requireContext());
+                TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
+                dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             }
         }
         return view;

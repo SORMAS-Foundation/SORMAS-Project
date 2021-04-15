@@ -18,11 +18,8 @@ package de.symeda.sormas.app.backend.region;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
@@ -46,9 +43,7 @@ public class Region extends InfrastructureAdo {
 	@Column
 	private String epidCode;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
-	@JoinColumn(nullable = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Area area;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)

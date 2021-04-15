@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -71,11 +70,11 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
 		if (criteria.getCampaign() != null) {
-			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN_ID, criteria.getCampaign().getId()));
+			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN +  "_id", criteria.getCampaign().getId()));
 		}
 
 		if (criteria.getCampaignFormMeta() != null) {
-			whereStatements.add((where.eq(CampaignFormData.CAMPAIGN_FORM_META_ID, criteria.getCampaignFormMeta().getId())));
+			whereStatements.add((where.eq(CampaignFormData.CAMPAIGN_FORM_META +  "_id", criteria.getCampaignFormMeta().getId())));
 		}
 
 		if (!whereStatements.isEmpty()) {
