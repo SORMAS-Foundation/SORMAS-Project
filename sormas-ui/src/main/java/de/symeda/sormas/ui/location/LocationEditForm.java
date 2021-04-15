@@ -17,6 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
@@ -32,6 +47,7 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -63,20 +79,6 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -393,10 +395,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 
 			// Fill in the address fields based on the selected facility
-			// We don't want the location form to automatically change even if the facility's address is updated later 
+			// We don't want the location form to automatically change even if the facility's address is updated later
 			// on, so we only trigger it upon a manual change of the facility field
 			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
-			// necessary because isModified() will still return true for a short duration even if we keep the very same 
+			// necessary because isModified() will still return true for a short duration even if we keep the very same
 			// value because of this field dependencies to other fields and the way updateEnumValues works
 			if (facility.isAttached()) {
 				if (facility.getValue() != null) {

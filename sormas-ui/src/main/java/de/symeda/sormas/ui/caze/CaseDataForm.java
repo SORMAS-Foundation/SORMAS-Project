@@ -1480,7 +1480,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox caseConfirmationBasisCombo = getField(CASE_CONFIRMATION_BASIS);
 
-		if (caseConfirmationBasisCombo!=null){
+		if (caseConfirmationBasisCombo != null) {
 			if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
 				caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
 			} else if (newFieldValue.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {

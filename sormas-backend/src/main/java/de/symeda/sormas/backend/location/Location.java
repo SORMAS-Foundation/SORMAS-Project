@@ -75,10 +75,10 @@ public class Location extends AbstractDomainObject {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
-	public static final String CONTACT_PERSON_FIRST_NAME="contactPersonFirstName";
-	public static final String CONTACT_PERSON_LAST_NAME="contactPersonLastName";
-	public static final String CONTACT_PERSON_PHONE="contactPersonPhone";
-	public static final String CONTACT_PERSON_EMAIL="contactPersonEmail";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 	public static final String PERSON = "person";
 
 	private String details;
