@@ -466,10 +466,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer page, Integer size, List<SortProperty> sortProperties) {
-		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, page * size, size, sortProperties);
+	public Page<CaseIndexDetailedDto> getIndexDetailedPage(
+		CaseCriteria caseCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, offset * size, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
-		return new Page<>(caseIndexDetailedList, page, size, totalElementCount);
+		return new Page<>(caseIndexDetailedList, offset, size, totalElementCount);
 	}
 
 	@Override
