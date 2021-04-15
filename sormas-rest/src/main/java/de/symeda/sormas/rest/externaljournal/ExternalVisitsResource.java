@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest;
+package de.symeda.sormas.rest.externaljournal;
 
 import java.util.Date;
 import java.util.List;
@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
+	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.1";
 
 	@GET
 	@Path("/person/{personUuid}")
@@ -100,10 +100,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@POST
 	@Path("/")
-	@Operation(summary = "Save visits",
-		description = "Upload visits with all symptom and disease related data to SORMAS.",
-		responses = @ApiResponse(description = "OK when visit was successfully saved, ERROR otherwise.",
-			content = @Content(schema = @Schema(name = "processing", example = "OK"))))
+	@Operation(summary = "Save visits", description = "Upload visits with all symptom and disease related data to SORMAS.")
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
 	}
