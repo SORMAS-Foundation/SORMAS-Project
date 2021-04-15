@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.icons.VaadinIcons;
@@ -31,7 +46,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -108,7 +122,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
+			StreamResource streamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -170,17 +185,10 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
-		countryFilter = new CountryCombo((country, isServerCountry) -> {
+		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-
-			if (isServerCountry) {
-				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-			} else {
-				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
-			}
-		});
-		filterLayout.addComponent(countryFilter);
+		}, regionFilter);
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(PointOfEntryDto.REGION);
@@ -270,12 +278,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.POINT_OF_ENTRY,
-									new Runnable() {
-
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
+									() -> navigateTo(criteria));
 						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
 							ControllerProvider.getInfrastructureController()
@@ -283,12 +286,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.POINT_OF_ENTRY,
-									new Runnable() {
-
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
+									() -> navigateTo(criteria));
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown

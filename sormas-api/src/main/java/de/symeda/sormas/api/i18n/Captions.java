@@ -154,6 +154,7 @@ public interface Captions {
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
 	String BAGExport = "BAGExport";
+	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";

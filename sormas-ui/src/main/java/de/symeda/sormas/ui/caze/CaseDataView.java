@@ -35,7 +35,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
-import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
+import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
@@ -90,7 +90,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SURVEILLANCE_REPORTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DOCUMENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CaseDocumentsComponent.QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QuarantineOrderDocumentsComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -198,7 +198,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
-		CaseDocumentsComponent.addComponentToLayout(layout, caze);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());
 
 		setCaseEditPermission(container);
 	}

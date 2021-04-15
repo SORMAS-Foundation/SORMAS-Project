@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
@@ -52,7 +50,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -140,39 +137,40 @@ public class FacilitiesView extends AbstractConfigurationView {
 			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			StreamResource basicExportStreamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource basicExportStreamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
-					basicExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.TABLE,
-					Captions.exportBasic,
-					Strings.infoBasicExport);
+				basicExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.TABLE,
+				Captions.exportBasic,
+				Strings.infoBasicExport);
 
 			// Detailed export
 
 			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-					FacilityExportDto.class,
-					null,
-					(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					ExportEntityName.FACILITIES,
-					null);
+				FacilityExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				ExportEntityName.FACILITIES,
+				null);
 
 			addExportButton(
-					detailedExportStreamResource,
-					exportPopupButton,
-					exportLayout,
-					VaadinIcons.FILE_TEXT,
-					Captions.exportDetailed,
-					Strings.infoDetailedExport);
+				detailedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
@@ -261,17 +259,10 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(typeFilter);
 
-		countryFilter = new CountryCombo((country, isServerCountry) -> {
+		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-
-			if (isServerCountry) {
-				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-			} else {
-				FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
-			}
-		});
-		filterLayout.addComponent(countryFilter);
+		}, regionFilter);
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(FacilityDto.REGION);

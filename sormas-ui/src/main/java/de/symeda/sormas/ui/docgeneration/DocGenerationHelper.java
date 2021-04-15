@@ -13,24 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.labmessage;
+package de.symeda.sormas.ui.docgeneration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 
-import org.junit.Test;
+public class DocGenerationHelper {
 
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.backend.AbstractBeanTest;
-
-public class LabMessageFacadeEjbTest extends AbstractBeanTest {
-	@Test
-	public void deleteLabMessage() {
-		LabMessageDto labMessage = creator.createLabMessage(null);
-
-		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
-
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));
+	public static boolean isDocGenerationAllowed() {
+		UserProvider currentUser = UserProvider.getCurrent();
+		return currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
 	}
 }

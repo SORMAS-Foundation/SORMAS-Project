@@ -13,24 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.labmessage;
+package de.symeda.sormas.api.docgeneneration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.Test;
+public class DocumentTemplateEntities implements Serializable {
 
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.backend.AbstractBeanTest;
+	private static final long serialVersionUID = 4264467192868446193L;
 
-public class LabMessageFacadeEjbTest extends AbstractBeanTest {
-	@Test
-	public void deleteLabMessage() {
-		LabMessageDto labMessage = creator.createLabMessage(null);
+	private final Map<RootEntityType, Object> entities = new HashMap<>();
 
-		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+	public void addEntity(RootEntityType rootEntityType, Object entity) {
+		entities.put(rootEntityType, entity);
+	}
 
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));
+	public Object getEntity(RootEntityType rootEntityType) {
+		return entities.get(rootEntityType);
+	}
+
+	public Map<RootEntityType, Object> getEntities() {
+		return entities;
 	}
 }
