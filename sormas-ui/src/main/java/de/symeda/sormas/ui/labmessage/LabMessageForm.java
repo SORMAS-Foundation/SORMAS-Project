@@ -10,8 +10,6 @@ import com.vaadin.v7.data.util.converter.Converter;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 

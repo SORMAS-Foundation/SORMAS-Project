@@ -7123,8 +7123,6 @@ ALTER TABLE contact_history ADD CONSTRAINT fk_contact_followupstatuschangeuser_i
 
 INSERT INTO schema_version (version_number, comment) VALUES (358, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
 
--- *** Insert new sql commands BEFORE this line ***
-
 -- 2021-04-12 [DEMIS Interface] Introduce option to reject lab messages #4851
 
 ALTER TABLE labmessage ADD COLUMN status varchar(255);
