@@ -402,8 +402,6 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			event.getEventGroups().remove(eventGroup);
 			eventService.ensurePersisted(event);
 		}
-		eventGroup.setEvents(Collections.emptyList());
-		eventGroupService.ensurePersisted(eventGroup);
 
 		eventGroupService.delete(eventGroup);
 	}

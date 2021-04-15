@@ -1111,7 +1111,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public Set<RegionReferenceDto> getAllRegionRelatedToEventUuids(List<String> uuids) {
+	public Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids) {
 		Set<RegionReferenceDto> regionReferenceDtos = new HashSet<>();
 		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();

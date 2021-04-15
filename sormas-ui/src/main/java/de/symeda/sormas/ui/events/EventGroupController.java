@@ -324,7 +324,7 @@ public class EventGroupController {
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
 		if (!user.hasNationalJurisdictionLevel()) {
-			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionRelatedToEventUuids(eventUuids);
+			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionsRelatedToEventUuids(eventUuids);
 			for (RegionReferenceDto region : regions) {
 				if (!user.hasRegion(region)) {
 					new Notification(

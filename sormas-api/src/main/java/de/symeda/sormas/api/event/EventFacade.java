@@ -94,5 +94,5 @@ public interface EventFacade {
 
 	void validate(EventDto dto) throws ValidationRuntimeException;
 
-	Set<RegionReferenceDto> getAllRegionRelatedToEventUuids(List<String> uuids);
+	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 }
