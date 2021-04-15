@@ -33,7 +33,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -75,6 +74,7 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
@@ -235,10 +235,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
 			if (subcontinent.getValue() == null) {
 				FieldHelper.updateItems(
-						country,
-						continentReferenceDto != null
-								? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-								: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+					country,
+					continentReferenceDto != null
+						? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+						: FacadeProvider.getCountryFacade().getAllActiveAsReference());
 				country.setValue(null);
 			}
 			subcontinent.setValue(null);
@@ -293,7 +293,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
 						skipCountryValueChange = false;
 						subcontinent.setValue(countrySubcontinent);
-						FieldHelper.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						FieldHelper
+							.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
 						subcontinent.addValueChangeListener(subContinentValueListener);
 					}
 				}
@@ -501,39 +502,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
 
-		Page.getCurrent().getStyles().add(".geocode-button-red {color: #cc0000 !important;}");
-
-		Button geocodeButton = ButtonHelper.createIconButtonWithCaption(
-			"geocodeButton",
-			null,
-			VaadinIcons.MAP_MARKER,
-			e -> triggerGeocoding(),
-			ValoTheme.BUTTON_ICON_ONLY,
-			ValoTheme.BUTTON_BORDERLESS,
-			ValoTheme.BUTTON_LARGE);
+		Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER, e -> {
+			triggerGeocoding();
+			e.getButton().removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 
 		// Highlight geocode-button when the address changes
-		ValueChangeListener addressListener = e -> geocodeButton.addStyleName("geocode-button-red");
-		// adding the valuechangelistener inside another valuechangelistener seems counterintuitive, but it prevents the listener from being executed when the initial field values are set
-		getField(LocationDto.STREET).addValueChangeListener(e -> {
-			getField(LocationDto.STREET).removeValueChangeListener(addressListener);
-			getField(LocationDto.STREET).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.POSTAL_CODE).addValueChangeListener(e -> {
-			getField(LocationDto.POSTAL_CODE).removeValueChangeListener(addressListener);
-			getField(LocationDto.POSTAL_CODE).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.CITY).addValueChangeListener(e -> {
-			getField(LocationDto.CITY).removeValueChangeListener(addressListener);
-			getField(LocationDto.CITY).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(e -> {
-			getField(LocationDto.HOUSE_NUMBER).removeValueChangeListener(addressListener);
-			getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(addressListener);
-		});
-
-		geocodeButton.addClickListener(e -> geocodeButton.removeStyleName("geocode-button-red"));
-		geocodeButton.removeStyleName("geocode-button-red");
+		for (String fieldName : new String[] {
+			LocationDto.STREET,
+			LocationDto.POSTAL_CODE,
+			LocationDto.CITY,
+			LocationDto.HOUSE_NUMBER }) {
+			Field<?> field = getField(fieldName);
+			field.addValueChangeListener(e -> {
+				if (field.isModified()) {
+					geocodeButton.addStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+				}
+			});
+		} ;
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);

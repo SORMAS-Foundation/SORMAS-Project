@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -45,10 +44,12 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -125,7 +126,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	public byte[] generateDocumentDocxFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, Object> entities,
+		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException {
 		if (!documentWorkflow.isDocx()) {
@@ -150,7 +151,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	public String generateDocumentTxtFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, Object> entities,
+		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException {
 		if (documentWorkflow.isDocx()) {
@@ -173,7 +174,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private Properties prepareProperties(
 		DocumentWorkflow documentWorkflow,
-		Map<String, Object> entities,
+		DocumentTemplateEntities entities,
 		Properties extraProperties,
 		DocumentVariables documentVariables) {
 		Properties properties = new Properties();
@@ -190,7 +191,13 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		for (String propertyKey : documentVariables.getVariables()) {
 			if (isEntityVariable(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
-				Object entity = entities.get(variableBaseName);
+				RootEntityType rootEntityType = RootEntityType.foEntityName(variableBaseName);
+
+				if (rootEntityType == null) {
+					continue;
+				}
+
+				Object entity = entities.getEntity(rootEntityType);
 				if (entity instanceof HasUuid) {
 					if (documentWorkflow.isDocx() || propertyKey.contains(propertySeparator)) {
 						String propertyPath = propertyKey.replaceFirst("(?i)" + variableBaseName + "[" + propertySeparator + "]", "");
@@ -211,12 +218,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			}
 		}
 		if (!documentWorkflow.isDocx()) {
-			for (String entityKey : entities.keySet()) {
-				Object entity = entities.get(entityKey);
+			for (RootEntityType entityType : entities.getEntities().keySet()) {
+				Object entity = entities.getEntity(entityType);
 				if (ReferenceDto.class.isAssignableFrom(entity.getClass())) {
 					entity = referenceDtoResolver.resolve((ReferenceDto) entity);
 				}
-				properties.put(entityKey, entity);
+				properties.put(entityType.getEntityName(), entity);
 			}
 		}
 

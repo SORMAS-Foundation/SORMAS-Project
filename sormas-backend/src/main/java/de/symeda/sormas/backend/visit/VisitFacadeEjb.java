@@ -47,7 +47,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +84,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -178,6 +178,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	public List<VisitDto> getVisitsByContact(ContactReferenceDto contactRef) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		return contact.getVisits().stream().map(visit -> toDto(visit)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -193,6 +199,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	public VisitDto getLastVisitByCase(CaseReferenceDto caseRef) {
 		Case caze = caseService.getByReferenceDto(caseRef);
 		return toDto(caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null));
+	}
+
+	@Override
+	public List<VisitDto> getVisitsByCase(CaseReferenceDto caseRef) {
+		Case caze = caseService.getByReferenceDto(caseRef);
+		return caze.getVisits().stream().map(visit -> toDto(visit)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -634,7 +646,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getContacts() != null) {
 			for (Contact contact : newVisit.getContacts()) {
-				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.updateFollowUpDetails(contact, false);
 			}
 		}
 

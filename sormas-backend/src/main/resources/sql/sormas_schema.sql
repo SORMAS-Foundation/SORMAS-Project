@@ -7090,7 +7090,7 @@ ALTER TABLE exposures_history ADD COLUMN probableinfectionenvironment boolean DE
 
 INSERT INTO schema_version (version_number, comment) VALUES (355, '[SurvNet Interface] Add checkbox "probable infection environment" to exposures');
 
--- 2020-03-19 Add continent and subcontinent to location #4777
+-- 2021-03-19 Add continent and subcontinent to location #4777
 
 ALTER TABLE location ADD COLUMN continent_id BIGINT;
 ALTER TABLE location ADD COLUMN subcontinent_id BIGINT;
@@ -7106,4 +7106,21 @@ ALTER TABLE populationdata ADD COLUMN community_id bigint;
 ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
 ALTER TABLE community ADD COLUMN growthRate real;
 INSERT INTO schema_version (version_number, comment) VALUES (357, 'Add Community reference to PopulationData entity #4271');
+
+-- 2021-04-06 Add date and responsible user of last follow-up status change #4138
+ALTER TABLE cases ADD COLUMN followupstatuschangedate timestamp without time zone;
+ALTER TABLE cases ADD COLUMN followupstatuschangeuser_id BIGINT;
+ALTER TABLE contact ADD COLUMN followupstatuschangedate timestamp without time zone;
+ALTER TABLE contact ADD COLUMN followupstatuschangeuser_id BIGINT;
+ALTER TABLE cases_history ADD COLUMN followupstatuschangedate timestamp without time zone;
+ALTER TABLE cases_history ADD COLUMN followupstatuschangeuser_id BIGINT;
+ALTER TABLE contact_history ADD COLUMN followupstatuschangedate timestamp without time zone;
+ALTER TABLE contact_history ADD COLUMN followupstatuschangeuser_id BIGINT;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
+ALTER TABLE contact ADD CONSTRAINT fk_contact_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
+ALTER TABLE cases_history ADD CONSTRAINT fk_cases_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
+ALTER TABLE contact_history ADD CONSTRAINT fk_contact_followupstatuschangeuser_id FOREIGN KEY (followupstatuschangeuser_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (358, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
+
 -- *** Insert new sql commands BEFORE this line ***

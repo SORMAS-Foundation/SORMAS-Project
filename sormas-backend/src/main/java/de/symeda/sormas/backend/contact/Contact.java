@@ -151,6 +151,8 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -238,6 +240,8 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private District reportingDistrict;
 
 	private VaccinationInfo vaccinationInfo;
+	private Date followUpStatusChangeDate;
+	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -953,5 +957,23 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 
 	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
 		this.vaccinationInfo = vaccinationInfo;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }
