@@ -50,8 +50,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -129,8 +127,6 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -288,19 +284,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(detailedPerson.getEmailAddress(false));
-			if (configFacade.getPatientDiaryConfig().isActive()) {
-				try {
-					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(false), "DE");
-					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-					exportPerson.setPhone(internationalPhone);
-				} catch (NumberParseException e) {
-					exportPerson.setPhone(detailedPerson.getPhone());
-				}
-			} else {
-				exportPerson.setPhone(detailedPerson.getPhone());
-			}
+			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
+			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -313,6 +298,31 @@ public class PersonFacadeEjb implements PersonFacade {
 			return exportPerson;
 		} else {
 			return null;
+		}
+	}
+
+	public String getJournalEmailAddress(PersonDto person) {
+		try {
+			return person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
+		}
+	}
+
+	public String getJournalPhoneNumber(PersonDto person) {
+		try {
+			String phoneNumber = person.getPhone(false);
+			if (StringUtils.EMPTY.equals(phoneNumber)) {
+				return StringUtils.EMPTY;
+			}
+
+			if (configFacade.getPatientDiaryConfig().isActive()) {
+				return getInternationalPhoneNumber(phoneNumber);
+			} else {
+				return phoneNumber;
+			}
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
 		}
 	}
 
