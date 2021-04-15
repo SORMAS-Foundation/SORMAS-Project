@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -167,7 +168,9 @@ public class EventController {
 		component.addCommitListener(() -> {
 			EventIndexDto selectedEvent = eventSelect.getValue();
 			if (selectedEvent != null) {
-				FacadeProvider.getEventGroupFacade().linkEventToGroup(selectedEvent.toReference(), eventGroupReference);
+				EventReferenceDto eventReference = selectedEvent.toReference();
+				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, eventGroupReference);
+				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(eventGroupReference, Collections.singletonList(eventReference));
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 				SormasUI.refreshView();
 			}

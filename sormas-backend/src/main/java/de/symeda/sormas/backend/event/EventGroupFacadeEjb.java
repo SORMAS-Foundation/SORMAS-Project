@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.symeda.sormas.api.event.EventGroupCriteria;
@@ -447,8 +449,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	public void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
-		notifyModificationOfEventGroup(eventGroupReference, eventReferences, MessageSubject.EVENT_GROUP_CREATED, MessagingService.CONTENT_EVENT_GROUP_CREATED);
+	public void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference) {
+		notifyModificationOfEventGroup(eventGroupReference, Collections.emptyList(), MessageSubject.EVENT_GROUP_CREATED, MessagingService.CONTENT_EVENT_GROUP_CREATED);
 	}
 
 	@Override
@@ -463,7 +465,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	private void notifyModificationOfEventGroup(
 		EventGroupReferenceDto eventGroupReference,
-		List<EventReferenceDto> eventReferences,
+		List<EventReferenceDto> impactedEventReferences,
 		MessageSubject subject,
 		String contentTemplate) {
 		EventGroup eventGroup = eventGroupService.getByUuid(eventGroupReference.getUuid());
@@ -473,26 +475,39 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		User currentUser = userService.getCurrentUser();
 
-		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
-		Map<String, User> responsibleUserByEventUuid = userService.getResponsibleUsersByEventUuids(eventUuids);
-		for (Map.Entry<String, User> eventEntry : responsibleUserByEventUuid.entrySet()) {
-			User responsibleUser = eventEntry.getValue();
+		Set<String> allRemainingEventUuids =
+			getEventReferencesByEventGroupUuid(eventGroupReference.getUuid()).stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+		Set<String> impactedEventUuids = impactedEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+		Map<String, User> responsibleUserByEventUuid =
+			userService.getResponsibleUsersByEventUuids(new ArrayList<>(Sets.union(allRemainingEventUuids, impactedEventUuids)));
+
+		Map<String, User> responsibleUserByRemainingEventUuid = Maps.filterKeys(responsibleUserByEventUuid, allRemainingEventUuids::contains);
+		Map<String, User> responsibleUserByImpactedEventUuid = Maps.filterKeys(responsibleUserByEventUuid, impactedEventUuids::contains);
+
+		for (User responsibleUser : new HashSet<>(responsibleUserByEventUuid.values())) {
 			if (responsibleUser == null || responsibleUser.equals(currentUser)) {
 				continue;
 			}
 
 			try {
-				messagingService.sendMessage(
-					responsibleUser,
-					subject,
-					String.format(
+				String message;
+				if (impactedEventReferences.isEmpty()) {
+					message = String.format(
 						I18nProperties.getString(contentTemplate),
 						eventGroup.getName(),
 						DataHelper.getShortUuid(eventGroup.getUuid()),
 						buildCaptionForUserInNotification(currentUser),
-						buildEventListContentForNotification(responsibleUserByEventUuid)),
-					MessageType.EMAIL,
-					MessageType.SMS);
+						buildEventGroupSummaryForNotification(responsibleUserByRemainingEventUuid));
+				} else {
+					message = String.format(
+						I18nProperties.getString(contentTemplate),
+						stringifyEventsWithResponsibleUser(responsibleUserByImpactedEventUuid, ", ", ""),
+						eventGroup.getName(),
+						DataHelper.getShortUuid(eventGroup.getUuid()),
+						buildCaptionForUserInNotification(currentUser),
+						buildEventGroupSummaryForNotification(responsibleUserByRemainingEventUuid));
+				}
+				messagingService.sendMessage(responsibleUser, subject, message, MessageType.EMAIL, MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
 					String.format(
@@ -503,14 +518,43 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		}
 	}
 
-	private String buildEventListContentForNotification(Map<String, User> responsibleUserByEventUuid) {
-		return responsibleUserByEventUuid.entrySet()
+	private List<EventReferenceDto> getEventReferencesByEventGroupUuid(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventGroup> eventGroupRoot = cq.from(EventGroup.class);
+		Join<EventGroup, Event> eventJoin = eventGroupRoot.join(EventGroup.EVENTS, JoinType.INNER);
+		cq.where(cb.equal(eventGroupRoot.get(EventGroup.UUID), uuid));
+		cq.select(eventJoin.get(Event.UUID));
+
+		return em.createQuery(cq)
+			.getResultList()
 			.stream()
-			.map(entry -> buildEventListContentForNotification(entry.getKey(), entry.getValue()))
-			.collect(Collectors.joining("\n* ", "* ", ""));
+			.map(EventReferenceDto::new)
+			.collect(Collectors.toList());
 	}
 
-	private String buildEventListContentForNotification(String eventUuid, User responsibleUser) {
+	private String buildEventGroupSummaryForNotification(Map<String, User> responsibleUserByEventUuid) {
+		if (responsibleUserByEventUuid.isEmpty()) {
+			return I18nProperties.getString(Strings.notificationEventGroupSummaryEmpty);
+		}
+
+		return String.format(
+			I18nProperties.getString(Strings.notificationEventGroupSummary),
+			stringifyEventsWithResponsibleUser(responsibleUserByEventUuid, "\n* ", "* "));
+	}
+
+	private String stringifyEventsWithResponsibleUser(Map<String, User> responsibleUserByEventUuid, String delimiter, String prefix) {
+		if (responsibleUserByEventUuid.isEmpty()) {
+			return "";
+		}
+
+		return responsibleUserByEventUuid.entrySet()
+			.stream()
+			.map(entry -> stringifyEventWithResponsibleUser(entry.getKey(), entry.getValue()))
+			.collect(Collectors.joining(delimiter, prefix, ""));
+	}
+
+	private String stringifyEventWithResponsibleUser(String eventUuid, User responsibleUser) {
 		return String.format(
 			I18nProperties.getString(Strings.notificationEventWithResponsibleUserLine),
 			DataHelper.getShortUuid(eventUuid),

@@ -61,7 +61,7 @@ public interface EventGroupFacade {
 
     List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
 
-    void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+    void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference);
 
     void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 

@@ -34,7 +34,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
@@ -48,7 +47,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
@@ -159,7 +157,7 @@ public class EventGroupController {
 				EventGroupFacade eventGroupFacade = FacadeProvider.getEventGroupFacade();
 				dto = eventGroupFacade.saveEventGroup(dto);
 				eventGroupFacade.linkEventsToGroup(eventReferences, dto.toReference());
-				eventGroupFacade.notifyEventEventGroupCreated(dto.toReference(), eventReferences);
+				eventGroupFacade.notifyEventEventGroupCreated(dto.toReference());
 				Notification.show(I18nProperties.getString(Strings.messageEventGroupCreated), Type.WARNING_MESSAGE);
 
 				if (callback != null) {

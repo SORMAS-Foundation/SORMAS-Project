@@ -946,6 +946,8 @@ public interface Strings {
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
 	String notificationEventGroupCreated = "notificationEventGroupCreated";
+	String notificationEventGroupSummary = "notificationEventGroupSummary";
+	String notificationEventGroupSummaryEmpty = "notificationEventGroupSummaryEmpty";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
 	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
 	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
