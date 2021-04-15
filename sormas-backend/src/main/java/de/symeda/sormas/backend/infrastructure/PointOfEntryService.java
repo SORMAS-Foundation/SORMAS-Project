@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -16,9 +17,12 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
@@ -29,6 +33,8 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 
 	public PointOfEntryService() {
 		super(PointOfEntry.class);
@@ -58,7 +64,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return pointsOfEntry;
 	}
 
-	public List<PointOfEntry> getByName(String name, District district) {
+	public List<PointOfEntry> getByName(String name, District district, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
@@ -69,6 +75,9 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase()));
 		if (district != null && !PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
+		}
+		if(!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
 		cq.where(filter);
@@ -96,6 +105,21 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
 
 		Predicate filter = null;
+
+		CountryReferenceDto country = criteria.getCountry();
+		if (country != null) {
+			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+			Path<Object> countryUuid = pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
+
+			if (country.equals(serverCountry)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
+			} else {
+				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
+			}
+		}
+
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
@@ -114,12 +138,13 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.like(cb.lower(pointOfEntry.get(PointOfEntry.NAME)), textFilter);
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, pointOfEntry.get(PointOfEntry.NAME), textFilter);
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {

@@ -64,6 +64,7 @@ public class Exposure extends AbstractDomainObject {
 
 	private EpiData epiData;
 	private User reportingUser;
+	private boolean probableInfectionEnvironment;
 	private Date startDate;
 	private Date endDate;
 	private String description;
@@ -124,6 +125,9 @@ public class Exposure extends AbstractDomainObject {
 	private String deceasedPersonName;
 	private String deceasedPersonRelation;
 
+	// Fields specific to ExposureType.GATHERING
+	private YesNoUnknown largeAttendanceNumber;
+
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	public EpiData getEpiData() {
@@ -142,6 +146,15 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	@Column
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -598,5 +611,14 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLargeAttendanceNumber() {
+		return largeAttendanceNumber;
+	}
+
+	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
+		this.largeAttendanceNumber = largeAttendanceNumber;
 	}
 }

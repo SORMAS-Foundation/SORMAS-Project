@@ -16,6 +16,8 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -62,14 +64,15 @@ public class PopulationDataImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
-		// Reference population data that contains the region and district for this line
+		// Reference population data that contains the region, district and community for this line
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
+		CommunityReferenceDto community = null;
 
 		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
 		for (int i = 0; i < entityProperties.length; i++) {
 			if (PopulationDataDto.REGION.equalsIgnoreCase(entityProperties[i])) {
-				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByName(values[i], false);
+				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getReferencesByName(values[i], false);
 				if (regions.size() != 1) {
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 					return ImportLineResult.ERROR;
@@ -88,14 +91,32 @@ public class PopulationDataImporter extends DataImporter {
 					district = districts.get(0);
 				}
 			}
+			if (PopulationDataDto.COMMUNITY.equalsIgnoreCase(entityProperties[i])) {
+				if (DataHelper.isNullOrEmpty(values[i])) {
+					community = null;
+				} else {
+					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getByName(values[i], district, false);
+					if (communities.size() != 1) {
+						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+						return ImportLineResult.ERROR;
+					}
+					community = communities.get(0);
+				}
+			}
 		}
 
 		// The region and district that will be used to save the population data to the database
 		final RegionReferenceDto finalRegion = region;
 		final DistrictReferenceDto finalDistrict = district;
+		final CommunityReferenceDto finalCommunity = community;
 
 		// Retrieve the existing population data for the region and district
 		PopulationDataCriteria criteria = new PopulationDataCriteria().region(finalRegion);
+		if (finalCommunity == null) {
+			criteria.communityIsNull(true);
+		} else {
+			criteria.community(finalCommunity);
+		}
 		if (district == null) {
 			criteria.districtIsNull(true);
 		} else {
@@ -111,13 +132,18 @@ public class PopulationDataImporter extends DataImporter {
 				public Exception apply(ImportCellData cellData) {
 					try {
 						if (PopulationDataDto.REGION.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
-							|| PopulationDataDto.DISTRICT.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
-							// Ignore the region and district columns
+							|| PopulationDataDto.DISTRICT.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
+						    || PopulationDataDto.COMMUNITY.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
+							// Ignore the region, district and community columns
 						} else if (RegionDto.GROWTH_RATE.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
 							// Update the growth rate of the region or district
 							if (!DataHelper.isNullOrEmpty(cellData.value)) {
 								Float growthRate = Float.parseFloat(cellData.value);
-								if (finalDistrict != null) {
+								if (finalCommunity != null) {
+									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
+									communityDto.setGrowthRate(growthRate);
+									FacadeProvider.getCommunityFacade().saveCommunity(communityDto);
+								} else if (finalDistrict != null) {
 									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
 									districtDto.setGrowthRate(growthRate);
 									FacadeProvider.getDistrictFacade().saveDistrict(districtDto);
@@ -146,6 +172,7 @@ public class PopulationDataImporter extends DataImporter {
 							} else {
 								newPopulationData.setRegion(finalRegion);
 								newPopulationData.setDistrict(finalDistrict);
+								newPopulationData.setCommunity(finalCommunity);
 								modifiedPopulationDataList.add(newPopulationData);
 							}
 						}

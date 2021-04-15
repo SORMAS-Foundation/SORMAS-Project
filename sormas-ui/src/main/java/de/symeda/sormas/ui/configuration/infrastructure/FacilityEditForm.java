@@ -48,7 +48,10 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME)
 		+ fluidRowLocs(TYPE_GROUP_LOC, FacilityDto.TYPE)
 		+ fluidRowLocs(FacilityDto.REGION, FacilityDto.DISTRICT)
-		+ fluidRowLocs(FacilityDto.COMMUNITY, FacilityDto.CITY)
+		+ fluidRowLocs(FacilityDto.COMMUNITY)
+		+ fluidRowLocs(FacilityDto.STREET, FacilityDto.HOUSE_NUMBER)
+		+ fluidRowLocs(FacilityDto.ADDITIONAL_INFORMATION, FacilityDto.POSTAL_CODE)
+		+ fluidRowLocs(FacilityDto.AREA_TYPE, FacilityDto.CITY)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
 		+ fluidRowLocs(FacilityDto.DEPARTMENT, FacilityDto.SECTOR)
 		+ fluidRowLocs(FacilityDto.DR_NAME, FacilityDto.POSTAL_CODE)
@@ -88,6 +91,11 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
 		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
 		addField(FacilityDto.CITY, TextField.class);
+		addField(FacilityDto.POSTAL_CODE, TextField.class);
+		addField(FacilityDto.STREET, TextField.class);
+		addField(FacilityDto.HOUSE_NUMBER, TextField.class);
+		addField(FacilityDto.ADDITIONAL_INFORMATION, TextField.class);
+		addField(FacilityDto.AREA_TYPE, ComboBox.class);
 		AccessibleTextField latitude = addField(FacilityDto.LATITUDE, AccessibleTextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
 		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));
@@ -112,7 +120,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		street.setCaption(I18nProperties.getCaption(Captions.Facility_street));
 
 		TextField houseNo = addField(FacilityDto.HOUSE_NO, TextField.class);
-		houseNo.setCaption(I18nProperties.getCaption(Captions.Facility_houseNo));
+		houseNo.setCaption(I18nProperties.getCaption(Captions.Facility_houseNumber));
 
 		TextField telNo = addField(FacilityDto.TEL_NO, TextField.class);
 		telNo.setCaption(I18nProperties.getCaption(Captions.Facility_telNo));

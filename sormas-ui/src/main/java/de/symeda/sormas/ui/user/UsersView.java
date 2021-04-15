@@ -17,12 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -48,6 +58,8 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.RowCount;
 
 /**
@@ -111,6 +123,26 @@ public class UsersView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
+
+			Button exportUserRightsButton =
+				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+
+			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+				try {
+					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
+					IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+				} catch (IOException e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					new Notification(
+						I18nProperties.getString(Strings.headingExportUserRightsFailed),
+						I18nProperties.getString(Strings.messageUserRightsExportFailed),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}, (e) -> {
+			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
+
+			addHeaderComponent(exportUserRightsButton);
 		}
 
 		if (AuthProvider.getProvider().isUserSyncSupported()) {
@@ -161,7 +193,7 @@ public class UsersView extends AbstractView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 

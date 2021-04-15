@@ -1,10 +1,13 @@
 package de.symeda.sormas.backend.sample;
 
+import java.util.EnumSet;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.sample.SampleJurisdictionDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.SampleJurisdictionHelper;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
@@ -33,10 +36,13 @@ public class SampleJurisdictionChecker {
 
 		User user = userService.getCurrentUser();
 
-		if (sampleJurisdiction.getEventParticipantJurisdiction() != null) {
-			EventParticipant sampleEventParticipant =
-				eventParticipantService.getByUuid(sampleJurisdiction.getEventParticipantJurisdiction().getEventParticipantUuid());
-			return eventParticipantJurisdictionChecker.isInJurisdiction(sampleEventParticipant);
+		if (!EnumSet.of(JurisdictionLevel.NONE, JurisdictionLevel.NATION, JurisdictionLevel.LABORATORY, JurisdictionLevel.EXTERNAL_LABORATORY)
+			.contains(user.getJurisdictionLevel())) {
+			if (sampleJurisdiction.getEventParticipantJurisdiction() != null) {
+				EventParticipant sampleEventParticipant =
+					eventParticipantService.getByUuid(sampleJurisdiction.getEventParticipantJurisdiction().getEventParticipantUuid());
+				return eventParticipantJurisdictionChecker.isInJurisdiction(sampleEventParticipant);
+			}
 		}
 
 		return SampleJurisdictionHelper

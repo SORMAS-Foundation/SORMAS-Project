@@ -305,6 +305,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
+		User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
+			return filter;
+		}
+
 		if (criteria != null) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
@@ -455,20 +461,34 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (criteria.getCaseCodeIdLike() != null) {
 			String[] textFilters = criteria.getCaseCodeIdLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCaze().get(Case.EPID_NUMBER)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.LAB_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.FIELD_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(joins.getLab().get(Facility.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.LAB_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.FIELD_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getLab().get(Facility.NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
+		}
+
+		if (criteria.getCaseUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
 		}
 
 		return filter;
@@ -498,13 +518,18 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	/**
-	 * Creates a filter that excludes all samples that are either {@link CoreAdo#deleted} or associated with
-	 * cases that are {@link Case#archived}.
+	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
+	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
+	 * {@link EventParticipant#deleted}
 	 */
 	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<Sample> root) {
 
 		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		return cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
+		Join<Sample, Contact> contact = root.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+		Join<Sample, EventParticipant> event = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+		Predicate pred =
+			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+		return cb.and(pred, cb.isFalse(root.get(Sample.DELETED)));
 	}
 
 	/**

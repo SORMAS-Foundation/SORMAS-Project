@@ -69,7 +69,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		if (user.getDistrict() == null) {
 			if (user.getRegion() == null) {
 				final ComboBox regionField = addField(FieldConfiguration.pixelSized(TaskIndexDto.REGION, 200));
-				regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 				final ComboBox districtField = addDistrictField();
 				districtField.setEnabled(false);
@@ -118,7 +118,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			false,
 			false,
 			null,
-			TaskDateType.class,
+			TaskDateType.values(),
 			I18nProperties.getString(Strings.promptTaskDateType),
 			TaskDateType.DUE_DATE,
 			this);

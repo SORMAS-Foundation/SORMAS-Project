@@ -76,6 +76,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_confir
 WebUI.delay(3)
 
 // CHECK
+WebUI.waitForElementVisible(findTestObject('Contacts/ContactInformationView/div_CaseID info'), 20)
 String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))
 
 println('displayed epidnumber after change in contact: ' + epidNumberAfterChange)

@@ -16,7 +16,10 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -35,10 +38,8 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
 		Root<AdditionalTest> from = cq.from(getElementClass());
-		Join<AdditionalTest, Sample> sample = from.join(AdditionalTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = createActiveSamplesFilter(cb,from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -62,10 +63,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<AdditionalTest> from = cq.from(getElementClass());
-		Join<AdditionalTest, Sample> sample = from.join(AdditionalTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = createActiveSamplesFilter(cb,from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -92,6 +90,24 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		List<AdditionalTest> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
+
+
+	/**
+	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
+	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
+	 * {@link EventParticipant#deleted}
+	 */
+	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<AdditionalTest> root) {
+		Join<AdditionalTest, Sample> sample = root.join(AdditionalTest.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+		Predicate pred =
+				cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
+	}
+
+
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md

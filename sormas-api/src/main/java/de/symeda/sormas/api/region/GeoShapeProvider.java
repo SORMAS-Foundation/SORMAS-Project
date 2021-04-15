@@ -40,4 +40,6 @@ public interface GeoShapeProvider {
 	GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
 
 	GeoLatLon[][] getCountryShape();
+
+	String loadShapefileAttributions();
 }

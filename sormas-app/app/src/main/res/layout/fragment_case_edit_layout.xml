@@ -42,12 +42,12 @@
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.caze.QuarantineReason" />
-        <import type="de.symeda.sormas.api.caze.CovidTestReason" />
         <import type="de.symeda.sormas.api.caze.EndOfIsolationReason" />
         <import type="de.symeda.sormas.api.caze.Vaccine" />
         <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="caseEditData" type="de.symeda.sormas.app.caze.edit.CaseEditFragment" />
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
         <variable name="trimesterClass" type="Class" />
@@ -74,27 +74,28 @@
                 <requestFocus/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/caseData_epidNumber"
-                        app:value="@={data.epidNumber}"
-                        app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
-                        app:softRequired="true"
-                        app:maxLength="24"
-                        style="@style/ControlSingleColumnStyle"/>
+                    android:id="@+id/caseData_epidNumber"
+                    app:value="@={data.epidNumber}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
+                    app:softRequired="true"
+                    app:maxLength="24"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/caseData_externalID"
                         app:value="@={data.externalID}"
-                    style="@style/ControlFirstOfTwoColumnsStyle"/>
+                        style="@style/ControlFirstOfTwoColumnsStyle"/>
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_externalToken"
-                    app:value="@={data.externalToken}"
-                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/caseData_externalToken"
+                        app:value="@={data.externalToken}"
+                        style="@style/ControlSecondOfTwoColumnsStyle"/>
+
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -103,30 +104,35 @@
                     app:value="@={data.caseIdIsm}"
                     app:inputType="number" />
 
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/caseData_clinicalConfirmation"
-                        app:enumClass="@{yesNoUnknownClass}"
-                        app:value="@={data.clinicalConfirmation}"
-                        style="@style/ControlSingleColumnStyle"/>
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_caseClassification"
+                    app:required="true"
+                    app:value="@={data.caseClassification}"
+                    app:userEditRight="@{UserRight.CASE_CLASSIFY}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/caseData_epidemiologicalConfirmation"
-                        app:enumClass="@{yesNoUnknownClass}"
-                        app:value="@={data.epidemiologicalConfirmation}"
-                        style="@style/ControlSingleColumnStyle"/>
+                    android:id="@+id/caseData_clinicalConfirmation"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.clinicalConfirmation}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/caseData_laboratoryDiagnosticConfirmation"
-                        app:enumClass="@{yesNoUnknownClass}"
-                        app:value="@={data.laboratoryDiagnosticConfirmation}"
-                        style="@style/ControlSingleColumnStyle"/>
+                    android:id="@+id/caseData_epidemiologicalConfirmation"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.epidemiologicalConfirmation}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_laboratoryDiagnosticConfirmation"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.laboratoryDiagnosticConfirmation}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/caseData_caseClassification"
-                        app:required="true"
-                        app:value="@={data.caseClassification}"
-                        app:userEditRight="@{UserRight.CASE_CLASSIFY}"
-                        style="@style/ControlSingleColumnStyle"/>
+                    android:id="@+id/caseData_caseConfirmationBasis"
+                    app:value="@={caseEditData.caseConfirmationBasis}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/caseData_notACaseReasonNegativeTest"
@@ -164,7 +170,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
-                        android:layout_width="match_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
@@ -187,12 +193,6 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/caseData_bloodOrganOrTissueDonated"
-                    app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@={data.bloodOrganOrTissueDonated}"
-                    style="@style/ControlSingleColumnStyle"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -278,6 +278,19 @@
                     android:id="@+id/caseData_diseaseVariant"
                     app:value="@={data.diseaseVariant}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_reInfection"
+                    style="@style/ControlSingleColumnStyle"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.reInfection}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_previousInfectionDate"
+                    style="@style/ControlSingleColumnStyle"
+                    app:dependencyParentField="@{caseDataReInfection}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.previousInfectionDate}" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
@@ -370,6 +383,7 @@
                         android:id="@+id/facilityOrHome"
                         app:caption="@string/caption_facility_or_home"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -405,6 +419,7 @@
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{facilityOrHome}"
                     app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
+                    app:dependencyParentClearOnHide="@{false}"
                     app:required="true"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     app:value="@={data.healthFacility}" />
@@ -470,19 +485,6 @@
                         app:dependencyParentValue="@{YesNoUnknown.YES}"
                         app:value="@={data.prohibitionToWorkUntil}" />
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/caseData_reInfection"
-                    style="@style/ControlSingleColumnStyle"
-                    app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@={data.reInfection}" />
-
-                <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/caseData_previousInfectionDate"
-                    style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{caseDataReInfection}"
-                    app:dependencyParentValue="@{YesNoUnknown.YES}"
-                    app:value="@={data.previousInfectionDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_quarantineHomePossible"
@@ -628,23 +630,6 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView
-                    android:id="@+id/caseData_covidTestReasonDivider"
-                    style="@style/FullHorizontalDividerStyle"
-                    android:visibility="gone" />
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_covidTestReason"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.covidTestReason}" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_covidTestReasonDetails"
-                    app:dependencyParentField="@{caseDataCovidTestReason}"
-                    app:dependencyParentValue="@{CovidTestReason.OTHER_REASON}"
-                    app:value="@={data.covidTestReasonDetails}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <ImageView
                     android:id="@+id/caseData_contactTracingDivider"
                     style="@style/FullHorizontalDividerStyle"
                     android:visibility="gone" />
@@ -681,6 +666,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/heading_additional_medical_information"
                     style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_bloodOrganOrTissueDonated"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.bloodOrganOrTissueDonated}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_pregnant"

@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.Date;
+import java.util.Collections;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -33,12 +33,12 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -70,9 +70,10 @@ public class TasksView extends AbstractView {
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			addHeaderComponent(basicExportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				taskListComponent.getGrid(),
-				"sormas_tasks_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
+				ExportEntityName.TASKS,
 				TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
@@ -92,15 +93,14 @@ public class TasksView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				taskListComponent.getBulkOperationsDropdown().setVisible(true);
-				viewConfiguration.setInEagerMode(true);
+				ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				taskListComponent.getGrid().setEagerDataProvider();
 				taskListComponent.getGrid().reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				taskListComponent.getBulkOperationsDropdown().setVisible(false);
-				viewConfiguration.setInEagerMode(false);
+				ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(taskListComponent.getCriteria());

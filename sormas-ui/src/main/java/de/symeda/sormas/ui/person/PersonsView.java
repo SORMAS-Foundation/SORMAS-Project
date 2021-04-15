@@ -5,23 +5,26 @@ import java.util.HashMap;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonsView extends AbstractView {
 
@@ -51,9 +54,50 @@ public class PersonsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
+		// TODO disabled because of potential performance problems, see GitHub issue #4938
+//		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
+//			Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
+//				I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
+//				VaadinIcons.MAP_MARKER,
+//				e -> showMissingCoordinatesPopUp(),
+//				ValoTheme.BUTTON_PRIMARY);
+//			addHeaderComponent(setMissingCoordinatesButton);
+//		}
+
 		grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
 
 		addComponent(gridLayout);
+	}
+
+	private void showMissingCoordinatesPopUp() {
+
+		Label popupDescLabel = new Label(I18nProperties.getString(Strings.confirmationSetMissingGeoCoordinates));
+		CheckBox popupCheckbox = new CheckBox(I18nProperties.getCaption(Captions.personsReplaceGeoCoordinates));
+		popupCheckbox.setValue(false);
+
+		VerticalLayout popupLayout = new VerticalLayout();
+		popupLayout.setMargin(false);
+		popupLayout.setSpacing(true);
+		popupDescLabel.setWidth(100, Unit.PERCENTAGE);
+		popupCheckbox.setWidth(100, Unit.PERCENTAGE);
+		popupLayout.addComponent(popupDescLabel);
+		popupLayout.addComponent(popupCheckbox);
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
+			popupLayout,
+			I18nProperties.getCaption(Captions.actionContinue),
+			I18nProperties.getCaption(Captions.actionCancel),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					long changedPersons = FacadeProvider.getPersonFacade().setMissingGeoCoordinates(popupCheckbox.getValue());
+					Notification.show(
+						I18nProperties.getCaption(Captions.personsUpdated),
+						String.format(I18nProperties.getString(Strings.notificationPersonsUpdated), changedPersons),
+						Notification.Type.TRAY_NOTIFICATION);
+				}
+			});
 	}
 
 	@Override
@@ -100,10 +144,6 @@ public class PersonsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
-		criteria.setRegion(user.getRegion());
-		criteria.setDistrict(user.getDistrict());
-		criteria.setCommunity(user.getCommunity());
 		filterForm = new PersonFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter()) {

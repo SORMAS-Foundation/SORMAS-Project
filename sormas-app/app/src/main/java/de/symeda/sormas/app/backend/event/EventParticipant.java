@@ -25,6 +25,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = EventParticipant.TABLE_NAME)
@@ -59,6 +60,12 @@ public class EventParticipant extends PseudonymizableAdo {
 	// TODO [vaccination info] integrate vaccination info
 //	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 //	private VaccinationInfo vaccinationInfo;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	@DatabaseField
+	private boolean ownershipHandedOver;
+
 
 	public User getReportingUser() {
 		return reportingUser;
@@ -130,4 +137,20 @@ public class EventParticipant extends PseudonymizableAdo {
 //	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
 //		this.vaccinationInfo = vaccinationInfo;
 //	}
+
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
 }

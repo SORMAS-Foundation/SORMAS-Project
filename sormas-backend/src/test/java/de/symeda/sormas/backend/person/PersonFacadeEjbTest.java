@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -25,6 +27,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -58,7 +61,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() {
+	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() throws ExternalSurveillanceToolException {
 		final RDCFEntities rdcf = creator.createRDCFEntities();
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -274,7 +277,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 */
 	public void testGetPersonForJournal() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER, UserRole.CONTACT_SUPERVISOR);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.CONTACT_SUPERVISOR);
 
 		final PersonDto person = creator.createPerson();
 		person.setFirstName("Klaus");
@@ -356,36 +359,68 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
+		final PersonDto person3 = creator.createPerson();
+		final PersonDto person4 = creator.createPerson();
 		final ContactDto contact1 = creator.createContact(user.toReference(), person1.toReference());
 		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
+		final ContactDto contact3 = creator.createContact(user.toReference(), person4.toReference());
+		final ContactDto contact4 = creator.createContact(user.toReference(), person4.toReference());
 		final CaseDataDto case1 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
 		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
+		final CaseDataDto case3 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
+		final CaseDataDto case4 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
+		final CaseDataDto case5 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
 
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setOverwriteFollowUpUntil(true);
 		case1.setOverwriteFollowUpUntil(true);
 		case2.setOverwriteFollowUpUntil(true);
+		case3.setOverwriteFollowUpUntil(true);
+		case4.setOverwriteFollowUpUntil(true);
+		case5.setOverwriteFollowUpUntil(true);
+		contact3.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+		contact3.setFollowUpUntil(null);
+		contact4.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 
 		Date now = new Date();
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 1));
 		case1.setFollowUpUntil(DateHelper.subtractDays(now, 2));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 1));
+
 		case2.setFollowUpUntil(now);
+		case2.setFollowUpStatus(FollowUpStatus.CANCELED);
+		case3.setFollowUpUntil(DateHelper.subtractDays(now, 2));
+
+		case4.setFollowUpStatus(FollowUpStatus.CANCELED);
+		case5.setFollowUpStatus(FollowUpStatus.CANCELED);
+		contact4.setFollowUpUntil(now);
 
 		getContactFacade().saveContact(contact1);
 		getContactFacade().saveContact(contact2);
+		getContactFacade().saveContact(contact3);
+		getContactFacade().saveContact(contact4);
 		getCaseFacade().saveCase(case1);
 		getCaseFacade().saveCase(case2);
+		getCaseFacade().saveCase(case3);
+		getCaseFacade().saveCase(case4);
+		getCaseFacade().saveCase(case5);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
-		assertThat(followUpEndDtos, hasSize(2));
+		assertThat(followUpEndDtos, hasSize(4));
+
 		Optional<PersonFollowUpEndDto> result1 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person1.getUuid())).findFirst();
 		assertTrue(result1.isPresent());
 		assertTrue(DateHelper.isSameDay(result1.get().getLatestFollowUpEndDate(), DateHelper.subtractDays(now, 1)));
+
 		Optional<PersonFollowUpEndDto> result2 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
 		assertTrue(result2.isPresent());
-		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), now));
+		assertNotNull(result2.get().getLatestFollowUpEndDate());
+		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), DateHelper.subtractDays(now, 1)));
+
+		Optional<PersonFollowUpEndDto> result3 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person3.getUuid())).findFirst();
+		assertTrue(result3.isPresent());
+		assertNull(result3.get().getLatestFollowUpEndDate());
 	}
 
 	@Test

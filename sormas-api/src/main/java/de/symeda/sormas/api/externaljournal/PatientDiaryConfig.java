@@ -54,6 +54,10 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 		this.password = password;
 	}
 
+	public boolean isActive() {
+		return url != null;
+	}
+
 	public UserConfig getDefaultUser() {
 		return defaultUser;
 	}

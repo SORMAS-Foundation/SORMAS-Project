@@ -71,6 +71,10 @@ public class FieldVisibilityCheckers {
 		return this;
 	}
 
+	public FieldVisibilityCheckers andWithCountry(String countryLocale) {
+		return add(new CountryFieldVisibilityChecker(countryLocale));
+	}
+
 	private boolean isPropertyVisible(Class<?> parentType, String propertyId) {
 		for (FieldNameBaseChecker checker : fieldNameBasedCheckers) {
 			if (!checker.isVisible(parentType, propertyId)) {

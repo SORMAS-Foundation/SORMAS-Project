@@ -1,7 +1,14 @@
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -10,9 +17,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public class CriteriaBuilderHelper {
 
@@ -55,6 +67,10 @@ public class CriteriaBuilderHelper {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Expression<? extends Timestamp> date) {
+		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
+	}
+
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
 		From<?, ? extends AbstractDomainObject> entityFrom,
@@ -76,5 +92,37 @@ public class CriteriaBuilderHelper {
 			filter = andEquals(cb, from, filter, referenceDto.getUuid(), AbstractDomainObject.UUID);
 		}
 		return filter;
+	}
+
+	public static Predicate andInValues(Collection<String> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
+		if (CollectionUtils.isEmpty(values)) {
+			return filter;
+		}
+
+		Predicate or = null;
+		for (List<String> batch : ListUtils.partition(new ArrayList<>(values), ModelConstants.PARAMETER_LIMIT)) {
+			if (CollectionUtils.isNotEmpty(batch)) {
+				or = CriteriaBuilderHelper.or(cb, or, cb.in(path).value(batch));
+			}
+		}
+		return CriteriaBuilderHelper.and(cb, filter, or);
+	}
+
+	public static Predicate unaccentedIlike(CriteriaBuilder cb, Expression<String> valueExpression, String pattern) {
+		return unaccentedIlike(cb, valueExpression, cb.literal("%" + pattern + "%"));
+	}
+
+	public static Predicate unaccentedIlike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
+		Expression<String> unaccentedValueExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, valueExpression);
+		Expression<String> unaccentedPatternExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, patternExpression);
+		return ilike(cb, unaccentedValueExpression, unaccentedPatternExpression);
+	}
+
+	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, String pattern) {
+		return ilike(cb, valueExpression, cb.literal("%" + pattern + "%"));
+	}
+
+	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
+		return cb.isTrue(cb.function(ExtendedPostgreSQL94Dialect.ILIKE, Boolean.class, valueExpression, patternExpression));
 	}
 }

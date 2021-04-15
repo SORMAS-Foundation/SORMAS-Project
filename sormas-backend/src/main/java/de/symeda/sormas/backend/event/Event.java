@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,26 +38,35 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.InfectionPathCertainty;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "events")
 @Audited
-public class Event extends CoreAdo {
+public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 
@@ -69,6 +79,7 @@ public class Event extends CoreAdo {
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
@@ -109,6 +120,13 @@ public class Event extends CoreAdo {
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+
+	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
+	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
+	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
+	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
+
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -156,10 +174,20 @@ public class Event extends CoreAdo {
 	private Float reportLatLonAccuracy;
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private EventManagementStatus eventManagementStatus;
 
 	private boolean archived;
 
+	private InfectionPathCertainty infectionPathCertainty;
+	private HumanTransmissionMode humanTransmissionMode;
+	private ParenteralTransmissionMode parenteralTransmissionMode;
+	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
+
 	private List<Task> tasks;
+
+	private String internalId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -586,7 +614,80 @@ public class Event extends CoreAdo {
 		return subordinateEvents;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
+	}
+
 	public void setSubordinateEvents(List<Event> subordinateEvents) {
 		this.subordinateEvents = subordinateEvents;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionPathCertainty getInfectionPathCertainty() {
+		return infectionPathCertainty;
+	}
+
+	public void setInfectionPathCertainty(InfectionPathCertainty infectionPathCertainty) {
+		this.infectionPathCertainty = infectionPathCertainty;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public HumanTransmissionMode getHumanTransmissionMode() {
+		return humanTransmissionMode;
+	}
+
+	public void setHumanTransmissionMode(HumanTransmissionMode humanTransmissionMode) {
+		this.humanTransmissionMode = humanTransmissionMode;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ParenteralTransmissionMode getParenteralTransmissionMode() {
+		return parenteralTransmissionMode;
+	}
+
+	public void setParenteralTransmissionMode(ParenteralTransmissionMode parenteralTransmissionMode) {
+		this.parenteralTransmissionMode = parenteralTransmissionMode;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public MedicallyAssociatedTransmissionMode getMedicallyAssociatedTransmissionMode() {
+		return medicallyAssociatedTransmissionMode;
+	}
+
+	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
+		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }

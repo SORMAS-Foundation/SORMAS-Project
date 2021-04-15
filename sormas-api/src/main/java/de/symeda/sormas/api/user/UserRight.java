@@ -50,6 +50,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum UserRight {
 
 	//@formatter:off
@@ -285,6 +287,10 @@ public enum UserRight {
 			COMMUNITY_OFFICER
 	),
 	PERSON_DELETE(
+			ADMIN,
+			ADMIN_SUPERVISOR,
+			NATIONAL_USER),
+	PERSON_CONTACT_DETAILS_DELETE(
 			ADMIN,
 			ADMIN_SUPERVISOR,
 			NATIONAL_USER),
@@ -541,7 +547,10 @@ public enum UserRight {
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			SURVEILLANCE_OFFICER,
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR
 	),
 	VISIT_CREATE(
 			ADMIN,
@@ -745,6 +754,10 @@ public enum UserRight {
 			EVENT_OFFICER,
 			COMMUNITY_OFFICER
 	),
+	EVENT_IMPORT(
+			ADMIN,
+			IMPORT_USER
+	),
 	EVENT_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -897,7 +910,8 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			POE_SUPERVISOR,
-			LAB_USER
+			LAB_USER,
+			COMMUNITY_OFFICER
 	),
 	STATISTICS_EXPORT(
 			ADMIN,
@@ -909,7 +923,8 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			POE_SUPERVISOR,
-			LAB_USER
+			LAB_USER,
+			COMMUNITY_OFFICER
 	),
 	DATABASE_EXPORT_ACCESS(
 			ADMIN,
@@ -1323,7 +1338,10 @@ public enum UserRight {
 	LAB_MESSAGES(
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR
-	);
+	),
+	PERFORM_BULK_OPERATIONS_LAB_MESSAGES(
+			NATIONAL_USER
+	);	
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;
@@ -1341,5 +1359,9 @@ public enum UserRight {
 
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
+	}
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

@@ -1,6 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.feature;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,15 +127,15 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		if (includeInactive) {
 			if (criteria.getDistrict() == null) {
-				List<District> districts = null;
+				List<District> districts;
 				if (criteria.getRegion() != null) {
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
 					districts = districtService.getAllActiveByRegion(region);
 				} else {
-					districts = districtService.getAllActive();
+					districts = districtService.getAllActiveByServerCountry();
 				}
 
-				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
+				List<String> activeUuids = resultList.stream().map(FeatureConfigurationIndexDto::getDistrictUuid).collect(Collectors.toList());
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
 
 				for (District district : districts) {
@@ -138,7 +154,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		if (criteria.getRegion() != null) {
-			resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
+			resultList.sort(Comparator.comparing(FeatureConfigurationIndexDto::getDistrictName));
 		} else {
 			resultList.sort((c1, c2) -> {
 				if (c1.getRegionName().equals(c2.getRegionName())) {
@@ -240,6 +256,18 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public boolean isFeatureEnabled(FeatureType featureType) {
 		return !isFeatureDisabled(featureType);
+	}
+
+	@Override
+	public boolean isAnySurveillanceEnabled() {
+		return isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			|| isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			|| isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
+	}
+
+	@Override
+	public boolean isCountryEnabled() {
+		return isAnySurveillanceEnabled();
 	}
 
 	@Override

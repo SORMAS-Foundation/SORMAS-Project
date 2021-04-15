@@ -69,6 +69,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String ONLY_CASES_WITH_REINFECTION = "onlyCasesWithReinfection";
+	public static final String ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesNotSharedWithExternalSurvTool";
+	public static final String ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesSharedWithExternalSurvTool";
+	public static final String ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyCasesChangedSinceLastSharedWithExternalSurvTool";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -87,7 +91,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date newCaseDateTo;
 	private Date creationDateFrom;
 	private Date creationDateTo;
-	private NewCaseDateType newCaseDateType;
+	private CaseCriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private PersonReferenceDto person;
@@ -118,6 +122,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsFromOtherInstances;
+	private Boolean onlyCasesWithReinfection;
+	private Boolean onlyCasesNotSharedWithExternalSurvTool;
+	private Boolean onlyCasesSharedWithExternalSurvTool;
+	private Boolean onlyCasesChangedSinceLastSharedWithExternalSurvTool;
 
 	@Override
 	public CaseCriteria clone() {
@@ -217,7 +225,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	 * @param newCaseDateTo
 	 *            will automatically be set to the end of the day
 	 */
-	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
+	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, CaseCriteriaDateType newCaseDateType) {
 
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
@@ -246,7 +254,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.newCaseDateTo = newCaseDateTo;
 	}
 
-	public NewCaseDateType getNewCaseDateType() {
+	public CaseCriteriaDateType getNewCaseDateType() {
 		return newCaseDateType;
 	}
 
@@ -259,7 +267,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return dateFilterOption;
 	}
 
-	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+	public void setNewCaseDateType(CaseCriteriaDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
 
@@ -595,5 +603,37 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Boolean getOnlyCasesWithReinfection() {
+		return onlyCasesWithReinfection;
+	}
+
+	public void setOnlyCasesWithReinfection(Boolean onlyCasesWithReinfection) {
+		this.onlyCasesWithReinfection = onlyCasesWithReinfection;
+	}
+
+	public Boolean getOnlyCasesNotSharedWithExternalSurvTool() {
+		return onlyCasesNotSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesNotSharedWithExternalSurvTool(Boolean onlyCasesNotSharedWithExternalSurvTool) {
+		this.onlyCasesNotSharedWithExternalSurvTool = onlyCasesNotSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyCasesSharedWithExternalSurvTool() {
+		return onlyCasesSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesSharedWithExternalSurvTool(Boolean onlyCasesSharedWithExternalSurvTool) {
+		this.onlyCasesSharedWithExternalSurvTool = onlyCasesSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyCasesChangedSinceLastSharedWithExternalSurvTool() {
+		return onlyCasesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyCasesChangedSinceLastSharedWithExternalSurvTool) {
+		this.onlyCasesChangedSinceLastSharedWithExternalSurvTool = onlyCasesChangedSinceLastSharedWithExternalSurvTool;
 	}
 }

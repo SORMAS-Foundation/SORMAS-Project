@@ -43,8 +43,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 
 public class CsvStreamUtils {
 
-	public static final int STEP_SIZE = 50;
-
 	public static <T> void writeCsvContentToStream(
 		Class<T> csvRowClass,
 		SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
@@ -129,7 +127,9 @@ public class CsvStreamUtils {
 			writer.writeNext(labels, false);
 
 			int startIndex = 0;
-			List<T> exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
+			int stepSize = configFacade.getStepSizeForCsvExport();
+
+			List<T> exportRows = exportRowsSupplier.apply(startIndex, stepSize);
 			while (!exportRows.isEmpty()) {
 				try {
 					for (T exportRow : exportRows) {
@@ -143,7 +143,7 @@ public class CsvStreamUtils {
 							labels[i] = DataHelper.valueToString(value);
 						}
 						writer.writeNext(labels);
-					} ;
+					}
 				} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 					throw new RuntimeException(e);
 				} catch (Exception e) {
@@ -151,8 +151,8 @@ public class CsvStreamUtils {
 				}
 
 				writer.flush();
-				startIndex += STEP_SIZE;
-				exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
+				startIndex += stepSize;
+				exportRows = exportRowsSupplier.apply(startIndex, stepSize);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

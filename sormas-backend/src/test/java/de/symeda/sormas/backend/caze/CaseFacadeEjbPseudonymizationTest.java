@@ -189,7 +189,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		creator.createSample(caze2.toReference(), sampleDate, sampleDate, user2.toReference(), SampleMaterial.BLOOD, rdcf2.facility);
 
 		List<CaseExportDto> exportList =
-			getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		CaseExportDto caseIndex1 = exportList.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get();
 

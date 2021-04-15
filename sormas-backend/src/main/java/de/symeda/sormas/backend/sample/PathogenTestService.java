@@ -38,6 +38,8 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -142,7 +144,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids) {
+	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
@@ -152,6 +154,11 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = cb.and(createDefaultFilter(cb, pathogenTestRoot), sampleJoin.get(AbstractDomainObject.UUID).in(sampleUuids));
 
 		cq.where(filter);
+
+		if (ordered) {
+			cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
+		}
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -216,14 +223,19 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	}
 
 	/**
-	 * Creates a filter that excludes all pathogen tests that are either {@link CoreAdo#deleted} or associated with
-	 * samples whose case is {@link Case#archived}.
+	 * Creates a filter that excludes all pathogen tests that are {@link CoreAdo#deleted} or associated with
+	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
+	 * {@link EventParticipant#deleted}
 	 */
 	public Predicate createActiveTestsFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		return cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(root.get(PathogenTest.DELETED)));
+		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+		Predicate pred =
+			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
 	}
 
 	/**

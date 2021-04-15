@@ -39,7 +39,7 @@ public class EntityDtoAccessHelper {
 			Method[] declaredMethods = entityClass.getDeclaredMethods();
 			for (Method method : declaredMethods) {
 				String methodName = method.getName();
-				if (methodName.startsWith("get") || methodName.startsWith("is")) {
+				if (method.getParameterTypes().length == 0 && (methodName.startsWith("get") || methodName.startsWith("is"))) {
 					String propertyName = methodName.replaceAll("(^(is|get))|((Reference)?Dto$)", "").toUpperCase();
 					if (propertyName.equals(propertyKey.toUpperCase())) {
 						return method.invoke(entity);

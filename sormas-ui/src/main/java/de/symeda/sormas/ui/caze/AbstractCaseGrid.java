@@ -20,10 +20,12 @@ package de.symeda.sormas.ui.caze;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Label;
@@ -68,14 +70,18 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
 
 	private final boolean caseFollowUpEnabled;
+	private final boolean externalSurveillanceToolShareEnabled;
+
+	private DataProviderListener<IndexDto> dataProviderListener;
 
 	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
 
 		super(beanType);
 		setSizeFull();
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		externalSurveillanceToolShareEnabled = FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -161,8 +167,18 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+		if (externalSurveillanceToolShareEnabled) {
+			Column<CaseIndexDto, Date> shareDateColumn = ((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE));
+			shareDateColumn.setSortable(false);
+			shareDateColumn.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+			getColumn(CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT).setSortable(false);
+		}
+
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
 		if (caseFollowUpEnabled) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
@@ -178,33 +194,38 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	protected Stream<String> getGridColumns() {
 
-		return Stream.of(
-			Stream.of(
-				CaseIndexDto.UUID,
-				CaseIndexDto.EPID_NUMBER,
-				CaseIndexDto.EXTERNAL_ID,
-				CaseIndexDto.EXTERNAL_TOKEN,
-				DISEASE_SHORT,
-				CaseIndexDto.DISEASE_VARIANT,
-				CaseIndexDto.CASE_CLASSIFICATION,
-				CaseIndexDto.OUTCOME,
-				CaseIndexDto.INVESTIGATION_STATUS),
-			getPersonColumns(),
-			getEventColumns(),
-			getSymptomsColumns(),
-			getSampleColumns(),
-			Stream.of(
-				CaseIndexDto.DISTRICT_NAME,
-				CaseIndexDto.HEALTH_FACILITY_NAME,
-				CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE,
-				CaseIndexDto.QUARANTINE_TO,
-				CaseIndexDto.CREATION_DATE),
-			caseFollowUpEnabled ? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS,
-					CaseIndexDto.FOLLOW_UP_UNTIL,
-					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-					NUMBER_OF_VISITS) : Stream.<String> empty(),
-			Stream.of(COLUMN_COMPLETENESS)).flatMap(s -> s);
+		return Stream
+			.of(
+				Stream.of(
+					CaseIndexDto.UUID,
+					CaseIndexDto.EPID_NUMBER,
+					CaseIndexDto.EXTERNAL_ID,
+					CaseIndexDto.EXTERNAL_TOKEN,
+					DISEASE_SHORT,
+					CaseIndexDto.DISEASE_VARIANT,
+					CaseIndexDto.CASE_CLASSIFICATION,
+					CaseIndexDto.OUTCOME),
+				getReinfectionColumn(),
+				Stream.of(CaseIndexDto.INVESTIGATION_STATUS),
+				getPersonColumns(),
+				getEventColumns(),
+				getSymptomsColumns(),
+				getSampleColumns(),
+				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME, CaseIndexDto.REPORT_DATE),
+				externalSurveillanceToolShareEnabled
+					? Stream.of(
+						CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE,
+						CaseIndexDto.SURVEILLANCE_TOOL_STATUS,
+						CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT)
+					: Stream.<String> empty(),
+				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
+				getFollowUpColumns(),
+				Stream.of(COLUMN_COMPLETENESS))
+			.flatMap(Function.identity());
+	}
+
+	protected Stream<String> getReinfectionColumn() {
+		return Stream.empty();
 	}
 
 	protected Stream<String> getPersonColumns() {
@@ -221,6 +242,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 	protected Stream<String> getSampleColumns() {
 		return Stream.empty();
+	}
+
+	private Stream<String> getFollowUpColumns() {
+		return caseFollowUpEnabled
+			? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, ContactIndexDto.SYMPTOM_JOURNAL_STATUS, NUMBER_OF_VISITS)
+			: Stream.empty();
 	}
 
 	public void reload() {
@@ -250,8 +277,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			}
 		}
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
-		if (viewConfiguration.isInEagerMode()) {
+		if (ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
@@ -279,6 +305,14 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

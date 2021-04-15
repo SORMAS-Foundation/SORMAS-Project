@@ -87,6 +87,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setShortDistance(source.getShortDistance());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
@@ -104,6 +105,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 
 	@Override
@@ -162,6 +164,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setShortDistance(source.getShortDistance());
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
 		target.setWearingPpe(source.getWearingPpe());
@@ -178,5 +181,6 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 }

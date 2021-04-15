@@ -38,7 +38,7 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		getSystemEventFacade().saveSystemEvent(earlierSuccess);
 		getSystemEventFacade().saveSystemEvent(latestSuccess);
 		getSystemEventFacade().saveSystemEvent(error);
-		assertEquals(intermediateDate, getSystemEventFacade().getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES));
+		assertEquals(latestSuccess, getSystemEventFacade().getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES));
 	}
 
 	@Test

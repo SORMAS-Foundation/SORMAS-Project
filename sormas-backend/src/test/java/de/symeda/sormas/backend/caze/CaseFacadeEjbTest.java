@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -79,12 +80,16 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -239,6 +244,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		Assert.assertEquals(
 			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfSexUnknownAndSameBirthDateMatches() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.UNKNOWN, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			1,
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
@@ -633,7 +671,37 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		final String primaryPhone = "0000444888";
+		final String primaryEmail = "primary@email.com";
+		cazePerson.setPhone(primaryPhone);
+		cazePerson.setEmailAddress(primaryEmail);
+
+		cazePerson.getPersonContactDetails()
+			.add(
+				PersonContactDetailDto.build(
+					cazePerson.toReference(),
+					false,
+					PersonContactDetailType.PHONE,
+					PhoneNumberType.LANDLINE,
+					"",
+					"0265590500",
+					"",
+					false,
+					"",
+					""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				PersonContactDetailDto
+					.build(cazePerson.toReference(), false, PersonContactDetailType.EMAIL, null, "", "secondary@email.com", "", false, "", ""));
+		cazePerson.getPersonContactDetails()
+			.add(
+				PersonContactDetailDto
+					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
+
+		getPersonFacade().savePerson(cazePerson);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -647,6 +715,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 //		assertNotNull(exportDto.getSampleLab1());
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
+		assertEquals(primaryPhone, exportDto.getPhone());
+		assertEquals(primaryEmail, exportDto.getEmailAddress());
+		final String otherContactDetails = exportDto.getOtherContactDetails();
+		assertTrue(otherContactDetails.contains("0265590500 (PHONE)"));
+		assertTrue(otherContactDetails.contains("secondary@email.com (EMAIL)"));
+		assertTrue(otherContactDetails.contains("personSkype (SkypeID)"));
 	}
 
 	/**
@@ -693,7 +767,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		List<CaseExportDto> result =
+			cut.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
@@ -702,7 +777,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletion() {
+	public void testCaseDeletion() throws ExternalSurveillanceToolException {
 
 		Date since = new Date();
 
@@ -1032,7 +1107,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGenerateEpidNumber() {
+	public void testGenerateEpidNumber() throws ExternalSurveillanceToolException {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
@@ -1599,53 +1674,28 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(duplicates, hasSize(2));
 	}
 
+	@Test
+	public void testGetCasesByPersonUuids() {
 
+		UserReferenceDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		RDCF rdcf = creator.createRDCF();
 
-//	@Test
-//	public void testGetSimilarCases() {
-//		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-//		PersonDto cazePerson = creator.createPerson("Case", "Person");
-//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, 
-//				CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
-//		
-//		// 1: Same disease, same region, similar name, report date in range
-//		CaseCriteria caseCriteria = new CaseCriteria()
-//				.disease(caze.getDisease())
-//				.region(caze.getRegion());
-//		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
-//				.firstName("Person")
-//				.lastName("Case")
-//				.caseCriteria(caseCriteria)
-//				.reportDate(new Date());
-//		
-//		assertEquals(1, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 2: Different disease
-//		caseCriteria.disease(Disease.LASSA);
-//		
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 3: Different region
-//		RDCFEntities rdcfDifferent = creator.createRDCFEntities("Other region", "Other district", "Other community", "Other facility");
-//		caseCriteria.disease(Disease.EVD);
-//		caseCriteria.region(new RegionReferenceDto(rdcf.region.getUuid()));
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 4: Non-similar name
-//		caseCriteria.region(caze.getRegion());
-//		criteria.firstName("Different");
-//		criteria.lastName("Name");
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//		
-//		// 5: Region date out of range
-//		criteria.firstName("Person");
-//		criteria.lastName("Case");
-//		criteria.reportDate(DateHelper.subtractDays(new Date(), 60));
-//
-//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
-//	}
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		CaseDataDto case1 = getCaseFacade().saveCase(creator.createCase(user, person1, rdcf));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		CaseDataDto case2 = getCaseFacade().saveCase(creator.createCase(user, person2, rdcf));
+
+		List<CaseDataDto> casesByPerson = getCaseFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
+
+		assertEquals(1, casesByPerson.size());
+		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
+		assertNotEquals(case2.getUuid(), casesByPerson.get(0).getUuid());
+
+		casesByPerson = getCaseFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
+
+		assertEquals(2, casesByPerson.size());
+		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
+		assertEquals(case2.getUuid(), casesByPerson.get(1).getUuid());
+	}
 }

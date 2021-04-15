@@ -17,4 +17,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/Tasks/CreateNewTask</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>8d23428b-1b29-4f57-83f1-747930779002</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Persons/FilterPersonNameAndValidate</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

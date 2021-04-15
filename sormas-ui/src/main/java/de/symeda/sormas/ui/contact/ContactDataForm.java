@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
@@ -38,6 +39,7 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.CheckBox;
@@ -89,6 +91,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
@@ -103,6 +106,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
+	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
+	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -116,7 +121,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					fluidRowLocs(ContactDto.UUID) +
-					fluidRowLocs(6, ContactDto.EXTERNAL_ID, 6, ContactDto.EXTERNAL_TOKEN) +
+					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
+					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
@@ -149,7 +155,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-                    fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
+                    fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
                     + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
@@ -168,6 +175,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
+	private TextField expectedUntilDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -201,7 +209,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
 		addField(ContactDto.UUID, TextField.class);
 		addField(ContactDto.EXTERNAL_ID, TextField.class);
-		addField(ContactDto.EXTERNAL_TOKEN, TextField.class);
+
+		TextField externalTokenField = addField(ContactDto.EXTERNAL_TOKEN, TextField.class);
+		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageContactExternalTokenWarning));
+		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
+
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
 		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
 		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
@@ -281,9 +294,24 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
-		quarantine.addValueChangeListener(e -> onValueChange());
+		quarantine.addValueChangeListener(e -> onQuarantineValueChange());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+
+		quarantineFrom.addValidator(
+			new DateComparisonValidator(
+				quarantineFrom,
+				quarantineTo,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, quarantineFrom.getCaption(), quarantineTo.getCaption())));
+		quarantineTo.addValidator(
+			new DateComparisonValidator(
+				quarantineTo,
+				quarantineFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, quarantineTo.getCaption(), quarantineFrom.getCaption())));
 
 		quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 		CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
@@ -382,11 +410,22 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
+		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE);
+		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
-		this.addValueChangeListener(e -> onValueChange());
+		addValueChangeListener(e -> {
+			ValidationUtils.initComponentErrorValidator(
+				externalTokenField,
+				getValue().getExternalToken(),
+				Validations.duplicateExternalToken,
+				externalTokenWarningLabel,
+				(externalToken) -> FacadeProvider.getContactFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
+
+			onQuarantineValueChange();
+		});
 
 		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 		contactOfficerField.setNullSelectionAllowed(true);
@@ -416,9 +455,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				contactOfficerField,
 				districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
+		expectedUntilDate = new TextField();
+		expectedUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
+		getContent().addComponent(expectedUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
 		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
@@ -459,13 +501,25 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);
+		setReadOnly(
+			true,
+			ContactDto.UUID,
+			ContactDto.REPORTING_USER,
+			ContactDto.CONTACT_STATUS,
+			ContactDto.FOLLOW_UP_STATUS,
+			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			ContactDto.FOLLOW_UP_STATUS,
 			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT),
 			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+		FieldHelper.setVisibleWhenSourceNotNull(
+			getFieldGroup(),
+			Arrays.asList(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER),
+			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ContactDto.RELATION_DESCRIPTION,
@@ -871,7 +925,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			});
 	}
 
-	private void onValueChange() {
+	private void onQuarantineValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			ContactDto contact = this.getInternalValue();
@@ -926,5 +980,23 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				endDate.removeValidator(endDateValidator);
 			}
 		});
+	}
+
+	@Override
+	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		expectedUntilDate.setValue(
+			DateHelper.formatLocalDate(
+				ContactLogic.getFollowUpUntilDate(
+					newFieldValue,
+					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease())),
+				I18nProperties.getUserLanguage()));
+		expectedUntilDate.setReadOnly(true);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		discard();
 	}
 }

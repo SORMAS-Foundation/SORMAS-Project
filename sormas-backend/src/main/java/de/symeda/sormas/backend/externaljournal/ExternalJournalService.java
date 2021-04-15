@@ -6,6 +6,7 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
 import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.SEVERAL_PHONES_OR_EMAILS;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -17,9 +18,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -27,7 +30,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -44,18 +46,19 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
@@ -85,6 +88,8 @@ public class ExternalJournalService {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	/**
 	 * Retrieves a token used for authenticating in the symptom journal.
@@ -180,20 +185,22 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a followUpUntilDate has been updated
 	 *
-	 * @param contact
-	 *            a contact assigned to a person already available in the external journal
+	 * @param personUuid
+	 *            uuid of person already registered in the external journal
+	 * @param newFollowUpUntilDate
+	 *            the updated follow-up end date
 	 * @param previousFollowUpUntilDate
 	 *            the follow-up end date before the update
 	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
+		PersonDto person = personFacade.getPersonByUuid(personUuid);
 		if (person.isEnrolledInExternalJournal()) {
-			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
-				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-					notifySymptomJournal(contact.getPerson().getUuid());
+			if (newFollowUpUntilDate.after(previousFollowUpUntilDate)) {
+				if (configFacade.getSymptomJournalConfig().isActive()) {
+					notifySymptomJournal(personUuid);
 				}
-				if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-					notifyPatientDiary(contact.getPerson().getUuid());
+				if (configFacade.getPatientDiaryConfig().isActive()) {
+					notifyPatientDiary(personUuid);
 				}
 			}
 		}
@@ -210,14 +217,29 @@ public class ExternalJournalService {
 	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
 		if (shouldNotify) {
-			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+			if (configFacade.getSymptomJournalConfig().isActive()) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+			if (configFacade.getPatientDiaryConfig().isActive()) {
 				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
 		return shouldNotify;
+	}
+
+	public void handleExternalJournalPersonUpdate(PersonReferenceDto person) {
+		if (!configFacade.isExternalJournalActive()) {
+			return;
+		}
+
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 * 5 second delay added before notifying of update so that current transaction can complete and
+		 * new data can be retrieved from DB
+		 */
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(person.getUuid());
+		executorService.schedule((Runnable) () -> notifyExternalJournalPersonUpdate(existingPerson), 5, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -226,8 +248,7 @@ public class ExternalJournalService {
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
 		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		if (SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus())) {
+		if (detailedExistingPerson.isEnrolledInExternalJournal()) {
 			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
 			return !existingJournalPerson.equals(updatedJournalPerson);
 		}
@@ -294,7 +315,7 @@ public class ExternalJournalService {
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person) {
+	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
@@ -310,10 +331,10 @@ public class ExternalJournalService {
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
 				personFacade.savePerson(person);
 			}
-			return new PatientDiaryRegisterResult(success, message);
+			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			return new PatientDiaryRegisterResult(false, e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
 		}
 	}
 
@@ -324,10 +345,10 @@ public class ExternalJournalService {
 	}
 
 	public void validateExternalJournalPerson(PersonDto person) {
-		if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+		if (configFacade.getSymptomJournalConfig().isActive()) {
 			//TODO Clarify with Conventic how to verify
 		}
-		if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+		if (configFacade.getPatientDiaryConfig().isActive()) {
 			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
@@ -341,13 +362,30 @@ public class ExternalJournalService {
 	 *
 	 * @param person
 	 *            the person to validate
-	 * @return the result of the validation
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
 	 */
-	protected ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
+	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
-		String email = person.getEmailAddress();
-		String phone = person.getPhone();
+		boolean severalEmails = false, severalPhones = false;
+		String phone = "", email = "";
+
+		try {
+			email = person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalEmails = true;
+		}
+
+		try {
+			phone = person.getPhone(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalPhones = true;
+		}
+
+		if (severalEmails && severalPhones || (severalEmails && phone == "") || (severalPhones && email == "")) {
+			validationErrors.add(SEVERAL_PHONES_OR_EMAILS);
+		}
+
 		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
 		if (!hasPhoneOrEmail) {
 			validationErrors.add(NO_PHONE_OR_EMAIL);
@@ -358,7 +396,7 @@ public class ExternalJournalService {
 			if (!validator.isValid(email)) {
 				validationErrors.add(INVALID_EMAIL);
 			}
-			if (!isEmailAvailable(person)) {
+			if (!isEmailAvailable(email, person)) {
 				validationErrors.add(EMAIL_TAKEN);
 			}
 		}
@@ -390,8 +428,8 @@ public class ExternalJournalService {
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(PersonDto person) {
-		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+	private boolean isEmailAvailable(String email, PersonDto person) {
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, email)
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()
@@ -462,5 +500,36 @@ public class ExternalJournalService {
 			.map(PatientDiaryValidationError::getErrorLanguageKey)
 			.map(I18nProperties::getValidationError)
 			.collect(Collectors.joining("\n"));
+	}
+
+	/**
+	 * Attempts to cancel the follow up of a patient in the CLIMEDO patient diary.
+	 * Sets the person symptom journal status to DELETED if successful.
+	 *
+	 * @param person
+	 *            the person whose follow-up will be cancelled in the external journal
+	 * @return {@link PatientDiaryResult PatientDiaryResult} containing details about the result
+	 */
+	public PatientDiaryResult deletePatientDiaryPerson(PersonDto person) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
+			Response response = invocationBuilder.delete();
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			boolean success = node.get("success").booleanValue();
+			String message = node.get("message").textValue();
+			if (!success) {
+				logger.warn("Could not cancel follow-up for patient diary person: " + message);
+			} else {
+				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
+				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
+				personFacade.savePerson(person);
+			}
+			return new PatientDiaryResult(success, message);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return new PatientDiaryResult(false, e.getMessage());
+		}
 	}
 }

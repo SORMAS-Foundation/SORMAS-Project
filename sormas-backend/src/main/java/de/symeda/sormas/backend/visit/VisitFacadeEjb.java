@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -83,6 +84,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -176,6 +178,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	public List<VisitDto> getVisitsByContact(ContactReferenceDto contactRef) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		return contact.getVisits().stream().map(visit -> toDto(visit)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -191,6 +199,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	public VisitDto getLastVisitByCase(CaseReferenceDto caseRef) {
 		Case caze = caseService.getByReferenceDto(caseRef);
 		return toDto(caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null));
+	}
+
+	@Override
+	public List<VisitDto> getVisitsByCase(CaseReferenceDto caseRef) {
+		Case caze = caseService.getByReferenceDto(caseRef);
+		return caze.getVisits().stream().map(visit -> toDto(visit)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -408,6 +422,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(
 		VisitCriteria visitCriteria,
+		Collection<String> selectedRows,
 		VisitExportType exportType,
 		int first,
 		int max,
@@ -438,6 +453,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			personJoin.get(Person.UUID));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -630,7 +646,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getContacts() != null) {
 			for (Contact contact : newVisit.getContacts()) {
-				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.updateFollowUpDetails(contact, false);
 			}
 		}
 

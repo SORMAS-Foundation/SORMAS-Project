@@ -10,6 +10,7 @@ public interface Descriptions {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String Campaign_calculatedBasedOn = "Campaign.calculatedBasedOn";
 	String Campaign_campaignPhase = "Campaign.campaignPhase";
 	String CaseData_caseClassification = "CaseData.caseClassification";
 	String CaseData_clinicianDetails = "CaseData.clinicianDetails";
@@ -32,6 +33,7 @@ public interface Descriptions {
 	String Contact_region = "Contact.region";
 	String Contact_relationToCase = "Contact.relationToCase";
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
+	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
 	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";
@@ -87,6 +89,7 @@ public interface Descriptions {
 	String Event_endDate = "Event.endDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventStatus = "Event.eventStatus";
+	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcLastName = "Event.srcLastName";

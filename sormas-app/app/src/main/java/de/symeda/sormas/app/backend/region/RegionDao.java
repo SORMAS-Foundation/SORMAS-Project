@@ -15,9 +15,20 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import com.j256.ormlite.dao.Dao;
+import java.sql.SQLException;
+import java.util.List;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import android.util.Log;
+
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class RegionDao extends AbstractInfrastructureAdoDao<Region> {
 
@@ -38,5 +49,45 @@ public class RegionDao extends AbstractInfrastructureAdoDao<Region> {
 	@Override
 	public Region saveAndSnapshot(Region source) {
 		throw new UnsupportedOperationException();
+	}
+
+	public List<Region> queryActiveByServerCountry() {
+		String serverCountryName = ConfigProvider.getServerCountryName();
+		Country serverCountry = null;
+		if (serverCountryName != null) {
+			List<Country> countries = DatabaseHelper.getCountryDao().queryActiveForEq(Country.NAME, serverCountryName, Country.NAME, true);
+			serverCountry = countries.size() > 0 ? countries.get(0) : null;
+		}
+
+		try {
+			QueryBuilder<Region, Long> builder = queryBuilder();
+			Where<Region, Long> where = builder.where();
+			where.and(where.eq(AbstractDomainObject.SNAPSHOT, false), where.eq(InfrastructureAdo.ARCHIVED, false));
+
+			if (serverCountry != null) {
+				where.and().eq(Region.COUNTRY + "_id", serverCountry).or().isNull(Region.COUNTRY + "_id");
+			}
+
+			return builder.orderBy(Region.NAME, true).query();
+		} catch (SQLException | IllegalArgumentException e) {
+			Log.e(getTableName(), "Could not perform queryActiveByServerCountry");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<Region> queryActiveByCountry(Country country) {
+		try {
+			QueryBuilder<Region, Long> builder = queryBuilder();
+			Where<Region, Long> where = builder.where();
+			where.and(
+				where.eq(AbstractDomainObject.SNAPSHOT, false),
+				where.eq(InfrastructureAdo.ARCHIVED, false),
+				where.eq(Region.COUNTRY + "_id", country));
+
+			return builder.orderBy(Region.NAME, true).query();
+		} catch (SQLException | IllegalArgumentException e) {
+			Log.e(getTableName(), "Could not perform queryActiveByCountry");
+			throw new RuntimeException(e);
+		}
 	}
 }

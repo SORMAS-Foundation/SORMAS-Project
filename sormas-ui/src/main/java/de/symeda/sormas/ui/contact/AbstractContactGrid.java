@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -60,6 +61,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
+	private DataProviderListener<IndexDto> dataProviderListener;
+
 	@SuppressWarnings("rawtypes")
 	Class viewClass;
 
@@ -70,7 +73,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
@@ -115,9 +118,9 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 		if (tasksFeatureEnabled) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
-					entry -> String.format(
-							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-							FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
+				entry -> String.format(
+					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+					FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
 			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 			pendingTasksColumn.setSortable(false);
 		}
@@ -156,24 +159,25 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 
-		return Stream.of(
-			Stream.of(
-				ContactIndexDto.UUID,
-				ContactIndexDto.EXTERNAL_ID,
-				ContactIndexDto.EXTERNAL_TOKEN,
-				DISEASE_SHORT,
-				ContactIndexDto.CONTACT_CLASSIFICATION,
-				ContactIndexDto.CONTACT_STATUS),
-			getPersonColumns(),
-			getEventColumns(),
-			Stream.of(
-				ContactIndexDto.CONTACT_CATEGORY,
-				ContactIndexDto.CONTACT_PROXIMITY,
-				ContactIndexDto.FOLLOW_UP_STATUS,
-				ContactIndexDto.FOLLOW_UP_UNTIL,
-				ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-				NUMBER_OF_VISITS),
-			Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
+		return Stream
+			.of(
+				Stream.of(
+					ContactIndexDto.UUID,
+					ContactIndexDto.EXTERNAL_ID,
+					ContactIndexDto.EXTERNAL_TOKEN,
+					DISEASE_SHORT,
+					ContactIndexDto.CONTACT_CLASSIFICATION,
+					ContactIndexDto.CONTACT_STATUS),
+				getPersonColumns(),
+				getEventColumns(),
+				Stream.of(
+					ContactIndexDto.CONTACT_CATEGORY,
+					ContactIndexDto.CONTACT_PROXIMITY,
+					ContactIndexDto.FOLLOW_UP_STATUS,
+					ContactIndexDto.FOLLOW_UP_UNTIL,
+					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
+					NUMBER_OF_VISITS),
+				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
 			.flatMap(s -> s);
 	}
 
@@ -197,9 +201,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
-		@SuppressWarnings("unchecked")
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
-		if (viewConfiguration.isInEagerMode()) {
+		if (ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
@@ -226,6 +228,14 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 
 	protected abstract List<IndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

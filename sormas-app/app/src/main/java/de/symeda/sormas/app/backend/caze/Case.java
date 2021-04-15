@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.app.backend.caze;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -26,13 +25,16 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -68,9 +70,6 @@ import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.user.User;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Case.TABLE_NAME)
 @DatabaseTable(tableName = Case.TABLE_NAME)
@@ -357,10 +356,6 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Integer caseIdIsm;
 	@Enumerated(EnumType.STRING)
-	private CovidTestReason covidTestReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String covidTestReasonDetails;
-	@Enumerated(EnumType.STRING)
 	private ContactTracingContactType contactTracingFirstContactType;
 	@DatabaseField
 	private Date contactTracingFirstContactDate;
@@ -413,6 +408,10 @@ public class Case extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String notACaseReasonDetails;
+	@DatabaseField
+	private Date followUpStatusChangeDate;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User followUpStatusChangeUser;
 
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -1202,22 +1201,6 @@ public class Case extends PseudonymizableAdo {
 		this.caseIdIsm = caseIdIsm;
 	}
 
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
-	}
-
 	public ContactTracingContactType getContactTracingFirstContactType() {
 		return contactTracingFirstContactType;
 	}
@@ -1400,5 +1383,21 @@ public class Case extends PseudonymizableAdo {
 
 	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
 		this.notACaseReasonDetails = notACaseReasonDetails;
+	}
+
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

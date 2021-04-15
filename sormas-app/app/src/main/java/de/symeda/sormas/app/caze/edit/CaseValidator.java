@@ -174,47 +174,7 @@ final class CaseValidator {
 	}
 
 	static void initializePreviousHospitalizationValidation(final DialogPreviousHospitalizationLayoutBinding contentBinding) {
-		ResultCallback<Boolean> admissionDateCallback = () -> {
-			if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null
-				&& contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(
-						contentBinding.casePreviousHospitalizationAdmissionDate.getValue(),
-						contentBinding.casePreviousHospitalizationDischargeDate.getValue())
-					> 0) {
-					contentBinding.casePreviousHospitalizationAdmissionDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.beforeDate,
-							contentBinding.casePreviousHospitalizationAdmissionDate.getCaption(),
-							contentBinding.casePreviousHospitalizationDischargeDate.getCaption()));
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		ResultCallback<Boolean> dischargeDateCallback = () -> {
-			if (contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null
-				&& contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(
-						contentBinding.casePreviousHospitalizationDischargeDate.getValue(),
-						contentBinding.casePreviousHospitalizationAdmissionDate.getValue())
-					< 0) {
-					contentBinding.casePreviousHospitalizationDischargeDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.casePreviousHospitalizationDischargeDate.getCaption(),
-							contentBinding.casePreviousHospitalizationAdmissionDate.getCaption()));
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		contentBinding.casePreviousHospitalizationAdmissionDate.setValidationCallback(admissionDateCallback);
-		contentBinding.casePreviousHospitalizationDischargeDate.setValidationCallback(dischargeDateCallback);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationDischargeDate, false);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, false);
 	}
 }

@@ -75,7 +75,7 @@ public class CaseListCriteriaBuilder {
 
 	private <T> CriteriaQuery<T> buildIndexCriteria(
 		Class<T> type,
-		BiFunction<Root<Case>, CaseJoins<Case>, List<Selection<?>>> selectionProvider,
+		BiFunction<Root<Case>, CaseQueryContext, List<Selection<?>>> selectionProvider,
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties,
@@ -84,9 +84,10 @@ public class CaseListCriteriaBuilder {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
 		Root<Case> caze = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
-		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, joins));
+		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, caseQueryContext));
 
 		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
 		Root<Case> visitCountRoot = visitCountSq.from(Case.class);
@@ -136,7 +137,7 @@ public class CaseListCriteriaBuilder {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, caze, joins)
+					orderExpressionProvider.forProperty(sortProperty, caze, joins, cb)
 						.stream()
 						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
 						.collect(Collectors.toList()));
@@ -153,7 +154,7 @@ public class CaseListCriteriaBuilder {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -164,8 +165,14 @@ public class CaseListCriteriaBuilder {
 		return cq;
 	}
 
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
+	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
 
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		return getCaseIndexSelections(root, joins);
+	}
+
+	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
 		return Arrays.asList(
 			root.get(AbstractDomainObject.ID),
 			root.get(Case.UUID),
@@ -211,7 +218,7 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.ID:
@@ -226,6 +233,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.REPORT_DATE:
 		case CaseIndexDto.CREATION_DATE:
 		case CaseIndexDto.OUTCOME:
+		case CaseIndexDetailedDto.RE_INFECTION:
 		case CaseIndexDto.QUARANTINE_TO:
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
@@ -262,17 +270,20 @@ public class CaseListCriteriaBuilder {
 		}
 	}
 
-	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseQueryContext caseQueryContext) {
 
-		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, joins));
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
+				caze.get(Case.RE_INFECTION),
 				joins.getAddress().get(Location.CITY),
 				joins.getAddress().get(Location.STREET),
 				joins.getAddress().get(Location.HOUSE_NUMBER),
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
-				joins.getPerson().get(Person.PHONE),
+				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
 				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
@@ -280,7 +291,7 @@ public class CaseListCriteriaBuilder {
 		return selections;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
@@ -290,13 +301,13 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.literal(49));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
-			return getIndexOrders(sortProperty, caze, joins);
+			return getIndexOrders(sortProperty, caze, joins, cb);
 		}
 	}
 
@@ -313,6 +324,6 @@ public class CaseListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb);
 	}
 }

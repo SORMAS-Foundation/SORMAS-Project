@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.app.component.controls;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -32,6 +29,9 @@ import android.widget.SpinnerAdapter;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -111,6 +111,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 		setFieldValue(selectedValue);
 	}
 
+	public void unregisterListener(ValueChangeListener valueChangeListener) {
+		spinnerFieldListeners.unregisterListener(valueChangeListener);
+	}
+
 	public ArrayAdapter getAdapter() {
 		return (ControlSpinnerAdapter) input.getAdapter();
 	}
@@ -124,6 +128,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 		input.setAdapter(null);
 		input.setSelection(Spinner.INVALID_POSITION);
 		input.setAdapter(adapter);
+
+		if (inverseBindingListener != null) {
+			inverseBindingListener.onChange();
+		}
 	}
 
 	public int getPositionOf(Item item) {

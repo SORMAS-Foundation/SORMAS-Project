@@ -165,7 +165,7 @@ public class LineListingLayout extends VerticalLayout {
 			region.setVisible(false);
 			updateDistricts(userRegion);
 		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			region.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
@@ -382,6 +382,7 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfReport.setId("lineListingDateOfReport_" + lineIndex);
 			dateOfReport.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfReport).asRequired().bind(CaseLineDto.DATE_OF_REPORT);
+			dateOfReport.setRangeEnd(LocalDate.now());
 			dateOfReport.addValueChangeListener(e -> setEpidNumberPrefix(this, dateOfReport.getValue()));
 			epidNumber = new TextField();
 			epidNumber.setId("lineListingEpidNumber_" + lineIndex);

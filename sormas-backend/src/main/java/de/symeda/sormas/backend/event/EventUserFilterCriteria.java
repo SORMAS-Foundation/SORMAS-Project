@@ -22,15 +22,15 @@ package de.symeda.sormas.backend.event;
 
 public class EventUserFilterCriteria {
 
-	private boolean includeUserCaseFilter;
+	private boolean includeUserCaseAndEventParticipantFilter;
 	private boolean forceRegionJurisdiction;
 
-	public boolean isIncludeUserCaseFilter() {
-		return includeUserCaseFilter;
+	public boolean isIncludeUserCaseAndEventParticipantFilter() {
+		return includeUserCaseAndEventParticipantFilter;
 	}
 
-	public EventUserFilterCriteria includeUserCaseFilter(boolean includeUserCaseFilter) {
-		this.includeUserCaseFilter = includeUserCaseFilter;
+	public EventUserFilterCriteria includeUserCaseAndEventParticipantFilter(boolean includeUserCaseAndEventParticipantFilter) {
+		this.includeUserCaseAndEventParticipantFilter = includeUserCaseAndEventParticipantFilter;
 		return this;
 	}
 

@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.naming.CannotProceedException;
+
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
@@ -51,8 +53,10 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.person.PersonEditForm;
 
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
@@ -60,7 +64,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public static interface CommitListener {
 
-		void onCommit();
+		void onCommit() throws CannotProceedException;
 	}
 
 	public static interface DiscardListener {
@@ -184,12 +188,39 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
 				final Object source = ((Field.ValueChangeEvent) ev).getSource();
-				if (source instanceof LocationEditForm) {
+				if (source instanceof PersonEditForm) {
+					final PersonEditForm personEditForm = (PersonEditForm) source;
+					final LocationEditForm locationEditForm = personEditForm.getField(PersonDto.ADDRESS);
+					if (atLeastOneFieldModified(
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					} else if (locationEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					} else if (personEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof LocationEditForm) {
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
 					if (atLeastOneFieldModified(
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					} else if (locationEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
 				} else if (source instanceof AccessibleTextField) {
@@ -522,7 +553,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private void onCommit() {
 
 		for (CommitListener listener : commitListeners)
-			listener.onCommit();
+			try {
+				listener.onCommit();
+			} catch (CannotProceedException e) {
+				break;
+			}
 	}
 
 	/**

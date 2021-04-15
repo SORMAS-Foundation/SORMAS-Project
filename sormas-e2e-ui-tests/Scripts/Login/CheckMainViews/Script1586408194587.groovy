@@ -1,6 +1,5 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -51,6 +50,11 @@ WebUI.click(findTestObject('Login/MainView/menu_Statistics'))
 
 WebUI.verifyElementPresent(findTestObject('Login/MainView/title_Statistics'), 2, FailureHandling.STOP_ON_FAILURE)
 
+'Persons'
+WebUI.click(findTestObject('Login/MainView/menu_Persons'))
+
+WebUI.verifyElementPresent(findTestObject('Login/MainView/title_PersonDirectory'), 2, FailureHandling.STOP_ON_FAILURE)
+
 'Configuration'
 WebUI.click(findTestObject('Login/MainView/menu_Configuration'))
 
@@ -62,3 +66,4 @@ WebUI.click(findTestObject('Login/MainView/menu_About'))
 WebUI.verifyElementPresent(findTestObject('Login/MainView/title_About'), 2, FailureHandling.STOP_ON_FAILURE)
 
 WebUI.closeBrowser()
+

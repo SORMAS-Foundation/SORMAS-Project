@@ -1,10 +1,12 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -15,6 +17,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -29,6 +33,7 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -45,6 +50,11 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+
+	@EJB
+	private ContinentService continentService;
+	@EJB
+	private SubcontinentService subcontinentService;
 
 	@EJB
 	private UserService userService;
@@ -71,15 +81,31 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
+	public List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid) {
+		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
+		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CountryReferenceDto> getAllActiveByContinent(String uuid) {
+		Continent continent = continentService.getByUuid(uuid);
+		return continent.getSubcontinents()
+			.stream()
+			.flatMap(subcontinent -> subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
+		Join<Country, Subcontinent> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -89,6 +115,9 @@ public class CountryFacadeEjb implements CountryFacade {
 				switch (sortProperty.propertyName) {
 				case CountryIndexDto.DISPLAY_NAME:
 					expression = country.get(Country.DEFAULT_NAME);
+					break;
+				case CountryIndexDto.SUBCONTINENT:
+					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
@@ -138,15 +167,29 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
+		return saveCountry(dto, false);
+	}
+
+	@Override
+	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
 
 		Country country = countryService.getByUuid(dto.getUuid());
 
-		if (country == null
-			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent() || countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+		if (country == null) {
+			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);
+			Optional<Country> byUnoCode = countryService.getByUnoCode(dto.getUnoCode(), true);
+			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
+				if (allowMerge) {
+					country = byIsoCode.isPresent() ? byIsoCode.get() : byUnoCode.get();
+					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
+				}
+			}
 		}
 
 		country = fillOrBuildEntity(dto, country, true);
@@ -205,6 +248,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -225,6 +269,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setIsoCode(isoCode);
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
+		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
 	}
@@ -237,6 +282,10 @@ public class CountryFacadeEjb implements CountryFacade {
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
+		if (subcontinent != null) {
+			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
+		}
 
 		return target;
 	}
@@ -293,8 +342,25 @@ public class CountryFacadeEjb implements CountryFacade {
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}
 
+	@Override
+	public boolean hasArchivedParentInfrastructure(Collection<String> countryUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Country> root = cq.from(Country.class);
+		Join<Country, Subcontinent> subcontinentJoin = root.join(Country.SUBCONTINENT);
+
+		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(Subcontinent.ARCHIVED)), root.get(Country.UUID).in(countryUuids)));
+
+		cq.select(root.get(Country.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
 	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
+
+		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
 
 		cq.multiselect(
 			root.get(Country.CREATION_DATE),
@@ -304,6 +370,9 @@ public class CountryFacadeEjb implements CountryFacade {
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
-			root.get(Country.UNO_CODE));
+			root.get(Country.UNO_CODE),
+			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(Subcontinent.DEFAULT_NAME),
+			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.clinicalcourse;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface ClinicalVisitFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max);
+	List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max);
 }

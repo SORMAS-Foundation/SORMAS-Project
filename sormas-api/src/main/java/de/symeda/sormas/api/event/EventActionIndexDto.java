@@ -38,6 +38,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_RISK_LEVEL = "eventRiskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String EVENT_REPORTING_USER = "eventReportingUser";
 	public static final String EVENT_RESPONSIBLE_USER = "eventResponsibleUser";
 	public static final String EVENT_EVOLUTION_DATE = "eventEvolutionDate";
@@ -56,6 +57,7 @@ public class EventActionIndexDto implements Serializable {
 	private EventStatus eventStatus;
 	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private EventManagementStatus eventManagementStatus;
 	private UserReferenceDto eventReportingUser;
 	private UserReferenceDto eventResponsibleUser;
 	private Date eventEvolutionDate;
@@ -75,6 +77,7 @@ public class EventActionIndexDto implements Serializable {
 		EventStatus eventStatus,
 		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
+		EventManagementStatus eventManagementStatus,
 		String eventReportingUserUuid,
 		String eventReportingUserFirstName,
 		String eventReportingUserLastName,
@@ -113,6 +116,7 @@ public class EventActionIndexDto implements Serializable {
 		this.actionPriority = actionPriority;
 		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null);
 		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public String getEventUuid() {
@@ -249,5 +253,13 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setActionCreatorUser(UserReferenceDto actionCreatorUser) {
 		this.actionCreatorUser = actionCreatorUser;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 }

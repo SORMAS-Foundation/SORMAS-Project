@@ -12,6 +12,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -30,7 +31,8 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 			EventParticipantCriteria.BIRTHDATE_MM,
 			EventParticipantCriteria.BIRTHDATE_DD,
 			EventParticipantCriteria.FREE_TEXT,
-			EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT};
+			EventParticipantCriteria.PATHOGENTESTRESULT,
+			EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT };
 	}
 
 	@Override
@@ -48,6 +50,13 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 		ComboBox birthDateDD = addField(EventParticipantCriteria.BIRTHDATE_DD, ComboBox.class);
 		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
 		birthDateDD.setWidth(140, Unit.PIXELS);
+
+		addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventParticipantCriteria.PATHOGENTESTRESULT,
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.PATHOGEN_TEST_RESULT),
+				180),
+			ComboBox.class);
 
 		TextField searchField = addField(
 			FieldConfiguration

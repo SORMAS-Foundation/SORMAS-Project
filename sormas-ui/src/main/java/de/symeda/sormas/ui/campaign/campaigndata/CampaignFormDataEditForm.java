@@ -37,6 +37,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -92,7 +93,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			CampaignFormDataDto.COMMUNITY);
 
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
-		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
@@ -113,7 +114,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					cbRegion,
 					area != null
 						? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid())
-						: FacadeProvider.getRegionFacade().getAllActiveAsReference());
+						: FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			});
 			cbRegion.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -206,6 +207,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			campaignForm.getCampaignFormTranslations());
 
 		campaignFormBuilder.buildForm();
+
+		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(campaignFormBuilder);
+		expressionProcessor.disableExpressionFieldsForEditing();
+		expressionProcessor.configureExpressionFieldsWithTooltip();
+		expressionProcessor.addExpressionListener();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}

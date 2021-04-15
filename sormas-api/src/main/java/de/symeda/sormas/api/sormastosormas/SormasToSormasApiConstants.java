@@ -29,4 +29,10 @@ public class SormasToSormasApiConstants {
 
 	public static final String CONTACT_SYNC_ENDPOINT = "/contacts/sync";
 
+	public static final String EVENT_ENDPOINT = "/events";
+
+	public static final String EVENT_SYNC_ENDPOINT = "/events/sync";
+
+	public static final String LAB_MESSAGE_ENDPOINT = "/labmessages";
+
 }

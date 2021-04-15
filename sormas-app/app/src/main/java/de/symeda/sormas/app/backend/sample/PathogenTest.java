@@ -101,6 +101,9 @@ public class PathogenTest extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User labUser;
 
+	@Column
+	private boolean viaLims;
+
 	public Sample getSample() {
 		return sample;
 	}
@@ -235,6 +238,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public boolean isViaLims() {
+		return viaLims;
+	}
+
+	public void setViaLims(boolean viaLims) {
+		this.viaLims = viaLims;
 	}
 
 	@Override

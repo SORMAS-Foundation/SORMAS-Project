@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import static com.google.common.base.Predicates.or;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -35,18 +37,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.CharMatcher;
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -138,11 +144,11 @@ public final class DownloadUtil {
 	public static StreamResource createGridExportStreamResource(
 		Indexed container,
 		List<Column> columns,
-		String tempFilePrefix,
-		String fileName,
+		ExportEntityName entityName,
 		String... ignoredPropertyIds) {
 
-		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
+		String fileName = createFileNameWithCurrentDate(entityName, ".csv");
+		return new V7GridExportStreamResource(container, columns, fileName, ignoredPropertyIds);
 	}
 
 	public static StreamResource createFileStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
@@ -184,12 +190,13 @@ public final class DownloadUtil {
 						List<String> columnNames = new ArrayList<>();
 						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.REGION));
 						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.DISTRICT));
+						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.COMMUNITY));
 						columnNames.add(I18nProperties.getString(Strings.total));
 						columnNames.add(I18nProperties.getCaption(Captions.populationDataMaleTotal));
 						columnNames.add(I18nProperties.getCaption(Captions.populationDataFemaleTotal));
 
 						Map<AgeGroup, Integer> ageGroupPositions = new HashMap<>();
-						int ageGroupIndex = 5;
+						int ageGroupIndex = 6;
 						for (AgeGroup ageGroup : AgeGroup.values()) {
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, null));
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, Sex.MALE));
@@ -206,16 +213,19 @@ public final class DownloadUtil {
 						String[] exportLine = new String[columnNames.size()];
 						String regionName = "";
 						String districtName = "";
+						String communityName = "";
 						for (Object[] populationExportData : populationExportDataList) {
 							String dataRegionName = (String) populationExportData[0];
 							String dataDistrictName = populationExportData[1] == null ? "" : (String) populationExportData[1];
-							if (exportLine[0] != null && (!dataRegionName.equals(regionName) || !dataDistrictName.equals(districtName))) {
+							String dataCommunityName = populationExportData[2] == null ? "" : (String) populationExportData[2];
+							if (exportLine[0] != null && (!dataRegionName.equals(regionName) || !dataDistrictName.equals(districtName)|| !dataCommunityName.equals(communityName))) {
 								// New region or district reached; write line to CSV
 								writer.writeNext(exportLine);
 								exportLine = new String[columnNames.size()];
 							}
 							regionName = dataRegionName;
 							districtName = dataDistrictName;
+							communityName = dataCommunityName;
 
 							// Region
 							if (exportLine[0] == null) {
@@ -225,23 +235,27 @@ public final class DownloadUtil {
 							if (exportLine[1] == null) {
 								exportLine[1] = (String) populationExportData[1];
 							}
+							// Community
+							if (exportLine[2] == null) {
+								exportLine[2] = (String) populationExportData[2];
+							}
 
-							if (populationExportData[2] == null) {
+							if (populationExportData[3] == null) {
 								// Total population
-								String sexString = (String) populationExportData[3];
+								String sexString = (String) populationExportData[4];
 								if (Sex.MALE.getName().equals(sexString)) {
-									exportLine[3] = String.valueOf((int) populationExportData[4]);
+									exportLine[4] = String.valueOf((int) populationExportData[5]);
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
-									exportLine[4] = String.valueOf((int) populationExportData[4]);
+									exportLine[5] = String.valueOf((int) populationExportData[5]);
 								} else if (Sex.OTHER.getName().equals(sexString)) {
-									exportLine[5] = String.valueOf((int) populationExportData[4]);
+									exportLine[6] = String.valueOf((int) populationExportData[5]);
 								} else {
-									exportLine[2] = String.valueOf((int) populationExportData[4]);
+									exportLine[3] = String.valueOf((int) populationExportData[5]);
 								}
 							} else {
 								// Population based on age group position and sex
-								Integer ageGroupPosition = ageGroupPositions.get(AgeGroup.valueOf((String) populationExportData[2]));
-								String sexString = (String) populationExportData[3];
+								Integer ageGroupPosition = ageGroupPositions.get(AgeGroup.valueOf((String) populationExportData[3]));
+								String sexString = (String) populationExportData[4];
 								if (Sex.MALE.getName().equals(sexString)) {
 									ageGroupPosition += 1;
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
@@ -249,7 +263,7 @@ public final class DownloadUtil {
 								} else if (Sex.OTHER.getName().equals(sexString)) {
 									ageGroupPosition += 3;
 								}
-								exportLine[ageGroupPosition] = String.valueOf((int) populationExportData[4]);
+								exportLine[ageGroupPosition] = String.valueOf((int) populationExportData[5]);
 							}
 						}
 
@@ -275,13 +289,17 @@ public final class DownloadUtil {
 		return populationDataStreamResource;
 	}
 
-	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
-		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, CaseExportType.CASE_MANAGEMENT, null);
+	public static StreamResource createCaseManagementExportResource(
+		CaseCriteria criteria,
+		Supplier<Collection<String>> selectedRows,
+		ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".zip");
+		StreamResource casesResource = CaseDownloadUtil.createCaseExportResource(criteria, selectedRows, CaseExportType.CASE_MANAGEMENT, null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(
 			PrescriptionExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					PrescriptionExportDto.I18N_PREFIX,
@@ -292,13 +310,13 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(
 			TreatmentExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					TreatmentExportDto.I18N_PREFIX,
@@ -309,13 +327,13 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.PRESCRIPTIONS,
 			null);
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(
 			ClinicalVisitExportDto.class,
 			null,
-			(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, start, max),
+			(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, selectedRows.get(), start, max),
 			(propertyId, type) -> {
 				String caption = I18nProperties.getPrefixCaption(
 					ClinicalVisitExportDto.I18N_PREFIX,
@@ -329,7 +347,7 @@ public final class DownloadUtil {
 				}
 				return caption;
 			},
-			"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+			ExportEntityName.CLINICAL_VISITS,
 			null);
 
 		StreamResource caseManagementStreamResource = new StreamResource(() -> {
@@ -393,7 +411,7 @@ public final class DownloadUtil {
 			this.lazyInputStreamSupplier = lazyInputStreamSupplier;
 		}
 
-		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
+		public DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
 			this(() -> {
 				try (SharedByteArrayOutputStream os = new SharedByteArrayOutputStream()) {
 					osConsumer.writeTo(os);
@@ -449,8 +467,11 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria, final String exportFileName) {
-
+	public static StreamResource createVisitsExportStreamResource(
+		ContactCriteria contactCriteria,
+		Supplier<Set<String>> selectedRows,
+		ExportEntityName entityName) {
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
 				.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
@@ -482,7 +503,7 @@ public final class DownloadUtil {
 
 				int startIndex = 0;
 				List<VisitSummaryExportDto> exportRows = FacadeProvider.getContactFacade()
-					.getVisitSummaryExportList(contactCriteria, 0, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
+					.getVisitSummaryExportList(contactCriteria, selectedRows.get(), 0, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
 					for (VisitSummaryExportDto exportRow : exportRows) {
@@ -502,7 +523,12 @@ public final class DownloadUtil {
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
 					exportRows = FacadeProvider.getContactFacade()
-						.getVisitSummaryExportList(contactCriteria, startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
+						.getVisitSummaryExportList(
+							contactCriteria,
+							selectedRows.get(),
+							startIndex,
+							DETAILED_EXPORT_STEP_SIZE,
+							I18nProperties.getUserLanguage());
 				}
 			}
 		},
@@ -528,9 +554,10 @@ public final class DownloadUtil {
 		Enum<?> exportType,
 		CsvStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 		CsvStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
-		String exportFileName,
+		ExportEntityName entityName,
 		ExportConfigurationDto exportConfiguration) {
 
+		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try {
 				CsvStreamUtils.writeCsvContentToStream(
@@ -579,7 +606,7 @@ public final class DownloadUtil {
 				exportTypeSupplier = exportTarget::visitExportTypes;
 
 			}
-			return exportTypeSupplier == null ? false : containsExportType(exportType, exportTypeSupplier);
+			return exportTypeSupplier != null && containsExportType(exportType, exportTypeSupplier);
 		}
 		return false;
 	}
@@ -600,7 +627,7 @@ public final class DownloadUtil {
 	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
 	 * </p>
 	 *
-	 * @param exportButton
+	 * @param exportComponent
 	 * @param closeListener
 	 */
 	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
@@ -621,7 +648,17 @@ public final class DownloadUtil {
 		dialog.addCloseListener(closeListener);
 	}
 
-	public static String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
-		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
+	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
+		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
+		String processedInstanceName = getProcessedName(instanceName);
+		String processedEntityName = getProcessedName(entityName.getLocalizedNameInSystemLanguage());
+		String exportDate = DateHelper.formatDateForExport(new Date());
+		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
+	}
+
+	private static String getProcessedName(String name) {
+		Predicate<Character> predicateMatcher = or(Character::isLetter, Character::isSpaceChar);
+		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(predicateMatcher::test).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }

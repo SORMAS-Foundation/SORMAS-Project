@@ -32,9 +32,12 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String I18N_PREFIX = "Event";
 
 	public static final String UUID = "uuid";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String CASE_COUNT = "caseCount";
 	public static final String DEATH_COUNT = "deathCount";
@@ -60,9 +63,12 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String ADDRESS = "address";
 
 	private String uuid;
+	private String externalId;
+	private String externalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private EventManagementStatus eventManagementStatus;
 	private long participantCount;
 	private long caseCount;
 	private long deathCount;
@@ -94,9 +100,12 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public EventIndexDto(
 		String uuid,
+		String externalId,
+		String externalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
+		EventManagementStatus eventManagementStatus,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -129,9 +138,12 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		Date changeDate) {
 
 		this.uuid = uuid;
+		this.externalId = externalId;
+		this.externalToken = externalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
+		this.eventManagementStatus = eventManagementStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -157,6 +169,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public EventStatus getEventStatus() {
@@ -361,6 +389,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public String getAddress() {
 		return getEventLocation().getAddress();
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public EventReferenceDto toReference() {

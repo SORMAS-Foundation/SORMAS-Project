@@ -15,18 +15,15 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static android.view.View.GONE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -41,7 +38,7 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class PreviousHospitalizationDialog extends FormDialog {
 
@@ -82,15 +79,17 @@ public class PreviousHospitalizationDialog extends FormDialog {
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.initializeDateField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
 		}
 
-		List<Item> initialRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
+		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
 		List<Item> hospitalizationReasons = DataUtils.getEnumItems(HospitalizationReasonType.class, true);
 
 		contentBinding.casePreviousHospitalizationHospitalizationReason.initializeSpinner(hospitalizationReasons);
@@ -102,10 +101,10 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			this.contentBinding.casePreviousHospitalizationDistrict.setEnabled(false);
 		}
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
 			data,
 			contentBinding.casePreviousHospitalizationRegion,
 			initialRegions,

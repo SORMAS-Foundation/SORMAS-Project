@@ -107,7 +107,7 @@ public interface ConfigFacade {
 
 	SormasToSormasConfig getSormasToSormasConfig();
 
-	String getSurvnetGatewayUrl();
+	String getExternalSurveillanceToolGatewayUrl();
 
 	String getAuthenticationProvider();
 
@@ -121,5 +121,9 @@ public interface ConfigFacade {
 
 	String getDemisJndiName();
 
+	boolean isSkipDefaultPasswordCheck();
+
 	boolean isAuditorAttributeLoggingEnabled();
+
+	int getStepSizeForCsvExport();
 }

@@ -53,13 +53,15 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		}
 		if (campaignCriteria.getFreeText() != null) {
 			String[] textFilters = campaignCriteria.getFreeText().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Campaign.NAME)), textFilter), cb.like(cb.lower(from.get(Campaign.UUID)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
+						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (campaignCriteria.getRelevanceStatus() != null) {

@@ -218,7 +218,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			.orElse(propertyId);
 	}
 
-	protected String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
-		return DownloadUtil.createFileNameWithCurrentDate(fileNamePrefix, fileExtension);
+	protected String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
+		return DownloadUtil.createFileNameWithCurrentDate(entityName, fileExtension);
 	}
 }

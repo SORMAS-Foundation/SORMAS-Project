@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -46,7 +48,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.api.person.*;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -55,6 +57,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -68,6 +71,7 @@ import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -85,6 +89,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private GeocodingService geocodingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
@@ -157,7 +163,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Case> caseJoin = personFrom.join(Person.CASES, JoinType.LEFT);
 		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
 		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
-		
+
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
@@ -170,10 +176,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
 		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
 
-		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
+		return CriteriaBuilderHelper.or(
+			cb,
+			caseFilter,
+			contactFilter,
+			eventParticipantFilter,
+			cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
 	}
 
-	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
+	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
+
+		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		final From<?, Person> personFrom = personQueryContext.getRoot();
+		final CriteriaQuery<?> cq = personQueryContext.getQuery();
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
@@ -185,21 +200,30 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateMM(), Person.BIRTHDATE_MM);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateDD(), Person.BIRTHDATE_DD);
 		if (personCriteria.getNameAddressPhoneEmailLike() != null) {
+
 			String[] textFilters = personCriteria.getNameAddressPhoneEmailLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
-						cb.like(cb.lower(personFrom.get(Person.EMAIL_ADDRESS)), textFilter),
-						phoneNumberPredicate(cb, personFrom.get(Person.PHONE), textFilter),
-						cb.like(cb.lower(location.get(Location.STREET)), textFilter),
-						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
-						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
+						textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		filter = andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
@@ -498,8 +522,16 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 
 		if (criteria.getSex() != null) {
-			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
+			Expression<Sex> sexExpr = cb.literal(criteria.getSex());
+
+			Predicate sexFilter = cb.or(
+				cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.isNull(sexExpr)),
+				cb.or(cb.equal(personFrom.get(Person.SEX), Sex.UNKNOWN), cb.equal(sexExpr, Sex.UNKNOWN)),
+				cb.equal(personFrom.get(Person.SEX), sexExpr));
+
+			filter = and(cb, filter, sexFilter);
 		}
+
 		if (criteria.getBirthdateYYYY() != null) {
 			filter = and(
 				cb,
@@ -545,5 +577,34 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
+
+		long updatedCount = 0;
+		List<Person> persons = getByUuids(personUuids);
+		for (Person person : persons) {
+			if (updateGeoLocation(person, overwriteExistingCoordinates)) {
+				updatedCount++;
+			}
+		}
+		return updatedCount;
+	}
+
+	public boolean updateGeoLocation(Person person, boolean overwriteExistingCoordinates) {
+
+		boolean geoLocationUpdated = false;
+		if (person.getAddress() != null
+			&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
+			GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
+			if (latLon != null) {
+				person.getAddress().setLatitude(latLon.getLat());
+				person.getAddress().setLongitude(latLon.getLon());
+				ensurePersisted(person);
+				geoLocationUpdated = true;
+			}
+		}
+		return geoLocationUpdated;
 	}
 }

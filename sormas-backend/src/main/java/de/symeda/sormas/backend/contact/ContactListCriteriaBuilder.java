@@ -27,6 +27,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -62,7 +63,7 @@ public class ContactListCriteriaBuilder {
 			sortProperties);
 	}
 
-	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins joins) {
+	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins<Contact> joins) {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),
@@ -77,7 +78,9 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+
+		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -118,7 +121,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_TOKEN));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb) {
 
 		List<Expression<?>> expressions = new ArrayList<>();
 		switch (sortProperty.propertyName) {
@@ -159,33 +162,38 @@ public class ContactListCriteriaBuilder {
 		return expressions;
 	}
 
-	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactJoins joins) {
+	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
-		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, joins));
-		indexSelection.addAll(
-			Arrays.asList(
-				joins.getPerson().get(Person.SEX),
-				joins.getPerson().get(Person.APPROXIMATE_AGE),
-				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.STREET),
-				joins.getAddress().get(Location.HOUSE_NUMBER),
-				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-				joins.getAddress().get(Location.POSTAL_CODE),
-				joins.getPerson().get(Person.PHONE),
-				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME)));
+		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
+		List<Selection<?>> selections = Arrays.asList(
+			joins.getPerson().get(Person.SEX),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getAddress().get(Location.CITY),
+			joins.getAddress().get(Location.STREET),
+			joins.getAddress().get(Location.HOUSE_NUMBER),
+			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
+			joins.getAddress().get(Location.POSTAL_CODE),
+			((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+			joins.getReportingUser().get(User.FIRST_NAME),
+			joins.getReportingUser().get(User.LAST_NAME));
+		indexSelection.addAll(selections);
 
 		return indexSelection;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
+	private List<Expression<?>> getIndexDetailOrders(
+		SortProperty sortProperty,
+		Root<Contact> contact,
+		ContactJoins<Contact> joins,
+		CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case ContactIndexDetailedDto.SEX:
 		case ContactIndexDetailedDto.APPROXIMATE_AGE:
 		case ContactIndexDetailedDto.PHONE:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.literal(44));
 		case ContactIndexDetailedDto.DISTRICT_NAME:
 			return Collections.singletonList(joins.getDistrict().get(District.NAME));
 		case ContactIndexDetailedDto.CITY:
@@ -197,26 +205,27 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		default:
-			return this.getIndexOrders(sortProperty, contact, joins);
+			return this.getIndexOrders(sortProperty, contact, joins, cb);
 		}
 	}
 
 	private <T> CriteriaQuery<T> buildIndexCriteria(
 		Class<T> type,
-		BiFunction<Root<Contact>, ContactJoins, List<Selection<?>>> selectionProvider,
+		BiFunction<Root<Contact>, ContactQueryContext, List<Selection<?>>> selectionProvider,
 		ContactCriteria contactCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<T> cq = cb.createQuery(type);
-		Root<Contact> contact = cq.from(Contact.class);
-		ContactJoins joins = new ContactJoins(contact);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<T> cq = cb.createQuery(type);
+		final Root<Contact> contact = cq.from(Contact.class);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
+		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
 
-		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, joins));
+		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
 
-		Predicate filter = buildContactFilter(contactCriteria, cb, contact, cq, joins);
+		Predicate filter = buildContactFilter(contactCriteria, contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -231,7 +240,7 @@ public class ContactListCriteriaBuilder {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, contact, joins)
+					orderExpressionProvider.forProperty(sortProperty, contact, joins, cb)
 						.stream()
 						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
 						.collect(Collectors.toList()));
@@ -242,29 +251,24 @@ public class ContactListCriteriaBuilder {
 		return cq;
 	}
 
-	public Predicate buildContactFilter(
-		ContactCriteria contactCriteria,
-		CriteriaBuilder cb,
-		Root<Contact> contact,
-		CriteriaQuery<?> query,
-		ContactJoins joins) {
+	public Predicate buildContactFilter(ContactCriteria contactCriteria, ContactQueryContext contactQueryContext) {
 
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilterForJoin(cb, query, contact, contactCriteria);
+			filter = contactService.createUserFilterForJoin(contactQueryContext, contactCriteria);
 		}
 
 		if (contactCriteria != null) {
-			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact, joins);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, contactQueryContext);
+			filter = CriteriaBuilderHelper.and(contactQueryContext.getCriteriaBuilder(), filter, criteriaFilter);
 		}
 		return filter;
 	}
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb);
 	}
 }

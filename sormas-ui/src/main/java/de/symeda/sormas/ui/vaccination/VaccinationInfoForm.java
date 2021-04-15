@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Collections;
 
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NumberValidator;
 
@@ -58,8 +60,26 @@ public class VaccinationInfoForm extends AbstractEditForm<VaccinationInfoDto> {
 	protected void addFields() {
 		addField(VaccinationInfoDto.VACCINATION);
 		addField(VaccinationInfoDto.VACCINATION_DOSES)
-			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10));
-		addFields(VaccinationInfoDto.VACCINATION_INFO_SOURCE, VaccinationInfoDto.FIRST_VACCINATION_DATE, VaccinationInfoDto.LAST_VACCINATION_DATE);
+			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		final DateField firstVaccinationDateField = addDateField(VaccinationInfoDto.FIRST_VACCINATION_DATE, DateField.class, 0);
+		final DateField lastVaccinationDateField = addDateField(VaccinationInfoDto.LAST_VACCINATION_DATE, DateField.class, 0);
+		firstVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				firstVaccinationDateField,
+				lastVaccinationDateField,
+				true,
+				false,
+				I18nProperties
+					.getValidationError(Validations.beforeDate, firstVaccinationDateField.getCaption(), lastVaccinationDateField.getCaption())));
+		lastVaccinationDateField.addValidator(
+			new DateComparisonValidator(
+				lastVaccinationDateField,
+				firstVaccinationDateField,
+				false,
+				false,
+				I18nProperties
+					.getValidationError(Validations.afterDate, lastVaccinationDateField.getCaption(), firstVaccinationDateField.getCaption())));
+		addField(VaccinationInfoDto.VACCINATION_INFO_SOURCE);
 
 		ComboBox vaccineName = addField(VaccinationInfoDto.VACCINE_NAME);
 		ComboBox vaccineManufacturer = addField(VaccinationInfoDto.VACCINE_MANUFACTURER);

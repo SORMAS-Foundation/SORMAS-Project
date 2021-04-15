@@ -28,6 +28,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -101,7 +102,8 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.getStartOfDay(referenceDate),
 			DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
 			DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)),
-			DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)));
+			DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)),
+			NewCaseDateType.MOST_RELEVANT);
 
 		DiseaseBurdenDto evdBurden = diseaseBurdenForDashboard.stream().filter(dto -> dto.getDisease() == Disease.EVD).findFirst().get();
 		assertEquals(new Long(3), evdBurden.getCaseCount());

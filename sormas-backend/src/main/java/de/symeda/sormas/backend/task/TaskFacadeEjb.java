@@ -56,6 +56,7 @@ import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -321,6 +323,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	public TaskDto saveTask(@Valid TaskDto dto) {
 
 		Task ado = fromDto(dto, true);
+
+		validate(dto);
+
 		taskService.ensurePersisted(ado);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 
@@ -423,6 +428,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		TaskJoins joins = new TaskJoins(task);
 
+		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
 			.otherwise(
@@ -436,6 +442,14 @@ public class TaskFacadeEjb implements TaskFacade {
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
 					.otherwise(joins.getEventDistrict().get(District.NAME)));
+
+		Expression<Object> community = cb.selectCase()
+			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
+					.otherwise(joins.getEventCommunity().get(Community.NAME)));
+
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
@@ -453,7 +467,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
 				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
 				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
-				region, district
+				region, district, community
 		);
 		//@formatter:on
 
@@ -681,13 +695,13 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Map<String, Long> taskCountMap = new HashMap<>();
 
-		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, batchedUserUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 			Root<Task> from = cq.from(Task.class);
 			Join<Task, User> userJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(userUuids));
+			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(batchedUserUuids));
 			cq.multiselect(userJoin.get(User.UUID), cb.count(from));
 			cq.groupBy(userJoin.get(User.UUID));
 
@@ -730,8 +744,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE
 				? task.getCaze()
 				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor()
-				|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			if (task.getAssigneeUser() != null) {
 				try {
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
@@ -762,8 +775,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE
 				? task.getCaze()
 				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null
-				&& (task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
+			if (task.getAssigneeUser() != null) {
 				try {
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
@@ -786,6 +798,19 @@ public class TaskFacadeEjb implements TaskFacade {
 							task.getAssigneeUser().getUuid()));
 				}
 			}
+		}
+	}
+
+	private void validate(TaskDto task) throws ValidationRuntimeException {
+
+		if (task.getTaskContext() == TaskContext.CASE && task.getCaze() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingCaseLink));
+		}
+		if (task.getTaskContext() == TaskContext.CONTACT && task.getContact() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingContactLink));
+		}
+		if (task.getTaskContext() == TaskContext.EVENT && task.getEvent() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.taskMissingEventLink));
 		}
 	}
 

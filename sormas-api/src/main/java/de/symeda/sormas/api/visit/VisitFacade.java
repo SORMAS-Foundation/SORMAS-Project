@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 public interface VisitFacade {
 
 	List<VisitDto> getAllActiveVisitsAfter(Date date);
+
+	List<VisitDto> getVisitsByCase(CaseReferenceDto caseRef);
 
 	VisitDto getVisitByUuid(String uuid);
 
@@ -53,12 +56,15 @@ public interface VisitFacade {
 
 	List<VisitExportDto> getVisitsExportList(
 		VisitCriteria visitCriteria,
+		Collection<String> selectedRows,
 		VisitExportType exportType,
 		int first,
 		int max,
 		ExportConfigurationDto exportConfiguration);
 
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
+
+	List<VisitDto> getVisitsByContact(ContactReferenceDto contactRef);
 
 	List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end);
 
