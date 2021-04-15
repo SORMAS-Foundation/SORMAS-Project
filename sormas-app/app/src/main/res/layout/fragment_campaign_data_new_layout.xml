@@ -54,7 +54,7 @@
                     app:required="true"
                     app:value="@={data.campaign}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/campaignFormData_formDate"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"

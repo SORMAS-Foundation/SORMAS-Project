@@ -1,7 +1,23 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.campaign.list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,7 +30,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
@@ -23,7 +38,6 @@ import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.campaign.edit.CampaignFormDataNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -119,6 +133,18 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_campaign_form_data);
+        return true;
+    }
+
+    @Override
+    protected int getActivityTitle() {
+        return R.string.heading_campaigns_list;
+    }
+
+    @Override
     public void goToNewView() {
         CampaignFormDataNewActivity.startActivity(getContext());
         finish();
@@ -126,12 +152,8 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
     @Override
     public boolean isEntryCreateAllowed() {
-        return ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
-    }
-
-    @Override
-    protected int getActivityTitle() {
-        return R.string.heading_campaigns_list;
+        return true;
+//        return ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
     }
 
     @Override

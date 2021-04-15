@@ -72,6 +72,7 @@
     <string name="action_markAllAsRead">Mark all as read</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
+    <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">New Contact</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>

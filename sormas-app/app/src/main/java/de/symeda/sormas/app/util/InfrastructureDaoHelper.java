@@ -203,7 +203,7 @@ public final class InfrastructureDaoHelper {
 			Area selectedArea = (Area) field.getValue();
 			if (selectedArea != null) {
 				List<Item> newRegions = loadRegionsByArea(selectedArea);
-				if (initialRegions != null && selectedArea.equals(initialRegion.getArea()) && !newRegions.contains(regionItem)) {
+				if (initialRegion != null && selectedArea.equals(initialRegion.getArea()) && !newRegions.contains(regionItem)) {
 					newRegions.add(regionItem);
 				}
 				regionField.setSpinnerData(newRegions, regionField.getValue());

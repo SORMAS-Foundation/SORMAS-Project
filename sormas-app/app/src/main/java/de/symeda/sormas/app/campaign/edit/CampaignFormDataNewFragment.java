@@ -18,16 +18,39 @@
 
 package de.symeda.sormas.app.campaign.edit;
 
-import java.util.List;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.TextViewBindingAdapters;
+
+import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.createControlCheckBoxField;
+import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.createControlTextEditField;
+import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.getCampaignFormDataEntry;
 
 public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampaignDataNewLayoutBinding, CampaignFormData, CampaignFormData> {
 
@@ -41,6 +64,53 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
     public static CampaignFormDataNewFragment newInstance(CampaignFormData activityRootData) {
         return newInstance(CampaignFormDataNewFragment.class, null, activityRootData);
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
+
+        final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
+        final List<CampaignFormDataEntry> formValues = record.getFormValues();
+        final Map<String, String> formValuesMap = new HashMap<>();
+        formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue().toString()));
+
+        for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
+            CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
+
+            if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
+                String value = formValuesMap.get(campaignFormElement.getId());
+                if (value != null) {
+                    ControlPropertyField dynamicField = null;
+                    if (type == CampaignFormElementType.YES_NO) {
+                        dynamicField = createControlCheckBoxField(campaignFormElement, requireContext());
+                        ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
+                    } else {
+                        dynamicField = createControlTextEditField(campaignFormElement, requireContext());
+                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
+                    }
+                    dynamicField.setShowCaption(true);
+                    dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                    dynamicField.addValueChangedListener(field -> {
+                        final CampaignFormDataEntry campaignFormDataEntry = getCampaignFormDataEntry(formValues, campaignFormElement);
+                        campaignFormDataEntry.setValue(field.getValue());
+                    });
+                } else {
+                    Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
+                }
+            } else if (type == CampaignFormElementType.SECTION) {
+                dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
+            } else if (type == CampaignFormElementType.LABEL) {
+                TextView textView = new TextView(requireContext());
+                TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
+                dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            }
+        }
+        return view;
+    }
+
 
     @Override
     public int getEditLayout() {
@@ -67,7 +137,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
     @Override
     protected void onLayoutBinding(FragmentCampaignDataNewLayoutBinding contentBinding) {
-        record.setArea(record.getRegion().getArea());
         contentBinding.setData(record);
 
         Item campaignItem = record.getCampaign() != null ? DataUtils.toItem(record.getCampaign()) : null;
@@ -77,6 +146,8 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
         }
 
         contentBinding.campaignFormDataCampaign.initializeSpinner(initialCampaigns, record.getCampaign());
+
+        contentBinding.campaignFormDataFormDate.initializeDateField(getFragmentManager());
 
         InfrastructureDaoHelper.initializeRegionAreaFields(
                 contentBinding.campaignFormDataArea,
