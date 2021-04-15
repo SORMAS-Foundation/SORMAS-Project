@@ -773,6 +773,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties
 					.getValidationError(Validations.afterDate, lastVaccinationDateField.getCaption(), firstVaccinationDateField.getCaption())));
+		// re-validate (and, if necessary, repaint) the opposite date field each time a date is changed, to make sure validation indicators are consistent
+		firstVaccinationDateField.addValueChangeListener(event -> lastVaccinationDateField.markAsDirty());
+		lastVaccinationDateField.addValueChangeListener(event -> firstVaccinationDateField.markAsDirty());
 
 		ComboBox vaccineName = addField(CaseDataDto.VACCINE_NAME);
 		ComboBox vaccineManufacturer = addField(CaseDataDto.VACCINE_MANUFACTURER);
