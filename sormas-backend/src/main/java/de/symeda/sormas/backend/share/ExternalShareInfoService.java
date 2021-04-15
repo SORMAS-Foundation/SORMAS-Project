@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.share;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import javax.ejb.EJB;
@@ -26,12 +27,15 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -78,6 +82,14 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		createAndPersistShareInfo(status, event, ExternalShareInfo::setEvent);
 	}
 
+	public boolean isCaseShared(Long caseId) {
+		return exists((cb, root) -> cb.equal(root.get(ExternalShareInfo.CAZE).get(Case.ID), caseId));
+	}
+
+	public boolean isEventShared(Long eventId) {
+		return exists((cb, root) -> cb.equal(root.get(ExternalShareInfo.EVENT).get(Event.ID), eventId));
+	}
+
 	private <T> void createAndPersistShareInfo(ExternalShareStatus status, T associatedEntity, BiConsumer<ExternalShareInfo, T> setAssociatedEntity) {
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
 
@@ -90,5 +102,37 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		shareInfo.setStatus(status);
 
 		ensurePersisted(shareInfo);
+	}
+
+	public List<ExternalShareInfoCountAndLatestDate> getCaseShareCountAndLatestDate(List<Long> caseIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalShareInfoCountAndLatestDate> cq = cb.createQuery(ExternalShareInfoCountAndLatestDate.class);
+		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
+		Path<String> cazeId = root.join(ExternalShareInfo.CAZE, JoinType.LEFT).get(Case.ID);
+		Path<String> creationDate = root.get(ExternalShareInfo.CREATION_DATE);
+
+		Subquery<String> latestShareInfoSubQuery = cq.subquery(String.class);
+		Root<ExternalShareInfo> latestShareInfoRoot = latestShareInfoSubQuery.from(ExternalShareInfo.class);
+
+		latestShareInfoSubQuery.select(
+			cb.function(
+				ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION,
+				String.class,
+				latestShareInfoRoot.get(ExternalShareInfo.CAZE),
+				cb.max(latestShareInfoRoot.get(ExternalShareInfo.CREATION_DATE))));
+		latestShareInfoSubQuery.groupBy(latestShareInfoRoot.get(ExternalShareInfo.CAZE));
+
+		Subquery<Long> countSubQuery = cq.subquery(Long.class);
+		Root<ExternalShareInfo> countRoot = countSubQuery.from(ExternalShareInfo.class);
+		countSubQuery.select(cb.count(countRoot.get(ExternalShareInfo.ID)));
+		countSubQuery.where(cb.equal(countRoot.get(ExternalShareInfo.CAZE), cazeId));
+		countSubQuery.groupBy(countRoot.get(ExternalShareInfo.CAZE));
+
+		cq.multiselect(cazeId, countSubQuery, creationDate, root.get(ExternalShareInfo.STATUS));
+		cq.where(
+			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, cazeId, creationDate).in(latestShareInfoSubQuery),
+			cazeId.in(caseIds));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

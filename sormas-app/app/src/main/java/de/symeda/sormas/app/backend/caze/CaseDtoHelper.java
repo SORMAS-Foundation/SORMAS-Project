@@ -234,6 +234,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getFollowUpStatusChangeUser()));
 	}
 
 	@Override
@@ -476,7 +478,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

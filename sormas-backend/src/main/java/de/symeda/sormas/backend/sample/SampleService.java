@@ -478,6 +478,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			}
 		}
 
+		if (criteria.getCaseUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
+		}
+
 		return filter;
 	}
 
