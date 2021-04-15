@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;

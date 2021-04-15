@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 
 public class DocumentUploadReceiver implements UploadReceiver {
 
+	private static final long serialVersionUID = 2971535728102027968L;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadReceiver.class);
 
 	private File file;
