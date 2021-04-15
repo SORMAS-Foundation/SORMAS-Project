@@ -174,6 +174,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			shareDateColumn.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 			getColumn(CaseIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT).setSortable(false);
+			getColumn(CaseIndexDto.SURVEILLANCE_TOOL_STATUS).setSortable(false);
+			getColumn(CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE).setSortable(false);
 		}
 
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))

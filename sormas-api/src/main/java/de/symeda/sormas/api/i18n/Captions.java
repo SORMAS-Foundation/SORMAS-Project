@@ -349,6 +349,7 @@ public interface Captions {
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
 	String CaseData_surveillanceToolLastShareDate = "CaseData.surveillanceToolLastShareDate";
 	String CaseData_surveillanceToolShareCount = "CaseData.surveillanceToolShareCount";
+	String CaseData_surveillanceToolStatus = "CaseData.surveillanceToolStatus";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
