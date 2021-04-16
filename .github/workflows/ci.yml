@@ -39,16 +39,16 @@ jobs:
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
 
-      - name: Commit openAPI spec to development
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+      - name: Commit external visits API spec to development
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && ${{ hashFiles(sormas-rest/target/external_visits_API.yaml) }} != ${{ hashFiles(openapi/external_visits_API.yaml) }}
         run: |
             git config user.name github-actions
             git config user.email github-actions@github.com
 
             rm -rf openapi
             mkdir openapi/
-            cp sormas-rest/target/swagger.* sormas-rest/target/external_visits_API.* openapi
+            cp sormas-rest/target/external_visits_API.* openapi
 
             git add openapi
-            git commit -m "[GitHub Actions] Update openAPI spec files"
+            git commit -m "[GitHub Actions] Update external visits API spec files"
             git push
