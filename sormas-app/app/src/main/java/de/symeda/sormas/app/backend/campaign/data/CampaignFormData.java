@@ -31,6 +31,8 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -190,5 +192,13 @@ public class CampaignFormData extends PseudonymizableAdo {
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
+    }
+
+    @Override
+    public String toString() {
+        return DataHelper.toStringNullable(getCampaign()) + " - "
+                + DataHelper.toStringNullable(getCampaignFormMeta())
+                + " - " + DataHelper.toStringNullable((getCommunity()))
+                + " " + DateHelper.formatShortDate(getFormDate());
     }
 }

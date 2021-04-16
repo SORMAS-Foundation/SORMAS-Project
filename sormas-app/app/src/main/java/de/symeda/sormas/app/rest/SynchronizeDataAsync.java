@@ -660,7 +660,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
 		// areas
 		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
-		DatabaseHelper.getAreaDao().deleteInvalid(regionUuids);
+		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids);
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
