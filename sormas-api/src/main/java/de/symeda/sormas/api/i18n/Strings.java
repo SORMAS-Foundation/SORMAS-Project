@@ -307,6 +307,7 @@ public interface Strings {
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
@@ -617,6 +618,7 @@ public interface Strings {
 	String infoLineListingConfigurationRegion = "infoLineListingConfigurationRegion";
 	String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";
 	String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	String infoMergeFiltersHint = "infoMergeFiltersHint";
 	String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	String infoMergingExplanation = "infoMergingExplanation";
 	String infoMergingHideDescription = "infoMergingHideDescription";
