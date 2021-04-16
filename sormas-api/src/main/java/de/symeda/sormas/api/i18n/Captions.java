@@ -659,6 +659,7 @@ public interface Captions {
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
 	String contactSourceCase = "contactSourceCase";
+	String continent = "continent";
 	String Continent_archived = "Continent.archived";
 	String Continent_defaultName = "Continent.defaultName";
 	String Continent_displayName = "Continent.displayName";
@@ -1753,6 +1754,7 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String subcontinent = "subcontinent";
 	String Subcontinent_archived = "Subcontinent.archived";
 	String Subcontinent_continent = "Subcontinent.continent";
 	String Subcontinent_defaultName = "Subcontinent.defaultName";
