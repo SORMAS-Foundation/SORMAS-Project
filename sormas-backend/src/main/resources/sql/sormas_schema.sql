@@ -7123,6 +7123,19 @@ ALTER TABLE contact_history ADD CONSTRAINT fk_contact_followupstatuschangeuser_i
 
 INSERT INTO schema_version (version_number, comment) VALUES (358, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
 
+-- 2021-04-12 [DEMIS Interface] Introduce option to reject lab messages #4851
+
+ALTER TABLE labmessage ADD COLUMN status varchar(255);
+
+UPDATE labmessage SET status = CASE WHEN processed=true THEN 'PROCESSED'
+                                    ELSE 'UNPROCESSED'
+                                END;
+ALTER TABLE labmessage
+    ALTER COLUMN status SET NOT NULL,
+    DROP COLUMN processed;
+
+INSERT INTO schema_version (version_number, comment) VALUES (359, '[DEMIS Interface] Introduce option to reject lab messages #4851');
+
 -- 2021-02-18 - Management of EventGroups #4571
 CREATE TABLE eventgroups(
     id bigint not null,
@@ -7156,6 +7169,6 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_ev
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_history', true);
 ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (359, 'Management of EventGroups #4571');
+INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
 
 -- *** Insert new sql commands BEFORE this line ***

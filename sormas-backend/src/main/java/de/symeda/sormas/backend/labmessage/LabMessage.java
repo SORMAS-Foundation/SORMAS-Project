@@ -12,10 +12,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Type;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -57,7 +56,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
-	public static final String PROCESSED = "processed";
+	public static final String STATUS = "status";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 
 	private Date messageDateTime;
@@ -90,7 +89,8 @@ public class LabMessage extends AbstractDomainObject {
 
 	private String labMessageDetails;
 
-	private boolean processed;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+
 	private String testResultText;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -346,13 +346,14 @@ public class LabMessage extends AbstractDomainObject {
 		this.labMessageDetails = labMessageDetails;
 	}
 
-	@Column
-	public boolean isProcessed() {
-		return processed;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 
 	@Column(length = COLUMN_LENGTH_BIG)
