@@ -34,9 +34,11 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
@@ -50,8 +52,10 @@ public class PathogenTest extends CoreAdo {
 
 	public static final String SAMPLE = "sample";
 	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
+	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String LAB = "lab";
@@ -67,9 +71,11 @@ public class PathogenTest extends CoreAdo {
 
 	private Sample sample;
 	private Disease testedDisease;
+	private DiseaseVariant testedDiseaseVariant;
 	private String testedDiseaseDetails;
 	private String typingId;
 	private PathogenTestType testType;
+	private PCRTestSpecification pcrTestSpecification;
 	private String testTypeText;
 	private Date testDateTime;
 	private Facility lab;
@@ -112,6 +118,16 @@ public class PathogenTest extends CoreAdo {
 		this.testedDiseaseDetails = testedDiseaseDetails;
 	}
 
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable = true)
+	public DiseaseVariant getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.testedDiseaseVariant = diseaseVariant;
+	}
+
 	@Column
 	public String getTypingId() {
 		return typingId;
@@ -129,6 +145,15 @@ public class PathogenTest extends CoreAdo {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PCRTestSpecification getPcrTestSpecification() {
+		return pcrTestSpecification;
+	}
+
+	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
+		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

@@ -7171,4 +7171,13 @@ ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
 
+-- 2021-04-15 Add variant specific Nucleic acid detecion methods #5029
+ALTER TABLE pathogentest ADD COLUMN pcrtestspecification varchar(255);
+ALTER TABLE pathogentest ADD COLUMN testeddiseasevariant_id bigint;
+ALTER TABLE pathogentest_history ADD COLUMN pcrtestspecification varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariant_id bigint;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIGN KEY (testeddiseasevariant_id) REFERENCES diseasevariant(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (359, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
+
 -- *** Insert new sql commands BEFORE this line ***
