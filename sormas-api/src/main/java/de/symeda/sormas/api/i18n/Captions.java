@@ -487,6 +487,7 @@ public interface Captions {
 	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String caseUpdateCaseWithNewDiseaseVariant = "caseUpdateCaseWithNewDiseaseVariant";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
@@ -1375,6 +1376,7 @@ public interface Captions {
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
+	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
@@ -1583,6 +1585,7 @@ public interface Captions {
 	String Sample_otherLab = "Sample.otherLab";
 	String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	String Sample_pathogenTestResult = "Sample.pathogenTestResult";
+	String Sample_pcrTestSpecification = "Sample.pcrTestSpecification";
 	String Sample_received = "Sample.received";
 	String Sample_receivedDate = "Sample.receivedDate";
 	String Sample_referredToUuid = "Sample.referredToUuid";
