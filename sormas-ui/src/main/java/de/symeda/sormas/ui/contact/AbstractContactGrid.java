@@ -63,17 +63,22 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 	private DataProviderListener<IndexDto> dataProviderListener;
 
-	@SuppressWarnings("rawtypes")
-	Class viewClass;
+	private final Class<? extends View> viewClass;
+	private final Class<? extends ViewConfiguration> viewConfigurationClass;
 
-	public <V extends View> AbstractContactGrid(Class<IndexDto> beanType, ContactCriteria criteria, Class<V> viewClass) {
+	public AbstractContactGrid(
+		Class<IndexDto> beanType,
+		ContactCriteria criteria,
+		Class<? extends View> viewClass,
+		Class<? extends ViewConfiguration> viewConfigurationClass) {
 		super(beanType);
 
 		this.viewClass = viewClass;
+		this.viewConfigurationClass = viewConfigurationClass;
 
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(viewConfigurationClass);
 		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
@@ -201,7 +206,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
-		if (ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class).isInEagerMode()) {
+		if (ViewModelProviders.of(viewClass).get(viewConfigurationClass).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
