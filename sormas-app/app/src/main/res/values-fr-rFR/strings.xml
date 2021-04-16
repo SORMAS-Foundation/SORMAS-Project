@@ -265,6 +265,7 @@
     <string name="heading_app_update_required">Mise à jour de l\'application requise</string>
     <string name="heading_burial">Enterrement</string>
     <string name="heading_burials_visited">Des enterrements visités</string>
+    <string name="heading_campaigns_list">Données de la campagne</string>
     <string name="heading_case_disease_changed">La maladie du cas a changé</string>
     <string name="heading_case_edit">Modifier le cas</string>
     <string name="heading_case_new">Nouveau Cas</string>
