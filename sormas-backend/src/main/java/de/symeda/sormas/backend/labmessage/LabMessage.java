@@ -89,7 +89,7 @@ public class LabMessage extends AbstractDomainObject {
 
 	private String labMessageDetails;
 
-	private LabMessageStatus status;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
 	private String testResultText;
 

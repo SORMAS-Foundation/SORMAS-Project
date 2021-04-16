@@ -76,7 +76,7 @@ public class LabMessageDto extends EntityDto {
 
 	private String labMessageDetails;
 
-	private LabMessageStatus status;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 	private String testResultText;
 
 	public Date getMessageDateTime() {
