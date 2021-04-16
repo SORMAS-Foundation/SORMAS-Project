@@ -118,6 +118,7 @@ public interface Strings {
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
@@ -128,6 +129,7 @@ public interface Strings {
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
+	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
@@ -309,7 +311,9 @@ public interface Strings {
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
 	String headingConfirmDeletion = "headingConfirmDeletion";
+	String headingConfirmManuallyForwardedLabMessage = "headingConfirmManuallyForwardedLabMessage";
 	String headingConfirmMerging = "headingConfirmMerging";
+	String headingConfirmUnclearLabMessage = "headingConfirmUnclearLabMessage";
 	String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	String headingContactConfirmationRequired = "headingContactConfirmationRequired";
 	String headingContactData = "headingContactData";

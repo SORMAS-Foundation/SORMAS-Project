@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.sormastosormas;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 
 import java.nio.charset.StandardCharsets;
@@ -36,6 +35,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -85,7 +85,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 
 		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
 			.post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any());
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));
+		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(LabMessageStatus.FORWARDED));
 	}
 
 	@Test

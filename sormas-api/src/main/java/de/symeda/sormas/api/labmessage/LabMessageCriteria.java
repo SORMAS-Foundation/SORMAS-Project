@@ -6,18 +6,15 @@ import de.symeda.sormas.api.BaseCriteria;
 
 public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
-	private Boolean processed;
+	private LabMessageStatus labMessageStatus;
 
-	public Boolean getProcessed() {
-		return processed;
+	public LabMessageStatus getLabMessageStatus() {
+		return labMessageStatus;
 	}
 
-	public void setProcessed(Boolean processed) {
-		this.processed = processed;
-	}
+	public LabMessageCriteria labMessageStatus(LabMessageStatus labMessageStatus) {
+		this.labMessageStatus = labMessageStatus;
 
-	public LabMessageCriteria processed(Boolean processed) {
-		setProcessed(processed);
 		return this;
 	}
 }
