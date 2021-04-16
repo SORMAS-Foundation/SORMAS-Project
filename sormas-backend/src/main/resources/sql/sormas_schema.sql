@@ -7188,5 +7188,5 @@ ALTER TABLE location_history ADD COLUMN contactPersonLastName text;
 ALTER TABLE location_history ADD COLUMN contactPersonPhone text;
 ALTER TABLE location_history ADD COLUMN contactPersonEmail text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (359, '#4755 Add contact person details to facilities');
+INSERT INTO schema_version (version_number, comment) VALUES (361, '#4755 Add contact person details to facilities');
 -- *** Insert new sql commands BEFORE this line ***
