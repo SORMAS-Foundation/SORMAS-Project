@@ -41,9 +41,10 @@ jobs:
 
       - name: Commit external visits API spec to development
         if: github.event_name == 'push' && github.ref == 'refs/heads/development' && ${{ hashFiles(sormas-rest/target/external_visits_API.yaml) }} != ${{ hashFiles(openapi/external_visits_API.yaml) }}
+        with: ${{ secrets.UPDATER_TOKEN }}
         run: |
-            git config user.name github-actions
-            git config user.email github-actions@github.com
+            git config user.name github-API-updater
+            git config user.email github-API-updater@github.com
 
             rm -rf openapi
             mkdir openapi/
