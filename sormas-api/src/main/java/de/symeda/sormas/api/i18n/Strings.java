@@ -58,6 +58,7 @@ public interface Strings {
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
+	String confirmationArchiveEventGroup = "confirmationArchiveEventGroup";
 	String confirmationArchiveEvents = "confirmationArchiveEvents";
 	String confirmationArchiveFacilities = "confirmationArchiveFacilities";
 	String confirmationArchiveFacility = "confirmationArchiveFacility";
@@ -87,6 +88,7 @@ public interface Strings {
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
+	String confirmationDearchiveEventGroup = "confirmationDearchiveEventGroup";
 	String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	String confirmationDearchiveFacilities = "confirmationDearchiveFacilities";
 	String confirmationDearchiveFacility = "confirmationDearchiveFacility";
@@ -184,6 +186,8 @@ public interface Strings {
 	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
+	String entityEventGroup = "entityEventGroup";
+	String entityEventGroups = "entityEventGroups";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
@@ -218,6 +222,8 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
+	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalSurveillanceToolCaseNotOwned = "errorExternalSurveillanceToolCaseNotOwned";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -282,6 +288,7 @@ public interface Strings {
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
+	String headingArchiveEventGroup = "headingArchiveEventGroup";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
@@ -340,6 +347,7 @@ public interface Strings {
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEvent = "headingCreateNewEvent";
+	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
 	String headingCreateNewFacility = "headingCreateNewFacility";
 	String headingCreateNewPerson = "headingCreateNewPerson";
@@ -357,6 +365,7 @@ public interface Strings {
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveEvent = "headingDearchiveEvent";
+	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
@@ -391,6 +400,9 @@ public interface Strings {
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
+	String headingEventGroupData = "headingEventGroupData";
+	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
+	String headingEventGroupUnlinkEventIssue = "headingEventGroupUnlinkEventIssue";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -488,6 +500,7 @@ public interface Strings {
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
+	String headingPickOrCreateEventGroup = "headingPickOrCreateEventGroup";
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
@@ -611,6 +624,7 @@ public interface Strings {
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCase = "infoNoSourceCase";
@@ -622,6 +636,7 @@ public interface Strings {
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
 	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
+	String infoPickOrCreateEventGroupForEvent = "infoPickOrCreateEventGroupForEvent";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
@@ -775,8 +790,13 @@ public interface Strings {
 	String messageEventCreated = "messageEventCreated";
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventExternalTokenWarning = "messageEventExternalTokenWarning";
+	String messageEventGroupArchived = "messageEventGroupArchived";
+	String messageEventGroupCreated = "messageEventGroupCreated";
+	String messageEventGroupDearchived = "messageEventGroupDearchived";
+	String messageEventGroupSaved = "messageEventGroupSaved";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
+	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
@@ -792,8 +812,10 @@ public interface Strings {
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";
+	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
+	String messageEventUnlinkedFromEventGroup = "messageEventUnlinkedFromEventGroup";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
@@ -933,7 +955,13 @@ public interface Strings {
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
+	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
+	String notificationEventGroupCreated = "notificationEventGroupCreated";
+	String notificationEventGroupSummary = "notificationEventGroupSummary";
+	String notificationEventGroupSummaryEmpty = "notificationEventGroupSummaryEmpty";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
+	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
+	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
 	String notificationLabResultArrived = "notificationLabResultArrived";
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";
@@ -1008,10 +1036,13 @@ public interface Strings {
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
 	String promptEventEvolutionDateFrom = "promptEventEvolutionDateFrom";
 	String promptEventEvolutionDateTo = "promptEventEvolutionDateTo";
+	String promptEventGroupSearchField = "promptEventGroupSearchField";
+	String promptEventGroupSearchFieldEvent = "promptEventGroupSearchFieldEvent";
 	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
 	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
 	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
+	String promptEventsSearchFieldEventGroups = "promptEventsSearchFieldEventGroups";
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptFilterByPeriod = "promptFilterByPeriod";

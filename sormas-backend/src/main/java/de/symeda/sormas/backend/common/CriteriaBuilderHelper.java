@@ -1,9 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 public class CriteriaBuilderHelper {
@@ -124,5 +121,20 @@ public class CriteriaBuilderHelper {
 
 	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
 		return cb.isTrue(cb.function(ExtendedPostgreSQL94Dialect.ILIKE, Boolean.class, valueExpression, patternExpression));
+	}
+
+	public static Expression<String> windowFirstValueDesc(
+		CriteriaBuilder cb,
+		Path<Object> valueProperty,
+		Path<Object> partitionProperty,
+		Path<Object> orderProperty) {
+		return cb.function(ExtendedPostgreSQL94Dialect.WINDOW_FIRST_VALUE_DESC, String.class, valueProperty, partitionProperty, orderProperty);
+	}
+
+	public static Expression<String> windowCount(
+		CriteriaBuilder cb,
+		Path<Object> valueProperty,
+		Path<Object> partitionProperty) {
+		return cb.function(ExtendedPostgreSQL94Dialect.WINDOW_COUNT, String.class, valueProperty, partitionProperty);
 	}
 }

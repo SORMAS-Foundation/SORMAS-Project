@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.event.EventExportDto;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,6 +61,18 @@ public final class ImportExportUtils {
 				}
 
 				return true;
+			}
+		}, propertyCaptionProvider);
+	}
+
+	public static List<ExportPropertyMetaInfo> getEventExportProperties(
+		PropertyCaptionProvider propertyCaptionProvider,
+		final boolean withEventGroups) {
+		return getExportProperties(EventExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType groupType) {
+				return ExportGroupType.EVENT_GROUP != groupType || withEventGroups;
 			}
 		}, propertyCaptionProvider);
 	}
