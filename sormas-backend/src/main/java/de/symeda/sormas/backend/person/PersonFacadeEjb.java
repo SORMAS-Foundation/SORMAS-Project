@@ -783,16 +783,16 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
+		// The uuid-list is filtered by the users jurisdiction and retrieved in batches to avoid timeouts
+		List<String> personUuidList = getAllUuidsBatched(500, overwriteExistingCoordinates);
 
 		// Run updates in batches to avoid large JPA cache
-		// The list is automatically filtered by the users jurisdiction?
-		List<String> personUuidList = getAllUuidsBatched(100);
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
 			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
 		});
-
 		Long changedPersons = batchResults.stream().reduce(0L, Long::sum);
+
 		return changedPersons;
 	}
 
@@ -888,13 +888,22 @@ public class PersonFacadeEjb implements PersonFacade {
 		cleanUp(newPerson);
 	}
 
-	private List<String> getAllUuidsBatched(Integer batchSize) {
+	private List<String> getAllUuidsBatched(Integer batchSize, boolean allowPersonsWithCoordinates) {
+		// Build query
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
 		final Root<Person> person = cq.from(Person.class);
 
 		cq.select(person.get(Person.UUID));
-		cq.where(personService.createUserFilter(cb, cq, person));
+		if (!allowPersonsWithCoordinates) {
+			// filter persons by those which have no latitude or longitude given
+			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
+			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
+			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+		} else {
+			cq.where(personService.createUserFilter(cb, cq, person));
+		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
 		// repeat the query as often as necessary until all data is retrieved
