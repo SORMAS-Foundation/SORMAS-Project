@@ -7000,8 +7000,8 @@ ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subco
 INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
 
 -- 2021-03-22 Provide SQL function to generate a UUIDv4 encoded as base32 #4805
-DROP FUNCTION IF EXISTS encode_base32;
-DROP FUNCTION IF EXISTS generate_base32_uuid;
+DROP FUNCTION IF EXISTS encode_base32(bytea,int);
+DROP FUNCTION IF EXISTS generate_base32_uuid();
 
 /** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
 CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
