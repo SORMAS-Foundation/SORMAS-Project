@@ -7171,4 +7171,22 @@ ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
 
+
+-- 2020-04-06 Add contact person details to facilities #4755
+ALTER TABLE facility ADD COLUMN contactPersonFirstName text;
+ALTER TABLE facility ADD COLUMN contactPersonLastName text;
+ALTER TABLE facility ADD COLUMN contactPersonPhone text;
+ALTER TABLE facility ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location ADD COLUMN contactPersonLastName text;
+ALTER TABLE location ADD COLUMN contactPersonPhone text;
+ALTER TABLE location ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location_history ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location_history ADD COLUMN contactPersonLastName text;
+ALTER TABLE location_history ADD COLUMN contactPersonPhone text;
+ALTER TABLE location_history ADD COLUMN contactPersonEmail text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (361, '#4755 Add contact person details to facilities');
 -- *** Insert new sql commands BEFORE this line ***
