@@ -1,18 +1,20 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.sormas.api.labmessage.LabMessageCriteria;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LabMessageServiceTest {
@@ -31,11 +33,12 @@ public class LabMessageServiceTest {
     @Test
     public void buildCriteriaFilter() {
         LabMessageService sut = new LabMessageService();
-        boolean isProcessed = true;
-        when(criteria.getProcessed()).thenReturn(isProcessed);
-        when(labMessage.get(LabMessage.PROCESSED)).thenReturn(objectPath);
+		LabMessageStatus status = LabMessageStatus.PROCESSED;
 
-        when(cb.equal(objectPath, isProcessed)).thenReturn(predicate);
+		when(criteria.getLabMessageStatus()).thenReturn(status);
+		when(labMessage.get(LabMessage.STATUS)).thenReturn(objectPath);
+
+		when(cb.equal(objectPath, status)).thenReturn(predicate);
 
         Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
 

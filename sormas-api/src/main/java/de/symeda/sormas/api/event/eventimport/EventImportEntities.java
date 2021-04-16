@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -29,11 +30,20 @@ public class EventImportEntities implements Serializable {
 
 	private final EventDto event;
 	private final List<EventParticipantDto> eventParticipants;
+	private final List<EventGroupReferenceDto> eventGroupReferences;
 
 	public EventImportEntities(UserReferenceDto reportingUser) {
 		event = createEvent(reportingUser);
 
 		eventParticipants = new ArrayList<>();
+		eventGroupReferences = new ArrayList<>();
+	}
+
+	public EventImportEntities(EventDto event) {
+		this.event = event;
+
+		eventParticipants = new ArrayList<>();
+		eventGroupReferences = new ArrayList<>();
 	}
 
 	public static EventDto createEvent(UserReferenceDto reportingUser) {
@@ -43,17 +53,15 @@ public class EventImportEntities implements Serializable {
 		return event;
 	}
 
-	public EventImportEntities(EventDto event) {
-		this.event = event;
-
-		eventParticipants = new ArrayList<>();
-	}
-
 	public EventDto getEvent() {
 		return event;
 	}
 
 	public List<EventParticipantDto> getEventParticipants() {
 		return eventParticipants;
+	}
+
+	public List<EventGroupReferenceDto> getEventGroupReferences() {
+		return eventGroupReferences;
 	}
 }

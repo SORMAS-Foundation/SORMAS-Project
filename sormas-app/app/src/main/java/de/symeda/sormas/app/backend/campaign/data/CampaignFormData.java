@@ -32,7 +32,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -47,6 +46,10 @@ public class CampaignFormData extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "campaignFormData";
 	public static final String I18N_PREFIX = "CampaignFormData";
+
+	public static final String CAMPAIGN_ID = "campaign_id";
+	public static final String CAMPAIGN_FORM_META_ID = "campaignformmeta_id";
+	public static final String FORM_DATE = "formDate";
 
 	@Column(name = "formValues")
 	private String formValuesJson;
