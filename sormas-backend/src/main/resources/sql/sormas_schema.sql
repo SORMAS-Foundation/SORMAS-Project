@@ -7189,4 +7189,10 @@ ALTER TABLE location_history ADD COLUMN contactPersonPhone text;
 ALTER TABLE location_history ADD COLUMN contactPersonEmail text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (361, '#4755 Add contact person details to facilities');
+
+-- 2021-03-26 [DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853
+ALTER TABLE labmessage ADD COLUMN pathogentest_id BIGINT;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pathogentest_id) REFERENCES pathogentest(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (362, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 -- *** Insert new sql commands BEFORE this line ***

@@ -9,8 +9,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import de.symeda.sormas.backend.sample.PathogenTest;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
@@ -58,6 +63,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String STATUS = "status";
 	public static final String TEST_RESULT_TEXT = "testResultText";
+	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -92,6 +98,7 @@ public class LabMessage extends AbstractDomainObject {
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
 	private String testResultText;
+	private PathogenTest pathogenTest;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getMessageDateTime() {
@@ -363,5 +370,15 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setTestResultText(String testResultText) {
 		this.testResultText = testResultText;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn
+	public PathogenTest getPathogenTest() {
+		return pathogenTest;
+	}
+
+	public void setPathogenTest(PathogenTest pathogenTest) {
+		this.pathogenTest = pathogenTest;
 	}
 }

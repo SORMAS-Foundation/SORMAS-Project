@@ -62,7 +62,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String RECEIVED = "received";
 	public static final String REFERRED = "referred";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
-	public static final String PATHOGEN_TEST_LAB_USER_NAME = "pathogenTestLabUserName";
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
 
 	private String uuid;
