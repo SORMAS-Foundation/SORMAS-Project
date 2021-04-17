@@ -13,9 +13,7 @@ public interface LabMessageFacade {
 
 	LabMessageDto getByUuid(String uuid);
 
-	List<LabMessageDto> getByLabSampleId(String labSampleId);
-
-	List<LabMessageDto> getBySampleUuid(String sampleUuid);
+	List<LabMessageDto> getForSample(String sampleUuid);
 
 	List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid);
 

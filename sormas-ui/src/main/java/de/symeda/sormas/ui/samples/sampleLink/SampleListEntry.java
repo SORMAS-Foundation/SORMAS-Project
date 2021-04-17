@@ -181,7 +181,7 @@ public class SampleListEntry extends HorizontalLayout {
 			sourceSampleButton = ButtonHelper.createIconButtonWithCaption(
 				"see-source-sample-" + sample.getUuid(),
 				null,
-				VaadinIcons.EYE,
+				VaadinIcons.NOTEBOOK,
 				sourceSampleClickListener,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);

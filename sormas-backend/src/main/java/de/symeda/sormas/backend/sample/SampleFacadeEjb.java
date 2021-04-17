@@ -98,8 +98,6 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.labmessage.LabMessage;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;

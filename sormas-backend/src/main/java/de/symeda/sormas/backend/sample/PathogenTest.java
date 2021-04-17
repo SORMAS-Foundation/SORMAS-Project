@@ -29,7 +29,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -40,7 +39,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.user.User;
 
 @Entity

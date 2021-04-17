@@ -16,8 +16,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.Sample;
-import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
@@ -64,7 +62,6 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String SAMPLE = "sample";
 	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
@@ -99,7 +96,6 @@ public class LabMessage extends AbstractDomainObject {
 
 	private boolean processed;
 	private String testResultText;
-	private Sample sample;
 	private PathogenTest pathogenTest;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -371,16 +367,6 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setTestResultText(String testResultText) {
 		this.testResultText = testResultText;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Sample getSample() {
-		return sample;
-	}
-
-	public void setSample(Sample sample) {
-		this.sample = sample;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

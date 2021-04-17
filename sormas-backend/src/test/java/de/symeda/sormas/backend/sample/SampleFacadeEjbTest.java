@@ -504,17 +504,14 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		criteria.caze(caze.toReference());
 
 		criteria.setLabSampleId("case_sample_id");
-		criteria.setSourceLabMessage(new LabMessageReferenceDto("uuid1"));
 		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(1));
 
 		// should return all samples for unknown lab sample id and missing date and material
 		criteria.setLabSampleId("unknown_id");
-		criteria.setSourceLabMessage(new LabMessageReferenceDto("uuid3"));
 		similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(2));
 
-		criteria.setSourceLabMessage(null);
 		criteria.setSampleMaterial(SampleMaterial.BLOOD);
 
 		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime2, 1));

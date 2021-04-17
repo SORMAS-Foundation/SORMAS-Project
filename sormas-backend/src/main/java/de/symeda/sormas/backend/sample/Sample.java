@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.labmessage.LabMessage;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;

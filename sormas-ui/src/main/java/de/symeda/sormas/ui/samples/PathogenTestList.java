@@ -97,7 +97,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
 		if (!labMessages.isEmpty()) {
 			listEntry
-				.addSourceSampleListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages, this::reload));
+				.addViewSourceLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages, this::reload));
 		}
 	}
 }

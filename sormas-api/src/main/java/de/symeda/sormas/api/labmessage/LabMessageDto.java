@@ -47,7 +47,6 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String SAMPLE = "sample";
 	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
@@ -82,7 +81,6 @@ public class LabMessageDto extends EntityDto {
 
 	private boolean processed;
 	private String testResultText;
-	private SampleReferenceDto sample;
 	private PathogenTestReferenceDto pathogenTest;
 
 	public Date getMessageDateTime() {
@@ -334,14 +332,6 @@ public class LabMessageDto extends EntityDto {
 
 	public LabMessageReferenceDto toReferenceDto() {
 		return new LabMessageReferenceDto(getUuid());
-	}
-
-	public SampleReferenceDto getSample() {
-		return sample;
-	}
-
-	public void setSample(SampleReferenceDto sample) {
-		this.sample = sample;
 	}
 
 	public PathogenTestReferenceDto getPathogenTest() {

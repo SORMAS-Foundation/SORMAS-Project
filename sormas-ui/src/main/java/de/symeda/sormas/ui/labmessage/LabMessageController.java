@@ -231,7 +231,6 @@ public class LabMessageController {
 	private SampleSimilarityCriteria createSampleCriteria(LabMessageDto labMessageDto) {
 		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
 		sampleCriteria.setLabSampleId(labMessageDto.getLabSampleId());
-		sampleCriteria.setSourceLabMessage(labMessageDto.toReferenceDto());
 		sampleCriteria.setSampleDateTime(labMessageDto.getSampleDateTime());
 		sampleCriteria.setSampleMaterial(labMessageDto.getSampleMaterial());
 		return sampleCriteria;
@@ -451,7 +450,7 @@ public class LabMessageController {
 			} else {
 				callback.run();
 			}
-			finishProcessingLabMessage(labMessageDto, sampleDto, pathogenTestDto);
+			finishProcessingLabMessage(labMessageDto, pathogenTestDto);
 		};
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -600,7 +599,7 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			ControllerProvider.getSampleController().getSampleCreateComponent(
 					sampleDto,
-					(savedSampleDto, pathogenTestDto) -> finishProcessingLabMessage(labMessageDto, sampleDto, pathogenTestDto)
+					(savedSampleDto, pathogenTestDto) -> finishProcessingLabMessage(labMessageDto, pathogenTestDto)
 			);
 
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
@@ -659,7 +658,7 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
 				window.close();
-			}, (savedPathogenTestDto, runnable) -> finishProcessingLabMessage(labMessageDto, sampleDto, savedPathogenTestDto));
+			}, (savedPathogenTestDto, runnable) -> finishProcessingLabMessage(labMessageDto, savedPathogenTestDto));
 		pathogenTestCreateComponent.addDiscardListener(window::close);
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
 		return pathogenTestCreateComponent;
@@ -697,11 +696,8 @@ public class LabMessageController {
 		form.setValue(labMessageDto);
 	}
 
-	private void finishProcessingLabMessage(LabMessageDto labMessageDto, SampleDto sampleDto, PathogenTestDto pathogenTestDto) {
-		labMessageDto.setSample(sampleDto.toReference());
-		if (pathogenTestDto != null) {
-			labMessageDto.setPathogenTest(pathogenTestDto.toReference());
-		}
+	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
+		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
 		labMessageDto.setProcessed(true);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);

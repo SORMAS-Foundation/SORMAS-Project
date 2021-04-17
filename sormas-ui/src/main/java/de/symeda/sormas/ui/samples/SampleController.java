@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;

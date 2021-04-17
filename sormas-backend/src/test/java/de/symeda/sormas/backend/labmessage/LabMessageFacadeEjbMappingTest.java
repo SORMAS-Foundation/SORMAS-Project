@@ -41,12 +41,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 	private LabMessageFacadeEjb sut;
 
 	@Test
-	public void testFromDto() {
-		Sample sample = new Sample();
-		sample.setUuid(DataHelper.createUuid());
-		SampleReferenceDto sampleReference = sample.toReference();
-		when(sampleService.getByReferenceDto(sampleReference)).thenReturn(sample);
-
+	public void testFromDto() {;
 		PathogenTest pathogenTest = new PathogenTest();
 		pathogenTest.setUuid(DataHelper.createUuid());
 		PathogenTestReferenceDto pathogenTestReference = pathogenTest.toReference();
@@ -85,7 +80,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonPhone("0123456789");
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
-		source.setSample(sampleReference);
 		source.setPathogenTest(pathogenTestReference);
 
 		LabMessage result = sut.fromDto(source, null, true);
@@ -118,15 +112,11 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
-		assertEquals(source.getSample().getUuid(), result.getSample().getUuid());
 		assertEquals(source.getPathogenTest().getUuid(), result.getPathogenTest().getUuid());
 	}
 
 	@Test
 	public void testToDto() {
-		Sample sample = new Sample();
-		sample.setUuid(DataHelper.createUuid());
-
 		PathogenTest pathogenTest = new PathogenTest();
 		pathogenTest.setUuid(DataHelper.createUuid());
 
@@ -163,7 +153,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 		source.setProcessed(true);
-		source.setSample(sample);
 		source.setPathogenTest(pathogenTest);
 
 		LabMessageDto result = sut.toDto(source);
@@ -196,7 +185,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
-		assertEquals(source.getSample().getUuid(), result.getSample().getUuid());
 		assertEquals(source.getPathogenTest().getUuid(), result.getPathogenTest().getUuid());
 	}
 

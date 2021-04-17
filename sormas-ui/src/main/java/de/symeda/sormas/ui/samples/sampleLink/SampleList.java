@@ -92,7 +92,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getBySampleUuid(listEntry.getSample().getUuid());
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().getUuid());
 		if (!labMessages.isEmpty()) {
 			listEntry
 				.addSourceSampleListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages, this::reload));

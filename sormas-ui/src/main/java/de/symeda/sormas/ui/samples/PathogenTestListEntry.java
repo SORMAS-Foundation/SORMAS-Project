@@ -45,7 +45,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	private final PathogenTestDto pathogenTest;
 	private Button editButton;
-	private Button sourceSampleButton;
+	private Button viewSourceLabMessagesButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
@@ -130,20 +130,20 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		editButton.addClickListener(editClickListener);
 	}
 
-	public void addSourceSampleListener(ClickListener sourceSampleClickListener) {
-		if (sourceSampleButton == null) {
-			sourceSampleButton = ButtonHelper.createIconButtonWithCaption(
+	public void addViewSourceLabMessagesListener(ClickListener sourceSampleClickListener) {
+		if (viewSourceLabMessagesButton == null) {
+			viewSourceLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
 					"see-source-sample-" + pathogenTest.getUuid(),
 					null,
-					VaadinIcons.EYE,
+					VaadinIcons.NOTEBOOK,
 					sourceSampleClickListener,
 					ValoTheme.BUTTON_LINK,
 					CssStyles.BUTTON_COMPACT);
 
-			addComponent(sourceSampleButton);
-			setComponentAlignment(sourceSampleButton, Alignment.TOP_RIGHT);
-			setExpandRatio(sourceSampleButton, 0);
-			sourceSampleButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
+			addComponent(viewSourceLabMessagesButton);
+			setComponentAlignment(viewSourceLabMessagesButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(viewSourceLabMessagesButton, 0);
+			viewSourceLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
 		}
 	}
 

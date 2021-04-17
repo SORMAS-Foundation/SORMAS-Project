@@ -73,14 +73,6 @@ public class SampleSimilarityCriteria implements Serializable {
 		this.labSampleId = labSampleId;
 	}
 
-	public LabMessageReferenceDto getSourceLabMessage() {
-		return sourceLabMessage;
-	}
-
-	public void setSourceLabMessage(LabMessageReferenceDto sourceLabMessage) {
-		this.sourceLabMessage = sourceLabMessage;
-	}
-
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}

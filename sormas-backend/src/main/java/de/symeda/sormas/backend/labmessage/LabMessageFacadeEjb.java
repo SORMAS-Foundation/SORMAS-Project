@@ -20,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -127,7 +128,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
-		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 
 		return target;
@@ -184,12 +184,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
 		if (source.isProcessed()) {
-			if (source.getSample() != null) {
-				target.setSample(source.getSample().toReference());
-			}
-			if (source.getPathogenTest() != null) {
-				target.setPathogenTest(source.getPathogenTest().toReference());
-			}
+			target.setPathogenTest(source.getPathogenTest().toReference());
 		}
 
 		return target;
@@ -201,12 +196,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public List<LabMessageDto> getBySampleUuid(String sampleUuid) {
+	public List<LabMessageDto> getForSample(String sampleUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
 		Root<LabMessage> from = cq.from(LabMessage.class);
+		Join<LabMessage, PathogenTest> pathogenTestJoin = from.join(LabMessage.PATHOGEN_TEST, JoinType.INNER);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestJoin.join(PathogenTest.SAMPLE, JoinType.INNER);
 
-		cq.where(cb.equal(from.join(LabMessage.SAMPLE, JoinType.INNER).get(Sample.UUID), sampleUuid));
+		cq.where(cb.equal(sampleJoin.get(Sample.UUID), sampleUuid));
 		cq.orderBy(cb.desc(from.get(LabMessage.MESSAGE_DATE_TIME)), cb.desc(from.get(LabMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
@@ -225,15 +222,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
 
-	@Override
-	public List<LabMessageDto> getByLabSampleId(String labSampleId) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
-		Root<LabMessage> from = cq.from(LabMessage.class);
-		cq.where(from.get(LabMessage.LAB_SAMPLE_ID).in(labSampleId));
-
-		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
-	}
 
 	@Override
 	public Boolean isProcessed(String uuid) {
