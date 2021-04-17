@@ -57,6 +57,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
+	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";

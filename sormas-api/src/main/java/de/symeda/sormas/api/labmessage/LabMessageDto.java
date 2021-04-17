@@ -9,7 +9,6 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -323,6 +322,14 @@ public class LabMessageDto extends EntityDto {
 		this.testResultText = testResultText;
 	}
 
+	public PathogenTestReferenceDto getPathogenTest() {
+		return pathogenTest;
+	}
+
+	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
+		this.pathogenTest = pathogenTest;
+	}
+
 	public static LabMessageDto build() {
 
 		LabMessageDto labMessage = new LabMessageDto();
@@ -332,13 +339,5 @@ public class LabMessageDto extends EntityDto {
 
 	public LabMessageReferenceDto toReferenceDto() {
 		return new LabMessageReferenceDto(getUuid());
-	}
-
-	public PathogenTestReferenceDto getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
-		this.pathogenTest = pathogenTest;
 	}
 }

@@ -133,7 +133,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 	public void addViewSourceLabMessagesListener(ClickListener sourceSampleClickListener) {
 		if (viewSourceLabMessagesButton == null) {
 			viewSourceLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
-					"see-source-sample-" + pathogenTest.getUuid(),
+					"see-source-lab-messages-" + pathogenTest.getUuid(),
 					null,
 					VaadinIcons.NOTEBOOK,
 					sourceSampleClickListener,
@@ -143,7 +143,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			addComponent(viewSourceLabMessagesButton);
 			setComponentAlignment(viewSourceLabMessagesButton, Alignment.MIDDLE_RIGHT);
 			setExpandRatio(viewSourceLabMessagesButton, 0);
-			viewSourceLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
+			viewSourceLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessages));
 		}
 	}
 

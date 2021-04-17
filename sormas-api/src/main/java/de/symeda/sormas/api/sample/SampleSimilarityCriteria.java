@@ -21,7 +21,6 @@ import java.util.Date;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 
 public class SampleSimilarityCriteria implements Serializable {
 
@@ -31,7 +30,6 @@ public class SampleSimilarityCriteria implements Serializable {
 	private ContactReferenceDto contact;
 	private EventParticipantReferenceDto eventParticipant;
 	private String labSampleId;
-	private LabMessageReferenceDto sourceLabMessage;
 	private Date sampleDateTime;
 	private SampleMaterial sampleMaterial;
 

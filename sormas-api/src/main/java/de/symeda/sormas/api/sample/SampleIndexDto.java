@@ -50,6 +50,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String DISTRICT = "district";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";

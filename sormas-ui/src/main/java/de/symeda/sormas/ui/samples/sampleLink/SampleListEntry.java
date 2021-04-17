@@ -49,7 +49,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 	private final SampleIndexDto sample;
 	private Button editButton;
-	private Button sourceSampleButton;
+	private Button sourceLabMessagesButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
 
@@ -176,20 +176,20 @@ public class SampleListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addSourceSampleListener(ClickListener sourceSampleClickListener) {
-		if (sourceSampleButton == null) {
-			sourceSampleButton = ButtonHelper.createIconButtonWithCaption(
-				"see-source-sample-" + sample.getUuid(),
+	public void addSourceLabMessagesListener(ClickListener sourceSampleClickListener) {
+		if (sourceLabMessagesButton == null) {
+			sourceLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
+				"see-source-lab-messages-" + sample.getUuid(),
 				null,
 				VaadinIcons.NOTEBOOK,
 				sourceSampleClickListener,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
 
-			addComponent(sourceSampleButton);
-			setComponentAlignment(sourceSampleButton, Alignment.TOP_RIGHT);
-			setExpandRatio(sourceSampleButton, 0);
-			sourceSampleButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessage));
+			addComponent(sourceLabMessagesButton);
+			setComponentAlignment(sourceLabMessagesButton, Alignment.TOP_RIGHT);
+			setExpandRatio(sourceLabMessagesButton, 0);
+			sourceLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessages));
 		}
 	}
 
