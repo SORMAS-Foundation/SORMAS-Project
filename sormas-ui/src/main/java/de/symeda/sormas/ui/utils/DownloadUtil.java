@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import static com.google.common.base.Predicates.or;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -43,6 +45,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -67,6 +70,7 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
+
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -98,10 +102,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
-
-import java.util.function.Predicate;
-
-import static com.google.common.base.Predicates.or;
 
 public final class DownloadUtil {
 
@@ -411,7 +411,7 @@ public final class DownloadUtil {
 			this.lazyInputStreamSupplier = lazyInputStreamSupplier;
 		}
 
-		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
+		public DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
 			this(() -> {
 				try (SharedByteArrayOutputStream os = new SharedByteArrayOutputStream()) {
 					osConsumer.writeTo(os);

@@ -33,7 +33,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -75,6 +74,7 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
@@ -98,6 +98,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
 			fluidRow(
 				loc(LocationDto.DETAILS),
 				fluidRow(
@@ -206,6 +208,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
+		TextField contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
+		TextField contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
+		TextField contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		TextField contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
+
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
@@ -235,10 +242,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
 			if (subcontinent.getValue() == null) {
 				FieldHelper.updateItems(
-						country,
-						continentReferenceDto != null
-								? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-								: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+					country,
+					continentReferenceDto != null
+						? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+						: FacadeProvider.getCountryFacade().getAllActiveAsReference());
 				country.setValue(null);
 			}
 			subcontinent.setValue(null);
@@ -293,7 +300,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
 						skipCountryValueChange = false;
 						subcontinent.setValue(countrySubcontinent);
-						FieldHelper.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+						FieldHelper
+							.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
 						subcontinent.addValueChangeListener(subContinentValueListener);
 					}
 				}
@@ -388,10 +396,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 
 			// Fill in the address fields based on the selected facility
-			// We don't want the location form to automatically change even if the facility's address is updated later 
+			// We don't want the location form to automatically change even if the facility's address is updated later
 			// on, so we only trigger it upon a manual change of the facility field
 			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
-			// necessary because isModified() will still return true for a short duration even if we keep the very same 
+			// necessary because isModified() will still return true for a short duration even if we keep the very same
 			// value because of this field dependencies to other fields and the way updateEnumValues works
 			if (facility.isAttached()) {
 				if (facility.getValue() != null) {
@@ -406,7 +414,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
 						|| facilityDto.getAreaType() != null
 						|| facilityDto.getLatitude() != null
-						|| facilityDto.getLongitude() != null) {
+						|| facilityDto.getLongitude() != null
+					||(StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName()) && StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
 
 						// Show a confirmation popup if the location's address is already set and different from the facility one
 						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
@@ -417,6 +426,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
 								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
 							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
+							|| (StringUtils.isNotEmpty(contactPersonFirstName.getValue()) && StringUtils.isNotEmpty(contactPersonLastName.getValue()))
 							|| (tfLatitude.getConvertedValue() != null
 								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
 							|| (tfLongitude.getConvertedValue() != null
@@ -481,6 +491,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
+		((TextField) getField(LocationDto.CONTACT_PERSON_FIRST_NAME)).setValue(facilityDto.getContactPersonFirstName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_LAST_NAME)).setValue(facilityDto.getContactPersonLastName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_PHONE)).setValue(facilityDto.getContactPersonPhone());
+		((TextField) getField(LocationDto.CONTACT_PERSON_EMAIL)).setValue(facilityDto.getContactPersonEmail());
 		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
 		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
@@ -501,39 +515,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
 
-		Page.getCurrent().getStyles().add(".geocode-button-red {color: #cc0000 !important;}");
-
-		Button geocodeButton = ButtonHelper.createIconButtonWithCaption(
-			"geocodeButton",
-			null,
-			VaadinIcons.MAP_MARKER,
-			e -> triggerGeocoding(),
-			ValoTheme.BUTTON_ICON_ONLY,
-			ValoTheme.BUTTON_BORDERLESS,
-			ValoTheme.BUTTON_LARGE);
+		Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER, e -> {
+			triggerGeocoding();
+			e.getButton().removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 
 		// Highlight geocode-button when the address changes
-		ValueChangeListener addressListener = e -> geocodeButton.addStyleName("geocode-button-red");
-		// adding the valuechangelistener inside another valuechangelistener seems counterintuitive, but it prevents the listener from being executed when the initial field values are set
-		getField(LocationDto.STREET).addValueChangeListener(e -> {
-			getField(LocationDto.STREET).removeValueChangeListener(addressListener);
-			getField(LocationDto.STREET).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.POSTAL_CODE).addValueChangeListener(e -> {
-			getField(LocationDto.POSTAL_CODE).removeValueChangeListener(addressListener);
-			getField(LocationDto.POSTAL_CODE).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.CITY).addValueChangeListener(e -> {
-			getField(LocationDto.CITY).removeValueChangeListener(addressListener);
-			getField(LocationDto.CITY).addValueChangeListener(addressListener);
-		});
-		getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(e -> {
-			getField(LocationDto.HOUSE_NUMBER).removeValueChangeListener(addressListener);
-			getField(LocationDto.HOUSE_NUMBER).addValueChangeListener(addressListener);
-		});
-
-		geocodeButton.addClickListener(e -> geocodeButton.removeStyleName("geocode-button-red"));
-		geocodeButton.removeStyleName("geocode-button-red");
+		for (String fieldName : new String[] {
+			LocationDto.STREET,
+			LocationDto.POSTAL_CODE,
+			LocationDto.CITY,
+			LocationDto.HOUSE_NUMBER }) {
+			Field<?> field = getField(fieldName);
+			field.addValueChangeListener(e -> {
+				if (field.isModified()) {
+					geocodeButton.addStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+				}
+			});
+		} ;
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);

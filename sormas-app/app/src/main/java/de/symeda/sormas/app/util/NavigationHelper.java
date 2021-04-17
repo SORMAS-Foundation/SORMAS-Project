@@ -23,6 +23,7 @@ import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.campaign.list.CampaignFormDataListActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
@@ -73,6 +74,10 @@ public class NavigationHelper {
 
 	public static void goToTasks(Context context) {
 		TaskListActivity.startActivity(context, TaskStatus.PENDING);
+	}
+
+	public static void goToCampaigns(Context context) {
+		CampaignFormDataListActivity.startActivity(context);
 	}
 
 	public static void goToReports(Context context) {

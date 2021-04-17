@@ -43,6 +43,7 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
@@ -87,6 +88,7 @@ import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
@@ -133,6 +135,10 @@ public class FacadeProvider {
 
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+
+	public static EventGroupFacade getEventGroupFacade() {
+		return get().lookupEjbRemote(EventGroupFacade.class);
 	}
 
 	public static EventImportFacade getEventImportFacade() {
@@ -415,6 +421,10 @@ public class FacadeProvider {
 
 	public static I18nFacade getI18nFacade() {
 		return get().lookupEjbRemote(I18nFacade.class);
+	}
+
+	public static UserRightsFacade getUserRightsFacade() {
+		return get().lookupEjbRemote(UserRightsFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

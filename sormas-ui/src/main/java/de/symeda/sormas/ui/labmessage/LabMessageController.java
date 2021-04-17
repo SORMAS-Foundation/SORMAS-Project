@@ -1,10 +1,14 @@
 package de.symeda.sormas.ui.labmessage;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -40,6 +44,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -49,6 +54,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -82,25 +89,30 @@ public class LabMessageController {
 
 	}
 
-	public void showLabMessage(String labMessageUuid, Runnable onShare) {
+	public void showLabMessage(String labMessageUuid, Runnable onFormActionPerformed) {
 
 		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
 		Window window = VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
-		LabMessageEditForm form = new LabMessageEditForm(true, newDto.isProcessed(), () -> {
-			window.close();
-			onShare.run();
-		});
+
+		LabMessageForm form = new LabMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 		layout.addComponent(form);
+
+		if (newDto.getStatus().isProcessable()) {
+			layout.addComponent(getLabMessageButtonsPanel(newDto, () -> {
+				window.close();
+				onFormActionPerformed.run();
+			}));
+		}
 
 		form.setValue(newDto);
 	}
 
-	public void showLabMessagesSlider(List<LabMessageDto> labMessages, Runnable onShare) {
-		new LabMessageSlider(onShare, labMessages);
+	public void showLabMessagesSlider(List<LabMessageDto> labMessages) {
+		new LabMessageSlider(labMessages);
 	}
 
 	public void processLabMessage(String labMessageUuid) {
@@ -146,6 +158,36 @@ public class LabMessageController {
 					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
 			}, false);
+	}
+
+	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
+				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else if (selectedRows.stream().anyMatch(m -> m.getStatus() == LabMessageStatus.PROCESSED)) {
+			new Notification(
+				I18nProperties.getString(Strings.headingLabMessagesDeleteProcessed),
+				I18nProperties.getString(Strings.messageLabMessagesDeleteProcessed),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteLabMessages), selectedRows.size()),
+				() -> {
+					FacadeProvider.getLabMessageFacade()
+						.deleteLabMessages(selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()));
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingLabMessagesDeleted),
+						I18nProperties.getString(Strings.messageLabMessagesDeleted),
+						Notification.Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
+		}
 	}
 
 	private PersonDto buildPerson(LabMessageDto labMessageDto) {
@@ -672,7 +714,7 @@ public class LabMessageController {
 		boolean entityCreated) {
 
 		addProcessedInMeantimeCheck(createComponent, labMessageDto, entityCreated);
-		LabMessageEditForm form = new LabMessageEditForm(true, labMessageDto.isProcessed(), null);
+		LabMessageForm form = new LabMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
@@ -697,8 +739,8 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
-		labMessageDto.setProcessed(true);
+        labMessageDto.setPathogenTest(pathogenTestDto.toReference());
+        labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}
@@ -741,7 +783,14 @@ public class LabMessageController {
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedCase,
-					e -> FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid()),
+					e -> {
+						try {
+							FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
+						} catch (ExternalSurveillanceToolException survToolException) {
+							// should not happen because the new case was not shared
+							throw new RuntimeException(survToolException);
+						}
+					},
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
@@ -766,5 +815,84 @@ public class LabMessageController {
 				throw new CannotProceedException("The lab message was processed in the meantime");
 			}
 		});
+	}
+
+	private HorizontalLayout getLabMessageButtonsPanel(LabMessageDto labMessage, Runnable callback) {
+		HorizontalLayout buttonsPanel = new HorizontalLayout();
+		buttonsPanel.setMargin(false);
+		buttonsPanel.setSpacing(true);
+
+		Button deleteButton = ButtonHelper.createButtonWithCaption(Captions.actionDelete, I18nProperties.getCaption(Captions.actionDelete), (e) -> {
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.LabMessage)),
+				() -> {
+					if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+						showAlreadyProcessedPopup(null, false);
+					} else {
+						FacadeProvider.getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+						callback.run();
+					}
+				});
+		}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+
+		buttonsPanel.addComponent(deleteButton);
+
+		Button unclearButton = ButtonHelper
+			.createButtonWithCaption(Captions.actionUnclearLabMessage, I18nProperties.getCaption(Captions.actionUnclearLabMessage), (e) -> {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
+					new Label(I18nProperties.getString(Strings.confirmationUnclearLabMessage)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					null,
+					(confirmed) -> {
+						if (confirmed) {
+							if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+								showAlreadyProcessedPopup(null, false);
+							} else {
+								labMessage.setStatus(LabMessageStatus.UNCLEAR);
+								FacadeProvider.getLabMessageFacade().save(labMessage);
+								callback.run();
+							}
+						}
+					});
+			});
+
+		buttonsPanel.addComponent(unclearButton);
+
+		Button forwardButton = ButtonHelper.createButtonWithCaption(
+			Captions.actionManualForwardLabMessage,
+			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
+			(e) -> {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
+					new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedLabMessage)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					null,
+					(confirmed) -> {
+						if (confirmed) {
+							if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+								showAlreadyProcessedPopup(null, false);
+							} else {
+								labMessage.setStatus(LabMessageStatus.FORWARDED);
+								FacadeProvider.getLabMessageFacade().save(labMessage);
+								callback.run();
+							}
+						}
+					});
+			});
+
+		buttonsPanel.addComponent(forwardButton);
+
+		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+			Button shareButton = ButtonHelper.createIconButton(Captions.sormasToSormasSendLabMessage, VaadinIcons.SHARE, (e) -> {
+				ControllerProvider.getSormasToSormasController().shareLabMessage(labMessage, callback);
+			});
+
+			buttonsPanel.addComponent(shareButton);
+		}
+
+		return buttonsPanel;
 	}
 }

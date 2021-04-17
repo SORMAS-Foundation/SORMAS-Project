@@ -26,6 +26,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -41,6 +42,7 @@ import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
+import de.symeda.sormas.ui.events.groups.EventGroupListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -64,6 +66,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
+	public static final String EVENT_GROUPS_LOC = "event-groups";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
@@ -88,6 +91,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_GROUPS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
@@ -111,7 +115,7 @@ public class EventDataView extends AbstractEventView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EVENT_LOC);
 
-		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, getEventRef());
+		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event);
 		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
@@ -142,6 +146,13 @@ public class EventDataView extends AbstractEventView {
 		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
 		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (eventGroupsFeatureEnabled) {
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
+			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {

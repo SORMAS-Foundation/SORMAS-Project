@@ -90,6 +90,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 	public static final String INTERNALID = "internalId";
+	public static final String EVENT_GROUP = "eventGroup";
 
 	private EventReferenceDto superordinateEvent;
 

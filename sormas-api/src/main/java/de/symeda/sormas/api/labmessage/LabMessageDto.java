@@ -79,7 +79,7 @@ public class LabMessageDto extends EntityDto {
 
 	private String labMessageDetails;
 
-	private boolean processed;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 	private String testResultText;
 	private PathogenTestReferenceDto pathogenTest;
 
@@ -307,12 +307,12 @@ public class LabMessageDto extends EntityDto {
 		this.labMessageDetails = labMessageDetails;
 	}
 
-	public boolean isProcessed() {
-		return processed;
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 
 	public String getTestResultText() {

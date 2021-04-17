@@ -61,6 +61,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String ADDRESS = "address";
+	public static final String EVENT_GROUPS = "eventGroups";
 
 	private String uuid;
 	private String externalId;
@@ -97,6 +98,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private UserReferenceDto reportingUser;
 	private UserReferenceDto responsibleUser;
 	private EventJurisdictionDto jurisdiction;
+	private EventGroupsIndexDto eventGroups;
 
 	public EventIndexDto(
 		String uuid,
@@ -397,6 +399,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public EventGroupsIndexDto getEventGroups() {
+		return eventGroups;
+	}
+
+	public void setEventGroups(EventGroupsIndexDto eventGroups) {
+		this.eventGroups = eventGroups;
 	}
 
 	public EventReferenceDto toReference() {

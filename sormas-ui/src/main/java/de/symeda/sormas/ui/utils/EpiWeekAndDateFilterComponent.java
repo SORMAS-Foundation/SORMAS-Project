@@ -21,15 +21,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.ui.Field;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.PopupDateField;
 
@@ -39,7 +36,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 
-public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends HorizontalLayout {
+public class EpiWeekAndDateFilterComponent<DATE_TYPE> extends HorizontalLayout {
 
 	private static final long serialVersionUID = 8752630393182185034L;
 
@@ -58,9 +55,9 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		boolean fillAutomatically,
 		boolean showCaption,
 		String infoText,
-		Class<E> dateType,
+		DATE_TYPE[] dateTypes,
 		String dateTypePrompt,
-		Enum<E> defaultDateType,
+		DATE_TYPE defaultDateType,
 		AbstractFilterForm parentFilterForm) {
 		setSpacing(true);
 
@@ -116,10 +113,10 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		addComponent(dateFilterOptionFilter);
 
 		// New case date type selector
-		if (dateType != null) {
+		if (dateTypes != null) {
 			dateTypeSelector.setId("dateType");
 			dateTypeSelector.setWidth(200, Unit.PIXELS);
-			dateTypeSelector.addItems((Object[]) dateType.getEnumConstants());
+			dateTypeSelector.addItems(dateTypes);
 			if (dateTypePrompt != null) {
 				dateTypeSelector.setInputPrompt(dateTypePrompt);
 			}

@@ -20,27 +20,24 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class LabMessageSlider {
 
 	private final List<LabMessageDto> labMessages;
-	private final LabMessageEditForm form;
+	private final LabMessageForm form;
 	private final Button leftButton;
 	private final Button rightButton;
 	private int index;
 
-	public LabMessageSlider(Runnable onShare, List<LabMessageDto> labMessages) {
+	public LabMessageSlider(List<LabMessageDto> labMessages) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
-		Window window = VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
+		VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
 
 		this.index = 0;
 		this.labMessages = labMessages;
-		LabMessageEditForm form = new LabMessageEditForm(true, true, () -> {
-			window.close();
-			onShare.run();
-		});
-		this.form = form;
+		LabMessageForm form = new LabMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
-		form.setValue(labMessages.get(index));
+		this.form = form;
 
 		layout.addComponent(this.form);
+		form.setValue(labMessages.get(index));
 
 		this.leftButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_LEFT, (clickEvent) -> this.previous());
 		this.rightButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_RIGHT, (clickEvent) -> this.next());

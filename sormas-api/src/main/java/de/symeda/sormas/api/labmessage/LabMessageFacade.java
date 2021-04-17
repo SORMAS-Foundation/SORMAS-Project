@@ -13,11 +13,15 @@ public interface LabMessageFacade {
 
 	LabMessageDto getByUuid(String uuid);
 
-	List<LabMessageDto> getForSample(String sampleUuid);
+	void deleteLabMessage(String uuid);
 
-	List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid);
+	void deleteLabMessages(List<String> uuids);
 
-	/**
+    List<LabMessageDto> getForSample(String sampleUuid);
+
+    List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid);
+
+    /**
 	 * This method is used to check whether a labMessage is marked processed in the database.
 	 * It can be used to check for recent changes.
 	 *

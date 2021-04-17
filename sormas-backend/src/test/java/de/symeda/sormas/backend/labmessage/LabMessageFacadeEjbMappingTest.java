@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -152,7 +153,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonPhone("0123456789");
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
-		source.setProcessed(true);
+		source.setStatus(LabMessageStatus.PROCESSED);
 		source.setPathogenTest(pathogenTest);
 
 		LabMessageDto result = sut.toDto(source);

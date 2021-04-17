@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.docgeneration;
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,7 +25,10 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -61,7 +63,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -73,13 +74,18 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private CaseDataDto caseDataDto;
 	private ContactDto contactDto;
 	private EventParticipantDto eventParticipantDto;
-	private UserDto userDto;
 
 	private SampleDto sampleDto;
 	private PathogenTestDto pathogenTestDto;
 
 	@Before
 	public void setup() throws ParseException, URISyntaxException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+
+		UserDto userDto = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		loginWith(userDto);
+
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
 		reset();
 
@@ -100,23 +106,19 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		getPersonFacade().savePerson(personDto);
 
-		caseDataDto = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
-		caseDataDto.setPerson(personDto.toReference());
-		caseDataDto.setQuarantineFrom(DATE_FORMAT.parse("10/09/2020"));
-		caseDataDto.setQuarantineTo(DATE_FORMAT.parse("24/09/2020"));
-		caseDataDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
-		getCaseFacade().saveCase(caseDataDto);
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-
-		userDto = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		caseDataDto = creator.createCase(userDto.toReference(), rdcf, (c) -> {
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setPerson(personDto.toReference());
+			c.setQuarantineFrom(parseDate("10/09/2020"));
+			c.setQuarantineTo(parseDate("24/09/2020"));
+			c.setQuarantineOrderedOfficialDocumentDate(parseDate("09/09/2020"));
+		});
 
 		contactDto = creator.createContact(userDto.toReference(), personDto.toReference());
 		contactDto.setCaze(caseDataDto.toReference());
-		contactDto.setQuarantineFrom(DATE_FORMAT.parse("10/09/2020"));
-		contactDto.setQuarantineTo(DATE_FORMAT.parse("24/09/2020"));
-		contactDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
+		contactDto.setQuarantineFrom(parseDate("10/09/2020"));
+		contactDto.setQuarantineTo(parseDate("24/09/2020"));
+		contactDto.setQuarantineOrderedOfficialDocumentDate(parseDate("09/09/2020"));
 		getContactFacade().saveContact(contactDto);
 
 		EventDto eventDto = creator.createEvent(userDto.toReference());
@@ -125,14 +127,14 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
 
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
-		sampleDto.setSampleDateTime(DATE_FORMAT.parse("11/09/2020"));
+		sampleDto.setSampleDateTime(parseDate("11/09/2020"));
 		sampleDto.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		sampleDto.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
 		sampleDto.setSamplePurpose(SamplePurpose.EXTERNAL);
 		getSampleFacade().saveSample(sampleDto);
 
 		pathogenTestDto = PathogenTestDto.build(sampleDto.toReference(), userDto.toReference());
-		pathogenTestDto.setTestDateTime(DATE_FORMAT.parse("12/09/2020"));
+		pathogenTestDto.setTestDateTime(parseDate("12/09/2020"));
 		pathogenTestDto.setTestedDisease(Disease.CORONAVIRUS);
 		pathogenTestDto.setTestResult(PathogenTestResultType.POSITIVE);
 		pathogenTestDto.setTestResultVerified(false);
@@ -140,12 +142,20 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		pathogenTestDto = getPathogenTestFacade().savePathogenTest(pathogenTestDto);
 	}
 
+	private Date parseDate(String dateString) {
+		try {
+			return DATE_FORMAT.parse(dateString);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Test
 	public void generateQuarantineOrderCaseTest() throws IOException, DocumentTemplateException {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
 		generateQuarantineOrderTest(
 			rootEntityReference,
-			userDto.toReference(),
+			DocumentWorkflow.QUARANTINE_ORDER_CASE,
 			sampleDto.toReference(),
 			pathogenTestDto.toReference(),
 			"QuarantineCase.cmp");
@@ -153,12 +163,17 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void generateQuarantineOrderContactTest() throws IOException, DocumentTemplateException {
-		generateQuarantineOrderTest(contactDto.toReference(), userDto.toReference(), null, null, "QuarantineContact.cmp");
+		generateQuarantineOrderTest(contactDto.toReference(), DocumentWorkflow.QUARANTINE_ORDER_CONTACT, null, null, "QuarantineContact.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderEventParticipantTest() throws IOException, DocumentTemplateException {
-		generateQuarantineOrderTest(eventParticipantDto.toReference(), userDto.toReference(), null, null, "QuarantineEvent.cmp");
+		generateQuarantineOrderTest(
+			eventParticipantDto.toReference(),
+			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
+			null,
+			null,
+			"QuarantineEvent.cmp");
 	}
 
 	@Test
@@ -166,32 +181,95 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
 
 		setNullReplacement("");
-		generateQuarantineOrderTest(rootEntityReference, userDto.toReference(), null, null, "QuarantineCaseEmptyNullReplacement.cmp");
+		generateQuarantineOrderTest(
+			rootEntityReference,
+			DocumentWorkflow.QUARANTINE_ORDER_CASE,
+			null,
+			null,
+			"QuarantineCaseEmptyNullReplacement.cmp");
 
 		setNullReplacement("xxx");
-		generateQuarantineOrderTest(rootEntityReference, userDto.toReference(), null, null, "QuarantineCaseCustomNullReplacement.cmp");
+		generateQuarantineOrderTest(
+			rootEntityReference,
+			DocumentWorkflow.QUARANTINE_ORDER_CASE,
+			null,
+			null,
+			"QuarantineCaseCustomNullReplacement.cmp");
 	}
 
 	@Test
-	public void generateQuarantineOrderWrongReferenceTypeTest() throws IOException {
-		try {
-			generateQuarantineOrderTest(new ReferenceDto() {
-			}, null, null, null, "Anything");
-			fail("Wrong ReferenceDto not recognized");
-		} catch (IllegalArgumentException | DocumentTemplateException e) {
-			assertEquals("Quarantine can only be issued for cases or contacts.", e.getMessage());
-		}
+	public void testBulkCaseDocumentCreation() throws DocumentTemplateException, IOException {
+		ReferenceDto rootEntityReference = caseDataDto.toReference();
+
+		Properties properties = new Properties();
+		properties.setProperty("extraremark1", "the first remark");
+		properties.setProperty("extra.remark.no3", "the third remark");
+
+		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CASE;
+		Map<ReferenceDto, byte[]> documentContents =
+			quarantineOrderFacadeEjb.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties);
+
+		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineCase.cmp", documentContents.get(rootEntityReference));
+	}
+
+	@Test
+	public void testBulkContactDocumentCreation() throws DocumentTemplateException, IOException {
+		ReferenceDto rootEntityReference = contactDto.toReference();
+
+		Properties properties = new Properties();
+		properties.setProperty("extraremark1", "the first remark");
+		properties.setProperty("extra.remark.no3", "the third remark");
+
+		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
+		Map<ReferenceDto, byte[]> documentContents =
+			quarantineOrderFacadeEjb.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties);
+
+		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineContact.cmp", documentContents.get(rootEntityReference));
+	}
+
+	@Test
+	public void testBulkEventParticipantDocumentCreation() throws DocumentTemplateException, IOException {
+		ReferenceDto rootEntityReference = eventParticipantDto.toReference();
+
+		Properties properties = new Properties();
+		properties.setProperty("extraremark1", "the first remark");
+		properties.setProperty("extra.remark.no3", "the third remark");
+
+		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
+		Map<ReferenceDto, byte[]> documentContents =
+			quarantineOrderFacadeEjb.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties);
+
+		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineEvent.cmp", documentContents.get(rootEntityReference));
 	}
 
 	private void generateQuarantineOrderTest(
 		ReferenceDto rootEntityReference,
-		UserReferenceDto userReference,
+		DocumentWorkflow documentWorkflow,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTest,
 		String comparisonFile)
+		throws DocumentTemplateException, IOException {
+
+		Properties properties = new Properties();
+		properties.setProperty("extraremark1", "the first remark");
+		properties.setProperty("extra.remark.no3", "the third remark");
+
+		verifyGeneratedDocument(
+			rootEntityReference,
+			documentWorkflow,
+			comparisonFile,
+			quarantineOrderFacadeEjb
+				.getGeneratedDocument("Quarantine.docx", documentWorkflow, rootEntityReference, sampleReference, pathogenTest, properties));
+	}
+
+	private void verifyGeneratedDocument(
+		ReferenceDto rootEntityReference,
+		DocumentWorkflow documentWorkflow,
+		String comparisonFile,
+		byte[] documentContent)
 		throws IOException, DocumentTemplateException {
 
-		DocumentVariables documentVariables = quarantineOrderFacadeEjb.getDocumentVariables(rootEntityReference, "Quarantine.docx");
+		DocumentVariables documentVariables = quarantineOrderFacadeEjb.getDocumentVariables(documentWorkflow, "Quarantine.docx");
 		List<String> additionalVariables = documentVariables.getAdditionalVariables();
 		List<String> expectedVariables = Arrays.asList("extraremark1", "extra.remark2", "extra.remark.no3");
 		for (String additionaVariable : additionalVariables) {
@@ -208,13 +286,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		}
 		assertEquals(expectedUsedEntities.size(), documentVariables.getUsedEntities().size());
 
-		Properties properties = new Properties();
-		properties.setProperty("extraremark1", "the first remark");
-		properties.setProperty("extra.remark.no3", "the third remark");
-
-		ByteArrayInputStream generatedDocument = new ByteArrayInputStream(
-			quarantineOrderFacadeEjb
-				.getGeneratedDocument("Quarantine.docx", rootEntityReference, userReference, sampleReference, pathogenTest, properties));
+		ByteArrayInputStream generatedDocument = new ByteArrayInputStream(documentContent);
 
 		XWPFDocument xwpfDocument = new XWPFDocument(generatedDocument);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(xwpfDocument);
@@ -233,15 +305,15 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void getAvailableTemplatesTest() throws URISyntaxException, DocumentTemplateException {
-		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates(new CaseReferenceDto());
+	public void getAvailableTemplatesTest() throws URISyntaxException {
+		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates(DocumentWorkflow.QUARANTINE_ORDER_CASE);
 		assertEquals(2, availableTemplates.size());
 		assertTrue(availableTemplates.contains("Quarantine.docx"));
 		assertTrue(availableTemplates.contains("FaultyTemplate.docx"));
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, "thisDirectoryDoesNotExist");
 
-		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates(new CaseReferenceDto()).isEmpty());
+		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates(DocumentWorkflow.QUARANTINE_ORDER_CASE).isEmpty());
 
 		resetCustomPath();
 	}

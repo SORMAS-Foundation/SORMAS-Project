@@ -95,7 +95,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().getUuid());
 		if (!labMessages.isEmpty()) {
 			listEntry
-				.addSourceSampleListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages, this::reload));
+				.addSourceSampleListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
 	}
 }

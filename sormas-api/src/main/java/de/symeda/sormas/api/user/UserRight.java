@@ -49,6 +49,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum UserRight {
 
 	//@formatter:off
@@ -814,6 +816,40 @@ public enum UserRight {
 			IMPORT_USER,
 			COMMUNITY_OFFICER
 	),
+	EVENTGROUP_CREATE(
+		ADMIN,
+		NATIONAL_USER,
+		SURVEILLANCE_SUPERVISOR,
+		ADMIN_SUPERVISOR,
+		SURVEILLANCE_OFFICER,
+		EVENT_OFFICER,
+		COMMUNITY_OFFICER
+	),
+	EVENTGROUP_EDIT(
+		ADMIN,
+		NATIONAL_USER,
+		SURVEILLANCE_SUPERVISOR,
+		ADMIN_SUPERVISOR,
+		SURVEILLANCE_OFFICER,
+		EVENT_OFFICER,
+		COMMUNITY_OFFICER
+	),
+	EVENTGROUP_LINK(
+		ADMIN,
+		NATIONAL_USER,
+		SURVEILLANCE_SUPERVISOR,
+		ADMIN_SUPERVISOR,
+		SURVEILLANCE_OFFICER,
+		EVENT_OFFICER,
+		COMMUNITY_OFFICER
+	),
+	EVENTGROUP_ARCHIVE(
+		ADMIN
+	),
+	EVENTGROUP_DELETE(
+		ADMIN,
+		NATIONAL_USER
+	),
 	WEEKLYREPORT_CREATE(
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
@@ -1331,7 +1367,10 @@ public enum UserRight {
 	LAB_MESSAGES(
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR
-	);
+	),
+	PERFORM_BULK_OPERATIONS_LAB_MESSAGES(
+			NATIONAL_USER
+	);	
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;
@@ -1349,5 +1388,9 @@ public enum UserRight {
 
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
+	}
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

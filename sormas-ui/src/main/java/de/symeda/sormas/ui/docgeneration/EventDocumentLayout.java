@@ -15,9 +15,10 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
+import java.util.function.Function;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -26,31 +27,25 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
-import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
-	private final EventReferenceDto eventReferenceDto;
+	private final DocumentInputStreamSupplier documentInputStreamSupplier;
 
-	public EventDocumentLayout(EventReferenceDto eventReferenceDto) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout));
-		this.eventReferenceDto = eventReferenceDto;
+	public EventDocumentLayout(Function<String, String> fileNameFunction, DocumentInputStreamSupplier documentInputStreamSupplier) {
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction);
+
+		this.documentInputStreamSupplier = documentInputStreamSupplier;
+
 		init();
 	}
 
 	@Override
 	protected List<String> getAvailableTemplates() {
 		return FacadeProvider.getEventDocumentFacade().getAvailableTemplates();
-	}
-
-	@Override
-	protected String generateFilename(String templateFile) {
-		return DataHelper.getShortUuid(eventReferenceDto) + "_" + templateFile;
 	}
 
 	@Override
@@ -61,13 +56,9 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	@Override
 	protected StreamResource createStreamResource(String templateFile, String filename) {
 		return new StreamResource((StreamResource.StreamSource) () -> {
-			EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 			try {
-				return new ByteArrayInputStream(
-					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables())
-						.getBytes(StandardCharsets.UTF_8));
+				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables());
 			} catch (Exception e) {
-				e.printStackTrace();
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());
 				return null;
@@ -78,5 +69,10 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	@Override
 	protected String getWindowCaption() {
 		return I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout_create);
+	}
+
+	interface DocumentInputStreamSupplier {
+
+		InputStream get(String templateFile, Properties properties) throws DocumentTemplateException;
 	}
 }

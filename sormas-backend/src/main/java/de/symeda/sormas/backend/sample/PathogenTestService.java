@@ -144,7 +144,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids) {
+	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
@@ -154,6 +154,11 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = cb.and(createDefaultFilter(cb, pathogenTestRoot), sampleJoin.get(AbstractDomainObject.UUID).in(sampleUuids));
 
 		cq.where(filter);
+
+		if (ordered) {
+			cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
+		}
+
 		return em.createQuery(cq).getResultList();
 	}
 

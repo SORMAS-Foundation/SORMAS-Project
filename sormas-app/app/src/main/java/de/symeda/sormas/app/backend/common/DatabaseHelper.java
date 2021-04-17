@@ -166,7 +166,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 294;
+	public static final int DATABASE_VERSION = 296;
 
 	private static DatabaseHelper instance = null;
 
@@ -2116,6 +2116,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 293;
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN continent_id BIGINT REFERENCES continent(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
+
+			case 294:
+				currentVersion = 294;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
+
+			case 295:
+				currentVersion = 295;
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonFirstName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonLastName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonPhone text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonEmail text");
+
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonFirstName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonLastName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

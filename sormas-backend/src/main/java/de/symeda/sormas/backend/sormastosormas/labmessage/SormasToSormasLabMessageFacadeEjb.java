@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
@@ -73,7 +74,10 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 			options,
 			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, SAVE_SHARED_LAB_MESSAGE_ENDPOINT, authToken, encryptedData));
 
-		labMessages.forEach(labMessage -> labMessageService.delete(labMessage));
+		labMessages.forEach(labMessage -> {
+			labMessage.setStatus(LabMessageStatus.FORWARDED);
+			labMessageService.ensurePersisted(labMessage);
+		});
 	}
 
 	@Override

@@ -133,7 +133,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@Override
 	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getBySampleUuids(sampleUuids).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
+		return pathogenTestService.getBySampleUuids(sampleUuids, false)
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -273,6 +276,32 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return pathogenTestService.getBySampleUuids(sampleUuids, true)
+			.stream()
+			.collect(
+				Collectors.toMap(
+					s -> s.getSample().getUuid(),
+					(s) -> s,
+					(s1, s2) -> {
+
+						// keep the positive one
+						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
+
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
+			.values()
+			.stream()
+			.map(s -> convertToDto(s, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
