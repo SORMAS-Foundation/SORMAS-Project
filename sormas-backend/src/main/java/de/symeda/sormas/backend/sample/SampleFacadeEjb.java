@@ -99,7 +99,6 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -139,8 +138,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private LabMessageService labMessageService;
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
@@ -447,6 +444,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
+				case SampleIndexDto.LAB_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:

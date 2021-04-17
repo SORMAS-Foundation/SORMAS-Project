@@ -37,7 +37,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.labmessage.LabMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,8 +94,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
-	@EJB
-	private LabMessageService labMessageService;
 
 	@Override
 	public List<String> getAllActiveUuids() {

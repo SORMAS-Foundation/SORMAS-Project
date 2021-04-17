@@ -41,7 +41,6 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
@@ -82,15 +81,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
-
-	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return new LabMessageReferenceDto(entity.getUuid());
-	}
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 

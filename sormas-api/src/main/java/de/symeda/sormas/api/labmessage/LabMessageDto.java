@@ -337,7 +337,4 @@ public class LabMessageDto extends EntityDto {
 		return labMessage;
 	}
 
-	public LabMessageReferenceDto toReferenceDto() {
-		return new LabMessageReferenceDto(getUuid());
-	}
 }

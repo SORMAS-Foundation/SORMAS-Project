@@ -45,7 +45,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	private final PathogenTestDto pathogenTest;
 	private Button editButton;
-	private Button viewSourceLabMessagesButton;
+	private Button viewAssociatedLabMessagesButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
@@ -130,20 +130,20 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		editButton.addClickListener(editClickListener);
 	}
 
-	public void addViewSourceLabMessagesListener(ClickListener sourceSampleClickListener) {
-		if (viewSourceLabMessagesButton == null) {
-			viewSourceLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
-					"see-source-lab-messages-" + pathogenTest.getUuid(),
+	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
+		if (viewAssociatedLabMessagesButton == null) {
+			viewAssociatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
+					"see-associated-lab-messages-" + pathogenTest.getUuid(),
 					null,
 					VaadinIcons.NOTEBOOK,
-					sourceSampleClickListener,
+					associatedLabMessagesClickListener,
 					ValoTheme.BUTTON_LINK,
 					CssStyles.BUTTON_COMPACT);
 
-			addComponent(viewSourceLabMessagesButton);
-			setComponentAlignment(viewSourceLabMessagesButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(viewSourceLabMessagesButton, 0);
-			viewSourceLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_sourceLabMessages));
+			addComponent(viewAssociatedLabMessagesButton);
+			setComponentAlignment(viewAssociatedLabMessagesButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(viewAssociatedLabMessagesButton, 0);
+			viewAssociatedLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_associatedLabMessages));
 		}
 	}
 

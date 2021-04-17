@@ -130,8 +130,8 @@ public interface Descriptions {
 	String Person_phone = "Person.phone";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
+	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
-	String Sample_sourceLabMessages = "Sample.sourceLabMessages";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
