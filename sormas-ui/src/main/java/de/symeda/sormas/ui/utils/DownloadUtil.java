@@ -176,8 +176,9 @@ public final class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createPopulationDataExportResource(String exportFileName) {
+	public static StreamResource createPopulationDataExportResource() {
 
+		String exportFileName = createFileNameWithCurrentDate(ExportEntityName.POPULATION_DATA, ".csv");
 		StreamResource populationDataStreamResource = new StreamResource(new StreamSource() {
 
 			@Override
@@ -218,7 +219,10 @@ public final class DownloadUtil {
 							String dataRegionName = (String) populationExportData[0];
 							String dataDistrictName = populationExportData[1] == null ? "" : (String) populationExportData[1];
 							String dataCommunityName = populationExportData[2] == null ? "" : (String) populationExportData[2];
-							if (exportLine[0] != null && (!dataRegionName.equals(regionName) || !dataDistrictName.equals(districtName)|| !dataCommunityName.equals(communityName))) {
+							if (exportLine[0] != null
+								&& (!dataRegionName.equals(regionName)
+									|| !dataDistrictName.equals(districtName)
+									|| !dataCommunityName.equals(communityName))) {
 								// New region or district reached; write line to CSV
 								writer.writeNext(exportLine);
 								exportLine = new String[columnNames.size()];
