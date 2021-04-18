@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import static com.google.common.base.Predicates.or;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -45,14 +43,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.CharMatcher;
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -654,15 +650,9 @@ public final class DownloadUtil {
 
 	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
 		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
-		String processedInstanceName = getProcessedName(instanceName);
-		String processedEntityName = getProcessedName(entityName.getLocalizedNameInSystemLanguage());
+		String processedInstanceName = DataHelper.cleanStringForFileName(instanceName);
+		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());
 		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
-	}
-
-	private static String getProcessedName(String name) {
-		Predicate<Character> predicateMatcher = or(Character::isLetter, Character::isSpaceChar);
-		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(predicateMatcher::test).retainFrom(name);
-		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }

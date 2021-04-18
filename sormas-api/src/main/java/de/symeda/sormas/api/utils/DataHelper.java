@@ -403,4 +403,9 @@ public final class DataHelper {
 	public static String sanitizeFileName(String fileName) {
 		return fileName.replaceAll("[^a-zA-Z0-9._-]", "");
 	}
+
+	public static String cleanStringForFileName(String name) {
+		String nameWithoutSpecialCharacters = name.replaceAll("[^a-zA-Z ]", "");
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
+	}
 }
