@@ -30,9 +30,18 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implements FieldWrapper<T> {
 
-	// XXX: make this configurable
-	private static final int MAX_ROWS = 30;
+	private static final int MAX_ROWS_DEFAULT = 30;
 	private static final int MIN_ROWS = 4;
+
+	private final int maxRows;
+
+	public TextFieldWithMaxLengthWrapper() {
+		this(MAX_ROWS_DEFAULT);
+	}
+
+	public TextFieldWithMaxLengthWrapper(int maxRows) {
+		this.maxRows = maxRows;
+	}
 
 	@Override
 	public ComponentContainer wrap(T textField, String caption, boolean withMargin) {
@@ -89,11 +98,16 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 
 	/**
 	 * Set number of rows in textareas to the number of lines of text + 1.
-	 * Min: {@link #MIN_ROWS}, Max: {@link #MAX_ROWS}
+	 * Min: {@link #MIN_ROWS}, Max: {@link #maxRows}
+	 * No upper limit is applied if {@link #maxRows} <= 0
 	 */
 	private void adjustRows(T textField, String text) {
 		if (textField instanceof TextArea) {
-			((TextArea) textField).setRows(Math.min(MAX_ROWS, Math.max(CharMatcher.is('\n').countIn(Strings.nullToEmpty(text)) + 1, MIN_ROWS)));
+			int textFieldRows = Math.max(CharMatcher.is('\n').countIn(Strings.nullToEmpty(text)) + 1, MIN_ROWS);
+			if (maxRows > 0) {
+				textFieldRows = Math.min(maxRows, textFieldRows);
+			}
+			((TextArea) textField).setRows(textFieldRows);
 		}
 	}
 }

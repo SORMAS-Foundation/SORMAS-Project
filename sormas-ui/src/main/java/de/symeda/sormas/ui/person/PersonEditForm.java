@@ -86,6 +86,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -501,7 +502,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
-		TextArea additionalDetails = addField(PersonDto.ADDITIONAL_DETAILS, TextArea.class);
+		TextArea additionalDetails = addField(PersonDto.ADDITIONAL_DETAILS, TextArea.class, new TextFieldWithMaxLengthWrapper<>(-1));
 		additionalDetails.setRows(6);
 		additionalDetails.setDescription(
 			I18nProperties.getPrefixDescription(PersonDto.I18N_PREFIX, PersonDto.ADDITIONAL_DETAILS, "") + "\n"
