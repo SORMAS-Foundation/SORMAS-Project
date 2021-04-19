@@ -399,15 +399,12 @@ public class FacadeProvider {
 	}
 
 	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
-		try {
-			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
-			if (jndiName == null) {
-				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
-			} else {
-				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
-			}
-		} catch (NamingException e) {
-			throw e;
+
+		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		if (jndiName == null) {
+			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+		} else {
+			return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 		}
 	}
 
