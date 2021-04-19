@@ -48,14 +48,12 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
@@ -190,8 +188,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
 				final Object source = ((Field.ValueChangeEvent) ev).getSource();
-				// Note by @MateStrysewske: It seems like the duplicate code here is necessary; for some reason,
-				// moving it to a separate method breaks the logic at least on my dev system
 				if (source instanceof PersonEditForm) {
 					final PersonEditForm personEditForm = (PersonEditForm) source;
 					final LocationEditForm locationEditForm = personEditForm.getField(PersonDto.ADDRESS);
@@ -207,27 +203,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					} else if (personEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = true;
-					}
-				} else if (source instanceof EventDataForm) {
-					final EventDataForm eventDataForm = (EventDataForm) source;
-					final LocationEditForm locationEditForm = eventDataForm.getField(EventDto.EVENT_LOCATION);
-					if (atLeastOneFieldModified(
-						locationEditForm.getField(LocationDto.LATITUDE),
-						locationEditForm.getField(LocationDto.LONGITUDE),
-						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
-					} else if (locationEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = true;
-					} else if (eventDataForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
