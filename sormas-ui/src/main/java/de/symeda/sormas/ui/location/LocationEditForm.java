@@ -116,6 +116,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private TextField facilityDetails;
 	private ComboBox continent;
 	private ComboBox subcontinent;
+	private TextField contactPersonFirstName;
+	private TextField contactPersonLastName;
+	private TextField contactPersonPhone;
+	private TextField contactPersonEmail;
 
 	private boolean districtRequiredOnDefaultCountry;
 	private boolean skipCountryValueChange;
@@ -208,10 +212,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		TextField contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
-		TextField contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
-		TextField contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
-		TextField contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
+		contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
+		contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
+		contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -612,12 +616,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
+		contactPersonFirstName.setVisible(visible);
+		contactPersonLastName.setVisible(visible);
+		contactPersonPhone.setVisible(visible);
+		contactPersonEmail.setVisible(visible);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+			contactPersonFirstName.clear();
+			contactPersonLastName.clear();
+			contactPersonPhone.clear();
+			contactPersonEmail.clear();
+
 		}
 	}
 
