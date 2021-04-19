@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -383,24 +382,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		// Validate birth date
-		Calendar calendar = Calendar.getInstance();
-		calendar.setLenient(false);
-		if (source.getBirthdateYYYY() != null) {
-			calendar.set(Calendar.YEAR, source.getBirthdateYYYY());
-		}
-		if (source.getBirthdateMM() != null) {
-			calendar.set(Calendar.MONTH, source.getBirthdateMM() - 1);
-		}
-		if (source.getBirthdateDD() != null) {
-			calendar.set(Calendar.DAY_OF_MONTH, source.getBirthdateDD());
-		}
-		try {
-			if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.birthDateInFuture));
-			}
-		} catch (IllegalArgumentException e) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.birthDateInvalid));
-		}
+		PersonHelper.validateBirthDate(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD());
 	}
 
 	//@formatter:off

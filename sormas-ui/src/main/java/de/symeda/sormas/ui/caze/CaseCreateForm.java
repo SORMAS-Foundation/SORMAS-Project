@@ -67,6 +67,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -165,12 +166,30 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
+		birthDateDay.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
+		birthDateMonth.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
+		birthDateYear.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
+
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+			birthDateMonth.markAsDirty();
+			birthDateDay.markAsDirty();
 		});
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+			birthDateYear.markAsDirty();
+			birthDateDay.markAsDirty();
+		});
+		birthDateDay.addValueChangeListener(e -> {
+			birthDateYear.markAsDirty();
+			birthDateMonth.markAsDirty();
 		});
 
 		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);

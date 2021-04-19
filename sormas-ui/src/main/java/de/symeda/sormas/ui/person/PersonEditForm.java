@@ -40,7 +40,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -77,6 +76,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -249,7 +249,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-		birthDateMonth.setInvalidAllowed(false);
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
@@ -258,10 +257,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
-		birthDateYear.setInvalidAllowed(false);
-		birthDateDay.addValidator(e -> validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
-		birthDateMonth.addValidator(e -> validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
-		birthDateYear.addValidator(e -> validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
+		birthDateDay.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
+		birthDateMonth.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
+		birthDateYear.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
 
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
@@ -488,25 +492,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 			personContactDetailsField.setThisPerson((PersonDto) e.getProperty().getValue());
 		});
-	}
-
-	private void validateBirthDate(Integer year, Integer month, Integer day) throws Validator.InvalidValueException {
-		Calendar calendar = Calendar.getInstance();
-
-		if (year != null) {
-			calendar.set(Calendar.YEAR, year);
-		}
-		if (month != null) {
-			month -= 1;
-			calendar.set(Calendar.MONTH, month);
-		}
-		if (day != null) {
-			calendar.set(Calendar.DAY_OF_MONTH, day);
-		}
-
-		if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
-			throw new Validator.InvalidValueException(I18nProperties.getValidationError(Validations.birthDateInFuture));
-		}
 	}
 
 	private void addListenersToInfrastructureFields(

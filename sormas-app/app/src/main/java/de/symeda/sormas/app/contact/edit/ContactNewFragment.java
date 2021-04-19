@@ -40,6 +40,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
+import de.symeda.sormas.app.person.edit.PersonValidator;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -92,6 +93,9 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
+
+		PersonValidator
+			.initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
 
 		InfrastructureDaoHelper.initializeRegionFields(
 			contentBinding.contactRegion,

@@ -25,10 +25,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
-final class PersonValidator {
+public final class PersonValidator {
 
 	static void initializePersonValidation(final FragmentPersonEditLayoutBinding contentBinding) {
 		ResultCallback<Boolean> deathDateCallback = () -> {
@@ -75,35 +76,44 @@ final class PersonValidator {
 			return false;
 		};
 
+		initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
+
+		contentBinding.personDeathDate.setValidationCallback(deathDateCallback);
+		contentBinding.personBurialDate.setValidationCallback(burialDateCallback);
+		contentBinding.personApproximateAge.setValidationCallback(approximateAgeCallback);
+	}
+
+	public static void initializeBirthDateValidation(
+		ControlSpinnerField personBirthdateYYYY,
+		ControlSpinnerField personBirthdateMM,
+		ControlSpinnerField personBirthdateDD) {
+
 		ResultCallback<Boolean> birthDateCallback = () -> {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setLenient(false);
-			if (contentBinding.personBirthdateYYYY.getValue() != null) {
-				calendar.set(Calendar.YEAR, (Integer) contentBinding.personBirthdateYYYY.getValue());
+			if (personBirthdateYYYY.getValue() != null) {
+				calendar.set(Calendar.YEAR, (Integer) personBirthdateYYYY.getValue());
 			}
-			if (contentBinding.personBirthdateMM.getValue() != null) {
-				calendar.set(Calendar.MONTH, ((Integer) contentBinding.personBirthdateMM.getValue()) - 1);
+			if (personBirthdateMM.getValue() != null) {
+				calendar.set(Calendar.MONTH, ((Integer) personBirthdateMM.getValue()) - 1);
 			}
-			if (contentBinding.personBirthdateDD.getValue() != null) {
-				calendar.set(Calendar.DAY_OF_MONTH, (Integer) contentBinding.personBirthdateDD.getValue());
+			if (personBirthdateDD.getValue() != null) {
+				calendar.set(Calendar.DAY_OF_MONTH, (Integer) personBirthdateDD.getValue());
 			}
 
 			if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
-				contentBinding.personBirthdateYYYY.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
-				contentBinding.personBirthdateMM.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
-				contentBinding.personBirthdateDD.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				personBirthdateYYYY.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				personBirthdateMM.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				personBirthdateDD.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
 				return true;
 			}
 
 			return false;
 		};
 
-		contentBinding.personDeathDate.setValidationCallback(deathDateCallback);
-		contentBinding.personBurialDate.setValidationCallback(burialDateCallback);
-		contentBinding.personApproximateAge.setValidationCallback(approximateAgeCallback);
-		contentBinding.personBirthdateYYYY.setValidationCallback(birthDateCallback);
-		contentBinding.personBirthdateMM.setValidationCallback(birthDateCallback);
-		contentBinding.personBirthdateDD.setValidationCallback(birthDateCallback);
+		personBirthdateYYYY.setValidationCallback(birthDateCallback);
+		personBirthdateMM.setValidationCallback(birthDateCallback);
+		personBirthdateDD.setValidationCallback(birthDateCallback);
 	}
 
 }
