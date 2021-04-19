@@ -40,7 +40,7 @@ jobs:
         run: mvn verify -B -ntp
 
       - name: Commit external visits API spec to development
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && ${{ hashFiles(sormas-rest/target/external_visits_API.yaml) }} != ${{ hashFiles(openapi/external_visits_API.yaml) }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml')  != hashFiles('openapi/external_visits_API.yaml')
         run: |
             token=${{ secrets.SORMAS_VITAGROUP_TOKEN }}
             bot_name=sormas-vitagroup
