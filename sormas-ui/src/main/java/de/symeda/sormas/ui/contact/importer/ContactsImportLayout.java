@@ -14,6 +14,7 @@ import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -24,14 +25,13 @@ public class ContactsImportLayout extends AbstractImportLayout {
 	public ContactsImportLayout() {
 		super();
 
+		ImportFacade importFacade = FacadeProvider.getImportFacade();
+
 		addDownloadResourcesComponent(
 			1,
 			new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
 			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(
-			2,
-			FacadeProvider.getImportFacade().getContactImportTemplateFilePath(),
-			"sormas_import_contact_template.csv");
+		addDownloadImportTemplateComponent(2, importFacade.getContactImportTemplateFilePath(), importFacade.getContactImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_contact_import_", new Consumer<File>() {
 
 			@Override

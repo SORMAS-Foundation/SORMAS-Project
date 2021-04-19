@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.base.CharMatcher;
+
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.Language;
@@ -402,5 +404,10 @@ public final class DataHelper {
 
 	public static String sanitizeFileName(String fileName) {
 		return fileName.replaceAll("[^a-zA-Z0-9._-]", "");
+	}
+
+	public static String cleanStringForFileName(String name) {
+		String nameWithoutSpecialCharacters = CharMatcher.javaLetter().or(CharMatcher.is(' ')).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }
