@@ -830,12 +830,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		if (statusChangedBySystem) {
-			contact.setFollowUpStatusChangeDate(null);
-			contact.setFollowUpStatusChangeUser(null);
-		} else if (followUpStatusChangedByUser) {
+		if (followUpStatusChangedByUser) {
 			contact.setFollowUpStatusChangeDate(new Date());
 			contact.setFollowUpStatusChangeUser(getCurrentUser());
+		} else if (statusChangedBySystem) {
+			contact.setFollowUpStatusChangeDate(null);
+			contact.setFollowUpStatusChangeUser(null);
 		}
 
 		ensurePersisted(contact);

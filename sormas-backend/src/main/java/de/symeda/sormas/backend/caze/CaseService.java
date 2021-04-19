@@ -25,10 +25,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -79,7 +77,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -1220,12 +1217,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		}
 
-		if (statusChangedBySystem) {
-			caze.setFollowUpStatusChangeDate(null);
-			caze.setFollowUpStatusChangeUser(null);
-		} else if (followUpStatusChangedByUser) {
+		if (followUpStatusChangedByUser) {
 			caze.setFollowUpStatusChangeDate(new Date());
 			caze.setFollowUpStatusChangeUser(getCurrentUser());
+		} else if (statusChangedBySystem) {
+			caze.setFollowUpStatusChangeDate(null);
+			caze.setFollowUpStatusChangeUser(null);
 		}
 
 		ensurePersisted(caze);
