@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -888,7 +886,6 @@ public class PersonDto extends PseudonymizableDto {
 		this.citizenship = citizenship;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

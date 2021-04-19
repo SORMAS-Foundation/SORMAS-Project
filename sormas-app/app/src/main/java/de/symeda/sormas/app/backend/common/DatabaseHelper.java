@@ -41,7 +41,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -2136,9 +2135,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone text;");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail text;");
 
-				case 296:
-					currentVersion = 297;
-					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN additionalDetails text;");
+			case 296:
+				currentVersion = 296;
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN additionalDetails text;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 

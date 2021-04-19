@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.stream.Stream;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextArea;
@@ -28,23 +31,35 @@ import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implements FieldWrapper<T> {
+public class ResizableTextAreaWrapper<T extends AbstractTextField> implements FieldWrapper<T> {
 
-	private static final int MAX_ROWS_DEFAULT = 30;
+	// XXX: make this configurable
+	private static final int MAX_ROWS = 30;
 	private static final int MIN_ROWS = 4;
 
-	private final int maxRows;
+	private final boolean withMaxLength;
+	private T textField;
+	private String caption;
+	private Label labelField;
 
-	public TextFieldWithMaxLengthWrapper() {
-		this(MAX_ROWS_DEFAULT);
+	public ResizableTextAreaWrapper() {
+		this(true);
 	}
 
-	public TextFieldWithMaxLengthWrapper(int maxRows) {
-		this.maxRows = maxRows;
+	public ResizableTextAreaWrapper(boolean withMaxLength) {
+		this.withMaxLength = withMaxLength;
+	}
+
+	@Override
+	public ComponentContainer wrap(T textField, String caption) {
+		return wrap(textField, caption, true);
 	}
 
 	@Override
 	public ComponentContainer wrap(T textField, String caption, boolean withMargin) {
+
+		this.textField = textField;
+		this.caption = caption;
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(false);
@@ -56,40 +71,43 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 
 		textField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		textField.addStyleName(CssStyles.RESIZABLE);
-		textField.getValidators()
-			.stream()
-			.filter(v -> v instanceof MaxLengthValidator)
-			.findFirst()
-			.map(v -> ((MaxLengthValidator) v).getMaxLength())
-			.ifPresent(textField::setMaxLength);
 		textField.setNullRepresentation("");
 		textField.setTextChangeTimeout(200);
 
-		Label labelField = new Label(buildLabelMessage(textField.getValue(), textField, caption));
-		labelField.setId(textField.getId() + "_label");
-		labelField.setWidth(100, Sizeable.Unit.PERCENTAGE);
-		labelField.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
+		Stream<Validator> maxLengthValidatorStream = textField.getValidators().stream().filter(v -> v instanceof MaxLengthValidator);
+
+		if (withMaxLength) {
+			maxLengthValidatorStream.findFirst().map(v -> ((MaxLengthValidator) v).getMaxLength()).ifPresent(textField::setMaxLength);
+
+			labelField = new Label(buildLabelMessage(textField.getValue(), textField, caption));
+			labelField.setId(textField.getId() + "_label");
+			labelField.setWidth(100, Sizeable.Unit.PERCENTAGE);
+			labelField.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
+			layout.addComponents(labelField);
+		} else {
+			maxLengthValidatorStream.iterator().forEachRemaining(v -> textField.removeValidator(v));
+		}
 
 		textField.addTextChangeListener(e -> {
-			// XXX: notify user if text is not valid (e.g. too long)
-			labelField.setValue(buildLabelMessage(e.getText(), textField, caption));
-			adjustRows(textField, e.getText());
+			updateTextfieldAppearance();
 		});
 		textField.addValueChangeListener(e -> {
-			// XXX: notify user if text is not valid (e.g. too long)
-			labelField.setValue(buildLabelMessage(textField.getValue(), textField, caption));
-			adjustRows(textField, textField.getValue());
+			updateTextfieldAppearance();
 		});
 
-		layout.addComponents(textField, labelField);
-
+		layout.addComponents(textField);
+		if (withMaxLength) {
+			layout.addComponents(labelField);
+		}
 		return layout;
 	}
 
-	@Override
-	public ComponentContainer wrap(T textField, String caption) {
-
-		return wrap(textField, caption, true);
+	private void updateTextfieldAppearance() {
+		if (withMaxLength) {
+			// XXX: notify user if text is not valid (e.g. too long)
+			labelField.setValue(buildLabelMessage(textField.getValue(), textField, caption));
+		}
+		adjustRows(textField);
 	}
 
 	private String buildLabelMessage(String text, T textField, String caption) {
@@ -98,16 +116,12 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 
 	/**
 	 * Set number of rows in textareas to the number of lines of text + 1.
-	 * Min: {@link #MIN_ROWS}, Max: {@link #maxRows}
-	 * No upper limit is applied if {@link #maxRows} <= 0
+	 * Min: {@link #MIN_ROWS}, Max: {@link #MAX_ROWS}
 	 */
-	private void adjustRows(T textField, String text) {
+	private void adjustRows(T textField) {
 		if (textField instanceof TextArea) {
-			int textFieldRows = Math.max(CharMatcher.is('\n').countIn(Strings.nullToEmpty(text)) + 1, MIN_ROWS);
-			if (maxRows > 0) {
-				textFieldRows = Math.min(maxRows, textFieldRows);
-			}
-			((TextArea) textField).setRows(textFieldRows);
+			((TextArea) textField)
+				.setRows(Math.min(MAX_ROWS, Math.max(CharMatcher.is('\n').countIn(Strings.nullToEmpty(textField.getValue())) + 1, MIN_ROWS)));
 		}
 	}
 }

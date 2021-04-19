@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -183,7 +181,7 @@ public class Person extends PseudonymizableAdo {
 	private Country birthCountry;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Country citizenship;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String additionalDetails;
 
 	public Person() {
