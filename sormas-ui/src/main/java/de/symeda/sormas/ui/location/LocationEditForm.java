@@ -419,7 +419,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						|| facilityDto.getAreaType() != null
 						|| facilityDto.getLatitude() != null
 						|| facilityDto.getLongitude() != null
-					||(StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName()) && StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
+						|| (StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName())
+							&& StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
 
 						// Show a confirmation popup if the location's address is already set and different from the facility one
 						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
@@ -524,19 +525,18 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			e.getButton().removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
 		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 
+		Field[] locationGeoFields = Stream.of(LocationDto.STREET, LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.HOUSE_NUMBER)
+			.map(field -> (Field) getField(field))
+			.toArray(Field[]::new);
+
 		// Highlight geocode-button when the address changes
-		for (String fieldName : new String[] {
-			LocationDto.STREET,
-			LocationDto.POSTAL_CODE,
-			LocationDto.CITY,
-			LocationDto.HOUSE_NUMBER }) {
-			Field<?> field = getField(fieldName);
-			field.addValueChangeListener(e -> {
-				if (field.isModified()) {
-					geocodeButton.addStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
-				}
-			});
-		} ;
+		Stream.of(locationGeoFields).forEach(field -> field.addValueChangeListener(e -> {
+			if (isAllFieldsEmpty(locationGeoFields)) {
+				geocodeButton.removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+			} else if (field.isModified()) {
+				geocodeButton.addStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+			}
+		}));
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
@@ -551,6 +551,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		geoButtonLayout.setComponentAlignment(leafletMapPopup, Alignment.BOTTOM_RIGHT);
 
 		return geoButtonLayout;
+	}
+
+	private boolean isAllFieldsEmpty(Field[] fields) {
+		return Stream.of(fields).allMatch(Field::isEmpty);
 	}
 
 	private void updateLeafletMapContent() {
