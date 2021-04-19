@@ -16,7 +16,6 @@ package de.symeda.sormas.api;
 
 import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.action.ActionFacade;
