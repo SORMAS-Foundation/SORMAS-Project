@@ -630,7 +630,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			contactPersonLastName.clear();
 			contactPersonPhone.clear();
 			contactPersonEmail.clear();
-
 		}
 	}
 
