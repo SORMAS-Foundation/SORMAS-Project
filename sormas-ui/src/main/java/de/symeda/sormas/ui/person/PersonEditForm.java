@@ -76,6 +76,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -97,10 +98,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 
-	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
-	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
-	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
-	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
+	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
+	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
 	private TextField firstNameField;
 	private TextField lastNameField;
@@ -256,6 +257,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
+		birthDateDay.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
+		birthDateMonth.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
+		birthDateYear.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
+
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
 		approximateAgeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, approximateAgeField.getCaption()));
@@ -458,9 +469,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+			birthDateMonth.markAsDirty();
+			birthDateDay.markAsDirty();
 		});
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+			birthDateYear.markAsDirty();
+			birthDateDay.markAsDirty();
+		});
+		birthDateDay.addValueChangeListener(e -> {
+			birthDateYear.markAsDirty();
+			birthDateMonth.markAsDirty();
 		});
 
 		addValueChangeListener((e) -> {

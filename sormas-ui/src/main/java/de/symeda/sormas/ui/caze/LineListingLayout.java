@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.ValidationResult;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -21,6 +22,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -434,7 +437,14 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfBirthYear.setItems(DateHelper.getYearsToNow());
 			dateOfBirthYear.setWidth(80, Unit.PIXELS);
 			dateOfBirthYear.addStyleName(CssStyles.CAPTION_OVERFLOW);
-			binder.forField(dateOfBirthYear).bind(CaseLineDto.DATE_OF_BIRTH_YYYY);
+			binder.forField(dateOfBirthYear).withValidator((e, context) -> {
+				try {
+					ControllerProvider.getPersonController().validateBirthDate(e, dateOfBirthMonth.getValue(), dateOfBirthDay.getValue());
+					return ValidationResult.ok();
+				} catch (Validator.InvalidValueException ex) {
+					return ValidationResult.error(ex.getMessage());
+				}
+			}).bind(CaseLineDto.DATE_OF_BIRTH_YYYY);
 			dateOfBirthMonth = new ComboBox<>();
 			dateOfBirthMonth.setId("lineListingDateOfBirthMonth_" + lineIndex);
 			dateOfBirthMonth.setEmptySelectionAllowed(true);
@@ -442,19 +452,41 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfBirthMonth.setPageLength(12);
 			setItemCaptionsForMonths(dateOfBirthMonth);
 			dateOfBirthMonth.setWidth(120, Unit.PIXELS);
-			binder.forField(dateOfBirthMonth).bind(CaseLineDto.DATE_OF_BIRTH_MM);
+			binder.forField(dateOfBirthMonth).withValidator((e, context) -> {
+				try {
+					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), e, dateOfBirthDay.getValue());
+					return ValidationResult.ok();
+				} catch (Validator.InvalidValueException ex) {
+					return ValidationResult.error(ex.getMessage());
+				}
+			}).bind(CaseLineDto.DATE_OF_BIRTH_MM);
 			dateOfBirthDay = new ComboBox<>();
 			dateOfBirthDay.setId("lineListingDateOfBirthDay_" + lineIndex);
 			dateOfBirthDay.setEmptySelectionAllowed(true);
 			dateOfBirthDay.setWidth(80, Unit.PIXELS);
-			binder.forField(dateOfBirthDay).bind(CaseLineDto.DATE_OF_BIRTH_DD);
+			binder.forField(dateOfBirthDay).withValidator((e, context) -> {
+				try {
+					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), dateOfBirthMonth.getValue(), e);
+					return ValidationResult.ok();
+				} catch (Validator.InvalidValueException ex) {
+					return ValidationResult.error(ex.getMessage());
+				}
+			}).bind(CaseLineDto.DATE_OF_BIRTH_DD);
 
 			// Update the list of days according to the selected month and year
 			dateOfBirthYear.addValueChangeListener(e -> {
-				updateListOfDays((Integer) e.getValue(), (Integer) dateOfBirthMonth.getValue(), dateOfBirthDay);
+				updateListOfDays(e.getValue(), dateOfBirthMonth.getValue(), dateOfBirthDay);
+				dateOfBirthMonth.markAsDirty();
+				dateOfBirthDay.markAsDirty();
 			});
 			dateOfBirthMonth.addValueChangeListener(e -> {
-				updateListOfDays((Integer) dateOfBirthYear.getValue(), (Integer) e.getValue(), dateOfBirthDay);
+				updateListOfDays(dateOfBirthYear.getValue(), e.getValue(), dateOfBirthDay);
+				dateOfBirthYear.markAsDirty();
+				dateOfBirthDay.markAsDirty();
+			});
+			dateOfBirthDay.addValueChangeListener(e -> {
+				dateOfBirthYear.markAsDirty();
+				dateOfBirthMonth.markAsDirty();
 			});
 
 			sex = new ComboBox<>();
