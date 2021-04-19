@@ -16,6 +16,7 @@ package de.symeda.sormas.api;
 
 import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.action.ActionFacade;
@@ -398,7 +399,7 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(LabMessageFacade.class);
 	}
 
-	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
 		try {
 			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
 			if (jndiName == null) {
@@ -407,7 +408,7 @@ public class FacadeProvider {
 				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 			}
 		} catch (NamingException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw e;
 		}
 	}
 
