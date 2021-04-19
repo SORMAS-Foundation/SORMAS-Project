@@ -18,6 +18,8 @@ package de.symeda.sormas.app.pathogentest.read;
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -28,7 +30,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestReadLayoutBinding;
-import de.symeda.sormas.app.pathogentest.edit.PathogenTestEditFragment;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenTestReadLayoutBinding, PathogenTest, PathogenTest> {
 
@@ -54,11 +58,22 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 	public void onLayoutBinding(FragmentPathogenTestReadLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
+
 		if ((PathogenTestType.PCR_RT_PCR == record.getTestType() && PathogenTestResultType.POSITIVE == record.getTestResult())
 			|| PathogenTestType.CQ_VALUE_DETECTION.equals(record.getTestType())) {
 			getContentBinding().pathogenTestCqValue.setVisibility(View.VISIBLE);
 		} else {
 			getContentBinding().pathogenTestCqValue.hideField(false);
+		}
+
+		if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == record.getTestedDisease()) {
+			getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
+		} else {
+			getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
+		}
+
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.pathogenTestTestedDiseaseVariant)) {
+			contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(record.getTestedDiseaseVariant() != null ? VISIBLE : GONE);
 		}
 	}
 
