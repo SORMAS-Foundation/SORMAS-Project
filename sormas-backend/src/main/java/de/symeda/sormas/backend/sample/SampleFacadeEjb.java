@@ -43,6 +43,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.IterableHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +122,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
+
+	private static final int DELETED_BATCH_SIZE = 1000;
 
 	public static final String CONTACT_CASE_DISTRICT = "contactCaseDistrict";
 	public static final String DISEASE = "disease";
@@ -860,6 +863,22 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (associatedCase != null) {
 			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
 		}
+	}
+
+	@Override
+	public void deleteAllSamples(List<String> sampleUuids) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+				.contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+		}
+		long startTime = DateHelper.startTime();
+
+		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
+		logger.debug(
+				"deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms",
+				sampleUuids.size(),
+				DateHelper.durationMillies(startTime));
 	}
 
 	@Override

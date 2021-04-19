@@ -19,9 +19,10 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -433,9 +434,8 @@ public class SampleController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), () -> {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()));
-					}
+					List<String> sampleIndexDtoList = selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList());
+					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList);
 					callback.run();
 					new Notification(
 						I18nProperties.getString(Strings.headingSamplesDeleted),

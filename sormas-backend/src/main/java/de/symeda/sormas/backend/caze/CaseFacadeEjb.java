@@ -1905,6 +1905,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	public void onCaseSampleChanged(Case associatedCase) {
+		// Update case classification if the feature is enabled
+		if (configFacade.isFeatureAutomaticCaseClassification()) {
+			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
+				List<PathogenTest> pathogenTests = pathogenTestService.getAllByCase(associatedCase);
+				if (pathogenTests.size() == 0) {
+					return;
+				}
+				// calculate classification
+				List<PathogenTestDto> pathogenTestDtos =
+						pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
+				CaseDataDto newCaseDto = toDto(associatedCase);
+
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
+
+				// only update when classification by system changes - user may overwrite this
+				if (classification != associatedCase.getSystemCaseClassification()) {
+					associatedCase.setSystemCaseClassification(classification);
+
+					// really a change? (user may have already set it)
+					if (classification != associatedCase.getCaseClassification()) {
+						associatedCase.setCaseClassification(classification);
+						associatedCase.setClassificationUser(null);
+						associatedCase.setClassificationDate(new Date());
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
