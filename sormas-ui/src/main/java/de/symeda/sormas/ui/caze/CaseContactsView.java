@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.contact.AbstractContactGrid;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -269,7 +268,9 @@ public class CaseContactsView extends AbstractCaseView {
 				Window popupWindow = VaadinUiUtil
 					.showPopupWindow(new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
-				popupWindow.addCloseListener(c -> grid.reload());
+				popupWindow.addCloseListener(c -> {
+					grid.reload();
+				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(importButton);
@@ -354,7 +355,7 @@ public class CaseContactsView extends AbstractCaseView {
 		criteria.caze(getCaseRef());
 
 		if (grid == null) {
-			grid = new ContactGrid(criteria, getClass());
+			grid = new ContactGrid(criteria, getClass(), ViewConfiguration.class);
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.addComponent(createFilterBar());
 			gridLayout.addComponent(createStatusFilterBar());

@@ -305,7 +305,7 @@ public class PersonDto extends PseudonymizableDto {
 	private CountryReferenceDto citizenship;
 
 	@SuppressWarnings("serial")
-	public static class SeveralNonPrimaryContactDetailsException extends Exception {
+	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
 
 		public SeveralNonPrimaryContactDetailsException(String message) {
 			super(message);

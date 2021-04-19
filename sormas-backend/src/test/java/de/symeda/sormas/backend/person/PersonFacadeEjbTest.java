@@ -279,12 +279,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcfEntities, UserRole.CONTACT_SUPERVISOR);
 
+		String phoneNumber = "+496211218490";
+		String internationalPhoneNumber = "+49 621 1218490";
+
 		final PersonDto person = creator.createPerson();
 		person.setFirstName("Klaus");
 		person.setLastName("Draufle");
 		person.setSex(Sex.MALE);
 		person.setEmailAddress("test@test.de");
-		person.setPhone("+496211218490");
+		person.setPhone(phoneNumber);
 		person.setBirthdateYYYY(2000);
 		person.setBirthdateMM(6);
 		person.setBirthdateDD(1);
@@ -307,7 +310,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getLastName(), exportPerson.getLastName());
 		assertEquals(person.getSex(), exportPerson.getSex());
 		assertEquals(person.getEmailAddress(), exportPerson.getEmailAddress());
-		assertEquals(person.getPhone(), exportPerson.getPhone());
+		assertEquals(internationalPhoneNumber, exportPerson.getPhone());
 		assertEquals(person.getBirthdateYYYY(), exportPerson.getBirthdateYYYY());
 		assertEquals(person.getBirthdateMM(), exportPerson.getBirthdateMM());
 		assertEquals(person.getBirthdateDD(), exportPerson.getBirthdateDD());

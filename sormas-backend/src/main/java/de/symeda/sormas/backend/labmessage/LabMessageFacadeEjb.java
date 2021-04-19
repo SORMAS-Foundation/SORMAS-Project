@@ -1,11 +1,12 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -19,6 +20,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -38,6 +41,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
@@ -45,6 +49,9 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -57,7 +64,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageIndexDto.PERSON_FIRST_NAME,
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.MESSAGE_DATE_TIME,
-		LabMessageIndexDto.PROCESSED,
+		LabMessageIndexDto.STATUS,
 		LabMessageIndexDto.TEST_RESULT,
 		LabMessageIndexDto.TESTED_DISEASE);
 
@@ -68,6 +75,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@EJB
 	private LabMessageService labMessageService;
+	@EJB
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -90,7 +99,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
 		target.setPersonStreet(source.getPersonStreet());
-		target.setProcessed(source.isProcessed());
+		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
@@ -107,9 +116,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
+		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 
 		return target;
 	}
+
 
 	@Override
 	public LabMessageDto save(LabMessageDto dto) {
@@ -145,7 +156,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setPersonStreet(source.getPersonStreet());
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
-		target.setProcessed(source.isProcessed());
+		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
@@ -160,6 +171,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestType(source.getTestType());
 		target.setTestResultText(source.getTestResultText());
+		if (source.getStatus() == LabMessageStatus.PROCESSED && source.getPathogenTest() != null) {
+			target.setPathogenTest(source.getPathogenTest().toReference());
+		}
 
 		return target;
 	}
@@ -178,11 +192,39 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	public void deleteLabMessages(List<String> uuids) {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		for (LabMessage labMessage : labMessages) {
-			if (!labMessage.isProcessed()) {
+			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
 				labMessageService.delete(labMessage);
 			}
 		}
 	}
+
+	@Override
+	public List<LabMessageDto> getForSample(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+		Join<LabMessage, PathogenTest> pathogenTestJoin = from.join(LabMessage.PATHOGEN_TEST, JoinType.INNER);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestJoin.join(PathogenTest.SAMPLE, JoinType.INNER);
+
+		cq.where(cb.equal(sampleJoin.get(Sample.UUID), sampleUuid));
+		cq.orderBy(cb.desc(from.get(LabMessage.MESSAGE_DATE_TIME)), cb.desc(from.get(LabMessage.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+
+	@Override
+	public List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		cq.where(cb.equal(from.join(LabMessage.PATHOGEN_TEST, JoinType.INNER).get(PathogenTest.UUID), pathogenTestUuid));
+		cq.orderBy(cb.desc(from.get(LabMessage.MESSAGE_DATE_TIME)), cb.desc(from.get(LabMessage.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
 
 	@Override
 	public Boolean isProcessed(String uuid) {
@@ -194,7 +236,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Predicate filter = cb.and(cb.equal(from.get(LabMessage.UUID), uuid));
 
 		cq.where(filter);
-		cq.select(from.get(LabMessage.PROCESSED));
+		cq.select(cb.equal(from.get(LabMessage.STATUS), LabMessageStatus.PROCESSED));
 
 		try {
 			return em.createQuery(cq).getSingleResult();
@@ -242,7 +284,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
-			labMessage.get(LabMessage.PROCESSED));
+			labMessage.get(LabMessage.STATUS));
 
 		criteriaHandler(criteria, cb, cq, labMessage);
 
@@ -257,7 +299,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 				Expression<?> expression = labMessage.get(sortProperty.propertyName);
 				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
 			})
-			.collect(Collectors.toList());
+			.collect(toList());
 
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);

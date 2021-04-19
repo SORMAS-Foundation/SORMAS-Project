@@ -7000,8 +7000,8 @@ ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subco
 INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
 
 -- 2021-03-22 Provide SQL function to generate a UUIDv4 encoded as base32 #4805
-DROP FUNCTION IF EXISTS encode_base32;
-DROP FUNCTION IF EXISTS generate_base32_uuid;
+DROP FUNCTION IF EXISTS encode_base32(bytea,int);
+DROP FUNCTION IF EXISTS generate_base32_uuid();
 
 /** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
 CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
@@ -7123,4 +7123,76 @@ ALTER TABLE contact_history ADD CONSTRAINT fk_contact_followupstatuschangeuser_i
 
 INSERT INTO schema_version (version_number, comment) VALUES (358, '2021-04-06 Add date and responsible user of last follow-up status change #4138');
 
+-- 2021-04-12 [DEMIS Interface] Introduce option to reject lab messages #4851
+
+ALTER TABLE labmessage ADD COLUMN status varchar(255);
+
+UPDATE labmessage SET status = CASE WHEN processed=true THEN 'PROCESSED'
+                                    ELSE 'UNPROCESSED'
+                                END;
+ALTER TABLE labmessage
+    ALTER COLUMN status SET NOT NULL,
+    DROP COLUMN processed;
+
+INSERT INTO schema_version (version_number, comment) VALUES (359, '[DEMIS Interface] Introduce option to reject lab messages #4851');
+
+-- 2021-02-18 - Management of EventGroups #4571
+CREATE TABLE eventgroups(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    name text not null,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    archived boolean not null default false,
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+ALTER TABLE eventgroups OWNER TO sormas_user;
+
+CREATE TABLE eventgroups_history (LIKE eventgroups);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON eventgroups
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventgroups_history', true);
+ALTER TABLE eventgroups_history OWNER TO sormas_user;
+
+CREATE TABLE events_eventgroups(
+    event_id bigint not null,
+    eventgroup_id bigint not null,
+    sys_period tstzrange not null,
+    PRIMARY KEY (event_id, eventgroup_id)
+);
+ALTER TABLE events_eventgroups OWNER TO sormas_user;
+ALTER TABLE events_eventgroups ADD CONSTRAINT fk_events_eventgroups_event_id FOREIGN KEY (event_id) REFERENCES events(id);
+ALTER TABLE events_eventgroups ADD CONSTRAINT fk_events_eventgroups_eventgroup_id FOREIGN KEY (eventgroup_id) REFERENCES eventgroups(id);
+
+CREATE TABLE events_eventgroups_history (LIKE events_eventgroups);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_eventgroups
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_history', true);
+ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
+
+
+-- 2020-04-06 Add contact person details to facilities #4755
+ALTER TABLE facility ADD COLUMN contactPersonFirstName text;
+ALTER TABLE facility ADD COLUMN contactPersonLastName text;
+ALTER TABLE facility ADD COLUMN contactPersonPhone text;
+ALTER TABLE facility ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location ADD COLUMN contactPersonLastName text;
+ALTER TABLE location ADD COLUMN contactPersonPhone text;
+ALTER TABLE location ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location_history ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location_history ADD COLUMN contactPersonLastName text;
+ALTER TABLE location_history ADD COLUMN contactPersonPhone text;
+ALTER TABLE location_history ADD COLUMN contactPersonEmail text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (361, '#4755 Add contact person details to facilities');
+
+-- 2021-03-26 [DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853
+ALTER TABLE labmessage ADD COLUMN pathogentest_id BIGINT;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pathogentest_id) REFERENCES pathogentest(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (362, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 -- *** Insert new sql commands BEFORE this line ***

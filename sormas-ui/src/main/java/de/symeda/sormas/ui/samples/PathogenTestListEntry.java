@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -44,6 +45,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	private final PathogenTestDto pathogenTest;
 	private Button editButton;
+	private Button viewAssociatedLabMessagesButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
@@ -109,11 +111,11 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		labelLayout.addComponent(labelBottom);
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(ClickListener editClickListener) {
 
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-test-" + rowIndex,
+				"edit-test-" + pathogenTest.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
 				null,
@@ -127,6 +129,24 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 		editButton.addClickListener(editClickListener);
 	}
+
+	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
+		if (viewAssociatedLabMessagesButton == null) {
+			viewAssociatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
+					"see-associated-lab-messages-" + pathogenTest.getUuid(),
+					null,
+					VaadinIcons.NOTEBOOK,
+					associatedLabMessagesClickListener,
+					ValoTheme.BUTTON_LINK,
+					CssStyles.BUTTON_COMPACT);
+
+			addComponent(viewAssociatedLabMessagesButton);
+			setComponentAlignment(viewAssociatedLabMessagesButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(viewAssociatedLabMessagesButton, 0);
+			viewAssociatedLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_associatedLabMessages));
+		}
+	}
+
 
 	public PathogenTestDto getPathogenTest() {
 		return pathogenTest;

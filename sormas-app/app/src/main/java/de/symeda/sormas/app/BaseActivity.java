@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.android.material.navigation.NavigationView;
@@ -239,16 +240,19 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	protected void updatePageMenu() {
 		List<PageMenuItem> menuItems = getPageMenuData();
-		if (pageMenu != null && menuItems != null) {
+		if (pageMenu != null) {
 			ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 			pageMenu.hide();
 
 			List<PageMenuItem> displayedMenuItems = new ArrayList<>();
-			for (PageMenuItem item : menuItems) {
-				if (item != null) {
-					displayedMenuItems.add(item);
+			if (menuItems != null) {
+				for (PageMenuItem item : menuItems) {
+					if (item != null) {
+						displayedMenuItems.add(item);
+					}
 				}
 			}
+
 			pageMenu.setMenuData(displayedMenuItems);
 			pageMenu.markActiveMenuItem(initializePageMenu(menuItems));
 		}
@@ -296,6 +300,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToEvents(getContext());
 				} else if (id == R.id.menu_item_samples) {
 					NavigationHelper.goToSamples(getContext());
+				} else if (id == R.id.menu_item_campaigns) {
+					NavigationHelper.goToCampaigns(getContext());
 				} else if (id == R.id.menu_item_reports) {
 					NavigationHelper.goToReports(getContext());
 				}
@@ -730,10 +736,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	private PageMenuItem initializePageMenu(List<PageMenuItem> menuList) {
 		this.pageItems = menuList;
-		activePageItem = menuList.get(0);
-		for (int i = 0; i < menuList.size(); i++) {
-			if (i == activePagePosition) {
-				activePageItem = menuList.get(i);
+		if (CollectionUtils.isNotEmpty(menuList)) {
+			activePageItem = menuList.get(0);
+			for (int i = 0; i < menuList.size(); i++) {
+				if (i == activePagePosition) {
+					activePageItem = menuList.get(i);
+				}
 			}
 		}
 

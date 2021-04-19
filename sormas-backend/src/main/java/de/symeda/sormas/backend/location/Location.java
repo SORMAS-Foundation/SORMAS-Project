@@ -75,6 +75,10 @@ public class Location extends AbstractDomainObject {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 	public static final String PERSON = "person";
 
 	private String details;
@@ -101,6 +105,11 @@ public class Location extends AbstractDomainObject {
 	private FacilityType facilityType;
 	private Facility facility;
 	private String facilityDetails;
+
+	private String contactPersonFirstName;
+	private String contactPersonLastName;
+	private String contactPersonPhone;
+	private String contactPersonEmail;
 
 	private Person person;
 
@@ -288,6 +297,42 @@ public class Location extends AbstractDomainObject {
 
 	public void setFacilityDetails(String facilityDetails) {
 		this.facilityDetails = facilityDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

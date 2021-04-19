@@ -148,8 +148,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
-	private static final String CASE_CONFIRMATION_BASIS = Captions.CaseData_caseConfirmationBasis;
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
+	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -773,6 +773,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				I18nProperties
 					.getValidationError(Validations.afterDate, lastVaccinationDateField.getCaption(), firstVaccinationDateField.getCaption())));
+		// re-validate (and, if necessary, repaint) the opposite date field each time a date is changed, to make sure validation indicators are consistent
+		firstVaccinationDateField.addValueChangeListener(event -> lastVaccinationDateField.markAsDirty());
+		lastVaccinationDateField.addValueChangeListener(event -> firstVaccinationDateField.markAsDirty());
 
 		ComboBox vaccineName = addField(CaseDataDto.VACCINE_NAME);
 		ComboBox vaccineManufacturer = addField(CaseDataDto.VACCINE_MANUFACTURER);
@@ -1480,12 +1483,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox caseConfirmationBasisCombo = getField(CASE_CONFIRMATION_BASIS);
 
-		if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
-			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
-		} else if (newFieldValue.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {
-			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
-		} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
-			caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		if (caseConfirmationBasisCombo != null) {
+			if (newFieldValue.getClinicalConfirmation() == YesNoUnknown.YES) {
+				caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
+			} else if (newFieldValue.getEpidemiologicalConfirmation() == YesNoUnknown.YES) {
+				caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION);
+			} else if (newFieldValue.getLaboratoryDiagnosticConfirmation() == YesNoUnknown.YES) {
+				caseConfirmationBasisCombo.setValue(CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			}
 		}
 
 		if (caseFollowUpEnabled) {
