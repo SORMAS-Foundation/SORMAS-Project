@@ -56,4 +56,4 @@ jobs:
 
             git add openapi
             git commit -m "[GitHub Actions] Update external visits API spec files"
-            git push
+            git push upstream development
