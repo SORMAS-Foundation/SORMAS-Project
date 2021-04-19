@@ -158,7 +158,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		return pathogenTestService.getDeletedUuidsSince(user, since);
+		return pathogenTestService.getDeletedUuidsSince(since);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.region;
 
 import java.net.URL;
@@ -68,13 +69,13 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
-	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
+	private final Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
+	private final Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
 
 	private GeoLatLon regionsCenter;
 
-	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons = new HashMap<>();
-	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes = new HashMap<>();
+	private final Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons = new HashMap<>();
+	private final Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes = new HashMap<>();
 
 	private GeoLatLon[][] countryShape;
 
@@ -185,7 +186,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
-		List<RegionReferenceDto> regions = regionFacade.getAllActiveByServerCountry();;
+		List<RegionReferenceDto> regions = regionFacade.getAllActiveByServerCountry();
 
 		try {
 			// load shapefile
@@ -273,7 +274,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 				// Use IDs in germany (could also be used for other countries, if fitting externalIDs are provided. Those can then be mapped to the externalID in SORMAS
 				if (countryName.equals("germany")) {
-					String shapeDistrictId = GeoShapeHelper.sniffShapeAttribute(feature, Arrays.asList("ARS"));
+					String shapeDistrictId = GeoShapeHelper.sniffShapeAttribute(feature, Collections.singletonList("ARS"));
 					if (shapeDistrictId == null) {
 						continue;
 					}

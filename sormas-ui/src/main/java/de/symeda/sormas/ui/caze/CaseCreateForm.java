@@ -215,11 +215,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
+		facilityOrHome =
+			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
+		facilityOrHome.removeAllItems();
+		for (TypeOfPlace place : TypeOfPlace.FOR_CASES) {
+			facilityOrHome.addItem(place);
+			facilityOrHome.setItemCaption(place, I18nProperties.getEnumCaption(place));
+		}
+		facilityOrHome.setItemCaptionMode(ItemCaptionMode.EXPLICIT);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
-		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
 		facilityTypeGroup = new ComboBox();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
