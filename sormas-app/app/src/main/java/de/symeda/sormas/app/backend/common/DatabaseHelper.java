@@ -2414,7 +2414,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 288:
 				currentVersion = 288;
-				TableUtils.createTable(connectionSource, PersonContactDetail.class);
+				getDao(PersonContactDetail.class).executeRaw(
+					"CREATE TABLE personContactDetail ("
+					+ "		additionalInformation text,"
+					+ "		contactInformation text,"
+					+ "		details text,"
+					+ "		person_id BIGINT,"
+					+ "		personContactDetailType VARCHAR,"
+					+ "		phoneNumberType VARCHAR,"
+					+ "		primaryContact SMALLINT,"
+					+ "		thirdParty SMALLINT,"
+					+ "		thirdPartyName text,"
+					+ "		thirdPartyRole text,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 				migratePersonContactDetails();
 
 			case 289:
