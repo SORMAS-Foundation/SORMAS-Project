@@ -1863,9 +1863,68 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 237:
 				currentVersion = 237;
-				TableUtils.createTable(connectionSource, Campaign.class);
-				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
-				TableUtils.createTable(connectionSource, CampaignFormData.class);
+				getDao(Campaign.class).executeRaw(
+					"CREATE TABLE campaigns ("
+					+ "		archived SMALLINT,"
+					+ "		creatingUser_id BIGINT,"
+					+ "		description VARCHAR,"
+					+ "		endDate BIGINT,"
+					+ "		name VARCHAR,"
+					+ "		startDate BIGINT,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
+				getDao(CampaignFormMeta.class).executeRaw(
+					"CREATE TABLE campaignformmeta ("
+					+ "		campaignFormElements VARCHAR,"
+					+ "		campaignFormTranslations VARCHAR,"
+					+ "		formId VARCHAR,"
+					+ "		formName VARCHAR,"
+					+ "		languageCode VARCHAR,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
+				getDao(CampaignFormData.class).executeRaw(
+					"CREATE TABLE campaignFormData ("
+					+ "		archived SMALLINT,"
+					+ "		campaign_id BIGINT,"
+					+ "		campaignFormMeta_id BIGINT,"
+					+ "		community_id BIGINT,"
+					+ "		creatingUser_id BIGINT,"
+					+ "		district_id BIGINT,"
+					+ "		formDate BIGINT,"
+					+ "		formValues VARCHAR,"
+					+ "		region_id BIGINT,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 
 			case 238:
 				currentVersion = 238;
