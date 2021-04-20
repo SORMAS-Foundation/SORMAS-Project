@@ -2452,8 +2452,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 290:
 				currentVersion = 290;
-				TableUtils.createTableIfNotExists(connectionSource, Continent.class);
-				TableUtils.createTableIfNotExists(connectionSource, Subcontinent.class);
+				
+				getDao(Continent.class).executeRaw(
+					"CREATE TABLE IF NOT EXISTS continent ("
+					+ "		defaultName text,"
+					+ "		archived SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
+				
+				getDao(Subcontinent.class).executeRaw(
+					"CREATE TABLE IF NOT EXISTS subcontinent ("
+					+ "		continent_id BIGINT NOT NULL,"
+					+ "		defaultName text,"
+					+ "		archived SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
+				
 				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
 
 			case 291:
