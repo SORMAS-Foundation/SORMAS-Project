@@ -740,8 +740,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
 			for (String textFilter : textFilters) {
 				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter));
