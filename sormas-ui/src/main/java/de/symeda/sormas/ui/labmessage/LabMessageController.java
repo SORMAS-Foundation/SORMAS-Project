@@ -685,10 +685,13 @@ public class LabMessageController {
 
 	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
+		pathogenTestDto.setTestResult(labMessageDto.getTestResult());
 		pathogenTestDto.setTestType(labMessageDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
+		pathogenTestDto.setTestResultVerified(labMessageDto.isTestResultVerified());
 		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
 		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
+		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
 		return pathogenTestDto;
 	}
 
