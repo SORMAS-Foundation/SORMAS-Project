@@ -1828,7 +1828,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 234:
 				currentVersion = 234;
-				TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
+
+				getDao(SormasToSormasOriginInfo.class).executeRaw(
+					"CREATE TABLE sormasToSormasOriginInfo ("
+					+ "		comment VARCHAR,"
+					+ "		organizationId VARCHAR,"
+					+ "		ownershipHandedOver SMALLINT,"
+					+ "		senderEmail VARCHAR,"
+					+ "		senderName VARCHAR,"
+					+ "		senderPhoneNumber VARCHAR,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 
 				getDao(Case.class)
 					.executeRaw("ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
