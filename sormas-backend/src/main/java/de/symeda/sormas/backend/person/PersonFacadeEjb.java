@@ -783,8 +783,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
+
 		// The uuid-list is filtered by the users jurisdiction and retrieved in batches to avoid timeouts
-		List<String> personUuidList = getAllUuidsBatched(500, overwriteExistingCoordinates);
+		List<String> personUuidList = getAllUuidsBatched(2500, overwriteExistingCoordinates);
 
 		// Run updates in batches to avoid large JPA cache
 		List<Long> batchResults = new ArrayList<>();
@@ -912,6 +913,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		int sizeOfLastBatch = 0;
 		List<String> personUuids = new ArrayList<>();
 		do {
+			// By using LIMIT and OFFSET, timeouts and overflowing caches are somewhat prevented
 			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
 			sizeOfLastBatch = newPersonUuids.size();
 			first += sizeOfLastBatch;

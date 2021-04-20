@@ -55,7 +55,6 @@ public class PersonsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-		// TODO disabled because of potential performance problems, see GitHub issue #4938
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
 			Button setMissingCoordinatesButton = ButtonHelper.createIconButton(
 				I18nProperties.getCaption(Captions.personsSetMissingGeoCoordinates),
