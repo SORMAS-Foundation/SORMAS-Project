@@ -675,6 +675,10 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
+		viaLimsCheckbox.setValue(Boolean.TRUE);
+		viaLimsCheckbox.setEnabled(false);
+
 		showFormWithLabMessage(
 			labMessageDto,
 			pathogenTestCreateComponent,
