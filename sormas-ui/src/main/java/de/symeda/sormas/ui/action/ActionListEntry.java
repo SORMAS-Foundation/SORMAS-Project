@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.action;
 
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
@@ -196,7 +196,7 @@ public class ActionListEntry extends HorizontalLayout {
 			documentLayout.setMargin(new MarginInfo(true, true, false, false));
 
 			// TODO: user rights?
-			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT);
+			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false);
 			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			documentLayout.addComponent(documentList);
 		}

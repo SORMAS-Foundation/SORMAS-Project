@@ -31,6 +31,7 @@ public enum ExportEntityName {
 	FACILITIES("entityFacilities", "facilities"),
 	PRESCRIPTIONS("entityPrescriptions", "prescriptions"),
 	POINTS_OF_ENTRY("entityPointsOfEntry", "points of entry"),
+	POPULATION_DATA("entityPopulationData", "population data"),
 	REGIONS("entityRegions", "regions"),
 	SAMPLES("entitySamples", "samples"),
 	TASKS("entityTasks", "tasks"),

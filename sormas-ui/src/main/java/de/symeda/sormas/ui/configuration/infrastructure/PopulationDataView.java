@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -16,7 +14,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -52,8 +49,7 @@ public class PopulationDataView extends AbstractConfigurationView {
 		layout.addComponent(btnExport);
 		layout.setComponentAlignment(btnExport, Alignment.MIDDLE_CENTER);
 
-		StreamResource populationDataExportResource =
-			DownloadUtil.createPopulationDataExportResource("sormas_population_data_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		StreamResource populationDataExportResource = DownloadUtil.createPopulationDataExportResource();
 		new FileDownloader(populationDataExportResource).extend(btnExport);
 
 		addComponent(layout);

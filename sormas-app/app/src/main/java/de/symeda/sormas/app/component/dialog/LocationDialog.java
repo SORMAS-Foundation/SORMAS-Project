@@ -296,12 +296,20 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationFacility.setVisibility(visibility);
 		contentBinding.locationFacilityDetails.setVisibility(visibility);
 		contentBinding.locationFacilityType.setVisibility(visibility);
+		contentBinding.locationContactPersonFirstName.setVisibility(visibility);
+		contentBinding.locationContactPersonLastName.setVisibility(visibility);
+		contentBinding.locationContactPersonPhone.setVisibility(visibility);
+		contentBinding.locationContactPersonEmail.setVisibility(visibility);
 
 		if (!visible && clearOnHidden) {
 			contentBinding.facilityTypeGroup.setValue(null);
 			contentBinding.locationFacility.setValue(null);
 			contentBinding.locationFacilityDetails.setValue(null);
 			contentBinding.locationFacilityType.setValue(null);
+			contentBinding.locationContactPersonFirstName.setValue(null);
+			contentBinding.locationContactPersonLastName.setValue(null);
+			contentBinding.locationContactPersonPhone.setValue(null);
+			contentBinding.locationContactPersonEmail.setValue(null);
 		}
 	}
 

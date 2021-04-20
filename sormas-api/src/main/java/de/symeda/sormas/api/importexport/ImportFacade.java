@@ -66,25 +66,45 @@ public interface ImportFacade {
 
 	void generateContactImportTemplateFile() throws IOException;
 
+	String getCaseImportTemplateFileName();
+
 	String getCaseImportTemplateFilePath();
 
+	String getEventImportTemplateFileName();
+
 	String getEventImportTemplateFilePath();
+
+	String getEventParticipantImportTemplateFileName();
 
 	String getEventParticipantImportTemplateFilePath();
 
 	String getCampaignFormImportTemplateFilePath();
 
+	String getPointOfEntryImportTemplateFileName();
+
 	String getPointOfEntryImportTemplateFilePath();
+
+	String getPopulationDataImportTemplateFileName();
 
 	String getPopulationDataImportTemplateFilePath();
 
+	String getCaseLineListingImportTemplateFileName();
+
 	String getCaseLineListingImportTemplateFilePath();
+
+	String getAreaImportTemplateFileName();
 
 	String getAreaImportTemplateFilePath();
 
+	String getContinentImportTemplateFileName();
+
 	String getContinentImportTemplateFilePath();
 
+	String getSubcontinentImportTemplateFileName();
+
 	String getSubcontinentImportTemplateFilePath();
+
+	String getCountryImportTemplateFileName();
 
 	String getCountryImportTemplateFilePath();
 
@@ -94,15 +114,27 @@ public interface ImportFacade {
 
 	URI getAllContinentsImportFilePath();
 
+	String getRegionImportTemplateFileName();
+
 	String getRegionImportTemplateFilePath();
+
+	String getDistrictImportTemplateFileName();
 
 	String getDistrictImportTemplateFilePath();
 
+	String getCommunityImportTemplateFileName();
+
 	String getCommunityImportTemplateFilePath();
+
+	String getFacilityImportTemplateFileName();
 
 	String getFacilityImportTemplateFilePath();
 
+	String getCaseContactImportTemplateFileName();
+
 	String getCaseContactImportTemplateFilePath();
+
+	String getContactImportTemplateFileName();
 
 	String getContactImportTemplateFilePath();
 
