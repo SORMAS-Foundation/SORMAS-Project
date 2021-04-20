@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -116,8 +113,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			double lat = 0, lon = 0;
 			int count = 0;
 			for (MultiPolygon polygon : regionMultiPolygons.values()) {
-				lat += polygon.getCentroid().getX();
-				lon += polygon.getCentroid().getY();
+				lon += polygon.getCentroid().getX();
+				lat += polygon.getCentroid().getY();
 				count++;
 			}
 
@@ -283,8 +280,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 						if (districtExtID == null) {
 							return false;
 						}
-						return districtExtID.contains(shapeDistrictId)
-							|| shapeDistrictId.contains(districtExtID);
+						return districtExtID.contains(shapeDistrictId) || shapeDistrictId.contains(districtExtID);
 					}).reduce((r1, r2) -> {
 						// take the result that best fits
 						// in germany, the external IDs in SORMAS usually contain a leading '110'
