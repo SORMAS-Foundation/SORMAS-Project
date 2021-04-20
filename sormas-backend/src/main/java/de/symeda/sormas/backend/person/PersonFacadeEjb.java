@@ -116,6 +116,8 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -163,6 +165,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
+	@EJB
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -815,6 +819,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		Long changedPersons = batchResults.stream().reduce(0L, Long::sum);
 
 		return changedPersons;
+	}
+
+	@Override
+	public boolean isSharedWithoutOwnership(String uuid) {
+		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
+		return originInfo != null && !originInfo.isOwnershipHandedOver();
 	}
 
 	/**
