@@ -2072,7 +2072,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				migrateEpiData();
 
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata RENAME TO tmp_epidata;");
-				TableUtils.createTable(connectionSource, EpiData.class);
+				getDao(EpiData.class).executeRaw(
+					"CREATE TABLE epidata ("
+					+ "		areaInfectedAnimals VARCHAR,"
+					+ "		contactWithSourceCaseKnown VARCHAR,"
+					+ "		exposureDetailsKnown VARCHAR,"
+					+ "		highTransmissionRiskArea VARCHAR,"
+					+ "		largeOutbreaksArea VARCHAR,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 				getDao(EpiData.class).executeRaw(
 					"INSERT INTO epidata(exposureDetailsKnown, contactWithSourceCaseKnown, areaInfectedAnimals, changeDate, creationDate, "
 						+ "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized) "
