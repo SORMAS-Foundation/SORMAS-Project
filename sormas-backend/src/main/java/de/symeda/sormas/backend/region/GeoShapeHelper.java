@@ -81,13 +81,13 @@ public class GeoShapeHelper {
 	 * @throws FactoryException
 	 *             Throws if the requested math transformer could not be build.
 	 */
-	public static MathTransform getLatLonMathTransform(ContentFeatureSource featureSource, String WKT_String) throws FactoryException {
+	public static MathTransform getLatLonMathTransform(ContentFeatureSource featureSource, String wkt) throws FactoryException {
 		// The CRS of the source file. There are tons of different schemas
 		CoordinateReferenceSystem sourceCRS = featureSource.getSchema().getCoordinateReferenceSystem();
 
 		// The coordinates system you want to reproject the data to
 		// EPSG:4326 is the coordinate reference system GPS uses. Now you know :)
-		CoordinateReferenceSystem targetCRS = CRS.parseWKT(WKT_String);
+		CoordinateReferenceSystem targetCRS = CRS.parseWKT(wkt);
 
 		return CRS.findMathTransform(sourceCRS, targetCRS, true);
 	}

@@ -170,17 +170,17 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@PostConstruct
 	private void loadData() {
 		String countryName = configFacade.getCountryName();
-		String WKT_String = configFacade.getGeocodingEPSG4326_WKTstring();
+		String wkt = configFacade.getGeocodingEPSG4326_WKT();
 		if (countryName.isEmpty()) {
 			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {
-			loadRegionData(countryName, WKT_String);
-			loadDistrictData(countryName, WKT_String);
+			loadRegionData(countryName, wkt);
+			loadDistrictData(countryName, wkt);
 		}
 		buildCountryShape();
 	}
 
-	private void loadRegionData(String countryName, String WKT_String) {
+	private void loadRegionData(String countryName, String wkt) {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
@@ -193,7 +193,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				return;
 			}
 
-			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, WKT_String);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, wkt);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {
@@ -237,7 +237,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		updateCenterOfAllRegions();
 	}
 
-	private void loadDistrictData(String countryName, String WKT_String) {
+	private void loadDistrictData(String countryName, String wkt) {
 
 		districtShapes.clear();
 		districtMultiPolygons.clear();
@@ -250,7 +250,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				return;
 			}
 
-			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, WKT_String);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, wkt);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {
