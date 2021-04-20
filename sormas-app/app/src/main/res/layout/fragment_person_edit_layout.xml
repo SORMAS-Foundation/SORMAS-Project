@@ -638,7 +638,7 @@
                 app:textAlignment="gravity"
                 app:gravity="top|start"
                 app:singleLine="false"
-                app:maxLines="3"
+                app:maxLines="6"
                 app:textArea="true"
                 style="@style/ControlSingleColumnStyle" />
 

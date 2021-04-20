@@ -733,6 +733,7 @@ public class Person extends AbstractDomainObject {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
 	}
 
+	@Column(columnDefinition = "text")
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

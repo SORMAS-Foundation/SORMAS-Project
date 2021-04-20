@@ -492,7 +492,7 @@
                 app:value="@{data.additionalDetails}"
                 app:showCaption="false"
                 app:singleLine="false"
-                app:maxLines="3"
+                app:maxLines="4000"
                 app:textArea="true"
                 style="@style/ControlSingleColumnStyle" />
 
