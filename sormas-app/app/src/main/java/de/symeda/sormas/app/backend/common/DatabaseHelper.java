@@ -2306,7 +2306,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 278:
 				currentVersion = 278;
 
-				TableUtils.createTable(connectionSource, ActivityAsCase.class);
+				getDao(ActivityAsCase.class).executeRaw(
+					"CREATE TABLE activityascase ("
+					+ "		activityAsCaseType VARCHAR,"
+					+ "		activityAsCaseTypeDetails text,"
+					+ "		connectionNumber VARCHAR,"
+					+ "		description text,"
+					+ "		endDate BIGINT,"
+					+ "		epiData_id BIGINT,"
+					+ "		gatheringDetails text,"
+					+ "		gatheringType VARCHAR,"
+					+ "		habitationDetails text,"
+					+ "		habitationType VARCHAR,"
+					+ "		location_id BIGINT,"
+					+ "		meansOfTransport VARCHAR,"
+					+ "		meansOfTransportDetails text,"
+					+ "		reportingUser_id BIGINT,"
+					+ "		role VARCHAR,"
+					+ "		seatNumber VARCHAR,"
+					+ "		startDate BIGINT,"
+					+ "		typeOfPlace VARCHAR,"
+					+ "		typeOfPlaceDetails text,"
+					+ "		workEnvironment VARCHAR,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN activityAsCaseDetailsKnown varchar(255);");
 
 				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
