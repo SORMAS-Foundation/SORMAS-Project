@@ -7171,6 +7171,7 @@ ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
 
+
 -- 2020-04-06 Add contact person details to facilities #4755
 ALTER TABLE facility ADD COLUMN contactPersonFirstName text;
 ALTER TABLE facility ADD COLUMN contactPersonLastName text;
@@ -7195,6 +7196,13 @@ ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pat
 
 INSERT INTO schema_version (version_number, comment) VALUES (362, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
 
+-- 2021-04-20 Change column type of case additional details #5148
+ALTER TABLE cases ALTER COLUMN additionaldetails TYPE text;
+ALTER TABLE cases_history ALTER COLUMN additionaldetails TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (363, 'Change column type of case additional details #5148');
+
+
 -- 2021-04-15 Add variant specific Nucleic acid detecion methods #5029
 ALTER TABLE pathogentest ADD COLUMN pcrtestspecification varchar(255);
 ALTER TABLE pathogentest ADD COLUMN testeddiseasevariant_id bigint;
@@ -7202,6 +7210,6 @@ ALTER TABLE pathogentest_history ADD COLUMN pcrtestspecification varchar(255);
 ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariant_id bigint;
 ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIGN KEY (testeddiseasevariant_id) REFERENCES diseasevariant(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (363, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
+INSERT INTO schema_version (version_number, comment) VALUES (364, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
 -- *** Insert new sql commands BEFORE this line ***

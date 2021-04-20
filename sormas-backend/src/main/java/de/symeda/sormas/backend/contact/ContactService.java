@@ -808,14 +808,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		} else {
 			ContactDto contactDto = contactFacade.toDto(contact);
-			Date untilDate = ContactLogic.getFollowUpUntilDate(
+			Date currentFollowUpUntil = contact.getFollowUpUntil();
+			Date untilDate = ContactLogic.calculateFollowUpUntilDate(
 				contactDto,
 				contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()));
+				diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
+				false);
 			contact.setFollowUpUntil(untilDate);
+			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
+				contact.setOverwriteFollowUpUntil(false);
+			}
 			if (changeStatus) {
 				Visit lastVisit = contact.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
-				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), untilDate)) {
+				if (lastVisit != null && !DateHelper.getStartOfDay(lastVisit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))) {
 					contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
 				} else {
 					contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);

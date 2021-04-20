@@ -1199,16 +1199,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
-
-			Date untilDate = CaseLogic.getFollowUpUntilDate(
+			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
+			Date untilDate = CaseLogic.calculateFollowUpUntilDate(
 				caseDto,
 				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()));
+				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+				false);
 			caze.setFollowUpUntil(untilDate);
+			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
+				caze.setOverwriteFollowUpUntil(false);
+			}
 			if (changeStatus) {
-
 				Visit lastVisit = caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
-				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), untilDate)) {
+				if (lastVisit != null && !DateHelper.getStartOfDay(lastVisit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))) {
 					caze.setFollowUpStatus(FollowUpStatus.COMPLETED);
 				} else {
 					caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
