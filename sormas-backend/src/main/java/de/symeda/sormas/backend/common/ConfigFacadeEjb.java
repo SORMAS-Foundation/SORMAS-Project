@@ -117,6 +117,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
+	private static final String GEOCODING_EPSG4326_WKT_STRING = "geocodingEPSG326_WKTstring";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
@@ -135,7 +136,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
-
 
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
@@ -405,6 +405,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingLatitudeJsonPath() {
 		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
+	}
+
+	@Override
+	public String getGeocodingEPSG4326_WKTstring() {
+		return getProperty(
+			GEOCODING_EPSG4326_WKT_STRING,
+			"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Long\",EAST],AXIS[\"Lat\",NORTH],AUTHORITY[\"EPSG\",\"4326\"]]");
 	}
 
 	@Override

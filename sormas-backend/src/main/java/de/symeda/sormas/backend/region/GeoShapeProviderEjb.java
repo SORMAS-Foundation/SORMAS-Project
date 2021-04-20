@@ -134,7 +134,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		}
 
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
-		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
+		return new GeoLatLon(polygonCenter.getY(), polygonCenter.getX());
 	}
 
 	@Override
@@ -164,22 +164,23 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		}
 
 		Point polygonCenter = districtMultiPolygons.get(district).getCentroid();
-		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
+		return new GeoLatLon(polygonCenter.getY(), polygonCenter.getX());
 	}
 
 	@PostConstruct
 	private void loadData() {
 		String countryName = configFacade.getCountryName();
+		String WKT_String = configFacade.getGeocodingEPSG4326_WKTstring();
 		if (countryName.isEmpty()) {
 			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {
-			loadRegionData(countryName);
-			loadDistrictData(countryName);
+			loadRegionData(countryName, WKT_String);
+			loadDistrictData(countryName, WKT_String);
 		}
 		buildCountryShape();
 	}
 
-	private void loadRegionData(String countryName) {
+	private void loadRegionData(String countryName, String WKT_String) {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
@@ -192,7 +193,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				return;
 			}
 
-			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, WKT_String);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {
@@ -236,7 +237,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		updateCenterOfAllRegions();
 	}
 
-	private void loadDistrictData(String countryName) {
+	private void loadDistrictData(String countryName, String WKT_String) {
 
 		districtShapes.clear();
 		districtMultiPolygons.clear();
@@ -249,7 +250,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				return;
 			}
 
-			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource);
+			MathTransform transform = GeoShapeHelper.getLatLonMathTransform(featureSource, WKT_String);
 			SimpleFeatureIterator iterator = featureSource.getFeatures().features();
 
 			while (iterator.hasNext()) {

@@ -97,6 +97,8 @@ public interface ConfigFacade {
 
 	String getGeocodingLatitudeJsonPath();
 
+	String getGeocodingEPSG4326_WKTstring();
+
 	SymptomJournalConfig getSymptomJournalConfig();
 
 	PatientDiaryConfig getPatientDiaryConfig();
