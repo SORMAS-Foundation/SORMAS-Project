@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -132,46 +131,44 @@ public final class CaseLogic {
 		}
 	}
 
-	public static Date getFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits) {
+	/**
+	 * Calculates the follow-up until date of the case based on its start date (onset contact or report date), the follow-up duration of
+	 * the disease, the current follow-up until date and the date of the last cooperative visit.
+	 *
+	 * @param ignoreOverwrite
+	 *            Returns the expected follow-up until date based on case start date, follow-up duration of the disease and date of the
+	 *            last cooperative visit. Ignores current follow-up until date and whether or not follow-up until has been overwritten.
+	 */
+	public static Date calculateFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits, int followUpDuration, boolean ignoreOverwrite) {
 
-		int followUpDuration = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(caze.getDisease());
 		Date beginDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
-		Date untilDate = caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : DateHelper.addDays(beginDate, followUpDuration);
+		Date standardUntilDate = DateHelper.addDays(beginDate, followUpDuration);
+		Date untilDate = !ignoreOverwrite && caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : standardUntilDate;
 
-		VisitDto lastVisit = null;
-		boolean additionalVisitNeeded;
-		do {
-			additionalVisitNeeded = false;
-			if (visits != null) {
-				for (VisitDto visit : visits) {
-					if (lastVisit != null) {
-						if (lastVisit.getVisitDateTime().before(visit.getVisitDateTime())) {
-							lastVisit = visit;
-						}
-					} else {
-						lastVisit = visit;
-					}
-				}
+		Date lastVisitDate = null;
+		boolean additionalVisitNeeded = true;
+		for (VisitDto visit : visits) {
+			if (lastVisitDate == null || DateHelper.getStartOfDay(visit.getVisitDateTime()).after(DateHelper.getStartOfDay(lastVisitDate))) {
+				lastVisitDate = visit.getVisitDateTime();
 			}
-			if (lastVisit != null) {
-				// if the last visit was not cooperative and happened at the last date of
-				// contact tracing ..
-				if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE && lastVisit.getVisitDateTime().compareTo(untilDate) == 0) {
-					// .. we need to do an additional visit
-					additionalVisitNeeded = true;
-					untilDate = DateHelper.addDays(untilDate, 1);
-				}
-				// if the last visit was cooperative and happened at the last date of contact tracing,
-				// revert the follow-up until date back to the original
-				if (!caze.isOverwriteFollowUpUntil()
-					&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
-					&& lastVisit.getVisitDateTime().compareTo(DateHelper.addDays(beginDate, followUpDuration)) == 0) {
-					additionalVisitNeeded = false;
-					untilDate = DateHelper.addDays(beginDate, followUpDuration);
-				}
+			if (additionalVisitNeeded
+				&& !DateHelper.getStartOfDay(visit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))
+				&& visit.getVisitStatus() == VisitStatus.COOPERATIVE) {
+				additionalVisitNeeded = false;
 			}
 		}
-		while (additionalVisitNeeded);
+
+		// Follow-up until needs to be extended to the date after the last visit if there is no cooperative visit after the follow-up until date
+		if (additionalVisitNeeded && lastVisitDate != null) {
+			untilDate = DateHelper.addDays(untilDate, DateHelper.getDaysBetween(untilDate, lastVisitDate));
+		}
+
+		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date and/or last contact
+		// date were changed), set it to the standard follow-up until date
+		if (DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
+			untilDate = standardUntilDate;
+		}
+
 		return untilDate;
 	}
 }

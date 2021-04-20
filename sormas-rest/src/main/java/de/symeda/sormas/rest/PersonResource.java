@@ -73,4 +73,11 @@ public class PersonResource extends EntityDtoResource {
 	public List<String> getAllUuids() {
 		return FacadeProvider.getPersonFacade().getAllUuids();
 	}
+
+	@GET
+	@Path("/{uuid}")
+	public PersonDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getPersonFacade().getPersonByUuid(uuid);
+	}
+
 }

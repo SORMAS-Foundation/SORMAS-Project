@@ -736,7 +736,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	private PageMenuItem initializePageMenu(List<PageMenuItem> menuList) {
 		this.pageItems = menuList;
-		if (menuList != null && CollectionUtils.isNotEmpty(menuList)) {
+		if (CollectionUtils.isNotEmpty(menuList)) {
 			activePageItem = menuList.get(0);
 			for (int i = 0; i < menuList.size(); i++) {
 				if (i == activePagePosition) {

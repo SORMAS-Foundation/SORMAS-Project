@@ -18,6 +18,7 @@ package de.symeda.sormas.app.campaign.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -28,13 +29,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -85,6 +90,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
         model.getCampaignFormDataList().observe(this, campaignFormDataPagedList -> {
             adapter.submitList(campaignFormDataPagedList);
+            setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
             hidePreloader();
         });
 
@@ -134,8 +140,11 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        Menu _menu = menu;
         getNewMenu().setTitle(R.string.action_new_campaign_form_data);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dashboard_action_menu, menu);
+        menu.findItem(R.id.action_help).setVisible(false);
         return true;
     }
 
@@ -175,16 +184,19 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         filterBinding.applyFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
+            setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
             model.notifyCriteriaUpdated();
         });
 
         filterBinding.resetFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
-            model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
+            Campaign lastCampaign = DatabaseHelper.getCampaignDao().getLastStartedCampaign();
+            model.getCriteria().setCampaign(lastCampaign);
             model.getCriteria().setCampaignFormMeta(null);
             filterBinding.invalidateAll();
             filterBinding.executePendingBindings();
+            setSetSubHeadingTitleForCampaign(lastCampaign);
             model.notifyCriteriaUpdated();
         });
     }
@@ -205,5 +217,9 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             listOut.add(new Item<>(campaignFormMeta.getFormName(), campaignFormMeta));
         }
         return listOut;
+    }
+
+    private void setSetSubHeadingTitleForCampaign(Campaign campaign) {
+        setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
     }
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +28,12 @@ import javax.persistence.PersistenceContext;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
@@ -62,7 +68,14 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private DocumentService documentService;
 	@EJB
 	private DocumentStorageService documentStorageService;
-
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private CaseJurisdictionChecker caseJurisdictionChecker;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventService eventService;
 	@EJB
@@ -155,23 +168,28 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			switch (dto.getRelatedEntityType()) {
-			case EVENT:
-				pseudonimizeEventRelatedDto(document, dto, pseudonymizer);
-				break;
-			}
+			boolean inJurisdiction = isInJurisdiction(dto);
+			pseudonymizer.pseudonymizeDto(
+					DocumentDto.class,
+					dto,
+					inJurisdiction,
+					(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
 		}
 	}
 
-	private void pseudonimizeEventRelatedDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
-		assert dto.getRelatedEntityType() == DocumentRelatedEntityType.EVENT;
-
-		Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-		boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
-
-		pseudonymizer.pseudonymizeDto(DocumentDto.class, dto, inJurisdiction, (e) -> {
-			pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser);
-		});
+	private boolean isInJurisdiction(DocumentDto dto) {
+		switch (dto.getRelatedEntityType()) {
+			case CASE:
+				Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
+				return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
+			case CONTACT:
+				Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
+				return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
+			case EVENT:
+				Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
+				return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+		}
+		return true;
 	}
 
 	public static DocumentDto toDto(Document source) {

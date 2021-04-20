@@ -511,7 +511,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(2));
 
-		criteria.setLabSampleId(null);
 		criteria.setSampleMaterial(SampleMaterial.BLOOD);
 
 		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime2, 1));

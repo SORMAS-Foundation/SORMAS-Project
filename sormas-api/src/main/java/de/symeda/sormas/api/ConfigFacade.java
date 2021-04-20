@@ -121,6 +121,8 @@ public interface ConfigFacade {
 
 	String getDemisJndiName();
 
+	boolean isSkipDefaultPasswordCheck();
+
 	boolean isAuditorAttributeLoggingEnabled();
 
 	int getStepSizeForCsvExport();

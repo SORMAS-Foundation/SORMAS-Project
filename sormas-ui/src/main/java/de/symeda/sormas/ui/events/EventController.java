@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -144,6 +146,32 @@ public class EventController {
 				}
 			} else {
 				create(caseRef);
+				SormasUI.refreshView();
+			}
+		});
+
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
+
+		Set<String> relatedEventUuids = FacadeProvider.getEventFacade().getAllEventUuidsByEventGroupUuid(eventGroupReference.getUuid());
+
+		EventSelectionField eventSelect = new EventSelectionField(eventGroupReference, relatedEventUuids);
+		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+				EventReferenceDto eventReference = selectedEvent.toReference();
+				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, eventGroupReference);
+				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(eventGroupReference, Collections.singletonList(eventReference));
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 				SormasUI.refreshView();
 			}
 		});

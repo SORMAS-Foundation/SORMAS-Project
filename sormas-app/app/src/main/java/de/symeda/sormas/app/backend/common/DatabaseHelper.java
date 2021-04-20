@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 296;
+	public static final int DATABASE_VERSION = 298;
 
 	private static DatabaseHelper instance = null;
 
@@ -2130,10 +2130,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 295:
 				currentVersion = 295;
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonFirstName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonLastName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonPhone text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonEmail text");
+
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonFirstName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonLastName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail text;");
+
+			case 296:
+				currentVersion = 296;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pcrTestSpecification varchar(255);");
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
+
+			case 297:
+				currentVersion = 297;
 				TableUtils.createTable(connectionSource, Area.class);
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
 
-				// ATTENTION: break should only be done after last version
+					// ATTENTION: break should only be done after last version
 				break;
 
 			default:

@@ -17,15 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.ContinentFacadeEjb;
@@ -39,6 +34,10 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.region.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.region.SubcontinentService;
 import de.symeda.sormas.backend.util.DtoHelper;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
 @Stateless(name = "LocationFacade")
 public class LocationFacadeEjb implements LocationFacade {
@@ -92,6 +91,10 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 
 		return target;
 	}
@@ -129,6 +132,11 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setFacility(FacilityFacadeEjb.toReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 
 		return target;
 	}

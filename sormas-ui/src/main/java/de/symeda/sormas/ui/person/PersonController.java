@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
@@ -246,5 +248,13 @@ public class PersonController {
 	public void navigateToPerson(String uuid) {
 		final String navigationState = PersonDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void validateBirthDate(Integer year, Integer month, Integer day) throws Validator.InvalidValueException {
+		try {
+			PersonHelper.validateBirthDate(year, month, day);
+		} catch (ValidationRuntimeException ex) {
+			throw new Validator.InvalidValueException(ex.getMessage());
+		}
 	}
 }

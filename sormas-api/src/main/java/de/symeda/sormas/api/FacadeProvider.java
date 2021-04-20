@@ -43,6 +43,7 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
@@ -134,6 +135,10 @@ public class FacadeProvider {
 
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+
+	public static EventGroupFacade getEventGroupFacade() {
+		return get().lookupEjbRemote(EventGroupFacade.class);
 	}
 
 	public static EventImportFacade getEventImportFacade() {
@@ -393,16 +398,13 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(LabMessageFacade.class);
 	}
 
-	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
-		try {
-			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
-			if (jndiName == null) {
-				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
-			} else {
-				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
-			}
-		} catch (NamingException e) {
-			throw new RuntimeException(e.getMessage(), e);
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
+
+		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		if (jndiName == null) {
+			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+		} else {
+			return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 		}
 	}
 

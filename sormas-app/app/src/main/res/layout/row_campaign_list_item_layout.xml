@@ -21,6 +21,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.campaign.data.CampaignFormData"/>
     </data>
 
@@ -55,7 +57,7 @@
                     android:id="@+id/campaign_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textSize="14sp"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
                     app:value="@{data.campaign.name}" />
@@ -73,7 +75,7 @@
                     android:id="@+id/form_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textSize="14sp"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
                     app:value="@{data.campaignFormMeta.formName}" />
@@ -138,12 +140,13 @@
 
                 <TextView
                     android:id="@+id/campaignFormData_formDate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/row_entry_date_text_size"
-                    android:textColor="@color/listActivityRowDateText"
-                    android:fontFamily="sans-serif-medium"
-                    app:timeAgoValue="@{data.campaignFormMeta.creationDate}" />
+                    android:layout_weight="1"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif"
+                    app:value="@{DateFormatHelper.formatLocalDate(data.formDate)}" />
 
             </LinearLayout>
 

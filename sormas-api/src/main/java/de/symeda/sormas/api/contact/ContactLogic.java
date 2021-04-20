@@ -20,7 +20,6 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -39,49 +38,44 @@ public final class ContactLogic {
 		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}
 
-	public static Date getFollowUpUntilDate(ContactDto contact, List<VisitDto> visits) {
+	/**
+	 * Calculates the follow-up until date of the contact based on its start date (last contact or report date), the follow-up duration of
+	 * the disease, the current follow-up until date and the date of the last cooperative visit.
+	 * 
+	 * @param ignoreOverwrite
+	 *            Returns the expected follow-up until date based on contact start date, follow-up duration of the disease and date of the
+	 *            last cooperative visit. Ignores current follow-up until date and whether or not follow-up until has been overwritten.
+	 */
+	public static Date calculateFollowUpUntilDate(ContactDto contact, List<VisitDto> visits, int followUpDuration, boolean ignoreOverwrite) {
 
-		int followUpDuration = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(contact.getDisease());
 		Date beginDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
-		Date untilDate = contact.isOverwriteFollowUpUntil()
-			|| (contact.getFollowUpUntil() != null && contact.getFollowUpUntil().after(DateHelper.addDays(beginDate, followUpDuration)))
-				? contact.getFollowUpUntil()
-				: DateHelper.addDays(beginDate, followUpDuration);
+		Date standardUntilDate = DateHelper.addDays(beginDate, followUpDuration);
+		Date untilDate = !ignoreOverwrite && contact.isOverwriteFollowUpUntil() ? contact.getFollowUpUntil() : standardUntilDate;
 
-		VisitDto lastVisit = null;
-		boolean additionalVisitNeeded;
-		do {
-			additionalVisitNeeded = false;
-			if (visits != null) {
-				for (VisitDto visit : visits) {
-					if (lastVisit != null) {
-						if (lastVisit.getVisitDateTime().before(visit.getVisitDateTime())) {
-							lastVisit = visit;
-						}
-					} else {
-						lastVisit = visit;
-					}
-				}
+		Date lastVisitDate = null;
+		boolean additionalVisitNeeded = true;
+		for (VisitDto visit : visits) {
+			if (lastVisitDate == null || DateHelper.getStartOfDay(visit.getVisitDateTime()).after(DateHelper.getStartOfDay(lastVisitDate))) {
+				lastVisitDate = visit.getVisitDateTime();
 			}
-			if (lastVisit != null) {
-				// if the last visit was not cooperative and happened at the last date of
-				// contact tracing ..
-				if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE && DateHelper.isSameDay(lastVisit.getVisitDateTime(), untilDate)) {
-					// .. we need to do an additional visit
-					additionalVisitNeeded = true;
-					untilDate = DateHelper.addDays(untilDate, 1);
-				}
-				// if the last visit was cooperative and happened at the last date of contact tracing,
-				// revert the follow-up until date back to the original
-				if (!contact.isOverwriteFollowUpUntil()
-					&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
-					&& DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper.addDays(beginDate, followUpDuration))) {
-					additionalVisitNeeded = false;
-					untilDate = DateHelper.addDays(untilDate, followUpDuration);
-				}
+			if (additionalVisitNeeded
+				&& !DateHelper.getStartOfDay(visit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))
+				&& visit.getVisitStatus() == VisitStatus.COOPERATIVE) {
+				additionalVisitNeeded = false;
 			}
 		}
-		while (additionalVisitNeeded);
+
+		// Follow-up until needs to be extended to the date after the last visit if there is no cooperative visit after the follow-up until date
+		if (additionalVisitNeeded && lastVisitDate != null) {
+			untilDate = DateHelper.addDays(untilDate, DateHelper.getDaysBetween(untilDate, lastVisitDate));
+		}
+
+		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date and/or last contact
+		// date were changed), set it to the standard follow-up until date
+		if (DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
+			untilDate = standardUntilDate;
+		}
+
 		return untilDate;
 	}
 }

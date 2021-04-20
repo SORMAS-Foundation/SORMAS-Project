@@ -175,7 +175,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
-	private TextField expectedUntilDate;
+	private TextField tfExpectedFollowUpUntilDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -458,10 +458,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
-		expectedUntilDate = new TextField();
-		expectedUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
-		getContent().addComponent(expectedUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		tfExpectedFollowUpUntilDate = new TextField();
+		tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
+		getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
+		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
+			if (!(Boolean) e.getProperty().getValue()) {
+				dfFollowUpUntil.discard();
+			}
+		});
+
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
@@ -986,11 +992,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		expectedUntilDate.setValue(
+		tfExpectedFollowUpUntilDate.setValue(
 			DateHelper.formatLocalDate(
-				ContactLogic.getFollowUpUntilDate(getValue(), FacadeProvider.getVisitFacade().getVisitsByContact(getValue().toReference())),
+				ContactLogic.calculateFollowUpUntilDate(
+					newFieldValue,
+					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease()),
+					true),
 				I18nProperties.getUserLanguage()));
-		expectedUntilDate.setReadOnly(true);
+		tfExpectedFollowUpUntilDate.setReadOnly(true);
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

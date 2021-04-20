@@ -19,7 +19,7 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
-	public static final String PROCESSED = "processed";
+	public static final String STATUS = "status";
 
 	private String uuid;
 
@@ -31,7 +31,8 @@ public class LabMessageIndexDto implements Serializable {
 	private String personFirstName;
 	private String personLastName;
 	private String personPostalCode;
-	private boolean processed;
+	private LabMessageStatus status;
+
 	public LabMessageIndexDto(
 			String uuid,
 			Date messageDateTime,
@@ -42,7 +43,8 @@ public class LabMessageIndexDto implements Serializable {
 			String personFirstName,
 			String personLastName,
 			String personPostalCode,
-			boolean processed) {
+		LabMessageStatus status) {
+
 		this.uuid = uuid;
 		this.messageDateTime = messageDateTime;
 		this.testLabName = testLabName;
@@ -52,7 +54,7 @@ public class LabMessageIndexDto implements Serializable {
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
-		this.processed = processed;
+		this.status = status;
 	}
 
 	public String getUuid() {
@@ -127,11 +129,11 @@ public class LabMessageIndexDto implements Serializable {
 		this.personPostalCode = personPostalCode;
 	}
 
-	public boolean isProcessed() {
-		return processed;
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 }
