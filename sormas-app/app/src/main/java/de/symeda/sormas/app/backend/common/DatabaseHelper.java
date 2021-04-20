@@ -1565,7 +1565,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				String visitQueryColumns = TextUtils.join(",", visitColumnNames);
 
 				db.execSQL("ALTER TABLE visits RENAME TO visits_old;");
-				TableUtils.createTable(connectionSource, Visit.class);
+				getDao(Visit.class).executeRaw(
+					"CREATE TABLE visits ("
+					+ "		disease VARCHAR,"
+					+ "		person_id BIGINT NOT NULL,"
+					+ "		reportLat DOUBLE PRECISION,"
+					+ "		reportLatLonAccuracy FLOAT,"
+					+ "		reportLon DOUBLE PRECISION,"
+					+ "		symptoms_id BIGINT,"
+					+ "		visitDateTime BIGINT NOT NULL,"
+					+ "		visitRemarks VARCHAR,"
+					+ "		visitStatus VARCHAR,"
+					+ "		visitUser_id BIGINT,"
+					+ "		pseudonymized SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 				db.execSQL("INSERT INTO visits (" + visitQueryColumns + ") SELECT " + visitQueryColumns + " FROM visits_old;");
 				db.execSQL("DROP TABLE visits_old;");
 
