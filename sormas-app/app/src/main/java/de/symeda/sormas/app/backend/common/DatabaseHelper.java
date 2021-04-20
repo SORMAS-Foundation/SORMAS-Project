@@ -1953,8 +1953,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 242:
 				currentVersion = 242;
-				TableUtils.createTableIfNotExists(connectionSource, Country.class);
 
+				getDao(Country.class).executeRaw(
+					"CREATE TABLE IF NOT EXISTS country ("
+					+ "		isoCode VARCHAR,"
+					+ "		name VARCHAR,"
+					+ "		archived SMALLINT,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 			case 243:
 				currentVersion = 243;
 				TableUtils.createTable(connectionSource, Exposure.class);
