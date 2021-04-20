@@ -162,57 +162,6 @@ public class PathogenTestController {
 			});
 	}
 
-	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant, Disease testedDisease) {
-		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-		final boolean differentDiseases = event.getDisease() == null || !event.getDisease().equals(testedDisease);
-		Label dialogContent = differentDiseases
-			? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseDifferentDiseases))
-			: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.convertEventParticipantToCase),
-			dialogContent,
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			800,
-			e -> {
-				if (e.booleanValue() == true) {
-					if (differentDiseases) {
-						ControllerProvider.getCaseController().createFromEventParticipantDifferentDisease(eventParticipant, testedDisease);
-					} else {
-						ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
-					}
-				}
-			});
-	}
-
-	public void showConvertContactToCaseDialog(ContactDto contact) {
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.convertContactToCase),
-			new Label(I18nProperties.getString(Strings.messageConvertContactToCase)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			800,
-			e -> {
-				if (e.booleanValue() == true) {
-					ControllerProvider.getCaseController().createFromContact(contact);
-				}
-			});
-	}
-
-	public void showCreateContactCaseDialog(ContactDto contact, Disease disease) {
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.contactCreateContactCase),
-			new Label(I18nProperties.getString(Strings.messageCreateContactCase)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			800,
-			e -> {
-				if (e.booleanValue() == true) {
-					ControllerProvider.getCaseController().createFromUnrelatedContact(contact, disease);
-				}
-			});
-	}
-
 	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		facade.savePathogenTest(dto);
 		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());

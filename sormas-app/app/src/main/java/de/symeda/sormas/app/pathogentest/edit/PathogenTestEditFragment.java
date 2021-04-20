@@ -15,11 +15,7 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
-import android.database.SQLException;
-import android.util.Log;
 import android.view.View;
-
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +23,6 @@ import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -39,7 +32,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseVariant;
@@ -49,7 +41,6 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -151,46 +142,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
         contentBinding.pathogenTestPcrTestSpecifications.initializeSpinner(pcrTestSpecificationList);
 
-        FragmentActivity thisActivity = this.getActivity();
-        final Case associatedCase = record.getSample().getAssociatedCase();
-        contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList,
-                new ValueChangeListener() {
-
-                    DiseaseVariant currentDiseaseVariant = record.getTestedDiseaseVariant();
-                    DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
-
-                    @Override
-                    public void onChange(ControlPropertyField field) {
-                        if (associatedCase != null) {
-                            DiseaseVariant newDiseaseVariant = (DiseaseVariant) getContentBinding().pathogenTestTestedDiseaseVariant.getValue();
-                            if (getContentBinding().pathogenTestTestResult.getValue() == PathogenTestResultType.POSITIVE
-                                    && (Boolean) getContentBinding().pathogenTestTestResultVerified.getValue() == true
-                                    && newDiseaseVariant != caseDiseaseVariant && newDiseaseVariant != currentDiseaseVariant) {
-
-                                String heading = I18nProperties.getCaption(Captions.caseUpdateCaseWithNewDiseaseVariant);
-                                String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
-                                int positiveButtonTextResId = R.string.yes;
-                                int negativeButtonTextResId = R.string.no;
-
-                                ConfirmationDialog dlg =
-                                        new ConfirmationDialog(thisActivity, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
-                                dlg.setCancelable(false);
-                                dlg.setNegativeCallback(() -> {
-                                });
-                                dlg.setPositiveCallback(() -> {
-                                    associatedCase.setDiseaseVariant(newDiseaseVariant);
-                                    try {
-                                        DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
-                                    } catch (SQLException | java.sql.SQLException e) {
-                                        Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
-                                        throw new RuntimeException(e);
-                                    }
-                                });
-                                dlg.show();
-                            }
-                        }
-                    }
-                });
+        contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
         contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList,
                 new ValueChangeListener() {
