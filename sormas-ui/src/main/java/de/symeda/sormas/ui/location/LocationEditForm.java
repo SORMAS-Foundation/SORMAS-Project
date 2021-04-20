@@ -98,6 +98,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
+			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
 			fluidRow(
 				loc(LocationDto.DETAILS),
 				fluidRow(
@@ -114,6 +116,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private TextField facilityDetails;
 	private ComboBox continent;
 	private ComboBox subcontinent;
+	private TextField contactPersonFirstName;
+	private TextField contactPersonLastName;
+	private TextField contactPersonPhone;
+	private TextField contactPersonEmail;
 
 	private boolean districtRequiredOnDefaultCountry;
 	private boolean skipCountryValueChange;
@@ -205,6 +211,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		TextField postalCodeField = addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
+
+		contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
+		contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
+		contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -389,10 +400,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 
 			// Fill in the address fields based on the selected facility
-			// We don't want the location form to automatically change even if the facility's address is updated later 
+			// We don't want the location form to automatically change even if the facility's address is updated later
 			// on, so we only trigger it upon a manual change of the facility field
 			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
-			// necessary because isModified() will still return true for a short duration even if we keep the very same 
+			// necessary because isModified() will still return true for a short duration even if we keep the very same
 			// value because of this field dependencies to other fields and the way updateEnumValues works
 			if (facility.isAttached()) {
 				if (facility.getValue() != null) {
@@ -407,7 +418,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
 						|| facilityDto.getAreaType() != null
 						|| facilityDto.getLatitude() != null
-						|| facilityDto.getLongitude() != null) {
+						|| facilityDto.getLongitude() != null
+					||(StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName()) && StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
 
 						// Show a confirmation popup if the location's address is already set and different from the facility one
 						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
@@ -418,6 +430,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
 								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
 							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
+							|| (StringUtils.isNotEmpty(contactPersonFirstName.getValue()) && StringUtils.isNotEmpty(contactPersonLastName.getValue()))
 							|| (tfLatitude.getConvertedValue() != null
 								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
 							|| (tfLongitude.getConvertedValue() != null
@@ -482,6 +495,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((TextField) getField(LocationDto.HOUSE_NUMBER)).setValue(facilityDto.getHouseNumber());
 		((TextField) getField(LocationDto.ADDITIONAL_INFORMATION)).setValue(facilityDto.getAdditionalInformation());
 		((ComboBox) getField(LocationDto.AREA_TYPE)).setValue(facilityDto.getAreaType());
+		((TextField) getField(LocationDto.CONTACT_PERSON_FIRST_NAME)).setValue(facilityDto.getContactPersonFirstName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_LAST_NAME)).setValue(facilityDto.getContactPersonLastName());
+		((TextField) getField(LocationDto.CONTACT_PERSON_PHONE)).setValue(facilityDto.getContactPersonPhone());
+		((TextField) getField(LocationDto.CONTACT_PERSON_EMAIL)).setValue(facilityDto.getContactPersonEmail());
 		((AccessibleTextField) getField(LocationDto.LATITUDE)).setConvertedValue(facilityDto.getLatitude());
 		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
@@ -599,12 +616,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
+		contactPersonFirstName.setVisible(visible);
+		contactPersonLastName.setVisible(visible);
+		contactPersonPhone.setVisible(visible);
+		contactPersonEmail.setVisible(visible);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+			contactPersonFirstName.clear();
+			contactPersonLastName.clear();
+			contactPersonPhone.clear();
+			contactPersonEmail.clear();
 		}
 	}
 

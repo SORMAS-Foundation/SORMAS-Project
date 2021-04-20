@@ -398,16 +398,13 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(LabMessageFacade.class);
 	}
 
-	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
-		try {
-			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
-			if (jndiName == null) {
-				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
-			} else {
-				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
-			}
-		} catch (NamingException e) {
-			throw new RuntimeException(e.getMessage(), e);
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
+
+		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		if (jndiName == null) {
+			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+		} else {
+			return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 		}
 	}
 

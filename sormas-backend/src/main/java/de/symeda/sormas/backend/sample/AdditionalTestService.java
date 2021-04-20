@@ -6,7 +6,10 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -121,5 +124,21 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
 
 		return filter;
+	}
+
+	/**
+	 * @param additionalTestUuids
+	 *            {@link AdditionalTest}s identified by {@code uuid} to be deleted.
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void delete(List<String> additionalTestUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<AdditionalTest> cd = cb.createCriteriaDelete(AdditionalTest.class);
+		Root<AdditionalTest> root = cd.from(AdditionalTest.class);
+
+		cd.where(root.get(AdditionalTest.UUID).in(additionalTestUuids));
+
+		em.createQuery(cd).executeUpdate();
 	}
 }

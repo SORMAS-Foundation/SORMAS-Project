@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.person.edit;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +24,12 @@ import org.joda.time.DateTimeComparator;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
-final class PersonValidator {
+public final class PersonValidator {
 
 	static void initializePersonValidation(final FragmentPersonEditLayoutBinding contentBinding) {
 		ResultCallback<Boolean> deathDateCallback = () -> {
@@ -73,8 +76,44 @@ final class PersonValidator {
 			return false;
 		};
 
+		initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
+
 		contentBinding.personDeathDate.setValidationCallback(deathDateCallback);
 		contentBinding.personBurialDate.setValidationCallback(burialDateCallback);
 		contentBinding.personApproximateAge.setValidationCallback(approximateAgeCallback);
 	}
+
+	public static void initializeBirthDateValidation(
+		ControlSpinnerField personBirthdateYYYY,
+		ControlSpinnerField personBirthdateMM,
+		ControlSpinnerField personBirthdateDD) {
+
+		ResultCallback<Boolean> birthDateCallback = () -> {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setLenient(false);
+			if (personBirthdateYYYY.getValue() != null) {
+				calendar.set(Calendar.YEAR, (Integer) personBirthdateYYYY.getValue());
+			}
+			if (personBirthdateMM.getValue() != null) {
+				calendar.set(Calendar.MONTH, ((Integer) personBirthdateMM.getValue()) - 1);
+			}
+			if (personBirthdateDD.getValue() != null) {
+				calendar.set(Calendar.DAY_OF_MONTH, (Integer) personBirthdateDD.getValue());
+			}
+
+			if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
+				personBirthdateYYYY.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				personBirthdateMM.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				personBirthdateDD.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
+				return true;
+			}
+
+			return false;
+		};
+
+		personBirthdateYYYY.setValidationCallback(birthDateCallback);
+		personBirthdateMM.setValidationCallback(birthDateCallback);
+		personBirthdateDD.setValidationCallback(birthDateCallback);
+	}
+
 }

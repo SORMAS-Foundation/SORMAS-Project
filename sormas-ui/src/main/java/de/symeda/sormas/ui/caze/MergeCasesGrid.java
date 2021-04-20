@@ -132,18 +132,14 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
-		this.setStyleGenerator(new StyleGenerator<CaseIndexDto>() {
+		this.setStyleGenerator((StyleGenerator<CaseIndexDto>) item -> {
+			TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
+			TreeData<CaseIndexDto> data = dataProvider.getTreeData();
 
-			@Override
-			public String apply(CaseIndexDto item) {
-				TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
-				TreeData<CaseIndexDto> data = dataProvider.getTreeData();
-
-				if (data.getRootItems().contains(item)) {
-					return "v-treegrid-parent-row";
-				} else {
-					return "v-treegrid-child-row";
-				}
+			if (data.getRootItems().contains(item)) {
+				return "v-treegrid-parent-row";
+			} else {
+				return "v-treegrid-child-row";
 			}
 		});
 	}

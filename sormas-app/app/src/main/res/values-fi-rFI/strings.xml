@@ -265,6 +265,7 @@
     <string name="heading_app_update_required">Päivitys vaaditaan</string>
     <string name="heading_burial">Hautajaiset</string>
     <string name="heading_burials_visited">Käydyt hautajaiset</string>
+    <string name="heading_campaigns_list">Campaign Data</string>
     <string name="heading_case_disease_changed">Potilaan tauti on vaihtunut</string>
     <string name="heading_case_edit">Muokkaa potilasta</string>
     <string name="heading_case_new">Uusi Potilas</string>

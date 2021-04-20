@@ -26,12 +26,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.symeda.sormas.api.event.EventExportDto;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.utils.Order;
 
@@ -41,7 +41,6 @@ public final class ImportExportUtils {
 		// Hide Utility Class Constructor
 	}
 
-	public static final String FILE_PREFIX = "sormas";
 	public static final String TEMP_FILE_PREFIX = "sormas_temp";
 
 	public static List<ExportPropertyMetaInfo> getCaseExportProperties(

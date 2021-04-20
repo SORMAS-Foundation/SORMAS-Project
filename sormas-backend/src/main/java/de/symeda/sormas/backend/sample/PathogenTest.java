@@ -35,6 +35,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -175,7 +176,7 @@ public class PathogenTest extends CoreAdo {
 		this.testDateTime = testDateTime;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn
 	public Facility getLab() {
 		return lab;
@@ -194,7 +195,7 @@ public class PathogenTest extends CoreAdo {
 		this.labDetails = labDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn
 	public User getLabUser() {
 		return labUser;
@@ -275,5 +276,9 @@ public class PathogenTest extends CoreAdo {
 
 	public void setViaLims(boolean viaLims) {
 		this.viaLims = viaLims;
+	}
+
+	public PathogenTestReferenceDto toReference() {
+		return new PathogenTestReferenceDto(getUuid());
 	}
 }

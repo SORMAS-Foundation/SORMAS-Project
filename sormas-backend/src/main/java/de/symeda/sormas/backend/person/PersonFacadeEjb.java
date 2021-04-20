@@ -284,19 +284,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			if (configFacade.getPatientDiaryConfig().isActive()) {
-				try {
-					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
-					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-					exportPerson.setPhone(internationalPhone);
-				} catch (NumberParseException e) {
-					exportPerson.setPhone(detailedPerson.getPhone());
-				}
-			} else {
-				exportPerson.setPhone(detailedPerson.getPhone());
-			}
+			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
+			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -309,6 +298,34 @@ public class PersonFacadeEjb implements PersonFacade {
 			return exportPerson;
 		} else {
 			return null;
+		}
+	}
+
+	public String getJournalEmailAddress(PersonDto person) {
+		try {
+			return person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
+		}
+	}
+
+	public String getJournalPhoneNumber(PersonDto person) {
+		try {
+			String phoneNumber = person.getPhone(false);
+			if (StringUtils.EMPTY.equals(phoneNumber)) {
+				return StringUtils.EMPTY;
+			}
+
+			try {
+				PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+				Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
+				return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+			} catch (NumberParseException e) {
+				return phoneNumber;
+			}
+
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
 		}
 	}
 
@@ -363,6 +380,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
 		}
+
+		// Validate birth date
+		PersonHelper.validateBirthDate(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD());
 	}
 
 	//@formatter:off
