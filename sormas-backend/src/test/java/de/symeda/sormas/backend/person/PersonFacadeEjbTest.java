@@ -238,9 +238,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
-		final ContactDto contact11 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
+		final ContactDto contact11 = creator.createContact(user.toReference(), person1.toReference(), DateHelper.subtractDays(new Date(), 41));
+		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference(), DateHelper.subtractDays(new Date(), 29));
+		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference(), DateHelper.subtractDays(new Date(), 21));
 
 		contact11.setOverwriteFollowUpUntil(true);
 		contact12.setOverwriteFollowUpUntil(true);
@@ -292,8 +292,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setBirthdateMM(6);
 		person.setBirthdateDD(1);
 		person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-		final ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
-		final ContactDto contact2 = creator.createContact(user.toReference(), person.toReference());
+		final ContactDto contact1 = creator.createContact(user.toReference(), person.toReference(), DateHelper.subtractDays(new Date(), 41));
+		final ContactDto contact2 = creator.createContact(user.toReference(), person.toReference(), DateHelper.subtractDays(new Date(), 29));
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setOverwriteFollowUpUntil(true);
 
