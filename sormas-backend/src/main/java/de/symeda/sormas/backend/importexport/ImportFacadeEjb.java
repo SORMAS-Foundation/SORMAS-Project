@@ -199,15 +199,16 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME = "import_subcontinent_template.csv";
 	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = "import_area_template.csv";
 	private static final String COUNTRY_IMPORT_TEMPLATE_FILE_NAME = "import_country_template.csv";
-	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "import_all_countries.csv";
-	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "import_all_subcontinents.csv";
-	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = "import_all_continents.csv";
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = "import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = "import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = "import_community_template.csv";
 	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = "import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_contact_template.csv";
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
+
+	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
+	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
+	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_continents.csv";
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {
