@@ -7195,4 +7195,11 @@ ALTER TABLE labmessage ADD COLUMN pathogentest_id BIGINT;
 ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pathogentest_id) REFERENCES pathogentest(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (362, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
+
+-- 2021-04-20 Change column type of case additional details #5148
+ALTER TABLE cases ALTER COLUMN additionaldetails TYPE text;
+ALTER TABLE cases_history ALTER COLUMN additionaldetails TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (363, 'Change column type of case additional details #5148');
+
 -- *** Insert new sql commands BEFORE this line ***
