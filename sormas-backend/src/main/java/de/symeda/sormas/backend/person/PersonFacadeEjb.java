@@ -765,6 +765,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}
@@ -1218,6 +1219,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}

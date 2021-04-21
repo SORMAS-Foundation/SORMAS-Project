@@ -7202,4 +7202,9 @@ ALTER TABLE cases_history ALTER COLUMN additionaldetails TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (363, 'Change column type of case additional details #5148');
 
+-- 2021-04-12 Add additional details to person #3936
+ALTER TABLE person ADD COLUMN additionaldetails text;
+ALTER TABLE person_history ADD COLUMN additionaldetails text;
+INSERT INTO schema_version (version_number, comment) VALUES (364, 'Add additional details to person #3936');
+
 -- *** Insert new sql commands BEFORE this line ***
