@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.backend.campaign.data;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DataType;
@@ -84,6 +85,10 @@ public class CampaignFormData extends PseudonymizableAdo {
     @DatabaseField
     private boolean archived;
 
+    /**
+     * JsonRawValue annotation is used to handle this differently when merging data
+     */
+    @JsonRawValue
     public String getFormValuesJson() {
         return formValuesJson;
     }

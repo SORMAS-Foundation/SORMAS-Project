@@ -17,6 +17,7 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -680,15 +681,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 									+ "'");
 
 							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-							conflictStringBuilder.append("<br/>");
+
+							// don't show the details of conflicts in json raw data to the user
+							if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+								conflictStringBuilder.append("<br/>");
+							}
 						}
 
 						// update snapshot
