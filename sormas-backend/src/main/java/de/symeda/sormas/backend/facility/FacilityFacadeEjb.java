@@ -421,7 +421,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public List<FacilityIndexDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<FacilityIndexDto> cq = cb.createQuery(FacilityIndexDto.class);
+		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
 		Root<Facility> facility = cq.from(Facility.class);
 		Join<Facility, Region> region = facility.join(Facility.REGION, JoinType.LEFT);
 		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
@@ -477,24 +477,19 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				cb.asc(facility.get(Facility.NAME)));
 		}
 
-		cq.multiselect(
-			facility.get(Facility.UUID),
-			facility.get(Facility.NAME),
-			facility.get(Facility.TYPE),
-			region.get(Region.UUID),
-			region.get(Region.NAME),
-			district.get(District.UUID),
-			district.get(District.NAME),
-			community.get(Community.UUID),
-			community.get(Community.NAME),
-			facility.get(Facility.CITY),
-			facility.get(Facility.LATITUDE),
-			facility.get(Facility.LONGITUDE),
-			facility.get(Facility.EXTERNAL_ID));
+		cq.select(facility);
 
-		return first != null && max != null
-			? em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList()
-			: em.createQuery(cq).getResultList();
+		if (first != null && max != null) {
+			return em.createQuery(cq)
+				.setFirstResult(first)
+				.setMaxResults(max)
+				.getResultList()
+				.stream()
+				.map(f -> toIndexDto(f))
+				.collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -648,5 +643,26 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setExternalID(source.getExternalID());
 
 		return target;
+	}
+
+	private FacilityIndexDto toIndexDto(Facility entity) {
+		if (entity == null) {
+			return null;
+		}
+
+		FacilityIndexDto dto = FacilityIndexDto.build();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setName(entity.getName());
+		dto.setType(entity.getType());
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
+		dto.setCity(entity.getCity());
+		dto.setLatitude(entity.getLatitude());
+		dto.setLongitude(entity.getLongitude());
+		dto.setExternalID(entity.getExternalID());
+
+		return dto;
 	}
 }

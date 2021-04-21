@@ -17,17 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
-import java.io.Serializable;
-
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
-public class FacilityIndexDto implements Serializable {
+public class FacilityIndexDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Facility";
 
-	public static final String UUID = "uuid";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -38,7 +37,6 @@ public class FacilityIndexDto implements Serializable {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
-	private String uuid;
 	private String name;
 	private FacilityType type;
 	private RegionReferenceDto region;
@@ -49,45 +47,10 @@ public class FacilityIndexDto implements Serializable {
 	private Double longitude;
 	private String externalID;
 
-	public FacilityIndexDto(
-		String uuid,
-		String name,
-		FacilityType type,
-		String regionUuid,
-		String regionName,
-		String districtUuid,
-		String districtName,
-		String communityUuid,
-		String communityName,
-		String city,
-		Double latitude,
-		Double longitude,
-		String externalID) {
-
-		this.uuid = uuid;
-		this.name = name;
-		this.type = type;
-		if (regionUuid != null) {
-			this.region = new RegionReferenceDto(regionUuid, regionName, null);
-		}
-		if (districtUuid != null) {
-			this.district = new DistrictReferenceDto(districtUuid, districtName, null);
-		}
-		if (communityUuid != null) {
-			this.community = new CommunityReferenceDto(communityUuid, communityName, null);
-		}
-		this.city = city;
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.externalID = externalID;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public static FacilityIndexDto build() {
+		FacilityIndexDto facilityIndexDto = new FacilityIndexDto();
+		facilityIndexDto.setUuid(DataHelper.createUuid());
+		return facilityIndexDto;
 	}
 
 	public String getName() {
