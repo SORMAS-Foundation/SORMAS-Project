@@ -2355,7 +2355,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getPerson().getPresentCondition().isDeceased()
 			&& (newCase.getPerson().getDeathDate() == null
 				? newCase.getOutcomeDate() != null
-				: !(Math.abs(newCase.getPerson().getDeathDate().getTime() - newCase.getOutcomeDate().getTime()) < (1000 * 60 * 30)))) {
+				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {
 			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 			personFacade.onPersonChanged(existingPerson, newCase.getPerson());

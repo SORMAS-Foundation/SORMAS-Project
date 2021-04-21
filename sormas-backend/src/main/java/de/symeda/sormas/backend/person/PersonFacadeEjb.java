@@ -847,7 +847,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		// Call onCaseChanged once for every case to update case classification
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
-			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);// does this even do anything though?!
 			caseFacade.onCaseChanged(existingCase, personCase);
 		}
 
@@ -861,7 +861,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
 							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 							personCase.setOutcome(CaseOutcome.DECEASED);
-							personCase.setOutcomeDate(new Date());
+							personCase.setOutcomeDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
 							// Attention: this may lead to infinite recursion when not properly implemented
 							caseFacade.onCaseChanged(existingCase, personCase);
 						}
