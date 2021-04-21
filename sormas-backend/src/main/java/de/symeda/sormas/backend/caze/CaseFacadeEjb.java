@@ -1918,8 +1918,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					return;
 				}
 				// calculate classification
-				List<PathogenTestDto> pathogenTestDtos =
-						pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
+				List<PathogenTestDto> pathogenTestDtos = pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
 				CaseDataDto newCaseDto = toDto(associatedCase);
 
 				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
@@ -2334,8 +2333,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
-				if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
-					&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
+				if (!newCase.getPerson().getPresentCondition().isDeceased()) {
 					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 					newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
 					newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
@@ -2354,10 +2352,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		} else if (existingCase != null
 			&& CaseOutcome.DECEASED == newCase.getOutcome()
-			&& newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
+			&& newCase.getPerson().getPresentCondition().isDeceased()
 			&& (newCase.getPerson().getDeathDate() == null
 				? newCase.getOutcomeDate() != null
-				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {
+				: !(Math.abs(newCase.getPerson().getDeathDate().getTime() - newCase.getOutcomeDate().getTime()) < (1000 * 60 * 30)))) {
 			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
