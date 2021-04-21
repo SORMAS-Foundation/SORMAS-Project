@@ -43,11 +43,10 @@ jobs:
 
       - name: Commit external visits API spec to development
         if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
-        # see https://github.com/colmose/push-bot/blob/main/entrypoint.sh
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
-            git config user.name "sormas-vitagroup"
-            git config user.email "support.sormas@helpdesk.symeda.de"
+            git config --global user.name "sormas-vitagroup"
+            git config --global user.email "support.sormas@helpdesk.symeda.de"
 
             rm -rf openapi
             mkdir openapi/
