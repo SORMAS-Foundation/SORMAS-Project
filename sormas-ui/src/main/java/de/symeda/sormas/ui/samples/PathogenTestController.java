@@ -36,6 +36,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -143,6 +144,24 @@ public class PathogenTestController {
 		return editView;
 	}
 
+	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariantReferenceDto diseaseVariantReferenceDto) {
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
+			new Label(I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			e -> {
+				if (e.booleanValue() == true) {
+					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
+					caseDataByUuid.setDiseaseVariant(diseaseVariantReferenceDto);
+					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
+				}
+			});
+	}
+
 	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		facade.savePathogenTest(dto);
 		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
@@ -180,14 +199,25 @@ public class PathogenTestController {
 				showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
 			}
 		};
+
+		Runnable caseDiseaseVariantCallback = () -> {
+			if (dto.getTestedDiseaseVariant()!= null && dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+					&& dto.getTestResultVerified().booleanValue() == true) {
+				showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, dto.getTestedDiseaseVariant());
+			}
+		};
+
 		if (onSavedPathogenTest != null) {
 			onSavedPathogenTest.accept(dto, () -> {
 				confirmCaseCallback.run();
 				caseCloningCallback.run();
+				caseDiseaseVariantCallback.run();
 			});
 		} else {
 			confirmCaseCallback.run();
 			caseCloningCallback.run();
+			caseDiseaseVariantCallback.run();
 		}
 	}
 
@@ -310,8 +340,9 @@ public class PathogenTestController {
 			800,
 			confirmed -> {
 				if (confirmed) {
-					caze.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caze);
+					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
+					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 				}
 			});
 

@@ -24,6 +24,9 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -81,6 +84,8 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import static de.symeda.sormas.ui.samples.PathogenTestController.showCaseUpdateWithNewDiseaseVariantDialog;
 
 public class SampleController {
 
@@ -193,6 +198,7 @@ public class SampleController {
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			pathogenTest.setPcrTestSpecification((PCRTestSpecification) (createForm.getField(PathogenTestDto.PCR_TEST_SPECIFICATION)).getValue());
 
 			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
 			if (dateField != null) {
@@ -205,6 +211,7 @@ public class SampleController {
 			}
 
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			pathogenTest.setTestedDiseaseVariant((DiseaseVariantReferenceDto) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
@@ -222,6 +229,21 @@ public class SampleController {
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
 			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
 			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
+			if (associatedCase != null) {
+				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+				Runnable caseDiseaseVariantCallback = () -> {
+					if (pathogenTest.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+							&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+							&& pathogenTest.getTestResultVerified().booleanValue() == true) {
+						showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
+					}
+				};
+
+				caseDiseaseVariantCallback.run();
+			}
+
 			consumer.accept(savedSample, savedPathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {

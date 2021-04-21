@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -40,9 +41,11 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public static final String SAMPLE = "sample";
 	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TESTED_DISEASE_DETAILS = "testedDiseaseDetails";
+	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
+	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
+	public static final String TESTED_DISEASE_DETAILS = "testedDiseaseDetails";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String LAB = "lab";
@@ -61,10 +64,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private SampleReferenceDto sample;
 	@Required
 	private Disease testedDisease;
+	private DiseaseVariantReferenceDto testedDiseaseVariant;
 	private String testedDiseaseDetails;
 	private String typingId;
 	@Required
 	private PathogenTestType testType;
+	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
 	private String testTypeText;
 	@Required
@@ -135,6 +140,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.testedDisease = testedDisease;
 	}
 
+	public DiseaseVariantReferenceDto getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(DiseaseVariantReferenceDto testedDiseaseVariant) {
+		this.testedDiseaseVariant = testedDiseaseVariant;
+	}
+
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
@@ -157,6 +170,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	public PCRTestSpecification getPcrTestSpecification() {
+		return pcrTestSpecification;
+	}
+
+	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
+		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
 	public String getTestTypeText() {

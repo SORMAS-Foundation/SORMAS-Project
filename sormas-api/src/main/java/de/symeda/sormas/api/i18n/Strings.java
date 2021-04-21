@@ -539,6 +539,7 @@ public interface Strings {
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
+	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
 	String headingUpdatePassword = "headingUpdatePassword";
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
@@ -934,6 +935,7 @@ public interface Strings {
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
+	String messageUpdateCaseWithNewDiseaseVariant = "messageUpdateCaseWithNewDiseaseVariant";
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";

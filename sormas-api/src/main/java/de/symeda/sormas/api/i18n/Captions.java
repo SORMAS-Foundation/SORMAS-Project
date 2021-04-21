@@ -1378,11 +1378,13 @@ public interface Captions {
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
+	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
+	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";

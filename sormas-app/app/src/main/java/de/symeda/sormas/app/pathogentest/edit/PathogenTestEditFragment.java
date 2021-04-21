@@ -15,13 +15,18 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import android.view.View;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -32,6 +37,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -51,7 +57,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
 	private List<Facility> labList;
 	private List<Item> testTypeList;
+	private List<Item> pcrTestSpecificationList;
 	private List<Item> diseaseList;
+	private List<Item> diseaseVariantList;
 	private List<Item> testResultList;
 
 	// Instance methods
@@ -82,10 +90,22 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		record = getActivityRootData();
 		sample = record.getSample();
 		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
-		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, true));
-		testResultList = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values())
-			.filter(type -> type != PathogenTestResultType.NOT_DONE)
-			.collect(Collectors.toList()), true);
+		pcrTestSpecificationList = DataUtils.getEnumItems(PCRTestSpecification.class, true);
+
+		List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
+		diseaseList = DataUtils.toItems(diseases);
+		if (record.getTestedDisease() != null && !diseases.contains(record.getTestedDisease())) {
+			diseaseList.add(DataUtils.toItem(record.getTestedDisease()));
+		}
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
+			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
+		}
+
+		testResultList = DataUtils.toItems(
+			Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList()),
+			true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 	}
 
@@ -111,10 +131,39 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 				} else {
 					contentBinding.pathogenTestCqValue.hideField(true);
 				}
+
+				if (PathogenTestType.PCR_RT_PCR == currentTestType && Disease.CORONAVIRUS == record.getTestedDisease()) {
+					getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
+				} else {
+					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
+				}
 			}
 		});
 
-		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
+		contentBinding.pathogenTestPcrTestSpecification.initializeSpinner(pcrTestSpecificationList);
+
+		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
+
+		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList, new ValueChangeListener() {
+
+			Disease currentDisease = record.getTestedDisease();
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+
+				if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
+					getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
+				} else {
+					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
+				}
+
+				if ((this.currentDisease != null && contentBinding.pathogenTestTestedDisease.getValue() != currentDisease)
+					|| (this.currentDisease == null)) {
+					updateDiseaseVariantsField(contentBinding);
+				}
+			}
+		});
+
 		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
 
 			@Override
@@ -150,6 +199,15 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
 			contentBinding.pathogenTestLab.setRequired(false);
 		}
+	}
+
+	private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
+		diseaseVariantList.clear();
+		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
+		contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);
+		contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
+		contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override
