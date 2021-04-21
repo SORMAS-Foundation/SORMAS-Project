@@ -243,42 +243,46 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 
 		ValueChangeListener continentValueListener = e -> {
-			ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
-			if (subcontinent.getValue() == null) {
+			if (continent.isVisible()) {
+				ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
+				if (subcontinent.getValue() == null) {
+					FieldHelper.updateItems(
+						country,
+						continentReferenceDto != null
+							? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+							: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+					country.setValue(null);
+				}
+				subcontinent.setValue(null);
 				FieldHelper.updateItems(
-					country,
+					subcontinent,
 					continentReferenceDto != null
-						? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-						: FacadeProvider.getCountryFacade().getAllActiveAsReference());
-				country.setValue(null);
+						? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
+						: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 			}
-			subcontinent.setValue(null);
-			FieldHelper.updateItems(
-				subcontinent,
-				continentReferenceDto != null
-					? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-					: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 		};
 
 		ValueChangeListener subContinentValueListener = e -> {
-			SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
+			if (subcontinent.isVisible()) {
+				SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
 
-			if (subcontinentReferenceDto != null) {
-				continent.removeValueChangeListener(continentValueListener);
-				continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
-				continent.addValueChangeListener(continentValueListener);
+				if (subcontinentReferenceDto != null) {
+					continent.removeValueChangeListener(continentValueListener);
+					continent.setValue(FacadeProvider.getContinentFacade().getBySubcontinent(subcontinentReferenceDto));
+					continent.addValueChangeListener(continentValueListener);
+				}
+
+				country.setValue(null);
+
+				ContinentReferenceDto continentValue = (ContinentReferenceDto) continent.getValue();
+				FieldHelper.updateItems(
+					country,
+					subcontinentReferenceDto != null
+						? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
+						: continentValue == null
+							? FacadeProvider.getCountryFacade().getAllActiveAsReference()
+							: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
 			}
-
-			country.setValue(null);
-
-			ContinentReferenceDto continentValue = (ContinentReferenceDto) continent.getValue();
-			FieldHelper.updateItems(
-				country,
-				subcontinentReferenceDto != null
-					? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
-					: continentValue == null
-						? FacadeProvider.getCountryFacade().getAllActiveAsReference()
-						: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
 		};
 
 		continent.addValueChangeListener(continentValueListener);
@@ -292,20 +296,28 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
 					if (countryContinent != null) {
 						continent.removeValueChangeListener(continentValueListener);
-						skipCountryValueChange = true;
-						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveByContinent(countryContinent.getUuid()));
-						skipCountryValueChange = false;
+						if (continent.isVisible()) {
+							skipCountryValueChange = true;
+							FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveByContinent(countryContinent.getUuid()));
+							skipCountryValueChange = false;
+						}
 						continent.setValue(countryContinent);
 						continent.addValueChangeListener(continentValueListener);
 					}
 					if (countrySubcontinent != null) {
 						subcontinent.removeValueChangeListener(subContinentValueListener);
-						skipCountryValueChange = true;
-						FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
-						skipCountryValueChange = false;
+						if (subcontinent.isVisible()) {
+							skipCountryValueChange = true;
+							if (countryContinent != null) {
+								FieldHelper.updateItems(
+									subcontinent,
+									FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+							}
+							FieldHelper
+								.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
+							skipCountryValueChange = false;
+						}
 						subcontinent.setValue(countrySubcontinent);
-						FieldHelper
-							.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
 						subcontinent.addValueChangeListener(subContinentValueListener);
 					}
 				}
