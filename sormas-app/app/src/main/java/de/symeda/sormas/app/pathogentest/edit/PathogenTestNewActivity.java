@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -130,7 +129,6 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 		}
 
 		final PathogenTest pathogenTestToSave = getStoredRootEntity();
-		DiseaseVariant currentDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 		final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
 
 		if (associatedCase != null) {
@@ -138,9 +136,10 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
 					&& pathogenTestToSave.getTestResultVerified() == true
-					&& newDiseaseVariant != caseDiseaseVariant && newDiseaseVariant != currentDiseaseVariant) {
+					&& newDiseaseVariant != null
+					&& newDiseaseVariant != caseDiseaseVariant) {
 
-				String heading = I18nProperties.getCaption(Captions.caseUpdateCaseWithNewDiseaseVariant);
+				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
 				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
 				int positiveButtonTextResId = R.string.yes;
 				int negativeButtonTextResId = R.string.no;

@@ -201,7 +201,7 @@ public class PathogenTestController {
 		};
 
 		Runnable caseDiseaseVariantCallback = () -> {
-			if (dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+			if (dto.getTestedDiseaseVariant()!= null && dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
 					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
 					&& dto.getTestResultVerified().booleanValue() == true) {
 				showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, dto.getTestedDiseaseVariant());
@@ -342,7 +342,7 @@ public class PathogenTestController {
 				if (confirmed) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caze);
+					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 				}
 			});
 

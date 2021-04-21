@@ -1378,6 +1378,7 @@ public interface Captions {
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
+	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
@@ -1592,7 +1593,6 @@ public interface Captions {
 	String Sample_otherLab = "Sample.otherLab";
 	String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	String Sample_pathogenTestResult = "Sample.pathogenTestResult";
-	String Sample_pcrTestSpecification = "Sample.pcrTestSpecification";
 	String Sample_received = "Sample.received";
 	String Sample_receivedDate = "Sample.receivedDate";
 	String Sample_referredToUuid = "Sample.referredToUuid";
