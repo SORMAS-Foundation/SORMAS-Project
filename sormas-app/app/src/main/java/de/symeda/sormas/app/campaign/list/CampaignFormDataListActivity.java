@@ -156,10 +156,8 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
         final CampaignFormDataCriteria criteria = model.getCriteria();
         final CampaignFormMetaDialog campaignFormMetaDialog = new CampaignFormMetaDialog(BaseActivity.getActiveActivity(), criteria.getCampaign());
-        campaignFormMetaDialog.setPositiveCallback(() -> {
-            CampaignFormDataNewActivity.startActivity(getContext(), criteria.getCampaign().getUuid(), campaignFormMetaDialog.getCampaignFormMeta().getUuid());
-        });
-        campaignFormMetaDialog.setPositiveCallback(() -> getActiveActivity().finish());
+        campaignFormMetaDialog.setLiveValidationDisabled(true);
+        campaignFormMetaDialog.setPositiveCallback(() -> CampaignFormDataNewActivity.startActivity(getContext(), criteria.getCampaign().getUuid(), campaignFormMetaDialog.getCampaignFormMeta().getUuid()));
         campaignFormMetaDialog.show();
     }
 

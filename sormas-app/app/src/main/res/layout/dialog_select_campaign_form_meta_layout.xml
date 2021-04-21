@@ -24,7 +24,8 @@
     tools:ignore="contentDescription">
 
     <data>
-
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
         <variable
             name="data"
             type="de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta" />
@@ -60,6 +61,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/campaignFormMeta"
+                    app:caption="@{I18nProperties.getCaption(Captions.CampaignFormData_campaignFormMeta)}"
                     style="@style/ControlSingleColumnStyle"
                     app:required="true"/>
             </LinearLayout>

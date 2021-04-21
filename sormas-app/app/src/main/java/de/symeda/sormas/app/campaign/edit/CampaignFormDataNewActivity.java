@@ -50,7 +50,6 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
     public static void startActivity(Context context, String campaignUUID, String campaignFormMetaUUID) {
         BaseEditActivity.startActivity(context, CampaignFormDataNewActivity.class,
                 BaseEditActivity.buildBundle(null).setCampaignUuid(campaignUUID).setCampaignFormMetaUuid(campaignFormMetaUUID));
-
     }
 
     @Override
@@ -60,7 +59,6 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
         campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryUuid(new Bundler(savedInstanceState).getCampaignFormMetaUuid());
     }
 
-
     @Override
     protected CampaignFormData queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
@@ -68,16 +66,17 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
 
     @Override
     protected CampaignFormData buildRootEntity() {
-        return DatabaseHelper.getCampaignFormDataDao().build();
+        CampaignFormData campaignFormData = DatabaseHelper.getCampaignFormDataDao().build();
+        return campaignFormData;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, CampaignFormData activityRootData) {
-
         activityRootData.setCampaign(campaign);
         activityRootData.setCampaignFormMeta(campaignFormMeta);
-
-        return CampaignFormDataNewFragment.newInstance(activityRootData);
+        CampaignFormDataNewFragment campaignFormDataNewFragment = CampaignFormDataNewFragment.newInstance(activityRootData);
+        campaignFormDataNewFragment.setLiveValidationDisabled(true);
+        return campaignFormDataNewFragment;
     }
 
     @Override
@@ -91,7 +90,7 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
         campaignFormDataToSave.setFormValues(campaignFormDataToSave.getFormValues());
 
         CampaignFormDataNewFragment activeFragment = (CampaignFormDataNewFragment) getActiveFragment();
-        activeFragment.setLiveValidationDisabled(false);
+        activeFragment.setLiveValidationDisabled(true);
 
         saveTask = new SavingAsyncTask(getRootView(), campaignFormDataToSave) {
 

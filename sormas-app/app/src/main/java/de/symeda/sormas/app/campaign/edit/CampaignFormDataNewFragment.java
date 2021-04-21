@@ -114,7 +114,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
     @Override
     protected void prepareFragmentData() {
-
+        record = getActivityRootData();
 
         initialCampaigns = DataUtils.toItems(DatabaseHelper.getCampaignDao().queryActiveForAll());
 

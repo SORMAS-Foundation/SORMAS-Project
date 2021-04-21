@@ -45,7 +45,7 @@ public class CampaignFormMetaDialog extends FormDialog {
                 R.layout.dialog_root_layout,
                 R.layout.dialog_select_campaign_form_meta_layout,
                 R.layout.dialog_root_two_button_panel_layout,
-                R.string.heading_previous_hospitalization,
+                R.string.heading_campaign_form_meta_select,
                 -1,
                 UiFieldAccessCheckers.forSensitiveData(campaign.isPseudonymized()));
 
@@ -61,13 +61,6 @@ public class CampaignFormMetaDialog extends FormDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         List<CampaignFormMeta> allFormsForCampaign = DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign);
         contentBinding.campaignFormMeta.initializeSpinner(DataUtils.toItems(allFormsForCampaign));
-    }
-
-    @Override
-    protected void onPositiveClick() {
-        setLiveValidationDisabled(true);
-        super.setCloseOnPositiveButtonClick(true);
-        super.onPositiveClick();
     }
 
     public CampaignFormMeta getCampaignFormMeta() {
