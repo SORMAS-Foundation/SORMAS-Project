@@ -44,7 +44,8 @@ public class SharedContactProcessor implements SharedDataProcessor<ContactDto, S
 	private SharedDataProcessorHelper dataProcessorHelper;
 
 	@Override
-	public ProcessedContactData processSharedData(SormasToSormasContactDto sharedContact) throws SormasToSormasValidationException {
+	public ProcessedContactData processSharedData(SormasToSormasContactDto sharedContact, ContactDto existingContact)
+		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = sharedContact.getPerson();
@@ -57,14 +58,14 @@ public class SharedContactProcessor implements SharedDataProcessor<ContactDto, S
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
 		contactValidationErrors.addAll(originInfoErrors);
 
-		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person);
+		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person, existingContact);
 		contactValidationErrors.addAll(contactDataErrors);
 
 		if (contactValidationErrors.hasError()) {
 			validationErrors.put(buildContactValidationGroupName(contact), contactValidationErrors);
 		}
 
-		if (samples != null) {
+		if (samples != null && samples.size() > 0) {
 			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
