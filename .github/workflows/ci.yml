@@ -49,7 +49,7 @@ jobs:
             REPO_REF="https://${user_name}:${token}@github.com/${GITHUB_REPOSITORY}.git"
             git config user.name "${user_name}"
             git config user.email "support.sormas@helpdesk.symeda.de"
-            git remote add origin "${REPO_REF}"
+            git remote add upstream "${REPO_REF}"
 
             rm -rf openapi
             mkdir openapi/
@@ -57,5 +57,5 @@ jobs:
 
             git add openapi
             git commit -m "[GitHub Actions] Update external visits API spec files"
-            git pull --rebase origin development
-            git push origin development
+            git pull --rebase upstream development
+            git push upstream development
