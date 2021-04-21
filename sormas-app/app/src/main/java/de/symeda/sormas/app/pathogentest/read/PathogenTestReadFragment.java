@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.pathogentest.read;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -31,20 +34,17 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestReadLayoutBinding;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenTestReadLayoutBinding, PathogenTest, PathogenTest> {
 
 	private PathogenTest record;
 
 	public static PathogenTestReadFragment newInstance(PathogenTest activityRootData) {
 		return newInstanceWithFieldCheckers(
-				PathogenTestReadFragment.class,
-				null,
-				activityRootData,
-				FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-				UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			PathogenTestReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	// Overrides
@@ -67,9 +67,9 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 		}
 
 		if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == record.getTestedDisease()) {
-			getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
+			getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
 		} else {
-			getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
+			getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
 		}
 
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.pathogenTestTestedDiseaseVariant)) {

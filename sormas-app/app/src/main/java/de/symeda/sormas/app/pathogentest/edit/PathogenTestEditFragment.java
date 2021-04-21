@@ -15,11 +15,14 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
-import android.view.View;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -45,172 +48,170 @@ import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenTestEditLayoutBinding, PathogenTest, PathogenTest> {
 
-    private PathogenTest record;
-    private Sample sample;
+	private PathogenTest record;
+	private Sample sample;
 
-    // Enum lists
+	// Enum lists
 
-    private List<Facility> labList;
-    private List<Item> testTypeList;
-    private List<Item> pcrTestSpecificationList;
-    private List<Item> diseaseList;
-    private List<Item> diseaseVariantList;
-    private List<Item> testResultList;
+	private List<Facility> labList;
+	private List<Item> testTypeList;
+	private List<Item> pcrTestSpecificationList;
+	private List<Item> diseaseList;
+	private List<Item> diseaseVariantList;
+	private List<Item> testResultList;
 
-    // Instance methods
+	// Instance methods
 
-    public static PathogenTestEditFragment newInstance(PathogenTest activityRootData) {
-        return newInstanceWithFieldCheckers(
-                PathogenTestEditFragment.class,
-                null,
-                activityRootData,
-                FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-                UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
-    }
+	public static PathogenTestEditFragment newInstance(PathogenTest activityRootData) {
+		return newInstanceWithFieldCheckers(
+			PathogenTestEditFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+	}
 
-    // Overrides
+	// Overrides
 
-    @Override
-    protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_pathogen_test_edit);
-    }
+	@Override
+	protected String getSubHeadingTitle() {
+		return getResources().getString(R.string.heading_pathogen_test_edit);
+	}
 
-    @Override
-    public PathogenTest getPrimaryData() {
-        return record;
-    }
+	@Override
+	public PathogenTest getPrimaryData() {
+		return record;
+	}
 
-    @Override
-    protected void prepareFragmentData() {
-        record = getActivityRootData();
-        sample = record.getSample();
-        testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
-        pcrTestSpecificationList = DataUtils.getEnumItems(PCRTestSpecification.class, true);
+	@Override
+	protected void prepareFragmentData() {
+		record = getActivityRootData();
+		sample = record.getSample();
+		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
+		pcrTestSpecificationList = DataUtils.getEnumItems(PCRTestSpecification.class, true);
 
-        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
-        diseaseList = DataUtils.toItems(diseases);
-        if (record.getTestedDisease() != null && !diseases.contains(record.getTestedDisease())) {
-            diseaseList.add(DataUtils.toItem(record.getTestedDisease()));
-        }
-        List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
-        diseaseVariantList = DataUtils.toItems(diseaseVariants);
-        if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
-            diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
-        }
+		List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
+		diseaseList = DataUtils.toItems(diseases);
+		if (record.getTestedDisease() != null && !diseases.contains(record.getTestedDisease())) {
+			diseaseList.add(DataUtils.toItem(record.getTestedDisease()));
+		}
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
+			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
+		}
 
-        testResultList = DataUtils.toItems(Arrays.stream(PathogenTestResultType.values())
-                .filter(type -> type != PathogenTestResultType.NOT_DONE)
-                .collect(Collectors.toList()), true);
-        labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
-    }
+		testResultList = DataUtils.toItems(
+			Arrays.stream(PathogenTestResultType.values()).filter(type -> type != PathogenTestResultType.NOT_DONE).collect(Collectors.toList()),
+			true);
+		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
+	}
 
-    @Override
-    public void onLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
-        contentBinding.setData(record);
-    }
+	@Override
+	public void onLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		contentBinding.setData(record);
+	}
 
-    @Override
-    public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
-        setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
+	@Override
+	public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
 
-        // Initialize ControlSpinnerFields
-        contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
+		// Initialize ControlSpinnerFields
+		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
 
-            @Override
-            public void onChange(ControlPropertyField field) {
-                PathogenTestType currentTestType = (PathogenTestType) field.getValue();
-                if ((PathogenTestType.PCR_RT_PCR == currentTestType
-                        && PathogenTestResultType.POSITIVE == contentBinding.pathogenTestTestResult.getValue())
-                        || PathogenTestType.CQ_VALUE_DETECTION == currentTestType) {
-                    contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.pathogenTestCqValue.hideField(true);
-                }
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestType currentTestType = (PathogenTestType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == currentTestType
+					&& PathogenTestResultType.POSITIVE == contentBinding.pathogenTestTestResult.getValue())
+					|| PathogenTestType.CQ_VALUE_DETECTION == currentTestType) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
 
-                if (PathogenTestType.PCR_RT_PCR == currentTestType && Disease.CORONAVIRUS == record.getTestedDisease()) {
-                    getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
-                }
-            }
-        });
+				if (PathogenTestType.PCR_RT_PCR == currentTestType && Disease.CORONAVIRUS == record.getTestedDisease()) {
+					getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
+				} else {
+					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
+				}
+			}
+		});
 
-        contentBinding.pathogenTestPcrTestSpecifications.initializeSpinner(pcrTestSpecificationList);
+		contentBinding.pathogenTestPcrTestSpecification.initializeSpinner(pcrTestSpecificationList);
 
-        contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
+		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
-        contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList,
-                new ValueChangeListener() {
-                    Disease currentDisease = record.getTestedDisease();
+		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList, new ValueChangeListener() {
 
-                    @Override
-                    public void onChange(ControlPropertyField field) {
+			Disease currentDisease = record.getTestedDisease();
 
-                        if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
-                            getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
-                        } else {
-                            getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
-                        }
+			@Override
+			public void onChange(ControlPropertyField field) {
 
-                        if ((this.currentDisease != null && contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) || (this.currentDisease == null)) {
-                            updateDiseaseVariantsField(contentBinding);
-                        }
-                    }
-                });
+				if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
+					getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
+				} else {
+					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
+				}
 
-        contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
+				if ((this.currentDisease != null && contentBinding.pathogenTestTestedDisease.getValue() != currentDisease)
+					|| (this.currentDisease == null)) {
+					updateDiseaseVariantsField(contentBinding);
+				}
+			}
+		});
 
-            @Override
-            public void onChange(ControlPropertyField field) {
-                PathogenTestResultType currentPathogenTestResult = (PathogenTestResultType) field.getValue();
-                if ((PathogenTestType.PCR_RT_PCR == contentBinding.pathogenTestTestType.getValue()
-                        && PathogenTestResultType.POSITIVE == currentPathogenTestResult)
-                        || PathogenTestType.CQ_VALUE_DETECTION == contentBinding.pathogenTestTestType.getValue()) {
-                    contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.pathogenTestCqValue.hideField(true);
-                }
-            }
-        });
+		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
 
-        contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestResultType currentPathogenTestResult = (PathogenTestResultType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == contentBinding.pathogenTestTestType.getValue()
+					&& PathogenTestResultType.POSITIVE == currentPathogenTestResult)
+					|| PathogenTestType.CQ_VALUE_DETECTION == contentBinding.pathogenTestTestType.getValue()) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
+			}
+		});
 
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Facility laboratory = (Facility) field.getValue();
-                if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-                    contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.pathogenTestLabDetails.hideField(true);
-                }
-            }
-        });
+		contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				Facility laboratory = (Facility) field.getValue();
+				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+					contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestLabDetails.hideField(true);
+				}
+			}
+		});
 
 //        // Initialize ControlDateFields
-        contentBinding.pathogenTestReportDate.initializeDateField(getFragmentManager());
-        contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
+		contentBinding.pathogenTestReportDate.initializeDateField(getFragmentManager());
+		contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
 
-        if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
-            contentBinding.pathogenTestLab.setRequired(false);
-        }
-    }
+		if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+			contentBinding.pathogenTestLab.setRequired(false);
+		}
+	}
 
-    private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
-        List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
-        diseaseVariantList.clear();
-        diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
-        contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);
-        contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
-        contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
-    }
+	private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getTestedDisease());
+		diseaseVariantList.clear();
+		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
+		contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);
+		contentBinding.pathogenTestTestedDiseaseVariant.setValue(null);
+		contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+	}
 
-    @Override
-    public int getEditLayout() {
-        return R.layout.fragment_pathogen_test_edit_layout;
-    }
+	@Override
+	public int getEditLayout() {
+		return R.layout.fragment_pathogen_test_edit_layout;
+	}
 }
