@@ -1,0 +1,1033 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "SORMAS external visits journal API",
+    "description" : "The purpose of this API is to enable communication between SORMAS and other symptom journals. Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. For technical details please contact the dev team on gitter. Authentication is done using basic auth, with the user and password.",
+    "version" : "1.41.1"
+  },
+  "servers" : [ {
+    "url" : "/sormas-rest"
+  } ],
+  "paths" : {
+    "/visits-external/followUpEndDates/{since}" : {
+      "get" : {
+        "summary" : "Get follow up end dates",
+        "description" : "Get latest follow up end date assigned to the specified person. Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! Only returns values changed after {since}, which is interpreted as a UNIX timestamp.",
+        "operationId" : "getLatestFollowUpEndDates",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "List of personUuids and their latest follow up end dates as UNIX timestamps.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : [ {
+                    "personUuid" : "Q56VFD-G3TXKT-R2DBIW-FTWIKAMI",
+                    "latestFollowUpEndDate" : 1599602400000
+                  }, {
+                    "personUuid" : "TEYCIW-BHWHMH-MH2QIW-KBP72JMU",
+                    "latestFollowUpEndDate" : 1593727200000
+                  } ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/person/{personUuid}" : {
+      "get" : {
+        "summary" : "Get person information",
+        "description" : "Get some personal data for a specific person",
+        "operationId" : "getPersonByUuid",
+        "parameters" : [ {
+          "name" : "personUuid",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "A selection of personal data, including first and last name, e-mail, phone number(s) and birth date if availablefor that person. Note that Null value fields may not be returned. If you get an unexpected result, it might help to verifyif the personUuid is existing in your system via the isValid controller.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : "[  {    \"pseudonymized\": false,    \"firstName\": \"Tim\",    \"lastName\": \"Tahler\",    \"emailAddress\": \"test@test.de\"    \"phone\": \"0123456789\",    \"birthdateDD\": 6,    \"birthdateMM\": 4,    \"birthdateYYYY\": 1974,    \"sex\": \"MALE\",    \"uuid\": \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\",    \"latestFollowUpEndDate\": 1601416800000,  }]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/version" : {
+      "get" : {
+        "summary" : "Get API version",
+        "operationId" : "getVersion",
+        "responses" : {
+          "default" : {
+            "description" : "The minimal version needed for compatibility with the external ReST API of SORMAS.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : "1.37.0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/person/{personUuid}/isValid" : {
+      "get" : {
+        "summary" : "Check person validity",
+        "description" : "Check if a the Uuid given as parameter exists in SORMAS.",
+        "operationId" : "isValidPersonUuid",
+        "parameters" : [ {
+          "name" : "personUuid",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "true a person with the given Uuid exists in SORMAS, false otherwise.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external" : {
+      "post" : {
+        "summary" : "Save visits",
+        "description" : "Upload visits with all symptom and disease related data to SORMAS.",
+        "operationId" : "postExternalVisits",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/ExternalVisitDto"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string",
+                    "enum" : [ "OK", "TOO_OLD", "ERROR" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/person/{personUuid}/status" : {
+      "post" : {
+        "summary" : "Save symptom journal status",
+        "operationId" : "postSymptomJournalStatus",
+        "parameters" : [ {
+          "name" : "personUuid",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "status may be one of the following:<br/>UNREGISTERED: User has not yet sent any state<br/>REGISTERED: After successful registration in SymptomJournal<br/>ACCEPTED: User has accepted a confirmation<br/>REJECTED: User has rejected (declined) a confirmation<br/>DELETED: User was deleted",
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "string",
+                "example" : "[\n  {\n    \"status\": \"REGISTERED\",\n    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ\n  }\n]"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "true if the status was set succesfully, false otherwise.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "PersonFollowUpEndDto" : {
+        "type" : "object",
+        "properties" : {
+          "personUuid" : {
+            "type" : "string"
+          },
+          "latestFollowUpEndDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "JournalPersonDto" : {
+        "type" : "object",
+        "properties" : {
+          "uuid" : {
+            "type" : "string"
+          },
+          "pseudonymized" : {
+            "type" : "boolean"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          },
+          "emailAddress" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "birthdateDD" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "birthdateMM" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "birthdateYYYY" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sex" : {
+            "type" : "string",
+            "enum" : [ "Male", "Female", "Other", "Unknown" ]
+          },
+          "latestFollowUpEndDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "followUpStatus" : {
+            "type" : "string",
+            "enum" : [ "Under follow-up", "Completed follow-up", "Canceled follow-up", "Lost follow-up", "No follow-up" ]
+          }
+        }
+      },
+      "ExternalVisitDto" : {
+        "type" : "object",
+        "properties" : {
+          "personUuid" : {
+            "type" : "string"
+          },
+          "disease" : {
+            "type" : "string",
+            "enum" : [ "Acute Flaccid Paralysis", "Cholera", "Congenital Rubella", "Meningitis (CSM)", "Dengue Fever", "Ebola Virus Disease", "Guinea Worm", "Lassa", "Measles", "Monkeypox", "Influenza (New subtype)", "Plague", "Poliomyelitis", "Unspecified VHF", "West Nile Fever", "Yellow Fever", "Human Rabies", "Anthrax", "COVID-19", "Pneumonia", "Malaria", "Typhoid Fever", "Acute Viral Hepatitis", "Non-Neonatal Tetanus", "HIV", "Schistosomiasis", "Soil-Transmitted Helminths", "Trypanosomiasis", "Diarrhea w/ Dehydration (< 5)", "Diarrhea w/ Blood (Shigella)", "Snake Bite", "Rubella", "Tuberculosis", "Leprosy", "Lymphatic Filariasis", "Buruli Ulcer", "Pertussis", "Neonatal Tetanus", "Onchocerciasis", "Diphteria", "Trachoma", "Yaws and Endemic Syphilis", "Maternal Deaths", "Perinatal Deaths", "Influenza A", "Influenza B", "H.metapneumovirus", "Respiratory syncytial virus (RSV)", "Parainfluenza (1-4)", "Adenovirus", "Rhinovirus", "Enterovirus", "M.pneumoniae", "C.pneumoniae", "Other Epidemic Disease", "Not Yet Defined" ]
+          },
+          "visitDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "visitStatus" : {
+            "type" : "string",
+            "enum" : [ "Unavailable", "Available, but uncooperative", "Available and cooperative" ]
+          },
+          "visitRemarks" : {
+            "type" : "string"
+          },
+          "symptoms" : {
+            "$ref" : "#/components/schemas/SymptomsDto"
+          },
+          "reportLat" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "reportLon" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "reportLatLonAccuracy" : {
+            "type" : "number",
+            "format" : "float"
+          }
+        }
+      },
+      "SymptomsDto" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "uuid" : {
+            "pattern" : "^[0-9a-zA-Z-]*$",
+            "type" : "string"
+          },
+          "pseudonymized" : {
+            "type" : "boolean"
+          },
+          "abdominalPain" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "anorexiaAppetiteLoss" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "backache" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bedridden" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "blackeningDeathOfTissue" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bleedingVagina" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bloodInStool" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bloodPressureDiastolic" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bloodPressureSystolic" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bloodUrine" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bloodyBlackStool" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "buboesGroinArmpitNeck" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bulgingFontanelle" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "chestPain" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "chillsSweats" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "conjunctivitis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "cough" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "coughWithSputum" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "coughWithHeamoptysis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "coughingBlood" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "darkUrine" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "dehydration" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "diarrhea" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "difficultyBreathing" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "digestedBloodVomit" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "eyePainLightSensitive" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "eyesBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fatigueWeakness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fever" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fluidInLungCavity" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "glasgowComaScale" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "gumsBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "headache" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hearingloss" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "heartRate" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "height" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "hiccups" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "injectionSiteBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "jaundice" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "jaundiceWithin24HoursOfBirth" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "jointPain" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "kopliksSpots" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesions" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsAllOverBody" : {
+            "type" : "boolean"
+          },
+          "lesionsArms" : {
+            "type" : "boolean"
+          },
+          "lesionsDeepProfound" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsFace" : {
+            "type" : "boolean"
+          },
+          "lesionsGenitals" : {
+            "type" : "boolean"
+          },
+          "lesionsLegs" : {
+            "type" : "boolean"
+          },
+          "lesionsOnsetDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "lesionsPalmsHands" : {
+            "type" : "boolean"
+          },
+          "lesionsResembleImg1" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsResembleImg2" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsResembleImg3" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsResembleImg4" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsSameSize" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsSameState" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsSolesFeet" : {
+            "type" : "boolean"
+          },
+          "lesionsThatItch" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lesionsThorax" : {
+            "type" : "boolean"
+          },
+          "lossSkinTurgor" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lymphadenopathy" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lymphadenopathyAxillary" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lymphadenopathyCervical" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lymphadenopathyInguinal" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "malaise" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "midUpperArmCircumference" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "musclePain" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "nausea" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "neckStiffness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "noseBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "oedemaFaceNeck" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "oedemaLowerExtremity" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "onsetDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "onsetSymptom" : {
+            "type" : "string"
+          },
+          "oralUlcers" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "otherHemorrhagicSymptoms" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "otherHemorrhagicSymptomsText" : {
+            "type" : "string"
+          },
+          "otherNonHemorrhagicSymptoms" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "otherNonHemorrhagicSymptomsText" : {
+            "type" : "string"
+          },
+          "otitisMedia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "painfulLymphadenitis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "palpableLiver" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "palpableSpleen" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "patientIllLocation" : {
+            "type" : "string"
+          },
+          "pharyngealErythema" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "pharyngealExudate" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "rapidBreathing" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "redBloodVomit" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "refusalFeedorDrink" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "respiratoryRate" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "runnyNose" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "sidePain" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "skinBruising" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "skinRash" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "soreThroat" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "stomachBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "sunkenEyesFontanelle" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "swollenGlands" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "symptomatic" : {
+            "type" : "boolean"
+          },
+          "symptomsComments" : {
+            "type" : "string"
+          },
+          "temperature" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "temperatureSource" : {
+            "type" : "string",
+            "enum" : [ "axillary", "oral", "rectal", "Non-contact (infrared)" ]
+          },
+          "throbocytopenia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "tremor" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bilateralCataracts" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "unilateralCataracts" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "congenitalGlaucoma" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "pigmentaryRetinopathy" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "purpuricRash" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "microcephaly" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "developmentalDelay" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "splenomegaly" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "meningoencephalitis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "radiolucentBoneDisease" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "congenitalHeartDisease" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "congenitalHeartDiseaseType" : {
+            "type" : "string",
+            "enum" : [ "Patent ductus arteriosus (PDA)", "Peripheral pulmonary stenosis (PPS)", "Ventricular septal defect (VSD)", "Other heart defect" ]
+          },
+          "congenitalHeartDiseaseDetails" : {
+            "type" : "string"
+          },
+          "unexplainedBleeding" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "vomiting" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hydrophobia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "opisthotonus" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "anxietyStates" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "delirium" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "uproariousness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "paresthesiaAroundWound" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "excessSalivation" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "insomnia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "paralysis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "excitation" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "dysphagia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "aerophobia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hyperactivity" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "paresis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "agitation" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "ascendingFlaccidParalysis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "erraticBehaviour" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "coma" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "convulsion" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fluidInLungCavityAuscultation" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fluidInLungCavityXray" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "abnormalLungXrayFindings" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "conjunctivalInjection" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "acuteRespiratoryDistressSyndrome" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "pneumoniaClinicalOrRadiologic" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lossOfTaste" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "lossOfSmell" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "wheezing" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "skinUlcers" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "inabilityToWalk" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "inDrawingOfChestWall" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "respiratoryDiseaseVentilation" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "feelingIll" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fastHeartRate" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "oxygenSaturationLower94" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "weight" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "alteredConsciousness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "confusedDisoriented" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hemorrhagicSyndrome" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hyperglycemia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "hypoglycemia" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "meningealSigns" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "otherComplications" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "otherComplicationsText" : {
+            "type" : "string"
+          },
+          "seizures" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "sepsis" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "shock" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "feverishFeeling" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "weakness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "fatigue" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "coughWithoutSputum" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "breathlessness" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "chestPressure" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "blueLips" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "bloodCirculationProblems" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "palpitations" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "dizzinessStandingUp" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "highOrLowBloodPressure" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "urinaryRetention" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          },
+          "shivering" : {
+            "type" : "string",
+            "enum" : [ "Yes", "No", "Unknown" ]
+          }
+        }
+      },
+      "PersonSymptomJournalStatusDto" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "Unregistered", "Registered", "Accepted", "Rejected", "Deleted" ]
+          },
+          "statusDateTime" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
