@@ -54,5 +54,5 @@ jobs:
 
             git add openapi
             git commit -m "[GitHub Actions] Update external visits API spec files"
-            git pull --rebase development
-            git push development
+            git pull --rebase
+            git push
