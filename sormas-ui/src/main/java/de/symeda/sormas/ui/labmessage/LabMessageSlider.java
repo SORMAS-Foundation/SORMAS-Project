@@ -7,9 +7,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
@@ -21,8 +19,10 @@ public class LabMessageSlider {
 
 	private final List<LabMessageDto> labMessages;
 	private final LabMessageForm form;
-	private final Button leftButton;
-	private final Button rightButton;
+	private final Button topLeftButton;
+	private final Button topRightButton;
+	private final Button bottomLeftButton;
+	private final Button bottomRightButton;
 	private int index;
 
 	public LabMessageSlider(List<LabMessageDto> labMessages) {
@@ -32,23 +32,33 @@ public class LabMessageSlider {
 
 		this.index = 0;
 		this.labMessages = labMessages;
+
+		this.topLeftButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_LEFT, (clickEvent) -> this.previous());
+		this.topRightButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_RIGHT, (clickEvent) -> this.next());
+
+		HorizontalLayout topNavigator = new HorizontalLayout();
+		topNavigator.setStyleName(CssStyles.FLOAT_RIGHT);
+		topNavigator.addComponent(topLeftButton);
+		topNavigator.addComponent(topRightButton);
+
+		layout.addComponent(topNavigator);
+
 		LabMessageForm form = new LabMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
-		this.form = form;
-
-		layout.addComponent(this.form);
 		form.setValue(labMessages.get(index));
+		this.form = form;
+		layout.addComponent(this.form);
 
-		this.leftButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_LEFT, (clickEvent) -> this.previous());
-		this.rightButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_RIGHT, (clickEvent) -> this.next());
+		this.bottomLeftButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_LEFT, (clickEvent) -> this.previous());
+		this.bottomRightButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_RIGHT, (clickEvent) -> this.next());
+		HorizontalLayout bottomNavigator = new HorizontalLayout();
+		bottomNavigator.setStyleName(CssStyles.FLOAT_RIGHT);
+		bottomNavigator.addComponent(bottomLeftButton);
+		bottomNavigator.addComponent(bottomRightButton);
+
+		layout.addComponent(bottomNavigator);
+
 		this.enableButtons();
-
-		HorizontalLayout navigator = new HorizontalLayout();
-		navigator.setStyleName(CssStyles.FLOAT_RIGHT);
-		navigator.addComponent(leftButton);
-		navigator.addComponent(rightButton);
-
-		layout.addComponent(navigator);
 	}
 
 	private void next() {
@@ -64,8 +74,11 @@ public class LabMessageSlider {
 	}
 
 	private void enableButtons() {
-		this.rightButton.setEnabled(this.index < this.labMessages.size() - 1);
-		this.leftButton.setEnabled(this.index > 0);
+		this.topRightButton.setEnabled(this.index < this.labMessages.size() - 1);
+		this.topLeftButton.setEnabled(this.index > 0);
+
+		this.bottomRightButton.setEnabled(this.index < this.labMessages.size() - 1);
+		this.bottomLeftButton.setEnabled(this.index > 0);
 	}
 
 }
