@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.campaign.edit;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -40,9 +38,7 @@ import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -72,34 +68,28 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
         final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
 
         final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
+        record.setFormValues(new ArrayList<>());
+
         final List<CampaignFormDataEntry> formValues = record.getFormValues();
-        final Map<String, String> formValuesMap = new HashMap<>();
-        formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue().toString()));
 
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
 
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
-                String value = formValuesMap.get(campaignFormElement.getId());
-                if (value != null) {
-                    ControlPropertyField dynamicField = null;
-                    if (type == CampaignFormElementType.YES_NO) {
-                        dynamicField = createControlCheckBoxField(campaignFormElement, requireContext());
-                        ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
-                    } else {
-                        dynamicField = createControlTextEditField(campaignFormElement, requireContext());
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
-                    }
-                    dynamicField.setShowCaption(true);
-                    dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                    dynamicField.addValueChangedListener(field -> {
-                        final CampaignFormDataEntry campaignFormDataEntry = getCampaignFormDataEntry(formValues, campaignFormElement);
-                        campaignFormDataEntry.setValue(field.getValue());
-                    });
+                ControlPropertyField dynamicField;
+                if (type == CampaignFormElementType.YES_NO) {
+                    dynamicField = createControlCheckBoxField(campaignFormElement, requireContext());
                 } else {
-                    Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext());
                 }
+                dynamicField.setShowCaption(true);
+                dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                dynamicField.addValueChangedListener(field -> {
+                    final CampaignFormDataEntry campaignFormDataEntry = getCampaignFormDataEntry(formValues, campaignFormElement);
+                    campaignFormDataEntry.setValue(field.getValue());
+                });
+                formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), null));
             } else if (type == CampaignFormElementType.SECTION) {
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {
@@ -125,14 +115,13 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
     @Override
     protected void prepareFragmentData() {
 
-        record = getActivityRootData();
 
         initialCampaigns = DataUtils.toItems(DatabaseHelper.getCampaignDao().queryActiveForAll());
 
         initialAreas = InfrastructureDaoHelper.loadAreas();
         initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
-        initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
-        initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
+        initialDistricts = InfrastructureDaoHelper.loadAllDistricts();
+        initialCommunities = InfrastructureDaoHelper.loadAllCommunities();
     }
 
     @Override

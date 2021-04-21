@@ -149,6 +149,10 @@ public final class InfrastructureDaoHelper {
 		return toItems(region != null ? DatabaseHelper.getDistrictDao().getByRegion(region) : new ArrayList<>(), true);
 	}
 
+	public static List<Item> loadAllCommunities() {
+		return toItems(DatabaseHelper.getCommunityDao().queryActiveForAll());
+	}
+
 	public static List<Item> loadCommunities(District district) {
 		return toItems(district != null ? DatabaseHelper.getCommunityDao().getByDistrict(district) : new ArrayList<>(), true);
 	}

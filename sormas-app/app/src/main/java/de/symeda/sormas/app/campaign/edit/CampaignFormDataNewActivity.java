@@ -20,11 +20,16 @@ package de.symeda.sormas.app.campaign.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -32,16 +37,29 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormData> {
 
     private AsyncTask saveTask;
+    private Campaign campaign;
+    private CampaignFormMeta campaignFormMeta;
 
-    public static void startActivity(Context context) {
-        BaseEditActivity.startActivity(context, CampaignFormDataNewActivity.class, BaseEditActivity.buildBundle(null));
+    public static void startActivity(Context context, String campaignUUID, String campaignFormMetaUUID) {
+        BaseEditActivity.startActivity(context, CampaignFormDataNewActivity.class,
+                BaseEditActivity.buildBundle(null).setCampaignUuid(campaignUUID).setCampaignFormMetaUuid(campaignFormMetaUUID));
+
     }
+
+    @Override
+    public void onCreateInner(@Nullable Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        campaign = DatabaseHelper.getCampaignDao().queryUuid(new Bundler(savedInstanceState).getCampaignUuid());
+        campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryUuid(new Bundler(savedInstanceState).getCampaignFormMetaUuid());
+    }
+
 
     @Override
     protected CampaignFormData queryRootEntity(String recordUuid) {
@@ -55,6 +73,10 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, CampaignFormData activityRootData) {
+
+        activityRootData.setCampaign(campaign);
+        activityRootData.setCampaignFormMeta(campaignFormMeta);
+
         return CampaignFormDataNewFragment.newInstance(activityRootData);
     }
 
