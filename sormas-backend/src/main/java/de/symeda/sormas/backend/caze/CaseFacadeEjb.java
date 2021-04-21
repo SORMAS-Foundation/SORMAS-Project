@@ -1918,8 +1918,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					return;
 				}
 				// calculate classification
-				List<PathogenTestDto> pathogenTestDtos =
-						pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
+				List<PathogenTestDto> pathogenTestDtos = pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
 				CaseDataDto newCaseDto = toDto(associatedCase);
 
 				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
@@ -2354,7 +2353,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		} else if (existingCase != null
 			&& CaseOutcome.DECEASED == newCase.getOutcome()
-			&& newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
+			&& (newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
+				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
 			&& (newCase.getPerson().getDeathDate() == null
 				? newCase.getOutcomeDate() != null
 				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {

@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.pathogentest.read;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -40,11 +43,11 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 
 	public static PathogenTestReadFragment newInstance(PathogenTest activityRootData) {
 		return newInstanceWithFieldCheckers(
-				PathogenTestReadFragment.class,
-				null,
-				activityRootData,
-				FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-				UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			PathogenTestReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	// Overrides

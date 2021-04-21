@@ -83,4 +83,6 @@ public interface PersonFacade {
 	boolean doesExternalTokenExist(String externalToken, String personUuid);
 
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
+
+	boolean isSharedWithoutOwnership(String uuid);
 }
