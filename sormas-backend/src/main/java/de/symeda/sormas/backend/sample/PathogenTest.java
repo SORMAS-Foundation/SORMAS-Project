@@ -119,8 +119,8 @@ public class PathogenTest extends CoreAdo {
 		this.testedDiseaseDetails = testedDiseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = true)
+	@ManyToOne()
+	@JoinColumn()
 	public DiseaseVariant getTestedDiseaseVariant() {
 		return testedDiseaseVariant;
 	}

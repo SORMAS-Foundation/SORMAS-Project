@@ -487,7 +487,6 @@ public interface Captions {
 	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
-	String caseUpdateCaseWithNewDiseaseVariant = "caseUpdateCaseWithNewDiseaseVariant";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";

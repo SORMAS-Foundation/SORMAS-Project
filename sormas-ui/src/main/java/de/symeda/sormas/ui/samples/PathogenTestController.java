@@ -147,7 +147,7 @@ public class PathogenTestController {
 	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariantReferenceDto diseaseVariantReferenceDto) {
 
 		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.caseUpdateCaseWithNewDiseaseVariant),
+			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
 			new Label(I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant)),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
