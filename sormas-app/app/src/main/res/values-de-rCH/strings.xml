@@ -265,7 +265,7 @@
     <string name="heading_app_update_required">App-Update erforderlich</string>
     <string name="heading_burial">Bestattung</string>
     <string name="heading_burials_visited">Besuchte Bestattungen</string>
-    <string name="heading_campaigns_list">Campaign Data</string>
+    <string name="heading_campaigns_list">Kampagnendaten</string>
     <string name="heading_case_disease_changed">Fall-Krankheit hat sich geändert</string>
     <string name="heading_case_edit">Fall bearbeiten</string>
     <string name="heading_case_new">Neuer Fall</string>
