@@ -133,14 +133,14 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
                 }
 
                 if (PathogenTestType.PCR_RT_PCR == currentTestType && Disease.CORONAVIRUS == record.getTestedDisease()) {
-                    getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
+                    getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
                 } else {
-                    getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
+                    getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
                 }
             }
         });
 
-        contentBinding.pathogenTestPcrTestSpecifications.initializeSpinner(pcrTestSpecificationList);
+        contentBinding.pathogenTestPcrTestSpecification.initializeSpinner(pcrTestSpecificationList);
 
         contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
@@ -152,9 +152,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
                     public void onChange(ControlPropertyField field) {
 
                         if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
-                            getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
+                            getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
                         } else {
-                            getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
+                            getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
                         }
 
                         if ((this.currentDisease != null && contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) || (this.currentDisease == null)) {

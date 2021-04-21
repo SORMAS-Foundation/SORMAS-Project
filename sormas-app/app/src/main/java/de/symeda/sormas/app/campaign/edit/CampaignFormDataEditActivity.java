@@ -21,6 +21,11 @@ package de.symeda.sormas.app.campaign.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -29,11 +34,13 @@ import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormData> {
@@ -67,8 +74,23 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
             return; // don't save multiple times
         }
 
-        CampaignFormData campaignFormDataToSave = getStoredRootEntity();
-        campaignFormDataToSave.setFormValues(campaignFormDataToSave.getFormValues());
+        final CampaignFormData campaignFormDataToSave = getStoredRootEntity();
+
+        try {
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
+        final List<CampaignFormDataEntry> formValues = campaignFormDataToSave.getFormValues();
+        final List<CampaignFormDataEntry> filledFormValues = new ArrayList<>();
+        formValues.forEach(campaignFormDataEntry -> {
+            if (campaignFormDataEntry.getId() != null && campaignFormDataEntry.getValue() != null) {
+                filledFormValues.add(campaignFormDataEntry);
+            }
+        });
+        campaignFormDataToSave.setFormValues(filledFormValues);
 
         saveTask = new SavingAsyncTask(getRootView(), campaignFormDataToSave) {
 

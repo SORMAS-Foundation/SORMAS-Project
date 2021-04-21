@@ -24,6 +24,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -33,12 +38,14 @@ import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormData> {
@@ -86,8 +93,23 @@ public class CampaignFormDataNewActivity extends BaseEditActivity<CampaignFormDa
             return; // don't save multiple times
         }
 
-        CampaignFormData campaignFormDataToSave = getStoredRootEntity();
-        campaignFormDataToSave.setFormValues(campaignFormDataToSave.getFormValues());
+        final CampaignFormData campaignFormDataToSave = getStoredRootEntity();
+
+        try {
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
+        final List<CampaignFormDataEntry> formValues = campaignFormDataToSave.getFormValues();
+        final List<CampaignFormDataEntry> filledFormValues = new ArrayList<>();
+        formValues.forEach(campaignFormDataEntry -> {
+            if (campaignFormDataEntry.getId() != null && campaignFormDataEntry.getValue() != null) {
+                filledFormValues.add(campaignFormDataEntry);
+            }
+        });
+        campaignFormDataToSave.setFormValues(filledFormValues);
 
         CampaignFormDataNewFragment activeFragment = (CampaignFormDataNewFragment) getActiveFragment();
         activeFragment.setLiveValidationDisabled(true);

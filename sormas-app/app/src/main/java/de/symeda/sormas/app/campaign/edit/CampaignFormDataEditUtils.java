@@ -20,86 +20,43 @@ package de.symeda.sormas.app.campaign.edit;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
-import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
-import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
 public class CampaignFormDataEditUtils {
 
     private CampaignFormDataEditUtils(){
     }
 
-    // todo : use this method for both edit and new - for new the campaign form meta needs to be chosen with a popup
-    public static void createDynamicFields(View view, CampaignFormData record, Context context) {
-        final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
-
-        final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
-        final List<CampaignFormDataEntry> formValues = record.getFormValues();
-        final Map<String, String> formValuesMap = new HashMap<>();
-        formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), campaignFormDataEntry.getValue().toString()));
-
-        for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
-            CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
-
-            if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
-                String value = formValuesMap.get(campaignFormElement.getId());
-                if (value != null) {
-                    ControlPropertyField dynamicField = null;
-                    if (type == CampaignFormElementType.YES_NO) {
-                        dynamicField = createControlCheckBoxField(campaignFormElement, context);
-                        ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
-                    } else {
-                        dynamicField = createControlTextEditField(campaignFormElement, context);
-                        ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
-                    }
-                    dynamicField.setShowCaption(true);
-                    dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                    dynamicField.addValueChangedListener(field -> {
-                        final CampaignFormDataEntry campaignFormDataEntry = getCampaignFormDataEntry(formValues, campaignFormElement);
-                        campaignFormDataEntry.setValue(field.getValue());
-                    });
-                } else {
-                    Log.e(CampaignFormDataEditUtils.class.getName(), "No form value for element id : " + campaignFormElement.getId());
-                }
-            } else if (type == CampaignFormElementType.SECTION) {
-                dynamicLayout.addView(new ImageView(context, null, R.style.FullHorizontalDividerStyle));
-            } else if (type == CampaignFormElementType.LABEL) {
-                TextView textView = new TextView(context);
-                TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
-                dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            }
+    public static void setVisibilityDependency(ControlPropertyField field, String[] dependingOnValues, Object dependingOnFieldValue) {
+        Object parsedDependingOnFieldValue = dependingOnFieldValue instanceof Boolean ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name() : dependingOnFieldValue;
+        if (!Arrays.asList(dependingOnValues).contains(parsedDependingOnFieldValue)) {
+            field.setVisibility(View.INVISIBLE);
+        } else {
+            field.setVisibility(View.VISIBLE);
         }
     }
 
-    public static CampaignFormDataEntry getCampaignFormDataEntry(List<CampaignFormDataEntry> formValues, CampaignFormElement campaignFormElement) {
+    public static CampaignFormDataEntry getOrCreateCampaignFormDataEntry(List<CampaignFormDataEntry> formValues, CampaignFormElement campaignFormElement) {
         for (CampaignFormDataEntry campaignFormDataEntry : formValues) {
             if (campaignFormDataEntry.getId().equals(campaignFormElement.getId())) {
                 return campaignFormDataEntry;
             }
         }
-        Log.e(CampaignFormDataEditUtils.class.getName(), "No form value for element id : " + campaignFormElement.getId());
-        throw new RuntimeException("No form value for element id : " + campaignFormElement.getId());
+        final CampaignFormDataEntry newCampaignFomDataEntry = new CampaignFormDataEntry(campaignFormElement.getId(), null);
+        formValues.add(newCampaignFomDataEntry);
+        return newCampaignFomDataEntry;
     }
 
     public static ControlTextEditField createControlTextEditField(CampaignFormElement campaignFormElement, Context context) {

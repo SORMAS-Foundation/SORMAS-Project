@@ -66,4 +66,11 @@ public class CampaignFormMetaDialog extends FormDialog {
     public CampaignFormMeta getCampaignFormMeta() {
         return (CampaignFormMeta) contentBinding.campaignFormMeta.getValue();
     }
+
+    @Override
+    protected void onPositiveClick() {
+        setLiveValidationDisabled(true);
+        super.setCloseOnPositiveButtonClick(true);
+        super.onPositiveClick();
+    }
 }

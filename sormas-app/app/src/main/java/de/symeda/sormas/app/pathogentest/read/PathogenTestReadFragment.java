@@ -67,9 +67,9 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 		}
 
 		if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == record.getTestedDisease()) {
-			getContentBinding().pathogenTestPcrTestSpecifications.setVisibility(View.VISIBLE);
+			getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
 		} else {
-			getContentBinding().pathogenTestPcrTestSpecifications.hideField(false);
+			getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
 		}
 
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.pathogenTestTestedDiseaseVariant)) {

@@ -21,7 +21,6 @@ package de.symeda.sormas.app.campaign.read;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,18 +72,16 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                 String value = formValuesMap.get(campaignFormElement.getId());
+                ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement);
+                dynamicField.setShowCaption(true);
                 if (value != null) {
-                    ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement);
-                    dynamicField.setShowCaption(true);
                     if (type == CampaignFormElementType.YES_NO) {
                         ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
                     } else {
                         ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null, null);
                     }
-                    dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                } else {
-                    Log.e(getClass().getName(), "No form value for element id : " + campaignFormElement.getId());
                 }
+                dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             } else if (type == CampaignFormElementType.SECTION) {
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {

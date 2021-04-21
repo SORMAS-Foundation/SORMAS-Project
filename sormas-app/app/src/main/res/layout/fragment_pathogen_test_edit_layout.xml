@@ -66,7 +66,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/pathogenTest_pcrTestSpecifications"
+                    android:id="@+id/pathogenTest_pcrTestSpecification"
                     app:value="@={data.pcrTestSpecification}"
                     style="@style/ControlSingleColumnStyle" />
 
