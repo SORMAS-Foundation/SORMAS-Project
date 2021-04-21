@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
 
       - name: Set up JDK ${{ env.java }}
         uses: actions/setup-java@v1
@@ -42,14 +44,10 @@ jobs:
       - name: Commit external visits API spec to development
         if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
         # see https://github.com/colmose/push-bot/blob/main/entrypoint.sh
+        # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
-            token=${{ secrets.SORMAS_VITAGROUP_TOKEN }}
-            user_name=sormas-vitagroup
-
-            REPO_REF="https://${user_name}:${token}@github.com/${GITHUB_REPOSITORY}.git"
-            git config user.name "${user_name}"
+            git config user.name "sormas-vitagroup"
             git config user.email "support.sormas@helpdesk.symeda.de"
-            git remote add upstream "${REPO_REF}"
 
             rm -rf openapi
             mkdir openapi/
@@ -57,5 +55,5 @@ jobs:
 
             git add openapi
             git commit -m "[GitHub Actions] Update external visits API spec files"
-            git pull --rebase upstream development
-            git push upstream development
+            git pull --rebase development
+            git push development
