@@ -42,6 +42,20 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -2142,6 +2156,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 296:
 				currentVersion = 296;
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN additionalDetails text;");
+
+			case 297:
+				currentVersion = 297;
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pcrTestSpecification varchar(255);");
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
 

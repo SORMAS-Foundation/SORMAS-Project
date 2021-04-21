@@ -21,7 +21,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Menu;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -99,9 +98,10 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
 					&& pathogenTestToSave.getTestResultVerified() == true
+					&& newDiseaseVariant != null
 					&& !newDiseaseVariant.equals(caseDiseaseVariant)) {
 
-				String heading = I18nProperties.getCaption(Captions.caseUpdateCaseWithNewDiseaseVariant);
+				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
 				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
 				int positiveButtonTextResId = R.string.yes;
 				int negativeButtonTextResId = R.string.no;
