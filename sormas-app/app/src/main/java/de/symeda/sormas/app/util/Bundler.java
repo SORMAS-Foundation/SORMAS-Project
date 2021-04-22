@@ -28,6 +28,8 @@ public class Bundler {
 	private static final String CASE_UUID = "caseUuid";
 	private static final String CONTACT_UUID = "contactUuid";
 	private static final String EVENT_UUID = "eventUuid";
+	private static final String CAMPAIGN_UUID = "campaignUuid";
+	private static final String CAMPAIGN_FROM_META_UUID = "campaignFormMetaUuid";
 	private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
 	private static final String EPI_WEEK = "epiWeek";
 	private static final String EMPTY_REPORT_DATE = "emptyReportDate";
@@ -98,6 +100,30 @@ public class Bundler {
 	public Enum getListFilter() {
 		if (bundle.containsKey(LIST_FILTER)) {
 			return (Enum) bundle.getSerializable(LIST_FILTER);
+		}
+		return null;
+	}
+
+	public Bundler setCampaignUuid(String recordUuid) {
+		bundle.putString(CAMPAIGN_UUID, recordUuid);
+		return this;
+	}
+
+	public String getCampaignUuid() {
+		if (bundle.containsKey(CAMPAIGN_UUID)) {
+			return bundle.getString(CAMPAIGN_UUID);
+		}
+		return null;
+	}
+
+	public Bundler setCampaignFormMetaUuid(String recordUuid) {
+		bundle.putString(CAMPAIGN_FROM_META_UUID, recordUuid);
+		return this;
+	}
+
+	public String getCampaignFormMetaUuid() {
+		if (bundle.containsKey(CAMPAIGN_FROM_META_UUID)) {
+			return bundle.getString(CAMPAIGN_FROM_META_UUID);
 		}
 		return null;
 	}
