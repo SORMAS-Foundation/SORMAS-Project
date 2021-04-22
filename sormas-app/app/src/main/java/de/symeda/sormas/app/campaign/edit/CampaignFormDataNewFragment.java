@@ -39,6 +39,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataNewLayoutBinding;
@@ -100,6 +102,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                 final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
                 if (dependingOn != null && dependingOnValues != null) {
                     ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
+                    setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
                     final ControlPropertyField finalDynamicField = dynamicField;
                     controlPropertyField.addValueChangedListener(field -> setVisibilityDependency(finalDynamicField, dependingOnValues, field.getValue()));
                 }
@@ -164,5 +167,21 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                 contentBinding.campaignFormDataCommunity,
                 initialCommunities,
                 record.getCommunity());
+    }
+
+    @Override
+    protected void onAfterLayoutBinding(FragmentCampaignDataNewLayoutBinding contentBinding) {
+        User user = ConfigProvider.getUser();
+
+        if (user.getRegion() != null) {
+            contentBinding.campaignFormDataArea.setEnabled(false);
+            contentBinding.campaignFormDataRegion.setEnabled(false);
+        }
+        if (user.getDistrict() != null) {
+            contentBinding.campaignFormDataDistrict.setEnabled(false);
+        }
+        if (user.getCommunity() != null) {
+            contentBinding.campaignFormDataCommunity.setEnabled(false);
+        }
     }
 }

@@ -36,16 +36,25 @@ import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
 public class CampaignFormDataEditUtils {
 
-    private CampaignFormDataEditUtils(){
+    private CampaignFormDataEditUtils() {
     }
 
     public static void setVisibilityDependency(ControlPropertyField field, String[] dependingOnValues, Object dependingOnFieldValue) {
-        Object parsedDependingOnFieldValue = dependingOnFieldValue instanceof Boolean ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name() : dependingOnFieldValue;
-        if (!Arrays.asList(dependingOnValues).contains(parsedDependingOnFieldValue)) {
+        String parsedDependingOnFieldValue = dependingOnFieldValue == null ? "" : dependingOnFieldValue instanceof Boolean ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name() : dependingOnFieldValue.toString();
+        if (!containsIgnoreCase(Arrays.asList(dependingOnValues), parsedDependingOnFieldValue)) {
             field.setVisibility(View.INVISIBLE);
         } else {
             field.setVisibility(View.VISIBLE);
         }
+    }
+
+    private static boolean containsIgnoreCase(List<String> list, String soughtFor) {
+        for (String current : list) {
+            if (current.equalsIgnoreCase(soughtFor)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static CampaignFormDataEntry getOrCreateCampaignFormDataEntry(List<CampaignFormDataEntry> formValues, CampaignFormElement campaignFormElement) {

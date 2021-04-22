@@ -30,6 +30,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
@@ -40,6 +41,7 @@ import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.campaign.edit.CampaignFormDataNewActivity;
 import de.symeda.sormas.app.campaign.edit.CampaignFormMetaDialog;
 import de.symeda.sormas.app.component.Item;
@@ -156,15 +158,14 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
         final CampaignFormDataCriteria criteria = model.getCriteria();
         final CampaignFormMetaDialog campaignFormMetaDialog = new CampaignFormMetaDialog(BaseActivity.getActiveActivity(), criteria.getCampaign());
-        campaignFormMetaDialog.setLiveValidationDisabled(true);
         campaignFormMetaDialog.setPositiveCallback(() -> CampaignFormDataNewActivity.startActivity(getContext(), criteria.getCampaign().getUuid(), campaignFormMetaDialog.getCampaignFormMeta().getUuid()));
         campaignFormMetaDialog.show();
+        campaignFormMetaDialog.setLiveValidationDisabled(true);
     }
 
     @Override
     public boolean isEntryCreateAllowed() {
-        return model.getCriteria().getCampaign() != null;
-//        return ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
+        return model.getCriteria().getCampaign() != null && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
     }
 
     @Override
@@ -179,6 +180,9 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
             filterBinding.campaignFormFilter.initializeSpinner(forms);
             setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
+            if (getNewMenu() != null) {
+                getNewMenu().setVisible(isEntryCreateAllowed());
+            }
         });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);

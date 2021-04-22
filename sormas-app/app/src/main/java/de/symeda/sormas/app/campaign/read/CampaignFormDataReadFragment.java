@@ -47,6 +47,8 @@ import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataReadLayoutBinding;
 import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
+import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.setVisibilityDependency;
+
 public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampaignDataReadLayoutBinding, CampaignFormData, CampaignFormData> {
 
     private CampaignFormData record;
@@ -66,6 +68,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
         final List<CampaignFormDataEntry> formValues = record.getFormValues();
         final Map<String, String> formValuesMap = new HashMap<>();
         formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), DataHelper.toStringNullable(campaignFormDataEntry.getValue())));
+        final Map<String, ControlPropertyField> fieldMap = new HashMap<>();
 
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
@@ -82,6 +85,13 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     }
                 }
                 dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                fieldMap.put(campaignFormElement.getId(), dynamicField);
+                final String dependingOn = campaignFormElement.getDependingOn();
+                final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
+                if (dependingOn != null && dependingOnValues != null) {
+                    ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
+                    setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
+                }
             } else if (type == CampaignFormElementType.SECTION) {
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {

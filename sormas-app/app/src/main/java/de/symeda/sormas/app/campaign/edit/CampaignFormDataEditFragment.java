@@ -39,6 +39,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -177,5 +179,18 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
         super.onAfterLayoutBinding(contentBinding);
 
         contentBinding.campaignFormDataFormDate.initializeDateField(getFragmentManager());
+
+        User user = ConfigProvider.getUser();
+
+        if (user.getRegion() != null) {
+            contentBinding.campaignFormDataArea.setEnabled(false);
+            contentBinding.campaignFormDataRegion.setEnabled(false);
+        }
+        if (user.getDistrict() != null) {
+            contentBinding.campaignFormDataDistrict.setEnabled(false);
+        }
+        if (user.getCommunity() != null) {
+            contentBinding.campaignFormDataCommunity.setEnabled(false);
+        }
     }
 }
