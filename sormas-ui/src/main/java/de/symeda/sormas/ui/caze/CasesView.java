@@ -165,6 +165,7 @@ public class CasesView extends AbstractView {
 		}
 
 		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			// ! followuprangeinterval
 			grid = new CaseFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
@@ -546,13 +547,15 @@ public class CasesView extends AbstractView {
 			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
 			navigateTo(null, true);
 		});
-		filterForm.addApplyHandler(e -> {
-			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-				((CaseFollowUpGrid) grid).reload();
-			} else {
-				((AbstractCaseGrid<?>) grid).reload();
-			}
-		});
+		filterForm.addApplyHandler(
+			e -> {
+				//! maybe start here
+				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+					((CaseFollowUpGrid) grid).reload();
+				} else {
+					((AbstractCaseGrid<?>) grid).reload();
+				}
+			});
 		filterLayout.addComponent(filterForm);
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
