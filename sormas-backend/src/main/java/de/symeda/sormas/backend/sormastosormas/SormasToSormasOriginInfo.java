@@ -18,15 +18,27 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 
 @Entity(name = "sormastosormasorigininfo")
 public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -842917698322793413L;
+
+	public static String CASES = "cases";
+	public static String CONTACTS = "contacts";
+	public static String EVENT_PARTICIPANTS = "eventParticipants";
 
 	private String organizationId;
 
@@ -39,6 +51,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private boolean ownershipHandedOver;
 
 	private String comment;
+
+	private List<Case> cases;
+
+	private List<Contact> contacts;
+
+	private List<EventParticipant> eventParticipants;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getOrganizationId() {
@@ -92,5 +110,35 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Case> getCases() {
+		return cases;
+	}
+
+	public void setCases(List<Case> cases) {
+		this.cases = cases;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -45,6 +46,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String TEST_RESULT_TEXT = "testResultText";
+	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -76,8 +78,9 @@ public class LabMessageDto extends EntityDto {
 
 	private String labMessageDetails;
 
-	private boolean processed;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 	private String testResultText;
+	private PathogenTestReferenceDto pathogenTest;
 
 	public Date getMessageDateTime() {
 		return messageDateTime;
@@ -303,12 +306,12 @@ public class LabMessageDto extends EntityDto {
 		this.labMessageDetails = labMessageDetails;
 	}
 
-	public boolean isProcessed() {
-		return processed;
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 
 	public String getTestResultText() {
@@ -319,10 +322,19 @@ public class LabMessageDto extends EntityDto {
 		this.testResultText = testResultText;
 	}
 
+	public PathogenTestReferenceDto getPathogenTest() {
+		return pathogenTest;
+	}
+
+	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
+		this.pathogenTest = pathogenTest;
+	}
+
 	public static LabMessageDto build() {
 
 		LabMessageDto labMessage = new LabMessageDto();
 		labMessage.setUuid(DataHelper.createUuid());
 		return labMessage;
 	}
+
 }

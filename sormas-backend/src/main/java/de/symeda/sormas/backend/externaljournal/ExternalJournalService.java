@@ -346,7 +346,10 @@ public class ExternalJournalService {
 
 	public void validateExternalJournalPerson(PersonDto person) {
 		if (configFacade.getSymptomJournalConfig().isActive()) {
-			//TODO Clarify with Conventic how to verify
+			ExternalJournalValidation validationResult = validateSymptomJournalPerson(person);
+			if (!validationResult.isValid()) {
+				throw new ValidationRuntimeException(validationResult.getMessage());
+			}
 		}
 		if (configFacade.getPatientDiaryConfig().isActive()) {
 			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
@@ -355,6 +358,33 @@ public class ExternalJournalService {
 			}
 		}
 	}
+
+	public ExternalJournalValidation validateSymptomJournalPerson(PersonDto person) {
+		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
+
+		boolean severalEmails = false;
+		String email = "";
+
+		try {
+			email = person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			severalEmails = true;
+		}
+
+		if (severalEmails) {
+			validationErrors.add(SEVERAL_PHONES_OR_EMAILS);
+		}
+
+		if (StringUtils.isNotEmpty(email)) {
+			EmailValidator validator = EmailValidator.getInstance();
+			if (!validator.isValid(email)) {
+				validationErrors.add(INVALID_EMAIL);
+			}
+		}
+
+		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
+	}
+
 
 	/**
 	 * Check whether a person has valid data in order to be registered in the patient diary.
@@ -396,7 +426,7 @@ public class ExternalJournalService {
 			if (!validator.isValid(email)) {
 				validationErrors.add(INVALID_EMAIL);
 			}
-			if (!isEmailAvailable(person)) {
+			if (!isEmailAvailable(email, person)) {
 				validationErrors.add(EMAIL_TAKEN);
 			}
 		}
@@ -428,8 +458,8 @@ public class ExternalJournalService {
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(PersonDto person) {
-		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+	private boolean isEmailAvailable(String email, PersonDto person) {
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, email)
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()

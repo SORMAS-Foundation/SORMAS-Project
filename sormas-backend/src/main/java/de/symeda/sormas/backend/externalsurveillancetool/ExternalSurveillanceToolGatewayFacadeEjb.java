@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.externalsurveillancetool;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -78,6 +79,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		Response response = ClientBuilder.newBuilder()
 			.connectTimeout(30, TimeUnit.SECONDS)
+			.readTimeout(60, TimeUnit.SECONDS)
 			.build()
 			.target(serviceUrl)
 			.path("export")
@@ -108,22 +110,30 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public int deleteCases(List<CaseDataDto> cases) {
+	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setCases(cases);
 
-		return sendDeleteRequest(params);
+		sendDeleteRequest(params);
+
+		caseService.getByUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList())).forEach(caze -> {
+			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.DELETED);
+		});
 	}
 
 	@Override
-	public int deleteEvents(List<EventDto> events) {
+	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setEvents(events);
 
-		return sendDeleteRequest(params);
+		sendDeleteRequest(params);
+
+		eventService.getByUuids(events.stream().map(EventDto::getUuid).collect(Collectors.toList())).forEach(event -> {
+			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.DELETED);
+		});
 	}
 
-	private int sendDeleteRequest(DeleteParameters params) {
+	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 		Response response = ClientBuilder.newBuilder()
 			.connectTimeout(30, TimeUnit.SECONDS)
@@ -132,7 +142,18 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 			.path("delete")
 			.request()
 			.post(Entity.json(params));
-		return response.getStatus();
+
+		int statusCode = response.getStatus();
+
+		switch (statusCode) {
+		case HttpServletResponse.SC_OK:
+		case HttpServletResponse.SC_NO_CONTENT:
+			return;
+		case HttpServletResponse.SC_BAD_REQUEST:
+			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted);
+		default:
+			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting);
+		}
 	}
 
 	public static class ExportParameters {

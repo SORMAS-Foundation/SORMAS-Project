@@ -116,23 +116,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	private Map<UserRole, Set<UserRight>> getUserRoleRightsCached() {
 
 		if (userRoleRightsCache == null) {
-			Map<UserRole, Set<UserRight>> cache = new EnumMap<>(UserRole.class);
-
-			userRoleConfigService.getAll().forEach(c -> cache.put(c.getUserRole(), c.getUserRights()));
-
-			//default values
-			Arrays.stream(UserRole.values()).forEach(r -> cache.computeIfAbsent(r, UserRole::getDefaultUserRights));
-
-			//enum sets
-			cache.replaceAll((k, v) -> {
-				if (v.isEmpty()) {
-					return EnumSet.noneOf(UserRight.class);
-				} else {
-					return EnumSet.copyOf(v);
-				}
-			});
-
-			userRoleRightsCache = cache;
+			userRoleRightsCache = getAllAsMap();
 		}
 
 		return userRoleRightsCache;
@@ -189,4 +173,23 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRolesList;
 	}
 
+	public Map<UserRole, Set<UserRight>> getAllAsMap() {
+		Map<UserRole, Set<UserRight>> map = new EnumMap<>(UserRole.class);
+
+		userRoleConfigService.getAll().forEach(c -> map.put(c.getUserRole(), c.getUserRights()));
+
+		//default values
+		Arrays.stream(UserRole.values()).forEach(r -> map.computeIfAbsent(r, UserRole::getDefaultUserRights));
+
+		//enum sets
+		map.replaceAll((k, v) -> {
+			if (v.isEmpty()) {
+				return EnumSet.noneOf(UserRight.class);
+			} else {
+				return EnumSet.copyOf(v);
+			}
+		});
+
+		return map;
+	}
 }

@@ -109,7 +109,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT,
-			EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS };
+			EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS,
+			EventCriteria.FREE_TEXT_EVENT_GROUPS };
 	}
 
 	@Override
@@ -131,6 +132,13 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				I18nProperties.getString(Strings.promptEventsSearchFieldEventParticipants),
 				200));
 		searchFieldEventParticipants.setNullRepresentation("");
+
+		TextField searchFieldEventGroups = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.FREE_TEXT_EVENT_GROUPS,
+				I18nProperties.getString(Strings.promptEventsSearchFieldEventGroups),
+				200));
+		searchFieldEventGroups.setNullRepresentation("");
 	}
 
 	@Override

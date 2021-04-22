@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -41,7 +56,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -166,7 +180,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 294;
+	public static final int DATABASE_VERSION = 298;
 
 	private static DatabaseHelper instance = null;
 
@@ -2116,6 +2130,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 293;
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN continent_id BIGINT REFERENCES continent(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
+
+			case 294:
+				currentVersion = 294;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeDate timestamp without time zone;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpStatusChangeUser_id BIGINT REFERENCES users(id);");
+
+			case 295:
+				currentVersion = 295;
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonFirstName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonLastName text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonPhone text");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN contactPersonEmail text");
+
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonFirstName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonLastName text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonPhone text;");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN contactPersonEmail text;");
+
+			case 296:
+				currentVersion = 296;
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN additionalDetails text;");
+
+			case 297:
+				currentVersion = 297;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pcrTestSpecification varchar(255);");
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
 
 				// ATTENTION: break should only be done after last version
 				break;

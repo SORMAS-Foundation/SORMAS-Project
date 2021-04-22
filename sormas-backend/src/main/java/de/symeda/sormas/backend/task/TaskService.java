@@ -215,7 +215,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), taskCriteria.getCaze().getUuid()));
@@ -224,22 +225,24 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
 		}
 		if (taskCriteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
 		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
-			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
-			filter = cb.and(filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
 		}
 		if (taskCriteria.getStartDateFrom() != null && taskCriteria.getStartDateTo() != null) {
-			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.SUGGESTED_START), taskCriteria.getStartDateFrom()));
-			filter = cb.and(filter, cb.lessThan(from.get(Task.SUGGESTED_START), taskCriteria.getStartDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Task.SUGGESTED_START), taskCriteria.getStartDateFrom()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Task.SUGGESTED_START), taskCriteria.getStartDateTo()));
 		}
 		if (taskCriteria.getStatusChangeDateFrom() != null && taskCriteria.getStatusChangeDateTo() != null) {
-			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
-			filter = cb.and(filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
 		}
 		if (taskCriteria.getRelevanceStatus() != null) {
 			if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
@@ -277,46 +280,50 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getContact().get(Contact.UUID)), textFilter),
-						cb.like(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getEvent().get(Event.UUID)), textFilter),
-						cb.like(cb.lower(joins.getEvent().get(Event.EVENT_TITLE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getContact().get(Contact.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getEvent().get(Event.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (taskCriteria.getAssigneeUserLike() != null) {
 			String[] textFilters = taskCriteria.getAssigneeUserLike().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getAssignee().get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getAssignee().get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getAssignee().get(User.USER_NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignee().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (taskCriteria.getCreatorUserLike() != null) {
 			String[] textFilters = taskCriteria.getCreatorUserLike().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCreator().get(User.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCreator().get(User.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCreator().get(User.USER_NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCreator().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

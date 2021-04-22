@@ -275,6 +275,7 @@
     <string name="heading_app_update_required">App update required</string>
     <string name="heading_burial">Burial</string>
     <string name="heading_burials_visited">Burials Visited</string>
+    <string name="heading_campaigns_list">Campaign Data</string>
     <string name="heading_case_disease_changed">Case disease has changed</string>
     <string name="heading_case_edit">Edit Case</string>
     <string name="heading_case_new">New Case</string>

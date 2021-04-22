@@ -17,14 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -144,7 +149,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids) {
+	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
@@ -154,10 +159,15 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = cb.and(createDefaultFilter(cb, pathogenTestRoot), sampleJoin.get(AbstractDomainObject.UUID).in(sampleUuids));
 
 		cq.where(filter);
+
+		if (ordered) {
+			cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
+		}
+
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -239,5 +249,24 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 		return cb.isFalse(root.get(PathogenTest.DELETED));
+	}
+
+	/**
+	 * @param pathogenTestUuids
+	 *            {@link PathogenTest}s identified by {@code uuid} to be deleted.
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void delete(List<String> pathogenTestUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<PathogenTest> cu = cb.createCriteriaUpdate(PathogenTest.class);
+		Root<PathogenTest> root = cu.from(PathogenTest.class);
+
+		cu.set(PathogenTest.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(PathogenTest.DELETED), true);
+
+		cu.where(root.get(PathogenTest.UUID).in(pathogenTestUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

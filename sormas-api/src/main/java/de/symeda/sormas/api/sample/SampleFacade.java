@@ -56,6 +56,8 @@ public interface SampleFacade {
 
 	void deleteSample(SampleReferenceDto sampleRef);
 
+	void deleteAllSamples(List<String> sampleUuids);
+
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 
 	List<String> getDeletedUuidsSince(Date since);
