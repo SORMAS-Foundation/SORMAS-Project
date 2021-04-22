@@ -2151,7 +2151,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 298:
 				currentVersion = 298;
-				TableUtils.createTable(connectionSource, Area.class);
 				getDao(Area.class).executeRaw(
 						"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
 								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
