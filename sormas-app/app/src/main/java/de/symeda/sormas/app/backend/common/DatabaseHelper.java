@@ -2157,6 +2157,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
 								+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
+				getDao(Region.class).executeRaw("UPDATE region set changeDate=0;");
 
 					// ATTENTION: break should only be done after last version
 				break;
