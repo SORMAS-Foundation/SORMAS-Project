@@ -33,6 +33,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -324,7 +326,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			if (districtDto == null) {
 				FieldHelper.removeItems(facility);
+				// Add a visual indictator reminding the user to select a district
+				facility.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return "You cannot select a facility without selecting a district.";
+					}
+				});
 			} else if (facilityType.getValue() != null) {
+				facility.setComponentError(null);
+				facility.markAsDirty();
 				FieldHelper.updateItems(
 					facility,
 					FacadeProvider.getFacilityFacade()
@@ -356,6 +373,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
+			facility.setComponentError(null);
+			facility.markAsDirty();
 			if (facilityType.getValue() != null && facilityTypeGroup.getValue() == null) {
 				facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
 			}
@@ -379,6 +398,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 								true,
 								false));
 				}
+			} else if (facilityType.getValue() != null && district.getValue() == null) {
+				// Add a visual indictator reminding the user to select a district
+				facility.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return "You cannot select a facility without selecting a district.";
+					}
+				});
 			}
 		});
 		facility.addValueChangeListener(e -> {
