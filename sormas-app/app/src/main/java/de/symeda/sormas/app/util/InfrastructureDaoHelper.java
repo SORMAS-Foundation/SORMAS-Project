@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.app.util;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -48,10 +52,6 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 public final class InfrastructureDaoHelper {
 
@@ -366,17 +366,19 @@ public final class InfrastructureDaoHelper {
 		continentField.setValue(initialContinent);
 		continentField.setVisibility(GONE);
 		ValueChangeListener continentValueChangeListener = field -> {
-			Continent selectedContinent = (Continent) field.getValue();
-			if (selectedContinent != null) {
-				List<Item> newSubcontinents = loadSubcontinentsByContinent(selectedContinent);
-				if (initialSubcontinent != null
-					&& selectedContinent.equals(initialSubcontinent.getContinent())
-					&& !newSubcontinents.contains(subcontinentItem)) {
-					newSubcontinents.add(subcontinentItem);
+			if (continentField.getVisibility() != GONE) {
+				Continent selectedContinent = (Continent) field.getValue();
+				if (selectedContinent != null) {
+					List<Item> newSubcontinents = loadSubcontinentsByContinent(selectedContinent);
+					if (initialSubcontinent != null
+						&& selectedContinent.equals(initialSubcontinent.getContinent())
+						&& !newSubcontinents.contains(subcontinentItem)) {
+						newSubcontinents.add(subcontinentItem);
+					}
+					subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
+				} else {
+					subcontinentField.setSpinnerData(loadSubcontinents(), null);
 				}
-				subcontinentField.setSpinnerData(newSubcontinents, subcontinentField.getValue());
-			} else {
-				subcontinentField.setSpinnerData(loadSubcontinents(), null);
 			}
 		};
 		continentField.initializeSpinner(continents, continentValueChangeListener);
@@ -385,23 +387,27 @@ public final class InfrastructureDaoHelper {
 		subcontinentField.setValue(initialSubcontinent);
 		subcontinentField.setVisibility(GONE);
 		ValueChangeListener subcontinentValueChangeListener = field -> {
-			Subcontinent selectedSubcontinent = (Subcontinent) field.getValue();
-			if (selectedSubcontinent != null) {
-				List<Item> newCountries = loadCountriesBySubcontinent(selectedSubcontinent);
-				if (initialCountry != null && selectedSubcontinent.equals(initialCountry.getSubcontinent()) && !newCountries.contains(countryItem)) {
-					newCountries.add(countryItem);
-				}
-				countryField.setSpinnerData(newCountries, countryField.getValue());
+			if (subcontinentField.getVisibility() != GONE) {
+				Subcontinent selectedSubcontinent = (Subcontinent) field.getValue();
+				if (selectedSubcontinent != null) {
+					List<Item> newCountries = loadCountriesBySubcontinent(selectedSubcontinent);
+					if (initialCountry != null
+						&& selectedSubcontinent.equals(initialCountry.getSubcontinent())
+						&& !newCountries.contains(countryItem)) {
+						newCountries.add(countryItem);
+					}
+					countryField.setSpinnerData(newCountries, countryField.getValue());
 
-				continentField.unregisterListener(continentValueChangeListener);
-				continentField.setValue(selectedSubcontinent.getContinent());
-				continentField.registerListener(continentValueChangeListener);
-			} else {
-				Continent continentFieldValue = (Continent) continentField.getValue();
-				if (continentFieldValue != null) {
-					countryField.setSpinnerData(loadCountriesByContinent(continentFieldValue), null);
+					continentField.unregisterListener(continentValueChangeListener);
+					continentField.setValue(selectedSubcontinent.getContinent());
+					continentField.registerListener(continentValueChangeListener);
 				} else {
-					countryField.setSpinnerData(loadCountries(), null);
+					Continent continentFieldValue = (Continent) continentField.getValue();
+					if (continentFieldValue != null) {
+						countryField.setSpinnerData(loadCountriesByContinent(continentFieldValue), null);
+					} else {
+						countryField.setSpinnerData(loadCountries(), null);
+					}
 				}
 			}
 		};

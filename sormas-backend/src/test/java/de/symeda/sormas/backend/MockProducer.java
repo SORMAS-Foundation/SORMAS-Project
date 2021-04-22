@@ -58,7 +58,7 @@ public class MockProducer {
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
 	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
 	private static final ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
-	private static final String TMP_PATH = "tmp";
+	private static final String TMP_PATH = "target/tmp";
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;

@@ -19,11 +19,12 @@ package de.symeda.sormas.api.facility;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class FacilityIndexDto implements Serializable {
+public class FacilityIndexDto implements Serializable, HasUuid {
 
 	public static final String I18N_PREFIX = "Facility";
 
@@ -82,6 +83,7 @@ public class FacilityIndexDto implements Serializable {
 		this.externalID = externalID;
 	}
 
+	@Override
 	public String getUuid() {
 		return uuid;
 	}

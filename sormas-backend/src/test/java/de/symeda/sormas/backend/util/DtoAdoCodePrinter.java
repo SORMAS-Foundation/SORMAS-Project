@@ -29,7 +29,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
-public class DtoAdoCodeGenerator {
+public class DtoAdoCodePrinter {
 
 	Class<? extends AbstractDomainObject> ado = Symptoms.class;
 	Class<? extends EntityDto> dto = SymptomsDto.class;
