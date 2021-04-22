@@ -2151,8 +2151,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 298:
 				currentVersion = 298;
-				TableUtils.createTable(connectionSource, Area.class);
+				getDao(Area.class).executeRaw(
+						"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
+								+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
+				getDao(Region.class).executeRaw("UPDATE region set changeDate=0;");
 
 					// ATTENTION: break should only be done after last version
 				break;
