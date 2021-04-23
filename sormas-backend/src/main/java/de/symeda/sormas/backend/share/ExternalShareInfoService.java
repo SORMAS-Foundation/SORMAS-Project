@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.share;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -118,6 +119,10 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 	}
 
 	public List<ExternalShareInfoCountAndLatestDate> getShareCountAndLatestDate(List<String> uuids, String associatedObjectName) {
+		if (uuids.size() == 0) {
+			return Collections.emptyList();
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ExternalShareInfoCountAndLatestDate> cq = cb.createQuery(ExternalShareInfoCountAndLatestDate.class);
 		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
