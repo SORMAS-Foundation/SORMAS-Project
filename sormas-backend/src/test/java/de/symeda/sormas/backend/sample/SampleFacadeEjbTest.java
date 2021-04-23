@@ -345,7 +345,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAllSamplesDeletion() {
+	public void testAllSamplesDeletionWithOneAdditionalTest() {
 
 		Date since = new Date();
 
@@ -380,59 +380,65 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		AdditionalTestDto firstSampleAdditionalTest = creator.createAdditionalTest(firstSample.toReference());
 
 		// Database should contain the created sample and sample test
-		assertNotNull(getSampleFacade().getSampleByUuid(firstSample.getUuid()));
-		assertNotNull(getSampleFacade().getSampleByUuid(secondSample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
 		getSampleFacade().deleteAllSamples(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()));
 
 		// Sample and pathogen test should be marked as deleted, additional test should be deleted
-		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(firstSample.getUuid()));
-		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(secondSample.getUuid()));
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(firstSample.getUuid()));
+		assertTrue(sampleUuids.contains(secondSample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
+	}
 
-		//2nd Case person
+	@Test
+	public void testAllSamplesDeletionWithMultipleAdditionalTest() {
+
+		Date since = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
 		PersonDto secondCazePerson = creator.createPerson("SecondCase", "SecondPerson");
 		CaseDataDto secondCaze = creator.createCase(
-			user.toReference(),
-			secondCazePerson.toReference(),
-			Disease.ACUTE_VIRAL_HEPATITIS,
-			CaseClassification.NOT_CLASSIFIED,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
+				user.toReference(),
+				secondCazePerson.toReference(),
+				Disease.ACUTE_VIRAL_HEPATITIS,
+				CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
 		SampleDto thirdSample =
-			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleDto forthSample =
-			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		PathogenTestDto secondSamplePathogenTest = creator.createPathogenTest(
-			thirdSample.toReference(),
-			PathogenTestType.RAPID_TEST,
-			secondCaze.getDisease(),
-			new Date(),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.INDETERMINATE,
-			"Indeterminate",
-			true);
+				thirdSample.toReference(),
+				PathogenTestType.RAPID_TEST,
+				secondCaze.getDisease(),
+				new Date(),
+				rdcf.facility,
+				user.toReference(),
+				PathogenTestResultType.INDETERMINATE,
+				"Indeterminate",
+				true);
 		PathogenTestDto thirdSamplePathogenTest = creator.createPathogenTest(
-			forthSample.toReference(),
-			PathogenTestType.CQ_VALUE_DETECTION,
-			firstCaze.getDisease(),
-			new Date(),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.NOT_DONE,
-			"Not done",
-			true);
+				forthSample.toReference(),
+				PathogenTestType.CQ_VALUE_DETECTION,
+				secondCaze.getDisease(),
+				new Date(),
+				rdcf.facility,
+				user.toReference(),
+				PathogenTestResultType.NOT_DONE,
+				"Not done",
+				true);
 		AdditionalTestDto secondSampleAdditionalTest = creator.createAdditionalTest(thirdSample.toReference());
 		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
 
 		// Database should contain the created sample, sample test and additional tests
-		assertNotNull(getSampleFacade().getSampleByUuid(thirdSample.getUuid()));
-		assertNotNull(getSampleFacade().getSampleByUuid(forthSample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
@@ -441,8 +447,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		getSampleFacade().deleteAllSamples(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()));
 
 		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
-		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(thirdSample.getUuid()));
-		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(forthSample.getUuid()));
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(thirdSample.getUuid()));
+		assertTrue(sampleUuids.contains(forthSample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
