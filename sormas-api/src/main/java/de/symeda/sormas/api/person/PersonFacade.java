@@ -40,8 +40,6 @@ public interface PersonFacade {
 
 	PersonReferenceDto getReferenceByUuid(String uuid);
 
-	PersonDto getPersonByUuid(String uuid);
-
 	JournalPersonDto getPersonForJournal(String uuid);
 
 	PersonDto savePerson(@Valid PersonDto dto);
@@ -49,6 +47,8 @@ public interface PersonFacade {
 	void validate(PersonDto dto);
 
 	List<String> getAllUuids();
+
+	PersonDto getPersonByUuid(String uuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);
 
@@ -83,4 +83,6 @@ public interface PersonFacade {
 	boolean doesExternalTokenExist(String externalToken, String personUuid);
 
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
+
+	boolean isSharedWithoutOwnership(String uuid);
 }

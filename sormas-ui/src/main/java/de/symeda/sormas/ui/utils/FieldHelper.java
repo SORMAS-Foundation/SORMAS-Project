@@ -310,6 +310,17 @@ public final class FieldHelper {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
 	}
 
+	public static void setVisibleWhen(
+		final Field targetField,
+		Map<Field, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnHidden) {
+
+		onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden);
+		sourceFieldsAndValues.forEach(
+			(sourcePropertyId, sourceValues) -> targetField
+				.addValueChangeListener(event -> onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden)));
+	}
+
 	private static void onValueChangedSetVisible(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
@@ -334,6 +345,27 @@ public final class FieldHelper {
 			if (!visible && clearOnHidden && targetField.getValue() != null) {
 				targetField.clear();
 			}
+		}
+	}
+	
+	private static void onValueChangedSetVisible(
+		Field targetField,
+		Map<Field, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnHidden) {
+
+		//a workaround variable to be modified in the forEach lambda
+		boolean[] visibleArray = {
+			true };
+
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			if (!sourceValues.contains(sourceField.getValue()))
+				visibleArray[0] = false;
+		});
+		boolean visible = visibleArray[0];
+
+		targetField.setVisible(visible);
+		if (!visible && clearOnHidden && targetField.getValue() != null) {
+			targetField.clear();
 		}
 	}
 

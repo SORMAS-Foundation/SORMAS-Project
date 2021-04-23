@@ -49,7 +49,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.CharMatcher;
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -67,6 +66,7 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
+
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -98,10 +98,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
-
-import java.util.function.Predicate;
-
-import static com.google.common.base.Predicates.or;
 
 public final class DownloadUtil {
 
@@ -176,8 +172,9 @@ public final class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createPopulationDataExportResource(String exportFileName) {
+	public static StreamResource createPopulationDataExportResource() {
 
+		String exportFileName = createFileNameWithCurrentDate(ExportEntityName.POPULATION_DATA, ".csv");
 		StreamResource populationDataStreamResource = new StreamResource(new StreamSource() {
 
 			@Override
@@ -190,12 +187,13 @@ public final class DownloadUtil {
 						List<String> columnNames = new ArrayList<>();
 						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.REGION));
 						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.DISTRICT));
+						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.COMMUNITY));
 						columnNames.add(I18nProperties.getString(Strings.total));
 						columnNames.add(I18nProperties.getCaption(Captions.populationDataMaleTotal));
 						columnNames.add(I18nProperties.getCaption(Captions.populationDataFemaleTotal));
 
 						Map<AgeGroup, Integer> ageGroupPositions = new HashMap<>();
-						int ageGroupIndex = 5;
+						int ageGroupIndex = 6;
 						for (AgeGroup ageGroup : AgeGroup.values()) {
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, null));
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, Sex.MALE));
@@ -212,16 +210,22 @@ public final class DownloadUtil {
 						String[] exportLine = new String[columnNames.size()];
 						String regionName = "";
 						String districtName = "";
+						String communityName = "";
 						for (Object[] populationExportData : populationExportDataList) {
 							String dataRegionName = (String) populationExportData[0];
 							String dataDistrictName = populationExportData[1] == null ? "" : (String) populationExportData[1];
-							if (exportLine[0] != null && (!dataRegionName.equals(regionName) || !dataDistrictName.equals(districtName))) {
+							String dataCommunityName = populationExportData[2] == null ? "" : (String) populationExportData[2];
+							if (exportLine[0] != null
+								&& (!dataRegionName.equals(regionName)
+									|| !dataDistrictName.equals(districtName)
+									|| !dataCommunityName.equals(communityName))) {
 								// New region or district reached; write line to CSV
 								writer.writeNext(exportLine);
 								exportLine = new String[columnNames.size()];
 							}
 							regionName = dataRegionName;
 							districtName = dataDistrictName;
+							communityName = dataCommunityName;
 
 							// Region
 							if (exportLine[0] == null) {
@@ -231,23 +235,27 @@ public final class DownloadUtil {
 							if (exportLine[1] == null) {
 								exportLine[1] = (String) populationExportData[1];
 							}
+							// Community
+							if (exportLine[2] == null) {
+								exportLine[2] = (String) populationExportData[2];
+							}
 
-							if (populationExportData[2] == null) {
+							if (populationExportData[3] == null) {
 								// Total population
-								String sexString = (String) populationExportData[3];
+								String sexString = (String) populationExportData[4];
 								if (Sex.MALE.getName().equals(sexString)) {
-									exportLine[3] = String.valueOf((int) populationExportData[4]);
+									exportLine[4] = String.valueOf((int) populationExportData[5]);
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
-									exportLine[4] = String.valueOf((int) populationExportData[4]);
+									exportLine[5] = String.valueOf((int) populationExportData[5]);
 								} else if (Sex.OTHER.getName().equals(sexString)) {
-									exportLine[5] = String.valueOf((int) populationExportData[4]);
+									exportLine[6] = String.valueOf((int) populationExportData[5]);
 								} else {
-									exportLine[2] = String.valueOf((int) populationExportData[4]);
+									exportLine[3] = String.valueOf((int) populationExportData[5]);
 								}
 							} else {
 								// Population based on age group position and sex
-								Integer ageGroupPosition = ageGroupPositions.get(AgeGroup.valueOf((String) populationExportData[2]));
-								String sexString = (String) populationExportData[3];
+								Integer ageGroupPosition = ageGroupPositions.get(AgeGroup.valueOf((String) populationExportData[3]));
+								String sexString = (String) populationExportData[4];
 								if (Sex.MALE.getName().equals(sexString)) {
 									ageGroupPosition += 1;
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
@@ -255,7 +263,7 @@ public final class DownloadUtil {
 								} else if (Sex.OTHER.getName().equals(sexString)) {
 									ageGroupPosition += 3;
 								}
-								exportLine[ageGroupPosition] = String.valueOf((int) populationExportData[4]);
+								exportLine[ageGroupPosition] = String.valueOf((int) populationExportData[5]);
 							}
 						}
 
@@ -403,7 +411,7 @@ public final class DownloadUtil {
 			this.lazyInputStreamSupplier = lazyInputStreamSupplier;
 		}
 
-		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
+		public DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
 			this(() -> {
 				try (SharedByteArrayOutputStream os = new SharedByteArrayOutputStream()) {
 					osConsumer.writeTo(os);
@@ -642,15 +650,9 @@ public final class DownloadUtil {
 
 	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
 		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
-		String processedInstanceName = getProcessedName(instanceName);
-		String processedEntityName = getProcessedName(entityName.getLocalizedNameInSystemLanguage());
+		String processedInstanceName = DataHelper.cleanStringForFileName(instanceName);
+		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());
 		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
-	}
-
-	private static String getProcessedName(String name) {
-		Predicate<Character> predicateMatcher = or(Character::isLetter, Character::isSpaceChar);
-		String nameWithoutSpecialCharacters = CharMatcher.forPredicate(predicateMatcher::test).retainFrom(name);
-		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
 	}
 }

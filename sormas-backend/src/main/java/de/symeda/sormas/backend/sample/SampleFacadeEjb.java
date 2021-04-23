@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -42,6 +43,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.IterableHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +92,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
@@ -100,7 +101,6 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -123,7 +123,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
-	public static final String CONTACT_CASE_REGION = "contactCaseRegion";
+	private static final int DELETED_BATCH_SIZE = 1000;
+
 	public static final String CONTACT_CASE_DISTRICT = "contactCaseDistrict";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
@@ -140,8 +141,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private PathogenTestService pathogenTestService;
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
@@ -161,8 +160,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private MessagingService messagingService;
 	@EJB
-	private LocationService locationService;
-	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
@@ -172,8 +169,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
@@ -519,6 +514,33 @@ public class SampleFacadeEjb implements SampleFacade {
 		return samples;
 	}
 
+	public List<SampleDto> getPositiveOrLatest(SampleCriteria criteria, Function<Sample, AbstractDomainObject> associatedObjectFn) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return sampleService.findBy(criteria, userService.getCurrentUser(), Sample.CREATION_DATE, false)
+			.stream()
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					(s) -> s,
+					(s1, s2) -> {
+
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
+
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
+			.values()
+			.stream()
+			.map(s -> convertToDto(s, pseudonymizer))
+			.collect(Collectors.toList());
+	}
+
 	private Collection<Selection<?>> getCaseJurisdictionSelections(SampleJoins joins) {
 
 		return Arrays.asList(
@@ -844,6 +866,22 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public void deleteAllSamples(List<String> sampleUuids) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+				.contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+		}
+		long startTime = DateHelper.startTime();
+
+		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
+		logger.debug(
+				"deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms",
+				sampleUuids.size(),
+				DateHelper.durationMillies(startTime));
+	}
+
+	@Override
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		return sampleService.getNewTestResultCountByResultType(caseIds);
 	}
@@ -1038,8 +1076,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 
-		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new SampleReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {

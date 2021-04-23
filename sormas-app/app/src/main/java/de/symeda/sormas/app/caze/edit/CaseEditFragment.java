@@ -220,28 +220,21 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private void updateCaseConfirmationVisibility(FragmentCaseEditLayoutBinding contentBinding) {
 
-		if (record.getCaseClassification() == CaseClassification.CONFIRMED) {
-			Disease disease = record.getDisease();
-			boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
-
-			if (extendedClassification) {
-				boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
-				if (extendedClassificationMulti) {
-					contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
-					contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
-				} else {
-					contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
-					contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
-					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-					contentBinding.caseDataCaseConfirmationBasis.setVisibility(VISIBLE);
-				}
+		Disease disease = record.getDisease();
+		boolean extendedClassification = DiseaseConfigurationCache.getInstance().usesExtendedClassification(disease);
+		if (extendedClassification) {
+			boolean extendedClassificationMulti = DiseaseConfigurationCache.getInstance().usesExtendedClassificationMulti(disease);
+			if (extendedClassificationMulti) {
+				contentBinding.caseDataClinicalConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(VISIBLE);
+				contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
 			} else {
 				contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 				contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
-				contentBinding.caseDataCaseConfirmationBasis.setVisibility(GONE);
+				contentBinding.caseDataCaseConfirmationBasis
+					.setVisibility(record.getCaseClassification() == CaseClassification.CONFIRMED ? VISIBLE : GONE);
 			}
 		} else {
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);

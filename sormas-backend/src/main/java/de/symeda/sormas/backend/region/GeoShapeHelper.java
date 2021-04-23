@@ -1,24 +1,27 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.region;
 
-import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.region.GeoLatLon;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.JTS;
@@ -34,14 +37,10 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
 
 public class GeoShapeHelper {
-
-	private static final String EPSG4326 =
-		"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]";
 
 	private static final Logger logger = LoggerFactory.getLogger(GeoShapeHelper.class);
 
@@ -82,13 +81,13 @@ public class GeoShapeHelper {
 	 * @throws FactoryException
 	 *             Throws if the requested math transformer could not be build.
 	 */
-	public static MathTransform getLatLonMathTransform(ContentFeatureSource featureSource) throws FactoryException {
+	public static MathTransform getLatLonMathTransform(ContentFeatureSource featureSource, String wkt) throws FactoryException {
 		// The CRS of the source file. There are tons of different schemas
 		CoordinateReferenceSystem sourceCRS = featureSource.getSchema().getCoordinateReferenceSystem();
 
 		// The coordinates system you want to reproject the data to
 		// EPSG:4326 is the coordinate reference system GPS uses. Now you know :)
-		CoordinateReferenceSystem targetCRS = CRS.parseWKT(EPSG4326);
+		CoordinateReferenceSystem targetCRS = CRS.parseWKT(wkt);
 
 		return CRS.findMathTransform(sourceCRS, targetCRS, true);
 	}
@@ -123,32 +122,32 @@ public class GeoShapeHelper {
 	}
 
 	/**
-	 * Try to find the name of the feature.
+	 * Try to find an attribute of the feature.
 	 * 
-	 * It is not clear which fields hold the name of the feature (e.g., region name).
+	 * It is not clear which fields hold the specific attribute of the feature (e.g., region name).
 	 * 
 	 * @param feature
-	 *            The feature we want to learn the name of.
-	 * @param list
-	 *            A list of candidates to contain the name.
+	 *            The feature we want to learn the attribute of.
+	 * @param attributeNames
+	 *            A list of attribute-name candidates
 	 * @return
-	 *         The name of the feature, null if no name could be found.
+	 *         The value of the feature attribute, null if no attribute with a fitting attribute-name could be found.
 	 */
-	public static String sniffShapeName(SimpleFeature feature, List<String> list) {
-		String shapeName = null;
+	public static String sniffShapeAttribute(SimpleFeature feature, List<String> attributeNames) {
+		String shapeAttribute = null;
 		// all these attributes can hold the region name
-		for (String attr : list) {
-			shapeName = (String) feature.getAttribute(attr);
-			if (shapeName != null) {
+		for (String attr : attributeNames) {
+			shapeAttribute = (String) feature.getAttribute(attr);
+			if (shapeAttribute != null) {
 				break;
 			}
 		}
-		if (shapeName == null) {
-			logger.error("No name for the shape could be found");
+		if (shapeAttribute == null) {
+			logger.error("No attribute for the shape could be found");
 			return null;
 		}
 
-		return shapeName.replaceAll("\\W", "").toLowerCase();
+		return shapeAttribute.replaceAll("\\W", "").toLowerCase();
 	}
 
 	/**

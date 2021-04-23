@@ -15,6 +15,8 @@ public interface Validations {
 	String afterDateWithDate = "afterDateWithDate";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
+	String birthDateInFuture = "birthDateInFuture";
+	String birthDateInvalid = "birthDateInvalid";
 	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
@@ -113,6 +115,8 @@ public interface Validations {
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
+	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
+	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
 	String required = "required";
 	String softAddEntryToList = "softAddEntryToList";

@@ -65,6 +65,11 @@
                     app:value="@={data.testType}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_pcrTestSpecification"
+                    app:value="@={data.pcrTestSpecification}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/pathogenTest_testTypeText"
                     style="@style/ControlSingleColumnStyle"
@@ -78,6 +83,11 @@
                     android:id="@+id/pathogenTest_testedDisease"
                     app:required="true"
                     app:value="@={data.testedDisease}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_testedDiseaseVariant"
+                    app:value="@={data.testedDiseaseVariant}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

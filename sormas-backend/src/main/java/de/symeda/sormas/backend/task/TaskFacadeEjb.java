@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
@@ -330,6 +331,13 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.getAllActiveTasksAfter(date, user).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<TaskIndexDto> getIndexPage(TaskCriteria taskCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<TaskIndexDto> taskIndexList = getIndexList(taskCriteria, offset, size, sortProperties);
+		long totalElementCount = count(taskCriteria);
+		return new Page<TaskIndexDto>(taskIndexList, offset, size, totalElementCount);
 	}
 
 	@Override

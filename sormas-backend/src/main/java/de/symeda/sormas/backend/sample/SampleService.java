@@ -18,6 +18,9 @@
 package de.symeda.sormas.backend.sample;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,10 +31,13 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -39,6 +45,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -73,6 +81,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -461,20 +471,34 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (criteria.getCaseCodeIdLike() != null) {
 			String[] textFilters = criteria.getCaseCodeIdLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
-						cb.like(cb.lower(joins.getCaze().get(Case.EPID_NUMBER)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.LAB_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(sample.get(Sample.FIELD_SAMPLE_ID)), textFilter),
-						cb.like(cb.lower(joins.getLab().get(Facility.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.LAB_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.FIELD_SAMPLE_ID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getLab().get(Facility.NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
+		}
+
+		if (criteria.getCaseUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
 		}
 
 		return filter;
@@ -501,6 +525,91 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		super.delete(sample);
+	}
+
+	/**
+	 * @param sampleUuids
+	 *            {@link Sample}s identified by {@code List<String> sampleUuids} to be deleted.
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void deleteAll(List<String> sampleUuids) {
+
+		List<Sample> samplesList = getByUuids(sampleUuids);
+		List<String> pathogenTestUUIDsList = new ArrayList<>();
+		List<String> additionalTestUUIDsList = new ArrayList<>();
+		for (Sample sample : samplesList) {
+			// Mark all pathogen tests of this sample as deleted
+			if (!sample.getPathogenTests().isEmpty()) {
+				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+					pathogenTestUUIDsList.add(pathogenTest.getUuid());
+				}
+			}
+
+			// Delete all additional tests of this sample
+			if (!sample.getPathogenTests().isEmpty()) {
+				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+					additionalTestUUIDsList.add(additionalTest.getUuid());
+				}
+			}
+		}
+
+		long startTime;
+		if (pathogenTestUUIDsList.size() > 0) {
+			startTime = DateHelper.startTime();
+			IterableHelper.executeBatched(
+					pathogenTestUUIDsList,
+					pathogenTestUUIDsList.size(),
+					batchedSampleUuids -> pathogenTestService.delete(pathogenTestUUIDsList));
+			logger.debug(
+					"pathogenTestService.delete(pathogenTestUUIDsList) = {}, {}ms",
+					pathogenTestUUIDsList.size(),
+					DateHelper.durationMillies(startTime));
+		}
+
+		if (additionalTestUUIDsList.size() > 0) {
+			startTime = DateHelper.startTime();
+			IterableHelper.executeBatched(
+					additionalTestUUIDsList,
+					additionalTestUUIDsList.size(),
+					batchedSampleUuids -> additionalTestService.delete(additionalTestUUIDsList));
+			logger.debug(
+					"additionalTestService.delete(additionalTestUUIDsList) = {}, {}ms",
+					additionalTestUUIDsList.size(),
+					DateHelper.durationMillies(startTime));
+		}
+
+		for (Sample sample : samplesList) {
+			// Remove the reference from another sample to this sample if existing
+			Sample referralSample = getReferredFrom(sample.getUuid());
+			if (referralSample != null) {
+				referralSample.setReferredTo(null);
+				ensurePersisted(referralSample);
+			}
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Sample> cu = cb.createCriteriaUpdate(Sample.class);
+		Root<Sample> root = cu.from(Sample.class);
+
+		cu.set(Sample.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Sample.DELETED), true);
+
+		cu.where(root.get(Sample.UUID).in(sampleUuids));
+
+		em.createQuery(cu).executeUpdate();
+
+		Map<String, Case> stringCaseMap = new HashMap<>();
+		for (Sample sample : samplesList) {
+			final Case associatedCase = sample.getAssociatedCase();
+			if (associatedCase != null) {
+				stringCaseMap.put(associatedCase.getUuid(), associatedCase);
+			}
+		}
+
+		for (Map.Entry<String, Case> entry : stringCaseMap.entrySet()) {
+			Case associatedCase = entry.getValue();
+			caseFacade.onCaseSampleChanged(associatedCase);
+		}
 	}
 
 	/**
