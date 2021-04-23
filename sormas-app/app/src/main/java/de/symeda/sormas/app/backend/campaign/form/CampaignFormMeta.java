@@ -147,4 +147,9 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
+	@Override
+	public String toString() {
+		return getFormName();
+	}
 }

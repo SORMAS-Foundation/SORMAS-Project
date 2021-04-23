@@ -39,6 +39,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.region.Area;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.Continent;
 import de.symeda.sormas.app.backend.region.Country;
@@ -125,6 +126,13 @@ public final class InfrastructureDaoHelper {
 			.collect(Collectors.toList());
 	}
 
+	public static List<Item> loadAreas() {
+		return toItems(DatabaseHelper.getAreaDao().queryActiveForAll());
+	}
+	public static List<Item> loadRegionsByArea(Area area) {
+		return toItems(DatabaseHelper.getRegionDao().queryActiveByArea(area));
+	}
+
 	public static List<Item> loadRegionsByServerCountry() {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveByServerCountry());
 	}
@@ -139,6 +147,10 @@ public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadDistricts(Region region) {
 		return toItems(region != null ? DatabaseHelper.getDistrictDao().getByRegion(region) : new ArrayList<>(), true);
+	}
+
+	public static List<Item> loadAllCommunities() {
+		return toItems(DatabaseHelper.getCommunityDao().queryActiveForAll());
 	}
 
 	public static List<Item> loadCommunities(District district) {
@@ -157,6 +169,90 @@ public final class InfrastructureDaoHelper {
 
 	public static List<Item> loadPointsOfEntry(District district) {
 		return toItems(district != null ? DatabaseHelper.getPointOfEntryDao().getActiveByDistrict(district, true) : new ArrayList<>(), true);
+	}
+
+	public static void initializeRegionAreaFields(
+		final ControlSpinnerField areaField,
+		List<Item> initialAreas,
+		Area initialArea,
+		final ControlSpinnerField regionField,
+		List<Item> initialRegions,
+		Region initialRegion,
+		final ControlSpinnerField districtField,
+		List<Item> initialDistricts,
+		District initialDistrict,
+		final ControlSpinnerField communityField,
+		List<Item> initialCommunities,
+		Community initialCommunity) {
+
+		Item areaItem = initialArea != null ? DataUtils.toItem(initialArea) : null;
+		Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
+		Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
+		Item communityItem = initialCommunity != null ? DataUtils.toItem(initialCommunity) : null;
+
+		if (areaItem != null && !initialAreas.contains(areaItem)) {
+			initialAreas.add(areaItem);
+		}
+		if (regionItem != null && !initialRegions.contains(regionItem)) {
+			initialRegions.add(regionItem);
+		}
+		if (districtItem != null && !initialDistricts.contains(districtItem)) {
+			initialDistricts.add(districtItem);
+		}
+		if (communityItem != null && !initialCommunities.contains(communityItem)) {
+			initialCommunities.add(communityItem);
+		}
+
+		areaField.initializeSpinner(initialAreas, field -> {
+			Area selectedArea = (Area) field.getValue();
+			if (selectedArea != null) {
+				List<Item> newRegions = loadRegionsByArea(selectedArea);
+				if (initialRegion != null && selectedArea.equals(initialRegion.getArea()) && !newRegions.contains(regionItem)) {
+					newRegions.add(regionItem);
+				}
+				regionField.setSpinnerData(newRegions, regionField.getValue());
+			} else {
+				regionField.setSpinnerData(null);
+			}
+		});
+
+		regionField.initializeSpinner(initialRegions, field -> {
+			Region selectedRegion = (Region) field.getValue();
+			if (selectedRegion != null) {
+				List<Item> newDistricts = loadDistricts(selectedRegion);
+				if (initialDistrict != null && selectedRegion.equals(initialDistrict.getRegion()) && !newDistricts.contains(districtItem)) {
+					newDistricts.add(districtItem);
+				}
+				districtField.setSpinnerData(newDistricts, districtField.getValue());
+
+				areaField.setValue(selectedRegion.getArea());
+			} else {
+				districtField.setSpinnerData(null);
+			}
+		});
+
+		if (communityField != null) {
+			districtField.initializeSpinner(initialDistricts, field -> {
+				District selectedDistrict = (District) field.getValue();
+				if (selectedDistrict != null) {
+					List<Item> newCommunities = loadCommunities(selectedDistrict);
+					if (initialCommunity != null
+						&& selectedDistrict.equals(initialCommunity.getDistrict())
+						&& !newCommunities.contains(communityItem)) {
+						newCommunities.add(communityItem);
+					}
+					communityField.setSpinnerData(newCommunities, communityField.getValue());
+				} else {
+					communityField.setSpinnerData(null);
+				}
+			});
+		} else {
+			districtField.initializeSpinner(initialDistricts);
+		}
+
+		if (communityField != null) {
+			communityField.initializeSpinner(initialCommunities);
+		}
 	}
 
 	public static void initializeRegionFields(

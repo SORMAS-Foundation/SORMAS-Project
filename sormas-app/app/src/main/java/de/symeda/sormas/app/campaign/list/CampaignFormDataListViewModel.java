@@ -11,47 +11,47 @@ import androidx.paging.PositionalDataSource;
 
 import java.util.List;
 
-import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 public class CampaignFormDataListViewModel extends ViewModel {
 
-    private LiveData<PagedList<CampaignFormData>> campaignsList;
-    private CampaignsDataFactory campaignsDataFactory;
+    private LiveData<PagedList<CampaignFormData>> campaignFormDataList;
+    private CampaignFormDataFactory campaignFormDataFactory;
 
     public CampaignFormDataListViewModel() {
-        campaignsDataFactory = new CampaignsDataFactory();
+        campaignFormDataFactory = new CampaignFormDataFactory();
         CampaignFormDataCriteria campaignFormDataCriteria = new CampaignFormDataCriteria();
-        campaignsDataFactory.setCampaignFormDataCriteria(campaignFormDataCriteria);
+        campaignFormDataFactory.setCampaignFormDataCriteria(campaignFormDataCriteria);
         PagedList.Config config = new PagedList.Config.Builder().setEnablePlaceholders(true).setInitialLoadSizeHint(32).setPageSize(16).build();
 
-        LivePagedListBuilder campaignsListBuilder = new LivePagedListBuilder(campaignsDataFactory, config);
-        campaignsList = campaignsListBuilder.build();
+        LivePagedListBuilder campaignsListBuilder = new LivePagedListBuilder(campaignFormDataFactory, config);
+        campaignFormDataList = campaignsListBuilder.build();
     }
 
-    public LiveData<PagedList<CampaignFormData>> getCampaigns() {
-        return campaignsList;
+    public LiveData<PagedList<CampaignFormData>> getCampaignFormDataList() {
+        return campaignFormDataList;
     }
 
     void notifyCriteriaUpdated() {
-        if (campaignsList.getValue() != null) {
-            campaignsList.getValue().getDataSource().invalidate();
-            if (!campaignsList.getValue().isEmpty()) {
-                campaignsList.getValue().loadAround(0);
+        if (campaignFormDataList.getValue() != null) {
+            campaignFormDataList.getValue().getDataSource().invalidate();
+            if (!campaignFormDataList.getValue().isEmpty()) {
+                campaignFormDataList.getValue().loadAround(0);
             }
         }
     }
 
     public CampaignFormDataCriteria getCriteria() {
-        return campaignsDataFactory.getCampaignFormDataCriteria();
+        return campaignFormDataFactory.getCampaignFormDataCriteria();
     }
 
-    public static class CampaignDataSource extends PositionalDataSource<CampaignFormData> {
+    public static class CampaignFormDataDataSource extends PositionalDataSource<CampaignFormData> {
 
         private CampaignFormDataCriteria campaignFormDataCriteria;
 
-        CampaignDataSource(CampaignFormDataCriteria campaignFormDataCriteria) {
+        CampaignFormDataDataSource(CampaignFormDataCriteria campaignFormDataCriteria) {
             this.campaignFormDataCriteria = campaignFormDataCriteria;
         }
 
@@ -63,41 +63,41 @@ public class CampaignFormDataListViewModel extends ViewModel {
             if (offset + count > totalCount) {
                 offset = (int) Math.max(0, totalCount - count);
             }
-            List<CampaignFormData> cases = DatabaseHelper.getCampaignFormDataDao().queryByCriteria(campaignFormDataCriteria, offset, count);
-            callback.onResult(cases, offset, (int) totalCount);
+            List<CampaignFormData> formDataList = DatabaseHelper.getCampaignFormDataDao().queryByCriteria(campaignFormDataCriteria, offset, count);
+            callback.onResult(formDataList, offset, (int) totalCount);
         }
 
         @Override
         public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<CampaignFormData> callback) {
-            List<CampaignFormData> campaigns = DatabaseHelper.getCampaignFormDataDao().queryByCriteria(campaignFormDataCriteria, params.startPosition, params.loadSize);
-            callback.onResult(campaigns);
+            List<CampaignFormData> formDataList = DatabaseHelper.getCampaignFormDataDao().queryByCriteria(campaignFormDataCriteria, params.startPosition, params.loadSize);
+            callback.onResult(formDataList);
         }
     }
 
-    public static class CampaignsDataFactory extends DataSource.Factory {
+    public static class CampaignFormDataFactory extends DataSource.Factory {
 
-        private MutableLiveData<CampaignDataSource> mutableDataSource;
-        private CampaignDataSource campaignDataSource;
+        private MutableLiveData<CampaignFormDataDataSource> mutableDataSource;
+        private CampaignFormDataDataSource campaignFormDataDataSource;
         private CampaignFormDataCriteria campaignFormDataCriteria;
 
-        CampaignsDataFactory() {
+        CampaignFormDataFactory() {
             this.mutableDataSource = new MutableLiveData<>();
         }
 
         @NonNull
         @Override
         public DataSource create() {
-            campaignDataSource = new CampaignDataSource(campaignFormDataCriteria);
-            mutableDataSource.postValue(campaignDataSource);
-            return campaignDataSource;
+            campaignFormDataDataSource = new CampaignFormDataDataSource(campaignFormDataCriteria);
+            mutableDataSource.postValue(campaignFormDataDataSource);
+            return campaignFormDataDataSource;
         }
 
-        void setCampaignFormDataCriteria(CampaignFormDataCriteria campaignFormDataCriteria) {
-            this.campaignFormDataCriteria = campaignFormDataCriteria;
-        }
-
-        CampaignFormDataCriteria getCampaignFormDataCriteria() {
+        public CampaignFormDataCriteria getCampaignFormDataCriteria() {
             return campaignFormDataCriteria;
+        }
+
+        public void setCampaignFormDataCriteria(CampaignFormDataCriteria campaignFormDataCriteria) {
+            this.campaignFormDataCriteria = campaignFormDataCriteria;
         }
     }
 }

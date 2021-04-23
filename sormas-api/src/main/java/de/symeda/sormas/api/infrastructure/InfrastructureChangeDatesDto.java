@@ -10,6 +10,7 @@ public class InfrastructureChangeDatesDto implements Serializable {
 	private Date continentChangeDate;
 	private Date subcontinentChangeDate;
 	private Date countryChangeDate;
+	private Date areaChangeDate;
 	private Date regionChangeDate;
 	private Date districtChangeDate;
 	private Date communityChangeDate;
@@ -45,6 +46,14 @@ public class InfrastructureChangeDatesDto implements Serializable {
 
 	public void setCountryChangeDate(Date countryChangeDate) {
 		this.countryChangeDate = countryChangeDate;
+	}
+
+	public Date getAreaChangeDate() {
+		return areaChangeDate;
+	}
+
+	public void setAreaChangeDate(Date areaChangeDate) {
+		this.areaChangeDate = areaChangeDate;
 	}
 
 	public Date getRegionChangeDate() {

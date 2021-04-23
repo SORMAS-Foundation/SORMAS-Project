@@ -207,6 +207,7 @@ public interface Captions {
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
+	String CampaignFormData_formValuesJson = "CampaignFormData.formValuesJson";
 	String campaignNewCampaign = "campaignNewCampaign";
 	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";

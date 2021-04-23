@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.app.component.controls;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -35,6 +29,12 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.InverseBindingListener;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -138,8 +138,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initTextView();
+	}
+
+	protected void initTextView() {
 		textView = (TextView) this.findViewById(R.id.text_view);
-		textView.setMaxLines(maxLines);
+		textView.setMaxLines(getMaxLines());
 		textView.setImeOptions(getImeOptions());
 		textView.setTextAlignment(getTextAlignment());
 		if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {

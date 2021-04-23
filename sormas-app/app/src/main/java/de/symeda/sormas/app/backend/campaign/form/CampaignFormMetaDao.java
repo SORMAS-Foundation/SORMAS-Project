@@ -51,7 +51,7 @@ public class CampaignFormMetaDao extends AbstractAdoDao<CampaignFormMeta> {
 			queryBuilder.distinct();
 			QueryBuilder<CampaignFormData, Long> campaignFormDataQueryBuilder = DatabaseHelper.getCampaignFormDataDao().queryBuilder();
 			if (campaign != null) {
-				campaignFormDataQueryBuilder.where().eq(CampaignFormData.CAMPAIGN_ID, campaign.getId());
+				campaignFormDataQueryBuilder.where().eq(CampaignFormData.CAMPAIGN + "_id", campaign.getId());
 			}
 
 			return queryBuilder.join(campaignFormDataQueryBuilder).orderBy(CampaignFormMeta.FORM_NAME, false).query();
@@ -61,3 +61,4 @@ public class CampaignFormMetaDao extends AbstractAdoDao<CampaignFormMeta> {
 		}
 	}
 }
+
