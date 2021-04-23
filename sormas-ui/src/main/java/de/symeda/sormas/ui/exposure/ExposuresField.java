@@ -126,25 +126,20 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private void addGeneratedColumns(Table table) {
 		table.addGeneratedColumn(COLUMN_EXPOSURE_TYPE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			String exposureString = "";
-			exposureString =
+			String exposureString =
 				ExposureType.OTHER != exposure.getExposureType() ? exposure.getExposureType().toString() : exposure.getExposureTypeDetails();
 
 			// if possible, always display "lowest-level" activity type (e.g. show type of gathering instead of just "gathering")
 			if (exposure.getExposureType() == ExposureType.GATHERING && exposure.getGatheringType() != null) {
 				exposureString += " - " + (exposure.getGatheringType() != GatheringType.OTHER
 					? exposure.getGatheringType().toString()
-					: ((exposure.getGatheringDetails() != null && !exposure.getGatheringDetails().isEmpty())
-						? exposure.getGatheringDetails()
-						: GatheringType.OTHER.toString()));
+					: (StringUtils.isNotEmpty(exposure.getGatheringDetails()) ? exposure.getGatheringDetails() : GatheringType.OTHER.toString()));
 			}
 
 			if (exposure.getExposureType() == ExposureType.HABITATION && exposure.getHabitationType() != null) {
 				exposureString += " - " + (exposure.getHabitationType() != HabitationType.OTHER
 					? exposure.getHabitationType().toString()
-					: (exposure.getHabitationDetails() != null && !exposure.getHabitationDetails().isEmpty()
-						? exposure.getHabitationDetails()
-						: HabitationType.OTHER.toString()));
+					: (StringUtils.isNotEmpty(exposure.getHabitationDetails()) ? exposure.getHabitationDetails() : HabitationType.OTHER.toString()));
 			}
 
 			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT) {
@@ -185,14 +180,14 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			String typeOfPlaceString = "";
+			String typeOfPlaceString;
 
 			if (exposure.getTypeOfPlace() == null) {
 				return "";
 			} else if (exposure.getTypeOfPlace() == TypeOfPlace.FACILITY && exposure.getLocation().getFacilityType() != null) {
 				typeOfPlaceString = exposure.getLocation().getFacilityType().toString();
 
-				if (exposure.getLocation().getFacilityDetails() != null && !exposure.getLocation().getFacilityDetails().isEmpty()) {
+				if (StringUtils.isNotEmpty(exposure.getLocation().getFacilityDetails())) {
 					typeOfPlaceString += " - " + exposure.getLocation().getFacilityDetails();
 				} else if (exposure.getLocation().getFacility() != null) {
 					typeOfPlaceString += " - " + exposure.getLocation().getFacility().toString();
@@ -202,15 +197,13 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					? TypeOfPlace.MEANS_OF_TRANSPORT.toString()
 					: (exposure.getMeansOfTransport() != MeansOfTransport.OTHER
 						? exposure.getMeansOfTransport().toString()
-						: ((exposure.getMeansOfTransportDetails() != null && !exposure.getMeansOfTransportDetails().isEmpty())
+						: ((StringUtils.isNotEmpty(exposure.getMeansOfTransportDetails()))
 							? exposure.getMeansOfTransportDetails()
 							: TypeOfPlace.MEANS_OF_TRANSPORT.toString()));
 			} else {
 				typeOfPlaceString = exposure.getTypeOfPlace() != TypeOfPlace.OTHER
 					? exposure.getTypeOfPlace().toString()
-					: ((exposure.getTypeOfPlaceDetails() != null && !exposure.getTypeOfPlaceDetails().isEmpty())
-						? exposure.getTypeOfPlaceDetails()
-						: TypeOfPlace.OTHER.toString());
+					: (StringUtils.isNotEmpty(exposure.getTypeOfPlaceDetails()) ? exposure.getTypeOfPlaceDetails() : TypeOfPlace.OTHER.toString());
 			}
 
 			return typeOfPlaceString;
