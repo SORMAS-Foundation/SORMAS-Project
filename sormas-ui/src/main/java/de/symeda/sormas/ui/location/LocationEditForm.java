@@ -336,7 +336,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 					@Override
 					public String getFormattedHtmlMessage() {
-						return "You cannot select a facility without selecting a district.";
+						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
 					}
 				});
 			} else if (facilityType.getValue() != null) {
@@ -409,7 +409,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 					@Override
 					public String getFormattedHtmlMessage() {
-						return "You cannot select a facility without selecting a district.";
+						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
 					}
 				});
 			}

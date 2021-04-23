@@ -605,6 +605,7 @@ public interface Strings {
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
+	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
