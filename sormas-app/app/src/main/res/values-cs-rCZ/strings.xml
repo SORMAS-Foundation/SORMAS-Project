@@ -265,6 +265,7 @@
     <string name="heading_app_update_required">Vyžadována aktualizace aplikace</string>
     <string name="heading_burial">Pohřbení</string>
     <string name="heading_burials_visited">Navštívené pohřby</string>
+    <string name="heading_campaigns_list">Data kampaně</string>
     <string name="heading_case_disease_changed">Nemoc případu se změnila</string>
     <string name="heading_case_edit">Upravit případ</string>
     <string name="heading_case_new">Nový případ</string>

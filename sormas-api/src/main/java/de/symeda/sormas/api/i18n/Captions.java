@@ -207,6 +207,7 @@ public interface Captions {
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
+	String CampaignFormData_formValuesJson = "CampaignFormData.formValuesJson";
 	String campaignNewCampaign = "campaignNewCampaign";
 	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
@@ -1155,6 +1156,10 @@ public interface Captions {
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
+	String Facility_contactPersonEmail = "Facility.contactPersonEmail";
+	String Facility_contactPersonFirstName = "Facility.contactPersonFirstName";
+	String Facility_contactPersonLastName = "Facility.contactPersonLastName";
+	String Facility_contactPersonPhone = "Facility.contactPersonPhone";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_houseNumber = "Facility.houseNumber";
@@ -1280,6 +1285,10 @@ public interface Captions {
 	String Location_addressType = "Location.addressType";
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
+	String Location_contactPersonEmail = "Location.contactPersonEmail";
+	String Location_contactPersonFirstName = "Location.contactPersonFirstName";
+	String Location_contactPersonLastName = "Location.contactPersonLastName";
+	String Location_contactPersonPhone = "Location.contactPersonPhone";
 	String Location_details = "Location.details";
 	String Location_facility = "Location.facility";
 	String Location_facilityDetails = "Location.facilityDetails";
@@ -1370,11 +1379,13 @@ public interface Captions {
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
+	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
+	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
@@ -1392,6 +1403,7 @@ public interface Captions {
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String Person = "Person";
+	String Person_additionalDetails = "Person.additionalDetails";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";
 	String Person_ageAndBirthDate = "Person.ageAndBirthDate";

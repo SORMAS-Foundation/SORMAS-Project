@@ -1179,7 +1179,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.completeness = completeness;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

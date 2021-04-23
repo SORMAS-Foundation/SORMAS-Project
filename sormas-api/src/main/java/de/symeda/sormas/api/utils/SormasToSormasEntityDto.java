@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.utils;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public interface SormasToSormasEntityDto {
 
@@ -24,4 +25,8 @@ public interface SormasToSormasEntityDto {
 	void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
 
 	boolean isOwnershipHandedOver();
+
+	UserReferenceDto getReportingUser();
+
+	void setReportingUser(UserReferenceDto user);
 }

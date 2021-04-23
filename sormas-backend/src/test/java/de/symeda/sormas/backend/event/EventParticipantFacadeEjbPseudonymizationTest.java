@@ -168,7 +168,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			e.getEventLocation().setCommunity(rdcf.community);
 		});
 
-		PersonDto person = creator.createPerson("John", "Smith", Sex.MALE, null, null, 23, p -> {
+		PersonDto person = creator.createPerson("John", "Smith", Sex.MALE, 1980, 10, 23, p -> {
 			p.getAddress().setStreet("Test Street");
 			p.getAddress().setHouseNumber("Test Number");
 			p.getAddress().setAdditionalInformation("Test Information");

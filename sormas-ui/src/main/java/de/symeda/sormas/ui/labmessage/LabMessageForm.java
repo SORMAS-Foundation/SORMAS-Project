@@ -12,6 +12,10 @@ import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.naming.NamingException;
 
 public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 
@@ -24,6 +28,8 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 	//@formatter:on
 
 	private Label labMessageDetails;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public LabMessageForm() {
 		super(LabMessageDto.class, LabMessageDto.I18N_PREFIX);
@@ -46,17 +52,23 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 	@Override
 	public void setValue(LabMessageDto labMessage) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(labMessage);
-		ExternalMessageResult<String> htmlConversionResult = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessage);
-		if (htmlConversionResult.isSuccess()) {
-			labMessageDetails.setValue(htmlConversionResult.getValue());
-			labMessageDetails.setContentMode(ContentMode.HTML);
-		} else {
+		getFieldGroup().setReadOnly(true);
+		try {
+			ExternalMessageResult<String> htmlConversionResult = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessage);
+			if (htmlConversionResult.isSuccess()) {
+				labMessageDetails.setValue(htmlConversionResult.getValue());
+				labMessageDetails.setContentMode(ContentMode.HTML);
+			} else {
+				String unformattedXml = labMessage.getLabMessageDetails();
+				this.labMessageDetails.setValue(unformattedXml);
+				this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
+				VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
+			}
+		} catch (NamingException e) {
 			String unformattedXml = labMessage.getLabMessageDetails();
 			this.labMessageDetails.setValue(unformattedXml);
 			this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
-			VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
+			logger.error(e.getMessage());
 		}
-
-		getFieldGroup().setReadOnly(true);
 	}
 }

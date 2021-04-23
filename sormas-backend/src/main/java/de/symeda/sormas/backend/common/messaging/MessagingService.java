@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
@@ -88,6 +88,8 @@ public class MessagingService {
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	/**
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
@@ -104,29 +106,19 @@ public class MessagingService {
 		sendMessage(recipient, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
 	}
 
-
 	/**
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public void sendMessage(
-			User recipient,
-			MessageSubject subject,
-			Object[] subjectParameters,
-			String messageContent,
-			MessageType... messageTypes)
-			throws NotificationDeliveryFailedException {
+	public void sendMessage(User recipient, MessageSubject subject, Object[] subjectParameters, String messageContent, MessageType... messageTypes)
+		throws NotificationDeliveryFailedException {
 
 		// Don't send notifications if the feature is disabled for the current MessageSubject
 		if (!featureConfigurationFacade.isFeatureEnabled(subject.getRelatedFeatureType())) {
 			return;
 		}
 
-		sendMessage(
-				recipient,
-				String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
-				messageContent,
-				messageTypes);
+		sendMessage(recipient, String.format(I18nProperties.getEnumCaption(subject), subjectParameters), messageContent, messageTypes);
 	}
 
 	private void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
@@ -167,16 +159,18 @@ public class MessagingService {
 		final String recipientType,
 		MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
+
+		boolean isSmsServiceSetUp = configFacade.isSmsServiceSetUp();
 		for (MessageType messageType : messageTypes) {
 			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
 				logger.info(String.format("Tried to send an email to a " + recipientType + " without an email address (UUID: %s).", recipientUuid));
-			} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
+			} else if (isSmsServiceSetUp && messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
 				logger.info(String.format("Tried to send an SMS to a " + recipientType + " without a phone number (UUID: %s).", recipientUuid));
 			} else {
 				try {
 					if (messageType == MessageType.EMAIL) {
 						emailService.sendEmail(emailAddress, subject, messageContent);
-					} else if (messageType == MessageType.SMS) {
+					} else if (isSmsServiceSetUp && messageType == MessageType.SMS) {
 						smsService.sendSms(phoneNumber, messageContent);
 					}
 				} catch (MessagingException e) {

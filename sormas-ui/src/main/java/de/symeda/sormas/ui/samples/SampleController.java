@@ -19,8 +19,14 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -79,6 +85,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import static de.symeda.sormas.ui.samples.PathogenTestController.showCaseUpdateWithNewDiseaseVariantDialog;
+
 public class SampleController {
 
 	public SampleController() {
@@ -114,7 +122,15 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer) {
+		return getSampleCreateComponent(sampleDto, consumer, ()-> {});
+	}
+
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
+		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {}, callback);
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer, Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -124,7 +140,7 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm);
+				saveSample(createForm, consumer);
 				callback.run();
 			}
 		});
@@ -167,6 +183,10 @@ public class SampleController {
 	}
 
 	private void saveSample(SampleCreateForm createForm) {
+		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {}));
+	}
+
+	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer) {
 
 		final SampleDto newSample = createForm.getValue();
 		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
@@ -178,6 +198,7 @@ public class SampleController {
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			pathogenTest.setPcrTestSpecification((PCRTestSpecification) (createForm.getField(PathogenTestDto.PCR_TEST_SPECIFICATION)).getValue());
 
 			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
 			if (dateField != null) {
@@ -190,6 +211,7 @@ public class SampleController {
 			}
 
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			pathogenTest.setTestedDiseaseVariant((DiseaseVariantReferenceDto) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
@@ -205,8 +227,24 @@ public class SampleController {
 				}
 			}
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
-			FacadeProvider.getSampleFacade().saveSample(newSample);
-			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
+			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
+			if (associatedCase != null) {
+				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+				Runnable caseDiseaseVariantCallback = () -> {
+					if (pathogenTest.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+							&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+							&& pathogenTest.getTestResultVerified().booleanValue() == true) {
+						showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
+					}
+				};
+
+				caseDiseaseVariantCallback.run();
+			}
+
+			consumer.accept(savedSample, savedPathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
@@ -221,7 +259,8 @@ public class SampleController {
 				}
 			}
 		} else {
-			FacadeProvider.getSampleFacade().saveSample(newSample);
+			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
+			consumer.accept(savedSample, null);
 		}
 	}
 
@@ -417,9 +456,8 @@ public class SampleController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), () -> {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()));
-					}
+					List<String> sampleIndexDtoList = selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList());
+					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList);
 					callback.run();
 					new Notification(
 						I18nProperties.getString(Strings.headingSamplesDeleted),

@@ -473,7 +473,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/exposure_location"
-                    app:maxLines="3"
+                    app:maxLines="4"
                     app:value="@{data.location}"
                     style="@style/ControlSingleColumnStyle" />
 

@@ -1698,4 +1698,63 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(case1.getUuid(), casesByPerson.get(0).getUuid());
 		assertEquals(case2.getUuid(), casesByPerson.get(1).getUuid());
 	}
+
+	@Test
+	public void testUpdateFollowUpUntilAndStatus() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+
+		VisitDto visit = creator
+			.createVisit(caze.getDisease(), cazePerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE, VisitOrigin.USER);
+
+		// Follow-up until should be increased by one day
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21 + 1), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+
+		visit.setVisitStatus(VisitStatus.COOPERATIVE);
+		visit = getVisitFacade().saveVisit(visit);
+
+		// Follow-up until should be back at the original date and follow-up should be completed
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(FollowUpStatus.COMPLETED, caze.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+
+		// Manually overwrite and increase the follow-up until date
+		caze.setFollowUpUntil(DateUtils.addDays(new Date(), 23));
+		caze.setOverwriteFollowUpUntil(true);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
+
+		// Add a cooperative visit AFTER the follow-up until date; should set follow-up to completed
+		visit.setVisitStatus(VisitStatus.UNAVAILABLE);
+		visit.setVisitDateTime(caze.getFollowUpUntil());
+		getVisitFacade().saveVisit(visit);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
+		creator
+			.createVisit(caze.getDisease(), cazePerson.toReference(), DateUtils.addDays(new Date(), 24), VisitStatus.COOPERATIVE, VisitOrigin.USER);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(FollowUpStatus.COMPLETED, caze.getFollowUpStatus());
+
+		// Increasing the onset date should extend follow-up
+		caze.getSymptoms().setOnsetDate(DateHelper.addDays(caze.getSymptoms().getOnsetDate(), 10));
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21 + 10), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+	}
 }

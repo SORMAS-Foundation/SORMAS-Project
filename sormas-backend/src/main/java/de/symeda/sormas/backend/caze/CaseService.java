@@ -25,10 +25,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -79,7 +77,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -563,6 +560,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else if (caseCriteria.getFollowUpUntilTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
 		}
+		if (caseCriteria.getSymptomJournalStatus() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
+		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
@@ -743,8 +744,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
 			for (String textFilter : textFilters) {
 				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, reportingUser.get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter));
@@ -1202,16 +1203,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
-
-			Date untilDate = CaseLogic.getFollowUpUntilDate(
+			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
+			Date untilDate = CaseLogic.calculateFollowUpUntilDate(
 				caseDto,
 				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()));
+				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+				false);
 			caze.setFollowUpUntil(untilDate);
+			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
+				caze.setOverwriteFollowUpUntil(false);
+			}
 			if (changeStatus) {
-
 				Visit lastVisit = caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
-				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), untilDate)) {
+				if (lastVisit != null && !DateHelper.getStartOfDay(lastVisit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))) {
 					caze.setFollowUpStatus(FollowUpStatus.COMPLETED);
 				} else {
 					caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
@@ -1220,12 +1224,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		}
 
-		if (statusChangedBySystem) {
-			caze.setFollowUpStatusChangeDate(null);
-			caze.setFollowUpStatusChangeUser(null);
-		} else if (followUpStatusChangedByUser) {
+		if (followUpStatusChangedByUser) {
 			caze.setFollowUpStatusChangeDate(new Date());
 			caze.setFollowUpStatusChangeUser(getCurrentUser());
+		} else if (statusChangedBySystem) {
+			caze.setFollowUpStatusChangeDate(null);
+			caze.setFollowUpStatusChangeUser(null);
 		}
 
 		ensurePersisted(caze);

@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +29,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
@@ -87,6 +87,7 @@ public final class RetroProvider {
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
+	private AreaFacadeRetro areaFacadeRetro;
 	private ContinentFacadeRetro continentFacadeRetro;
 	private SubcontinentFacadeRetro subcontinentFacadeRetro;
 	private CountryFacadeRetro countryFacadeRetro;
@@ -509,6 +510,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.districtFacadeRetro;
+	}
+
+	public static AreaFacadeRetro getAreaFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.areaFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.areaFacadeRetro == null) {
+					instance.areaFacadeRetro = instance.retrofit.create(AreaFacadeRetro.class);
+				}
+			}
+		}
+		return instance.areaFacadeRetro;
 	}
 
 	public static ContinentFacadeRetro getContinentFacade() throws NoConnectionException {

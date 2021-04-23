@@ -7000,8 +7000,8 @@ ALTER TABLE country ADD CONSTRAINT fk_country_subcontinent_id FOREIGN KEY (subco
 INSERT INTO schema_version (version_number, comment) VALUES (352, '2020-03-17 Create continent and subcontinent #4775');
 
 -- 2021-03-22 Provide SQL function to generate a UUIDv4 encoded as base32 #4805
-DROP FUNCTION IF EXISTS encode_base32;
-DROP FUNCTION IF EXISTS generate_base32_uuid;
+DROP FUNCTION IF EXISTS encode_base32(bytea,int);
+DROP FUNCTION IF EXISTS generate_base32_uuid();
 
 /** base 32 encoding based on de.symeda.sormas.api.utils.Base32 **/
 CREATE FUNCTION encode_base32(bytes bytea, separatorBlockSize int)
@@ -7170,5 +7170,50 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_hist
 ALTER TABLE events_eventgroups_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (360, 'Management of EventGroups #4571');
+
+
+-- 2020-04-06 Add contact person details to facilities #4755
+ALTER TABLE facility ADD COLUMN contactPersonFirstName text;
+ALTER TABLE facility ADD COLUMN contactPersonLastName text;
+ALTER TABLE facility ADD COLUMN contactPersonPhone text;
+ALTER TABLE facility ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location ADD COLUMN contactPersonLastName text;
+ALTER TABLE location ADD COLUMN contactPersonPhone text;
+ALTER TABLE location ADD COLUMN contactPersonEmail text;
+
+ALTER TABLE location_history ADD COLUMN contactPersonFirstName text;
+ALTER TABLE location_history ADD COLUMN contactPersonLastName text;
+ALTER TABLE location_history ADD COLUMN contactPersonPhone text;
+ALTER TABLE location_history ADD COLUMN contactPersonEmail text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (361, '#4755 Add contact person details to facilities');
+
+-- 2021-03-26 [DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853
+ALTER TABLE labmessage ADD COLUMN pathogentest_id BIGINT;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_pathogentest FOREIGN KEY(pathogentest_id) REFERENCES pathogentest(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (362, '[DEMIS Interface] visualize respective lab messages in sample and pathogen test sections #4853');
+
+-- 2021-04-20 Change column type of case additional details #5148
+ALTER TABLE cases ALTER COLUMN additionaldetails TYPE text;
+ALTER TABLE cases_history ALTER COLUMN additionaldetails TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (363, 'Change column type of case additional details #5148');
+
+-- 2021-04-12 Add additional details to person #3936
+ALTER TABLE person ADD COLUMN additionaldetails text;
+ALTER TABLE person_history ADD COLUMN additionaldetails text;
+INSERT INTO schema_version (version_number, comment) VALUES (364, 'Add additional details to person #3936');
+
+-- 2021-04-15 Add variant specific Nucleic acid detecion methods #5029
+ALTER TABLE pathogentest ADD COLUMN pcrtestspecification varchar(255);
+ALTER TABLE pathogentest ADD COLUMN testeddiseasevariant_id bigint;
+ALTER TABLE pathogentest_history ADD COLUMN pcrtestspecification varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariant_id bigint;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIGN KEY (testeddiseasevariant_id) REFERENCES diseasevariant(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (365, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -15,14 +15,14 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import java.sql.SQLException;
-import java.util.List;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
@@ -87,6 +87,22 @@ public class RegionDao extends AbstractInfrastructureAdoDao<Region> {
 			return builder.orderBy(Region.NAME, true).query();
 		} catch (SQLException | IllegalArgumentException e) {
 			Log.e(getTableName(), "Could not perform queryActiveByCountry");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<Region> queryActiveByArea(Area area) {
+		try {
+			QueryBuilder<Region, Long> builder = queryBuilder();
+			Where<Region, Long> where = builder.where();
+			where.and(
+				where.eq(AbstractDomainObject.SNAPSHOT, false),
+				where.eq(InfrastructureAdo.ARCHIVED, false),
+				where.eq(Region.AREA + "_id", area));
+
+			return builder.orderBy(Region.NAME, true).query();
+		} catch (SQLException | IllegalArgumentException e) {
+			Log.e(getTableName(), "Could not perform queryActiveByArea");
 			throw new RuntimeException(e);
 		}
 	}

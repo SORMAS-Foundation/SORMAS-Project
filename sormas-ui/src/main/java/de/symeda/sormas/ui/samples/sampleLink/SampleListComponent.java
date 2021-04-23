@@ -41,24 +41,23 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class SampleListComponent extends VerticalLayout {
 
 	private SampleList list;
-	private Button createButton;
 
 	public SampleListComponent(ContactReferenceDto contactRef) {
 		createSampleListComponent(
 			new SampleList(contactRef),
-			e -> ControllerProvider.getSampleController().create(contactRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(contactRef, SormasUI::refreshView));
 	}
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
 		createSampleListComponent(
 			new SampleList(caseRef),
-			e -> ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(caseRef, SormasUI::refreshView));
 	}
 
 	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef) {
 		createSampleListComponent(
 			new SampleList(eventParticipantRef),
-			e -> ControllerProvider.getSampleController().create(eventParticipantRef, () -> SormasUI.refreshView()));
+			e -> ControllerProvider.getSampleController().create(eventParticipantRef, SormasUI::refreshView));
 	}
 
 	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {
@@ -81,7 +80,7 @@ public class SampleListComponent extends VerticalLayout {
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
+			Button createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(clickListener);

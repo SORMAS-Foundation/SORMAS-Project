@@ -196,7 +196,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
 		final Case caze = getStoredRootEntity();
 		CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
-
 		fragment.setLiveValidationDisabled(false);
 
 		try {
