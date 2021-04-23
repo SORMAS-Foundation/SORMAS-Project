@@ -67,7 +67,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
-	private static final String COLUMN_EXPOSURE_ROLE = ExposureDto.EXPOSURE_ROLE;
 	private static final String COLUMN_TYPE_OF_PLACE = ExposureDto.TYPE_OF_PLACE;
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_ADDRESS = Captions.address;
@@ -95,7 +94,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
-				COLUMN_EXPOSURE_ROLE,
+				ExposureDto.EXPOSURE_ROLE,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
@@ -105,7 +104,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
-				COLUMN_EXPOSURE_ROLE,
+				ExposureDto.EXPOSURE_ROLE,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
@@ -171,11 +170,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			}
 
 			return exposureTypeLabel;
-		});
-
-		table.addGeneratedColumn(COLUMN_EXPOSURE_ROLE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			ExposureDto exposure = (ExposureDto) itemId;
-			return exposure.getExposureRole() != null ? exposure.getExposureRole().toString() : "";
 		});
 
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
