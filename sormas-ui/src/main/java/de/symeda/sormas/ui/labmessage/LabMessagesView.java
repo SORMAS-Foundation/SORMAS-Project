@@ -84,7 +84,7 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-			checkForConcurrentFetch();
+			initiateLabMessageFetch();
 		}, ValoTheme.BUTTON_PRIMARY));
 
 		if (isBulkEditAllowed()) {
@@ -209,7 +209,7 @@ public class LabMessagesView extends AbstractView {
 		return button;
 	}
 
-	private void checkForConcurrentFetch() {
+	private void initiateLabMessageFetch() {
 		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_LAB_MESSAGES);
 		if (fetchAlreadyStarted) {
 			VaadinUiUtil.showConfirmationPopup(
