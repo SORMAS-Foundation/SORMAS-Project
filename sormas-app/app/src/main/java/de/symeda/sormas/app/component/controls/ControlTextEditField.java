@@ -36,7 +36,6 @@ import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
@@ -255,6 +254,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initInput();
+	}
+
+	protected void initInput() {
 		input = (EditText) this.findViewById(R.id.text_input);
 		if (getImeOptions() == EditorInfo.IME_NULL) {
 			setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -267,10 +270,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		}
 		input.setInputType(inputType);
 		setSingleLine(singleLine);
-		if (maxLength >= 0) {
+		if (getMaxLength() >= 0) {
 			input.setFilters(
 				new InputFilter[] {
-					new InputFilter.LengthFilter(maxLength) });
+					new InputFilter.LengthFilter(getMaxLength()) });
 		}
 
 		input.addTextChangedListener(new TextWatcher() {
@@ -302,7 +305,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		super.onAttachedToWindow();
 
 		if (getHint() == null) {
-			setHint(I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId()));
+			setHint(getPrefixCaption());
 		}
 	}
 
@@ -454,10 +457,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 			input.setMaxLines(1);
 			input.setVerticalScrollBarEnabled(false);
 		} else {
-			input.setMaxLines(maxLines);
+			input.setMaxLines(getMaxLines());
 			input.setVerticalScrollBarEnabled(true);
 			if (textArea) {
-				input.setLines(maxLines);
+				input.setLines(getMaxLines());
 			}
 		}
 	}
@@ -472,4 +475,19 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 			input.setInputType(inputType);
 	}
 
+	public int getMaxLines() {
+		return maxLines;
+	}
+
+	public void setMaxLines(int maxLines) {
+		this.maxLines = maxLines;
+	}
+
+	public int getMaxLength() {
+		return maxLength;
+	}
+
+	public void setMaxLength(int maxLength) {
+		this.maxLength = maxLength;
+	}
 }

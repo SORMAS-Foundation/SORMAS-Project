@@ -130,6 +130,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
 
 		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
+		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
 
 		cq.multiselect(
 			root.get(Region.CREATION_DATE),
@@ -142,7 +143,8 @@ public class RegionFacadeEjb implements RegionFacade {
 			root.get(Region.EXTERNAL_ID),
 			country.get(Country.UUID),
 			country.get(Country.DEFAULT_NAME),
-			country.get(Country.ISO_CODE));
+			country.get(Country.ISO_CODE),
+			area.get(Area.UUID));
 	}
 
 	@Override

@@ -307,6 +307,7 @@ public interface Strings {
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
@@ -538,6 +539,7 @@ public interface Strings {
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
+	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
 	String headingUpdatePassword = "headingUpdatePassword";
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
@@ -604,6 +606,7 @@ public interface Strings {
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
+	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
@@ -617,6 +620,7 @@ public interface Strings {
 	String infoLineListingConfigurationRegion = "infoLineListingConfigurationRegion";
 	String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";
 	String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	String infoMergeFiltersHint = "infoMergeFiltersHint";
 	String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	String infoMergingExplanation = "infoMergingExplanation";
 	String infoMergingHideDescription = "infoMergingHideDescription";
@@ -932,6 +936,7 @@ public interface Strings {
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
+	String messageUpdateCaseWithNewDiseaseVariant = "messageUpdateCaseWithNewDiseaseVariant";
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
@@ -1083,6 +1088,7 @@ public interface Strings {
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
+	String uuidOf = "uuidOf";
 	String warningDashboardMapTooManyMarkers = "warningDashboardMapTooManyMarkers";
 	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
 	String week = "week";

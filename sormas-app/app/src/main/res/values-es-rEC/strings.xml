@@ -265,6 +265,7 @@
     <string name="heading_app_update_required">Actualización de la aplicación requerida</string>
     <string name="heading_burial">Sepelio</string>
     <string name="heading_burials_visited">Entierros visitados</string>
+    <string name="heading_campaigns_list">Campaign Data</string>
     <string name="heading_case_disease_changed">Enfermedad del caso cambió</string>
     <string name="heading_case_edit">Editar caso</string>
     <string name="heading_case_new">Nuevo caso</string>

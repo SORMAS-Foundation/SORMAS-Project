@@ -27,6 +27,8 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 
@@ -70,11 +72,11 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
 		if (criteria.getCampaign() != null) {
-			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN_ID, criteria.getCampaign().getId()));
+			whereStatements.add(where.eq(CampaignFormData.CAMPAIGN +  "_id", criteria.getCampaign().getId()));
 		}
 
 		if (criteria.getCampaignFormMeta() != null) {
-			whereStatements.add((where.eq(CampaignFormData.CAMPAIGN_FORM_META_ID, criteria.getCampaignFormMeta().getId())));
+			whereStatements.add((where.eq(CampaignFormData.CAMPAIGN_FORM_META +  "_id", criteria.getCampaignFormMeta().getId())));
 		}
 
 		if (!whereStatements.isEmpty()) {
@@ -84,4 +86,24 @@ public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 
 		return queryBuilder;
 	}
+
+	@Override
+	public CampaignFormData build() {
+		CampaignFormData campaignFormData = super.build();
+		User user = ConfigProvider.getUser();
+
+		if (user.getRegion() != null) {
+			campaignFormData.setArea(user.getRegion().getArea());
+			campaignFormData.setRegion(user.getRegion());
+		}
+		if (user.getDistrict() != null) {
+			campaignFormData.setDistrict(user.getDistrict());
+		}
+		if (user.getCommunity() != null) {
+			campaignFormData.setCommunity(user.getCommunity());
+		}
+
+		return campaignFormData;
+	}
+
 }

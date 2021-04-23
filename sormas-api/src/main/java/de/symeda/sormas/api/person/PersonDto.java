@@ -108,6 +108,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -303,9 +304,11 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	@SensitiveData
 	private CountryReferenceDto citizenship;
+	@SensitiveData
+	private String additionalDetails;
 
 	@SuppressWarnings("serial")
-	public static class SeveralNonPrimaryContactDetailsException extends Exception {
+	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
 
 		public SeveralNonPrimaryContactDetailsException(String message) {
 			super(message);
@@ -881,6 +884,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setCitizenship(CountryReferenceDto citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 
 	@Override

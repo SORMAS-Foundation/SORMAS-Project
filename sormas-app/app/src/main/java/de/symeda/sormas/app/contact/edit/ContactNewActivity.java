@@ -160,7 +160,6 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 		}
 
 		final Contact contactToSave = getStoredRootEntity();
-
 		ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
 		fragment.setLiveValidationDisabled(false);
 

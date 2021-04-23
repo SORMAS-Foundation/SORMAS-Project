@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -26,18 +39,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-
-import android.util.Log;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -249,6 +250,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		} catch (SQLException | IllegalArgumentException e) {
 			Log.e(getTableName(), "Could not perform queryForAll");
 			throw new RuntimeException();
+		}
+	}
+
+	public List<ADO> queryActiveForAll() {
+		try {
+			QueryBuilder<ADO, Long> builder = queryBuilder();
+			Where<ADO, Long> where = builder.where();
+			where.and(where.eq(AbstractDomainObject.SNAPSHOT, false), where.eq(InfrastructureAdo.ARCHIVED, false));
+			return builder.query();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -669,15 +681,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 									+ "'");
 
 							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-							conflictStringBuilder.append("<br/>");
+
+							// don't show the details of conflicts in json raw data to the user
+							if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+								conflictStringBuilder.append("<br/>");
+							}
 						}
 
 						// update snapshot

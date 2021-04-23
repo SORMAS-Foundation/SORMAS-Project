@@ -353,6 +353,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		ContactDto returnedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertThat(returnedContact.getQuarantine(), is(QuarantineType.HOTEL));
+		assertThat(returnedContact.getReportingUser(), is(officer));
 
 		List<SormasToSormasShareInfoDto> contactShares =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);

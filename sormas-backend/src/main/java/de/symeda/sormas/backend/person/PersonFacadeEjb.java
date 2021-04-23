@@ -116,6 +116,8 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -163,6 +165,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
+	@EJB
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -284,19 +288,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			if (configFacade.getPatientDiaryConfig().isActive()) {
-				try {
-					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
-					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-					exportPerson.setPhone(internationalPhone);
-				} catch (NumberParseException e) {
-					exportPerson.setPhone(detailedPerson.getPhone());
-				}
-			} else {
-				exportPerson.setPhone(detailedPerson.getPhone());
-			}
+			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
+			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -309,6 +302,34 @@ public class PersonFacadeEjb implements PersonFacade {
 			return exportPerson;
 		} else {
 			return null;
+		}
+	}
+
+	public String getJournalEmailAddress(PersonDto person) {
+		try {
+			return person.getEmailAddress(false);
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
+		}
+	}
+
+	public String getJournalPhoneNumber(PersonDto person) {
+		try {
+			String phoneNumber = person.getPhone(false);
+			if (StringUtils.EMPTY.equals(phoneNumber)) {
+				return StringUtils.EMPTY;
+			}
+
+			try {
+				PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+				Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
+				return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+			} catch (NumberParseException e) {
+				return phoneNumber;
+			}
+
+		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
+			return StringUtils.EMPTY;
 		}
 	}
 
@@ -363,6 +384,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
 		}
+
+		// Validate birth date
+		PersonHelper.validateBirthDate(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD());
 	}
 
 	//@formatter:off
@@ -745,6 +769,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}
@@ -784,21 +809,23 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
 
-		// The list is automatically filtered by the users jurisdiction
-		List<PersonIndexDto> indexList = getIndexList(null, null, null, null);
-		if (CollectionUtils.isEmpty(indexList)) {
-			return 0;
-		}
+		// The uuid-list is filtered by the users jurisdiction and retrieved in batches to avoid timeouts
+		List<String> personUuidList = getAllUuidsBatched(2500, overwriteExistingCoordinates);
 
 		// Run updates in batches to avoid large JPA cache
-		List<String> personUuidList = indexList.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList());
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
 			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
 		});
-
 		Long changedPersons = batchResults.stream().reduce(0L, Long::sum);
+
 		return changedPersons;
+	}
+
+	@Override
+	public boolean isSharedWithoutOwnership(String uuid) {
+		SormasToSormasOriginInfo originInfo = sormasToSormasOriginInfoService.getByPerson(uuid);
+		return originInfo != null && !originInfo.isOwnershipHandedOver();
 	}
 
 	/**
@@ -844,7 +871,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
 							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 							personCase.setOutcome(CaseOutcome.DECEASED);
-							personCase.setOutcomeDate(new Date());
+							personCase.setOutcomeDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
 							// Attention: this may lead to infinite recursion when not properly implemented
 							caseFacade.onCaseChanged(existingCase, personCase);
 						}
@@ -891,6 +918,41 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		cleanUp(newPerson);
+	}
+
+	private List<String> getAllUuidsBatched(Integer batchSize, boolean allowPersonsWithCoordinates) {
+		// Build query
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		cq.select(person.get(Person.UUID));
+		if (!allowPersonsWithCoordinates) {
+			// filter persons by those which have no latitude or longitude given
+			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
+			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
+			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+		} else {
+			cq.where(personService.createUserFilter(cb, cq, person));
+		}
+		cq.orderBy(cb.desc(person.get(Person.UUID)));
+
+		// repeat the query as often as necessary until all data is retrieved
+		final int BATCH_SIZE = batchSize == null ? 100 : batchSize;
+		int first = 0;
+		int sizeOfLastBatch = 0;
+		List<String> personUuids = new ArrayList<>();
+		do {
+			// By using LIMIT and OFFSET, timeouts and overflowing caches are somewhat prevented
+			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
+			sizeOfLastBatch = newPersonUuids.size();
+			first += sizeOfLastBatch;
+			personUuids = Stream.concat(personUuids.stream(), newPersonUuids.stream()).collect(Collectors.toList());
+		}
+		while (sizeOfLastBatch >= BATCH_SIZE);
+
+		return personUuids;
 	}
 
 	@Override
@@ -1167,6 +1229,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}
