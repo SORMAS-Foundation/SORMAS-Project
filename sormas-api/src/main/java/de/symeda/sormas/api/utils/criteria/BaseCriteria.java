@@ -1,4 +1,19 @@
-package de.symeda.sormas.api;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.api.utils.criteria;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -16,8 +31,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import de.symeda.sormas.api.caze.CaseCriteriaDateType;
-import de.symeda.sormas.api.caze.CaseCriteriaDateTypeHelper;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -67,8 +81,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = String.valueOf(value);
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
 						stringValue = ((EpiWeek) value).toUrlString();
-					} else if (CaseCriteriaDateType.class.isAssignableFrom(type)) {
-						stringValue = CaseCriteriaDateTypeHelper.toUrlString((CaseCriteriaDateType) value);
+					} else if (CriteriaDateType.class.isAssignableFrom(type)) {
+						stringValue = CriteriaDateTypeHelper.toUrlString((CriteriaDateType) value);
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -89,13 +103,6 @@ public abstract class BaseCriteria implements Serializable {
 					|| Modifier.isPrivate(getter.getModifiers())
 					|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is")))
 					continue;
-
-				String propertyName = getter.getName();
-				if (propertyName.startsWith("get")) {
-					propertyName = propertyName.substring(3, 4).toLowerCase() + propertyName.substring(4);
-				} else if (propertyName.startsWith("is")) {
-					propertyName = propertyName.substring(2, 3).toLowerCase() + propertyName.substring(3);
-				}
 
 				Object value = getter.invoke(this);
 				Class<?> type = getter.getReturnType();
@@ -121,11 +128,7 @@ public abstract class BaseCriteria implements Serializable {
 		}
 	}
 
-	@SuppressWarnings({
-		"unchecked",
-		"rawtypes" })
 	public void fromUrlParams(String urlParams) {
-
 		Map<String, List<String>> params = splitQuery(urlParams);
 		try {
 			for (Method getter : getClass().getDeclaredMethods()) {
@@ -153,33 +156,7 @@ public abstract class BaseCriteria implements Serializable {
 				if (params.containsKey(propertyName)) {
 					List<String> fieldParams = params.get(propertyName);
 
-					Object value = null;
-					if (ReferenceDto.class.isAssignableFrom(type)) {
-						value = type.newInstance();
-						((ReferenceDto) value).setUuid(fieldParams.get(0));
-					} else if (Date.class.isAssignableFrom(type)) {
-						try {
-							value = new Date(Long.valueOf(fieldParams.get(0)).longValue());
-						} catch (NumberFormatException e) {
-						} // ignore
-					} else if (Boolean.class.isAssignableFrom(type)) {
-						value = Boolean.valueOf(fieldParams.get(0));
-					} else if (Enum.class.isAssignableFrom(type)) {
-						try {
-							value = Enum.valueOf((Class<? extends Enum>) type, fieldParams.get(0));
-						} catch (IllegalArgumentException e) {
-						} // ignore
-					} else if (String.class.isAssignableFrom(type)) {
-						value = fieldParams.get(0);
-					} else if (Integer.class.isAssignableFrom(type)) {
-						value = Integer.valueOf(fieldParams.get(0));
-					} else if (EpiWeek.class.isAssignableFrom(type)) {
-						value = EpiWeek.fromUrlString(fieldParams.get(0));
-					} else if (CaseCriteriaDateType.class.isAssignableFrom(type)) {
-						value = CaseCriteriaDateTypeHelper.valueOf(fieldParams.get(0));
-					} else {
-						throw new NotImplementedException(type.toString());
-					}
+					Object value = parseUrlParam(type, fieldParams);
 
 					setter.invoke(this, value);
 				}
@@ -190,6 +167,38 @@ public abstract class BaseCriteria implements Serializable {
 		}
 	}
 
+	protected Object parseUrlParam(Class<?> type, List<String> fieldParams) throws InstantiationException, IllegalAccessException {
+		Object value = null;
+		if (ReferenceDto.class.isAssignableFrom(type)) {
+			value = type.newInstance();
+			((ReferenceDto) value).setUuid(fieldParams.get(0));
+		} else if (Date.class.isAssignableFrom(type)) {
+			try {
+				value = new Date(Long.parseLong(fieldParams.get(0)));
+			} catch (NumberFormatException e) {
+				// ignore
+			}
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			value = Boolean.valueOf(fieldParams.get(0));
+		} else if (Enum.class.isAssignableFrom(type)) {
+			try {
+				//noinspection unchecked
+				value = Enum.valueOf((Class<Enum>) type, fieldParams.get(0));
+			} catch (IllegalArgumentException e) {
+				// ignore
+			}
+		} else if (String.class.isAssignableFrom(type)) {
+			value = fieldParams.get(0);
+		} else if (Integer.class.isAssignableFrom(type)) {
+			value = Integer.valueOf(fieldParams.get(0));
+		} else if (EpiWeek.class.isAssignableFrom(type)) {
+			value = EpiWeek.fromUrlString(fieldParams.get(0));
+		} else {
+			throw new NotImplementedException(type.toString());
+		}
+		return value;
+	}
+
 	public static Map<String, List<String>> splitQuery(String urlParams) {
 
 		if (DataHelper.isNullOrEmpty(urlParams)) {
@@ -197,7 +206,7 @@ public abstract class BaseCriteria implements Serializable {
 		}
 		String encoding = "UTF-8";
 
-		final Map<String, List<String>> queryPairs = new LinkedHashMap<String, List<String>>();
+		final Map<String, List<String>> queryPairs = new LinkedHashMap<>();
 		try {
 			final String[] pairs = urlParams.split("&");
 			for (String pair : pairs) {

@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -54,12 +53,10 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseCriteriaDateType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ExternalShareDateType;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
@@ -77,6 +74,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -110,6 +109,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -168,6 +168,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ExternalShareInfoService externalShareInfoService;
 
 	public CaseService() {
 		super(Case.class);
@@ -773,30 +775,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
 		}
 
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesNotSharedWithExternalSurvTool())) {
-			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(cb.exists(survToolShareSubQuery)));
-		}
-
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesSharedWithExternalSurvTool())) {
-			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(survToolShareSubQuery));
-		}
-
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesChangedSinceLastSharedWithExternalSurvTool())) {
-			Predicate changedSinceLastShareFilter =
-				buildLatestSurvToolShareDateFilter(cq, cb, from, (latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
-		}
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			externalShareInfoService.buildShareCriteriaFilter(
+				caseCriteria,
+				cq,
+				cb,
+				from,
+				ExternalShareInfo.CAZE,
+				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false)));
 
 		return filter;
 	}
@@ -887,7 +875,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createChangeDateFilter(
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
-		Expression<? extends Timestamp> dateExpression,
+		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters) {
 
 		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
@@ -1043,7 +1031,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		From<?, Case> caze,
 		Date fromDate,
 		Date toDate,
-		CaseCriteriaDateType dateType) {
+		CriteriaDateType dateType) {
 
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
@@ -1061,34 +1049,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			newCaseFilter = reportDateFilter;
 		} else if (dateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
 			newCaseFilter =
-				buildLatestSurvToolShareDateFilter(cq, cb, caze, (latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
+				externalShareInfoService.buildLatestSurvToolShareDateFilter(
+					cq,
+					cb,
+					caze,
+					ExternalShareInfo.CAZE,
+					(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
 		}
 
 		return newCaseFilter;
-	}
-
-	private Predicate buildLatestSurvToolShareDateFilter(
-		CriteriaQuery<?> cq,
-		CriteriaBuilder cb,
-		From<?, Case> caze,
-		Function<Expression<Timestamp>, Predicate> shareDatePredicateBuilder) {
-
-		Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
-		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-		Join<ExternalShareInfo, Case> survToolShareCase = survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT);
-		@SuppressWarnings({
-			"unchecked",
-			"rawtypes" })
-		Expression<Timestamp> latestShareDate =
-			// double conversion because hibernate doesn't know the `max` function for timestamps
-			(Expression<Timestamp>) ((Expression) cb.max(survToolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
-
-		survToolShareSubQuery.select(survToolShareCase.get(Case.ID));
-		survToolShareSubQuery.where(cb.equal(survToolShareCase, caze.get(Case.ID)));
-		survToolShareSubQuery.groupBy(survToolShareCase.get(Case.ID));
-		survToolShareSubQuery.having(shareDatePredicateBuilder.apply(latestShareDate));
-
-		return cb.exists(survToolShareSubQuery);
 	}
 
 	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<Case> joins) {

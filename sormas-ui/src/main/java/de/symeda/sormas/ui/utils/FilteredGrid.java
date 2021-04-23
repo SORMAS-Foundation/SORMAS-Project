@@ -10,7 +10,7 @@ import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
