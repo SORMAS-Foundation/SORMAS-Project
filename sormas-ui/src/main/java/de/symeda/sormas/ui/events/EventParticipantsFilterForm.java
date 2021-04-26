@@ -32,6 +32,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 			EventParticipantCriteria.BIRTHDATE_DD,
 			EventParticipantCriteria.FREE_TEXT,
 			EventParticipantCriteria.PATHOGENTESTRESULT,
+			EventParticipantCriteria.VACCINATION,
 			EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT };
 	}
 
@@ -57,6 +58,8 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.PATHOGEN_TEST_RESULT),
 				180),
 			ComboBox.class);
+
+		addField(FieldConfiguration.withCaptionAndPixelSized(EventParticipantCriteria.VACCINATION, "Vaccination i18n", 100), ComboBox.class);
 
 		TextField searchField = addField(
 			FieldConfiguration

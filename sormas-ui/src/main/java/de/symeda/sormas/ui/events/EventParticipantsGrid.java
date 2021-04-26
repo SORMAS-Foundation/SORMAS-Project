@@ -101,7 +101,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			CASE_ID,
 			EventParticipantIndexDto.CONTACT_COUNT,
 			SampleIndexDto.PATHOGEN_TEST_RESULT,
-			SampleIndexDto.SAMPLE_DATE_TIME);
+			SampleIndexDto.SAMPLE_DATE_TIME,
+			EventParticipantIndexDto.VACCINATION);
 		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
