@@ -313,7 +313,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	/**
-	 * This method marks the previously started system events as UNCLEAR and creates a new event with status STARTED.
+	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
 	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
 	 * In case of any Exception, the status of the currentSystemEvent is changed to ERROR.
 	 *
