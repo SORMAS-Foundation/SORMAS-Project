@@ -1250,6 +1250,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		// Remove this contact from all exposures that its referenced in
 		exposureService.removeContactFromExposures(contact.getId());
 
+		// Notify external journal if necessary
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		super.delete(contact);
 	}
 
