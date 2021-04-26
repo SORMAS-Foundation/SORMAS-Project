@@ -30,7 +30,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
@@ -41,7 +40,6 @@ import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.campaign.edit.CampaignFormDataNewActivity;
 import de.symeda.sormas.app.campaign.edit.CampaignFormMetaDialog;
 import de.symeda.sormas.app.component.Item;
@@ -177,11 +175,13 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         filterBinding.campaignFilter.initializeSpinner(campaigns);
         filterBinding.campaignFilter.addValueChangedListener(e -> {
             Campaign campaign = (Campaign) e.getValue();
-            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
-            filterBinding.campaignFormFilter.initializeSpinner(forms);
-            setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
-            if (getNewMenu() != null) {
-                getNewMenu().setVisible(isEntryCreateAllowed());
+            if (campaign != null) {
+                List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
+                filterBinding.campaignFormFilter.initializeSpinner(forms);
+                setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
+                if (getNewMenu() != null) {
+                    getNewMenu().setVisible(isEntryCreateAllowed());
+                }
             }
         });
 

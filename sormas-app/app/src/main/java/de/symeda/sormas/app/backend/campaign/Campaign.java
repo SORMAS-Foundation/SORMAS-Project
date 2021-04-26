@@ -15,20 +15,27 @@
 
 package de.symeda.sormas.app.backend.campaign;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.MetaProperty;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 
@@ -38,8 +45,6 @@ public class Campaign extends PseudonymizableAdo {
 
     public static final String TABLE_NAME = "campaigns";
     public static final String I18N_PREFIX = "Campaign";
-
-    public static final String CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME = "campaign_campaignformmeta";
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
@@ -68,7 +73,10 @@ public class Campaign extends PseudonymizableAdo {
     @DatabaseField
     private boolean archived;
 
-    private List<CampaignFormMeta> campaignFormMetas = new ArrayList<>();
+
+    @Column(name = "campaignFormMetas")
+    private String campaignFormMetasJson;
+    private List<CampaignFormMeta> campaignFormMetas;
 
     public String getName() {
         return name;
@@ -118,12 +126,39 @@ public class Campaign extends PseudonymizableAdo {
         this.archived = archived;
     }
 
+    public String getCampaignFormMetasJson() {
+        return campaignFormMetasJson;
+    }
+
+    public void setCampaignFormMetasJson(String campaignFormMetasJson) {
+        this.campaignFormMetasJson = campaignFormMetasJson;
+    }
+
+    @MetaProperty
+    @Transient
     public List<CampaignFormMeta> getCampaignFormMetas() {
+        if (campaignFormMetas == null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<CampaignFormMetaReferenceDto>>() {}.getType();
+            List<CampaignFormMetaReferenceDto> campaignFormMetaReferenceDtos = gson.fromJson(campaignFormMetasJson, type);
+            campaignFormMetas = new ArrayList<>();
+
+            for (CampaignFormMetaReferenceDto formMetaReferenceDto : campaignFormMetaReferenceDtos) {
+                final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().getByReferenceDto(formMetaReferenceDto);
+                campaignFormMetas.add(campaignFormMeta);
+            }
+        }
         return campaignFormMetas;
     }
 
-    public void setCampaignFormMetas(List<CampaignFormMeta> campaignFormMetas) {
+    public void setCampaignFormMetas(List<CampaignFormMetaReferenceDto> campaignFormMetaReferenceDtos) {
+        final List<CampaignFormMeta> campaignFormMetas = new ArrayList<>();
+        for (CampaignFormMetaReferenceDto formMetaReferenceDto : campaignFormMetaReferenceDtos) {
+            campaignFormMetas.add(DatabaseHelper.getCampaignFormMetaDao().getByReferenceDto(formMetaReferenceDto));
+        }
         this.campaignFormMetas = campaignFormMetas;
+        Gson gson = new Gson();
+        campaignFormMetasJson = gson.toJson(campaignFormMetaReferenceDtos);
     }
 
     @Override
