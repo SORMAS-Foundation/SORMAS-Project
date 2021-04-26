@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>contactView_changeCase_confirmationDlg_yes</name>
+   <name>div_edit</name>
    <tag></tag>
-   <elementGuidId>5c695b38-67bd-4bb2-bb97-7ddc168cc525</elementGuidId>
+   <elementGuidId>4d583c29-80bb-41b6-8df0-c63d196f9412</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>CSS</key>
+         <value></value>
+      </entry>
+      <entry>
          <key>XPATH</key>
-         <value>//div[@id='actionConfirm']</value>
+         <value>//div[@id='de.symeda.sormas.api.person.PersonContactDetailDto@bfda0701-edit']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
-   <useRalativeImagePath>false</useRalativeImagePath>
+   <useRalativeImagePath>true</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
@@ -38,69 +42,69 @@
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
-      <value>v-button v-widget primary v-button-primary</value>
+      <value>v-button v-widget borderless v-button-borderless</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>actionConfirm</value>
+      <value>de.symeda.sormas.api.person.PersonContactDetailDto@bfda0701-edit</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
-      <value>Yes</value>
+      <value></value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;actionConfirm&quot;)</value>
+      <value>id(&quot;de.symeda.sormas.api.person.PersonContactDetailDto@bfda0701-edit&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//div[@id='actionConfirm']</value>
+      <value>//div[@id='de.symeda.sormas.api.person.PersonContactDetailDto@bfda0701-edit']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div[3]/div/div[3]/div</value>
+      <value>//div[@id='personContactDetails']/div/div[2]/div/div[2]/div/table/tbody/tr/td/div/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='No'])[4]/following::div[3]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Contact information'])[2]/following::div[6]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Discard Unsaved Changes'])[1]/following::div[13]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Type of contact details'])[1]/following::div[9]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Arrow down key opens calendar element for choosing the date'])[1]/preceding::div[4]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='This person'])[1]/preceding::div[3]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div/div/div[3]/div/div[3]/div</value>
+      <value>//div[6]/div/div/div/div[2]/div/div[2]/div/table/tbody/tr/td/div/div</value>
    </webElementXpaths>
 </WebElementEntity>
