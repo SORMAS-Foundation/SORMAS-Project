@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
 
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -11,10 +10,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
+public class EventStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 	private final Label eventCountLabel;
 	private final DashboardStatisticsCountElement eventStatusConfirmed;
@@ -47,18 +45,12 @@ public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
 		addComponent(headerLayout);
 
 		// Count layout
-		CssLayout countLayout = createCountLayout(true);
 		eventStatusCluster = new DashboardStatisticsCountElement(EventStatus.CLUSTER.toString(), CountElementStyle.CRITICAL);
-		addComponentToCountLayout(countLayout, eventStatusCluster);
 		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.EVENT.toString(), CountElementStyle.IMPORTANT);
-		addComponentToCountLayout(countLayout, eventStatusConfirmed);
 		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.SIGNAL.toString(), CountElementStyle.RELEVANT);
-		addComponentToCountLayout(countLayout, eventStatusPossible);
 		eventStatusScreening = new DashboardStatisticsCountElement(EventStatus.SCREENING.toString(), CountElementStyle.NEUTRAL);
-		addComponentToCountLayout(countLayout, eventStatusScreening);
 		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.DROPPED.toString(), CountElementStyle.POSITIVE);
-		addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
-		addComponent(countLayout);
+		buildCountLayout(eventStatusCluster, eventStatusConfirmed, eventStatusPossible, eventStatusScreening, eventStatusNotAnEvent);
 	}
 
 	public void update(Map<EventStatus, Long> events) {

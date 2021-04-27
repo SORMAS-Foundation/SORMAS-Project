@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
 
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -12,10 +11,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class TestResultsStatisticsComponent extends DashboardStatisticsSubComponent {
+public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 	private final Label testResultCountLabel;
 	private final DashboardStatisticsCountElement testResultPositive;
@@ -47,17 +45,12 @@ public class TestResultsStatisticsComponent extends DashboardStatisticsSubCompon
 		addComponent(headerLayout);
 
 		// Count layout
-		CssLayout countLayout = createCountLayout(true);
 		testResultPositive = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPositive), CountElementStyle.CRITICAL);
-		addComponentToCountLayout(countLayout, testResultPositive);
 		testResultNegative = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNegative), CountElementStyle.POSITIVE);
-		addComponentToCountLayout(countLayout, testResultNegative);
 		testResultPending = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPending), CountElementStyle.IMPORTANT);
-		addComponentToCountLayout(countLayout, testResultPending);
 		testResultIndeterminate =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
-		addComponentToCountLayout(countLayout, testResultIndeterminate);
-		addComponent(countLayout);
+		buildCountLayout(testResultPositive, testResultNegative, testResultPending, testResultIndeterminate);
 	}
 
 	public void update(Map<PathogenTestResultType, Long> testResults) {

@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.List;
 
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -12,10 +11,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CaseStatisticsComponent extends DashboardStatisticsSubComponent {
+public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 	private final Label caseCountLabel;
 	private final DashboardStatisticsCountElement caseClassificationConfirmed;
@@ -47,23 +45,22 @@ public class CaseStatisticsComponent extends DashboardStatisticsSubComponent {
 		addComponent(headerLayout);
 
 		// Count layout
-		CssLayout countLayout = createCountLayout(true);
 		caseClassificationConfirmed =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
-		addComponentToCountLayout(countLayout, caseClassificationConfirmed);
 		caseClassificationProbable =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardProbable), CountElementStyle.IMPORTANT);
-		addComponentToCountLayout(countLayout, caseClassificationProbable);
 		caseClassificationSuspect =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSuspect), CountElementStyle.RELEVANT);
-		addComponentToCountLayout(countLayout, caseClassificationSuspect);
 		caseClassificationNotACase =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotACase), CountElementStyle.POSITIVE);
-		addComponentToCountLayout(countLayout, caseClassificationNotACase);
 		caseClassificationNotYetClassified =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), CountElementStyle.MINOR);
-		addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
-		addComponent(countLayout);
+		buildCountLayout(
+			caseClassificationConfirmed,
+			caseClassificationProbable,
+			caseClassificationSuspect,
+			caseClassificationNotACase,
+			caseClassificationNotYetClassified);
 	}
 
 	public void update(List<DashboardCaseDto> cases) {
