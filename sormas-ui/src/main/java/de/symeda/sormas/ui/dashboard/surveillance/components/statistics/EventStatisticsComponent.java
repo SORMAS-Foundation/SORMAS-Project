@@ -19,7 +19,9 @@ public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
 
 	private final Label eventCountLabel;
 	private final DashboardStatisticsCountElement eventStatusConfirmed;
+	private final DashboardStatisticsCountElement eventStatusCluster;
 	private final DashboardStatisticsCountElement eventStatusPossible;
+	private final DashboardStatisticsCountElement eventStatusScreening;
 	private final DashboardStatisticsCountElement eventStatusNotAnEvent;
 
 	public EventStatisticsComponent() {
@@ -47,10 +49,14 @@ public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
 
 		// Count layout
 		CssLayout countLayout = createCountLayout(true);
-		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.EVENT.toString(), CountElementStyle.CRITICAL);
+		eventStatusCluster = new DashboardStatisticsCountElement(EventStatus.CLUSTER.toString(), CountElementStyle.CRITICAL);
+		addComponentToCountLayout(countLayout, eventStatusCluster);
+		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.EVENT.toString(), CountElementStyle.IMPORTANT);
 		addComponentToCountLayout(countLayout, eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.SIGNAL.toString(), CountElementStyle.IMPORTANT);
+		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.SIGNAL.toString(), CountElementStyle.RELEVANT);
 		addComponentToCountLayout(countLayout, eventStatusPossible);
+		eventStatusScreening = new DashboardStatisticsCountElement(EventStatus.SCREENING.toString(), CountElementStyle.NEUTRAL);
+		addComponentToCountLayout(countLayout, eventStatusScreening);
 		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.DROPPED.toString(), CountElementStyle.POSITIVE);
 		addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
 		addComponent(countLayout);
@@ -59,8 +65,10 @@ public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
 	public void update(Map<EventStatus, Long> events) {
 		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
+		eventStatusCluster.updateCountLabel(events.getOrDefault(EventStatus.CLUSTER, 0L).toString());
 		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
 		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.SIGNAL, 0L).toString());
+		eventStatusScreening.updateCountLabel(events.getOrDefault(EventStatus.SCREENING, 0L).toString());
 		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.DROPPED, 0L).toString());
 	}
 }
