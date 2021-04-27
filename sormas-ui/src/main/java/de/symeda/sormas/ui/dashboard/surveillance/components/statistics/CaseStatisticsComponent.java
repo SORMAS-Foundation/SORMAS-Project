@@ -2,20 +2,15 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.List;
 
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
-	private final Label caseCountLabel;
 	private final DashboardStatisticsCountElement caseClassificationConfirmed;
 	private final DashboardStatisticsCountElement caseClassificationProbable;
 	private final DashboardStatisticsCountElement caseClassificationSuspect;
@@ -23,26 +18,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 	private final DashboardStatisticsCountElement caseClassificationNotYetClassified;
 
 	public CaseStatisticsComponent() {
-		// Header
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setMargin(false);
-		headerLayout.setSpacing(false);
-		// count
-		caseCountLabel = new Label();
-		CssStyles.style(
-			caseCountLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_XXXLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.VSPACE_4,
-			CssStyles.VSPACE_TOP_NONE);
-		headerLayout.addComponent(caseCountLabel);
-		// title
-		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
-		CssStyles.style(caseComponentTitle, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(caseComponentTitle);
-
-		addComponent(headerLayout);
+		super(Captions.dashboardNewCases);
 
 		// Count layout
 		caseClassificationConfirmed =
@@ -64,7 +40,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 	}
 
 	public void update(List<DashboardCaseDto> cases) {
-		caseCountLabel.setValue(Integer.toString(cases.size()));
+		updateTotalLabel(Integer.toString(cases.size()));
 
 		int confirmedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
