@@ -28,7 +28,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -50,7 +49,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private DashboardDataProvider dashboardDataProvider;
+	private final DashboardDataProvider dashboardDataProvider;
 
 	private final CaseStatisticsComponent caseStatisticsComponent;
 
@@ -305,41 +304,39 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	public void refresh() {
-		Disease disease = this.dashboardDataProvider.getDisease();
-
-		updateCaseComponent(disease);
-		updateCaseFatalityComponent(disease);
-		updateLastReportedDistrictComponent(disease);
+		updateCaseComponent();
+		updateCaseFatalityComponent();
+		updateLastReportedDistrictComponent();
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
-			updateOutbreakDistrictComponent(disease);
+			updateOutbreakDistrictComponent();
 		}
-		updateEventComponent(disease);
-		updateTestResultComponent(disease);
+		updateEventComponent();
+		updateTestResultComponent();
 		updateCasesInQuarantineData();
 	}
 
-	private void updateCaseComponent(Disease disease) {
+	private void updateCaseComponent() {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 		caseStatisticsComponent.update(cases);
 	}
 
-	private void updateCaseFatalityComponent(Disease disease) {
+	private void updateCaseFatalityComponent() {
 		List<DashboardCaseDto> newCases = dashboardDataProvider.getCases();
 		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
 
 		int casesCount = newCases.size();
-		Long fatalCasesCount = newCases.stream().filter((c) -> c.wasFatal()).count();
-		long previousFatalCasesCount = previousCases.stream().filter((c) -> c.wasFatal()).count();
+		long fatalCasesCount = newCases.stream().filter(DashboardCaseDto::wasFatal).count();
+		long previousFatalCasesCount = previousCases.stream().filter(DashboardCaseDto::wasFatal).count();
 		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
 		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
 		fatalityRate = Math.round(fatalityRate * 100) / 100f;
 
 		// count
 		// current
-		caseFatalityCountValue.setValue(fatalCasesCount.toString());
+		caseFatalityCountValue.setValue(Long.toString(fatalCasesCount));
 		// growth
-		String chevronType = "";
-		String criticalLevel = "";
+		String chevronType;
+		String criticalLevel;
 
 		if (fatalCasesGrowth > 0) {
 			chevronType = VaadinIcons.CHEVRON_UP.getHtml();
@@ -361,23 +358,22 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseFatalityRateValue.setValue(fatalityRate + "%");
 	}
 
-	private void updateLastReportedDistrictComponent(Disease disease) {
+	private void updateLastReportedDistrictComponent() {
 		String district = dashboardDataProvider.getLastReportedDistrict();
 		lastReportedDistrictLabel.setValue(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
 	}
 
-	private void updateOutbreakDistrictComponent(Disease disease) {
+	private void updateOutbreakDistrictComponent() {
 		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
-
 		outbreakDistrictCountLabel.setValue(districtCount.toString());
 	}
 
-	private void updateEventComponent(Disease disease) {
+	private void updateEventComponent() {
 		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
 		eventStatisticsComponent.update(events);
 	}
 
-	private void updateTestResultComponent(Disease disease) {
+	private void updateTestResultComponent() {
 		Map<PathogenTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
 		testResultsStatisticsComponent.update(testResults);
 	}
