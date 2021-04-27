@@ -2586,6 +2586,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
 		}
 
+		target.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(source.getResponsibleCommunity()));
+
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
@@ -2761,6 +2765,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			source.setPortHealthInfo(PortHealthInfoDto.build());
 		}
 		target.setPortHealthInfo(portHealthInfoFacade.fromDto(source.getPortHealthInfo(), checkChangeDate));
+
+		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

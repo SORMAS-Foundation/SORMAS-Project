@@ -53,15 +53,22 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 	private Case record;
 	private CaseConfirmationBasis caseConfirmationBasis;
+	private boolean isDifferentJurisdiction;
 
 	public static CaseReadFragment newInstance(Case activityRootData) {
-		return newInstanceWithFieldCheckers(
+		CaseReadFragment caseReadFragment = newInstanceWithFieldCheckers(
 			CaseReadFragment.class,
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+
+		caseReadFragment.isDifferentJurisdiction = activityRootData.getResponsibleRegion() != null
+			|| activityRootData.getResponsibleDistrict() != null
+			|| activityRootData.getResponsibleCommunity() != null;
+
+		return caseReadFragment;
 	}
 
 	private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
@@ -88,14 +95,16 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityOrHome.setVisibility(GONE);
+			contentBinding.caseDataCommunity.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 		} else {
 			if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				if (record.getHealthFacility() == null) {
-					contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+					contentBinding.facilityOrHome.setVisibility(GONE);
+					contentBinding.caseDataCommunity.setVisibility(GONE);
 					contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 					contentBinding.caseDataHealthFacility.setVisibility(GONE);
 					contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
@@ -197,6 +206,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
+		contentBinding.setIsDifferentJurisdiction(isDifferentJurisdiction);
 
 		if (record.getClinicalConfirmation() == YesNoUnknown.YES) {
 			contentBinding.setSingleClassification(CaseConfirmationBasis.CLINICAL_CONFIRMATION);

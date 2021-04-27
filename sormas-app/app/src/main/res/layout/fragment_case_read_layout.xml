@@ -25,6 +25,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="android.view.View" />
         <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.Vaccination" />
@@ -38,6 +39,7 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="singleClassification" type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
+        <variable name="isDifferentJurisdiction" type="Boolean" />
     </data>
 
     <ScrollView
@@ -331,6 +333,17 @@
                     app:value="@{data.caseOrigin}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_case_place_of_stay"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/facilityOrHome"
+                    style="@style/ControlSingleColumnStyle"
+                    app:caption="@string/caption_facility_or_home"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -348,23 +361,10 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/facility_or_home_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_community"
-                        app:value="@{data.community}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/facilityOrHome"
-                        style="@style/ControlSecondOfTwoColumnsStyle"
-                        app:caption="@string/caption_facility_or_home"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_community"
+                    app:value="@{data.community}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:id="@+id/facility_type_fields_layout"
@@ -411,6 +411,40 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_case_responsible_jurisdiction"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_differentJurisdiction"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{isDifferentJurisdiction}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_responsibleRegion"
+                        app:value="@{data.responsibleRegion}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_responsibleDistrict"
+                        app:value="@{data.responsibleDistrict}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_responsibleCommunity"
+                    app:value="@{data.responsibleCommunity}"
+                    style="@style/ControlSingleColumnStyle" />
+
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_nosocomialOutbreak"

@@ -89,6 +89,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -270,6 +275,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown sequelae;
 	@SensitiveData
 	private String sequelaeDetails;
+
+	private RegionReferenceDto responsibleRegion;
+	private DistrictReferenceDto responsibleDistrict;
+	private CommunityReferenceDto responsibleCommunity;
+
 	@Outbreaks
 	@Required
 	private RegionReferenceDto region;
@@ -931,6 +941,30 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public RegionReferenceDto getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(RegionReferenceDto responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public DistrictReferenceDto getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(DistrictReferenceDto responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public CommunityReferenceDto getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public RegionReferenceDto getRegion() {
