@@ -140,7 +140,6 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
-		case ContactIndexDto.VACCINATION:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
@@ -157,6 +156,9 @@ public class ContactListCriteriaBuilder {
 			break;
 		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
+			break;
+		case ContactIndexDto.VACCINATION:
+			expressions.add(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION));
 			break;
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);

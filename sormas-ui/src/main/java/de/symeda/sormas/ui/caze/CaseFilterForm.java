@@ -214,8 +214,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					240));
 		}
 
-		ComboBox vaccinationField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.VACCINATION, 100));
-		vaccinationField.setInputPrompt("Vaccination I18N!");
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort), 120));
 
 		addField(
 			moreFiltersContainer,

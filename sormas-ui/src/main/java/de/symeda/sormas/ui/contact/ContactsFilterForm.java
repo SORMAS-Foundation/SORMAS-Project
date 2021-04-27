@@ -201,7 +201,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
-		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.VACCINATION, "Vaccination i18n", 100));
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort), 120));
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
