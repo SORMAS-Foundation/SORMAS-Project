@@ -105,17 +105,6 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected ValidationErrors validateExistingEntity(EventDto entity) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (!eventFacade.exists(entity.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasReturnEventNotExists));
-		}
-
-		return errors;
-	}
-
-	@Override
 	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Event entity) {
 		sormasToSormasShareInfo.setEvent(entity);
 	}
@@ -143,6 +132,11 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@Override
 	protected ProcessedDataPersister<ProcessedEventData> getProcessedDataPersister() {
 		return processedEventDataPersister;
+	}
+
+	@Override
+	protected List<EventDto> loadExistingEntities(List<String> uuids) {
+		return eventFacade.getByUuids(uuids);
 	}
 
 	@LocalBean

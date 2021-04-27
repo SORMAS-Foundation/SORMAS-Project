@@ -118,6 +118,7 @@ public interface Strings {
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
+	String confirmationFetchLabMessages = "confirmationFetchLabMessages";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
@@ -418,6 +419,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingFetchLabMessages = "headingFetchLabMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
 	String headingFollowUpCanceled = "headingFollowUpCanceled";
@@ -606,6 +608,7 @@ public interface Strings {
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
+	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";

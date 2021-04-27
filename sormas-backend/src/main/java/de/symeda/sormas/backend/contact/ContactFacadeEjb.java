@@ -297,9 +297,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		validate(dto);
 
-		if (existingContact != null) {
-			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
-		}
+		externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
+
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
 		// in this case the best solution is to only keep this hidden from the UI and still allow it in the backend

@@ -19,17 +19,22 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildVali
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -120,7 +125,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 				if (caseErrors.hasError()) {
 					validationErrors.put(buildEntityValidationGroupName(entity), caseErrors);
 				} else {
-					P processedData = getSharedDataProcessor().processSharedData(data);
+					P processedData = getSharedDataProcessor().processSharedData(data, null);
 
 					processedData.getEntity().setSormasToSormasOriginInfo(processedData.getOriginInfo());
 
@@ -173,15 +178,18 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<P> entitiesToSave = new ArrayList<>(sharedEntities.length);
+		List<U> existingEntities = loadExistingEntities(Arrays.stream(sharedEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
+		Map<String, U> existingEntitiesMap = existingEntities.stream().collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
 
 		for (S sharedEntity : sharedEntities) {
 			try {
 				U entity = sharedEntity.getEntity();
-				ValidationErrors entityErrors = validateExistingEntity(entity);
+				ValidationErrors entityErrors = validateExistingEntity(entity, existingEntities);
 				if (entityErrors.hasError()) {
 					validationErrors.put(buildEntityValidationGroupName(entity), entityErrors);
 				} else {
-					P processedEntity = getSharedDataProcessor().processSharedData(sharedEntity);
+					U exsitingEntity = existingEntitiesMap.get(sharedEntity.getEntity().getUuid());
+					P processedEntity = getSharedDataProcessor().processSharedData(sharedEntity, exsitingEntity);
 					entitiesToSave.add(processedEntity);
 				}
 			} catch (SormasToSormasValidationException validationException) {
@@ -235,16 +243,19 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<P> entitiesToSave = new ArrayList<>(sharedEntities.length);
+		List<U> existingEntities = loadExistingEntities(Arrays.stream(sharedEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
+		Map<String, U> existingEntitiesMap = existingEntities.stream().collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
 
 		for (S sharedEntity : sharedEntities) {
 			try {
 				U entity = sharedEntity.getEntity();
 
-				ValidationErrors contactErrors = validateExistingEntity(entity);
+				ValidationErrors contactErrors = validateExistingEntity(entity, existingEntities);
 				if (contactErrors.hasError()) {
 					validationErrors.put(buildEntityValidationGroupName(entity), contactErrors);
 				} else {
-					P processedContactData = getSharedDataProcessor().processSharedData(sharedEntity);
+					U existingEntity = existingEntitiesMap.get(sharedEntity.getEntity().getUuid());
+					P processedContactData = getSharedDataProcessor().processSharedData(sharedEntity, existingEntity);
 					entitiesToSave.add(processedContactData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
@@ -279,11 +290,23 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 	protected abstract ValidationErrors validateSharedEntity(U entity);
 
-	protected abstract ValidationErrors validateExistingEntity(U entity);
-
 	protected abstract void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, T entity);
 
 	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId);
+
+	protected abstract List<U> loadExistingEntities(List<String> uuids);
+
+	protected ValidationErrors validateExistingEntity(U entity, List<U> existingEntities) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (existingEntities.stream().noneMatch(e -> e.getUuid().equals(entity.getUuid()))) {
+			errors
+				.add(I18nProperties.getCaption(entityCaptionTag), I18nProperties.getValidationError(Validations.sormasToSormasReturnEntityNotExists));
+
+		}
+
+		return errors;
+	}
 
 	private <T> void saveNewShareInfo(
 		UserReferenceDto sender,
