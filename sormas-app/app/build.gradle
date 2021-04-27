@@ -44,6 +44,9 @@ android {
     packagingOptions {
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/spring.*'
     }
     dataBinding {
         enabled = true
