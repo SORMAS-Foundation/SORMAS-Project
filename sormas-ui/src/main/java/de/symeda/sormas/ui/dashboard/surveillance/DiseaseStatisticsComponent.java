@@ -19,12 +19,10 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -36,17 +34,15 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -75,13 +71,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private Label caseFatalityCountGrowth;
 
 	private final EventStatisticsComponent eventStatisticsComponent;
-
-	// "New Test Results" elements
-	private Label testResultCountLabel;
-	private DashboardStatisticsCountElement testResultPositive;
-	private DashboardStatisticsCountElement testResultNegative;
-	private DashboardStatisticsCountElement testResultPending;
-	private DashboardStatisticsCountElement testResultIndeterminate;
+	private final TestResultsStatisticsComponent testResultsStatisticsComponent;
 
 	private static final String CASE_LOC = "case";
 	private static final String OUTBREAK_LOC = "outbreak";
@@ -100,11 +90,12 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
+		testResultsStatisticsComponent = new TestResultsStatisticsComponent();
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(createOutbreakDistrictAndCaseFatalityLayout(), OUTBREAK_LOC);
 		addComponent(eventStatisticsComponent, EVENT_LOC);
-		addComponent(createTestResultComponent(), SAMPLE_LOC);
+		addComponent(testResultsStatisticsComponent, SAMPLE_LOC);
 	}
 
 	private DashboardStatisticsSubComponent createOutbreakDistrictAndCaseFatalityLayout() {
@@ -313,47 +304,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return layout;
 	}
 
-	private DashboardStatisticsSubComponent createTestResultComponent() {
-		DashboardStatisticsSubComponent testResultComponent = new DashboardStatisticsSubComponent();
-
-		// Header
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setMargin(false);
-		headerLayout.setSpacing(false);
-		// count
-		testResultCountLabel = new Label();
-		testResultCountLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardNewTestResults));
-		CssStyles.style(
-			testResultCountLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_XXXLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.VSPACE_4,
-			CssStyles.VSPACE_TOP_NONE);
-		headerLayout.addComponent(testResultCountLabel);
-		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardNewTestResults));
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(titleLabel);
-
-		testResultComponent.addComponent(headerLayout);
-
-		// Count layout
-		CssLayout countLayout = testResultComponent.createCountLayout(true);
-		testResultPositive = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPositive), CountElementStyle.CRITICAL);
-		testResultComponent.addComponentToCountLayout(countLayout, testResultPositive);
-		testResultNegative = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNegative), CountElementStyle.POSITIVE);
-		testResultComponent.addComponentToCountLayout(countLayout, testResultNegative);
-		testResultPending = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPending), CountElementStyle.IMPORTANT);
-		testResultComponent.addComponentToCountLayout(countLayout, testResultPending);
-		testResultIndeterminate =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
-		testResultComponent.addComponentToCountLayout(countLayout, testResultIndeterminate);
-		testResultComponent.addComponent(countLayout);
-
-		return testResultComponent;
-	}
-
 	public void refresh() {
 		Disease disease = this.dashboardDataProvider.getDisease();
 
@@ -429,13 +379,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateTestResultComponent(Disease disease) {
 		Map<PathogenTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
-
-		testResultCountLabel.setValue(testResults.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
-
-		testResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
-		testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
-		testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
-		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
+		testResultsStatisticsComponent.update(testResults);
 	}
 
 	private void updateCasesInQuarantineData() {

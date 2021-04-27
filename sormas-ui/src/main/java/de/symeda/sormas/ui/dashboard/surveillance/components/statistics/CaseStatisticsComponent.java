@@ -17,12 +17,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseStatisticsComponent extends DashboardStatisticsSubComponent {
 
-	private Label caseCountLabel;
-	private DashboardStatisticsCountElement caseClassificationConfirmed;
-	private DashboardStatisticsCountElement caseClassificationProbable;
-	private DashboardStatisticsCountElement caseClassificationSuspect;
-	private DashboardStatisticsCountElement caseClassificationNotACase;
-	private DashboardStatisticsCountElement caseClassificationNotYetClassified;
+	private final Label caseCountLabel;
+	private final DashboardStatisticsCountElement caseClassificationConfirmed;
+	private final DashboardStatisticsCountElement caseClassificationProbable;
+	private final DashboardStatisticsCountElement caseClassificationSuspect;
+	private final DashboardStatisticsCountElement caseClassificationNotACase;
+	private final DashboardStatisticsCountElement caseClassificationNotYetClassified;
 
 	public CaseStatisticsComponent() {
 		// Header
@@ -67,7 +67,7 @@ public class CaseStatisticsComponent extends DashboardStatisticsSubComponent {
 	}
 
 	public void update(List<DashboardCaseDto> cases) {
-		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
+		caseCountLabel.setValue(Integer.toString(cases.size()));
 
 		int confirmedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);

@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -63,7 +62,7 @@ public class EventStatisticsComponent extends DashboardStatisticsSubComponent {
 	}
 
 	public void update(Map<EventStatus, Long> events) {
-		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
+		eventCountLabel.setValue(((Long) events.values().stream().mapToLong(Long::longValue).sum()).toString());
 
 		eventStatusCluster.updateCountLabel(events.getOrDefault(EventStatus.CLUSTER, 0L).toString());
 		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
