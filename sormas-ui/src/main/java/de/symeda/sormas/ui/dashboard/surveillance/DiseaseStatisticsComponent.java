@@ -32,7 +32,6 @@ import com.vaadin.ui.Layout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -46,6 +45,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -56,14 +56,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private DashboardDataProvider dashboardDataProvider;
 
-	// "New Cases" elements
-	private Label caseCountLabel;
-//	private Label caseDiseaseLabel;
-	private DashboardStatisticsCountElement caseClassificationConfirmed;
-	private DashboardStatisticsCountElement caseClassificationProbable;
-	private DashboardStatisticsCountElement caseClassificationSuspect;
-	private DashboardStatisticsCountElement caseClassificationNotACase;
-	private DashboardStatisticsCountElement caseClassificationNotYetClassified;
+	private final CaseStatisticsComponent caseStatisticsComponent;
 
 	// "Outbreak Districts" elements
 	private Label outbreakDistrictCountLabel;
@@ -105,58 +98,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)),
 				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))));
 
+		caseStatisticsComponent = new CaseStatisticsComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
 
-		addComponent(createCaseComponent(), CASE_LOC);
+		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(createOutbreakDistrictAndCaseFatalityLayout(), OUTBREAK_LOC);
 		addComponent(eventStatisticsComponent, EVENT_LOC);
 		addComponent(createTestResultComponent(), SAMPLE_LOC);
-	}
-
-	private DashboardStatisticsSubComponent createCaseComponent() {
-		DashboardStatisticsSubComponent caseComponent = new DashboardStatisticsSubComponent();
-
-		// Header
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setMargin(false);
-		headerLayout.setSpacing(false);
-		// count
-		caseCountLabel = new Label();
-		CssStyles.style(
-			caseCountLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_XXXLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.VSPACE_4,
-			CssStyles.VSPACE_TOP_NONE);
-		headerLayout.addComponent(caseCountLabel);
-		// title
-		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
-		CssStyles.style(caseComponentTitle, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(caseComponentTitle);
-
-		caseComponent.addComponent(headerLayout);
-
-		// Count layout
-		CssLayout countLayout = caseComponent.createCountLayout(true);
-		caseClassificationConfirmed =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
-		caseComponent.addComponentToCountLayout(countLayout, caseClassificationConfirmed);
-		caseClassificationProbable =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardProbable), CountElementStyle.IMPORTANT);
-		caseComponent.addComponentToCountLayout(countLayout, caseClassificationProbable);
-		caseClassificationSuspect =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSuspect), CountElementStyle.RELEVANT);
-		caseComponent.addComponentToCountLayout(countLayout, caseClassificationSuspect);
-		caseClassificationNotACase =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotACase), CountElementStyle.POSITIVE);
-		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotACase);
-		caseClassificationNotYetClassified =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), CountElementStyle.MINOR);
-		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
-		caseComponent.addComponent(countLayout);
-
-		return caseComponent;
 	}
 
 	private DashboardStatisticsSubComponent createOutbreakDistrictAndCaseFatalityLayout() {
@@ -422,20 +370,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateCaseComponent(Disease disease) {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-
-		//caseDiseaseLabel.setValue("(" + disease.toString() + ")");
-		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
-
-		int confirmedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
-		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
-		int probableCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
-		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
-		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-		int notACaseCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
-		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
-		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
+		caseStatisticsComponent.update(cases);
 	}
 
 	private void updateCaseFatalityComponent(Disease disease) {
