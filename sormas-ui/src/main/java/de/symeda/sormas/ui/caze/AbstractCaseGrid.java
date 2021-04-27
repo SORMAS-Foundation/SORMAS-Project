@@ -193,7 +193,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 
-		getColumn(CaseIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort));
+		getColumn(CaseIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getGridColumns() {

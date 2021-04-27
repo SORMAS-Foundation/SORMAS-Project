@@ -62,7 +62,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
 				EventParticipantCriteria.VACCINATION,
-				I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort),
+				I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus),
 				120),
 			ComboBox.class);
 

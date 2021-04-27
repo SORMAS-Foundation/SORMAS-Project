@@ -159,7 +159,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 
-		getColumn(ContactIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort));
+		getColumn(ContactIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getColumnList() {

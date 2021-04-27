@@ -217,7 +217,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		addField(
 			moreFiltersContainer,
 			FieldConfiguration
-				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationShort), 120));
+				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 120));
 
 		addField(
 			moreFiltersContainer,
