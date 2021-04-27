@@ -21,11 +21,14 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCont
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -38,22 +41,23 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper.InfrastructureData;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData> {
 
 	@EJB
-	private UserService userService;
-	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 
 	@Override
-	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase) throws SormasToSormasValidationException {
+	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase, CaseDataDto existingCaseData)
+		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = sharedCase.getPerson();
@@ -67,19 +71,19 @@ public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, Sor
 		ValidationErrors originInfoErrorsErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.CaseData);
 		caseValidationErrors.addAll(originInfoErrorsErrors);
 
-		ValidationErrors caseDataErrors = processCaseData(caze, person);
+		ValidationErrors caseDataErrors = processCaseData(caze, person, existingCaseData);
 		caseValidationErrors.addAll(caseDataErrors);
 
 		if (caseValidationErrors.hasError()) {
 			validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors);
 		}
 
-		if (associatedContacts != null) {
+		if (associatedContacts != null && associatedContacts.size() > 0) {
 			Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
 			validationErrors.putAll(contactValidationErrors);
 		}
 
-		if (samples != null) {
+		if (samples != null && samples.size() > 0) {
 			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
@@ -91,14 +95,14 @@ public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, Sor
 		return new ProcessedCaseData(person, caze, associatedContacts, samples, originInfo);
 	}
 
-	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person) {
+	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, CaseDataDto existingCaseData) {
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
 		caseValidationErrors.addAll(personValidationErrors);
 
 		caze.setPerson(person.toReference());
-		caze.setReportingUser(userService.getCurrentUser().toReference());
+		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
 
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 			caze.getRegion(),
@@ -184,9 +188,15 @@ public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, Sor
 	private Map<String, ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
+		Map<String, ContactDto> existingContactsMap =
+			contactFacade.getByUuids(associatedContacts.stream().map(c -> c.getContact().getUuid()).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
+
 		for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : associatedContacts) {
 			ContactDto contact = associatedContact.getContact();
-			ValidationErrors contactErrors = dataProcessorHelper.processContactData(contact, associatedContact.getPerson());
+			ValidationErrors contactErrors =
+				dataProcessorHelper.processContactData(contact, associatedContact.getPerson(), existingContactsMap.get(contact.getUuid()));
 
 			if (contactErrors.hasError()) {
 				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);

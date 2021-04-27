@@ -63,13 +63,27 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPerso
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_contact(Fathers name)'), 'dad')
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number'), '12345')
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_New entry'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Owner of phone'), 'myself')
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Type of contact details_v-filterselect-button'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), 'somemail@gmail.com')
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/td_Phone'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Phone number type_v-filterselect-button'))
+
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/td_Mobile'))
+
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_ContactInformation'), '12345')
+
+WebUI.click(findTestObject('ReusableORs/div_Save_modalWindow'))
+
+/*WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Owner of phone'), 'myself')
+
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), 'somemail@gmail.com')*/
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_General comment_additionalDetails'), 
+    2)
+
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_General comment_additionalDetails'), 
     'practitioner')
 
 WebUI.click(findTestObject('ReusableORs/div_Save'))
@@ -168,7 +182,7 @@ if (!(maidenName.contains('maiden'))) {
     throw new StepFailedException('The contact mothers maiden name should be "maiden". maidenName: ' + maidenName)
 }
 
-String phoneNumber = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number'), 
+/*String phoneNumber = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number'), 
     'value')
 
 if (!(phoneNumber.contains('12345'))) {
@@ -187,9 +201,8 @@ String email = WebUI.getAttribute(findTestObject('Contacts/ContactInformationVie
 
 if (!(email.contains('somemail'))) {
     throw new StepFailedException('The email should be "somemail". email: ' + email)
-}
-
-String practitioner = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
+}*/
+String practitioner = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_General comment_additionalDetails'), 
     'value')
 
 if (!(practitioner.contains('practitioner'))) {
@@ -251,13 +264,23 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPerso
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_contact(Mothers name)'), '')
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number'), '')
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_edit'), 2)
+
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_edit'))
+
+WebUI.click(findTestObject('ReusableORs/div_Delete'))
+
+WebUI.click(findTestObject('Contacts/ContactInformationView/confirmationDlg_yes'))
+
+/*WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number'), '')
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Owner of phone'), '')
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), '')
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), '')*/
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_General comment_additionalDetails'), 
+    2)
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_General comment_additionalDetails'), 
     '')
 
 WebUI.click(findTestObject('ReusableORs/div_Save'))
