@@ -897,6 +897,7 @@ public interface Captions {
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
+	String edit = "edit";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";

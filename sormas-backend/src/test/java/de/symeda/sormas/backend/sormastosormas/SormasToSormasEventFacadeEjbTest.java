@@ -457,6 +457,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		EventDto returnedEvent = getEventFacade().getEventByUuid(event.getUuid());
 		assertThat(returnedEvent.getEventDesc(), is("Test updated description"));
+		assertThat(returnedEvent.getReportingUser(), is(officer));
 
 		List<SormasToSormasShareInfoDto> eventShares =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);

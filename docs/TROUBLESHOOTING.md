@@ -2,6 +2,11 @@
 
 Please consult this collection of solutions to common problems if you have any issues before issuing a support request or asking developers for help. Also note that this resource has only been added recently and will be extended in the future. If you have encountered (and fixed) any issue that you think would be worth adding to this list, please don't hesitate to let us know!
 
+## Android Application FAQ
+
+**Q:** I don't see a logout option anywhere in the mobile app. How can I change my user?  
+**A:** The logout option is hidden by default because users in the field often don't know their own passwords, but their devices are instead set up by a supervisor. If you want to change your user, go to the Settings screen and tap the version number five times to bring up additional options, including the logout option.
+
 ## IDE Troubleshooting: eclipse
 
 ### Deployment Problems
