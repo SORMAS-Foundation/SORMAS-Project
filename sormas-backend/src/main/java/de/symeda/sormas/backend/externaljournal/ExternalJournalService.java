@@ -183,30 +183,6 @@ public class ExternalJournalService {
 	}
 
 	/**
-	 * Notify external journals that a followUpUntilDate has been updated
-	 *
-	 * @param personUuid
-	 *            uuid of person already registered in the external journal
-	 * @param newFollowUpUntilDate
-	 *            the updated follow-up end date
-	 * @param previousFollowUpUntilDate
-	 *            the follow-up end date before the update
-	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
-		PersonDto person = personFacade.getPersonByUuid(personUuid);
-		if (person.isEnrolledInExternalJournal()) {
-			if (newFollowUpUntilDate.after(previousFollowUpUntilDate)) {
-				if (configFacade.getSymptomJournalConfig().isActive()) {
-					notifySymptomJournal(personUuid);
-				}
-				if (configFacade.getPatientDiaryConfig().isActive()) {
-					notifyPatientDiary(personUuid);
-				}
-			}
-		}
-	}
-
-	/**
 	 * Notify external journals that a person has been updated
 	 * 
 	 * @param existingJournalPerson
@@ -384,7 +360,6 @@ public class ExternalJournalService {
 
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
-
 
 	/**
 	 * Check whether a person has valid data in order to be registered in the patient diary.
