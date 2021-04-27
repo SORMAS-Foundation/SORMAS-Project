@@ -46,6 +46,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -80,11 +81,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private Label caseFatalityCountValue;
 	private Label caseFatalityCountGrowth;
 
-	// "New Events" elements
-	private Label eventCountLabel;
-	private DashboardStatisticsCountElement eventStatusConfirmed;
-	private DashboardStatisticsCountElement eventStatusPossible;
-	private DashboardStatisticsCountElement eventStatusNotAnEvent;
+	private final EventStatisticsComponent eventStatisticsComponent;
 
 	// "New Test Results" elements
 	private Label testResultCountLabel;
@@ -108,9 +105,11 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)),
 				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))));
 
+		eventStatisticsComponent = new EventStatisticsComponent();
+
 		addComponent(createCaseComponent(), CASE_LOC);
 		addComponent(createOutbreakDistrictAndCaseFatalityLayout(), OUTBREAK_LOC);
-		addComponent(createEventComponent(), EVENT_LOC);
+		addComponent(eventStatisticsComponent, EVENT_LOC);
 		addComponent(createTestResultComponent(), SAMPLE_LOC);
 	}
 
@@ -366,44 +365,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return layout;
 	}
 
-	private DashboardStatisticsSubComponent createEventComponent() {
-		DashboardStatisticsSubComponent eventComponent = new DashboardStatisticsSubComponent();
-
-		// Header
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setMargin(false);
-		headerLayout.setSpacing(false);
-
-		// count
-		eventCountLabel = new Label();
-		CssStyles.style(
-			eventCountLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_XXXLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.VSPACE_4,
-			CssStyles.VSPACE_TOP_NONE);
-		headerLayout.addComponent(eventCountLabel);
-		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardNewEvents));
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(titleLabel);
-
-		eventComponent.addComponent(headerLayout);
-
-		// Count layout
-		CssLayout countLayout = eventComponent.createCountLayout(true);
-		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.EVENT.toString(), CountElementStyle.CRITICAL);
-		eventComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.SIGNAL.toString(), CountElementStyle.IMPORTANT);
-		eventComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.DROPPED.toString(), CountElementStyle.POSITIVE);
-		eventComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
-		eventComponent.addComponent(countLayout);
-
-		return eventComponent;
-	}
-
 	private DashboardStatisticsSubComponent createTestResultComponent() {
 		DashboardStatisticsSubComponent testResultComponent = new DashboardStatisticsSubComponent();
 
@@ -528,12 +489,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateEventComponent(Disease disease) {
 		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
-
-		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
-
-		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
-		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.SIGNAL, 0L).toString());
-		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.DROPPED, 0L).toString());
+		eventStatisticsComponent.update(events);
 	}
 
 	private void updateTestResultComponent(Disease disease) {
