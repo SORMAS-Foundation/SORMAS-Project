@@ -79,7 +79,7 @@ sudo pgxn install temporal_tables
 
 ## SORMAS Server
 
-Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest>
+Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
 
 ### Install on Linux
 

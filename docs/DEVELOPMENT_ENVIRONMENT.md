@@ -11,7 +11,7 @@ Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local
 ## Step 2: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
 - *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
-- *Optional:* Clone the SORMAS-Open repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
+- *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 3: Install Java
@@ -22,7 +22,7 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 ### IntelliJ
 - Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/)
 - Set the project SDK to the installed JDK
-- *Optional:* Clone the SORMAS-Open repository if you haven't done so already
+- *Optional:* Clone the SORMAS-Project repository if you haven't done so already
 - Open the project in Intellij; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
@@ -46,8 +46,8 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 ### Eclipse
 - Download and install the latest [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages)
 - Set the default JRE of Eclipse to the installed JDK: [Assigning the default JRE for the workbench](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
-- *Optional:* Clone the SORMAS-Open repository if you haven't done so already via `File -> Import -> Git -> Projects from Git` and cancel the process when you're asked to create a new project from the cloned repository
-- Import the projects from the SORMAS-Open repository into your workspace via `File -> Import -> Maven -> Existing Maven Projects`
+- *Optional:* Clone the SORMAS-Project repository if you haven't done so already via `File -> Import -> Git -> Projects from Git` and cancel the process when you're asked to create a new project from the cloned repository
+- Import the projects from the SORMAS-Project repository into your workspace via `File -> Import -> Maven -> Existing Maven Projects`
 - Install the [Payara Tools plugin](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse); the commercial UI designer is not needed
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the local SORMAS server
@@ -65,7 +65,7 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 - Download and install the latest [Android Studio version](https://developer.android.com/studio)
   - Please make sure to run the installer with admin rights if you're using Windows
   - Ensure that the Android SDK installation path does not contain whitespaces; you can also change this later via `Tools -> SDK Manager -> Android SDK Location`
-- Open Android Studio and import the `sormas-app` module from the SORMAS-Open repository
+- Open Android Studio and import the `sormas-app` module from the SORMAS-Project repository
 - Make a copy of `keystore.properties.example` and rename it to `keystore.properties`
 - Build the Android Studio project by executing the Gradle build (this may be done automatically)
 - Add an emulator and set the SDK version to the `minSdkVersion` or `targetSdkVersion` from `build.gradle`; we suggest to test your code on both, but `minSdkVersion` should be preferred to ensure compatibility to the minimum supported SDK
