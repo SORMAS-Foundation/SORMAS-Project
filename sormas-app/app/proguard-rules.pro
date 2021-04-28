@@ -16,6 +16,8 @@
 #   public *;
 #}
 
+-dontobfuscate
+
 -keep public class de.symeda.sormas.** {
-  public protected *;
+  *;
 }
