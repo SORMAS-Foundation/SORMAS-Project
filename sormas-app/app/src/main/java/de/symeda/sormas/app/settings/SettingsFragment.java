@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
@@ -293,29 +294,35 @@ public class SettingsFragment extends BaseLandingFragment {
 	public void syncLbds() {
 		Log.i("SYNC", "Sync");
 
-		/*try {
+		try {
 			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
+			// private key merken
 			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(rsa.getPublic());
-			kexToLbdsIntent.setComponent(LbdsRelated.componentName);
-			ComponentName c = getContext().startForegroundService(kexToLbdsIntent);
-		} catch (NoSuchAlgorithmException e) {
+			//kexToLbdsIntent.setComponent(LbdsRelated.componentName);
+			//ComponentName c = getContext().startForegroundService(kexToLbdsIntent);
+			ContextCompat.startForegroundService(getContext(), kexToLbdsIntent);
+		} catch (Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 
+		/*
 		PersonDto target = new PersonDto();
 		PersonDao personDao = DatabaseHelper.getPersonDao();
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		List<Person> modifiedEntities = personDao.getModifiedEntities();
+		if (modifiedEntities.isEmpty()) {
+			return;
+		}
 		Person firstEntry = modifiedEntities.get(0);
 		personDtoHelper.fillInnerFromAdo(target, firstEntry);
 		resetFields(target);
 		String payload = new Gson().toJson(target);
 
 		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", payload);
-		Intent intent = new LbdsSendIntent(method);
+		Intent intent = new LbdsSendIntent(method, "gemerkter aesSecret?");
 
 		intent.setComponent(LbdsRelated.componentName);
-		ComponentName c = getContext().startForegroundService(intent);
+		ComponentName c = getContext().startForegroundService(intent);*/
 	}
 
 	private void resetFields(PersonDto personDto) {
