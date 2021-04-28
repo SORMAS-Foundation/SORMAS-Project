@@ -179,7 +179,7 @@
         },
         "responses" : {
           "default" : {
-            "description" : "true if the status was set succesfully, false otherwise.",
+            "description" : "true if the status was set successfully, false otherwise.",
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {

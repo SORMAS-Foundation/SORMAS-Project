@@ -1,7 +1,7 @@
 
 # Development Environment Setup
 
-This step-by-step guide explains how to set up your development environment, using either Eclipse or Intellij for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
+This step-by-step guide explains how to set up your development environment, using either Eclipse or IntelliJ for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
 
 **Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions in our developer chat on [Gitter](https://gitter.im/SORMAS-Project).
 
@@ -23,7 +23,7 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 - Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Project repository if you haven't done so already
-- Open the project in Intellij; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
+- Open the project in IntelliJ; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
 - Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
@@ -77,7 +77,7 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 In order to ensure a consistent code style and prevent so-called edit wars, we have set up custom configuration files for automatic code formatting and import ordering. Please make sure to adhere to the following steps for your IDE(s) before you start developing.
 
 ### IntelliJ and Android Studio
-- Install the [Eclipse Code Formatter for Intellij/Android Studio plugin](https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+- Install the [Eclipse Code Formatter for IntelliJ/Android Studio plugin](https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 - Open the plugin settings via `File -> Settings -> Other Settings -> Eclipse Code Formatter` and select `Use the Eclipse Code Formatter`
 - Under `Eclipse formatter config`, choose `Eclipse workspace/project folder or config file` and select `sormas-base/java-formatter-profile.xml`
 - Check `Optimize Imports`

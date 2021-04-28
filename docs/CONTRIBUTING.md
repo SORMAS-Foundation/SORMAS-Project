@@ -38,7 +38,7 @@ Bug reports cover everything that leads to the application behaving in an uninte
 
 Change requests cover features that are already part of SORMAS. This primarily includes aspects (or whole features) for which you would like to request an altered behavior, but also small extensions (e.g. additional values being added to a dropdown field).
 
-* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, namig it briefly might be enough. If it is about a very specific detail of said feature, please try to be more specific.
+* **Feature Description:** Please describe the feature you would like us to change like it is in SORMAS right now. If it is about a relatively big or a very general feature, naming it briefly might be enough. If it is about a very specific detail of said feature, please try to be more specific.
 * **Problem Description:** Tell us why you want us to change the feature and what you believe is wrong or could be improved about the way it is currently designed.
 * **Proposed Change:** Describe in as much detail as possible how you would like us to change the feature and what the expected outcome of your request should look like.
 * **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
@@ -103,7 +103,7 @@ The advantage of adhering to this process is that you can be sure that there won
 Contributing to the SORMAS code requires you to submit pull requests that will be reviewed by one of our core developers. Once a pull request has been submitted to our repository, a developer will either assign themselves as its reviewer or we will get back to you in case we won't be able to review it in time. This may e.g. happen if your pull request involves a lot of technical changes that we would like to merge together with other issues of the same nature or that could potentially break a lot of logic. Usually though, the general process looks like this:
 
 1. A developer assigns themselves as the reviewer of your pull request. Please wait until the review is done; if you think that the review is taking too long, feel free to add a comment to the pull request as a reminder to the developer.
-2. The developer might request changes to the code. If that's the case, please implement the requested changes or answer to their change request if you have questions or don't agree with a specific part of the request. 
+2. The developer might request changes to the code. If that's the case, please implement the requested changes or answer to their change request if you have questions or don't agree with a specific part of the request.
 3. Once you've implemented all requested changes, please request another review by the assigned developer by clicking on the "Re-request review" icon next to their name.
 4. As soon as the developer is happy with the submitted code (which might require multiple iterations of step 2 and 3, especially for larger pull requests), they will merge it into the development branch and close the pull request.
 

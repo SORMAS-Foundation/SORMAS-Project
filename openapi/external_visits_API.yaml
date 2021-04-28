@@ -54,7 +54,7 @@ paths:
           description: "A selection of personal data, including first and last name,\
             \ e-mail, phone number(s) and birth date if availablefor that person.\
             \ Note that Null value fields may not be returned. If you get an unexpected\
-            \ result, it might help to verifyif the personUuid is existing in your\
+            \ result, it might help to verify if the personUuid is existing in your\
             \ system via the isValid controller."
           content:
             application/json:
