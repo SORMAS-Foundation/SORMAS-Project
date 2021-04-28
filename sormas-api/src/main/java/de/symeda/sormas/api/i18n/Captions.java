@@ -696,6 +696,8 @@ public interface Captions {
 	String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	String dashboardConfirmed = "dashboardConfirmed";
+	String dashboardConfirmedNoSymptoms = "dashboardConfirmedNoSymptoms";
+	String dashboardConfirmedUnknownSymptoms = "dashboardConfirmedUnknownSymptoms";
 	String dashboardConfirmedContact = "dashboardConfirmedContact";
 	String dashboardContactClassificationChart = "dashboardContactClassificationChart";
 	String dashboardConvertedToCase = "dashboardConvertedToCase";
