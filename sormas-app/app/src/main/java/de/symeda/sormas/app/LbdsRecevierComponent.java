@@ -13,6 +13,7 @@ import org.hzi.sormas.lbds.core.http.HttpMethod;
 import org.hzi.sormas.lbds.messaging.Constants;
 import org.hzi.sormas.lbds.messaging.IntentType;
 import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
+import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToSormasIntent;
 import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import java.security.PublicKey;
@@ -31,14 +32,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LbdsReceiverComponent extends IntentService {
+public class LbdsRecevierComponent extends IntentService {
 
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
+     *
      */
-    public LbdsReceiverComponent() {
-        super("LbdsReceiverComponent");
+    public LbdsRecevierComponent() {
+        super("LbdsRecevierComponent");
     }
 
     @Override
@@ -77,6 +79,9 @@ public class LbdsReceiverComponent extends IntentService {
                 case HTTP_RESPONSE_INTENT:
                     break;
                 case KEX_TO_SORMAS_INTENT:
+                    LbdsPropagateKexToSormasIntent kexToSormasIntent = (LbdsPropagateKexToSormasIntent) intent;
+                    //String aesSecret = kexToSormasIntent.getAesSecret(/* gemerkter private key?*/);
+                    // aesSecret merken und beim Versenden (LbdsSendIntent) mit übergeben?
                     break;
             }
         }
