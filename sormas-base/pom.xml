@@ -803,7 +803,8 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>5.3.4</version>
+				<version>4.0.3.RELEASE</version>
+				<!-- downgraded because of missing support in android api 24-->
 			</dependency>
 
 			<dependency>

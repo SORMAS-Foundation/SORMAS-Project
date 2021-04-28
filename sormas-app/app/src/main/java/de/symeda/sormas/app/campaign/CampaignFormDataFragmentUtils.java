@@ -20,12 +20,14 @@ package de.symeda.sormas.app.campaign;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,16 +51,21 @@ public class CampaignFormDataFragmentUtils {
     }
 
     public static void handleExpression(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, CampaignFormElementType type, ControlPropertyField dynamicField, String expressionString) {
-        final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-        if (type == CampaignFormElementType.YES_NO) {
-            ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
-        } else {
-            ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString());
+        try {
+            final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+            if (type == CampaignFormElementType.YES_NO) {
+                ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
+            } else {
+                ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString());
+            }
+            dynamicField.setEnabled(false);
+        } catch (SpelEvaluationException e) {
+            Log.e("Error evaluating expression depending on field" + dynamicField.getCaption(), e.getMessage());
         }
-        dynamicField.setEnabled(false);
+
     }
 
-    public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString) {
+    public static Object getExpressionValue(ExpressionParser expressionParser, List<CampaignFormDataEntry> formValues, String expressionString) throws SpelEvaluationException {
         final EvaluationContext context = refreshEvaluationContext(formValues);
         final Expression expression = expressionParser.parseExpression(expressionString);
         final Class<?> valueType = expression.getValueType(context);
