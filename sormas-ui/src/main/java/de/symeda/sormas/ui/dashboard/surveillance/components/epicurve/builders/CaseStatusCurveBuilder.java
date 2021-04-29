@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,17 +37,12 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 			notYetClassifiedNumbers[i] = caseCounts.getOrDefault(CaseClassification.NOT_CLASSIFIED, 0L).intValue();
 		}
 
-		hcjs.append("series: [");
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers));
-		hcjs.append(", ");
+		List<EpiCurveSeriesElement> elements = Arrays.asList(
+			new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
 
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers));
-		hcjs.append(", ");
-
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers));
-		hcjs.append(", ");
-
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
-		hcjs.append("], ");
+		buildSeries(elements);
 	}
 }

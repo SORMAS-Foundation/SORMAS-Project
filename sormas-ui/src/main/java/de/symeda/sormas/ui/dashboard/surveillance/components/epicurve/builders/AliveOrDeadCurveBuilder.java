@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +33,10 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 			deadNumbers[i] = caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue();
 		}
 
-		hcjs.append("series: [");
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardAlive, "#32CD32", aliveNumbers));
-		hcjs.append(", ");
+		List<EpiCurveSeriesElement> elements = Arrays.asList(
+			new EpiCurveSeriesElement(Captions.dashboardAlive, "#32CD32", aliveNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers));
 
-		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers));
-		hcjs.append("]}], ");
+		buildSeries(elements);
 	}
 }

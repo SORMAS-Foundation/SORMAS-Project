@@ -63,6 +63,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 		//@formatter:on
 
 		buildEpiCurve(filteredDates, dashboardDataProvider);
+		hcjs.append(", ");
 
 		//@formatter:off
 		hcjs.append("exporting: {\n" +
@@ -104,7 +105,18 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return caseCriteria;
 	}
 
-	protected void buildSeriesElement(EpiCurveSeriesElement element) {
+	protected void buildSeries(List<EpiCurveSeriesElement> elements) {
+		hcjs.append("series: [");
+		for (int i = 0; i < elements.size(); i++) {
+			if (i > 0) {
+				hcjs.append(", ");
+			}
+			buildSeriesElement(elements.get(i));
+		}
+		hcjs.append("]");
+	}
+
+	private void buildSeriesElement(EpiCurveSeriesElement element) {
 		hcjs.append("{ name: '")
 			.append(element.getCaption())
 			.append("', color: '")
