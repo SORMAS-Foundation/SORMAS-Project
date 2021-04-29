@@ -104,6 +104,15 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return caseCriteria;
 	}
 
+	protected void addDataObject(int[] numbers) {
+		for (int i = 0; i < numbers.length; i++) {
+			if (i > 0) {
+				hcjs.append(", ");
+			}
+			hcjs.append(numbers[i]);
+		}
+	}
+
 	private List<String> buildLabels(List<Date> filteredDates) {
 		List<String> newLabels = new ArrayList<>();
 		Calendar calendar = Calendar.getInstance();

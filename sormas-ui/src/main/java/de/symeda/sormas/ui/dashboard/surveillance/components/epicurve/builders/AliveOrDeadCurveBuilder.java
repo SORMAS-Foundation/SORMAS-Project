@@ -36,21 +36,12 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 		hcjs.append("series: [");
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardAlive) + "', color: '#32CD32', dataLabels: { allowOverlap: false }, data: [");
-		for (int i = 0; i < aliveNumbers.length; i++) {
-			if (i == aliveNumbers.length - 1) {
-				hcjs.append(aliveNumbers[i] + "]},");
-			} else {
-				hcjs.append(aliveNumbers[i] + ", ");
-			}
-		}
+		addDataObject(aliveNumbers);
+		hcjs.append("]}, ");
+
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardDead) + "', color: '#B22222', dataLabels: { allowOverlap: false },  data: [");
-		for (int i = 0; i < deadNumbers.length; i++) {
-			if (i == deadNumbers.length - 1) {
-				hcjs.append(deadNumbers[i] + "]}],");
-			} else {
-				hcjs.append(deadNumbers[i] + ", ");
-			}
-		}
+		addDataObject(deadNumbers);
+		hcjs.append("]}], ");
 	}
 }

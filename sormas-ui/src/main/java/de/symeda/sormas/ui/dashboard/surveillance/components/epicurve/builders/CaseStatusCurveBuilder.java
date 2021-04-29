@@ -41,42 +41,25 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardNotYetClassified)
 				+ "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
-		for (int i = 0; i < notYetClassifiedNumbers.length; i++) {
-			if (i == notYetClassifiedNumbers.length - 1) {
-				hcjs.append(notYetClassifiedNumbers[i] + "]},");
-			} else {
-				hcjs.append(notYetClassifiedNumbers[i] + ", ");
-			}
-		}
+		addDataObject(notYetClassifiedNumbers);
+		hcjs.append("]}, ");
+
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardSuspect)
 				+ "', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
-		for (int i = 0; i < suspectNumbers.length; i++) {
-			if (i == suspectNumbers.length - 1) {
-				hcjs.append(suspectNumbers[i] + "]},");
-			} else {
-				hcjs.append(suspectNumbers[i] + ", ");
-			}
-		}
+		addDataObject(suspectNumbers);
+		hcjs.append("]}, ");
+
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardProbable)
 				+ "', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
-		for (int i = 0; i < probableNumbers.length; i++) {
-			if (i == probableNumbers.length - 1) {
-				hcjs.append(probableNumbers[i] + "]},");
-			} else {
-				hcjs.append(probableNumbers[i] + ", ");
-			}
-		}
+		addDataObject(probableNumbers);
+		hcjs.append("]}, ");
+
 		hcjs.append(
 			"{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed)
 				+ "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
-		for (int i = 0; i < confirmedNumbers.length; i++) {
-			if (i == confirmedNumbers.length - 1) {
-				hcjs.append(confirmedNumbers[i] + "]}],");
-			} else {
-				hcjs.append(confirmedNumbers[i] + ", ");
-			}
-		}
+		addDataObject(confirmedNumbers);
+		hcjs.append("]}], ");
 	}
 }
