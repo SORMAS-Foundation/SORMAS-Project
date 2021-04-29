@@ -62,7 +62,11 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, dashboardDataProvider);
+		CaseCriteria caseCriteria = new CaseCriteria().disease(dashboardDataProvider.getDisease())
+			.region(dashboardDataProvider.getRegion())
+			.district(dashboardDataProvider.getDistrict())
+			.newCaseDateType(dashboardDataProvider.getNewCaseDateType());
+		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, caseCriteria);
 		buildSeries(elements);
 		hcjs.append(", ");
 
@@ -90,18 +94,13 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return hcjs.toString();
 	}
 
-	protected CaseCriteria buildCaseCriteria(Date date, DashboardDataProvider dashboardDataProvider) {
-		CaseCriteria caseCriteria = new CaseCriteria().disease(dashboardDataProvider.getDisease())
-			.region(dashboardDataProvider.getRegion())
-			.district(dashboardDataProvider.getDistrict());
+	protected CaseCriteria setNewCaseDatesInCaseCriteria(Date date, CaseCriteria caseCriteria) {
 		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), dashboardDataProvider.getNewCaseDateType());
+			caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), dashboardDataProvider.getNewCaseDateType());
+			caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
 		} else {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), dashboardDataProvider.getNewCaseDateType());
+			caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 		}
 		return caseCriteria;
 	}
@@ -155,5 +154,5 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
+	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, CaseCriteria caseCriteria);
 }

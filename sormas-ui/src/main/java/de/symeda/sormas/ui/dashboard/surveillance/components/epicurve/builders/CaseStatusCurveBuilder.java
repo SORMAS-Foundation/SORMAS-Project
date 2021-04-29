@@ -9,7 +9,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
 public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
@@ -19,15 +18,14 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, CaseCriteria caseCriteria) {
 		int[] confirmedNumbers = new int[filteredDates.size()];
 		int[] probableNumbers = new int[filteredDates.size()];
 		int[] suspectNumbers = new int[filteredDates.size()];
 		int[] notYetClassifiedNumbers = new int[filteredDates.size()];
 
 		for (int i = 0; i < filteredDates.size(); i++) {
-			CaseCriteria caseCriteria = buildCaseCriteria(filteredDates.get(i), dashboardDataProvider);
-
+			caseCriteria = setNewCaseDatesInCaseCriteria(filteredDates.get(i), caseCriteria);
 			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);
 
 			confirmedNumbers[i] = caseCounts.getOrDefault(CaseClassification.CONFIRMED, 0L).intValue();

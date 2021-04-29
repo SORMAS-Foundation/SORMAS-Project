@@ -221,6 +221,13 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.community = community;
 	}
 
+	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo) {
+
+		this.newCaseDateFrom = newCaseDateFrom;
+		this.newCaseDateTo = newCaseDateTo;
+		return this;
+	}
+
 	/**
 	 * @param newCaseDateTo
 	 *            will automatically be set to the end of the day
@@ -258,6 +265,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return newCaseDateType;
 	}
 
+	public void setNewCaseDateType(CaseCriteriaDateType newCaseDateType) {
+		this.newCaseDateType = newCaseDateType;
+	}
+
+	public CaseCriteria newCaseDateType(CaseCriteriaDateType newCaseDateType) {
+		setNewCaseDateType(newCaseDateType);
+		return this;
+	}
+
 	public CaseCriteria dateFilterOption(DateFilterOption dateFilterOption) {
 		this.dateFilterOption = dateFilterOption;
 		return this;
@@ -265,10 +281,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public DateFilterOption getDateFilterOption() {
 		return dateFilterOption;
-	}
-
-	public void setNewCaseDateType(CaseCriteriaDateType newCaseDateType) {
-		this.newCaseDateType = newCaseDateType;
 	}
 
 	public PersonReferenceDto getPerson() {

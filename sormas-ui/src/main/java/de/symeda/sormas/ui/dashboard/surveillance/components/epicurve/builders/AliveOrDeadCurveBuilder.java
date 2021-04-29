@@ -9,7 +9,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
 public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
@@ -19,13 +18,12 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, CaseCriteria caseCriteria) {
 		int[] aliveNumbers = new int[filteredDates.size()];
 		int[] deadNumbers = new int[filteredDates.size()];
 
 		for (int i = 0; i < filteredDates.size(); i++) {
-			CaseCriteria caseCriteria = buildCaseCriteria(filteredDates.get(i), dashboardDataProvider);
-
+			caseCriteria = setNewCaseDatesInCaseCriteria(filteredDates.get(i), caseCriteria);
 			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
 
 			aliveNumbers[i] = caseCounts.getOrDefault(PresentCondition.ALIVE, 0L).intValue();
