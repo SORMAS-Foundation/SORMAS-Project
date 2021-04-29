@@ -21,19 +21,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.label.ContentMode;
@@ -44,12 +37,17 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.GatheringType;
+import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -59,6 +57,8 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -94,13 +94,21 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
+				ExposureDto.EXPOSURE_ROLE,
 				COLUMN_TYPE_OF_PLACE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
 				COLUMN_DESCRIPTION,
 				COLUMN_SOURCE_CASE_NAME);
 		} else {
-			table.setVisibleColumns(EDIT_COLUMN_ID, COLUMN_EXPOSURE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
+			table.setVisibleColumns(
+				EDIT_COLUMN_ID,
+				COLUMN_EXPOSURE_TYPE,
+				ExposureDto.EXPOSURE_ROLE,
+				COLUMN_TYPE_OF_PLACE,
+				COLUMN_DATE,
+				COLUMN_ADDRESS,
+				COLUMN_DESCRIPTION);
 		}
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
@@ -119,6 +127,25 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			String exposureString =
 				ExposureType.OTHER != exposure.getExposureType() ? exposure.getExposureType().toString() : exposure.getExposureTypeDetails();
+
+			// if possible, always display "lowest-level" activity type (e.g. show type of gathering instead of just "gathering")
+			if (exposure.getExposureType() == ExposureType.GATHERING && exposure.getGatheringType() != null) {
+				exposureString += " - " + (exposure.getGatheringType() != GatheringType.OTHER
+					? exposure.getGatheringType().toString()
+					: (StringUtils.isNotEmpty(exposure.getGatheringDetails()) ? exposure.getGatheringDetails() : GatheringType.OTHER.toString()));
+			}
+
+			if (exposure.getExposureType() == ExposureType.HABITATION && exposure.getHabitationType() != null) {
+				exposureString += " - " + (exposure.getHabitationType() != HabitationType.OTHER
+					? exposure.getHabitationType().toString()
+					: (StringUtils.isNotEmpty(exposure.getHabitationDetails()) ? exposure.getHabitationDetails() : HabitationType.OTHER.toString()));
+			}
+
+			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT) {
+				exposureString += " (" + (exposure.getTypeOfAnimal() != TypeOfAnimal.OTHER
+					? exposure.getTypeOfAnimal().toString()
+					: (exposure.getTypeOfAnimalDetails() != null ? exposure.getTypeOfAnimalDetails() : TypeOfAnimal.OTHER.toString())) + ")";
+			}
 
 			if (exposure.getRiskArea() == YesNoUnknown.YES || exposure.isProbableInfectionEnvironment())
 				exposureString = "<b>" + exposureString + "</b>";
@@ -147,9 +174,33 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			return exposure.getTypeOfPlace() != null
-				? TypeOfPlace.OTHER != exposure.getTypeOfPlace() ? exposure.getTypeOfPlace().toString() : exposure.getTypeOfPlaceDetails()
-				: "";
+			String typeOfPlaceString;
+
+			if (exposure.getTypeOfPlace() == null) {
+				return "";
+			} else if (exposure.getTypeOfPlace() == TypeOfPlace.FACILITY && exposure.getLocation().getFacilityType() != null) {
+				typeOfPlaceString = exposure.getLocation().getFacilityType().toString();
+
+				if (StringUtils.isNotEmpty(exposure.getLocation().getFacilityDetails())) {
+					typeOfPlaceString += " - " + exposure.getLocation().getFacilityDetails();
+				} else if (exposure.getLocation().getFacility() != null) {
+					typeOfPlaceString += " - " + exposure.getLocation().getFacility().toString();
+				}
+			} else if (exposure.getTypeOfPlace() == TypeOfPlace.MEANS_OF_TRANSPORT) {
+				typeOfPlaceString = exposure.getMeansOfTransport() == null
+					? TypeOfPlace.MEANS_OF_TRANSPORT.toString()
+					: (exposure.getMeansOfTransport() != MeansOfTransport.OTHER
+						? exposure.getMeansOfTransport().toString()
+						: ((StringUtils.isNotEmpty(exposure.getMeansOfTransportDetails()))
+							? exposure.getMeansOfTransportDetails()
+							: TypeOfPlace.MEANS_OF_TRANSPORT.toString()));
+			} else {
+				typeOfPlaceString = exposure.getTypeOfPlace() != TypeOfPlace.OTHER
+					? exposure.getTypeOfPlace().toString()
+					: (StringUtils.isNotEmpty(exposure.getTypeOfPlaceDetails()) ? exposure.getTypeOfPlaceDetails() : TypeOfPlace.OTHER.toString());
+			}
+
+			return typeOfPlaceString;
 		});
 
 		table.addGeneratedColumn(COLUMN_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
@@ -194,6 +245,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	protected boolean isModified(ExposureDto oldEntry, ExposureDto newEntry) {
 		return isModifiedObject(oldEntry.getExposureType(), newEntry.getExposureType())
 			|| isModifiedObject(oldEntry.getExposureTypeDetails(), newEntry.getExposureTypeDetails())
+			|| isModifiedObject(oldEntry.getExposureRole(), newEntry.getExposureRole())
 			|| isModifiedObject(oldEntry.getTypeOfPlace(), newEntry.getTypeOfPlace())
 			|| isModifiedObject(oldEntry.getTypeOfPlaceDetails(), newEntry.getTypeOfPlaceDetails())
 			|| isModifiedObject(oldEntry.getStartDate(), newEntry.getStartDate())

@@ -177,11 +177,13 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
         filterBinding.campaignFilter.initializeSpinner(campaigns);
         filterBinding.campaignFilter.addValueChangedListener(e -> {
             Campaign campaign = (Campaign) e.getValue();
-            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
-            filterBinding.campaignFormFilter.initializeSpinner(forms);
-            setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
-            if (getNewMenu() != null) {
-                getNewMenu().setVisible(isEntryCreateAllowed());
+            if (campaign != null) {
+                List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
+                filterBinding.campaignFormFilter.initializeSpinner(forms);
+                setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
+                if (getNewMenu() != null) {
+                    getNewMenu().setVisible(isEntryCreateAllowed());
+                }
             }
         });
 

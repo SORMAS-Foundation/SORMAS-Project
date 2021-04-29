@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -512,6 +513,12 @@ public class SampleFacadeEjb implements SampleFacade {
 			null);
 
 		return samples;
+	}
+
+	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<SampleIndexDto> sampleIndexList = getIndexList(sampleCriteria, offset, size, sortProperties);
+		long totalElementCount = count(sampleCriteria);
+		return new Page<>(sampleIndexList, offset, size, totalElementCount);
 	}
 
 	public List<SampleDto> getPositiveOrLatest(SampleCriteria criteria, Function<Sample, AbstractDomainObject> associatedObjectFn) {
