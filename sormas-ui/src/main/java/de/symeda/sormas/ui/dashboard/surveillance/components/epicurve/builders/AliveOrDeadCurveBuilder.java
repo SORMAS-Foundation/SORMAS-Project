@@ -7,7 +7,6 @@ import java.util.Map;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
@@ -34,10 +33,10 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 		}
 
 		hcjs.append("series: [");
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardAlive), "#32CD32", aliveNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardAlive, "#32CD32", aliveNumbers));
 		hcjs.append(", ");
 
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardDead), "#B22222", deadNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers));
 		hcjs.append("]}], ");
 	}
 }

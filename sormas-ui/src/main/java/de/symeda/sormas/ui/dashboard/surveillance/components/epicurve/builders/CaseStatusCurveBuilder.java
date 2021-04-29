@@ -8,7 +8,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
@@ -38,16 +37,16 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 		}
 
 		hcjs.append("series: [");
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), "#808080", notYetClassifiedNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers));
 		hcjs.append(", ");
 
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardSuspect), "#FFD700", suspectNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers));
 		hcjs.append(", ");
 
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardProbable), "#FF4500", probableNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers));
 		hcjs.append(", ");
 
-		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardConfirmed), "#B22222", confirmedNumbers);
+		buildSeriesElement(new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
 		hcjs.append("], ");
 	}
 }

@@ -104,9 +104,13 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return caseCriteria;
 	}
 
-	protected void buildSeriesElement(String caption, String color, int[] values) {
-		hcjs.append("{ name: '").append(caption).append("', color: '").append(color).append("', dataLabels: { allowOverlap: false },  data: [");
-		buildDataObject(values);
+	protected void buildSeriesElement(EpiCurveSeriesElement element) {
+		hcjs.append("{ name: '")
+			.append(element.getCaption())
+			.append("', color: '")
+			.append(element.getColor())
+			.append("', dataLabels: { allowOverlap: false },  data: [");
+		buildDataObject(element.getValues());
 		hcjs.append("]}");
 	}
 
