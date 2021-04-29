@@ -38,28 +38,16 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 		}
 
 		hcjs.append("series: [");
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardNotYetClassified)
-				+ "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
-		addDataObject(notYetClassifiedNumbers);
-		hcjs.append("]}, ");
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), "#808080", notYetClassifiedNumbers);
+		hcjs.append(", ");
 
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardSuspect)
-				+ "', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
-		addDataObject(suspectNumbers);
-		hcjs.append("]}, ");
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardSuspect), "#FFD700", suspectNumbers);
+		hcjs.append(", ");
 
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardProbable)
-				+ "', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
-		addDataObject(probableNumbers);
-		hcjs.append("]}, ");
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardProbable), "#FF4500", probableNumbers);
+		hcjs.append(", ");
 
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed)
-				+ "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
-		addDataObject(confirmedNumbers);
-		hcjs.append("]}], ");
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardConfirmed), "#B22222", confirmedNumbers);
+		hcjs.append("], ");
 	}
 }

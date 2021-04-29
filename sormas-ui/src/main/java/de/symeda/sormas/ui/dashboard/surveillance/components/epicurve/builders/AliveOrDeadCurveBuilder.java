@@ -34,14 +34,10 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 		}
 
 		hcjs.append("series: [");
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardAlive) + "', color: '#32CD32', dataLabels: { allowOverlap: false }, data: [");
-		addDataObject(aliveNumbers);
-		hcjs.append("]}, ");
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardAlive), "#32CD32", aliveNumbers);
+		hcjs.append(", ");
 
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardDead) + "', color: '#B22222', dataLabels: { allowOverlap: false },  data: [");
-		addDataObject(deadNumbers);
+		buildSeriesElement(I18nProperties.getCaption(Captions.dashboardDead), "#B22222", deadNumbers);
 		hcjs.append("]}], ");
 	}
 }

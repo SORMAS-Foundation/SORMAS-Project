@@ -104,12 +104,18 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return caseCriteria;
 	}
 
-	protected void addDataObject(int[] numbers) {
-		for (int i = 0; i < numbers.length; i++) {
+	protected void buildSeriesElement(String caption, String color, int[] values) {
+		hcjs.append("{ name: '").append(caption).append("', color: '").append(color).append("', dataLabels: { allowOverlap: false },  data: [");
+		buildDataObject(values);
+		hcjs.append("]}");
+	}
+
+	private void buildDataObject(int[] values) {
+		for (int i = 0; i < values.length; i++) {
 			if (i > 0) {
 				hcjs.append(", ");
 			}
-			hcjs.append(numbers[i]);
+			hcjs.append(values[i]);
 		}
 	}
 
