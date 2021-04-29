@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard.surveillance.epicurve;
+package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders;
 
 import java.util.ArrayList;
 import java.util.Calendar;

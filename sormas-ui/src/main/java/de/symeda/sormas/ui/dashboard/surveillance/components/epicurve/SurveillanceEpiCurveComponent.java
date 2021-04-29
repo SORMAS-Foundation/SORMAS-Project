@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.surveillance;
+package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve;
 
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.epicurve.SurveillanceEpiCurveBuilder;
-import de.symeda.sormas.ui.dashboard.surveillance.epicurve.SurveillanceEpiCurveBuilders;
+import de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders.SurveillanceEpiCurveBuilder;
+import de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders.SurveillanceEpiCurveBuilders;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
