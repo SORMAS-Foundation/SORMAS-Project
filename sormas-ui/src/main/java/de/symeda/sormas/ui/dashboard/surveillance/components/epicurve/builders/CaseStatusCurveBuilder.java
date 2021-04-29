@@ -46,14 +46,10 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);
 
-			Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
-			Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
-			Long suspectCount = caseCounts.get(CaseClassification.SUSPECT);
-			Long notYetClassifiedCount = caseCounts.get(CaseClassification.NOT_CLASSIFIED);
-			confirmedNumbers[i] = confirmedCount != null ? confirmedCount.intValue() : 0;
-			probableNumbers[i] = probableCount != null ? probableCount.intValue() : 0;
-			suspectNumbers[i] = suspectCount != null ? suspectCount.intValue() : 0;
-			notYetClassifiedNumbers[i] = notYetClassifiedCount != null ? notYetClassifiedCount.intValue() : 0;
+			confirmedNumbers[i] = caseCounts.getOrDefault(CaseClassification.CONFIRMED, 0L).intValue();
+			probableNumbers[i] = caseCounts.getOrDefault(CaseClassification.PROBABLE, 0L).intValue();
+			suspectNumbers[i] = caseCounts.getOrDefault(CaseClassification.SUSPECT, 0L).intValue();
+			notYetClassifiedNumbers[i] = caseCounts.getOrDefault(CaseClassification.NOT_CLASSIFIED, 0L).intValue();
 		}
 
 		hcjs.append("series: [");

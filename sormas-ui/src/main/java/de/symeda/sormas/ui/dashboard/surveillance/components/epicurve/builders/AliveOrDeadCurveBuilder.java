@@ -44,10 +44,8 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
 
-			Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
-			Long deadCount = caseCounts.get(PresentCondition.DEAD);
-			aliveNumbers[i] = aliveCount != null ? aliveCount.intValue() : 0;
-			deadNumbers[i] = deadCount != null ? deadCount.intValue() : 0;
+			aliveNumbers[i] = caseCounts.getOrDefault(PresentCondition.ALIVE, 0L).intValue();
+			deadNumbers[i] = caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue();
 		}
 
 		hcjs.append("series: [");
