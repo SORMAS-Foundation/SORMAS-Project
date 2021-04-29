@@ -753,16 +753,15 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			return false; // last page
 		}
 
-		int newPosition = activePagePosition + 1;
+		int newPosition = activePagePosition;
 		PageMenuItem pageItem = null;
 
 		while (pageItem == null) {
-			pageItem = pageItems.get(newPosition);
 			newPosition++;
-
-			if (newPosition >= pageItems.size() - 1) {
+			if (newPosition >= pageItems.size()) {
 				return false;
 			}
+			pageItem = pageItems.get(newPosition);
 		}
 
 		pageMenu.markActiveMenuItem(pageItem);
