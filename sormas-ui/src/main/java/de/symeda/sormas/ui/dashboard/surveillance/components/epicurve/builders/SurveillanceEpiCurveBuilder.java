@@ -9,7 +9,6 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -23,7 +22,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 		hcjs = new StringBuilder();
 	}
 
-	public String buildFrom(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	public String buildFrom(List<Date> filteredDates, CaseCriteria caseCriteria) {
 		//@formatter:off
         hcjs.append(
             "var options = {"
@@ -62,10 +61,6 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		CaseCriteria caseCriteria = new CaseCriteria().disease(dashboardDataProvider.getDisease())
-			.region(dashboardDataProvider.getRegion())
-			.district(dashboardDataProvider.getDistrict())
-			.newCaseDateType(dashboardDataProvider.getNewCaseDateType());
 		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, caseCriteria);
 		buildSeries(elements);
 		hcjs.append(", ");
