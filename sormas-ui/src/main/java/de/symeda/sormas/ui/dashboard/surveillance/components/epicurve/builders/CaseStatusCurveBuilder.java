@@ -9,7 +9,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
@@ -28,7 +27,7 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 		int[] notYetClassifiedNumbers = new int[filteredDates.size()];
 
 		for (int i = 0; i < filteredDates.size(); i++) {
-			CaseCriteria caseCriteria = buidCaseCriteria(filteredDates.get(i), dashboardDataProvider);
+			CaseCriteria caseCriteria = buildCaseCriteria(filteredDates.get(i), dashboardDataProvider);
 
 			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);
 
@@ -79,21 +78,5 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 				hcjs.append(confirmedNumbers[i] + ", ");
 			}
 		}
-	}
-
-	private CaseCriteria buidCaseCriteria(Date date, DashboardDataProvider dashboardDataProvider) {
-		CaseCriteria caseCriteria = new CaseCriteria().disease(dashboardDataProvider.getDisease())
-			.region(dashboardDataProvider.getRegion())
-			.district(dashboardDataProvider.getDistrict());
-		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), dashboardDataProvider.getNewCaseDateType());
-		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), dashboardDataProvider.getNewCaseDateType());
-		} else {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), dashboardDataProvider.getNewCaseDateType());
-		}
-		return caseCriteria;
 	}
 }

@@ -9,7 +9,6 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
@@ -53,21 +52,5 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 				hcjs.append(deadNumbers[i] + ", ");
 			}
 		}
-	}
-
-	private CaseCriteria buildCaseCriteria(Date date, DashboardDataProvider dashboardDataProvider) {
-		CaseCriteria caseCriteria = new CaseCriteria().disease(dashboardDataProvider.getDisease())
-			.region(dashboardDataProvider.getRegion())
-			.district(dashboardDataProvider.getDistrict());
-		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), dashboardDataProvider.getNewCaseDateType());
-		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date), dashboardDataProvider.getNewCaseDateType());
-		} else {
-			caseCriteria
-				.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date), dashboardDataProvider.getNewCaseDateType());
-		}
-		return caseCriteria;
 	}
 }
