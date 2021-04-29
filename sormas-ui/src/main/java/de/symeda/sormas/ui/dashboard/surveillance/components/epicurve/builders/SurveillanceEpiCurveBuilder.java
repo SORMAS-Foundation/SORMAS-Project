@@ -62,7 +62,8 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		buildEpiCurve(filteredDates, dashboardDataProvider);
+		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, dashboardDataProvider);
+		buildSeries(elements);
 		hcjs.append(", ");
 
 		//@formatter:off
@@ -154,5 +155,5 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
+	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
 }

@@ -19,8 +19,7 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
-		// Adds the number of confirmed, probable and suspect cases for each day as data
+	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		int[] confirmedNumbers = new int[filteredDates.size()];
 		int[] probableNumbers = new int[filteredDates.size()];
 		int[] suspectNumbers = new int[filteredDates.size()];
@@ -37,12 +36,10 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 			notYetClassifiedNumbers[i] = caseCounts.getOrDefault(CaseClassification.NOT_CLASSIFIED, 0L).intValue();
 		}
 
-		List<EpiCurveSeriesElement> elements = Arrays.asList(
+		return Arrays.asList(
 			new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers),
 			new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers),
 			new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers),
 			new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
-
-		buildSeries(elements);
 	}
 }

@@ -19,8 +19,7 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 	}
 
 	@Override
-	void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
-		// Adds the number of alive and dead cases for each day as data
+	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
 		int[] aliveNumbers = new int[filteredDates.size()];
 		int[] deadNumbers = new int[filteredDates.size()];
 
@@ -33,10 +32,8 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 			deadNumbers[i] = caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue();
 		}
 
-		List<EpiCurveSeriesElement> elements = Arrays.asList(
+		return Arrays.asList(
 			new EpiCurveSeriesElement(Captions.dashboardAlive, "#32CD32", aliveNumbers),
 			new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers));
-
-		buildSeries(elements);
 	}
 }
