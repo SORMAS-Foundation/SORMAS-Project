@@ -1730,4 +1730,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public void setFollowUpStatusChangeUser(UserReferenceDto followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
+
+	public boolean hasResponsibleJurisdiction() {
+		return responsibleRegion != null || responsibleDistrict != null || responsibleCommunity != null;
+	}
 }

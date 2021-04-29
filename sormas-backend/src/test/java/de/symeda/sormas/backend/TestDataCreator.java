@@ -292,6 +292,10 @@ public class TestDataCreator {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
+	}
+
 	public CaseDataDto createCase(
 		UserReferenceDto user,
 		PersonReferenceDto cazePerson,

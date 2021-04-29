@@ -336,7 +336,10 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
-						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType) {
+						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
+						 // responsible jurisdiction
+						 String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid
+						 ) {
 		//@formatter:on
 
 		this.id = id;
@@ -455,7 +458,14 @@ public class CaseExportDto implements Serializable {
 		this.caseIdentificationSource = caseIdentificationSource;
 		this.screeningType = screeningType;
 
-		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		jurisdiction = new CaseJurisdictionDto(
+			reportingUserUuid,
+			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
+			regionUuid,
+			districtUuid,
+			communityUuid,
+			healthFacilityUuid,
+			pointOfEntryUuid);
 	}
 
 	public CaseReferenceDto toReference() {

@@ -215,7 +215,10 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			root.get(Case.CHANGE_DATE),
-			joins.getFacility().get(Facility.ID));
+			joins.getFacility().get(Facility.ID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
@@ -315,6 +318,9 @@ public class CaseListCriteriaBuilder {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),

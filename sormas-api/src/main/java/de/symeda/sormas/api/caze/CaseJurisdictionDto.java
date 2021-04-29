@@ -24,6 +24,9 @@ public class CaseJurisdictionDto implements Serializable {
 	private static final long serialVersionUID = -5412823431238056752L;
 
 	private String reportingUserUuid;
+
+	private ResponsibleJurisdictionDto responsibleJurisdiction;
+
 	private String regionUuid;
 	private String districtUuid;
 	private String communityUuid;
@@ -35,12 +38,14 @@ public class CaseJurisdictionDto implements Serializable {
 
 	public CaseJurisdictionDto(
 		String reportingUserUuid,
+		ResponsibleJurisdictionDto responsibleJurisdiction,
 		String regionUuid,
 		String districtUuid,
 		String communityUuid,
 		String healthFacilityUuid,
 		String pointOfEntryUuid) {
 		this.reportingUserUuid = reportingUserUuid;
+		this.responsibleJurisdiction = responsibleJurisdiction;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.communityUuid = communityUuid;
@@ -52,6 +57,11 @@ public class CaseJurisdictionDto implements Serializable {
 		if (caseDto.getReportingUser() != null) {
 			reportingUserUuid = caseDto.getReportingUser().getUuid();
 		}
+
+		if (caseDto.hasResponsibleJurisdiction()) {
+			responsibleJurisdiction = new ResponsibleJurisdictionDto(caseDto);
+		}
+
 		if (caseDto.getRegion() != null) {
 			regionUuid = caseDto.getRegion().getUuid();
 		}
@@ -75,6 +85,14 @@ public class CaseJurisdictionDto implements Serializable {
 
 	public void setReportingUserUuid(String reportingUserUuid) {
 		this.reportingUserUuid = reportingUserUuid;
+	}
+
+	public ResponsibleJurisdictionDto getResponsibleJurisdiction() {
+		return responsibleJurisdiction;
+	}
+
+	public void setResponsibleJurisdiction(ResponsibleJurisdictionDto responsibleJurisdiction) {
+		this.responsibleJurisdiction = responsibleJurisdiction;
 	}
 
 	public String getRegionUuid() {

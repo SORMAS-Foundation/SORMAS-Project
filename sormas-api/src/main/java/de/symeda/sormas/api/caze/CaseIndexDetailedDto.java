@@ -75,6 +75,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId,
+								// responsible jurisdiction
+								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
@@ -83,7 +86,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, visitCount);
+				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid,
+				visitCount);
 		//@formatter:on
 
 		this.reInfection = reInfection;

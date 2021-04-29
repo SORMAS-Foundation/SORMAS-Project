@@ -697,7 +697,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
 				joins.getReportingDistrict().get(District.NAME),
 				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
-				caseRoot.get(Case.SCREENING_TYPE)
+				caseRoot.get(Case.SCREENING_TYPE),
+				// responsible jurisdiction
+				joins.getResponsibleRegion().get(Region.UUID),
+				joins.getResponsibleDistrict().get(District.UUID),
+				joins.getResponsibleCommunity().get(Community.UUID)
 				);
 		//@formatter:on
 
