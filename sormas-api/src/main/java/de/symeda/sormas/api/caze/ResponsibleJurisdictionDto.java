@@ -27,6 +27,9 @@ public class ResponsibleJurisdictionDto implements Serializable {
 	private String districtUuid;
 	private String communityUuid;
 
+	public ResponsibleJurisdictionDto() {
+	}
+
 	private ResponsibleJurisdictionDto(String regionUuid, String districtUuid, String communityUuid) {
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
