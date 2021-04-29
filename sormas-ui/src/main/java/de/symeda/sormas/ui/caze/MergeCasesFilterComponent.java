@@ -38,6 +38,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	// Layouts
 	private HorizontalLayout firstRowLayout;
 	private HorizontalLayout secondRowLayout;
+	private HorizontalLayout thirdRowLayout;
 
 	private DateField dfCreationDateFrom;
 	private DateField dfCreationDateTo;
@@ -71,6 +72,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		addFirstRowLayout();
 		addSecondRowLayout();
+		addThirdRowLayout();
 
 		binder.readBean(this.criteria);
 	}
@@ -130,17 +132,6 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		binder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
 
-		cbIgnoreRegion = new CheckBox();
-		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
-		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
-		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
-		cbIgnoreRegion.addValueChangeListener(e -> {
-			ignoreRegionCallback.accept(e.getValue());
-		});
-		firstRowLayout.addComponent(cbIgnoreRegion);
-		firstRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_RIGHT);
-		firstRowLayout.setExpandRatio(cbIgnoreRegion, 1);
-
 		addComponent(firstRowLayout);
 	}
 
@@ -181,6 +172,25 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		binder.bind(cbDistrict, CaseDataDto.DISTRICT);
 		secondRowLayout.addComponent(cbDistrict);
 
+		cbIgnoreRegion = new CheckBox();
+		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
+		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
+		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
+		cbIgnoreRegion.addValueChangeListener(e -> {
+			ignoreRegionCallback.accept(e.getValue());
+		});
+		secondRowLayout.addComponent(cbIgnoreRegion);
+		secondRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_LEFT);
+		secondRowLayout.setExpandRatio(cbIgnoreRegion, 1);
+
+		addComponent(secondRowLayout);
+	}
+
+	private void addThirdRowLayout() {
+		thirdRowLayout = new HorizontalLayout();
+		thirdRowLayout.setMargin(false);
+		thirdRowLayout.setWidth(100, Unit.PERCENTAGE);
+
 		cbNewCaseDateType = new ComboBox<>();
 		dfNewCaseDateFrom = new DateField();
 		dfNewCaseDateTo = new DateField();
@@ -195,7 +205,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			dfNewCaseDateFrom.setEnabled(event.getValue() != null);
 			dfNewCaseDateTo.setEnabled(event.getValue() != null);
 		});
-		secondRowLayout.addComponent(cbNewCaseDateType);
+		thirdRowLayout.addComponent(cbNewCaseDateType);
 
 		dfNewCaseDateFrom.setId(CaseCriteria.NEW_CASE_DATE_FROM);
 		dfNewCaseDateFrom.setWidth(200, Unit.PIXELS);
@@ -203,7 +213,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCasesDateFrom));
 		binder.forField(dfNewCaseDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_FROM);
 		dfNewCaseDateFrom.setEnabled(false);
-		secondRowLayout.addComponent(dfNewCaseDateFrom);
+		thirdRowLayout.addComponent(dfNewCaseDateFrom);
 
 		dfNewCaseDateTo.setId(CaseCriteria.NEW_CASE_DATE_TO);
 		dfNewCaseDateTo.setWidth(200, Unit.PIXELS);
@@ -211,7 +221,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
 		binder.forField(dfNewCaseDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_TO);
 		dfNewCaseDateTo.setEnabled(false);
-		secondRowLayout.addComponent(dfNewCaseDateTo);
+		thirdRowLayout.addComponent(dfNewCaseDateTo);
 
 		btnConfirmFilters = ButtonHelper.createButton(Captions.actionConfirmFilters, event -> {
 			try {
@@ -222,14 +232,14 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			}
 		}, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 
-		secondRowLayout.addComponent(btnConfirmFilters);
+		thirdRowLayout.addComponent(btnConfirmFilters);
 
 		btnResetFilters = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(MergeCasesView.class).remove(CaseCriteria.class);
 			filtersUpdatedCallback.run();
 		}, CssStyles.FORCE_CAPTION);
 
-		secondRowLayout.addComponent(btnResetFilters);
+		thirdRowLayout.addComponent(btnResetFilters);
 
 		lblNumberOfDuplicates = new Label("");
 		lblNumberOfDuplicates.setId("numberOfDuplicates");
@@ -239,11 +249,11 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			CssStyles.LABEL_ROUNDED_CORNERS,
 			CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
 			CssStyles.LABEL_BOLD);
-		secondRowLayout.addComponent(lblNumberOfDuplicates);
-		secondRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
-		secondRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
+		thirdRowLayout.addComponent(lblNumberOfDuplicates);
+		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
+		thirdRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
 
-		addComponent(secondRowLayout);
+		addComponent(thirdRowLayout);
 	}
 
 	public void updateDuplicateCountLabel(int count) {
