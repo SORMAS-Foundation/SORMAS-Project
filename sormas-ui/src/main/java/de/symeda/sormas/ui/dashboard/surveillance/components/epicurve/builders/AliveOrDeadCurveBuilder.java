@@ -30,7 +30,8 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
 
 			aliveNumbers[i] = caseCounts.getOrDefault(PresentCondition.ALIVE, 0L).intValue();
-			deadNumbers[i] = caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue();
+			deadNumbers[i] =
+				caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue() + caseCounts.getOrDefault(PresentCondition.BURIED, 0L).intValue();
 			unknownNumbers[i] = caseCounts.getOrDefault(PresentCondition.UNKNOWN, 0L).intValue();
 		}
 
