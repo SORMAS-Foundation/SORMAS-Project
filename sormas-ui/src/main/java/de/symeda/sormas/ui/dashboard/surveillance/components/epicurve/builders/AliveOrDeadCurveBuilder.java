@@ -19,8 +19,11 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 	@Override
 	List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, CaseCriteria caseCriteria) {
-		int[] aliveNumbers = new int[filteredDates.size()];
-		int[] deadNumbers = new int[filteredDates.size()];
+		int filteredDatesSize = filteredDates.size();
+
+		int[] aliveNumbers = new int[filteredDatesSize];
+		int[] deadNumbers = new int[filteredDatesSize];
+		int[] unknownNumbers = new int[filteredDatesSize];
 
 		for (int i = 0; i < filteredDates.size(); i++) {
 			caseCriteria = setNewCaseDatesInCaseCriteria(filteredDates.get(i), caseCriteria);
@@ -28,10 +31,12 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 			aliveNumbers[i] = caseCounts.getOrDefault(PresentCondition.ALIVE, 0L).intValue();
 			deadNumbers[i] = caseCounts.getOrDefault(PresentCondition.DEAD, 0L).intValue();
+			unknownNumbers[i] = caseCounts.getOrDefault(PresentCondition.UNKNOWN, 0L).intValue();
 		}
 
 		return Arrays.asList(
 			new EpiCurveSeriesElement(Captions.dashboardAlive, "#32CD32", aliveNumbers),
-			new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers));
+			new EpiCurveSeriesElement(Captions.dashboardDead, "#B22222", deadNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardUnknown, "#808080", unknownNumbers));
 	}
 }
