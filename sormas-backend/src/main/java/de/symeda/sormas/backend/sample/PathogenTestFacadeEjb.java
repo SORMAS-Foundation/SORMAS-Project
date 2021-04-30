@@ -37,8 +37,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +84,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private DiseaseVariantService diseaseVariantService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -315,7 +311,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
@@ -366,7 +362,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(diseaseVariantService.getByReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());

@@ -161,8 +161,23 @@ public class DevModeView extends AbstractConfigurationView {
 		contentLayout.addComponent(createContactGeneratorLayout());
 		contentLayout.addComponent(createEventsGeneratorLayout());
 		contentLayout.addComponent(createSamplesGeneratorLayout());
+		contentLayout.addComponent(createDevButtonsLayout());
 
 		addComponent(contentLayout);
+	}
+
+	private HorizontalLayout createDevButtonsLayout() {
+
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		horizontalLayout.setSpacing(true);
+
+		Button btnResetEnumCache = new Button(I18nProperties.getCaption(Captions.actionResetEnumCache), e -> {
+			FacadeProvider.getCustomizableEnumFacade().loadData();
+		});
+
+		horizontalLayout.addComponent(btnResetEnumCache);
+
+		return horizontalLayout;
 	}
 
 	private HorizontalLayout createSeedSettingsLayout() {

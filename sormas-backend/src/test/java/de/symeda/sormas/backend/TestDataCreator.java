@@ -105,7 +105,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -1386,17 +1385,17 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
-
-		DiseaseVariant diseaseVariant = new DiseaseVariant();
-		diseaseVariant.setUuid(DataHelper.createUuid());
-		diseaseVariant.setName(name);
-		diseaseVariant.setDisease(disease);
-
-		beanTest.getDiseaseVariantService().persist(diseaseVariant);
-
-		return diseaseVariant;
-	}
+//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+//
+//		DiseaseVariant diseaseVariant = new DiseaseVariant();
+//		diseaseVariant.setUuid(DataHelper.createUuid());
+//		diseaseVariant.setName(name);
+//		diseaseVariant.setDisease(disease);
+//
+//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
+//
+//		return diseaseVariant;
+//	}
 
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,

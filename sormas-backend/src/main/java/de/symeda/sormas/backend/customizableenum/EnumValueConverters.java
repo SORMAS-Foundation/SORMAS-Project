@@ -13,27 +13,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.disease;
+package de.symeda.sormas.backend.customizableenum;
 
-import org.junit.Test;
+import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
 
-import de.symeda.sormas.backend.AbstractBeanTest;
+public class EnumValueConverters {
 
-/**
- * @author Alex Vidrean
- * @since 18-Mar-21
- */
-public class DiseaseVariantServiceTest extends AbstractBeanTest {
+	public static class DiseaseVariantConverter extends AbstractEnumValueConverter<DiseaseVariant> {
 
-	@Test
-	public void testGetByName() {
-//        creator.createDiseaseVariant("B.1.1.7", Disease.CORONAVIRUS);
-//        creator.createDiseaseVariant("B.1.1.28.1-P.1", Disease.CORONAVIRUS);
-//
-//        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.CORONAVIRUS), hasSize(1));
-//        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.ANTHRAX), hasSize(0));
-//        assertThat(getDiseaseVariantService().getByName(" b.1.1.28.1-P.1 ", Disease.CORONAVIRUS), hasSize(1));
-
+		public DiseaseVariantConverter() {
+			super(DiseaseVariant.class);
+		}
 	}
 
 }

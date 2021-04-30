@@ -77,6 +77,7 @@ public interface Captions {
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionRemindMeLater = "actionRemindMeLater";
+	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";

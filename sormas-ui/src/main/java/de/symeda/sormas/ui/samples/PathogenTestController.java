@@ -36,7 +36,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -86,9 +86,9 @@ public class PathogenTestController {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false);
 		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
-				createForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
-				createForm.getFieldGroup());
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
+			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -144,7 +144,7 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariantReferenceDto diseaseVariantReferenceDto) {
+	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariant diseaseVariant) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
@@ -155,7 +155,7 @@ public class PathogenTestController {
 			e -> {
 				if (e.booleanValue() == true) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
-					caseDataByUuid.setDiseaseVariant(diseaseVariantReferenceDto);
+					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
@@ -177,7 +177,10 @@ public class PathogenTestController {
 		}
 	}
 
-	private void handleAssociatedCase(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest, CaseReferenceDto associatedCase) {
+	private void handleAssociatedCase(
+		PathogenTestDto dto,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+		CaseReferenceDto associatedCase) {
 		CaseDataDto preSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 		CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 		showSaveNotification(preSaveCaseDto, postSaveCaseDto);
@@ -201,9 +204,10 @@ public class PathogenTestController {
 		};
 
 		Runnable caseDiseaseVariantCallback = () -> {
-			if (dto.getTestedDiseaseVariant()!= null && dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
-					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
-					&& dto.getTestResultVerified().booleanValue() == true) {
+			if (dto.getTestedDiseaseVariant() != null
+				&& dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+				&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+				&& dto.getTestResultVerified().booleanValue() == true) {
 				showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, dto.getTestedDiseaseVariant());
 			}
 		};
@@ -221,13 +225,16 @@ public class PathogenTestController {
 		}
 	}
 
-	private void handleAssociatedContact(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest, ContactReferenceDto associatedContact) {
+	private void handleAssociatedContact(
+		PathogenTestDto dto,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+		ContactReferenceDto associatedContact) {
 		final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
 		Runnable contactConvertToCaseCallback = () -> {
 			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult())
-					&& dto.getTestResultVerified()
-					&& ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())
-					&& !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
+				&& dto.getTestResultVerified()
+				&& ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())
+				&& !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 				if (contact.getDisease() != null && contact.getDisease().equals(dto.getTestedDisease())) {
 					showConvertContactToCaseDialog(contact);
 				} else if (contact.getDisease() != null) {
@@ -242,9 +249,12 @@ public class PathogenTestController {
 		}
 	}
 
-	private void handleAssociatedEventParticipant(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest, EventParticipantReferenceDto associatedEventParticipant) {
+	private void handleAssociatedEventParticipant(
+		PathogenTestDto dto,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+		EventParticipantReferenceDto associatedEventParticipant) {
 		final EventParticipantDto eventParticipant =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+			FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
 		Runnable eventParticipantConvertToCaseCallback = () -> {
 			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease());

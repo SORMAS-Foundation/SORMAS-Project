@@ -21,10 +21,10 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -277,14 +277,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
-	}
-
-	public Join<Case, DiseaseVariant> getDiseaseVariant() {
-		return getOrCreate(diseaseVariant, Case.DISEASE_VARIANT, JoinType.LEFT, this::setDiseaseVariant);
-	}
-
-	private void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
-		this.diseaseVariant = diseaseVariant;
 	}
 
 	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {

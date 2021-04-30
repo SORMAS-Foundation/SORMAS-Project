@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -68,7 +69,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	//@formatter:off
 	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName,
-								Disease disease, String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
 								String regionUuid, String districtUuid, String districtName, String communityUuid,
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -79,7 +80,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
-		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
+		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,

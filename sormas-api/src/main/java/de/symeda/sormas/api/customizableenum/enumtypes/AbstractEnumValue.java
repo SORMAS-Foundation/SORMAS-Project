@@ -13,27 +13,43 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.disease;
+package de.symeda.sormas.api.customizableenum.enumtypes;
 
-import org.junit.Test;
+import java.io.Serializable;
 
-import de.symeda.sormas.backend.AbstractBeanTest;
+public abstract class AbstractEnumValue implements Serializable {
 
-/**
- * @author Alex Vidrean
- * @since 18-Mar-21
- */
-public class DiseaseVariantServiceTest extends AbstractBeanTest {
+	private static final long serialVersionUID = 8698428745095686559L;
 
-	@Test
-	public void testGetByName() {
-//        creator.createDiseaseVariant("B.1.1.7", Disease.CORONAVIRUS);
-//        creator.createDiseaseVariant("B.1.1.28.1-P.1", Disease.CORONAVIRUS);
-//
-//        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.CORONAVIRUS), hasSize(1));
-//        assertThat(getDiseaseVariantService().getByName("B.1.1.7", Disease.ANTHRAX), hasSize(0));
-//        assertThat(getDiseaseVariantService().getByName(" b.1.1.28.1-P.1 ", Disease.CORONAVIRUS), hasSize(1));
-
+	public AbstractEnumValue() {
+		// Empty constructor
 	}
 
+	public AbstractEnumValue(String value) {
+		this.value = value;
+	}
+
+	private String value;
+	private String caption;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
+
+	@Override
+	public String toString() {
+		return caption;
+	}
 }
