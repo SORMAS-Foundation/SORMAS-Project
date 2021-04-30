@@ -30,7 +30,6 @@ import com.vaadin.ui.Layout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -64,7 +63,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	// "Case Fatality" elements
 	private DiseaseSummaryElementComponent caseFatalityRateValue;
-	private Label caseFatalityCountValue;
+	private DiseaseSummaryElementComponent caseFatalityCountValue;
 	private Label caseFatalityCountGrowth;
 
 	private final EventStatisticsComponent eventStatisticsComponent;
@@ -138,34 +137,16 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// count		
 		{
-			HorizontalLayout countLayout = new HorizontalLayout();
-			countLayout.setMargin(false);
-			countLayout.setSpacing(false);
-
-			// title
-			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardFatalities));
-			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_3);
-			countLayout.addComponent(titleLabel);
-
-			// value
-			caseFatalityCountValue = new Label("0");
-			CssStyles.style(
-				caseFatalityCountValue,
-				CssStyles.LABEL_PRIMARY,
-				CssStyles.LABEL_BOLD,
-				CssStyles.LABEL_LARGE,
-				CssStyles.HSPACE_RIGHT_5,
-				CssStyles.VSPACE_TOP_5);
-			countLayout.addComponent(caseFatalityCountValue);
+			caseFatalityCountValue = new DiseaseSummaryElementComponent(Strings.headingFatalities, "0");
 
 			// growth
 			caseFatalityCountGrowth = new Label("", ContentMode.HTML);
 			CssStyles.style(caseFatalityCountGrowth, CssStyles.VSPACE_TOP_5);
-			countLayout.addComponent(caseFatalityCountGrowth);
+			caseFatalityCountValue.addComponent(caseFatalityCountGrowth);
 
-			component.addComponent(countLayout);
-			component.setExpandRatio(countLayout, 0);
-			component.setComponentAlignment(countLayout, Alignment.MIDDLE_RIGHT);
+			component.addComponent(caseFatalityCountValue);
+			component.setExpandRatio(caseFatalityCountValue, 0);
+			component.setComponentAlignment(caseFatalityCountValue, Alignment.MIDDLE_RIGHT);
 		}
 
 		return component;
@@ -200,7 +181,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// count
 		// current
-		caseFatalityCountValue.setValue(Long.toString(fatalCasesCount));
+		caseFatalityCountValue.updateTotalLabel(Long.toString(fatalCasesCount));
 		// growth
 		String chevronType;
 		String criticalLevel;

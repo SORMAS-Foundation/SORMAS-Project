@@ -420,6 +420,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingFatalities = "headingFatalities";
 	String headingFetchLabMessages = "headingFetchLabMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
