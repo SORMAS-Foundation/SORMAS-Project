@@ -17,18 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import java.util.List;
-
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,6 +30,7 @@ import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStat
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary.DiseaseSummaryElementComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary.FatalitiesSummaryElementComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -62,9 +54,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private DiseaseSummaryElementComponent contactsConvertedToCase;
 
 	// "Case Fatality" elements
-	private DiseaseSummaryElementComponent caseFatalityRateValue;
-	private DiseaseSummaryElementComponent caseFatalityCountValue;
-	private Label caseFatalityCountGrowth;
+	private FatalitiesSummaryElementComponent fatalitiesSummaryElementComponent;
 
 	private final EventStatisticsComponent eventStatisticsComponent;
 	private final TestResultsStatisticsComponent testResultsStatisticsComponent;
@@ -97,7 +87,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private DashboardStatisticsSubComponent createOutbreakDistrictAndCaseFatalityLayout() {
 		DashboardStatisticsSubComponent layout = new DashboardStatisticsSubComponent();
 
-		layout.addComponent(createCaseFatalityComponent());
+		fatalitiesSummaryElementComponent = new FatalitiesSummaryElementComponent();
+		layout.addComponent(fatalitiesSummaryElementComponent);
 
 		lastReportedDistrict =
 			new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
@@ -122,36 +113,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return layout;
 	}
 
-	private Layout createCaseFatalityComponent() {
-		HorizontalLayout component = new HorizontalLayout();
-		component.setMargin(false);
-		component.setSpacing(false);
-		component.setWidth(100, Unit.PERCENTAGE);
-
-		// rate
-		{
-			caseFatalityRateValue = new DiseaseSummaryElementComponent(Strings.headingCaseFatalityRate, "00.0%");
-			component.addComponent(caseFatalityRateValue);
-			component.setExpandRatio(caseFatalityRateValue, 1);
-		}
-
-		// count		
-		{
-			caseFatalityCountValue = new DiseaseSummaryElementComponent(Strings.headingFatalities, "0");
-
-			// growth
-			caseFatalityCountGrowth = new Label("", ContentMode.HTML);
-			CssStyles.style(caseFatalityCountGrowth, CssStyles.VSPACE_TOP_5);
-			caseFatalityCountValue.addComponent(caseFatalityCountGrowth);
-
-			component.addComponent(caseFatalityCountValue);
-			component.setExpandRatio(caseFatalityCountValue, 0);
-			component.setComponentAlignment(caseFatalityCountValue, Alignment.MIDDLE_RIGHT);
-		}
-
-		return component;
-	}
-
 	public void refresh() {
 		updateCaseComponent();
 		updateCaseFatalityComponent();
@@ -169,41 +130,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	private void updateCaseFatalityComponent() {
-		List<DashboardCaseDto> newCases = dashboardDataProvider.getCases();
-		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
-
-		int casesCount = newCases.size();
-		long fatalCasesCount = newCases.stream().filter(DashboardCaseDto::wasFatal).count();
-		long previousFatalCasesCount = previousCases.stream().filter(DashboardCaseDto::wasFatal).count();
-		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
-		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
-		fatalityRate = Math.round(fatalityRate * 100) / 100f;
-
-		// count
-		// current
-		caseFatalityCountValue.updateTotalLabel(Long.toString(fatalCasesCount));
-		// growth
-		String chevronType;
-		String criticalLevel;
-
-		if (fatalCasesGrowth > 0) {
-			chevronType = VaadinIcons.CHEVRON_UP.getHtml();
-			criticalLevel = CssStyles.LABEL_CRITICAL;
-		} else if (fatalCasesGrowth < 0) {
-			chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
-			criticalLevel = CssStyles.LABEL_POSITIVE;
-		} else {
-			chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
-			criticalLevel = CssStyles.LABEL_IMPORTANT;
-		}
-
-		caseFatalityCountGrowth.setValue(
-			"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
-				+ " align-center v-label-align-center bold v-label-bold v-has-width\" " + "	  style=\"margin-top: 4px;margin-left: 5px;\">"
-				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
-
-		// rate
-		caseFatalityRateValue.updateTotalLabel(fatalityRate + "%");
+		fatalitiesSummaryElementComponent.update(dashboardDataProvider.getCases(), dashboardDataProvider.getPreviousCases());
 	}
 
 	private void updateLastReportedDistrictComponent() {
