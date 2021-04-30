@@ -63,7 +63,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private DiseaseSummaryElementComponent contactsConvertedToCase;
 
 	// "Case Fatality" elements
-	private Label caseFatalityRateValue;
+	private DiseaseSummaryElementComponent caseFatalityRateValue;
 	private Label caseFatalityCountValue;
 	private Label caseFatalityCountGrowth;
 
@@ -131,28 +131,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// rate
 		{
-			HorizontalLayout rateLayout = new HorizontalLayout();
-			rateLayout.setMargin(false);
-			rateLayout.setSpacing(false);
-
-			// title
-			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRate));
-			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-			rateLayout.addComponent(titleLabel);
-
-			// value
-			caseFatalityRateValue = new Label("00.0%");
-			CssStyles.style(
-				caseFatalityRateValue,
-				CssStyles.LABEL_PRIMARY,
-				CssStyles.LABEL_BOLD,
-				CssStyles.LABEL_LARGE,
-				CssStyles.HSPACE_LEFT_3,
-				CssStyles.VSPACE_TOP_5);
-			rateLayout.addComponent(caseFatalityRateValue);
-
-			component.addComponent(rateLayout);
-			component.setExpandRatio(rateLayout, 1);
+			caseFatalityRateValue = new DiseaseSummaryElementComponent(Strings.headingCaseFatalityRate, "00.0%");
+			component.addComponent(caseFatalityRateValue);
+			component.setExpandRatio(caseFatalityRateValue, 1);
 		}
 
 		// count		
@@ -241,7 +222,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
 
 		// rate
-		caseFatalityRateValue.setValue(fatalityRate + "%");
+		caseFatalityRateValue.updateTotalLabel(fatalityRate + "%");
 	}
 
 	private void updateLastReportedDistrictComponent() {

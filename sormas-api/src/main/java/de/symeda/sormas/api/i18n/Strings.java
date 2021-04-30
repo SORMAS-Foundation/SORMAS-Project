@@ -304,6 +304,7 @@ public interface Strings {
 	String headingCasesArchived = "headingCasesArchived";
 	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
+	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";

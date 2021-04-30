@@ -688,7 +688,6 @@ public interface Captions {
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
 	String dashboardCanceledFollowUpShort = "dashboardCanceledFollowUpShort";
-	String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	String dashboardCasesIn = "dashboardCasesIn";
 	String dashboardComparedTo = "dashboardComparedTo";
