@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary.DiseaseSummaryElementComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -58,7 +59,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private Label lastReportedDistrictLabel;
 
 	//"cases in quarantine" elements 
-	private Label casesInQuarantineByDate;
+	private DiseaseSummaryElementComponent casesInQuarantineByDate;
 	private Label casesPlacedInQuarantineByDate;
 
 	// "Contacts converted to cases"
@@ -108,7 +109,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			layout.addComponent(createOutbreakDistrictComponent());
 		}
 
-		layout.addComponent(createCasesInQuarantineLayout());
+		casesInQuarantineByDate = new DiseaseSummaryElementComponent(Strings.headingCasesInQuarantine);
+		layout.addComponent(casesInQuarantineByDate);
 
 		layout.addComponent(createCasesPlacedInQuarantineLayout());
 
@@ -232,29 +234,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		component.addComponent(outbreakDistrictCountLabel);
 
 		return component;
-	}
-
-	private HorizontalLayout createCasesInQuarantineLayout() {
-
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label captionInQuarantine = new Label(I18nProperties.getString(Strings.headingCasesInQuarantine));
-		CssStyles.style(captionInQuarantine, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-		layout.addComponent(captionInQuarantine);
-
-		casesInQuarantineByDate = new Label();
-		CssStyles.style(
-			casesInQuarantineByDate,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_BOLD,
-			CssStyles.LABEL_LARGE,
-			CssStyles.HSPACE_LEFT_3,
-			CssStyles.VSPACE_TOP_5);
-		layout.addComponent(casesInQuarantineByDate);
-
-		return layout;
 	}
 
 	private HorizontalLayout createCasesPlacedInQuarantineLayout() {
@@ -382,7 +361,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		contactsConvertedToCase.setValue(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
 
-		casesInQuarantineByDate.setValue(dashboardDataProvider.getCasesInQuarantineCount().toString());
+		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
 
 		casesPlacedInQuarantineByDate.setValue(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
 
