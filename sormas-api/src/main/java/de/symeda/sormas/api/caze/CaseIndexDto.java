@@ -283,8 +283,16 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.creationDate = creationDate;
 	}
 
+	public String getResponsibleRegionUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getRegionUuid() : null;
+	}
+
 	public String getRegionUuid() {
 		return jurisdiction.getRegionUuid();
+	}
+
+	public String getResponsibleDistrictUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getDistrictUuid() : null;
 	}
 
 	public String getDistrictUuid() {

@@ -392,7 +392,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
-			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
+			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getResponsibleRegion() != null) {
+				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getResponsibleRegion(), UserRole.CONTACT_SUPERVISOR);
+			}
+			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getRegion() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
 			if (!supervisors.isEmpty()) {

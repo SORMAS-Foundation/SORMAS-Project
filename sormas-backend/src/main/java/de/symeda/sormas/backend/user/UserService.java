@@ -134,15 +134,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
-		return getAllByRegionAndUserRoles(region, Arrays.asList(userRoles), null);
+		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), null);
 	}
 
 	public List<User> getAllByRegionAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
-		return getAllByRegionAndUserRoles(region, Arrays.asList(userRoles), this::createJurisdictionFilter);
+		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
-	private List<User> getAllByRegionAndUserRoles(
-		Region region,
+	public List<User> getAllByRegionsAndUserRolesInJurisdiction(List<Region> regions, UserRole... userRoles) {
+		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), this::createJurisdictionFilter);
+	}
+
+	private List<User> getAllByRegionsAndUserRoles(
+		List<Region> regions,
 		Collection<UserRole> userRoles,
 		BiFunction<CriteriaBuilder, Root<User>, Predicate> createExtraFilters) {
 
@@ -151,8 +155,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Root<User> from = cq.from(getElementClass());
 
 		Predicate filter = createDefaultFilter(cb, from);
-		if (region != null) {
-			filter = cb.equal(from.get(User.REGION), region);
+		if (regions != null) {
+			filter = from.get(User.REGION).in(regions);
 		}
 
 		if (userRoles.size() > 0) {
@@ -229,15 +233,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @return
 	 */
 	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
-		return getAllByDistrict(district, includeSupervisors, Arrays.asList(userRoles), null);
+		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), null);
 	}
 
 	public List<User> getAllByDistrictInJurisdiction(District district, boolean includeSupervisors, UserRole... userRoles) {
-		return getAllByDistrict(district, includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
+		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
-	private List<User> getAllByDistrict(
-		District district,
+	public List<User> getAllByDistrictsInJurisdiction(List<District> districts, boolean includeSupervisors, UserRole... userRoles) {
+		return getAllByDistricts(districts, includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
+	}
+
+	private List<User> getAllByDistricts(
+		List<District> districts,
 		boolean includeSupervisors,
 		Collection<UserRole> userRoles,
 		BiFunction<CriteriaBuilder, Root<User>, Predicate> createExtraFilters) {
@@ -246,7 +254,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
-		Predicate filter = cb.and(createDefaultFilter(cb, from), buildDistrictFilter(cb, cq, from, district, includeSupervisors, userRoles));
+		Predicate filter = cb.and(createDefaultFilter(cb, from), buildDistrictFilter(cb, from, districts, includeSupervisors, userRoles));
 
 		if (createExtraFilters != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createExtraFilters.apply(cb, from));
@@ -449,13 +457,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	private Predicate buildDistrictFilter(
 		CriteriaBuilder cb,
-		CriteriaQuery<User> cq,
 		Root<User> from,
-		District district,
+		List<District> district,
 		boolean includeSupervisors,
 		Collection<UserRole> userRoles) {
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(from.get(User.DISTRICT), district), buildUserRolesFilter(from, userRoles));
+		Predicate filter = CriteriaBuilderHelper.and(cb, from.get(User.DISTRICT).in(district), buildUserRolesFilter(from, userRoles));
 
 		if (includeSupervisors) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
