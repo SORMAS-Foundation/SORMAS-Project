@@ -24,6 +24,11 @@ public class DiseaseSummaryElementComponent extends HorizontalLayout {
 		addComponent(totalLabel);
 	}
 
+	public DiseaseSummaryElementComponent(String heading, String defaultValue) {
+		this(heading);
+		updateTotalLabel(defaultValue);
+	}
+
 	public void updateTotalLabel(String value) {
 		totalLabel.setValue(value);
 	}

@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.List;
-import java.util.Map;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -30,12 +29,10 @@ import com.vaadin.ui.Layout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
@@ -55,15 +52,15 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private final CaseStatisticsComponent caseStatisticsComponent;
 
 	// "Outbreak Districts" elements
-	private Label outbreakDistrictCountLabel;
-	private Label lastReportedDistrictLabel;
+	private DiseaseSummaryElementComponent lastReportedDistrict;
+	private DiseaseSummaryElementComponent outbreakDistrictCount;
 
 	//"cases in quarantine" elements 
 	private DiseaseSummaryElementComponent casesInQuarantineByDate;
-	private Label casesPlacedInQuarantineByDate;
+	private DiseaseSummaryElementComponent casesPlacedInQuarantineByDate;
 
 	// "Contacts converted to cases"
-	private Label contactsConvertedToCase;
+	private DiseaseSummaryElementComponent contactsConvertedToCase;
 
 	// "Case Fatality" elements
 	private Label caseFatalityRateValue;
@@ -103,18 +100,23 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		layout.addComponent(createCaseFatalityComponent());
 
-		layout.addComponent(this.createLastReportedDistrictComponent());
+		lastReportedDistrict =
+			new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
+		layout.addComponent(lastReportedDistrict);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
-			layout.addComponent(createOutbreakDistrictComponent());
+			outbreakDistrictCount = new DiseaseSummaryElementComponent(Strings.headingOutbreakDistricts);
+			layout.addComponent(outbreakDistrictCount);
 		}
 
 		casesInQuarantineByDate = new DiseaseSummaryElementComponent(Strings.headingCasesInQuarantine);
 		layout.addComponent(casesInQuarantineByDate);
 
-		layout.addComponent(createCasesPlacedInQuarantineLayout());
+		casesPlacedInQuarantineByDate = new DiseaseSummaryElementComponent(Strings.headingCasesPlacedInQuarantine);
+		layout.addComponent(casesPlacedInQuarantineByDate);
 
-		layout.addComponent(createContactsConvertedToCasesLayout());
+		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingContactsConvertedToCase);
+		layout.addComponent(contactsConvertedToCase);
 
 		layout.addStyleName(CssStyles.VSPACE_TOP_4);
 
@@ -188,100 +190,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return component;
 	}
 
-	private Layout createLastReportedDistrictComponent() {
-		HorizontalLayout component = new HorizontalLayout();
-		component.setMargin(false);
-		component.setSpacing(false);
-
-		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(I18nProperties.getCaption(Captions.dashboardLastReportedDistrict)));
-		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-		component.addComponent(titleLabel);
-
-		// value
-		lastReportedDistrictLabel = new Label(I18nProperties.getString(Strings.none).toUpperCase());
-		CssStyles.style(
-			lastReportedDistrictLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_BOLD,
-			CssStyles.LABEL_LARGE,
-			CssStyles.HSPACE_LEFT_3,
-			CssStyles.VSPACE_TOP_5);
-		component.addComponent(lastReportedDistrictLabel);
-
-		return component;
-	}
-
-	private Layout createOutbreakDistrictComponent() {
-		HorizontalLayout component = new HorizontalLayout();
-		component.setMargin(false);
-		component.setSpacing(false);
-
-		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreakDistricts));
-		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-		component.addComponent(titleLabel);
-
-		// count
-		outbreakDistrictCountLabel = new Label();
-		CssStyles.style(
-			outbreakDistrictCountLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_BOLD,
-			CssStyles.LABEL_LARGE,
-			CssStyles.HSPACE_LEFT_3,
-			CssStyles.VSPACE_TOP_5);
-		component.addComponent(outbreakDistrictCountLabel);
-
-		return component;
-	}
-
-	private HorizontalLayout createCasesPlacedInQuarantineLayout() {
-
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label captionPlacedInQuarantine = new Label(I18nProperties.getString(Strings.headingCasesPlacedInQuarantine));
-		CssStyles.style(captionPlacedInQuarantine, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-		layout.addComponent(captionPlacedInQuarantine);
-
-		casesPlacedInQuarantineByDate = new Label();
-		CssStyles.style(
-			casesPlacedInQuarantineByDate,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_BOLD,
-			CssStyles.LABEL_LARGE,
-			CssStyles.HSPACE_LEFT_3,
-			CssStyles.VSPACE_TOP_5);
-		layout.addComponent(casesPlacedInQuarantineByDate);
-
-		return layout;
-	}
-
-	private HorizontalLayout createContactsConvertedToCasesLayout() {
-
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label captionInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsConvertedToCase));
-		CssStyles.style(captionInQuarantine, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
-		layout.addComponent(captionInQuarantine);
-
-		contactsConvertedToCase = new Label();
-		CssStyles.style(
-			contactsConvertedToCase,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_BOLD,
-			CssStyles.LABEL_LARGE,
-			CssStyles.HSPACE_LEFT_3,
-			CssStyles.VSPACE_TOP_5);
-		layout.addComponent(contactsConvertedToCase);
-
-		return layout;
-	}
-
 	public void refresh() {
 		updateCaseComponent();
 		updateCaseFatalityComponent();
@@ -295,8 +203,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	private void updateCaseComponent() {
-		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-		caseStatisticsComponent.update(cases);
+		caseStatisticsComponent.update(dashboardDataProvider.getCases());
 	}
 
 	private void updateCaseFatalityComponent() {
@@ -339,31 +246,24 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateLastReportedDistrictComponent() {
 		String district = dashboardDataProvider.getLastReportedDistrict();
-		lastReportedDistrictLabel.setValue(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
+		lastReportedDistrict.updateTotalLabel(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
 	}
 
 	private void updateOutbreakDistrictComponent() {
-		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
-		outbreakDistrictCountLabel.setValue(districtCount.toString());
+		outbreakDistrictCount.updateTotalLabel(dashboardDataProvider.getOutbreakDistrictCount().toString());
 	}
 
 	private void updateEventComponent() {
-		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
-		eventStatisticsComponent.update(events);
+		eventStatisticsComponent.update(dashboardDataProvider.getEventCountByStatus());
 	}
 
 	private void updateTestResultComponent() {
-		Map<PathogenTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
-		testResultsStatisticsComponent.update(testResults);
+		testResultsStatisticsComponent.update(dashboardDataProvider.getTestResultCountByResultType());
 	}
 
 	private void updateCasesInQuarantineData() {
-
-		contactsConvertedToCase.setValue(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
-
 		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
-
-		casesPlacedInQuarantineByDate.setValue(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
-
+		casesPlacedInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
+		contactsConvertedToCase.updateTotalLabel(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
 	}
 }

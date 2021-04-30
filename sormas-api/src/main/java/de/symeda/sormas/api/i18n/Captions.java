@@ -731,7 +731,6 @@ public interface Captions {
 	String dashboardIndeterminate = "dashboardIndeterminate";
 	String dashboardInvestigated = "dashboardInvestigated";
 	String dashboardLastReport = "dashboardLastReport";
-	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -762,7 +761,6 @@ public interface Captions {
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
-	String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	String dashboardPending = "dashboardPending";
 	String dashboardPeriodBefore = "dashboardPeriodBefore";
 	String dashboardPositive = "dashboardPositive";

@@ -460,6 +460,7 @@ public interface Strings {
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
 	String headingLaboratorySample = "headingLaboratorySample";
+	String headingLastReportedDistrict = "headingLastReportedDistrict";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
@@ -493,6 +494,7 @@ public interface Strings {
 	String headingNoTasksSelected = "headingNoTasksSelected";
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
+	String headingOutbreakDistricts = "headingOutbreakDistricts";
 	String headingOutbreakIn = "headingOutbreakIn";
 	String headingPaperFormDates = "headingPaperFormDates";
 	String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
