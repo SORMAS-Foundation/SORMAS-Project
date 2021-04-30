@@ -11,6 +11,7 @@ Please consult this collection of solutions to common problems if you have any i
 
 If for some reason the Android App is not building correctly (for example due to unexpected `ClassNotFoundExceptions`), here is what you should try:
 - Clean the Project (Build -> Clean Project)
+- Invalidate Caches (File -> Invalidate Caches / Restart...)
 - Wipe your Android VM (AVD Manager -> Wipe Data)
 
 ## IDE Troubleshooting: eclipse
