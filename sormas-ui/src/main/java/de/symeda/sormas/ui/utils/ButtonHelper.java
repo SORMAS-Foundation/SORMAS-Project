@@ -21,16 +21,16 @@ public class ButtonHelper {
 		return button;
 	}
 
-	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
-		return createButtonWithCaption(captionKey, I18nProperties.getCaption(captionKey), clickListener, styles);
-	}
-
 	public static Button createButton(String captionKey, boolean enableDoubleClick, Button.ClickListener clickListener, String... styles) {
 		Button button = createButtonWithCaption(captionKey, I18nProperties.getCaption(captionKey), clickListener, styles);
 		if (!enableDoubleClick) {
 			preventDoubleClick(button);
 		}
 		return button;
+	}
+
+	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
+		return createButton(captionKey, true, clickListener, styles);
 	}
 
 	public static Button createIconButtonWithCaption(String id, String caption, Resource icon, Button.ClickListener clickListener, String... styles) {
