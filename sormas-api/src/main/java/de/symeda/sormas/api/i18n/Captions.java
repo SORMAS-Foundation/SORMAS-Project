@@ -1005,7 +1005,7 @@ public interface Captions {
 	String eventEvolutionDateWithStatus = "eventEvolutionDateWithStatus";
 	String eventFilterOnlyEventsChangedSinceLastSharedWithExternalSurvTool = "eventFilterOnlyEventsChangedSinceLastSharedWithExternalSurvTool";
 	String eventFilterOnlyEventsNotSharedWithExternalSurvTool = "eventFilterOnlyEventsNotSharedWithExternalSurvTool";
-	String eventFilterOnlyEventsSharedWithExternalSurvToo = "eventFilterOnlyEventsSharedWithExternalSurvToo";
+	String eventFilterOnlyEventsSharedWithExternalSurvTool = "eventFilterOnlyEventsSharedWithExternalSurvTool";
 	String EventGroup = "EventGroup";
 	String EventGroup_eventCount = "EventGroup.eventCount";
 	String EventGroup_name = "EventGroup.name";

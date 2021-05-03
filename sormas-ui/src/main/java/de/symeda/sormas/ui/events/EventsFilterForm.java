@@ -265,7 +265,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
 					EventCriteria.ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL,
-					I18nProperties.getCaption(Captions.eventFilterOnlyEventsSharedWithExternalSurvToo),
+					I18nProperties.getCaption(Captions.eventFilterOnlyEventsSharedWithExternalSurvTool),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 
