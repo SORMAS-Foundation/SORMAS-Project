@@ -44,7 +44,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -82,6 +81,7 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -384,12 +384,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Person> personJoin = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Person, Location> contactPersonAddressJoin = personJoin.join(Person.ADDRESS, JoinType.LEFT);
 
-		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, contactPersonAddressJoin, region, district, disease, caseUuids);
 
 		if (filter != null) {
 			cq.where(filter);
-			cq.select(cb.count(caze.get(Case.ID)));
+			cq.select(cb.count(contact.get(Contact.UUID)));
 
 			return em.createQuery(cq).getSingleResult();
 		}
@@ -408,7 +410,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, contactPersonAddress, region, district, disease, caseUuids);
 
 		List<MapContactDto> result;
 		if (filter != null) {
@@ -451,6 +453,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<?> cq,
 		Root<Contact> contactRoot,
 		Join<Contact, Case> cazeJoin,
+		Join<Person, Location> contactPersonAddressJoin,
 		Region region,
 		District district,
 		Disease disease,
@@ -484,6 +487,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			filter = followUpFilter;
 		}
+
+		// only retrieve contacts with given coordinates
+		Predicate personLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(contactPersonAddressJoin.get(Location.LONGITUDE)), cb.isNotNull(contactPersonAddressJoin.get(Location.LATITUDE)));
+		Predicate reportLatLonNotNull =
+			CriteriaBuilderHelper.and(cb, cb.isNotNull(contactRoot.get(Contact.REPORT_LON)), cb.isNotNull(contactRoot.get(Contact.REPORT_LAT)));
+		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull);
+		filter = filter != null ? CriteriaBuilderHelper.and(cb, filter, latLonProvided) : latLonProvided;
 
 		return filter;
 	}
