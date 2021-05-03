@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -26,6 +30,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRole;
@@ -42,6 +47,10 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	private static final String DIFFERENCE_LOC = "difference";
 	private static final String EXTEND_BUTTONS_LOC = "extendButtons";
 
+	private static final int SHONW_DISEASES = 6;
+
+	private final DashboardDataProvider dashboardDataProvider;
+
 	private HorizontalLayout diseaseBurdenView;
 	private DiseaseBurdenComponent diseaseBurdenComponent;
 	private DiseaseTileViewLayout diseaseTileViewLayout;
@@ -57,8 +66,10 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(6, 0, 12, 0, BURDEN_LOC), LayoutUtil.fluidColumnLoc(6, 0, 12, 0, DIFFERENCE_LOC))
 				+ LayoutUtil.loc(EXTEND_BUTTONS_LOC));
 
-		diseaseBurdenComponent = new DiseaseBurdenComponent(dashboardDataProvider);
-		diseaseTileViewLayout = new DiseaseTileViewLayout(dashboardDataProvider);
+		this.dashboardDataProvider = dashboardDataProvider;
+
+		diseaseBurdenComponent = new DiseaseBurdenComponent();
+		diseaseTileViewLayout = new DiseaseTileViewLayout();
 		diseaseDifferenceComponent = new CaseCountDifferenceComponent(dashboardDataProvider);
 
 		addDiseaseBurdenView();
@@ -184,12 +195,25 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	}
 
 	public void refresh() {
-		diseaseBurdenComponent.refresh(isShowingAllDiseases ? 0 : 6);
-		diseaseTileViewLayout.refresh(isShowingAllDiseases ? 0 : 6);
+		List<DiseaseBurdenDto> diseasesBurden = refreshDiseasesBurden();
+		diseaseBurdenComponent.refresh(diseasesBurden);
+		diseaseTileViewLayout.refresh(diseasesBurden);
 		diseaseDifferenceComponent.refresh(isShowingAllDiseases ? 0 : 10);
 	}
 
 	public void updateDifferenceComponentSubHeader() {
 		diseaseDifferenceComponent.updateSubHeader();
+	}
+
+	private List<DiseaseBurdenDto> refreshDiseasesBurden() {
+		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
+
+		// sort, limit and filter
+		Stream<DiseaseBurdenDto> diseasesBurdenStream =
+			diseasesBurden.stream().sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
+		if (!isShowingAllDiseases) {
+			diseasesBurdenStream = diseasesBurdenStream.limit(SHONW_DISEASES);
+		}
+		return diseasesBurdenStream.collect(Collectors.toList());
 	}
 }

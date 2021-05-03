@@ -18,8 +18,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Label;
@@ -29,7 +27,6 @@ import com.vaadin.v7.shared.ui.grid.HeightMode;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -37,12 +34,9 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private DashboardDataProvider dashboardDataProvider;
 	private DiseaseBurdenGrid grid;
 
-	public DiseaseBurdenComponent(DashboardDataProvider dashboardDataProvider) {
-
-		this.dashboardDataProvider = dashboardDataProvider;
+	public DiseaseBurdenComponent() {
 
 		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenInfo));
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
@@ -61,18 +55,7 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 		setExpandRatio(grid, 1);
 	}
 
-	public void refresh(int limitDiseasesCount) {
-
-		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-
-		// sort, limit and filter
-		Stream<DiseaseBurdenDto> diseasesBurdenStream =
-			diseasesBurden.stream().sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
-		if (limitDiseasesCount > 0) {
-			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
-		}
-		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
-
+	public void refresh(List<DiseaseBurdenDto> diseasesBurden) {
 		grid.reload(diseasesBurden);
 		grid.setHeightByRows(diseasesBurden.size());
 	}
