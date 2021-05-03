@@ -74,12 +74,16 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		// TODO: implement cancel for PIA
-		Button.ClickListener cancelListener = clickEvent -> {
-		};
-		Button.ClickListener openListener = clickEvent -> openSymptomJournalWindow(person);
 		PopupButton ediaryButton =
 			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.symptomJournalOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button.ClickListener openListener = clickEvent -> {
+			openSymptomJournalWindow(person);
+			ediaryButton.setPopupVisible(false);
+		};
+		// TODO: implement cancel for PIA
+		Button.ClickListener cancelListener = clickEvent -> {
+			ediaryButton.setPopupVisible(false);
+		};
 		Button cancelButton =
 			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
 		Button openButton =
@@ -101,10 +105,16 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		Button.ClickListener cancelListener = clickEvent -> showCancelFollowupConfirmationPopup(person);
-		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
 		PopupButton ediaryButton =
 			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.patientDiaryOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button.ClickListener cancelListener = clickEvent -> {
+			showCancelFollowupConfirmationPopup(person);
+			ediaryButton.setPopupVisible(false);
+		};
+		Button.ClickListener openListener = clickEvent -> {
+			openPatientDiaryPage(person.getUuid());
+			ediaryButton.setPopupVisible(false);
+		};
 		Button cancelButton =
 			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
 		Button openButton =
@@ -123,7 +133,7 @@ public class ExternalJournalUtil {
 
 	private static void enrollPatientInSymptomJournal(PersonDto person) {
 		ExternalJournalValidation validationResult = externalJournalFacade.validateSymptomJournalPerson(person);
-		if(!validationResult.isValid()) {
+		if (!validationResult.isValid()) {
 			showExternalJournalWarningPopup(validationResult.getMessage());
 		} else {
 			openSymptomJournalWindow(person);
