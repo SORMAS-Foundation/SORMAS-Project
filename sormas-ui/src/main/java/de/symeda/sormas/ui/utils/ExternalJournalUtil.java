@@ -82,6 +82,7 @@ public class ExternalJournalUtil {
 		};
 		// TODO: implement cancel for PIA
 		Button.ClickListener cancelListener = clickEvent -> {
+			VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageDeletionUnsupportedByExternalJournalWarning));
 			ediaryButton.setPopupVisible(false);
 		};
 		Button cancelButton =
