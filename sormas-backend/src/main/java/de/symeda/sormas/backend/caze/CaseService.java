@@ -48,12 +48,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseCriteriaDateType;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -95,6 +95,7 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -262,7 +263,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
+
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -282,7 +285,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -320,6 +323,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb,
 		CriteriaQuery<?> cq,
 		Root<Case> root,
+		CaseJoins<Case> joins,
 		Region region,
 		District district,
 		Disease disease,
@@ -328,6 +332,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = createActiveCasesFilter(cb, root);
 		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
 		filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+
+		// Also filter cases by those which are classified as no case
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(root.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(root.get(Case.CASE_CLASSIFICATION))); // this should technically not be necessary, as the classification is a required field
+
+		// only show cases which actually have GPS coordinates provided
+		Predicate personLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(joins.getPersonAddress().get(Location.LONGITUDE)), cb.isNotNull(joins.getPersonAddress().get(Location.LATITUDE)));
+		Predicate reportLatLonNotNull =
+			CriteriaBuilderHelper.and(cb, cb.isNotNull(root.get(Case.REPORT_LON)), cb.isNotNull(root.get(Case.REPORT_LAT)));
+		Predicate facilityLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(joins.getFacility().get(Facility.LONGITUDE)), cb.isNotNull(joins.getFacility().get(Facility.LATITUDE)));
+		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull, facilityLatLonNotNull);
+		filter = CriteriaBuilderHelper.and(cb, filter, latLonProvided);
 
 		if (region != null) {
 			Predicate regionFilter = cb.equal(root.get(Case.REGION), region);

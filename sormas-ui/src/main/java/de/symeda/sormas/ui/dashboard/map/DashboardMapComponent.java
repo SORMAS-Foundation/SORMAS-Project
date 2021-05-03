@@ -309,7 +309,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases);
 		}
 
-		if (showEvents) {
+		if (count < maxCount && showEvents) {
 			count += dashboardDataProvider.getEvents().size();
 		}
 
@@ -1228,9 +1228,8 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	private void fillCaseLists(List<MapCaseDto> cases) {
 		for (MapCaseDto caze : cases) {
+			// these filters need to be used for the count too
 			CaseClassification classification = caze.getCaseClassification();
-			if (classification == null || classification == CaseClassification.NO_CASE)
-				continue;
 			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
 				continue;
 			if (dateTo != null && !(caze.getReportDate() == dateTo || caze.getReportDate().before(dateTo) || dateTo.after(caze.getReportDate())))
@@ -1238,9 +1237,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			boolean hasCaseGps =
 				(caze.getAddressLat() != null && caze.getAddressLon() != null) || (caze.getReportLat() != null && caze.getReportLon() != null);
 			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
-			if (!hasCaseGps && !hasFacilityGps) {
-				continue; // no gps at all
-			}
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASE_ADDRESS) {
 				if (!hasCaseGps) {
