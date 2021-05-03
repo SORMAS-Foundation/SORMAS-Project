@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.event;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
@@ -35,6 +36,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
@@ -42,7 +45,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedEventProcessor implements SharedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData> {
+public class SharedEventProcessor implements SharedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData, SormasToSormasEventPreview> {
 
 	@EJB
 	private UserService userService;
@@ -85,6 +88,31 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		}
 
 		return new ProcessedEventData(event, originInfo, eventParticipants, samples);
+	}
+
+	@Override
+	public SormasToSormasEventPreview processSharedPreview(SormasToSormasEventPreview preview) throws SormasToSormasValidationException {
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+
+		ValidationErrors eventValidationErrors = new ValidationErrors();
+
+		dataProcessorHelper.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+
+		if (eventValidationErrors.hasError()) {
+			validationErrors.put(buildCaseValidationGroupName(preview), eventValidationErrors);
+		}
+
+		List<SormasToSormasEventParticipantPreview> eventParticipants = preview.getEventParticipants();
+		if (eventParticipants != null && eventParticipants.size() > 0) {
+			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipantPreviews(eventParticipants);
+			validationErrors.putAll(eventParticipantErrors);
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		return preview;
 	}
 
 	private ValidationErrors processEventData(EventDto event, EventDto existingEvent) {
@@ -133,6 +161,20 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 				eventParticipant.setRegion(infrastructureData.getRegion());
 				eventParticipant.setDistrict(infrastructureData.getDistrict());
 			}));
+
+			if (validationErrors.hasError()) {
+				errors.put(buildEventParticipantValidationGroupName(eventParticipant), validationErrors);
+			}
+		});
+
+		return errors;
+	}
+
+	private Map<String, ValidationErrors> processEventParticipantPreviews(List<SormasToSormasEventParticipantPreview> eventParticipants) {
+		Map<String, ValidationErrors> errors = new HashMap<>();
+
+		eventParticipants.forEach(eventParticipant -> {
+			ValidationErrors validationErrors = dataProcessorHelper.processPersonPreview(eventParticipant.getPerson());
 
 			if (validationErrors.hasError()) {
 				errors.put(buildEventParticipantValidationGroupName(eventParticipant), validationErrors);

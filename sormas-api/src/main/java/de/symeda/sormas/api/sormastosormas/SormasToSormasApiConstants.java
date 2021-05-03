@@ -21,13 +21,19 @@ public class SormasToSormasApiConstants {
 
 	public static final String RESOURCE_PATH = "/sormasToSormas";
 
+	public static final String CASE_REQUEST_ENDPOINT = "/cases/request";
+
 	public static final String CASE_ENDPOINT = "/cases";
 
 	public static final String CASE_SYNC_ENDPOINT = "/cases/sync";
 
+	public static final String CONTACT_REQUEST_ENDPOINT = "/contacts/request";
+
 	public static final String CONTACT_ENDPOINT = "/contacts";
 
 	public static final String CONTACT_SYNC_ENDPOINT = "/contacts/sync";
+
+	public static final String EVENT_REQUEST_ENDPOINT = "/events/request";
 
 	public static final String EVENT_ENDPOINT = "/events";
 

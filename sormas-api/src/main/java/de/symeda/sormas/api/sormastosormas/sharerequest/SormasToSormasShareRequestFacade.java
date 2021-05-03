@@ -15,27 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-import de.symeda.sormas.api.HasUuid;
+import javax.ejb.Remote;
+import javax.validation.Valid;
 
-public class SormasToSormasEventParticipantPreview implements HasUuid {
+@Remote
+public interface SormasToSormasShareRequestFacade {
 
-	private String uuid;
-
-	private SormasToSormasPersonPreview person;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public SormasToSormasPersonPreview getPerson() {
-		return person;
-	}
-
-	public void setPerson(SormasToSormasPersonPreview person) {
-		this.person = person;
-	}
+	SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto);
 }

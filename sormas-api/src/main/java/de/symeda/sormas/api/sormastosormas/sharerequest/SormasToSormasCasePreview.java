@@ -15,9 +15,196 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.util.Date;
 import java.util.List;
 
-public class SormasToSormasCasePreview {
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+
+public class SormasToSormasCasePreview implements HasUuid {
+
+	private String uuid;
+	private Date reportDate;
+	private Disease disease;
+	private String diseaseDetails;
+	private DiseaseVariantDto diseaseVariant;
+	private CaseClassification caseClassification;
+	private CaseOutcome outcome;
+	private InvestigationStatus investigationStatus;
+	private Date onsetDate;
+
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
+	private FacilityType facilityType;
+	private FacilityReferenceDto healthFacility;
+	private String healthFacilityDetails;
+	private PointOfEntryReferenceDto pointOfEntry;
+	private String pointOfEntryDetails;
+
+	private SormasToSormasPersonPreview person;
 
 	private List<SormasToSormasContactPreview> contacts;
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
+	public DiseaseVariantDto getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public InvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
+	}
+
+	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+		this.investigationStatus = investigationStatus;
+	}
+
+	public Date getOnsetDate() {
+		return onsetDate;
+	}
+
+	public void setOnsetDate(Date onsetDate) {
+		this.onsetDate = onsetDate;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public FacilityReferenceDto getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
+	public String getPointOfEntryDetails() {
+		return pointOfEntryDetails;
+	}
+
+	public void setPointOfEntryDetails(String pointOfEntryDetails) {
+		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	public SormasToSormasPersonPreview getPerson() {
+		return person;
+	}
+
+	public void setPerson(SormasToSormasPersonPreview person) {
+		this.person = person;
+	}
+
+	public List<SormasToSormasContactPreview> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<SormasToSormasContactPreview> contacts) {
+		this.contacts = contacts;
+	}
 }

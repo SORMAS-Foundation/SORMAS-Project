@@ -27,6 +27,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -39,7 +40,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class ContactShareDataBuilder implements ShareDataBuilder<Contact, SormasToSormasContactDto> {
+public class ContactShareDataBuilder implements ShareDataBuilder<Contact, SormasToSormasContactDto, SormasToSormasContactPreview> {
 
 	@EJB
 	private SampleService sampleService;
@@ -65,5 +66,11 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 		}
 
 		return shareData;
+	}
+
+	@Override
+	public ShareData<SormasToSormasContactPreview> buildShareDataPreview(Contact data, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
+		return null;
 	}
 }

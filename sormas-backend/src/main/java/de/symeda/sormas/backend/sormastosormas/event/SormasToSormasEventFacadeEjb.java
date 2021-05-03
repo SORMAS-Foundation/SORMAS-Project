@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
@@ -37,6 +38,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -48,9 +52,11 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasEventFacade")
-public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, ProcessedEventData>
+public class SormasToSormasEventFacadeEjb
+	extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, ProcessedEventData>
 	implements SormasToSormasEventFacade {
 
+	public static final String SHARED_EVENTS_REQUEST = RESOURCE_PATH + EVENT_REQUEST_ENDPOINT;
 	public static final String SAVE_SHARED_EVENTS = RESOURCE_PATH + EVENT_ENDPOINT;
 	public static final String SYNC_SHARED_EVENTS = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
 
@@ -68,7 +74,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasEventFacadeEjb() {
-		super(SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event);
+		super(SHARED_EVENTS_REQUEST, SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event, ShareRequestDataType.EVENT);
 	}
 
 	@Override
@@ -95,13 +101,12 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 	@Override
 	protected ValidationErrors validateSharedEntity(EventDto entity) {
-		ValidationErrors errors = new ValidationErrors();
+		return validateSharedUuid(entity.getUuid());
+	}
 
-		if (eventFacade.exists(entity.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasEventExists));
-		}
-
-		return errors;
+	@Override
+	protected ValidationErrors validateSharedPreview(SormasToSormasEventPreview preview) {
+		return validateSharedUuid(preview.getUuid());
 	}
 
 	@Override
@@ -120,7 +125,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected ShareDataBuilder<Event, SormasToSormasEventDto> getShareDataBuilder() {
+	protected ShareDataBuilder<Event, SormasToSormasEventDto, SormasToSormasEventPreview> getShareDataBuilder() {
 		return shareDataBuilder;
 	}
 
@@ -137,6 +142,21 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@Override
 	protected List<EventDto> loadExistingEntities(List<String> uuids) {
 		return eventFacade.getByUuids(uuids);
+	}
+
+	@Override
+	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasEventPreview> previews) {
+		request.setEvents(previews);
+	}
+
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (eventFacade.exists(uuid)) {
+			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasEventExists));
+		}
+
+		return errors;
 	}
 
 	@LocalBean

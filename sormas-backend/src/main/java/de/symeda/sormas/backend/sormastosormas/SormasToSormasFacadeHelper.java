@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,7 +65,7 @@ public class SormasToSormasFacadeHelper {
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	public void sendEntitiesToSormas(List<?> entities, SormasToSormasOptionsDto options, RestCall restCall) throws SormasToSormasException {
+	public void sendEntitiesToSormas(Object entities, SormasToSormasOptionsDto options, RestCall restCall) throws SormasToSormasException {
 
 		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -121,7 +120,7 @@ public class SormasToSormasFacadeHelper {
 		}
 	}
 
-	public <T> T[] decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T[]> dataType) throws SormasToSormasException {
+	public <T> T decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
 		try {
 			byte[] decryptedData = encryptionService.decrypt(encryptedData.getData(), encryptedData.getOrganizationId());
 

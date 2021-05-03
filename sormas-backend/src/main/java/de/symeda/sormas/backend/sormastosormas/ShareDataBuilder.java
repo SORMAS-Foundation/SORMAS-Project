@@ -21,7 +21,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
-public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto> {
+public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto, P> {
 
 	ShareData<S> buildShareData(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	ShareData<P> buildShareDataPreview(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
 }

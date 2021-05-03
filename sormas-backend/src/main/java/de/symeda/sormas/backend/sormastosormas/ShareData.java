@@ -18,9 +18,7 @@ package de.symeda.sormas.backend.sormastosormas;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-
-public class ShareData<T extends SormasToSormasDto> {
+public class ShareData<T> {
 
 	private final T dto;
 

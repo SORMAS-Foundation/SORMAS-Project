@@ -13,29 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.sharerequest;
+package de.symeda.sormas.backend.sormastosormas.sharerequest;
 
-import de.symeda.sormas.api.HasUuid;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 
-public class SormasToSormasEventParticipantPreview implements HasUuid {
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
-	private String uuid;
+@Stateless
+@LocalBean
+public class SormasToSormasShareRequestService extends AdoServiceWithUserFilter<SormasToSormasShareRequest> {
 
-	private SormasToSormasPersonPreview person;
-
-	public String getUuid() {
-		return uuid;
+	public SormasToSormasShareRequestService() {
+		super(SormasToSormasShareRequest.class);
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public SormasToSormasPersonPreview getPerson() {
-		return person;
-	}
-
-	public void setPerson(SormasToSormasPersonPreview person) {
-		this.person = person;
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, SormasToSormasShareRequest> from) {
+		return null;
 	}
 }

@@ -37,6 +37,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
 	private String comment;
+	private SormasToSormasShareStatus status;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -132,5 +133,13 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public SormasToSormasShareStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(SormasToSormasShareStatus status) {
+		this.status = status;
 	}
 }

@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.contact;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
@@ -38,6 +39,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -52,9 +56,10 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasContactFacade")
 public class SormasToSormasContactFacadeEjb
-	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, ProcessedContactData>
+	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, ProcessedContactData>
 	implements SormasToSormasContactFacade {
 
+	private static final String SHARED_CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + CONTACT_REQUEST_ENDPOINT;
 	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 	public static final String SYNC_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_SYNC_ENDPOINT;
 
@@ -74,7 +79,12 @@ public class SormasToSormasContactFacadeEjb
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasContactFacadeEjb() {
-		super(SAVE_SHARED_CONTACT_ENDPOINT, SYNC_SHARED_CONTACT_ENDPOINT, Captions.Contact);
+		super(
+			SHARED_CONTACT_REQUEST_ENDPOINT,
+			SAVE_SHARED_CONTACT_ENDPOINT,
+			SYNC_SHARED_CONTACT_ENDPOINT,
+			Captions.Contact,
+			ShareRequestDataType.CONTACT);
 	}
 
 	@Override
@@ -83,12 +93,12 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected ShareDataBuilder<Contact, SormasToSormasContactDto> getShareDataBuilder() {
+	protected ShareDataBuilder<Contact, SormasToSormasContactDto, SormasToSormasContactPreview> getShareDataBuilder() {
 		return contactShareDataBuilder;
 	}
 
 	@Override
-	protected SharedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> getSharedDataProcessor() {
+	protected SharedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> getSharedDataProcessor() {
 		return sharedContactProcessor;
 	}
 
@@ -121,19 +131,12 @@ public class SormasToSormasContactFacadeEjb
 
 	@Override
 	protected ValidationErrors validateSharedEntity(ContactDto entity) {
-		ValidationErrors errors = new ValidationErrors();
+		return validateSharedUuids(entity.getUuid(), entity.getCaze());
+	}
 
-		if (contactFacade.exists(entity.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
-		}
-
-		CaseReferenceDto caze = entity.getCaze();
-		if (caze != null && !caseFacade.exists(caze.getUuid())) {
-			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
-		}
-
-		return errors;
+	@Override
+	protected ValidationErrors validateSharedPreview(SormasToSormasContactPreview preview) {
+		return validateSharedUuids(preview.getUuid(), preview.getCaze());
 	}
 
 	@Override
@@ -149,6 +152,26 @@ public class SormasToSormasContactFacadeEjb
 	@Override
 	protected List<ContactDto> loadExistingEntities(List<String> uuids) {
 		return contactFacade.getByUuids(uuids);
+	}
+
+	@Override
+	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasContactPreview> previews) {
+		request.setContacts(previews);
+	}
+
+	private ValidationErrors validateSharedUuids(String uuid, CaseReferenceDto caze) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (contactFacade.exists(uuid)) {
+			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
+		}
+
+		if (caze != null && !caseFacade.exists(caze.getUuid())) {
+			errors
+				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
+		}
+
+		return errors;
 	}
 
 	@LocalBean

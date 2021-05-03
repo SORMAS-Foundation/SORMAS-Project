@@ -7216,4 +7216,34 @@ ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIG
 
 INSERT INTO schema_version (version_number, comment) VALUES (365, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
+-- 2021-04-30 [SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423
+CREATE TABLE sormastosormassharerequest(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    dataType varchar(255),
+    status  varchar(255),
+    originInfo_id bigint,
+    cases json,
+    contacts json,
+    events json,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE cases ADD CONSTRAINT fk_sormastosormassharerequest_originInfo_id FOREIGN KEY (originInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormassharerequest OWNER TO sormas_user;
+
+CREATE TABLE sormastosormassharerequest_history (LIKE sormastosormassharerequest);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
+ALTER TABLE sormastosormassharerequest_history OWNER TO sormas_user;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN status varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (365, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
 -- *** Insert new sql commands BEFORE this line ***

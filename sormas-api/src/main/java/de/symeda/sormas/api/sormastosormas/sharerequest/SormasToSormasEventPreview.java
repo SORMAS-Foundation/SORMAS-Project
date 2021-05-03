@@ -15,9 +15,86 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.util.Date;
 import java.util.List;
 
-public class SormasToSormasEventPreview {
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.location.LocationDto;
+
+public class SormasToSormasEventPreview implements HasUuid {
+
+	private String uuid;
+	private Date reportDateTime;
+	private String eventTitle;
+	private String eventDesc;
+	private Disease disease;
+	private String diseaseDetails;
+	private LocationDto eventLocation;
 
 	private List<SormasToSormasEventParticipantPreview> eventParticipants;
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Date getReportDateTime() {
+		return reportDateTime;
+	}
+
+	public void setReportDateTime(Date reportDateTime) {
+		this.reportDateTime = reportDateTime;
+	}
+
+	public String getEventTitle() {
+		return eventTitle;
+	}
+
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
+	}
+
+	public String getEventDesc() {
+		return eventDesc;
+	}
+
+	public void setEventDesc(String eventDesc) {
+		this.eventDesc = eventDesc;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
+	public LocationDto getEventLocation() {
+		return eventLocation;
+	}
+
+	public void setEventLocation(LocationDto eventLocation) {
+		this.eventLocation = eventLocation;
+	}
+
+	public List<SormasToSormasEventParticipantPreview> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<SormasToSormasEventParticipantPreview> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
 }

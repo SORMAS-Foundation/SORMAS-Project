@@ -28,6 +28,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -44,7 +45,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSormasEventDto> {
+public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSormasEventDto, SormasToSormasEventPreview> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
@@ -83,6 +84,12 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 
 		return eventShareData;
+	}
+
+	@Override
+	public ShareData<SormasToSormasEventPreview> buildShareDataPreview(Event data, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
+		return null;
 	}
 
 	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {

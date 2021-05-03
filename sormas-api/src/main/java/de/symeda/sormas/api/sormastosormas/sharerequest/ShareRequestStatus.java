@@ -16,8 +16,7 @@
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 public enum ShareRequestStatus {
-	SENT,
-	RECEIVED,
+	PENDING,
 	ACCEPTED,
 	REJECTED
 }

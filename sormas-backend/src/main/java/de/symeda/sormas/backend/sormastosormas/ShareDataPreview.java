@@ -13,29 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.sharerequest;
+package de.symeda.sormas.backend.sormastosormas;
 
-import de.symeda.sormas.api.HasUuid;
+import java.util.List;
 
-public class SormasToSormasEventParticipantPreview implements HasUuid {
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 
-	private String uuid;
+public class ShareDataPreview<P> {
 
-	private SormasToSormasPersonPreview person;
+	private final List<P> previews;
 
-	public String getUuid() {
-		return uuid;
+	private final SormasToSormasOriginInfoDto originInfo;
+
+	public ShareDataPreview(List<P> previews, SormasToSormasOriginInfoDto originInfo) {
+		this.previews = previews;
+		this.originInfo = originInfo;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public List<P> getPreviews() {
+		return previews;
 	}
 
-	public SormasToSormasPersonPreview getPerson() {
-		return person;
-	}
-
-	public void setPerson(SormasToSormasPersonPreview person) {
-		this.person = person;
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
 	}
 }

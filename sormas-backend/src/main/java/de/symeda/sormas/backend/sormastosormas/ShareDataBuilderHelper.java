@@ -32,12 +32,19 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
@@ -130,5 +137,42 @@ public class ShareDataBuilderHelper {
 	private OrganizationServerAccessData getServerAccessData() throws SormasToSormasException {
 		return serverAccessDataService.getServerAccessData()
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)));
+	}
+
+	public SormasToSormasPersonPreview getPersonPreview(Person person) {
+		SormasToSormasPersonPreview personPreview = new SormasToSormasPersonPreview();
+
+		personPreview.setFirstName(person.getFirstName());
+		personPreview.setLastName(person.getLastName());
+		personPreview.setBirthdateDD(person.getBirthdateDD());
+		personPreview.setBirthdateMM(person.getBirthdateMM());
+		personPreview.setBirthdateYYYY(person.getBirthdateYYYY());
+		personPreview.setSex(person.getSex());
+		personPreview.setAddress(LocationFacadeEjb.toDto(person.getAddress()));
+
+		return personPreview;
+	}
+
+	public SormasToSormasContactPreview getContactPreview(Contact contact) {
+		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
+
+		contactPreview.setUuid(contact.getUuid());
+		contactPreview.setReportDateTime(contact.getReportDateTime());
+		contactPreview.setDisease(contact.getDisease());
+		contactPreview.setDiseaseDetails(contact.getDiseaseDetails());
+		contactPreview.setLastContactDate(contact.getLastContactDate());
+		contactPreview.setContactClassification(contact.getContactClassification());
+		contactPreview.setContactCategory(contact.getContactCategory());
+		contactPreview.setContactStatus(contact.getContactStatus());
+
+		contactPreview.setRegion(RegionFacadeEjb.toReferenceDto(contact.getRegion()));
+		contactPreview.setDistrict(DistrictFacadeEjb.toReferenceDto(contact.getDistrict()));
+		contactPreview.setCommunity(CommunityFacadeEjb.toReferenceDto(contact.getCommunity()));
+
+		contactPreview.setPerson(getPersonPreview(contact.getPerson()));
+
+		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
+
+		return contactPreview;
 	}
 }

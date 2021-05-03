@@ -39,6 +39,12 @@ import de.symeda.sormas.api.user.UserRole;
 public class SormasToSormasResource {
 
 	@POST
+	@Path(SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT)
+	public Response saveSharedCaseRequest(SormasToSormasEncryptedDataDto sharedCases) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveShareRequest(sharedCases));
+	}
+
+	@POST
 	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
 	public Response saveSharedCase(SormasToSormasEncryptedDataDto sharedCases) {
 		return handleRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveSharedEntities(sharedCases));
@@ -57,6 +63,12 @@ public class SormasToSormasResource {
 	}
 
 	@POST
+	@Path(SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT)
+	public Response saveSharedCOntactRequest(SormasToSormasEncryptedDataDto sharedContacts) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveShareRequest(sharedContacts));
+	}
+
+	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContacts) {
 		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSharedEntities(sharedContacts));
@@ -72,6 +84,12 @@ public class SormasToSormasResource {
 	@Path(SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT)
 	public Response syncSharedContacts(SormasToSormasEncryptedDataDto sharedContacts) {
 		return handleRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSyncedEntity(sharedContacts));
+	}
+
+	@POST
+	@Path(SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT)
+	public Response saveSharedEventRequest(SormasToSormasEncryptedDataDto sharedEvents) {
+		return handleRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveShareRequest(sharedEvents));
 	}
 
 	@POST

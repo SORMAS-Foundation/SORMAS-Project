@@ -34,9 +34,8 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPre
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 
-@Entity
+@Entity(name = "sormastosormassharerequest")
 public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1116921896060439299L;
@@ -46,8 +45,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 	private ShareRequestStatus status;
 
 	private SormasToSormasOriginInfo originInfo;
-
-	private SormasToSormasShareInfo shareInfo;
 
 	private List<SormasToSormasCasePreview> cases;
 	private List<SormasToSormasContactPreview> contacts;
@@ -81,15 +78,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	public void setOriginInfo(SormasToSormasOriginInfo originInfo) {
 		this.originInfo = originInfo;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL)
-	public SormasToSormasShareInfo getShareInfo() {
-		return shareInfo;
-	}
-
-	public void setShareInfo(SormasToSormasShareInfo shareInfo) {
-		this.shareInfo = shareInfo;
 	}
 
 	@AuditedIgnore

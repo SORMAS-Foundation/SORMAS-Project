@@ -13,29 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.sharerequest;
+package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.HasUuid;
-
-public class SormasToSormasEventParticipantPreview implements HasUuid {
-
-	private String uuid;
-
-	private SormasToSormasPersonPreview person;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public SormasToSormasPersonPreview getPerson() {
-		return person;
-	}
-
-	public void setPerson(SormasToSormasPersonPreview person) {
-		this.person = person;
-	}
+public enum SormasToSormasShareStatus {
+	PENDING,
+	REJECTED,
+	ACCEPTED
 }

@@ -15,5 +15,79 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-public class SormasToSormasShareRequestDto {
+import java.util.List;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.utils.DataHelper;
+
+public class SormasToSormasShareRequestDto extends EntityDto {
+
+	private static final long serialVersionUID = 2658688866070962522L;
+
+	private ShareRequestDataType dataType;
+
+	private ShareRequestStatus status;
+
+	private SormasToSormasOriginInfoDto originInfo;
+
+	private List<SormasToSormasCasePreview> cases;
+	private List<SormasToSormasContactPreview> contacts;
+	private List<SormasToSormasEventPreview> events;
+
+	public ShareRequestDataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(ShareRequestDataType dataType) {
+		this.dataType = dataType;
+	}
+
+	public ShareRequestStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ShareRequestStatus status) {
+		this.status = status;
+	}
+
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
+	}
+
+	public void setOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+		this.originInfo = originInfo;
+	}
+
+	public List<SormasToSormasCasePreview> getCases() {
+		return cases;
+	}
+
+	public void setCases(List<SormasToSormasCasePreview> cases) {
+		this.cases = cases;
+	}
+
+	public List<SormasToSormasContactPreview> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<SormasToSormasContactPreview> contacts) {
+		this.contacts = contacts;
+	}
+
+	public List<SormasToSormasEventPreview> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<SormasToSormasEventPreview> events) {
+		this.events = events;
+	}
+
+	public static SormasToSormasShareRequestDto build() {
+		SormasToSormasShareRequestDto dto = new SormasToSormasShareRequestDto();
+
+		dto.setUuid(DataHelper.createUuid());
+
+		return dto;
+	}
 }

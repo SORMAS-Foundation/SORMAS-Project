@@ -108,6 +108,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
 		target.setTarget(serverAccessData.toReference());
 
+		target.setStatus(source.getStatus());
 		target.setSender(source.getSender().toReference());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setWithAssociatedContacts(source.isWithAssociatedContacts());

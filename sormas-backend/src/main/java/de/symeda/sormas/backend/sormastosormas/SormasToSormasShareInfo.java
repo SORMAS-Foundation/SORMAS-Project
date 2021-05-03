@@ -20,10 +20,13 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -72,6 +75,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private boolean pseudonymizedSensitiveData;
 
 	private String comment;
+
+	private SormasToSormasShareStatus status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
@@ -196,12 +201,21 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SormasToSormasShareStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(SormasToSormasShareStatus status) {
+		this.status = status;
 	}
 }

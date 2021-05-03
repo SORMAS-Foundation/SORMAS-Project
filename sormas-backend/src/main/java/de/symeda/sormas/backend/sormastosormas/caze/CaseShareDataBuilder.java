@@ -35,11 +35,19 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
@@ -51,7 +59,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSormasCaseDto> {
+public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSormasCaseDto, SormasToSormasCasePreview> {
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -73,7 +81,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!sormasToSormasConfig.getRetainCaseExternalToken()){
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
 			cazeDto.setExternalToken(null);
 		}
 
@@ -111,6 +119,24 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		return shareData;
 	}
 
+	@Override
+	public ShareData<SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
+
+		SormasToSormasCasePreview cazePreview = getCasePreview(caze);
+
+		List<Contact> associatedContacts = Collections.emptyList();
+		if (options.isWithAssociatedContacts()) {
+			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
+			cazePreview.setContacts(getContactPreviews(associatedContacts));
+		}
+
+		ShareData<SormasToSormasCasePreview> shareData = new ShareData<>(cazePreview);
+		shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
+
+		return shareData;
+	}
+
 	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
 		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
 
@@ -133,5 +159,35 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 
 			return new SormasToSormasCaseDto.AssociatedContactDto(personDto, contactDto);
 		}).collect(Collectors.toList());
+	}
+
+	private SormasToSormasCasePreview getCasePreview(Case caze) {
+		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
+
+		casePreview.setUuid(caze.getUuid());
+		casePreview.setReportDate(caze.getReportDate());
+		casePreview.setDisease(caze.getDisease());
+		casePreview.setDiseaseDetails(caze.getDiseaseDetails());
+		casePreview.setDiseaseVariant(DiseaseVariantFacadeEjb.toDto(caze.getDiseaseVariant()));
+		casePreview.setCaseClassification(caze.getCaseClassification());
+		casePreview.setOutcome(caze.getOutcome());
+		casePreview.setInvestigationStatus(caze.getInvestigationStatus());
+		casePreview.setOnsetDate(caze.getSymptoms().getOnsetDate());
+		casePreview.setRegion(RegionFacadeEjb.toReferenceDto(caze.getRegion()));
+		casePreview.setDistrict(DistrictFacadeEjb.toReferenceDto(caze.getDistrict()));
+		casePreview.setCommunity(CommunityFacadeEjb.toReferenceDto(caze.getCommunity()));
+		casePreview.setFacilityType(caze.getFacilityType());
+		casePreview.setHealthFacility(FacilityFacadeEjb.toReferenceDto(caze.getHealthFacility()));
+		casePreview.setHealthFacilityDetails(caze.getHealthFacilityDetails());
+		casePreview.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(caze.getPointOfEntry()));
+		casePreview.setPointOfEntryDetails(caze.getPointOfEntryDetails());
+
+		casePreview.setPerson(dataBuilderHelper.getPersonPreview(caze.getPerson()));
+
+		return casePreview;
+	}
+
+	private List<SormasToSormasContactPreview> getContactPreviews(List<Contact> contacts) {
+		return contacts.stream().map(c -> dataBuilderHelper.getContactPreview(c)).collect(Collectors.toList());
 	}
 }
