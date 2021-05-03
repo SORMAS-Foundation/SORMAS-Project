@@ -707,6 +707,7 @@ public class LabMessageController {
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
 				window.close();
 			}, (savedPathogenTestDto, runnable) -> {
+				runnable.run();
 				finishProcessingLabMessage(labMessageDto, savedPathogenTestDto);
 			});
 		pathogenTestCreateComponent.addDiscardListener(window::close);
