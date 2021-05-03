@@ -689,6 +689,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertThat(returnedCase.getQuarantine(), is(QuarantineType.HOTEL));
+		assertThat(returnedCase.getReportingUser(), is(officer));
 
 		List<SormasToSormasShareInfoDto> caseShares =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);

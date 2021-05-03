@@ -1731,9 +1731,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
-		if (caze != null) {
-			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
-		}
+		externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 

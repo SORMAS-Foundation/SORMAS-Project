@@ -47,6 +47,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -170,6 +171,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	public CaseService() {
 		super(Case.class);
@@ -820,6 +823,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		contacts = contactService.getAllByResultingCase(caze);
 		for (Contact contact : contacts) {
 			contact.setResultingCase(null);
+			externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 			contactService.ensurePersisted(contact);
 		}
 
@@ -1201,6 +1205,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.setFollowUpStatusChangeUser(null);
 		}
 
+		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
 		ensurePersisted(caze);
 	}
 

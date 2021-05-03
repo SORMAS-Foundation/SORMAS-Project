@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -11,6 +13,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
@@ -67,12 +70,25 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		return getDataProvider().size(new Query<>());
 	}
 
+	/**
+	 * Add's a column to the left hand side of the grid complete with an edit-logo
+	 *
+	 * @param handler
+	 *            ItemClickListener
+	 */
 	protected void addEditColumn(Consumer<T> handler) {
+
+		List<Column<T, ?>> columnsList = new ArrayList<>(getColumns());
 
 		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
+		editColumn.setCaption(I18nProperties.getCaption(EDIT_BTN_ID));
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
+
+		// the edit column should always be on the left for consistency and to prevent sidescrolling
+		columnsList.add(0, editColumn);
+		setColumnOrder(columnsList.toArray(new Column[columnsList.size()]));
 
 		addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));
 	}
