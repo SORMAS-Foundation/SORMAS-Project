@@ -137,7 +137,15 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), null);
 	}
 
+	public List<User> getAllByRegionsAndUserRoles(List<Region> regions, UserRole... userRoles) {
+		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), null);
+	}
+
 	public List<User> getAllByRegionAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
+		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
+	}
+
+	public List<User> getAllByRegionsAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 

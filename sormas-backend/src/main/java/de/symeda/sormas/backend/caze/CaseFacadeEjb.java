@@ -2074,8 +2074,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-				newCase.getRegion(),
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getCaseRegions(newCase),
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
@@ -2104,8 +2104,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the disease of an
 		// Unspecified VHF case has changed
 		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-				newCase.getRegion(),
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getCaseRegions(newCase),
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
@@ -3203,8 +3203,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-			caze.getRegion(),
+		List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+			JurisdictionHelper.getCaseRegions(caze),
 			UserRole.SURVEILLANCE_SUPERVISOR,
 			UserRole.ADMIN_SUPERVISOR,
 			UserRole.CASE_SUPERVISOR,

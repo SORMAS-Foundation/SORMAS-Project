@@ -14,6 +14,9 @@
  */
 package de.symeda.sormas.backend.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -29,6 +32,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
@@ -277,5 +281,28 @@ public class JurisdictionHelper {
 		default:
 			return JurisdictionLevel.NONE;
 		}
+	}
+
+	public static List<Region> getCaseRegions(Case caze) {
+		List<Region> regions = new ArrayList<>();
+		if (caze.getResponsibleRegion() != null) {
+			regions.add(caze.getResponsibleRegion());
+		}
+		regions.add(caze.getRegion());
+
+		return regions;
+	}
+
+	public static List<Region> getContactRegions(Contact contact) {
+		Case contactCase = contact.getCaze();
+
+		List<Region> regions = new ArrayList<>();
+		if (contact.getRegion() != null) {
+			regions.add(contact.getRegion());
+		} else {
+			regions.addAll(getCaseRegions(contactCase));
+		}
+
+		return regions;
 	}
 }

@@ -276,33 +276,28 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			Region recipientRegion = ado.getContact().getRegion() != null
-				? ado.getContact().getRegion()
-				: ado.getContact().getCaze() != null ? ado.getContact().getCaze().getRegion() : null;
-			if (recipientRegion != null) {
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-					recipientRegion,
-					UserRole.SURVEILLANCE_SUPERVISOR,
-					UserRole.CASE_SUPERVISOR,
-					UserRole.CONTACT_SUPERVISOR);
-				for (User recipient : messageRecipients) {
-					try {
-						messagingService.sendMessage(
-							recipient,
-							MessageSubject.VISIT_COMPLETED,
-							String.format(
-								I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
-								DataHelper.getShortUuid(ado.getContact().getUuid()),
-								DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
-							MessageType.EMAIL,
-							MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(
-							String.format(
-								"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								recipient.getUuid()));
-					}
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getContactRegions(ado.getContact()),
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(
+						recipient,
+						MessageSubject.VISIT_COMPLETED,
+						String.format(
+							I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
+							DataHelper.getShortUuid(ado.getContact().getUuid()),
+							DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
+						MessageType.EMAIL,
+						MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(
+						String.format(
+							"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							recipient.getUuid()));
 				}
 			}
 		}
