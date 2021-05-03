@@ -109,6 +109,10 @@ public class CriteriaBuilderHelper {
 		return unaccentedIlike(cb, valueExpression, cb.literal("%" + pattern + "%"));
 	}
 
+	public static Predicate unaccentedIlikePrecise(CriteriaBuilder cb, Expression<String> valueExpression, String value) {
+		return unaccentedIlike(cb, valueExpression, cb.literal(value));
+	}
+
 	public static Predicate unaccentedIlike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
 		Expression<String> unaccentedValueExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, valueExpression);
 		Expression<String> unaccentedPatternExpression = cb.function(ExtendedPostgreSQL94Dialect.UNACCENT, String.class, patternExpression);
@@ -117,6 +121,10 @@ public class CriteriaBuilderHelper {
 
 	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, String pattern) {
 		return ilike(cb, valueExpression, cb.literal("%" + pattern + "%"));
+	}
+
+	public static Predicate ilikePrecise(CriteriaBuilder cb, Expression<String> valueExpression, String value) {
+		return ilike(cb, valueExpression, cb.literal(value));
 	}
 
 	public static Predicate ilike(CriteriaBuilder cb, Expression<String> valueExpression, Expression<String> patternExpression) {
@@ -131,10 +139,7 @@ public class CriteriaBuilderHelper {
 		return cb.function(ExtendedPostgreSQL94Dialect.WINDOW_FIRST_VALUE_DESC, String.class, valueProperty, partitionProperty, orderProperty);
 	}
 
-	public static Expression<String> windowCount(
-		CriteriaBuilder cb,
-		Path<Object> valueProperty,
-		Path<Object> partitionProperty) {
+	public static Expression<String> windowCount(CriteriaBuilder cb, Path<Object> valueProperty, Path<Object> partitionProperty) {
 		return cb.function(ExtendedPostgreSQL94Dialect.WINDOW_COUNT, String.class, valueProperty, partitionProperty);
 	}
 }
