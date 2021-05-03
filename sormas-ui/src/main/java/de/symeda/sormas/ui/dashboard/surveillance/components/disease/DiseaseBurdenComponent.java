@@ -15,31 +15,48 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.surveillance;
+package de.symeda.sormas.ui.dashboard.surveillance.components.disease;
 
 import java.util.List;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
+import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseTileViewLayout extends CssLayout {
+public class DiseaseBurdenComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	@Override
-	protected String getCss(Component c) {
-		return "margin-left: 18px; margin-bottom: 18px;";
+	private DiseaseBurdenGrid grid;
+
+	public DiseaseBurdenComponent() {
+
+		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenInfo));
+		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+
+		grid = new DiseaseBurdenGrid();
+		grid.setHeightMode(HeightMode.ROW);
+		grid.setWidth(100, Unit.PERCENTAGE);
+
+		// layout
+		setWidth(100, Unit.PERCENTAGE);
+
+		addComponent(title);
+		addComponent(grid);
+		setMargin(new MarginInfo(true, true, false, true));
+		setSpacing(false);
+		setExpandRatio(grid, 1);
 	}
 
 	public void refresh(List<DiseaseBurdenDto> diseasesBurden) {
-		this.removeAllComponents();
-
-		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
-			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden);
-			tile.setWidth(230, Unit.PIXELS);
-			addComponent(tile);
-		}
+		grid.reload(diseasesBurden);
+		grid.setHeightByRows(diseasesBurden.size());
 	}
 }
