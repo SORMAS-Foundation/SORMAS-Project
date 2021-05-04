@@ -18,16 +18,20 @@
 package de.symeda.sormas.api.task;
 
 import java.util.Date;
+import java.util.List;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -54,6 +58,30 @@ public class TaskDto extends EntityDto {
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+
+	public static final String LABCERTIFICATEGUID = "labCertificateGuid";
+	public static final String PAYER_NUMBER = "payerNumber";
+	public static final String DOCTOR_NUMBER = "doctorNumber";
+	public static final String OPERATING_FACILITY_NUMBER = "operatingFacilityNumber";
+	public static final String LAB_NUMBER = "labNumber";
+	public static final String TEST_V = "testV";
+	public static final String SELF_PAYING = "selfPaying";
+	public static final String SPECIAL_AGREEMENT = "specialAgreement";
+	public static final String FIRST_TEST = "firstTest";
+	public static final String NEXT_TEST = "nextTest";
+	public static final String CONTACT_PERSON = "contactPerson";
+	public static final String CORONA_APP = "coronaApp";
+	public static final String OUTBREAK = "outbreak";
+	public static final String OUTBREAK_PREVENTION = "outbreakPrevention";
+	public static final String WORKING_IN_FACILITY = "workingInFacility";
+	public static final String LIVING_IN_FACILITY = "livingInFacility";
+	public static final String MEDICAL_FACILITY = "medicalFacility";
+	public static final String COM_FACILITY = "communityFacility";
+	public static final String CARE_FACILITY = "careFacility";
+	public static final String OTHER_FACILITY = "otherFacility";
+	public static final String AGREED_TO_GDPR = "agreedToGdpr";
+	public static final String SPECIAL_AGREEMENT_CODE = "specialAgreementCode";
+	public static final String HEALTH_DEPARTMENT = "healthDepartment";
 
 	@Required
 	private TaskContext taskContext;
@@ -86,6 +114,75 @@ public class TaskDto extends EntityDto {
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
+
+	/* ALERI FIELDS */
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String labCertificateGuid;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String payerNumber;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String doctorNumber;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String operatingFacilityNumber;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String labNumber;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean testV;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean selfPaying;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean specialAgreement;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean firstTest;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean nextTest;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean contactPerson;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean coronaApp;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean outbreak;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean outbreakPrevention;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean workingInFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean livingInFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean medicalFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean communityFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean careFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean otherFacility;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private boolean agreedToGdpr;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String specialAgreementCode;
+
+	private FacilityReferenceDto healthDepartment;
 
 	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {
 
@@ -270,5 +367,189 @@ public class TaskDto extends EntityDto {
 
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
+	}
+	
+	public String getLabCertificateGuid() {
+		return labCertificateGuid;
+	}
+
+	public void setLabCertificateGuid(String labCertificateGuid) {
+		this.labCertificateGuid = labCertificateGuid;
+	}
+
+	public String getPayerNumber() {
+		return payerNumber;
+	}
+
+	public void setPayerNumber(String payerNumber) {
+		this.payerNumber = payerNumber;
+	}
+
+	public String getDoctorNumber() {
+		return doctorNumber;
+	}
+
+	public void setDoctorNumber(String doctorNumber) {
+		this.doctorNumber = doctorNumber;
+	}
+
+	public String getOperatingFacilityNumber() {
+		return operatingFacilityNumber;
+	}
+
+	public void setOperatingFacilityNumber(String operatingFacilityNumber) {
+		this.operatingFacilityNumber = operatingFacilityNumber;
+	}
+
+	public String getLabNumber() {
+		return labNumber;
+	}
+
+	public void setLabNumber(String labNumber) {
+		this.labNumber = labNumber;
+	}
+
+	public boolean isTestV() {
+		return testV;
+	}
+
+	public void setTestV(boolean testV) {
+		this.testV = testV;
+	}
+
+	public boolean isSelfPaying() {
+		return selfPaying;
+	}
+
+	public void setSelfPaying(boolean selfPaying) {
+		this.selfPaying = selfPaying;
+	}
+
+	public boolean isSpecialAgreement() {
+		return specialAgreement;
+	}
+
+	public void setSpecialAgreement(boolean specialAgreement) {
+		this.specialAgreement = specialAgreement;
+	}
+
+	public boolean isFirstTest() {
+		return firstTest;
+	}
+
+	public void setFirstTest(boolean firstTest) {
+		this.firstTest = firstTest;
+	}
+
+	public boolean isNextTest() {
+		return nextTest;
+	}
+
+	public void setNextTest(boolean nextTest) {
+		this.nextTest = nextTest;
+	}
+
+	public boolean isContactPerson() {
+		return contactPerson;
+	}
+
+	public void setContactPerson(boolean contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+
+	public boolean isCoronaApp() {
+		return coronaApp;
+	}
+
+	public void setCoronaApp(boolean coronaApp) {
+		this.coronaApp = coronaApp;
+	}
+
+	public boolean isOutbreak() {
+		return outbreak;
+	}
+
+	public void setOutbreak(boolean outbreak) {
+		this.outbreak = outbreak;
+	}
+
+	public boolean isOutbreakPrevention() {
+		return outbreakPrevention;
+	}
+
+	public void setOutbreakPrevention(boolean outbreakPrevention) {
+		this.outbreakPrevention = outbreakPrevention;
+	}
+
+	public boolean isWorkingInFacility() {
+		return workingInFacility;
+	}
+
+	public void setWorkingInFacility(boolean workingInFacility) {
+		this.workingInFacility = workingInFacility;
+	}
+
+	public boolean isLivingInFacility() {
+		return livingInFacility;
+	}
+
+	public void setLivingInFacility(boolean livingInFacility) {
+		this.livingInFacility = livingInFacility;
+	}
+
+	public boolean isMedicalFacility() {
+		return medicalFacility;
+	}
+
+	public void setMedicalFacility(boolean medicalFacility) {
+		this.medicalFacility = medicalFacility;
+	}
+
+	public boolean isCommunityFacility() {
+		return communityFacility;
+	}
+
+	public void setCommunityFacility(boolean communityFacility) {
+		this.communityFacility = communityFacility;
+	}
+
+	public boolean isCareFacility() {
+		return careFacility;
+	}
+
+	public void setCareFacility(boolean careFacility) {
+		this.careFacility = careFacility;
+	}
+
+	public boolean isOtherFacility() {
+		return otherFacility;
+	}
+
+	public void setOtherFacility(boolean otherFacility) {
+		this.otherFacility = otherFacility;
+	}
+
+	public boolean isAgreedToGdpr() {
+		return agreedToGdpr;
+	}
+
+	public void setAgreedToGdpr(boolean agreedToGdpr) {
+		this.agreedToGdpr = agreedToGdpr;
+	}
+
+	public String getSpecialAgreementCode() {
+		return specialAgreementCode;
+	}
+
+	public void setSpecialAgreementCode(String specialAgreementCode) {
+		this.specialAgreementCode = specialAgreementCode;
+	}
+
+	public FacilityReferenceDto getHealthDepartment() {
+		return healthDepartment;
+	}
+
+	public void setHealthDepartment(FacilityReferenceDto healthDepartment) {
+		this.healthDepartment = healthDepartment;
 	}
 }

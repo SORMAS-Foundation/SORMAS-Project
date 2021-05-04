@@ -136,6 +136,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
+	public List<FacilityReferenceDto> getAllHealthDepartments() {
+		List<Facility> healthDepartments = facilityService.getAllHealthDepartments();
+		return healthDepartments.stream().map(h -> toReferenceDto(h)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getAllUuids() {
 
 		if (userService.getCurrentUser() == null) {
@@ -399,6 +405,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setDepartment(entity.getDepartment());
+		dto.setSector(entity.getSector());
+		dto.setDrName(entity.getDrName());
+		dto.setStreet(entity.getStreet());
+		dto.setHouseNo(entity.getHouseNo());
+		dto.setPostalCode(entity.getPostalCode());
+		dto.setTelNo(entity.getTelNo());
+		dto.setFaxNo(entity.getFaxNo());
 
 		return dto;
 	}
@@ -608,6 +622,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		}
 	}
 
+	public Facility getFromReferenceDto(FacilityReferenceDto referenceDto){
+		return fillOrBuildEntity(getByUuid(referenceDto.getUuid()), null, false);
+	}
+
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
@@ -630,6 +648,15 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+
+		target.setDepartment(source.getDepartment());
+		target.setSector(source.getSector());
+		target.setDrName(source.getDrName());
+		target.setStreet(source.getStreet());
+		target.setHouseNo(source.getHouseNo());
+		target.setPostalCode(source.getPostalCode());
+		target.setTelNo(source.getTelNo());
+		target.setFaxNo(source.getFaxNo());
 
 		return target;
 	}

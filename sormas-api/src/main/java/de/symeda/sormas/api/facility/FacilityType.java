@@ -72,6 +72,7 @@ public enum FacilityType {
 	THEATER(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	UNIVERSITY(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),
 	ZOO(FacilityTypeGroup.LEISURE_FACILITY, false, false),
+	HEALTH_DEPARTMENT(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	AMBULATORY_SURGERY_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	DIALYSIS_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, false),
 	DAY_HOSPITAL(FacilityTypeGroup.MEDICAL_FACILITY, false, false),

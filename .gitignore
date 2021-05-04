@@ -30,6 +30,7 @@ bin
 /sormas-cargoserver/.env
 /sormas-cargoserver/custom.env
 /sormas-cargoserver/custom.properties
+*.DS_Store
 
 sormas-e2e-ui-tests/gradle/
 sormas-e2e-ui-tests/gradlew

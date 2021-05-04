@@ -56,6 +56,8 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherFacility);
 
+	List<FacilityReferenceDto> getAllHealthDepartments();
+
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
 
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);

@@ -21,12 +21,25 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfThreeCol;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
+import de.aleri.labcertificategenerator.Generator;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.AdvancedFileDownloader;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -72,18 +85,38 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	private static final String SAVE_INFO = "saveInfo";
 	private static final String ASSIGNEE_MISSING_INFO = "assigneeMissingInfo";
 
+	private static final String GENERATE_BTN = "generateLabornachweis";
+	private HorizontalLayout generateLayout;
+	private TextField labornachweisField;
+	private Button generateButton;
+	private CheckBox testV;
+
+	private ComboBox healthDepartments;
+	private static final String HEALTH_DEPARTMENTS = "healthDepartments";
+
+
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRow(
-					loc(TaskDto.TASK_CONTEXT), 
-					locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
+		fluidRow(
+			loc(TaskDto.TASK_CONTEXT),
+			locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
 			fluidRowLocs(TaskDto.TASK_TYPE) +
+			fluidRowLocs(TaskDto.PAYER_NUMBER, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.DOCTOR_NUMBER, TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.LAB_NUMBER) +
+			fluidRowLocs(TaskDto.TEST_V, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT) +
+			fluidRowLocs(TaskDto.FIRST_TEST, TaskDto.NEXT_TEST, "empty") +
+			fluidRowLocs(TaskDto.CONTACT_PERSON, TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION) +
+			fluidRowLocs(TaskDto.CORONA_APP) +
+			fluidRowLocs(TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.CARE_FACILITY) +
+			fluidRowLocs(TaskDto.WORKING_IN_FACILITY, TaskDto.COM_FACILITY, TaskDto.OTHER_FACILITY) +
+			fluidRowLocs(TaskDto.AGREED_TO_GDPR) +
+			fluidRowLocs(HEALTH_DEPARTMENTS, GENERATE_BTN) +
 			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
 			fluidRowLocs(ASSIGNEE_MISSING_INFO) +
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
 			fluidRowLocs(TaskDto.TASK_STATUS) +
+			fluidRowLocs(TaskDto.LABCERTIFICATEGUID) +
 			fluidRowLocs(SAVE_INFO);
 	//@formatter:on
 
@@ -132,7 +165,73 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			if (taskType != null) {
 				setRequired(taskType.isCreatorCommentRequired(), TaskDto.CREATOR_COMMENT);
 			}
+			this.updateOnTaskTypeChange(taskType);
 		});
+
+		labornachweisField = addField(TaskDto.LABCERTIFICATEGUID, TextField.class);
+
+		labornachweisField.setCaption("Labornachweis GUID");
+		labornachweisField.setWidth(100, Unit.PERCENTAGE);
+
+		setVisible(false, TaskDto.LABCERTIFICATEGUID);
+
+		generateLayout = new HorizontalLayout();
+		getContent().addComponent(generateLayout, GENERATE_BTN);
+
+		generateButton = new Button("Generieren");
+		generateButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		generateButton.setIcon(VaadinIcons.PLUS_CIRCLE);
+		//generateLayout.addComponent(labornachweisField);
+
+		this.healthDepartments = new ComboBox();
+		getContent().addComponent(this.healthDepartments, HEALTH_DEPARTMENTS);
+		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getAllHealthDepartments();
+
+		this.healthDepartments.addItems(facilities);
+		this.healthDepartments.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		this.healthDepartments.setImmediate(true);
+		this.healthDepartments.setVisible(false);
+		this.healthDepartments.setCaption(I18nProperties.getCaption(Captions.Task_healthDepartment));
+
+		this.healthDepartments.addValueChangeListener(e -> {
+			if(getValue() != null) {
+				FacilityReferenceDto facilityReferenceDto = (FacilityReferenceDto) e.getProperty().getValue();
+				getValue().setHealthDepartment(facilityReferenceDto);
+			}
+		});
+
+
+		if(getValue() == null && facilities.size() == 1){
+			this.healthDepartments.setValue(facilities.get(0));
+		}
+
+
+
+		final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
+		downloader
+			.addAdvancedDownloaderListener(new AdvancedFileDownloader.AdvancedDownloaderListener() {
+				/**
+				 * This method will be invoked just before the download
+				 * starts. Thus, a new file path can be set.
+				 *
+				 * @param downloadEvent
+				 */
+				@Override
+				public void beforeDownload(AdvancedFileDownloader.DownloaderEvent downloadEvent) {
+
+					String pdfPath = ControllerProvider.getTaskController().generateCovTestPdf(getValue());
+					downloader.setFilePath(pdfPath);
+				}
+			});
+		downloader.extend(generateButton);
+
+		generateLayout.addComponent(generateButton);
+		generateLayout.setComponentAlignment(generateButton, Alignment.MIDDLE_LEFT);
+		generateLayout.setVisible(false);
+
+		generateButton.setEnabled(UserProvider.getCurrent().hasUserRight(UserRight.TASK_PRINT_LAB_CERTIFICATE));
+
+		createLabDocFields();
 
 		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
 		assigneeUser.addValueChangeListener(e -> {
@@ -241,6 +340,248 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 	}
 
+	private <F extends Field> F createAndBindField(String propertyId, Class<F> fieldType, String caption){
+		F field = addField(propertyId, fieldType);
+		field.setCaption(caption);
+		return field;
+	}
+
+	private void createLabDocFields(){
+		TextField payerNumber = createAndBindField(TaskDto.PAYER_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_payerId));
+
+		TextField betriebsstaettenNumber = createAndBindField(TaskDto.OPERATING_FACILITY_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_establishmentId));
+
+		TextField doctorNumber = createAndBindField(TaskDto.DOCTOR_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_drId));
+
+		TextField specialAgreementCode = createAndBindField(TaskDto.SPECIAL_AGREEMENT_CODE, TextField.class, I18nProperties.getCaption(Captions.Task_kvSpecialNumber));
+
+		TextField labNr = createAndBindField(TaskDto.LAB_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_labId));
+
+		testV = createAndBindField(TaskDto.TEST_V, CheckBox.class, I18nProperties.getCaption(Captions.Task_testV));
+
+		CheckBox selfPaying = addField(TaskDto.SELF_PAYING, CheckBox.class);
+		selfPaying.setCaption(I18nProperties.getCaption(Captions.Task_selfPaying));
+
+		CheckBox specialAgreement = addField(TaskDto.SPECIAL_AGREEMENT, CheckBox.class);
+		specialAgreement.setCaption(I18nProperties.getCaption(Captions.Task_specialAgreement));
+
+		CheckBox firstTest = addField(TaskDto.FIRST_TEST, CheckBox.class);
+		firstTest.setCaption(I18nProperties.getCaption(Captions.Task_firstTest));
+
+		CheckBox nextTest = addField(TaskDto.NEXT_TEST, CheckBox.class);
+		nextTest.setCaption(I18nProperties.getCaption(Captions.Task_nextTest));
+
+		CheckBox contactPerson = addField(TaskDto.CONTACT_PERSON, CheckBox.class);
+		contactPerson.setCaption(I18nProperties.getCaption(Captions.Task_contactPerson));
+
+		CheckBox outbreak = addField(TaskDto.OUTBREAK, CheckBox.class);
+		outbreak.setCaption(I18nProperties.getCaption(Captions.Task_outbreak));
+
+		CheckBox outbreakPrevention = addField(TaskDto.OUTBREAK_PREVENTION, CheckBox.class);
+		outbreakPrevention.setCaption(I18nProperties.getCaption(Captions.Task_outbreakPrevention));
+
+		CheckBox coronaApp = addField(TaskDto.CORONA_APP, CheckBox.class);
+		coronaApp.setCaption(I18nProperties.getCaption(Captions.Task_coronaApp));
+
+		CheckBox livingInFacility = addField(TaskDto.LIVING_IN_FACILITY, CheckBox.class);
+		livingInFacility.setCaption(I18nProperties.getCaption(Captions.Task_livingInFacility));
+
+		CheckBox workingInFacility = addField(TaskDto.WORKING_IN_FACILITY, CheckBox.class);
+		workingInFacility.setCaption(I18nProperties.getCaption(Captions.Task_workingInFacility));
+
+		CheckBox medicalFacility = addField(TaskDto.MEDICAL_FACILITY, CheckBox.class);
+		medicalFacility.setCaption(I18nProperties.getCaption(Captions.Task_medicalFacility));
+
+		CheckBox comFacility = addField(TaskDto.COM_FACILITY, CheckBox.class);
+		comFacility.setCaption(I18nProperties.getCaption(Captions.Task_comFacility));
+
+		CheckBox careFacility = addField(TaskDto.CARE_FACILITY, CheckBox.class);
+		careFacility.setCaption(I18nProperties.getCaption(Captions.Task_careFacility));
+
+		CheckBox otherFacility = addField(TaskDto.OTHER_FACILITY, CheckBox.class);
+		otherFacility.setCaption(I18nProperties.getCaption(Captions.Task_otherFacility));
+
+		CheckBox agreedToGdpr = addField(TaskDto.AGREED_TO_GDPR, CheckBox.class);
+		agreedToGdpr.setCaption(I18nProperties.getCaption(Captions.Task_agreedToGdpr));
+
+		payerNumber.addValueChangeListener(e -> {
+			getValue().setPayerNumber(payerNumber.getValue());
+		});
+
+		betriebsstaettenNumber.addValueChangeListener(e -> {
+			getValue().setOperatingFacilityNumber(betriebsstaettenNumber.getValue());
+		});
+
+
+		doctorNumber.addValueChangeListener(e -> {
+			getValue().setDoctorNumber(doctorNumber.getValue());
+		});
+
+		specialAgreementCode.addValueChangeListener(e -> {
+			getValue().setSpecialAgreementCode(specialAgreementCode.getValue());
+		});
+
+		labNr.addValueChangeListener(e -> {
+			getValue().setLabNumber(labNr.getValue());
+		});
+
+		testV.addValueChangeListener(e -> {
+			getValue().setTestV(testV.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				selfPaying.setValue(false);
+				specialAgreement.setValue(false);
+			}
+		});
+
+		selfPaying.addValueChangeListener(e -> {
+			getValue().setSelfPaying(selfPaying.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				testV.setValue(false);
+				specialAgreement.setValue(false);
+			}
+		});
+
+		specialAgreement.addValueChangeListener(e -> {
+			getValue().setSpecialAgreement(specialAgreement.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				selfPaying.setValue(false);
+				testV.setValue(false);
+				specialAgreementCode.setEnabled(true);
+				specialAgreementCode.setRequired(true);
+			}
+			else{
+				specialAgreementCode.setEnabled(false);
+				specialAgreementCode.setRequired(false);
+			}
+		});
+
+		firstTest.addValueChangeListener(e -> {
+			getValue().setFirstTest(firstTest.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				nextTest.setValue(false);
+			}
+		});
+
+		nextTest.addValueChangeListener(e -> {
+			getValue().setNextTest(nextTest.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				firstTest.setValue(false);
+			}
+		});
+
+		contactPerson.addValueChangeListener(e -> {
+			getValue().setContactPerson(contactPerson.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				outbreak.setValue(false);
+				outbreakPrevention.setValue(false);
+				coronaApp.setValue(false);
+			}
+		});
+
+		outbreak.addValueChangeListener(e -> {
+			getValue().setOutbreak(outbreak.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				contactPerson.setValue(false);
+				outbreakPrevention.setValue(false);
+				coronaApp.setValue(false);
+			}
+		});
+
+		outbreakPrevention.addValueChangeListener(e -> {
+			getValue().setOutbreakPrevention(outbreakPrevention.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				outbreak.setValue(false);
+				contactPerson.setValue(false);
+				coronaApp.setValue(false);
+			}
+		});
+
+		coronaApp.addValueChangeListener(e -> {
+			getValue().setCoronaApp(coronaApp.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				outbreak.setValue(false);
+				outbreakPrevention.setValue(false);
+				contactPerson.setValue(false);
+			}
+		});
+
+		livingInFacility.addValueChangeListener(e -> {
+			getValue().setLivingInFacility(livingInFacility.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				workingInFacility.setValue(false);
+			}
+		});
+
+		workingInFacility.addValueChangeListener(e -> {
+			getValue().setWorkingInFacility(workingInFacility.getValue());
+			if((boolean) e.getProperty().getValue()){
+				livingInFacility.setValue(false);
+			}
+		});
+
+		medicalFacility.addValueChangeListener(e -> {
+			getValue().setMedicalFacility(medicalFacility.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+			 	comFacility.setValue(false);
+				careFacility.setValue(false);
+				otherFacility.setValue(false);
+			}
+		});
+
+		comFacility.addValueChangeListener(e -> {
+			getValue().setCommunityFacility(comFacility.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				medicalFacility.setValue(false);
+				careFacility.setValue(false);
+				otherFacility.setValue(false);
+			}
+		});
+
+		careFacility.addValueChangeListener(e -> {
+			getValue().setCareFacility(careFacility.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				comFacility.setValue(false);
+				medicalFacility.setValue(false);
+				otherFacility.setValue(false);
+			}
+		});
+
+		otherFacility.addValueChangeListener(e -> {
+			getValue().setOtherFacility(otherFacility.getValue());
+
+			if((boolean) e.getProperty().getValue()){
+				comFacility.setValue(false);
+				careFacility.setValue(false);
+				medicalFacility.setValue(false);
+			}
+		});
+
+		agreedToGdpr.addValueChangeListener(e -> {
+			getValue().setAgreedToGdpr(agreedToGdpr.getValue());
+		});
+
+		setVisible(false, TaskDto.LABCERTIFICATEGUID,
+				TaskDto.AGREED_TO_GDPR, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.CARE_FACILITY, TaskDto.COM_FACILITY,
+				TaskDto.CONTACT_PERSON, TaskDto.CORONA_APP, TaskDto.DOCTOR_NUMBER, TaskDto.FIRST_TEST, TaskDto.LAB_NUMBER,
+				TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.NEXT_TEST, TaskDto.OTHER_FACILITY,
+				TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION, TaskDto.PAYER_NUMBER, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT,
+				TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.TEST_V, TaskDto.WORKING_IN_FACILITY);
+
+	}
+
 	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {
 
 		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
@@ -274,6 +615,31 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		assigneeMissingInfo.setWidthFull();
 
 		return assigneeMissingInfo;
+	}
+
+	private void updateOnTaskTypeChange(TaskType taskType){
+		if(taskType == TaskType.SAMPLE_COLLECTION) {
+			if(getValue().getLabCertificateGuid() == null) {
+				String guid = Generator.generateGuid();
+				getValue().setLabCertificateGuid(guid);
+				labornachweisField.setValue(guid);
+			}
+
+			if(getValue().getHealthDepartment() != null){
+				this.healthDepartments.setValue(getValue().getHealthDepartment());
+			}
+		}
+		setVisible(taskType == TaskType.SAMPLE_COLLECTION, TaskDto.LABCERTIFICATEGUID,
+				TaskDto.AGREED_TO_GDPR, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.CARE_FACILITY, TaskDto.COM_FACILITY,
+				TaskDto.CONTACT_PERSON, TaskDto.CORONA_APP, TaskDto.DOCTOR_NUMBER, TaskDto.FIRST_TEST, TaskDto.LAB_NUMBER,
+				TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.NEXT_TEST, TaskDto.OTHER_FACILITY,
+				TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION, TaskDto.PAYER_NUMBER, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT,
+				TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.TEST_V, TaskDto.WORKING_IN_FACILITY, HEALTH_DEPARTMENTS);
+		generateLayout.setVisible(taskType == TaskType.SAMPLE_COLLECTION);
+
+		setRequired(taskType == TaskType.SAMPLE_COLLECTION, HEALTH_DEPARTMENTS);
+
+		setEnabled(getValue().isSpecialAgreement(), TaskDto.SPECIAL_AGREEMENT_CODE);
 	}
 
 	private void updateByCreatingAndAssignee() {

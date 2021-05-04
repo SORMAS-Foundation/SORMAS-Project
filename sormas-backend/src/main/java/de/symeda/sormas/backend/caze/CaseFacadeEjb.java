@@ -2670,6 +2670,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
 
+
+
 		return target;
 	}
 
