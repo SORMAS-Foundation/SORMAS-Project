@@ -635,10 +635,9 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		Window window) {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			ControllerProvider.getSampleController().getSampleCreateComponent(
-					sampleDto,
-					(savedSampleDto, pathogenTestDto) -> finishProcessingLabMessage(labMessageDto, pathogenTestDto)
-			);
+			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
+				finishProcessingLabMessage(labMessageDto, pathogenTestDto);
+			});
 
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
 		includeTestCheckbox.setValue(Boolean.TRUE);
@@ -703,7 +702,10 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
 				window.close();
-			}, (savedPathogenTestDto, runnable) -> finishProcessingLabMessage(labMessageDto, savedPathogenTestDto));
+			}, (savedPathogenTestDto, runnable) -> {
+				runnable.run();
+				finishProcessingLabMessage(labMessageDto, savedPathogenTestDto);
+			});
 		pathogenTestCreateComponent.addDiscardListener(window::close);
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
 		return pathogenTestCreateComponent;
@@ -742,8 +744,8 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-        labMessageDto.setPathogenTest(pathogenTestDto.toReference());
-        labMessageDto.setStatus(LabMessageStatus.PROCESSED);
+		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
+		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}
@@ -784,17 +786,14 @@ public class LabMessageController {
 		if (SampleCreateForm.class.equals(component.getClass())) {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
 			if (sample.getAssociatedCase() != null) {
-				return ButtonHelper.createButton(
-					Captions.labMessage_deleteNewlyCreatedCase,
-					e -> {
-						try {
-							FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
-						} catch (ExternalSurveillanceToolException survToolException) {
-							// should not happen because the new case was not shared
-							throw new RuntimeException(survToolException);
-						}
-					},
-					ValoTheme.BUTTON_PRIMARY);
+				return ButtonHelper.createButton(Captions.labMessage_deleteNewlyCreatedCase, e -> {
+					try {
+						FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
+					} catch (ExternalSurveillanceToolException survToolException) {
+						// should not happen because the new case was not shared
+						throw new RuntimeException(survToolException);
+					}
+				}, ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedContact,
@@ -810,7 +809,10 @@ public class LabMessageController {
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");
 	}
 
-	private void addProcessedInMeantimeCheck(CommitDiscardWrapperComponent<? extends Component> createComponent, LabMessageDto labMessageDto, boolean entityCreated) {
+	private void addProcessedInMeantimeCheck(
+		CommitDiscardWrapperComponent<? extends Component> createComponent,
+		LabMessageDto labMessageDto,
+		boolean entityCreated) {
 		createComponent.setPrimaryCommitListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
 				createComponent.getCommitButton().setEnabled(false);
