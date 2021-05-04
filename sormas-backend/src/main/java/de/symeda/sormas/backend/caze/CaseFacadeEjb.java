@@ -1175,7 +1175,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
@@ -1187,7 +1186,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(caze));
+		cq.select(cb.countDistinct(caze));
 		return em.createQuery(cq).getSingleResult();
 	}
 
