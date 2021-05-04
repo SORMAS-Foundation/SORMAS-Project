@@ -288,8 +288,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
-			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -299,37 +297,61 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setSex(detailedPerson.getSex());
 			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
 			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(uuid));
+
+			Pair<String, String> contactDetails = getContactDetails(detailedPerson);
+			exportPerson.setEmailAddress(contactDetails.getElement0());
+			exportPerson.setPhone(contactDetails.getElement1());
+
 			return exportPerson;
 		} else {
 			return null;
 		}
 	}
 
-	public String getJournalEmailAddress(PersonDto person) {
+	/**
+	 *
+	 * @param personDto a detailed person object
+	 * @return a pair with element0=emailAddress and element1=phone
+	 */
+	public Pair<String, String> getContactDetails(PersonDto personDto) {
+		String primaryEmailAddress = getEmailAddress(personDto, true);
+		String primaryPhone = getPhone(personDto, true);
+
+		if (!StringUtils.isBlank(primaryEmailAddress) || !StringUtils.isBlank(primaryPhone)) {
+			return Pair.createPair(primaryEmailAddress, primaryPhone);
+		} else {
+			String nonPrimaryEmailAddress = getEmailAddress(personDto, false);
+			String nonPrimaryPhone = getPhone(personDto, false);
+
+			return Pair.createPair(nonPrimaryEmailAddress, nonPrimaryPhone);
+		}
+	}
+
+	public String getEmailAddress(PersonDto person, boolean onlyPrimary) {
 		try {
-			return person.getEmailAddress(false);
+			return person.getEmailAddress(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			return StringUtils.EMPTY;
 		}
 	}
 
-	public String getJournalPhoneNumber(PersonDto person) {
+	public String getPhone(PersonDto person, boolean onlyPrimary) {
 		try {
-			String phoneNumber = person.getPhone(false);
-			if (StringUtils.EMPTY.equals(phoneNumber)) {
-				return StringUtils.EMPTY;
-			}
-
-			try {
-				PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-				Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
-				return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-			} catch (NumberParseException e) {
-				return phoneNumber;
-			}
-
+			return person.getPhone(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			return StringUtils.EMPTY;
+		}
+	}
+
+
+
+	public String formatPhoneNumber(String phoneNumber) {
+		try {
+			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+			Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
+			return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+		} catch (NumberParseException e) {
+			return phoneNumber;
 		}
 	}
 
