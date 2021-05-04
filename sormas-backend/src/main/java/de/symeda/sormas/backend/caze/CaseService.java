@@ -258,14 +258,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to);
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -277,7 +277,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return 0L;
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
@@ -285,7 +285,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to);
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -328,14 +328,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		District district,
 		Disease disease,
 		Date from,
-		Date to) {
+		Date to,
+		NewCaseDateType dateType) {
 		Predicate filter = createActiveCasesFilter(cb, root);
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
 
-		// Also filter cases by those which are classified as no case
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(root.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(root.get(Case.CASE_CLASSIFICATION))); // this should technically not be necessary, as the classification is a required field
+		// Userfilter
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
+
+		// Filter by date. The relevancefilter uses a special algorithm that should reflect the current situation.
+		if (dateType == null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+		} else {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, createNewCaseFilter(cq, cb, root, DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to), dateType));
+		}
 
 		// only show cases which actually have GPS coordinates provided
 		Predicate personLatLonNotNull = CriteriaBuilderHelper
@@ -503,9 +509,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are
-	 * within the time frame.
+	 * within the time frame. Also excludes cases with classification=not a case
 	 */
 	public Predicate createCaseRelevanceFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
+		Predicate classificationFilter = cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE);
 		Predicate dateFromFilter = null;
 		Predicate dateToFilter = null;
 		if (fromDate != null) {
@@ -519,11 +526,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (dateFromFilter != null && dateToFilter != null) {
-			return cb.and(dateFromFilter, dateToFilter);
+			return cb.and(classificationFilter, dateFromFilter, dateToFilter);
 		} else if (dateFromFilter != null) {
-			return dateFromFilter;
+			return cb.and(classificationFilter, dateFromFilter);
+		} else if (dateToFilter != null) {
+			return cb.and(classificationFilter, dateToFilter);
 		} else {
-			return dateToFilter;
+			return classificationFilter;
 		}
 	}
 

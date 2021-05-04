@@ -463,7 +463,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.getDistrict(),
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
-			DateHelper.addDays(new Date(), 1));
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		// List should have one entry
 		assertEquals(1, mapCaseDtos.size());

@@ -114,6 +114,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private boolean showEvents;
 	private boolean showRegions;
 	private boolean hideOtherCountries;
+	private boolean showCurrentEpiSituation;
 
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
@@ -188,6 +189,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			showUnconfirmedContacts = true;
 		}
 		hideOtherCountries = false;
+		showCurrentEpiSituation = false;
 
 		this.setMargin(true);
 
@@ -285,14 +287,29 @@ public class DashboardMapComponent extends VerticalLayout {
 		Long count = 0L;
 
 		if (showCases) {
-			count += FacadeProvider.getCaseFacade().countCasesForMap(region, district, disease, fromDate, toDate);
+			count += FacadeProvider.getCaseFacade()
+				.countCasesForMap(
+					region,
+					district,
+					disease,
+					fromDate,
+					toDate,
+					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType());
 		}
 
 		if (count < maxCount && showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are
 				// needed to retrieve the contacts
-				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+				fillCaseLists(
+					FacadeProvider.getCaseFacade()
+						.getCasesForMap(
+							region,
+							district,
+							disease,
+							fromDate,
+							toDate,
+							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 			}
 
 			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases);
@@ -311,13 +328,29 @@ public class DashboardMapComponent extends VerticalLayout {
 		Disease disease = dashboardDataProvider.getDisease();
 
 		if (showCases) {
-			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+			showCaseMarkers(
+				FacadeProvider.getCaseFacade()
+					.getCasesForMap(
+						region,
+						district,
+						disease,
+						fromDate,
+						toDate,
+						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 		}
 		if (showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are
 				// needed to retrieve the contacts
-				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+				fillCaseLists(
+					FacadeProvider.getCaseFacade()
+						.getCasesForMap(
+							region,
+							district,
+							disease,
+							fromDate,
+							toDate,
+							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 			}
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, mapAndFacilityCases));
 		}
@@ -553,7 +586,18 @@ public class DashboardMapComponent extends VerticalLayout {
 					hideOtherCountries = (boolean) e.getProperty().getValue();
 					refreshMap(true);
 				});
+				CssStyles.style(hideOtherCountriesCheckBox, CssStyles.VSPACE_3);
 				layersLayout.addComponent(hideOtherCountriesCheckBox);
+
+				CheckBox showCurrentEpiSituationCB = new CheckBox();
+				showCurrentEpiSituationCB.setId("SomeID");
+				showCurrentEpiSituationCB.setCaption("Show epidemiological situation");
+				showCurrentEpiSituationCB.setValue(false);
+				showCurrentEpiSituationCB.addValueChangeListener(e -> {
+					showCurrentEpiSituation = (boolean) e.getProperty().getValue();
+					refreshMap(true);
+				});
+				layersLayout.addComponent(showCurrentEpiSituationCB);
 			}
 		}
 
