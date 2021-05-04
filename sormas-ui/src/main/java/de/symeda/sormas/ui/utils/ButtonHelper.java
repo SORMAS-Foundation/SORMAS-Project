@@ -12,6 +12,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class ButtonHelper {
 
+	public static Button createButton(String caption) {
+		return createButton(caption, false, null, null);
+	}
+
 	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
 		return createButton(captionKey, false, clickListener, styles);
 	}
@@ -110,7 +114,9 @@ public class ButtonHelper {
 
 		T button = buttonFactory.apply(caption);
 		button.setId(id);
-		CssStyles.style(button, styles);
+		if (styles != null) {
+			CssStyles.style(button, styles);
+		}
 		if (!enableDoubleClick) {
 			preventDoubleClick(button);
 		}
