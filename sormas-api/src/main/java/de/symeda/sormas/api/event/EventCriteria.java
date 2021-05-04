@@ -259,6 +259,12 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return reportedDateTo;
 	}
 
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo) {
+		this.eventDateFrom = eventDateFrom;
+		this.eventDateTo = eventDateTo;
+		return this;
+	}
+
 	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, DateFilterOption dateFilterOption) {
 		this.eventDateFrom = eventDateFrom;
 		this.eventDateTo = eventDateTo;
