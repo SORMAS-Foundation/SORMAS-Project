@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.common;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,20 +28,20 @@ public class ChangeDateFilterBuilder {
 
 	private final CriteriaBuilder cb;
 	private final Stream.Builder<Predicate> filters;
-	private Timestamp date;
-	private Expression<? extends Timestamp> dateExpression;
+	private Date date;
+	private Expression<? extends Date> dateExpression;
 
 	private ChangeDateFilterBuilder(CriteriaBuilder cb) {
 		this.cb = cb;
 		this.filters = Stream.builder();
 	}
 
-	public ChangeDateFilterBuilder(CriteriaBuilder cb, Timestamp date) {
+	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date) {
 		this(cb);
 		this.date = date;
 	}
 
-	public ChangeDateFilterBuilder(CriteriaBuilder cb, Expression<? extends Timestamp> dateExpression) {
+	public ChangeDateFilterBuilder(CriteriaBuilder cb, Expression<? extends Date> dateExpression) {
 		this(cb);
 		this.dateExpression = dateExpression;
 	}

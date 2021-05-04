@@ -13,24 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.surveillancereport;
+package de.symeda.sormas.api.utils.criteria;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+public interface CriteriaDateType {
 
-public class SurveillanceReportCriteria extends BaseCriteria {
-
-	private static final long serialVersionUID = -1086704371622664429L;
-
-	private CaseReferenceDto caze;
-
-	public CaseReferenceDto getCaze() {
-		return caze;
-	}
-
-	public SurveillanceReportCriteria caze(CaseReferenceDto caze) {
-		this.caze = caze;
-
-		return this;
-	}
+	String name();
 }

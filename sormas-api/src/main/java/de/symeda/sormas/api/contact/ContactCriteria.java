@@ -20,7 +20,6 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -37,6 +36,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
