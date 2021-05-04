@@ -13,33 +13,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.utils.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CaseCriteriaDateTypeHelper {
+public class CriteriaDateTypeHelper {
 
-	private CaseCriteriaDateTypeHelper() {
+	private CriteriaDateTypeHelper() {
 	}
 
-	public static CaseCriteriaDateType[] getTypes(boolean isExternalSurvToolShareEnbaled) {
-		ArrayList<CaseCriteriaDateType> types = new ArrayList<>();
-		types.addAll(Arrays.asList(NewCaseDateType.values()));
+	public static CriteriaDateType[] getTypes(Class<? extends CriteriaDateType> defaultDateType, boolean isExternalSurvToolShareEnbaled) {
+		ArrayList<CriteriaDateType> types = new ArrayList<>(Arrays.asList(defaultDateType.getEnumConstants()));
 
 		if (isExternalSurvToolShareEnbaled) {
 			types.addAll(Arrays.asList(ExternalShareDateType.values()));
 		}
 
-		return types.toArray(new CaseCriteriaDateType[] {});
+		return types.toArray(new CriteriaDateType[] {});
 	}
 
-	public static CaseCriteriaDateType valueOf(String string) {
+	public static CriteriaDateType valueOf(Class<? extends CriteriaDateType> defaultDateType, String string) {
 		if (string == null) {
 			return null;
 		}
 
-		for (CaseCriteriaDateType type : getTypes(true)) {
+		for (CriteriaDateType type : getTypes(defaultDateType, true)) {
 			if (type.name().equals(string)) {
 				return type;
 			}
@@ -48,7 +47,7 @@ public class CaseCriteriaDateTypeHelper {
 		return null;
 	}
 
-	public static String toUrlString(CaseCriteriaDateType type) {
+	public static String toUrlString(CriteriaDateType type) {
 		return type.name();
 	}
 }

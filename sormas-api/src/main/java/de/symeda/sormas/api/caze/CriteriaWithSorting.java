@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.utils.SortProperty;
-
 import java.io.Serializable;
 import java.util.List;
+
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class CriteriaWithSorting<T extends BaseCriteria> implements Serializable {
 
