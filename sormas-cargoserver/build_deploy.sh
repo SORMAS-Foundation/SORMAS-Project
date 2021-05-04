@@ -17,6 +17,9 @@ if [ "$1" = "wipe" ]; then
 elif [ "$1" = "test" ]; then
   mvn clean install
 
+elif [ "$1" = "clean" ]; then
+  mvn clean install -DskipTests
+
 elif [ "$1" = "fast" ]; then
   mvn -T 1C install -DskipTests
 

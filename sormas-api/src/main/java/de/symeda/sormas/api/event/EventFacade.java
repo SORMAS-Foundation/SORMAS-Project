@@ -28,6 +28,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -62,6 +63,8 @@ public interface EventFacade {
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
 	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 
 	boolean isArchived(String caseUuid);
@@ -90,7 +93,7 @@ public interface EventFacade {
 
 	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
 
-    String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
+	String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
 
 	void validate(EventDto dto) throws ValidationRuntimeException;
 

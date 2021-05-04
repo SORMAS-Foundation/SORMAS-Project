@@ -3,10 +3,10 @@ package de.symeda.sormas.api.region;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends EntityDto, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
 

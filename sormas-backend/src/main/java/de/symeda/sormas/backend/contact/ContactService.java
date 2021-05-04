@@ -44,6 +44,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -95,6 +96,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -131,6 +133,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -775,7 +779,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		default:
 			throw new NoSuchElementException(DataHelper.toStringNullable(contactClassification));
 		}
-
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
@@ -842,13 +846,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			contact.setFollowUpStatusChangeDate(null);
 			contact.setFollowUpStatusChangeUser(null);
 		}
-
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
 		contact.setFollowUpComment(comment);
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
@@ -1071,6 +1076,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
 		}
+		if (contactCriteria.getVaccination() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION), contactCriteria.getVaccination()));
+		}
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -1246,6 +1255,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		// Remove this contact from all exposures that its referenced in
 		exposureService.removeContactFromExposures(contact.getId());
 
+		// Notify external journal if necessary
+		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		super.delete(contact);
 	}
 

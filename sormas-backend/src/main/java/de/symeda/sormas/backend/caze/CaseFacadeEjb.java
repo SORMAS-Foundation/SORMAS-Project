@@ -497,18 +497,20 @@ public class CaseFacadeEjb implements CaseFacade {
 			cases = em.createQuery(cq).getResultList();
 		}
 
-		Map<Long, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
+		List<String> caseUuids = cases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			survToolShareCountAndDates =
-				externalShareInfoService.getCaseShareCountAndLatestDate(cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList()))
+				externalShareInfoService.getCaseShareCountAndLatestDate(caseUuids)
 					.stream()
-					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectId, Function.identity()));
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (CaseIndexDto caze : cases) {
 			if (survToolShareCountAndDates != null) {
-				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getId());
+				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
 
 				if (survToolShareCountAndDate != null) {
 					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
@@ -544,18 +546,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<EventSummaryDetails> eventSummaries =
 			eventService.getEventSummaryDetailsByCases(cases.stream().map(CaseIndexDetailedDto::getId).collect(Collectors.toList()));
 
-		Map<Long, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			survToolShareCountAndDates =
-				externalShareInfoService.getCaseShareCountAndLatestDate(cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList()))
+				externalShareInfoService.getCaseShareCountAndLatestDate(cases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()))
 					.stream()
-					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectId, Function.identity()));
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (CaseIndexDetailedDto caze : cases) {
 			if (survToolShareCountAndDates != null) {
-				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getId());
+				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
 
 				if (survToolShareCountAndDate != null) {
 					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
@@ -1729,9 +1731,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
-		if (caze != null) {
-			externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
-		}
+		externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
 
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 

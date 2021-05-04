@@ -13,9 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.share;
 
-public interface CaseCriteriaDateType {
+public interface ExternalShareCriteria {
 
-	String name();
+	Boolean getOnlyEntitiesNotSharedWithExternalSurvTool();
+
+	Boolean getOnlyEntitiesSharedWithExternalSurvTool();
+
+	Boolean getOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool();
 }

@@ -30,7 +30,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -64,7 +63,7 @@ public class CampaignFormMetaDialog extends FormDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-        List<CampaignFormMeta> allFormsForCampaign = DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign);
+        List<CampaignFormMeta> allFormsForCampaign = campaign.getCampaignFormMetas();
         contentBinding.campaignFormMeta.initializeSpinner(DataUtils.toItems(allFormsForCampaign));
     }
 

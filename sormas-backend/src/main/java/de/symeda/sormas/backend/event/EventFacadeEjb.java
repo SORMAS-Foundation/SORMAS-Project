@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -52,13 +53,12 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.backend.util.IterableHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -75,6 +75,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -93,6 +94,7 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
@@ -101,6 +103,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -332,7 +335,9 @@ public class EventFacadeEjb implements EventFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		cq.where(filter);
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -418,6 +423,8 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = new HashMap<>();
+
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
@@ -427,7 +434,8 @@ public class EventFacadeEjb implements EventFacade {
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInIndexlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			Predicate isInIndexlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -453,7 +461,8 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInIndexlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			isInIndexlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -508,6 +517,12 @@ public class EventFacadeEjb implements EventFacade {
 					});
 				}
 			}
+
+			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			}
 		}
 
 		if (indexList != null) {
@@ -518,11 +533,23 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
 				Optional.ofNullable(eventGroupsByEventId.get(eventDto.getUuid())).ifPresent(eventDto::setEventGroups);
+				Optional.ofNullable(survToolShareCountAndDates.get(eventDto.getUuid())).ifPresent((c) -> {
+					eventDto.setSurveillanceToolStatus(c.getLatestStatus());
+					eventDto.setSurveillanceToolLastShareDate(c.getLatestDate());
+					eventDto.setSurveillanceToolShareCount(c.getCount());
+				});
 			}
 		}
 
 		return indexList;
 
+	}
+
+	@Override
+	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventCriteria);
+		return new Page<>(eventIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -624,7 +651,8 @@ public class EventFacadeEjb implements EventFacade {
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInExportlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			Predicate isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -650,7 +678,8 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInExportlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -803,10 +832,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptySet();
 		}
 
-		return eventGroup.getEvents()
-			.stream()
-			.map(Event::getUuid)
-			.collect(Collectors.toSet());
+		return eventGroup.getEvents().stream().map(Event::getUuid).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -1123,10 +1149,7 @@ public class EventFacadeEjb implements EventFacade {
 			cq.select(regionJoin.get(Region.UUID)).distinct(true);
 			cq.where(eventRoot.get(Event.UUID).in(batchedUuids));
 
-			em.createQuery(cq).getResultList()
-				.stream()
-				.map(RegionReferenceDto::new)
-				.forEach(regionReferenceDtos::add);
+			em.createQuery(cq).getResultList().stream().map(RegionReferenceDto::new).forEach(regionReferenceDtos::add);
 		});
 		return regionReferenceDtos;
 	}
