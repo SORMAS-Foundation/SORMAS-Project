@@ -94,17 +94,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 		initColumns();
 
-		for (Column<IndexDto, ?> column : getColumns()) {
-			column.setCaption(
-				I18nProperties.findPrefixCaptionWithDefault(
-					column.getId(),
-					column.getCaption(),
-					CaseIndexDto.I18N_PREFIX,
-					PersonDto.I18N_PREFIX,
-					LocationDto.I18N_PREFIX));
-			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
-		}
-
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
 	}
 
@@ -192,6 +181,19 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
+
+		for (Column<IndexDto, ?> column : getColumns()) {
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(
+					column.getId(),
+					column.getCaption(),
+					CaseIndexDto.I18N_PREFIX,
+					PersonDto.I18N_PREFIX,
+					LocationDto.I18N_PREFIX));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+		}
+
+		getColumn(CaseIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getGridColumns() {
@@ -222,6 +224,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					: Stream.<String> empty(),
 				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				getFollowUpColumns(),
+				Stream.of(CaseIndexDto.VACCINATION),
 				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(Function.identity());
 	}

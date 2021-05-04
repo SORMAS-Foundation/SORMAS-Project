@@ -101,6 +101,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -1094,6 +1095,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getSymptomJournalStatus() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
+		}
+		if (contactCriteria.getVaccination() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION), contactCriteria.getVaccination()));
 		}
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(

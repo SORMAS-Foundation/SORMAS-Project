@@ -1,9 +1,9 @@
 package de.symeda.sormas.backend.common;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -60,11 +60,11 @@ public class CriteriaBuilderHelper {
 		return reduce(op, Arrays.stream(predicates).map(Optional::ofNullable)).orElse(null);
 	}
 
-	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Timestamp date) {
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Date> path, Date date) {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
-	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path, Expression<? extends Timestamp> date) {
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Date> path, Expression<? extends Date> date) {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
