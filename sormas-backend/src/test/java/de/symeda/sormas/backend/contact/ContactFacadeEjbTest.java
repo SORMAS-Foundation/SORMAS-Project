@@ -360,8 +360,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		List<MapContactDto> mapContactDtos =
-			getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), Arrays.asList(mapCaseDto));
+		List<MapContactDto> mapContactDtos = getContactFacade().getContactsForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			Arrays.asList(mapCaseDto),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1));
 
 		// List should have one entry
 		assertEquals(1, mapContactDtos.size());

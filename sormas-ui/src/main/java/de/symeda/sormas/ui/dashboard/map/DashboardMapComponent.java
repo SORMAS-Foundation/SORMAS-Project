@@ -312,7 +312,7 @@ public class DashboardMapComponent extends VerticalLayout {
 							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 			}
 
-			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases);
+			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases, fromDate, toDate);
 		}
 
 		if (count < maxCount && showEvents) {
@@ -352,7 +352,7 @@ public class DashboardMapComponent extends VerticalLayout {
 							toDate,
 							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 			}
-			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, mapAndFacilityCases));
+			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, mapAndFacilityCases, fromDate, toDate));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
