@@ -2,9 +2,9 @@ package de.symeda.sormas.api.region;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SubcontinentCriteria extends BaseCriteria implements Serializable, Cloneable {
 
