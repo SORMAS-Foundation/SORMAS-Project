@@ -2147,22 +2147,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 297:
 				currentVersion = 297;
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pcrTestSpecification varchar(255);");
-				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
+				getDao(PathogenTest.class)
+					.executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
 
 			case 298:
 				currentVersion = 298;
 				getDao(Area.class).executeRaw(
-						"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
-								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
-								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
-								+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
+					"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+						+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
+						+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
 				getDao(Region.class).executeRaw("UPDATE region set changeDate=0;");
 
 			case 299:
 				currentVersion = 299;
-				getDao(Campaign.class).executeRaw("ALTER TABLE campaign ADD COLUMN campaignFormMetas TEXT");
-				getDao(Campaign.class).executeRaw("UPDATE campaign set changeDate=0;");
+				getDao(Campaign.class).executeRaw("ALTER TABLE campaigns ADD COLUMN campaignFormMetas text;");
+				getDao(Campaign.class).executeRaw("UPDATE campaigns set changeDate=0;");
 
 			case 300:
 				currentVersion = 300;
@@ -2170,7 +2171,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN responsibleDistrict_id BIGINT REFERENCES district(id);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN responsibleCommunity_id BIGINT REFERENCES community(id);");
 
-					// ATTENTION: break should only be done after last version
+				// ATTENTION: break should only be done after last version
 				break;
 
 			default:

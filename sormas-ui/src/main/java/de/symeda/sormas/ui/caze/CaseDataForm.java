@@ -742,6 +742,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				true);
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
+		final CheckBox finalCbOverwriteFollowUpUntil = cbOverwriteFollowUpUntil;
 		if (cbOverwriteFollowUpUntil != null) {
 			cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
 				if (!(Boolean) e.getProperty().getValue()) {
@@ -756,7 +757,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				false,
 				true);
 		}
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil));
+		quarantineTo.addValueChangeListener(
+			e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil, finalCbOverwriteFollowUpUntil));
 		this.addValueChangeListener(e -> onValueChange());
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
@@ -1380,7 +1382,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Property.ValueChangeEvent valueChangeEvent,
 		CheckBox quarantineExtendedCheckBox,
 		CheckBox quarantineReducedCheckBox,
-		DateField followUpUntilField) {
+		DateField followUpUntilField,
+		CheckBox overwriteFollowUpUntilCheckbox) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -1397,7 +1400,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							quarantineEndField,
 							originalCase,
 							oldQuarantineEnd,
-							followUpUntilField);
+							followUpUntilField,
+							overwriteFollowUpUntilCheckbox);
 					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}
@@ -1416,7 +1420,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Property<Date> quarantineEndField,
 		CaseDataDto originalCase,
 		Date oldQuarantineEnd,
-		DateField followUpUntil) {
+		DateField followUpUntil,
+		CheckBox overwriteFollowUpUntil) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingExtendQuarantine),
 			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
@@ -1430,7 +1435,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
 					setVisible(false, CaseDataDto.QUARANTINE_REDUCED);
 					if (caseFollowUpEnabled && originalCase.getFollowUpUntil() != null) {
-						confirmExtendFollowUpPeriod(originalCase, quarantineEndField.getValue(), followUpUntil);
+						confirmExtendFollowUpPeriod(originalCase, quarantineEndField.getValue(), followUpUntil, overwriteFollowUpUntil);
 					}
 				} else {
 					quarantineEndField.setValue(oldQuarantineEnd);
@@ -1438,7 +1443,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			});
 	}
 
-	private void confirmExtendFollowUpPeriod(CaseDataDto originalCase, Date quarantineEnd, DateField followUpUntil) {
+	private void confirmExtendFollowUpPeriod(CaseDataDto originalCase, Date quarantineEnd, DateField followUpUntil, CheckBox overwriteFollowUpUntil) {
 		if (quarantineEnd.after(originalCase.getFollowUpUntil())) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendFollowUp),
@@ -1448,13 +1453,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						if (followUpUntil.isReadOnly()) {
-							followUpUntil.setReadOnly(false);
-							followUpUntil.setValue(quarantineEnd);
-							followUpUntil.setReadOnly(true);
-						} else {
-							followUpUntil.setValue(quarantineEnd);
-						}
+						overwriteFollowUpUntil.setValue(true);
+						followUpUntil.setValue(quarantineEnd);
 					}
 				});
 		}

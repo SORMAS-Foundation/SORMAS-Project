@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -93,6 +94,7 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
@@ -421,6 +423,8 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = new HashMap<>();
+
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
@@ -513,6 +517,12 @@ public class EventFacadeEjb implements EventFacade {
 					});
 				}
 			}
+
+			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			}
 		}
 
 		if (indexList != null) {
@@ -523,6 +533,11 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
 				Optional.ofNullable(eventGroupsByEventId.get(eventDto.getUuid())).ifPresent(eventDto::setEventGroups);
+				Optional.ofNullable(survToolShareCountAndDates.get(eventDto.getUuid())).ifPresent((c) -> {
+					eventDto.setSurveillanceToolStatus(c.getLatestStatus());
+					eventDto.setSurveillanceToolLastShareDate(c.getLatestDate());
+					eventDto.setSurveillanceToolShareCount(c.getCount());
+				});
 			}
 		}
 

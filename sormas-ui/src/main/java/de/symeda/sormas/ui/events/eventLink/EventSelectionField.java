@@ -38,8 +38,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -291,7 +291,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.eventDateBetween(fromDate, toDate, dateFilterOption);
+				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
@@ -322,7 +322,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 			weekAndDateFilter.getDateFromFilter().setValue(null);
 			weekAndDateFilter.getDateToFilter().setValue(null);
-			criteria.eventDateBetween(null, null, DateFilterOption.DATE);
+			criteria.eventDateBetween(null, null, null, DateFilterOption.DATE);
 
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();

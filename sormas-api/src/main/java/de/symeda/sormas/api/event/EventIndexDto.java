@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -62,6 +63,9 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String COMMUNITY = "community";
 	public static final String ADDRESS = "address";
 	public static final String EVENT_GROUPS = "eventGroups";
+	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
+	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
+	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
 	private String uuid;
 	private String externalId;
@@ -99,6 +103,10 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private UserReferenceDto responsibleUser;
 	private EventJurisdictionDto jurisdiction;
 	private EventGroupsIndexDto eventGroups;
+
+	private Date surveillanceToolLastShareDate;
+	private Long surveillanceToolShareCount;
+	private ExternalShareStatus surveillanceToolStatus;
 
 	public EventIndexDto(
 		String uuid,
@@ -407,6 +415,30 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEventGroups(EventGroupsIndexDto eventGroups) {
 		this.eventGroups = eventGroups;
+	}
+
+	public Date getSurveillanceToolLastShareDate() {
+		return surveillanceToolLastShareDate;
+	}
+
+	public void setSurveillanceToolLastShareDate(Date surveillanceToolLastShareDate) {
+		this.surveillanceToolLastShareDate = surveillanceToolLastShareDate;
+	}
+
+	public Long getSurveillanceToolShareCount() {
+		return surveillanceToolShareCount;
+	}
+
+	public void setSurveillanceToolShareCount(Long surveillanceToolShareCount) {
+		this.surveillanceToolShareCount = surveillanceToolShareCount;
+	}
+
+	public ExternalShareStatus getSurveillanceToolStatus() {
+		return surveillanceToolStatus;
+	}
+
+	public void setSurveillanceToolStatus(ExternalShareStatus surveillanceToolStatus) {
+		this.surveillanceToolStatus = surveillanceToolStatus;
 	}
 
 	public EventReferenceDto toReference() {

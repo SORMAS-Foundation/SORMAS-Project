@@ -214,6 +214,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.FOLLOW_UP_STATUS),
 			root.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			root.get(Case.VACCINATION),
 			root.get(Case.CHANGE_DATE),
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
@@ -241,6 +242,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
+		case CaseIndexDto.VACCINATION:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));

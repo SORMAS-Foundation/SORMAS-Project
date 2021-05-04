@@ -1040,6 +1040,7 @@ public interface Strings {
 	String promptDistrict = "promptDistrict";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
+	String promptEventDateType = "promptEventDateType";
 	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
 	String promptEventEvolutionDateFrom = "promptEventEvolutionDateFrom";
