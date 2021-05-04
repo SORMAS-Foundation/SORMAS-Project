@@ -45,7 +45,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 
 	private final DashboardDataProvider dashboardDataProvider;
 
-	private DiseaseOverviewComponent diseaseBurdenView;
+	private DiseaseOverviewComponent diseaseOverviewComponent;
 	private CaseCountDifferenceComponent diseaseDifferenceComponent;
 	private Button showMoreButton;
 	private Button showLessButton;
@@ -70,11 +70,11 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	}
 
 	private void addDiseaseBurdenView() {
-		diseaseBurdenView = new DiseaseOverviewComponent();
-		addComponent(diseaseBurdenView, BURDEN_LOC);
+		diseaseOverviewComponent = new DiseaseOverviewComponent();
+		addComponent(diseaseOverviewComponent, BURDEN_LOC);
 
 		if (UserRole.isSupervisor(UserProvider.getCurrent().getUser().getUserRoles()))
-			diseaseBurdenView.getShowTableViewButton().click();
+			diseaseOverviewComponent.getShowTableViewButton().click();
 	}
 
 	private void addShowMoreAndLessButtons() {
@@ -120,12 +120,12 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 
 		hideOverview.addValueChangeListener(e -> {
 			if (hideOverview.getValue()) {
-				diseaseBurdenView.setVisible(false);
+				diseaseOverviewComponent.setVisible(false);
 				diseaseDifferenceComponent.setVisible(false);
 				showLessButton.setVisible(false);
 				showMoreButton.setVisible(false);
 			} else {
-				diseaseBurdenView.setVisible(true);
+				diseaseOverviewComponent.setVisible(true);
 				diseaseDifferenceComponent.setVisible(true);
 				showLessButton.setVisible(isShowingAllDiseases);
 				showMoreButton.setVisible(!isShowingAllDiseases);
@@ -150,7 +150,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	}
 
 	public void refresh() {
-		diseaseBurdenView.refresh(dashboardDataProvider.getDiseasesBurden(), isShowingAllDiseases);
+		diseaseOverviewComponent.refresh(dashboardDataProvider.getDiseasesBurden(), isShowingAllDiseases);
 		diseaseDifferenceComponent.refresh(isShowingAllDiseases ? 0 : 10);
 	}
 
