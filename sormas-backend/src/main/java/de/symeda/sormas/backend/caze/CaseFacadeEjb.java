@@ -1135,12 +1135,38 @@ public class CaseFacadeEjb implements CaseFacade {
 		return Collections.emptyList();
 	}
 
-	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date from, Date to) {
+	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {
+		Predicate filter = null;
+		if (fromDate != null && toDate != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.between(caze.get(Case.QUARANTINE_FROM), fromDate, toDate),
+					cb.and(
+						cb.isNotNull(caze.get(Case.QUARANTINE_TO)),
+						cb.lessThan(caze.get(Case.QUARANTINE_FROM), fromDate),
+						cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), fromDate))));
+		} else if (fromDate != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), fromDate),
+					cb.and(
+						cb.isNotNull(caze.get(Case.QUARANTINE_TO)),
+						cb.lessThan(caze.get(Case.QUARANTINE_FROM), fromDate),
+						cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), fromDate))));
+		} else if (toDate != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), toDate)),
+					cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), toDate)));
+		}
 
-		return cb.or(
-			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), to)),
-			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)),
-			cb.and(cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)));
+		return filter;
 	}
 
 	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
