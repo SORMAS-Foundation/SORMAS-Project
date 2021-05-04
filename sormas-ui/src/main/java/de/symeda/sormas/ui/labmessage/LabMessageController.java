@@ -1,12 +1,36 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.labmessage;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
+import javax.naming.NamingException;
 
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Playwright;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -53,6 +77,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
@@ -82,8 +107,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LabMessageController {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public LabMessageController() {
 
@@ -901,5 +930,46 @@ public class LabMessageController {
 		}
 
 		return buttonsPanel;
+	}
+
+	public byte[] downloadLabMessage(String labMessageUuid) {
+
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+
+		try {
+			ExternalMessageResult<String> result = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessageDto);
+
+			if (result.isSuccess()) {
+				return convertToPdf(result.getValue());
+			} else {
+				new Notification(
+						I18nProperties.getString("error downloading the lab message"),
+						I18nProperties.getString("could not obtain the lab message HTML"),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+			}
+
+		} catch (NamingException e) {
+			new Notification(
+					I18nProperties.getString("error downloading the lab message"),
+					I18nProperties.getString("something went wrong when converting to HTML"),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			logger.error(e.getMessage());
+		}
+		return null;
+	}
+
+	private byte[] convertToPdf(String labMessageHtml) {
+		logger.info(labMessageHtml);
+
+		try (Playwright playwright = Playwright.create()) {
+			try (Browser browser = playwright.chromium().launch()) {
+				BrowserContext context = browser.newContext();
+				com.microsoft.playwright.Page page = context.newPage();
+				page.setContent(labMessageHtml);
+				return page.pdf();
+			}
+		}
 	}
 }
