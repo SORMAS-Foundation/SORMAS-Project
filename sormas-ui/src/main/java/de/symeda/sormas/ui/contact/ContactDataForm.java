@@ -60,11 +60,13 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -619,14 +621,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					ContactLogic
-						.getStartDate(
-							lastContactDate.getValue(),
-							reportDate.getValue(),
-							FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())))
-						.getFollowUpStartDate(),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
+				FollowUpPeriodDto followUpPeriod = ContactLogic.getStartDate(
+					lastContactDate.getValue(),
+					reportDate.getValue(),
+					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
+				Date minimumFollowUpUntilDate =
+					FollowUpLogic
+						.calculateFollowUpUntilDate(
+							followUpPeriod,
+							null,
+							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
+							FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(getSelectedDisease()))
+						.getFollowUpEndDate();
+
 				dfFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),

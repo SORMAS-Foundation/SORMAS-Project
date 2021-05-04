@@ -76,6 +76,7 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -94,6 +95,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -1264,14 +1266,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					CaseLogic
-						.getStartDate(
-							symptoms.getOnsetDate(),
-							reportDate.getValue(),
-							FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)))
-						.getFollowUpStartDate(),
-					FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()));
+				FollowUpPeriodDto followUpPeriod = CaseLogic.getStartDate(
+					symptoms.getOnsetDate(),
+					reportDate.getValue(),
+					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));
+				Date minimumFollowUpUntilDate = FollowUpLogic
+					.calculateFollowUpUntilDate(
+						followUpPeriod,
+						null,
+						FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
+						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()))
+					.getFollowUpEndDate();
+
 				finalFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
