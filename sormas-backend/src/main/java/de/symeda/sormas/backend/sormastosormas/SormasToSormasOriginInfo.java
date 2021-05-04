@@ -36,9 +36,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -842917698322793413L;
 
-	public static String CASES = "cases";
-	public static String CONTACTS = "contacts";
-	public static String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String ORGANIZATION_ID = "organizationId";
+	public static final String SENDER_NAME = "senderName";
+	public static final String SENDER_EMAIL = "senderEmail";
+	public static final String SENDER_PHONE_NUMBER = "senderPhoneNumber";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String COMMENT = "comment";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 
 	private String organizationId;
 

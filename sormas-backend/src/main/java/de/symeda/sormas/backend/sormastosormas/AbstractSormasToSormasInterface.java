@@ -84,6 +84,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private final String entityCaptionTag;
 
 	private final ShareRequestDataType shareRequestDataType;
+	private final Class<? extends ShareDataPreview<PREVIEW>> previewType;
 
 	public AbstractSormasToSormasInterface() {
 		throw new RuntimeException("AbstractSormasToSormasInterface should not be instantiated");
@@ -94,12 +95,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String saveEndpoint,
 		String syncEndpoint,
 		String entityCaptionTag,
-		ShareRequestDataType shareRequestDataType) {
+		ShareRequestDataType shareRequestDataType,
+		Class<? extends ShareDataPreview<PREVIEW>> previewType) {
 		this.requestEndpoint = requestEndpoint;
 		this.saveEndpoint = saveEndpoint;
 		this.syncEndpoint = syncEndpoint;
 		this.entityCaptionTag = entityCaptionTag;
 		this.shareRequestDataType = shareRequestDataType;
+		this.previewType = previewType;
 	}
 
 	public void sendShareRequest(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -123,7 +126,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			new ShareDataPreview<>(previewsToSend, originInfo),
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, requestEndpoint, authToken, encryptedData));
+			(host, authToken, encryptedData) -> {
+				return sormasToSormasRestClient.post(host, requestEndpoint, authToken, encryptedData);
+			});
 
 		entities.forEach(
 			entity -> saveNewShareInfo(
@@ -141,7 +146,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		ShareDataPreview<PREVIEW> shareData = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, ShareDataPreview.class);
+		ShareDataPreview<PREVIEW> shareData = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, previewType);
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<PREVIEW> previews = shareData.getPreviews();

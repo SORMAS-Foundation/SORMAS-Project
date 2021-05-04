@@ -69,6 +69,7 @@
 		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
 		<class>de.symeda.sormas.backend.region.Continent</class>
 		<class>de.symeda.sormas.backend.region.Subcontinent</class>
+		<class>de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

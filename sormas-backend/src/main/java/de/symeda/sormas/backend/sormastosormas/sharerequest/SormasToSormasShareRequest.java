@@ -22,7 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
 
@@ -39,6 +39,13 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1116921896060439299L;
+
+	public static final String DATA_TYPE = "dataType";
+	public static final String STATUS = "status";
+	public static final String ORIGIN_INFO = "originInfo";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String EVENTS = "events";
 
 	private ShareRequestDataType dataType;
 
@@ -71,7 +78,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	public SormasToSormasOriginInfo getOriginInfo() {
 		return originInfo;
 	}

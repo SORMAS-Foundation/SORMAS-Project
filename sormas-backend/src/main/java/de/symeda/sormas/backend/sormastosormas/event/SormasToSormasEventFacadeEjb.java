@@ -74,7 +74,7 @@ public class SormasToSormasEventFacadeEjb
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasEventFacadeEjb() {
-		super(SHARED_EVENTS_REQUEST, SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event, ShareRequestDataType.EVENT);
+		super(SHARED_EVENTS_REQUEST, SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event, ShareRequestDataType.EVENT, EventShareDataPreview.class);
 	}
 
 	@Override

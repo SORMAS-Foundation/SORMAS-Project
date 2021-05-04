@@ -7234,7 +7234,7 @@ CREATE TABLE sormastosormassharerequest(
     PRIMARY KEY (id)
 );
 
-ALTER TABLE cases ADD CONSTRAINT fk_sormastosormassharerequest_originInfo_id FOREIGN KEY (originInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormassharerequest ADD CONSTRAINT fk_sormastosormassharerequest_originInfo_id FOREIGN KEY (originInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE sormastosormassharerequest OWNER TO sormas_user;
 
@@ -7245,5 +7245,5 @@ ALTER TABLE sormastosormassharerequest_history OWNER TO sormas_user;
 
 ALTER TABLE sormastosormasshareinfo ADD COLUMN status varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (365, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
+INSERT INTO schema_version (version_number, comment) VALUES (366, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
 -- *** Insert new sql commands BEFORE this line ***

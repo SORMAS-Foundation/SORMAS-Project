@@ -15,25 +15,19 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-import java.util.List;
+import de.symeda.sormas.api.BaseCriteria;
 
-import javax.ejb.Remote;
-import javax.validation.Valid;
+public class ShareRequestCriteria extends BaseCriteria {
 
-import de.symeda.sormas.api.utils.SortProperty;
+	private static final long serialVersionUID = 5743916971712206656L;
 
-@Remote
-public interface SormasToSormasShareRequestFacade {
+	private ShareRequestStatus status;
 
-	SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto);
+	public ShareRequestStatus getStatus() {
+		return status;
+	}
 
-	SormasToSormasShareRequestDto getShareRequestByUuid(String uuid);
-
-	List<SormasToSormasShareRequestIndexDto> getIndexList(
-		ShareRequestCriteria criteria,
-		Integer offset,
-		Integer size,
-		List<SortProperty> sortProperties);
-
-	long count(ShareRequestCriteria criteria);
+	public void setStatus(ShareRequestStatus status) {
+		this.status = status;
+	}
 }

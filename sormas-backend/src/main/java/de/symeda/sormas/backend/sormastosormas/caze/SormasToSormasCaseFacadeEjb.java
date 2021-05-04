@@ -75,7 +75,13 @@ public class SormasToSormasCaseFacadeEjb
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasCaseFacadeEjb() {
-		super(SHARED_CASE_REQUEST_ENDPOINT, SAVE_SHARED_CASE_ENDPOINT, SYNC_CASE_ENDPOINT, Captions.CaseData, ShareRequestDataType.CASE);
+		super(
+			SHARED_CASE_REQUEST_ENDPOINT,
+			SAVE_SHARED_CASE_ENDPOINT,
+			SYNC_CASE_ENDPOINT,
+			Captions.CaseData,
+			ShareRequestDataType.CASE,
+			CaseShareDataPreview.class);
 	}
 
 	@Override

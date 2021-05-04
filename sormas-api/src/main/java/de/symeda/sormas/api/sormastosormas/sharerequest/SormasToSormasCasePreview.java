@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,9 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class SormasToSormasCasePreview implements HasUuid {
+public class SormasToSormasCasePreview implements HasUuid, Serializable {
+
+	private static final long serialVersionUID = -5346989433141136006L;
 
 	private String uuid;
 	private Date reportDate;

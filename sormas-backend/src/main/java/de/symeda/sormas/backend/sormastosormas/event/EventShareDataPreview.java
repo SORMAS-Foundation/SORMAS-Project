@@ -13,27 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.sharerequest;
+package de.symeda.sormas.backend.sormastosormas.event;
 
-import java.util.List;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.backend.sormastosormas.ShareDataPreview;
 
-import javax.ejb.Remote;
-import javax.validation.Valid;
-
-import de.symeda.sormas.api.utils.SortProperty;
-
-@Remote
-public interface SormasToSormasShareRequestFacade {
-
-	SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto);
-
-	SormasToSormasShareRequestDto getShareRequestByUuid(String uuid);
-
-	List<SormasToSormasShareRequestIndexDto> getIndexList(
-		ShareRequestCriteria criteria,
-		Integer offset,
-		Integer size,
-		List<SortProperty> sortProperties);
-
-	long count(ShareRequestCriteria criteria);
+public class EventShareDataPreview extends ShareDataPreview<SormasToSormasEventPreview> {
 }

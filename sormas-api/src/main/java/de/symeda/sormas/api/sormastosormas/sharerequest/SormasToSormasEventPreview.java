@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.location.LocationDto;
 
-public class SormasToSormasEventPreview implements HasUuid {
+public class SormasToSormasEventPreview implements HasUuid, Serializable {
+
+	private static final long serialVersionUID = -8084434633554426724L;
 
 	private String uuid;
 	private Date reportDateTime;

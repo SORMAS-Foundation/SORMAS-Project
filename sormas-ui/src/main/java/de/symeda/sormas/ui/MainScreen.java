@@ -77,6 +77,7 @@ import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
@@ -175,6 +176,16 @@ public class MainScreen extends HorizontalLayout {
 			navigator.addView(EventGroupDataView.VIEW_NAME, EventGroupDataView.class);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
+
+		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+			ControllerProvider.getSormasToSormasController().registerViews(navigator);
+			menu.addView(
+				ShareRequestsView.class,
+				ShareRequestsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuShareRequests),
+				VaadinIcons.SHARE);
+		}
+
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);

@@ -13,27 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas.sharerequest;
+package de.symeda.sormas.ui.sormastosormas;
 
-import java.util.List;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.ui.utils.AbstractFilterForm;
 
-import javax.ejb.Remote;
-import javax.validation.Valid;
+public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCriteria> {
 
-import de.symeda.sormas.api.utils.SortProperty;
+	private static final long serialVersionUID = 1551296359856190303L;
 
-@Remote
-public interface SormasToSormasShareRequestFacade {
+	protected ShareRequestFilterForm() {
+		super(ShareRequestCriteria.class, SormasToSormasShareRequestDto.I18N_PREFIX);
+	}
 
-	SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto);
+	@Override
+	protected String[] getMainFilterLocators() {
+		return new String[0];
+	}
 
-	SormasToSormasShareRequestDto getShareRequestByUuid(String uuid);
+	@Override
+	protected void addFields() {
 
-	List<SormasToSormasShareRequestIndexDto> getIndexList(
-		ShareRequestCriteria criteria,
-		Integer offset,
-		Integer size,
-		List<SortProperty> sortProperties);
-
-	long count(ShareRequestCriteria criteria);
+	}
 }

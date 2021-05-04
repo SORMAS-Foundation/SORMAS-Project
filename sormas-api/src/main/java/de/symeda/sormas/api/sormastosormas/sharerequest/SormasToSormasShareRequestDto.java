@@ -25,6 +25,15 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 
 	private static final long serialVersionUID = 2658688866070962522L;
 
+	public static String I18N_PREFIX = "ShareRequest";
+
+	public static String DATA_TYPE = "dataType";
+	public static String STATUS = "status";
+	public static String ORIGIN_INFO = "originInfo";
+	public static String CASES = "cases";
+	public static String CONTACTS = "contacts";
+	public static String EVENTS = "events";
+
 	private ShareRequestDataType dataType;
 
 	private ShareRequestStatus status;

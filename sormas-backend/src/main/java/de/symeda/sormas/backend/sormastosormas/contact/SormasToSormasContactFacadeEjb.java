@@ -84,7 +84,8 @@ public class SormasToSormasContactFacadeEjb
 			SAVE_SHARED_CONTACT_ENDPOINT,
 			SYNC_SHARED_CONTACT_ENDPOINT,
 			Captions.Contact,
-			ShareRequestDataType.CONTACT);
+			ShareRequestDataType.CONTACT,
+			ContactShareDataPreview.class);
 	}
 
 	@Override

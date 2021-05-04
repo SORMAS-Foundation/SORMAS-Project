@@ -15,10 +15,14 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.Sex;
 
-public class SormasToSormasPersonPreview {
+public class SormasToSormasPersonPreview implements Serializable {
+
+	private static final long serialVersionUID = -5945798718115243796L;
 
 	private String firstName;
 	private String lastName;

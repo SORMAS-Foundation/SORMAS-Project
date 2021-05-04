@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.HasUuid;
 
-public class SormasToSormasEventParticipantPreview implements HasUuid {
+public class SormasToSormasEventParticipantPreview implements HasUuid, Serializable {
+
+	private static final long serialVersionUID = 430061021316700295L;
 
 	private String uuid;
 

@@ -21,9 +21,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 
 public class ShareDataPreview<P> {
 
-	private final List<P> previews;
+	private List<P> previews;
 
-	private final SormasToSormasOriginInfoDto originInfo;
+	private SormasToSormasOriginInfoDto originInfo;
+
+	public ShareDataPreview() {
+	}
 
 	public ShareDataPreview(List<P> previews, SormasToSormasOriginInfoDto originInfo) {
 		this.previews = previews;
