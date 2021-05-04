@@ -12,13 +12,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class ButtonHelper {
 
-	public static Button createButtonWithCaption(String id, String caption, Button.ClickListener clickListener, String... styles) {
-
-		Button button = createButton(Button::new, id, caption, styles);
-		if (clickListener != null) {
-			button.addClickListener(clickListener);
-		}
-		return button;
+	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
+		return createButton(captionKey, false, clickListener, styles);
 	}
 
 	public static Button createButton(String captionKey, boolean enableDoubleClick, Button.ClickListener clickListener, String... styles) {
@@ -29,20 +24,55 @@ public class ButtonHelper {
 		return button;
 	}
 
-	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
-		return createButton(captionKey, true, clickListener, styles);
+	public static Button createButtonWithCaption(String id, String caption, Button.ClickListener clickListener, String... styles) {
+		return createButtonWithCaption(id, caption, false, clickListener, styles);
+	}
+
+	public static Button createButtonWithCaption(
+		String id,
+		String caption,
+		boolean enableDoubleClick,
+		Button.ClickListener clickListener,
+		String... styles) {
+
+		Button button = createButton(Button::new, id, caption, enableDoubleClick, styles);
+		if (clickListener != null) {
+			button.addClickListener(clickListener);
+		}
+		return button;
 	}
 
 	public static Button createIconButtonWithCaption(String id, String caption, Resource icon, Button.ClickListener clickListener, String... styles) {
 
-		Button button = createButtonWithCaption(id, caption, clickListener, styles);
+		return createIconButtonWithCaption(id, caption, icon, false, clickListener, styles);
+	}
+
+	public static Button createIconButtonWithCaption(
+		String id,
+		String caption,
+		Resource icon,
+		boolean enableDoubleClick,
+		Button.ClickListener clickListener,
+		String... styles) {
+
+		Button button = createButtonWithCaption(id, caption, enableDoubleClick, clickListener, styles);
 		button.setIcon(icon);
 		return button;
 	}
 
 	public static Button createIconButton(String captionKey, Resource icon, Button.ClickListener clickListener, String... styles) {
 
-		Button button = createButton(captionKey, clickListener, styles);
+		return createIconButton(captionKey, icon, false, clickListener, styles);
+	}
+
+	public static Button createIconButton(
+		String captionKey,
+		Resource icon,
+		boolean enableDoubleClick,
+		Button.ClickListener clickListener,
+		String... styles) {
+
+		Button button = createButton(captionKey, enableDoubleClick, clickListener, styles);
 		button.setIcon(icon);
 		return button;
 	}
@@ -51,6 +81,7 @@ public class ButtonHelper {
 
 		PopupButton button = createButton(PopupButton::new, id, caption, styles);
 		button.setContent(content);
+		preventDoubleClick(button);
 		return button;
 	}
 
@@ -65,18 +96,24 @@ public class ButtonHelper {
 		return button;
 	}
 
-	public static PopupButton createIconPopupButtonWithCaption(String id, String caption, Resource icon, Component content, String... styles) {
+	public static <T extends Button> T createButton(Function<String, T> buttonFactory, String id, String caption, String... styles) {
 
-		PopupButton button = createPopupButtonWithDescription(id, caption, content, styles);
-		button.setIcon(icon);
-		return button;
+		return createButton(buttonFactory, id, caption, false, styles);
 	}
 
-	public static <T extends Button> T createButton(Function<String, T> buttonFactory, String id, String caption, String... styles) {
+	public static <T extends Button> T createButton(
+		Function<String, T> buttonFactory,
+		String id,
+		String caption,
+		boolean enableDoubleClick,
+		String... styles) {
 
 		T button = buttonFactory.apply(caption);
 		button.setId(id);
 		CssStyles.style(button, styles);
+		if (!enableDoubleClick) {
+			preventDoubleClick(button);
+		}
 		return button;
 	}
 
