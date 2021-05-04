@@ -23,8 +23,6 @@ public class ValidationHelper {
 			return;
 		}
 
-		System.out.println("wassup");
-
 		ResultCallback<Boolean> dateFromUntilCallback = () -> {
 			Date dateFromValue = dateFromControl.getValue();
 			Date dateUntilValue = dateUntilControl.getValue();
