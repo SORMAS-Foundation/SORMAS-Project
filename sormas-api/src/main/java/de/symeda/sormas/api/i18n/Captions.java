@@ -2063,6 +2063,7 @@ public interface Captions {
 	String VaccinationInfo_vaccination = "VaccinationInfo.vaccination";
 	String VaccinationInfo_vaccinationDoses = "VaccinationInfo.vaccinationDoses";
 	String VaccinationInfo_vaccinationInfoSource = "VaccinationInfo.vaccinationInfoSource";
+	String VaccinationInfo_vaccinationStatus = "VaccinationInfo.vaccinationStatus";
 	String VaccinationInfo_vaccineAtcCode = "VaccinationInfo.vaccineAtcCode";
 	String VaccinationInfo_vaccineBatchNumber = "VaccinationInfo.vaccineBatchNumber";
 	String VaccinationInfo_vaccineInn = "VaccinationInfo.vaccineInn";
