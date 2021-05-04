@@ -150,11 +150,11 @@ public class DashboardDataProvider {
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
 			CaseCriteria caseCriteria = new CaseCriteria();
-			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, newCaseDateType);
+			caseCriteria.region(region).district(district).disease(disease).newCaseDateType(newCaseDateType).newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true, true));
 
-			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, newCaseDateType);
+			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
 			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
