@@ -7216,4 +7216,13 @@ ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIG
 
 INSERT INTO schema_version (version_number, comment) VALUES (365, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
+-- 2021-04-29 Add evidence fields for event clusters #5061
+
+ALTER TABLE events ADD COLUMN epidemiologicalevidence varchar(255);
+ALTER TABLE events ADD COLUMN epidemiologicalevidencedetails json;
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidence varchar(255);
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidencedetails json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (366, ' 2021-04-29 Add evidence fields for event clusters #5061');
+
 -- *** Insert new sql commands BEFORE this line ***
