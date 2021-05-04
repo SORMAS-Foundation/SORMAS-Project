@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.utils.IgnoreForUrl;
-
 import java.util.Date;
+
+import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 

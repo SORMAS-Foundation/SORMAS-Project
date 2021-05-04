@@ -21,8 +21,16 @@ public class ButtonHelper {
 		return button;
 	}
 
+	public static Button createButton(String captionKey, boolean enableDoubleClick, Button.ClickListener clickListener, String... styles) {
+		Button button = createButtonWithCaption(captionKey, I18nProperties.getCaption(captionKey), clickListener, styles);
+		if (!enableDoubleClick) {
+			preventDoubleClick(button);
+		}
+		return button;
+	}
+
 	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
-		return createButtonWithCaption(captionKey, I18nProperties.getCaption(captionKey), clickListener, styles);
+		return createButton(captionKey, true, clickListener, styles);
 	}
 
 	public static Button createIconButtonWithCaption(String id, String caption, Resource icon, Button.ClickListener clickListener, String... styles) {
@@ -69,6 +77,35 @@ public class ButtonHelper {
 		T button = buttonFactory.apply(caption);
 		button.setId(id);
 		CssStyles.style(button, styles);
+		return button;
+	}
+
+	static final Button.ClickListener ENABLE_LISTENER = event -> event.getButton().setEnabled(true);
+
+	/**
+	 * Prevent double-clicks causing the buttons action being executed twice
+	 * 
+	 * @param button
+	 * @param <T>
+	 * @return
+	 */
+	public static <T extends Button> T preventDoubleClick(T button) {
+		button.setDisableOnClick(true);
+		button.addClickListener(ENABLE_LISTENER);
+		return button;
+	}
+
+	/**
+	 * Re-Enable double clicks, if they were disabled using ButtonHelper.preventDoubleClick
+	 * 
+	 * @param button
+	 * @param <T>
+	 * @return
+	 */
+	public static <T extends Button> T allowDoubleClick(T button) {
+		button.setEnabled(true); // Make sure the button doesn't end up in a forever-disabled state
+		button.setDisableOnClick(false);
+		button.removeClickListener(ENABLE_LISTENER);
 		return button;
 	}
 }
