@@ -245,11 +245,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	}
 
 	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
-
-		if (caseDto.getResponsibleDistrict() != null && caseDto.getDistrict() == null) {
-			return null;
-		}
-
 		List<DistrictReferenceDto> districts = new ArrayList<>(2);
 
 		if (caseDto.getResponsibleDistrict() != null) {
@@ -262,11 +257,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	}
 
 	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
-
-		if (caseDto.getResponsibleRegion() != null && caseDto.getRegion() == null) {
-			return null;
-		}
-
 		List<RegionReferenceDto> regions = new ArrayList<>(2);
 
 		if (caseDto.getResponsibleDistrict() != null) {

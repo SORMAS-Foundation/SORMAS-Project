@@ -37,7 +37,10 @@ public class ResponsibleJurisdictionDto implements Serializable {
 	}
 
 	public ResponsibleJurisdictionDto(CaseDataDto caze) {
-		this.regionUuid = caze.getResponsibleRegion().getUuid();
+
+		if (caze.getResponsibleRegion() != null) {
+			this.regionUuid = caze.getResponsibleRegion().getUuid();
+		}
 
 		if (caze.getResponsibleDistrict() != null) {
 			this.districtUuid = caze.getResponsibleDistrict().getUuid();

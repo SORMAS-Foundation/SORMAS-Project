@@ -121,7 +121,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private List<Item> caseConfirmationBasisList;
 
-	private boolean isDifferentJurisdiction;
+	private boolean differentJurisdiction;
 
 	// Static methods
 
@@ -134,7 +134,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 
-		caseEditFragment.isDifferentJurisdiction = activityRootData.getResponsibleRegion() != null
+		caseEditFragment.differentJurisdiction = activityRootData.getResponsibleRegion() != null
 			|| activityRootData.getResponsibleDistrict() != null
 			|| activityRootData.getResponsibleCommunity() != null;
 
@@ -445,7 +445,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 		contentBinding.setVaccinationClass(Vaccination.class);
 		contentBinding.setTrimesterClass(Trimester.class);
-		contentBinding.setIsDifferentJurisdiction(isDifferentJurisdiction);
+		contentBinding.setDifferentJurisdiction(differentJurisdiction);
 
 		InfrastructureDaoHelper.initializeRegionFields(
 			contentBinding.caseDataResponsibleRegion,

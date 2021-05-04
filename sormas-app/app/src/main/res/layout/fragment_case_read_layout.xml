@@ -36,6 +36,8 @@
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
         <import type="de.symeda.sormas.api.caze.CaseClassification" />
         <import type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="singleClassification" type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
@@ -412,38 +414,41 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/heading_case_responsible_jurisdiction"
-                    style="@style/SubHeadingStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_differentJurisdiction"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@{isDifferentJurisdiction}" />
-
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    app:goneIfEmpty="@{data.responsibleRegion}" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{I18nProperties.getString(Strings.headingCaseResponsibleJurisidction)}"
+                        style="@style/SubHeadingStyle" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/caseData_responsibleRegion"
+                            app:value="@{data.responsibleRegion}"
+                            style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/caseData_responsibleDistrict"
+                            app:value="@{data.responsibleDistrict}"
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                    </LinearLayout>
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_responsibleRegion"
-                        app:value="@{data.responsibleRegion}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_responsibleDistrict"
-                        app:value="@{data.responsibleDistrict}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                        android:id="@+id/caseData_responsibleCommunity"
+                        app:value="@{data.responsibleCommunity}"
+                        style="@style/ControlSingleColumnStyle" />
 
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_responsibleCommunity"
-                    app:value="@{data.responsibleCommunity}"
-                    style="@style/ControlSingleColumnStyle" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

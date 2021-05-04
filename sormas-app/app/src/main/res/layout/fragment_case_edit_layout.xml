@@ -45,13 +45,15 @@
         <import type="de.symeda.sormas.api.caze.EndOfIsolationReason" />
         <import type="de.symeda.sormas.api.caze.Vaccine" />
         <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="caseEditData" type="de.symeda.sormas.app.caze.edit.CaseEditFragment" />
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
         <variable name="trimesterClass" type="Class" />
-        <variable name="isDifferentJurisdiction" type="Boolean" />
+        <variable name="differentJurisdiction" type="Boolean" />
     </data>
 
     <ScrollView
@@ -450,13 +452,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_case_responsible_jurisdiction"
+                    android:text="@{I18nProperties.getString(Strings.headingCaseResponsibleJurisidction)}"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/caseData_differentJurisdiction"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@={isDifferentJurisdiction}" />
+                    app:value="@={differentJurisdiction}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -466,16 +468,16 @@
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_responsibleRegion"
                         app:value="@={data.responsibleRegion}"
-                        app:required="@{isDifferentJurisdiction}"
-                        app:enabled="@{isDifferentJurisdiction}"
+                        app:required="@{differentJurisdiction}"
+                        app:enabled="@{differentJurisdiction}"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_responsibleDistrict"
                         app:value="@={data.responsibleDistrict}"
-                        app:required="@{isDifferentJurisdiction}"
-                        app:enabled="@{isDifferentJurisdiction}"
+                        app:required="@{differentJurisdiction}"
+                        app:enabled="@{differentJurisdiction}"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -484,7 +486,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_responsibleCommunity"
                     app:value="@={data.responsibleCommunity}"
-                    app:enabled="@{isDifferentJurisdiction}"
+                    app:enabled="@{differentJurisdiction}"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     style="@style/ControlSingleColumnStyle" />
 

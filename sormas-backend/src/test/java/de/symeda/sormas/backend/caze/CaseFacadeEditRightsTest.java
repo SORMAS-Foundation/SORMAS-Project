@@ -108,7 +108,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCanEditResponsibleJurisdiction() {
+	public void testCanEditByResponsibleJurisdiction() {
 		loginWith(districtUser2);
 
 		CaseDataDto editableCase = createCase(rdcf1, districtUser1, rdcf2);

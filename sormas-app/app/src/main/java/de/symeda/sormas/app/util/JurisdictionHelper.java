@@ -213,7 +213,7 @@ public class JurisdictionHelper {
 		return jurisdiction;
 	}
 
-	private static ResponsibleJurisdictionDto createResponsibleJurisdiction(Case caze){
+	private static ResponsibleJurisdictionDto createResponsibleJurisdiction(Case caze) {
 		Region responsibleRegion = caze.getResponsibleRegion();
 		District responsibleDistrict = caze.getResponsibleDistrict();
 		Community responsibleCommunity = caze.getResponsibleCommunity();
@@ -223,13 +223,13 @@ public class JurisdictionHelper {
 		}
 
 		ResponsibleJurisdictionDto jurisdiction = new ResponsibleJurisdictionDto();
-		if(responsibleRegion != null){
+		if (responsibleRegion != null) {
 			jurisdiction.setRegionUuid(responsibleRegion.getUuid());
 		}
-		if(responsibleDistrict != null){
+		if (responsibleDistrict != null) {
 			jurisdiction.setDistrictUuid(responsibleDistrict.getUuid());
 		}
-		if(responsibleCommunity != null){
+		if (responsibleCommunity != null) {
 			jurisdiction.setCommunityUuid(responsibleCommunity.getUuid());
 		}
 

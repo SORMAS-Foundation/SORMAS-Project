@@ -53,7 +53,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 	private Case record;
 	private CaseConfirmationBasis caseConfirmationBasis;
-	private boolean isDifferentJurisdiction;
 
 	public static CaseReadFragment newInstance(Case activityRootData) {
 		CaseReadFragment caseReadFragment = newInstanceWithFieldCheckers(
@@ -63,10 +62,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
-
-		caseReadFragment.isDifferentJurisdiction = activityRootData.getResponsibleRegion() != null
-			|| activityRootData.getResponsibleDistrict() != null
-			|| activityRootData.getResponsibleCommunity() != null;
 
 		return caseReadFragment;
 	}
@@ -206,7 +201,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
-		contentBinding.setIsDifferentJurisdiction(isDifferentJurisdiction);
 
 		if (record.getClinicalConfirmation() == YesNoUnknown.YES) {
 			contentBinding.setSingleClassification(CaseConfirmationBasis.CLINICAL_CONFIRMATION);
