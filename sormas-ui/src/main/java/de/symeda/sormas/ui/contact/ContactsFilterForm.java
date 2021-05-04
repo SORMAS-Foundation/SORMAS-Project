@@ -364,7 +364,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			if (disease != null) {
 				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
 				FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-				diseaseVariantField.setEnabled(true);
+				diseaseVariantField.setEnabled(!diseaseVariants.isEmpty());
 			} else {
 				diseaseVariantField.setValue(null);
 				diseaseVariantField.setEnabled(false);
