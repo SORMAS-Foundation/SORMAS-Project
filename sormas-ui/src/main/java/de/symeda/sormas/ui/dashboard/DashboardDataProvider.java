@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -70,7 +69,6 @@ public class DashboardDataProvider {
 	private Long outbreakDistrictCount = 0L;
 	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
-	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
 	private Map<EventStatus, Long> eventCountByStatus;
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
@@ -159,9 +157,12 @@ public class DashboardDataProvider {
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
-					setTestResultCountByResultType(
-						FacadeProvider.getSampleFacade()
-							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
+					List<Long> list = new ArrayList<>();
+					for (DashboardCaseDto c : getCases()) {
+						Long id = c.getId();
+						list.add(id);
+					}
+					setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(list));
 				} else {
 					setTestResultCountByResultType(new HashMap<>());
 				}
@@ -176,9 +177,6 @@ public class DashboardDataProvider {
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
-
-		eventCriteria.reportedBetween(previousFromDate, previousToDate);
-		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
 
 		eventCriteria.reportedBetween(fromDate, toDate);
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria));
@@ -220,14 +218,6 @@ public class DashboardDataProvider {
 
 	public void setEvents(List<DashboardEventDto> events) {
 		this.events = events;
-	}
-
-	public List<DashboardEventDto> getPreviousEvents() {
-		return previousEvents;
-	}
-
-	public void setPreviousEvents(List<DashboardEventDto> previousEvents) {
-		this.previousEvents = previousEvents;
 	}
 
 	public Map<EventStatus, Long> getEventCountByStatus() {
