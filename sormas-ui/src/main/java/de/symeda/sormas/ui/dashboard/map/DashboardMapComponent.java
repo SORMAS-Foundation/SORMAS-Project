@@ -256,7 +256,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		}
 
 		if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
-			showMapOverlay(count);
+			showMapOverlay(maxDisplayCount);
 		} else {
 			hideMapOverlay();
 
@@ -268,10 +268,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		refreshMap(false);
 	}
 
-	private void showMapOverlay(Long count) {
+	private void showMapOverlay(int maxCount) {
 		overlayBackground.setVisible(true);
 		overlayLayout.setVisible(true);
-		overlayMessageLabel.setValue(String.format(I18nProperties.getString(Strings.warningDashboardMapTooManyMarkers), count));
+		overlayMessageLabel.setValue(String.format(I18nProperties.getString(Strings.warningDashboardMapTooManyMarkers), maxCount));
 	}
 
 	private void hideMapOverlay() {
@@ -590,8 +590,8 @@ public class DashboardMapComponent extends VerticalLayout {
 				layersLayout.addComponent(hideOtherCountriesCheckBox);
 
 				CheckBox showCurrentEpiSituationCB = new CheckBox();
-				showCurrentEpiSituationCB.setId("SomeID");
-				showCurrentEpiSituationCB.setCaption("Show epidemiological situation");
+				showCurrentEpiSituationCB.setId(Captions.dashboardMapShowEpiSituation);
+				showCurrentEpiSituationCB.setCaption(I18nProperties.getCaption(Captions.dashboardMapShowEpiSituation));
 				showCurrentEpiSituationCB.setValue(false);
 				showCurrentEpiSituationCB.addValueChangeListener(e -> {
 					showCurrentEpiSituation = (boolean) e.getProperty().getValue();
