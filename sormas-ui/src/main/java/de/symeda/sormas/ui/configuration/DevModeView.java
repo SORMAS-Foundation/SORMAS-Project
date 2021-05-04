@@ -66,7 +66,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.event.EventDto;
@@ -1212,7 +1211,7 @@ public class DevModeView extends AbstractConfigurationView {
 				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
 				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
-				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+				Date contactStartDate = FacadeProvider.getContactFacade().getStartDate(contact).getFollowUpStartDate();
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
 					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();

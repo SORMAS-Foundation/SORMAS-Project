@@ -278,6 +278,8 @@ public interface Strings {
 	String forCase = "forCase";
 	String forContact = "forContact";
 	String forEventParticipant = "forEventParticipant";
+	String forThisCase = "forThisCase";
+	String forThisContact = "forThisContact";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingActivityAsCase = "headingActivityAsCase";
 	String headingActivityAsCaseDetails = "headingActivityAsCaseDetails";
@@ -602,6 +604,7 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoExpectedFollowUpUntilDate = "infoExpectedFollowUpUntilDate";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";

@@ -48,7 +48,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,6 +68,8 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -95,6 +96,7 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -108,6 +110,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -124,6 +127,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
@@ -164,6 +168,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -1207,12 +1213,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
-			Date untilDate = CaseLogic.calculateFollowUpUntilDate(
-				caseDto,
-				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
-				false);
+			Date untilDate =
+				CaseLogic
+					.calculateFollowUpUntilDate(
+						caseDto,
+						getStartDate(caze),
+						caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+						false)
+					.getFollowUpEndDate();
 			caze.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				caze.setOverwriteFollowUpUntil(false);
@@ -1238,6 +1249,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
 		ensurePersisted(caze);
+	}
+
+	public FollowUpPeriodDto getStartDate(Case caze) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		List<SampleDto> samples =
+			caze.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
+		return CaseLogic.getStartDate(caseFacade.toDto(caze), samples);
 	}
 
 	/**

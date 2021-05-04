@@ -4,6 +4,7 @@ import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			ContactFollowUpDto.LAST_CONTACT_DATE,
 			FollowUpDto.REPORT_DATE,
 			FollowUpDto.FOLLOW_UP_UNTIL,
-			ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS);
+			FollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
@@ -104,7 +105,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 				return getVisitResultCssStyle(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate(), Collections.EMPTY_LIST).getFollowUpStartDate(),
 					item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
 				final VisitResultDto visitResult = item.getVisitResults()[index];
@@ -112,7 +113,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 				return getVisitResultDescription(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate(), Collections.EMPTY_LIST).getFollowUpStartDate(),
 					item.getFollowUpUntil());
 			});
 		}

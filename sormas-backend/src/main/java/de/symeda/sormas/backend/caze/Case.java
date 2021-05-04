@@ -351,7 +351,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private Trimester trimester;
 
 	private List<Task> tasks;
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> convertedContact;

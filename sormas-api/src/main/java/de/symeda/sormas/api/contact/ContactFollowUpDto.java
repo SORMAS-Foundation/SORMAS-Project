@@ -17,7 +17,6 @@ public class ContactFollowUpDto extends FollowUpDto {
 
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
-	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
 	@SensitiveData
 	private UserReferenceDto contactOfficer;

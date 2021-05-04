@@ -65,6 +65,7 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -108,6 +109,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
+	private static final String INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "infoExpectedFollowUpUntilDateLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -157,6 +159,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+					fluidRowLocs(INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
                     + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
@@ -176,6 +179,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private Label labelInfoExpectedFollowUpUntilDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -468,6 +472,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tfExpectedFollowUpUntilDate = new TextField();
 		tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
 		getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
+		labelInfoExpectedFollowUpUntilDate = new Label();
+		labelInfoExpectedFollowUpUntilDate.addStyleNames(CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_NONE);
+		getContent().addComponent(labelInfoExpectedFollowUpUntilDate, INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
 
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
@@ -613,7 +620,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
+					ContactLogic
+						.getStartDate(
+							lastContactDate.getValue(),
+							reportDate.getValue(),
+							FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())))
+						.getFollowUpStartDate(),
 					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
 				dfFollowUpUntil.addValidator(
 					new DateRangeValidator(
@@ -995,15 +1007,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		tfExpectedFollowUpUntilDate.setValue(
-			DateHelper.formatLocalDate(
-				ContactLogic.calculateFollowUpUntilDate(
-					newFieldValue,
-					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease()),
-					true),
-				I18nProperties.getUserLanguage()));
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
+
+		labelInfoExpectedFollowUpUntilDate.setValue(
+			String.format(
+				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDate),
+				I18nProperties.getString(Strings.forThisContact),
+				followUpPeriodDto.getFollowUpStartDateType(),
+				DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

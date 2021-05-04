@@ -28,6 +28,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -64,6 +65,10 @@ public interface ContactFacade {
 		List<MapCaseDto> mapCaseDtos);
 
 	void deleteContact(String contactUuid);
+
+	FollowUpPeriodDto getStartDate(ContactDto contactDto);
+
+	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
@@ -145,5 +150,5 @@ public interface ContactFacade {
 		Date from,
 		Date to);
 
-    List<ContactDto> getByPersonUuids(List<String> personUuids);
+	List<ContactDto> getByPersonUuids(List<String> personUuids);
 }

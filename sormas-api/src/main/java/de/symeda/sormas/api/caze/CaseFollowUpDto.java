@@ -27,8 +27,6 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	private static final long serialVersionUID = -7782443664670559221L;
 
-	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-
 	private Date symptomsOnsetDate;
 
 	private final CaseJurisdictionDto jurisdiction;
