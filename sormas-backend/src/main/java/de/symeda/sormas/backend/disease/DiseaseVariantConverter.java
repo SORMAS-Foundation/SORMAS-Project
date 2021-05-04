@@ -13,17 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.customizableenum;
+package de.symeda.sormas.backend.disease;
 
-import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumConverter;
 
-public class EnumValueConverters {
+public class DiseaseVariantConverter extends CustomizableEnumConverter<DiseaseVariant> {
 
-	public static class DiseaseVariantConverter extends AbstractEnumValueConverter<DiseaseVariant> {
-
-		public DiseaseVariantConverter() {
-			super(DiseaseVariant.class);
-		}
+	public DiseaseVariantConverter() {
+		super(DiseaseVariant.class);
 	}
-
 }

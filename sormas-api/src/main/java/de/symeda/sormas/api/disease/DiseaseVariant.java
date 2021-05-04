@@ -13,19 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.customizableenum;
+package de.symeda.sormas.api.disease;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import java.io.Serializable;
 
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 
-@Stateless
-@LocalBean
-public class CustomizableEnumService extends BaseAdoService<CustomizableEnum> {
+public class DiseaseVariant extends CustomizableEnum implements Serializable {
 
-	public CustomizableEnumService() {
-		super(CustomizableEnum.class);
-	}
+	private static final long serialVersionUID = -5289300364081294764L;
 
 }

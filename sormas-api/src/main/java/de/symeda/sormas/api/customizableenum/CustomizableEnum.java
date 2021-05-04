@@ -13,21 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum.enumtypes;
+package de.symeda.sormas.api.customizableenum;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-public abstract class AbstractEnumValue implements Serializable {
+public abstract class CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = 8698428745095686559L;
-
-	public AbstractEnumValue() {
-		// Empty constructor
-	}
-
-	public AbstractEnumValue(String value) {
-		this.value = value;
-	}
 
 	private String value;
 	private String caption;
@@ -51,5 +44,20 @@ public abstract class AbstractEnumValue implements Serializable {
 	@Override
 	public String toString() {
 		return caption;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CustomizableEnum that = (CustomizableEnum) o;
+		return Objects.equals(value, that.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
 	}
 }

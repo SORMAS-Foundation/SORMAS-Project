@@ -19,16 +19,16 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.AttributeConverter;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.customizableenum.enumtypes.AbstractEnumValue;
 
-public abstract class AbstractEnumValueConverter<T extends AbstractEnumValue> implements AttributeConverter<T, String> {
+public abstract class CustomizableEnumConverter<T extends CustomizableEnum> implements AttributeConverter<T, String> {
 
 	private final Class<T> enumClass;
 	private CustomizableEnumFacade customizableEnumFacade;
 
-	public AbstractEnumValueConverter(Class<T> enumClass) {
+	public CustomizableEnumConverter(Class<T> enumClass) {
 		this.enumClass = enumClass;
 	}
 
@@ -43,9 +43,15 @@ public abstract class AbstractEnumValueConverter<T extends AbstractEnumValue> im
 			if (customizableEnumFacade == null) {
 				customizableEnumFacade = (CustomizableEnumFacade) new InitialContext().lookup("java:module/CustomizableEnumFacade");
 			}
+
+			CustomizableEnumType enumType = CustomizableEnumType.getByEnumClass(enumClass);
+			if (enumType == null) {
+				throw new RuntimeException("No CustomizableEnumType for given enumClass " + enumClass + "found");
+			}
+
 			return customizableEnumFacade.getEnumValue(CustomizableEnumType.getByEnumClass(enumClass), enumString);
 		} catch (NamingException e) {
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 }

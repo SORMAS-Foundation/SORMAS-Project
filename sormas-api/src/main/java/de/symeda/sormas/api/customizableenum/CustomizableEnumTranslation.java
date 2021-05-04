@@ -18,7 +18,7 @@ package de.symeda.sormas.api.customizableenum;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class EnumTranslation implements Serializable {
+public class CustomizableEnumTranslation implements Serializable {
 
 	private static final long serialVersionUID = 1031723613185793585L;
 
@@ -47,7 +47,7 @@ public class EnumTranslation implements Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		EnumTranslation that = (EnumTranslation) o;
+		CustomizableEnumTranslation that = (CustomizableEnumTranslation) o;
 		return Objects.equals(languageCode, that.languageCode) && Objects.equals(value, that.value);
 	}
 

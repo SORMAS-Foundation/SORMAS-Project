@@ -37,7 +37,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -556,7 +556,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				List<DiseaseVariant> diseaseVariants =
 					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 				FieldHelper.updateItems(field, diseaseVariants);
-				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), field);
+				FieldHelper.setEnabled(disease != null && CollectionUtils.isNotEmpty(diseaseVariants), field);
 			}
 		}
 		}
@@ -705,7 +705,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+			FieldHelper.setEnabled(disease != null && CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}
 	}
 

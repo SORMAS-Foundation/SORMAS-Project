@@ -27,33 +27,33 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.customizableenum.EnumTranslation;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 
-public class EnumTranslationConverter implements AttributeConverter<List<EnumTranslation>, String> {
+public class CustomizableEnumTranslationConverter implements AttributeConverter<List<CustomizableEnumTranslation>, String> {
 
 	@Override
-	public String convertToDatabaseColumn(List<EnumTranslation> enumTranslations) {
-		if (CollectionUtils.isEmpty(enumTranslations)) {
+	public String convertToDatabaseColumn(List<CustomizableEnumTranslation> customizableEnumTranslations) {
+		if (CollectionUtils.isEmpty(customizableEnumTranslations)) {
 			return null;
 		}
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(enumTranslations);
+			return mapper.writeValueAsString(customizableEnumTranslations);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of enumTranslations could not be parsed to JSON String");
 		}
 	}
 
 	@Override
-	public List<EnumTranslation> convertToEntityAttribute(String enumTranslationsJson) {
+	public List<CustomizableEnumTranslation> convertToEntityAttribute(String enumTranslationsJson) {
 		if (StringUtils.isBlank(enumTranslationsJson)) {
 			return null;
 		}
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return Arrays.asList(mapper.readValue(enumTranslationsJson, EnumTranslation[].class));
+			return Arrays.asList(mapper.readValue(enumTranslationsJson, CustomizableEnumTranslation[].class));
 		} catch (IOException e) {
 			throw new RuntimeException("Content of enumTranslationsJson could not be parsed to List<EnumTranslation>: enumTranslationsJson");
 		}

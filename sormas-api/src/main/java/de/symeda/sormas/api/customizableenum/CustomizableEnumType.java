@@ -15,20 +15,19 @@
 
 package de.symeda.sormas.api.customizableenum;
 
-import de.symeda.sormas.api.customizableenum.enumtypes.AbstractEnumValue;
-import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 
 public enum CustomizableEnumType {
 
 	DISEASE_VARIANT(DiseaseVariant.class);
 
-	private final Class<? extends AbstractEnumValue> enumClass;
+	private final Class<? extends CustomizableEnum> enumClass;
 
-	CustomizableEnumType(Class<? extends AbstractEnumValue> enumClass) {
+	CustomizableEnumType(Class<? extends CustomizableEnum> enumClass) {
 		this.enumClass = enumClass;
 	}
 
-	public static CustomizableEnumType getByEnumClass(Class<? extends AbstractEnumValue> enumClass) {
+	public static CustomizableEnumType getByEnumClass(Class<? extends CustomizableEnum> enumClass) {
 		for (CustomizableEnumType enumType : values()) {
 			if (enumType.getEnumClass() == enumClass) {
 				return enumType;
@@ -38,7 +37,7 @@ public enum CustomizableEnumType {
 		return null;
 	}
 
-	public Class<? extends AbstractEnumValue> getEnumClass() {
+	public Class<? extends CustomizableEnum> getEnumClass() {
 		return enumClass;
 	}
 

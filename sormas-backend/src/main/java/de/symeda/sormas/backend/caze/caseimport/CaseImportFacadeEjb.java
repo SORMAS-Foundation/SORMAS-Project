@@ -44,7 +44,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.customizableenum.enumtypes.AbstractEnumValue;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -634,10 +634,10 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			pd.getWriteMethod().invoke(element, enumValue);
 			return true;
 		}
-		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == AbstractEnumValue.class) {
+		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
 			try {
 				Object test = propertyType.newInstance();
-				((AbstractEnumValue) test).setValue(entry);
+				((CustomizableEnum) test).setValue(entry);
 				pd.getWriteMethod().invoke(element, test);
 				return true;
 			} catch (InstantiationException e) {

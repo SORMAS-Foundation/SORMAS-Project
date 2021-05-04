@@ -69,7 +69,7 @@
 		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
 		<class>de.symeda.sormas.backend.region.Continent</class>
 		<class>de.symeda.sormas.backend.region.Subcontinent</class>
-		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnum</class>
+		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

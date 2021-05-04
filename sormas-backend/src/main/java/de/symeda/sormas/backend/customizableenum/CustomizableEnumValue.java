@@ -26,24 +26,25 @@ import javax.persistence.Enumerated;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.customizableenum.EnumTranslation;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.disease.DiseaseListConverter;
 
-@Entity(name = "customizableenums")
-public class CustomizableEnum extends AbstractDomainObject {
+@Entity
+public class CustomizableEnumValue extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8438117516604287640L;
 
-	public static final String TABLE_NAME = "customizableenums";
+	public static final String TABLE_NAME = "customizableenumvalue";
 
 	private CustomizableEnumType dataType;
 	private String value;
 	private String caption;
-	private List<EnumTranslation> translations;
+	private List<CustomizableEnumTranslation> translations;
 	private List<Disease> diseases;
 	private String description;
-	private List<EnumTranslation> descriptionTranslations;
+	private List<CustomizableEnumTranslation> descriptionTranslations;
 	private String properties;
 
 	@Enumerated(EnumType.STRING)
@@ -75,12 +76,12 @@ public class CustomizableEnum extends AbstractDomainObject {
 	}
 
 	@Column
-	@Convert(converter = EnumTranslationConverter.class)
-	public List<EnumTranslation> getTranslations() {
+	@Convert(converter = CustomizableEnumTranslationConverter.class)
+	public List<CustomizableEnumTranslation> getTranslations() {
 		return translations;
 	}
 
-	public void setTranslations(List<EnumTranslation> translations) {
+	public void setTranslations(List<CustomizableEnumTranslation> translations) {
 		this.translations = translations;
 	}
 
@@ -104,12 +105,12 @@ public class CustomizableEnum extends AbstractDomainObject {
 	}
 
 	@Column
-	@Convert(converter = EnumTranslationConverter.class)
-	public List<EnumTranslation> getDescriptionTranslations() {
+	@Convert(converter = CustomizableEnumTranslationConverter.class)
+	public List<CustomizableEnumTranslation> getDescriptionTranslations() {
 		return descriptionTranslations;
 	}
 
-	public void setDescriptionTranslations(List<EnumTranslation> descriptionTranslations) {
+	public void setDescriptionTranslations(List<CustomizableEnumTranslation> descriptionTranslations) {
 		this.descriptionTranslations = descriptionTranslations;
 	}
 

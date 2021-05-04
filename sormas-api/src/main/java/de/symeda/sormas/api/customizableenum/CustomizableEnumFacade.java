@@ -20,14 +20,13 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.customizableenum.enumtypes.AbstractEnumValue;
 
 @Remote
 public interface CustomizableEnumFacade {
 
-	<T extends AbstractEnumValue> T getEnumValue(CustomizableEnumType type, String value);
+	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
 
-	<T extends AbstractEnumValue> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
+	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
 
 	void loadData();
 

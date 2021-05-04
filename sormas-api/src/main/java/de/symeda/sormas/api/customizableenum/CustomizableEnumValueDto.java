@@ -22,7 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 
-public class CustomizableEnumDto extends EntityDto {
+public class CustomizableEnumValueDto extends EntityDto {
 
 	private static final long serialVersionUID = 4360662500289404985L;
 

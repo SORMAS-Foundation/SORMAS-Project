@@ -65,7 +65,7 @@ import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.customizableenum.enumtypes.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -74,7 +74,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.customizableenum.EnumValueConverters;
+import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -424,7 +424,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	}
 
 	@Column
-	@Convert(converter = EnumValueConverters.DiseaseVariantConverter.class)
+	@Convert(converter = DiseaseVariantConverter.class)
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}

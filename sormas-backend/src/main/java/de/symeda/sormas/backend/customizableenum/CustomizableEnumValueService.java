@@ -13,16 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum.enumtypes;
+package de.symeda.sormas.backend.customizableenum;
 
-import java.io.Serializable;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
-public class DiseaseVariant extends AbstractEnumValue implements Serializable {
+import de.symeda.sormas.backend.common.BaseAdoService;
 
-	private static final long serialVersionUID = -5289300364081294764L;
+@Stateless
+@LocalBean
+public class CustomizableEnumValueService extends BaseAdoService<CustomizableEnumValue> {
 
-	public static String getDefaultValues() {
-
-		return null;
+	public CustomizableEnumValueService() {
+		super(CustomizableEnumValue.class);
 	}
+
 }
