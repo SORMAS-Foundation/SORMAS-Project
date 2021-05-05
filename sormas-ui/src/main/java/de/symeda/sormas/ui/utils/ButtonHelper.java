@@ -16,6 +16,10 @@ public class ButtonHelper {
 		return createButton(caption, false, null, null);
 	}
 
+	public static Button createButton(Resource icon) {
+		return createIconButton("", icon, null);
+	}
+
 	public static Button createButton(String captionKey, Button.ClickListener clickListener, String... styles) {
 		return createButton(captionKey, false, clickListener, styles);
 	}

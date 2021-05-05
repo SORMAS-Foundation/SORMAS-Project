@@ -163,7 +163,7 @@ public class DocumentListComponent extends VerticalLayout {
 	}
 
 	private Button buildDownloadButton(DocumentDto document) {
-		Button viewButton = ButtonHelper.createIconButton("", VaadinIcons.DOWNLOAD, null, null);
+		Button viewButton = ButtonHelper.createButton(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
