@@ -423,8 +423,8 @@ public class DashboardMapComponent extends VerticalLayout {
 					caseClassificationOption = (MapCaseClassificationOption) event.getProperty().getValue();
 					refreshMap(true);
 				});
-				layersLayout.addComponent(caseClassificationOptions);
 
+				// Optiongroup to select what property the coordinates should be based on
 				OptionGroup mapCaseDisplayModeSelect = new OptionGroup();
 				mapCaseDisplayModeSelect.setWidth(100, Unit.PERCENTAGE);
 				mapCaseDisplayModeSelect.addItems((Object[]) MapCaseDisplayMode.values());
@@ -446,6 +446,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						showCases = (boolean) e.getProperty().getValue();
 						mapCaseDisplayModeSelect.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
+						caseClassificationOptions.setEnabled(showCases);
 						refreshMap(true);
 					});
 					showCasesLayout.addComponent(showCasesCheckBox);
@@ -461,6 +462,9 @@ public class DashboardMapComponent extends VerticalLayout {
 
 				layersLayout.addComponent(mapCaseDisplayModeSelect);
 				mapCaseDisplayModeSelect.setEnabled(showCases);
+
+				layersLayout.addComponent(caseClassificationOptions);
+				caseClassificationOptions.setEnabled(showCases);
 
 				CheckBox showConfirmedContactsCheckBox = new CheckBox();
 				showConfirmedContactsCheckBox.setId(Captions.dashboardShowConfirmedContacts);
