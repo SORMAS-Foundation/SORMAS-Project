@@ -386,6 +386,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				if (exception != null) {
 					if (exception instanceof ImportErrorException) {
 						importError = exception.getMessage();
+						StringBuilder additionalInfo = new StringBuilder();
+						for (int j = 0; j < entityPropertyPath.length; j++) {
+							additionalInfo.append(" ").append(entityPropertyPath[j]);
+						}
+						importError += additionalInfo;
+						importError += "value:" + value;
 						break;
 					} else if (exception instanceof InvalidColumnException) {
 						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
