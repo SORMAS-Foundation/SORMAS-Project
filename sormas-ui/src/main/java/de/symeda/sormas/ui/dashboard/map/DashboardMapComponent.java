@@ -1088,9 +1088,6 @@ public class DashboardMapComponent extends VerticalLayout {
 						continue;
 					}
 				} else {
-					if (!hasFacilityGps) {
-						continue;
-					}
 					FacilityReferenceDto facility = new FacilityReferenceDto();
 					facility.setUuid(caze.getHealthFacilityUuid());
 					if (casesByFacility.get(facility) == null) {
@@ -1132,7 +1129,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.UNCONFIRMED) {
 				continue;
 			}
-			Date referenceDate = contact.getCaseReportDate() != null ? contact.getCaseReportDate() : contact.getContactReportDate();
 
 			MarkerIcon icon;
 			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard
@@ -1200,6 +1196,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			default:
 				continue;
 			}
+
+			// Because events are pulled from the dashboardDataProvider, we do not need to add additional filters for event dates here
 
 			LeafletMarker marker = new LeafletMarker();
 			if (event.getLocationLat() != null && event.getLocationLon() != null) {

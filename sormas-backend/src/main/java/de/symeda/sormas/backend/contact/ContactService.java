@@ -471,11 +471,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// Only retrieve contacts that are currently under follow-up
 		Predicate followUpFilter = cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
-		if (filter != null) {
-			filter = cb.and(filter, followUpFilter);
-		} else {
-			filter = followUpFilter;
-		}
+		filter = CriteriaBuilderHelper.and(cb, filter, followUpFilter);
 
 		// only retrieve contacts with given coordinates
 		Predicate personLatLonNotNull = CriteriaBuilderHelper
@@ -483,7 +479,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate reportLatLonNotNull =
 			CriteriaBuilderHelper.and(cb, cb.isNotNull(contactRoot.get(Contact.REPORT_LON)), cb.isNotNull(contactRoot.get(Contact.REPORT_LAT)));
 		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull);
-		filter = filter != null ? CriteriaBuilderHelper.and(cb, filter, latLonProvided) : latLonProvided;
+		filter = CriteriaBuilderHelper.and(cb, filter, latLonProvided);
 
 		return filter;
 	}

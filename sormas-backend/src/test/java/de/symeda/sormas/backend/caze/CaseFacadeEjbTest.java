@@ -484,7 +484,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null);
 
 		// List should have one entry
-		assertEquals((long) 1, mapCaseDtos.size());
+		assertEquals((long) count, mapCaseDtos.size());
 		assertEquals(1, mapCaseDtos.size());
 	}
 
