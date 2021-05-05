@@ -564,7 +564,7 @@ public class LabMessageController {
 	}
 
 	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
-		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null, null);
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		contactDto.setPerson(person.toReference());
 		return contactDto;

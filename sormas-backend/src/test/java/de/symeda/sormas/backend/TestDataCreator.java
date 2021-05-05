@@ -471,7 +471,7 @@ public class TestDataCreator {
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
-			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null, null);
 			if (rdcf == null) {
 				rdcf = createRDCF();
 			}
