@@ -64,6 +64,9 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String REFERRED = "referred";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
+	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
+	public static final String TYPE_OF_LAST_TEST = "typeOfLastTest";
+	public static final String LAST_TEST_CQ_VALUE = "lastTestCqValue";
 
 	private String uuid;
 	@EmbeddedPersonalData
@@ -97,6 +100,9 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private AdditionalTestingStatus additionalTestingStatus;
 	private SamplingReason samplingReason;
 	private String samplingReasonDetails;
+	private Long pathogenTestCount;
+	private PathogenTestType typeOfLastTest;
+	private Float lastTestCqValue;
 
 	private SampleJurisdictionDto jurisdiction;
 
@@ -110,7 +116,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-						  String districtName, String reportingUserUuid, String labUuid,
+						  String districtName, String reportingUserUuid, String labUuid, Long pathogenTestCount, //PathogenTestType typeOfLastTest, Float lastTestCqValue,
 						  String caseReportingUserUuid,
 						  String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
 						  String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
@@ -157,6 +163,9 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 		this.samplingReason = samplingReason;
 		this.samplingReasonDetails = samplingReasonDetails;
+		this.pathogenTestCount = pathogenTestCount;
+		this.typeOfLastTest = typeOfLastTest;
+		this.lastTestCqValue = lastTestCqValue;
 
 		CaseJurisdictionDto associatedCaseJurisdiction = null;
 		if (associatedCaseUuid != null) {
@@ -426,6 +435,30 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public Long getPathogenTestCount() {
+		return pathogenTestCount;
+	}
+
+	public void setPathogenTestCount(Long pathogenTestCount) {
+		this.pathogenTestCount = pathogenTestCount;
+	}
+
+	public PathogenTestType getTypeOfLastTest() {
+		return typeOfLastTest;
+	}
+
+	public void setTypeOfLastTest(PathogenTestType typeOfLastTest) {
+		this.typeOfLastTest = typeOfLastTest;
+	}
+
+	public Float getLastTestCqValue() {
+		return lastTestCqValue;
+	}
+
+	public void setLastTestCqValue(Float lastTestCqValue) {
+		this.lastTestCqValue = lastTestCqValue;
 	}
 
 	public String toString() {

@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,10 +39,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -425,6 +430,16 @@ public class SampleFacadeEjb implements SampleFacade {
 				districtSelect,
 				joins.getReportingUser().get(User.UUID),
 				joins.getLab().get(Facility.UUID)));
+
+		// Tests count subquery
+		Subquery<Long> testCountSq = cq.subquery(Long.class);
+		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
+		testCountSq.where(
+			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(AbstractDomainObject.ID), sample.get(AbstractDomainObject.ID)),
+			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.select(cb.countDistinct(testCountRoot.get(AbstractDomainObject.ID)));
+		selections.add(testCountSq.getSelection());
+
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 		selections.addAll(getEventJurisdictionSelections(joins));
@@ -505,6 +520,31 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
+		if (!samples.isEmpty()) {
+			Map<String, PathogenTest> tests = null;
+			List<PathogenTest> testList = null;
+			CriteriaQuery<PathogenTest> testCq = cb.createQuery(PathogenTest.class);
+			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
+			Expression<String> testIdsExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
+			testCq.where(
+				cb.isFalse(testRoot.get(PathogenTest.DELETED)),
+				testIdsExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
+			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
+			testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			tests = testList.stream()
+				.filter(distinctByKey(pathogenTest -> pathogenTest.getSample().getUuid()))
+				.collect(Collectors.toMap(pathogenTest -> pathogenTest.getSample().getUuid(), Function.identity()));
+
+			if (tests != null) {
+				for (SampleIndexDto indexDto : samples) {
+					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
+						indexDto.setTypeOfLastTest(test.getTestType());
+						indexDto.setLastTestCqValue(test.getCqValue());
+					});
+				}
+			}
+		}
+
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			SampleIndexDto.class,
@@ -513,6 +553,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			null);
 
 		return samples;
+	}
+
+	public <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Set<Object> seen = ConcurrentHashMap.newKeySet();
+		return t -> seen.add(keyExtractor.apply(t));
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
