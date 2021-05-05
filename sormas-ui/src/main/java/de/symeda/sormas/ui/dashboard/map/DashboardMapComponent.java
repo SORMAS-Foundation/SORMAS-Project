@@ -298,21 +298,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		}
 
 		if (count < maxCount && showContacts) {
-			if (!showCases) {
-				// Case lists need to be filled even when cases are hidden because they are
-				// needed to retrieve the contacts
-				fillCaseLists(
-					FacadeProvider.getCaseFacade()
-						.getCasesForMap(
-							region,
-							district,
-							disease,
-							fromDate,
-							toDate,
-							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
-			}
-
-			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases, fromDate, toDate);
+			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, fromDate, toDate);
 		}
 
 		if (count < maxCount && showEvents) {
@@ -339,20 +325,8 @@ public class DashboardMapComponent extends VerticalLayout {
 						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 		}
 		if (showContacts) {
-			if (!showCases) {
-				// Case lists need to be filled even when cases are hidden because they are
-				// needed to retrieve the contacts
-				fillCaseLists(
-					FacadeProvider.getCaseFacade()
-						.getCasesForMap(
-							region,
-							district,
-							disease,
-							fromDate,
-							toDate,
-							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
-			}
-			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, mapAndFacilityCases, fromDate, toDate));
+			// FIXME: The problem now is that the shwon contacts are completely unrelated to the shown cases; this may lead to confiusion, e.g with the "show only for confirmed cases" checkbox
+			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());

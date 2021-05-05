@@ -65,7 +65,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -391,18 +390,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public Long countContactsForMap(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		List<MapCaseDto> mapCaseDtos,
-		Date from,
-		Date to) {
+	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.countContactsForMap(region, district, disease, caseUuids, from, to);
+		return contactService.countContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -410,15 +402,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,
-		List<MapCaseDto> mapCaseDtos,
 		Date from,
 		Date to) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.getContactsForMap(region, district, disease, caseUuids, from, to);
+		return contactService.getContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override

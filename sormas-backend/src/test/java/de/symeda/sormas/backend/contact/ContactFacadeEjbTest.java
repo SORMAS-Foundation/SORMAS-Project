@@ -52,7 +52,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -338,33 +337,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		MapCaseDto mapCaseDto = new MapCaseDto(
-			caze.getUuid(),
-			caze.getReportDate(),
-			caze.getCaseClassification(),
-			caze.getDisease(),
-			caze.getPerson().getUuid(),
-			cazePerson.getFirstName(),
-			cazePerson.getLastName(),
-			caze.getHealthFacility().getUuid(),
-			0d,
-			0d,
-			caze.getReportLat(),
-			caze.getReportLon(),
-			caze.getReportLat(),
-			caze.getReportLon(),
-			null,
-			null,
-			null,
-			null,
-			null);
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), caze.getDisease());
 
 		List<MapContactDto> mapContactDtos = getContactFacade().getContactsForMap(
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getDisease(),
-			Arrays.asList(mapCaseDto),
 			DateHelper.subtractDays(new Date(), 1),
 			DateHelper.addDays(new Date(), 1));
 
