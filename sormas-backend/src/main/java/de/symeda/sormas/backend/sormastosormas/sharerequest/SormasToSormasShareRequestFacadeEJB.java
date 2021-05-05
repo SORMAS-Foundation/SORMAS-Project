@@ -207,6 +207,10 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
+	public List<SormasToSormasShareRequestDto> getShareRequestsByUuids(List<String> uuids) {
+		return shareRequestService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasShareRequestFacadeEJBLocal extends SormasToSormasShareRequestFacadeEJB {

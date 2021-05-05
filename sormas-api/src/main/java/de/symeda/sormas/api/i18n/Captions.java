@@ -32,6 +32,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
+	String actionAccept = "actionAccept";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
@@ -76,6 +77,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
@@ -1746,6 +1748,15 @@ public interface Captions {
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
 	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
+	String SormasToSormasShareRequest_cases = "SormasToSormasShareRequest.cases";
+	String SormasToSormasShareRequest_contacts = "SormasToSormasShareRequest.contacts";
+	String SormasToSormasShareRequest_creationDate = "SormasToSormasShareRequest.creationDate";
+	String SormasToSormasShareRequest_dataType = "SormasToSormasShareRequest.dataType";
+	String SormasToSormasShareRequest_events = "SormasToSormasShareRequest.events";
+	String SormasToSormasShareRequest_organizationName = "SormasToSormasShareRequest.organizationName";
+	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
+	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
+	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";

@@ -72,9 +72,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -88,7 +88,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.StartupShutdownService;
-import de.symeda.sormas.backend.sormastosormas.caze.CaseShareDataPreview;
+import de.symeda.sormas.backend.sormastosormas.caze.CaseShareRequestData;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -892,7 +892,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
 				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 
-				CaseShareDataPreview dataPreview = decryptSharesData(encryptedData.getData(), CaseShareDataPreview.class);
+				CaseShareRequestData dataPreview = decryptSharesData(encryptedData.getData(), CaseShareRequestData.class);
 				SormasToSormasCasePreview casePreview = dataPreview.getPreviews().get(0);
 
 				assertThat(casePreview.getPerson().getFirstName(), is(person.getFirstName()));
@@ -925,7 +925,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
-		assertThat(shareInfoList.get(0).getStatus(), is(SormasToSormasShareStatus.PENDING));
+		assertThat(shareInfoList.get(0).getRequestStatus(), is(ShareRequestStatus.PENDING));
 	}
 
 	@Test
@@ -955,8 +955,10 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		preview.setPerson(personPreview);
 
-		CaseShareDataPreview shareData =
-			new CaseShareDataPreview(Collections.singletonList(preview), createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
+		CaseShareRequestData shareData = new CaseShareRequestData(
+			DataHelper.createUuid(),
+			Collections.singletonList(preview),
+			createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		byte[] encryptedData = encryptShareData(shareData);
 
 		getSormasToSormasCaseFacade().saveShareRequest(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));

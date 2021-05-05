@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.sormastosormas.event;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
@@ -34,6 +33,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -56,9 +56,11 @@ public class SormasToSormasEventFacadeEjb
 	extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, ProcessedEventData>
 	implements SormasToSormasEventFacade {
 
-	public static final String SHARED_EVENTS_REQUEST = RESOURCE_PATH + EVENT_REQUEST_ENDPOINT;
-	public static final String SAVE_SHARED_EVENTS = RESOURCE_PATH + EVENT_ENDPOINT;
-	public static final String SYNC_SHARED_EVENTS = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
+	public static final String EVENT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
+	public static final String EVENT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_REJECT_ENDPOINT;
+	public static final String EVENT_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ACCEPT_ENDPOINT;
+	public static final String SAVE_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_ENDPOINT;
+	public static final String SYNC_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
 
 	@EJB
 	private EventService eventService;
@@ -74,7 +76,15 @@ public class SormasToSormasEventFacadeEjb
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasEventFacadeEjb() {
-		super(SHARED_EVENTS_REQUEST, SAVE_SHARED_EVENTS, SYNC_SHARED_EVENTS, Captions.Event, ShareRequestDataType.EVENT, EventShareDataPreview.class);
+		super(
+			EVENT_REQUEST_ENDPOINT,
+			EVENT_REQUEST_REJECT_ENDPOINT,
+			EVENT_REQUEST_ACCEPT_ENDPOINT,
+			SAVE_SHARED_EVENTS_ENDPOINT,
+			SYNC_SHARED_EVENTS_ENDPOINT,
+			Captions.Event,
+			ShareRequestDataType.EVENT,
+			EventShareRequestData.class);
 	}
 
 	@Override

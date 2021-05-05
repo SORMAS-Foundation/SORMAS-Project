@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -185,5 +187,15 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
 
 		return q.getResultList().stream().findFirst().orElse(null);
+	}
+
+	public List<SormasToSormasShareInfo> getByRequestUuid(String requestUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
+		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
+
+		cq.where(cb.equal(from.get(SormasToSormasShareInfo.REQUEST_UUID), requestUuid));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

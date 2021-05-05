@@ -13,20 +13,38 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.caze;
+package de.symeda.sormas.backend.sormastosormas;
 
 import java.util.List;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.backend.sormastosormas.ShareDataPreview;
 
-public class CaseShareDataPreview extends ShareDataPreview<SormasToSormasCasePreview> {
+public class ShareRequestData<P> {
 
-	public CaseShareDataPreview() {
+	private String requestUuid;
+
+	private List<P> previews;
+
+	private SormasToSormasOriginInfoDto originInfo;
+
+	public ShareRequestData() {
 	}
 
-	public CaseShareDataPreview(List<SormasToSormasCasePreview> previews, SormasToSormasOriginInfoDto originInfo) {
-		super(previews, originInfo);
+	public ShareRequestData(String uuid, List<P> previews, SormasToSormasOriginInfoDto originInfo) {
+		this.requestUuid = uuid;
+		this.previews = previews;
+		this.originInfo = originInfo;
+	}
+
+	public String getRequestUuid() {
+		return requestUuid;
+	}
+
+	public List<P> getPreviews() {
+		return previews;
+	}
+
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
 	}
 }

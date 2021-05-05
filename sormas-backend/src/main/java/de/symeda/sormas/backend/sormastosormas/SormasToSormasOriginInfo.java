@@ -24,12 +24,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest;
 
 @Entity(name = "sormastosormasorigininfo")
 public class SormasToSormasOriginInfo extends AbstractDomainObject {
@@ -61,6 +63,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private List<Case> cases;
 
 	private List<Contact> contacts;
+
+	private SormasToSormasShareRequest request;
 
 	private List<EventParticipant> eventParticipants;
 
@@ -107,6 +111,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	@OneToOne(optional = false, mappedBy = "originInfo")
+	public SormasToSormasShareRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(SormasToSormasShareRequest request) {
+		this.request = request;
 	}
 
 	@Column(length = COLUMN_LENGTH_BIG)

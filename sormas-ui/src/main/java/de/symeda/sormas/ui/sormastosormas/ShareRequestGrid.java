@@ -15,24 +15,46 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.Date;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestIndexDto, ShareRequestCriteria> {
 
 	private static final long serialVersionUID = -7556621082342162960L;
 
+	private static final String SHOW_MESSAGE = "showRequest";
+	private static final String COLUMN_ACTIONS = "actions";
+
 	public ShareRequestGrid(boolean isInEagerMode, ShareRequestCriteria criteria) {
 		super(SormasToSormasShareRequestIndexDto.class);
+
+		initGridColumns();
 
 		if (isInEagerMode) {
 			setCriteria(criteria);
@@ -41,6 +63,58 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
+	}
+
+	private void initGridColumns() {
+		addShowColumn((request) -> {
+		});
+		addComponentColumn(indexDto -> createActionButtons(indexDto)).setId(COLUMN_ACTIONS);
+
+		setColumns(
+			SHOW_MESSAGE,
+			SormasToSormasShareRequestIndexDto.UUID,
+			SormasToSormasShareRequestIndexDto.CREATION_DATE,
+			SormasToSormasShareRequestIndexDto.DATA_TYPE,
+			SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME,
+			SormasToSormasShareRequestIndexDto.SENDER_NAME,
+			SormasToSormasShareRequestIndexDto.STATUS,
+			COLUMN_ACTIONS);
+
+		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<SormasToSormasShareRequestIndexDto, Date>) getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
+		getColumn(SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME).setSortable(false);
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(SormasToSormasShareRequestIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+		}
+	}
+
+	private Component createActionButtons(SormasToSormasShareRequestIndexDto indexDto) {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(true);
+
+		if (indexDto.getStatus() == ShareRequestStatus.PENDING) {
+			layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
+				ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
+			}, ValoTheme.BUTTON_SMALL));
+			layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
+				ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
+			}, ValoTheme.BUTTON_SMALL));
+		}
+
+		return layout;
+	}
+
+	protected void addShowColumn(Consumer<SormasToSormasShareRequestIndexDto> handler) {
+
+		Column<SormasToSormasShareRequestIndexDto, String> showColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
+		showColumn.setId(SHOW_MESSAGE);
+		showColumn.setSortable(false);
+		showColumn.setWidth(20);
+
+		addItemClickListener(new ShowDetailsListener<>(SHOW_MESSAGE, handler::accept));
 	}
 
 	public void reload() {

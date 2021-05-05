@@ -13,10 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.event;
 
-public enum SormasToSormasShareStatus {
-	PENDING,
-	REJECTED,
-	ACCEPTED
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.backend.sormastosormas.ShareRequestData;
+
+public class EventShareRequestData extends ShareRequestData<SormasToSormasEventPreview> {
 }

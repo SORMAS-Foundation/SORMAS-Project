@@ -26,7 +26,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -47,6 +47,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String EVENT_PARTICIPANT = "eventParticipant";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
+	public static final String REQUEST_UUID = "requestUuid";
 
 	private Case caze;
 
@@ -76,7 +77,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private String comment;
 
-	private SormasToSormasShareStatus status;
+	private String requestUuid;
+	private ShareRequestStatus requestStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
@@ -210,12 +212,21 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.comment = comment;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public SormasToSormasShareStatus getStatus() {
-		return status;
+	@Column(unique = true, length = 36)
+	public String getRequestUuid() {
+		return requestUuid;
 	}
 
-	public void setStatus(SormasToSormasShareStatus status) {
-		this.status = status;
+	public void setRequestUuid(String requestUuid) {
+		this.requestUuid = requestUuid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ShareRequestStatus getRequestStatus() {
+		return requestStatus;
+	}
+
+	public void setRequestStatus(ShareRequestStatus requestStatus) {
+		this.requestStatus = requestStatus;
 	}
 }

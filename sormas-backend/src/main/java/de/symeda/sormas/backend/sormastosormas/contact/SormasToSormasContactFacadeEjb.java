@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.sormastosormas.contact;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
@@ -59,7 +59,9 @@ public class SormasToSormasContactFacadeEjb
 	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, ProcessedContactData>
 	implements SormasToSormasContactFacade {
 
-	private static final String SHARED_CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + CONTACT_REQUEST_ENDPOINT;
+	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
+	private static final String CONTACT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_REJECT_ENDPOINT;
+	private static final String CONTACT_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ACCEPT_ENDPOINT;
 	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 	public static final String SYNC_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_SYNC_ENDPOINT;
 
@@ -80,12 +82,14 @@ public class SormasToSormasContactFacadeEjb
 
 	public SormasToSormasContactFacadeEjb() {
 		super(
-			SHARED_CONTACT_REQUEST_ENDPOINT,
+			CONTACT_REQUEST_ENDPOINT,
+			CONTACT_REQUEST_REJECT_ENDPOINT,
+			CONTACT_REQUEST_ACCEPT_ENDPOINT,
 			SAVE_SHARED_CONTACT_ENDPOINT,
 			SYNC_SHARED_CONTACT_ENDPOINT,
 			Captions.Contact,
 			ShareRequestDataType.CONTACT,
-			ContactShareDataPreview.class);
+			ContactShareRequestData.class);
 	}
 
 	@Override

@@ -43,6 +43,7 @@ import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -237,6 +238,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 			infoLayout.addComponent(senderLabel);
 
+			Label statusLabel =
+				new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + shareInfo.getRequestStatus());
+			infoLayout.addComponent(statusLabel);
+
 			Label shareDateLabel = new Label(
 				I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
 			infoLayout.addComponent(shareDateLabel);
@@ -248,7 +253,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			addComponent(infoLayout);
 			setExpandRatio(infoLayout, 1);
 
-			if (syncListener != null && !shareInfo.isOwnershipHandedOver()) {
+			if (syncListener != null && shareInfo.getRequestStatus() == ShareRequestStatus.ACCEPTED && !shareInfo.isOwnershipHandedOver()) {
 				addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasSync, VaadinIcons.REFRESH, (e) -> {
 					syncListener.accept(shareInfo);
 				}));

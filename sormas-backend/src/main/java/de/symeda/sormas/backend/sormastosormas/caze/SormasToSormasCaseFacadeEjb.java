@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.sormastosormas.caze;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_ENDPOINT;
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
@@ -34,6 +33,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -57,7 +57,9 @@ public class SormasToSormasCaseFacadeEjb
 	extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, ProcessedCaseData>
 	implements SormasToSormasCaseFacade {
 
-	public static final String SHARED_CASE_REQUEST_ENDPOINT = RESOURCE_PATH + CASE_REQUEST_ENDPOINT;
+	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
+	public static final String CASE_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_REJECT_ENDPOINT;
+	public static final String CASE_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ACCEPT_ENDPOINT;
 	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
 	public static final String SYNC_CASE_ENDPOINT = RESOURCE_PATH + CASE_SYNC_ENDPOINT;
 
@@ -76,12 +78,14 @@ public class SormasToSormasCaseFacadeEjb
 
 	public SormasToSormasCaseFacadeEjb() {
 		super(
-			SHARED_CASE_REQUEST_ENDPOINT,
+			CASE_REQUEST_ENDPOINT,
+			CASE_REQUEST_REJECT_ENDPOINT,
+			CASE_REQUEST_ACCEPT_ENDPOINT,
 			SAVE_SHARED_CASE_ENDPOINT,
 			SYNC_CASE_ENDPOINT,
 			Captions.CaseData,
 			ShareRequestDataType.CASE,
-			CaseShareDataPreview.class);
+			CaseShareRequestData.class);
 	}
 
 	@Override

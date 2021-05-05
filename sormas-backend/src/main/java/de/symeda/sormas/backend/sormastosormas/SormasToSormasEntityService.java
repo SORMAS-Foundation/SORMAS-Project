@@ -13,10 +13,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.event;
+package de.symeda.sormas.backend.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
-import de.symeda.sormas.backend.sormastosormas.ShareDataPreview;
+import java.util.List;
 
-public class EventShareDataPreview extends ShareDataPreview<SormasToSormasEventPreview> {
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+
+public interface SormasToSormasEntityService<ADO extends AbstractDomainObject> {
+
+	ADO getByUuid(String uuid);
+
+	List<ADO> getByUuids(List<String> uuid);
+
+	List<ADO> getByShareRequest(String requestUuid);
 }

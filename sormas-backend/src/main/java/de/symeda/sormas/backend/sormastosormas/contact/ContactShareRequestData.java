@@ -13,31 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.contact;
 
-import java.util.List;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.backend.sormastosormas.ShareRequestData;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+public class ContactShareRequestData extends ShareRequestData<SormasToSormasContactPreview> {
 
-public class ShareDataPreview<P> {
-
-	private List<P> previews;
-
-	private SormasToSormasOriginInfoDto originInfo;
-
-	public ShareDataPreview() {
-	}
-
-	public ShareDataPreview(List<P> previews, SormasToSormasOriginInfoDto originInfo) {
-		this.previews = previews;
-		this.originInfo = originInfo;
-	}
-
-	public List<P> getPreviews() {
-		return previews;
-	}
-
-	public SormasToSormasOriginInfoDto getOriginInfo() {
-		return originInfo;
-	}
 }

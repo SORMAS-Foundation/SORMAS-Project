@@ -15,8 +15,14 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum ShareRequestStatus {
 	PENDING,
 	ACCEPTED,
-	REJECTED
+	REJECTED;
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

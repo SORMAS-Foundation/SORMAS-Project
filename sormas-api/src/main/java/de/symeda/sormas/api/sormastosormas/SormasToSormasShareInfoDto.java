@@ -19,6 +19,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
@@ -37,7 +38,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
 	private String comment;
-	private SormasToSormasShareStatus status;
+	private ShareRequestStatus requestStatus;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -135,11 +136,11 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.comment = comment;
 	}
 
-	public SormasToSormasShareStatus getStatus() {
-		return status;
+	public ShareRequestStatus getRequestStatus() {
+		return requestStatus;
 	}
 
-	public void setStatus(SormasToSormasShareStatus status) {
-		this.status = status;
+	public void setRequestStatus(ShareRequestStatus requestStatus) {
+		this.requestStatus = requestStatus;
 	}
 }

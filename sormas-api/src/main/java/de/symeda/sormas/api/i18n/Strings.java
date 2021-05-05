@@ -125,6 +125,7 @@ public interface Strings {
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRejectSormasToSormasShareRequest = "confirmationRejectSormasToSormasShareRequest";
 	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
 	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
@@ -514,6 +515,7 @@ public interface Strings {
 	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
+	String headingRejectSormasToSormasShareRequest = "headingRejectSormasToSormasShareRequest";
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";

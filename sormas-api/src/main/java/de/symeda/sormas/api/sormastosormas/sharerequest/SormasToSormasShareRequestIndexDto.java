@@ -22,6 +22,8 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 2314636780125234734L;
 
+	public static final String I18N_PREFIX = "SormasToSormasShareRequest";
+
 	public static final String UUID = "uuid";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String DATA_TYPE = "dataType";

@@ -78,7 +78,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	public SormasToSormasOriginInfo getOriginInfo() {
 		return originInfo;
 	}

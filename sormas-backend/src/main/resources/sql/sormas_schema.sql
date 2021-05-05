@@ -7243,7 +7243,14 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastos
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
 ALTER TABLE sormastosormassharerequest_history OWNER TO sormas_user;
 
-ALTER TABLE sormastosormasshareinfo ADD COLUMN status varchar(255);
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN requestUuid varchar(36) unique,
+    ADD COLUMN requestStatus varchar(255);
+
+update sormastosormasshareinfo set requestUuid = generate_base32_uuid();
+
+ALTER TABLE sormastosormasshareinfo
+    ALTER COLUMN requestUuid SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (366, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
 -- *** Insert new sql commands BEFORE this line ***
