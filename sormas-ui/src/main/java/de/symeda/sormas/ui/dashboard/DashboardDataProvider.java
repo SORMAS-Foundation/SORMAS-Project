@@ -150,7 +150,7 @@ public class DashboardDataProvider {
 			CaseCriteria caseCriteria = new CaseCriteria();
 			caseCriteria.region(region).district(district).disease(disease).newCaseDateType(newCaseDateType).newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
-			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true, true));
+			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
 			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));

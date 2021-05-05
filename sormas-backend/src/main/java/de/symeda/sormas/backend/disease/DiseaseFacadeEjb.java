@@ -96,7 +96,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		}
 
 		//last report district
-		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true, true);
+		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true);
 
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);

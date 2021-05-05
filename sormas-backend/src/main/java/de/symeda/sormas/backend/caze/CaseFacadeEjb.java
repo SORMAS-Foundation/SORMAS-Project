@@ -1341,10 +1341,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return randomGenerator.ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
 	}
 
-	public Map<Disease, District> getLastReportedDistrictByDisease(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts) {
+	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, boolean excludeCasesFromContacts) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -1586,7 +1583,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
+	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeCasesFromContacts) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);

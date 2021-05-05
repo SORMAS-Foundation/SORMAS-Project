@@ -115,7 +115,7 @@ public interface CaseFacade {
 
 	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
-	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeCasesFromContacts);
 
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
