@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.AreaDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
@@ -401,6 +402,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new ContinentDtoHelper().pullEntities(false);
 		new SubcontinentDtoHelper().pullEntities(false);
 		new CountryDtoHelper().pullEntities(false);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullEntities(false);
+		}
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
@@ -429,8 +434,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new FeatureConfigurationDtoHelper().pullEntities(false);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullEntities(false);
 			new CampaignFormMetaDtoHelper().pullEntities(false);
+			new CampaignDtoHelper().pullEntities(false);
 		}
 
 		ConfigProvider.setInitialSyncRequired(false);
@@ -659,6 +664,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// regions
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+		// areas
+		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
+		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids);
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
@@ -669,20 +677,16 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
 		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			// campaigns
-			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
-			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
-			// campaignFormMetas
-			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-		}
-
 		// order is important, due to dependencies
 
 		new ContinentDtoHelper().pullMissing(continentUuids);
 		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullMissing(areaUuids);
+		}
+
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);
@@ -693,9 +697,17 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new DiseaseVariantDtoHelper().pullMissing(diseaseVariantUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
+
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullMissing(featureConfigurationUuids);
-			new CampaignFormMetaDtoHelper().pullMissing(featureConfigurationUuids);
+			// campaigns
+			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
+			// campaignFormMetas
+			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+
+			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
+			new CampaignDtoHelper().pullMissing(campaignUuids);
 		}
 	}
 

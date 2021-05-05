@@ -137,7 +137,7 @@ public class CaseListCriteriaBuilder {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, caze, joins)
+					orderExpressionProvider.forProperty(sortProperty, caze, joins, cb)
 						.stream()
 						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
 						.collect(Collectors.toList()));
@@ -214,11 +214,15 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.FOLLOW_UP_STATUS),
 			root.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			root.get(Case.VACCINATION),
 			root.get(Case.CHANGE_DATE),
-			joins.getFacility().get(Facility.ID));
+			joins.getFacility().get(Facility.ID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.ID:
@@ -238,6 +242,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
+		case CaseIndexDto.VACCINATION:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));
@@ -286,12 +291,15 @@ public class CaseListCriteriaBuilder {
 				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
-				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
+				joins.getSymptoms().get(Symptoms.ONSET_DATE),
+				joins.getResponsibleRegion().get(Region.NAME),
+				joins.getResponsibleDistrict().get(District.NAME),
+				joins.getResponsibleCommunity().get(Community.NAME)));
 
 		return selections;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
+	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
@@ -301,13 +309,13 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.literal(49));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
-			return getIndexOrders(sortProperty, caze, joins);
+			return getIndexOrders(sortProperty, caze, joins, cb);
 		}
 	}
 
@@ -315,6 +323,9 @@ public class CaseListCriteriaBuilder {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),
@@ -324,6 +335,6 @@ public class CaseListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb);
 	}
 }

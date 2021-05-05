@@ -13,13 +13,14 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetailedDto> {
 
 	private static final long serialVersionUID = 3063406225342415037L;
 
-	public <V extends View> ContactGridDetailed(ContactCriteria criteria, Class<V> viewClass) {
-		super(ContactIndexDetailedDto.class, criteria, viewClass);
+	public ContactGridDetailed(ContactCriteria criteria, Class<? extends View> viewClass, Class<? extends ViewConfiguration> viewConfigurationClass) {
+		super(ContactIndexDetailedDto.class, criteria, viewClass, viewConfigurationClass);
 	}
 
 	protected List<ContactIndexDetailedDto> getGridData(

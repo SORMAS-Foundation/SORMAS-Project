@@ -137,19 +137,6 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected ValidationErrors validateExistingEntity(ContactDto entity) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (!contactFacade.exists(entity.getUuid())) {
-			errors.add(
-				I18nProperties.getCaption(Captions.Contact),
-				I18nProperties.getValidationError(Validations.sormasToSormasReturnContactNotExists));
-		}
-
-		return errors;
-	}
-
-	@Override
 	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Contact entity) {
 		sormasToSormasShareInfo.setContact(entity);
 	}
@@ -157,6 +144,11 @@ public class SormasToSormasContactFacadeEjb
 	@Override
 	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
 		return shareInfoService.getByContactAndOrganization(entityUuid, organizationId);
+	}
+
+	@Override
+	protected List<ContactDto> loadExistingEntities(List<String> uuids) {
+		return contactFacade.getByUuids(uuids);
 	}
 
 	@LocalBean

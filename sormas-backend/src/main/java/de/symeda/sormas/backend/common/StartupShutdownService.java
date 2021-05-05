@@ -33,6 +33,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DefaultUserHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -105,14 +107,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
-	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
-
-	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
-
-	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
-
 	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
-
+	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
+	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
 			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
@@ -163,6 +161,20 @@ public class StartupShutdownService {
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+
+	static boolean isBlankOrSqlComment(String sqlLine) {
+		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
+	}
+
+	static Integer extractSchemaVersion(String sqlLine) {
+
+		return Optional.ofNullable(sqlLine)
+			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+			.filter(Matcher::matches)
+			.map(m -> m.group(1))
+			.map(Integer::parseInt)
+			.orElse(null);
+	}
 
 	@PostConstruct
 	public void startup() {
@@ -324,10 +336,14 @@ public class StartupShutdownService {
 		if (userService.count() == 0) {
 
 			// Create Admin
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			admin.setUserName("admin");
-			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.ADMIN,
+					"ad",
+					"min",
+					DefaultUserHelper.ADMIN_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
 
 			if (!configFacade.isCreateDefaultEntities()) {
 				// return if isCreateDefaultEntities() is false
@@ -347,95 +363,147 @@ public class StartupShutdownService {
 			logger.info("Create default users");
 
 			// Create Surveillance Supervisor
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
-			surveillanceSupervisor.setUserName("SurvSup");
-			surveillanceSupervisor.setRegion(region);
-			userService.persist(surveillanceSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				"Surveillance",
+				"Supervisor",
+				DefaultUserHelper.SURV_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Case Supervisor
-			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor", "CaseSup");
-			caseSupervisor.setUserName("CaseSup");
-			caseSupervisor.setRegion(region);
-			userService.persist(caseSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(caseSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.CASE_SUPERVISOR,
+				"Case",
+				"Supervisor",
+				DefaultUserHelper.CASE_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Contact Supervisor
-			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor", "ContSup");
-			contactSupervisor.setUserName("ContSup");
-			contactSupervisor.setRegion(region);
-			userService.persist(contactSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(contactSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.CONTACT_SUPERVISOR,
+				"Contact",
+				"Supervisor",
+				DefaultUserHelper.CONT_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Point of Entry Supervisor
-			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor", "PoeSup");
-			poeSupervisor.setUserName("PoeSup");
-			poeSupervisor.setRegion(region);
-			userService.persist(poeSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(poeSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.POE_SUPERVISOR,
+				"Point of Entry",
+				"Supervisor",
+				DefaultUserHelper.POE_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Laboratory Officer
-			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
-			laboratoryOfficer.setUserName("LabOff");
-			laboratoryOfficer.setLaboratory(laboratory);
-			userService.persist(laboratoryOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(laboratoryOfficer));
+			createAndPersistDefaultUser(
+				UserRole.LAB_USER,
+				"Laboratory",
+				"Officer",
+				DefaultUserHelper.LAB_OFF_USERNAME_AND_PASSWORD,
+				u -> u.setLaboratory(laboratory));
 
 			// Create Event Officer
-			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
-			eventOfficer.setUserName("EveOff");
-			eventOfficer.setRegion(region);
-			userService.persist(eventOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(eventOfficer));
+			createAndPersistDefaultUser(
+				UserRole.EVENT_OFFICER,
+				"Event",
+				"Officer",
+				DefaultUserHelper.EVE_OFF_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create National User
-			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
-			nationalUser.setUserName("NatUser");
-			userService.persist(nationalUser);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalUser));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.NATIONAL_USER,
+					"National",
+					"User",
+					DefaultUserHelper.NAT_USER_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
 
 			// Create National Clinician
-			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician", "NatClin");
-			nationalClinician.setUserName("NatClin");
-			userService.persist(nationalClinician);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalClinician));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.NATIONAL_CLINICIAN,
+					"National",
+					"Clinician",
+					DefaultUserHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
 
 			// Create Surveillance Officer
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance", "Officer", "SurvOff");
-			surveillanceOfficer.setUserName("SurvOff");
-			surveillanceOfficer.setRegion(region);
-			surveillanceOfficer.setDistrict(district);
-			userService.persist(surveillanceOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceOfficer));
+			//@formatter:off
+			User surveillanceOfficer = createAndPersistDefaultUser(
+				UserRole.SURVEILLANCE_OFFICER,
+				"Surveillance",
+				"Officer",
+				DefaultUserHelper.SURV_OFF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setRegion(region);
+					u.setDistrict(district);
+				});
+			//@formatter:on
 
 			// Create Hospital Informant
-			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant", "HospInf");
-			hospitalInformant.setUserName("HospInf");
-			hospitalInformant.setRegion(region);
-			hospitalInformant.setDistrict(district);
-			hospitalInformant.setHealthFacility(facility);
-			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(hospitalInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.HOSPITAL_INFORMANT,
+					"Hospital",
+					"Informant",
+					DefaultUserHelper.HOSP_INF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setHealthFacility(facility);
+						u.setAssociatedOfficer(surveillanceOfficer);
+					});
+			//@formatter:on
 
 			// Create Community Officer
-			User communityOfficer = MockDataGenerator.createUser(UserRole.COMMUNITY_OFFICER, "Community", "Officer", "CommOff");
-			communityOfficer.setUserName("CommOff");
-			communityOfficer.setRegion(region);
-			communityOfficer.setDistrict(district);
-			communityOfficer.setCommunity(community);
-			userService.persist(communityOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(communityOfficer));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.COMMUNITY_OFFICER,
+					"Community",
+					"Officer",
+					DefaultUserHelper.COMM_OFF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setCommunity(community);
+					});
+			//@formatter:on
 
-			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
-			poeInformant.setUserName("PoeInf");
-			poeInformant.setRegion(region);
-			poeInformant.setDistrict(district);
-			poeInformant.setPointOfEntry(pointOfEntry);
-			poeInformant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(poeInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(poeInformant));
+			// Create Poe Informant
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.POE_INFORMANT,
+					"Poe",
+					"Informant",
+					DefaultUserHelper.POE_INF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setUserName("PoeInf");
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setPointOfEntry(pointOfEntry);
+						u.setAssociatedOfficer(surveillanceOfficer);
+					});
+			//@formatter:on
+
 		}
+	}
+
+	private User createAndPersistDefaultUser(
+		UserRole userRole,
+		String firstName,
+		String lastName,
+		DataHelper.Pair<String, String> usernameAndPassword,
+		Consumer<User> userModificator) {
+		User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
+		user.setUserName(usernameAndPassword.getElement0());
+		userModificator.accept(user);
+		userService.persist(user);
+		userUpdateEvent.fire(new UserUpdateEvent(user));
+		return user;
+
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
@@ -511,7 +579,7 @@ public class StartupShutdownService {
 
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
-	 * 
+	 *
 	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
@@ -644,20 +712,6 @@ public class StartupShutdownService {
 		}
 	}
 
-	static boolean isBlankOrSqlComment(String sqlLine) {
-		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
-	}
-
-	static Integer extractSchemaVersion(String sqlLine) {
-
-		return Optional.ofNullable(sqlLine)
-			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
-			.filter(Matcher::matches)
-			.map(m -> m.group(1))
-			.map(Integer::parseInt)
-			.orElse(null);
-	}
-
 	private void upgrade() {
 
 		@SuppressWarnings("unchecked")
@@ -671,7 +725,7 @@ public class StartupShutdownService {
 			case 95:
 				// update follow up and status for all contacts
 				for (Contact contact : contactService.getAll()) {
-					contactService.updateFollowUpUntilAndStatus(contact);
+					contactService.updateFollowUpDetails(contact, false);
 					contactService.udpateContactStatus(contact);
 				}
 				break;

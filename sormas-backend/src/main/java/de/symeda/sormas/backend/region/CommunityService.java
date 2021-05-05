@@ -59,9 +59,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Community.NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Community.NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Community.NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -80,10 +78,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Community.EXTERNAL_ID)), externalId.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Community.EXTERNAL_ID))), externalId.trim().toLowerCase()));
-
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Community.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -130,17 +125,19 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(cb.like(cb.lower(from.get(District.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), textFilter);
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}

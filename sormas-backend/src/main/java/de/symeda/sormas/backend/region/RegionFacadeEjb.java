@@ -130,6 +130,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
 
 		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
+		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
 
 		cq.multiselect(
 			root.get(Region.CREATION_DATE),
@@ -142,7 +143,8 @@ public class RegionFacadeEjb implements RegionFacade {
 			root.get(Region.EXTERNAL_ID),
 			country.get(Country.UUID),
 			country.get(Country.DEFAULT_NAME),
-			country.get(Country.ISO_CODE));
+			country.get(Country.ISO_CODE),
+			area.get(Area.UUID));
 	}
 
 	@Override
@@ -152,15 +154,16 @@ public class RegionFacadeEjb implements RegionFacade {
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
 		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
+		Join<Region, Country> country = region.join(Region.COUNTRY, JoinType.LEFT);
 
 		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -172,6 +175,9 @@ public class RegionFacadeEjb implements RegionFacade {
 					break;
 				case Region.AREA:
 					expression = area.get(Area.NAME);
+					break;
+				case RegionIndexDto.COUNTRY:
+					expression = country.get(Country.DEFAULT_NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -285,8 +291,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		if (entity == null) {
 			return null;
 		}
-		RegionReferenceDto dto = new RegionReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new RegionReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
 	public RegionDto toDto(Region entity) {

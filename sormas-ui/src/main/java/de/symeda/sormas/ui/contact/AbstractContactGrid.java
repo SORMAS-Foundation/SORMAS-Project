@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -60,17 +61,24 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
-	@SuppressWarnings("rawtypes")
-	Class viewClass;
+	private DataProviderListener<IndexDto> dataProviderListener;
 
-	public <V extends View> AbstractContactGrid(Class<IndexDto> beanType, ContactCriteria criteria, Class<V> viewClass) {
+	private final Class<? extends View> viewClass;
+	private final Class<? extends ViewConfiguration> viewConfigurationClass;
+
+	public AbstractContactGrid(
+		Class<IndexDto> beanType,
+		ContactCriteria criteria,
+		Class<? extends View> viewClass,
+		Class<? extends ViewConfiguration> viewConfigurationClass) {
 		super(beanType);
 
 		this.viewClass = viewClass;
+		this.viewConfigurationClass = viewConfigurationClass;
 
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(viewConfigurationClass);
 		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
@@ -150,6 +158,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
+
+		getColumn(ContactIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getColumnList() {
@@ -173,6 +183,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.FOLLOW_UP_STATUS,
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
+					ContactIndexDto.VACCINATION,
 					NUMBER_OF_VISITS),
 				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
 			.flatMap(s -> s);
@@ -198,7 +209,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
-		if (ViewModelProviders.of(ContactsView.class).get(ContactsViewConfiguration.class).isInEagerMode()) {
+		if (ViewModelProviders.of(viewClass).get(viewConfigurationClass).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
@@ -225,6 +236,14 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 
 	protected abstract List<IndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

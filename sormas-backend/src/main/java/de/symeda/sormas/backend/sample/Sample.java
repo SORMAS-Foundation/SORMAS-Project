@@ -69,7 +69,7 @@ import de.symeda.sormas.backend.user.User;
 @Audited
 public class Sample extends CoreAdo implements SormasToSormasEntity {
 
-	private static final long serialVersionUID = -7196712070188634978L;
+    private static final long serialVersionUID = -7196712070188634978L;
 
 	public static final String TABLE_NAME = "samples";
 

@@ -16,6 +16,8 @@ public interface ExternalJournalFacade {
 
 	String getPatientDiaryAuthToken();
 
+	ExternalJournalValidation validateSymptomJournalPerson(PersonDto person);
+
 	PatientDiaryPersonDto getPatientDiaryPerson(String personUuid);
 
 	PatientDiaryResult registerPatientDiaryPerson(PersonDto person);
@@ -23,6 +25,4 @@ public interface ExternalJournalFacade {
 	ExternalJournalValidation validatePatientDiaryPerson(PersonDto person);
 
 	PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto personDto);
-
-	void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate);
 }

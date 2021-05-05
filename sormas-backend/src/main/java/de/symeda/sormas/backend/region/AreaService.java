@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.AreaCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
@@ -34,8 +35,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(getElementClass());
 		Root<Area> from = cq.from(getElementClass());
-		Predicate filter =
-			cb.or(cb.equal(cb.trim(from.get(Area.NAME)), name.trim()), cb.equal(cb.lower(cb.trim(from.get(Area.NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Area.NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -49,17 +49,19 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		Predicate filter = null;
 		if (StringUtils.isNotBlank(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
-			for (String s : textFilters) {
-				String textFilter = "%" + s.toLowerCase() + "%";
-				if (StringUtils.isNotBlank(textFilter)) {
-					Predicate likeFilters = cb.or(cb.like(cb.lower(areaRoot.get(Region.NAME)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, areaRoot.get(Region.NAME), textFilter);
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(areaRoot.get(Area.ARCHIVED), false), cb.isNull(areaRoot.get(Area.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(areaRoot.get(Area.ARCHIVED), false), cb.isNull(areaRoot.get(Area.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(areaRoot.get(Area.ARCHIVED), true));
 			}

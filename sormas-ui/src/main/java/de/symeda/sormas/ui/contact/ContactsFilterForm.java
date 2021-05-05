@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -24,6 +25,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -70,6 +72,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.REPORTING_USER_ROLE,
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+		ContactCriteria.VACCINATION,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
 		ContactCriteria.BIRTHDATE_DD)
@@ -100,6 +103,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return new String[] {
 			ContactIndexDto.CONTACT_CLASSIFICATION,
 			ContactIndexDto.DISEASE,
+			ContactCriteria.DISEASE_VARIANT,
 			ContactIndexDto.CASE_CLASSIFICATION,
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
@@ -117,6 +121,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CLASSIFICATION, 140));
 		addField(FieldConfiguration.pixelSized(ContactIndexDto.DISEASE, 140));
+		ComboBox diseaseVariantField = addField(FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.DISEASE_VARIANT,I18nProperties.getCaption(Captions.Contact_cazeDiseaseVariant), 140));
+		diseaseVariantField.setValue(null);
+		diseaseVariantField.setEnabled(false);
 
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
@@ -200,6 +207,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
@@ -347,6 +358,18 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			populateSurveillanceOfficersForDistrict(district);
 			break;
 		}
+		case ContactIndexDto.DISEASE: {
+			Disease disease = (Disease) event.getProperty().getValue();
+			ComboBox diseaseVariantField = getField(ContactCriteria.DISEASE_VARIANT);
+			if (disease != null) {
+				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+				FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+				diseaseVariantField.setEnabled(!diseaseVariants.isEmpty());
+			} else {
+				diseaseVariantField.setValue(null);
+				diseaseVariantField.setEnabled(false);
+			}
+		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
 			getValue().followUpUntilToPrecise(event.getProperty().getValue() != null);
 			break;
@@ -455,7 +478,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			false,
 			false,
 			null,
-			ContactDateType.class,
+			ContactDateType.values(),
 			I18nProperties.getString(Strings.promptContactDateType),
 			null,
 			this);

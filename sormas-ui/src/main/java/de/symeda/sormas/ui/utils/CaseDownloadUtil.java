@@ -37,23 +37,25 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 public class CaseDownloadUtil {
 
 	public static StreamResource createCaseExportResource(
-			CaseCriteria criteria,
-			Supplier<Collection<String>> selectedRows,
-			CaseExportType exportType,
-			ExportConfigurationDto exportConfiguration) {
+		CaseCriteria criteria,
+		Supplier<Collection<String>> selectedRows,
+		CaseExportType exportType,
+		ExportConfigurationDto exportConfiguration) {
 
 		return DownloadUtil.createCsvExportStreamResource(
-				CaseExportDto.class,
-				exportType,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-						.getExportList(criteria, selectedRows.get(), exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
-				CaseDownloadUtil::captionProvider,
-				ExportEntityName.CASES,
-				exportConfiguration);
+			CaseExportDto.class,
+			exportType,
+			(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
+				.getExportList(criteria, selectedRows.get(), exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+			CaseDownloadUtil::captionProvider,
+			ExportEntityName.CASES,
+			exportConfiguration);
 	}
 
-	public static String getPropertyCaption(String propertyId) {
-
+	public static String getPropertyCaption(String propertyId, String prefixId) {
+		if (prefixId != null) {
+			return I18nProperties.getPrefixCaption(prefixId, propertyId);
+		}
 		return I18nProperties.findPrefixCaption(
 			propertyId,
 			CaseExportDto.I18N_PREFIX,
@@ -66,7 +68,7 @@ public class CaseDownloadUtil {
 	}
 
 	private static String captionProvider(String propertyId, Class<?> type) {
-		String caption = getPropertyCaption(propertyId);
+		String caption = getPropertyCaption(propertyId, null);
 
 		if (Date.class.isAssignableFrom(type)) {
 			caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";

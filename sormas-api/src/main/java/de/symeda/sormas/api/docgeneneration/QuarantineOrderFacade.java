@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.docgeneneration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.Remote;
@@ -23,21 +24,27 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
 public interface QuarantineOrderFacade {
 
 	byte[] getGeneratedDocument(
 		String templateName,
+		DocumentWorkflow workflow,
 		ReferenceDto rootEntityReference,
-		UserReferenceDto userReference,
 		SampleReferenceDto sampleReference,
-		PathogenTestReferenceDto pathogenTest,
+		PathogenTestReferenceDto pathogenTestReference,
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
-	List<String> getAvailableTemplates(ReferenceDto referenceDto) throws DocumentTemplateException;
+	Map<ReferenceDto, byte[]> getGeneratedDocuments(
+		String templateName,
+		DocumentWorkflow workflow,
+		List<ReferenceDto> rootEntityReferences,
+		Properties extraProperties)
+		throws DocumentTemplateException;
 
-	DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws DocumentTemplateException;
+	List<String> getAvailableTemplates(DocumentWorkflow workflow);
+
+	DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
 }

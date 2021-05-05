@@ -61,7 +61,7 @@ public class EventParticipantDto extends PseudonymizableDto implements SormasToS
 	private VaccinationInfoDto vaccinationInfo;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean isOwnershipHandedOver;
+	private boolean ownershipHandedOver;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -177,10 +177,10 @@ public class EventParticipantDto extends PseudonymizableDto implements SormasToS
 
 	@Override
 	public boolean isOwnershipHandedOver() {
-		return isOwnershipHandedOver;
+		return ownershipHandedOver;
 	}
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		isOwnershipHandedOver = ownershipHandedOver;
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

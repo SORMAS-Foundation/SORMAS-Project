@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -52,7 +54,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -60,6 +64,7 @@ import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -80,6 +85,8 @@ public class SharedDataProcessorHelper {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private SampleFacadeEjbLocal sampleFacade;
 
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
@@ -216,11 +223,16 @@ public class SharedDataProcessorHelper {
 	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
+		Map<String, SampleDto> existingSamplesMap =
+			sampleFacade.getByUuids(samples.stream().map(s -> s.getSample().getUuid()).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(SampleDto::getUuid, Function.identity()));
+
 		samples.forEach(sormasToSormasSample -> {
 			SampleDto sample = sormasToSormasSample.getSample();
 			ValidationErrors sampleErrors = new ValidationErrors();
 
-			sample.setReportingUser(userService.getCurrentUser().toReference());
+			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
 
 			DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
 				loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
@@ -260,13 +272,13 @@ public class SharedDataProcessorHelper {
 		return validationErrors;
 	}
 
-	public ValidationErrors processContactData(ContactDto contact, PersonDto person) {
+	public ValidationErrors processContactData(ContactDto contact, PersonDto person, ContactDto existingContact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		processPerson(person);
 
 		contact.setPerson(person.toReference());
-		contact.setReportingUser(userService.getCurrentUser().toReference());
+		updateReportingUser(contact, existingContact);
 
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
 			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
@@ -291,6 +303,12 @@ public class SharedDataProcessorHelper {
 				}
 			});
 		}
+	}
+
+	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntityDto originalEntiy) {
+		UserReferenceDto reportingUser = originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser();
+
+		entity.setReportingUser(reportingUser);
 	}
 
 	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {

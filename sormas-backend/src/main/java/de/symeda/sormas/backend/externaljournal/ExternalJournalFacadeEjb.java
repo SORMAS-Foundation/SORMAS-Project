@@ -34,6 +34,11 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
+	public ExternalJournalValidation validateSymptomJournalPerson(PersonDto person) {
+		return externalJournalService.validateSymptomJournalPerson(person);
+	}
+
+	@Override
 	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
 		return externalJournalService.registerPatientDiaryPerson(person);
 	}
@@ -48,8 +53,4 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 		return externalJournalService.deletePatientDiaryPerson(person);
 	}
 
-	@Override
-	public void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate) {
-		externalJournalService.notifyExternalJournalFollowUpUntilUpdate(personUuid, newFollowUpUntilDate, previousFollowUpUntilDate);
-	}
 }

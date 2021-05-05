@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -54,6 +55,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+
+	private DataProviderListener<SampleIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public SampleGrid(SampleCriteria criteria) {
@@ -194,6 +197,10 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			deselectAll();
 		}
 
+		if (ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 
@@ -219,5 +226,13 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			DataProvider.fromStream(FacadeProvider.getSampleFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<SampleIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

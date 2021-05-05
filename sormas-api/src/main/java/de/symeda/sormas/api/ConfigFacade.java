@@ -97,6 +97,8 @@ public interface ConfigFacade {
 
 	String getGeocodingLatitudeJsonPath();
 
+	String getGeocodingEPSG4326_WKT();
+
 	SymptomJournalConfig getSymptomJournalConfig();
 
 	PatientDiaryConfig getPatientDiaryConfig();
@@ -120,6 +122,8 @@ public interface ConfigFacade {
 	boolean isSmsServiceSetUp();
 
 	String getDemisJndiName();
+
+	boolean isSkipDefaultPasswordCheck();
 
 	boolean isAuditorAttributeLoggingEnabled();
 

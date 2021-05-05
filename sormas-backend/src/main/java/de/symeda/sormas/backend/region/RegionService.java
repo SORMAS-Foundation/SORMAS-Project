@@ -55,8 +55,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		Predicate filter = cb
-			.or(cb.equal(cb.trim(from.get(Region.NAME)), name.trim()), cb.equal(cb.lower(cb.trim(from.get(Region.NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Region.NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -71,10 +70,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Region.EXTERNAL_ID)), externalId.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Region.EXTERNAL_ID))), externalId.trim().toLowerCase()));
-
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Region.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -96,13 +92,15 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		Predicate filter = null;
 		if (criteria.getNameEpidLike() != null) {
 			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Region.NAME)), textFilter), cb.like(cb.lower(from.get(Region.EPID_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Region.NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Region.EPID_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {

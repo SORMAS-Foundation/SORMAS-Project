@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.region;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -29,4 +30,10 @@ public interface AreaFacade {
 	void deArchive(String areaUuid);
 
 	List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas);
+
+	List<AreaDto> getAllAfter(Date date);
+
+	List<AreaDto> getByUuids(List<String> uuids);
+
+	List<String> getAllUuids();
 }

@@ -24,7 +24,6 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -38,6 +37,7 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -46,6 +46,9 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private Join<Case, Person> person;
+	private Join<Case, Region> responsibleRegion;
+	private Join<Case, District> responsibleDistrict;
+	private Join<Case, Community> responsibleCommunity;
 	private Join<Case, Region> region;
 	private Join<Case, District> district;
 	private Join<Case, Community> community;
@@ -73,6 +76,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, DiseaseVariant> diseaseVariant;
 	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
+	private Join<Case, ExternalShareInfo> externalShareInfo;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -84,6 +88,30 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private void setPerson(Join<Case, Person> person) {
 		this.person = person;
+	}
+
+	public Join<Case, Region> getResponsibleRegion() {
+		return getOrCreate(responsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, this::setResponsibleRegion);
+	}
+
+	private void setResponsibleRegion(Join<Case, Region> responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public Join<Case, District> getResponsibleDistrict() {
+		return getOrCreate(responsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, this::setResponsibleDistrict);
+	}
+
+	private void setResponsibleDistrict(Join<Case, District> responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public Join<Case, Community> getResponsibleCommunity() {
+		return getOrCreate(responsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, this::setResponsibleCommunity);
+	}
+
+	private void setResponsibleCommunity(Join<Case, Community> responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public Join<Case, Region> getRegion() {
@@ -282,7 +310,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		return getOrCreate(diseaseVariant, Case.DISEASE_VARIANT, JoinType.LEFT, this::setDiseaseVariant);
 	}
 
-	public void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
+	private void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 
@@ -290,7 +318,15 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
 	}
 
-	public void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+	private void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
 		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	}
+
+	public Join<Case, ExternalShareInfo> getExternalShareInfo() {
+		return getOrCreate(externalShareInfo, Case.EXTERNAL_SHARES, JoinType.LEFT, this::setExternalShareInfo);
+	}
+
+	private void setExternalShareInfo(Join<Case, ExternalShareInfo> externalShareInfo) {
+		this.externalShareInfo = externalShareInfo;
 	}
 }

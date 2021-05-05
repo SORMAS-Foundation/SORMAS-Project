@@ -44,6 +44,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
+import de.symeda.sormas.app.person.edit.PersonValidator;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -129,6 +130,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		contentBinding.setCaseOriginClass(CaseOrigin.class);
+
+		PersonValidator
+			.initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
 
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -273,7 +277,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.caseDataDisease.setVisibility(GONE);
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityOrHome.setVisibility(GONE);
+			contentBinding.caseDataCommunity.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.facilityTypeGroup.setRequired(false);

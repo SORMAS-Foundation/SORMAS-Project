@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -27,24 +40,13 @@ import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-
-import android.util.Log;
-
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.util.MetaProperty;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
@@ -249,6 +251,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		} catch (SQLException | IllegalArgumentException e) {
 			Log.e(getTableName(), "Could not perform queryForAll");
 			throw new RuntimeException();
+		}
+	}
+
+	public List<ADO> queryActiveForAll() {
+		try {
+			QueryBuilder<ADO, Long> builder = queryBuilder();
+			Where<ADO, Long> where = builder.where();
+			where.and(where.eq(AbstractDomainObject.SNAPSHOT, false), where.eq(InfrastructureAdo.ARCHIVED, false));
+			return builder.query();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -622,9 +635,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				// we now have to write the value from source into target and base
 				// there are four types of properties:
 
-				// 1. embedded domain objects like a Location or Symptoms
-				// -> call merge for the object
-				if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
+				if (property.getReadMethod().isAnnotationPresent(MetaProperty.class)) {
+					property.getWriteMethod().invoke(current, property.getReadMethod().invoke(source));
+					// 1. embedded domain objects like a Location or Symptoms
+					// -> call merge for the object
+				} else if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
 					// get the embedded entity
 					AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
@@ -632,7 +647,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					if (embeddedSource != null) {
 						// merge it - will return the merged result
 						AbstractDomainObject embeddedCurrent =
-							DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+								DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
 						if (embeddedCurrent == null) {
 							throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
@@ -641,68 +656,72 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 						property.getWriteMethod().invoke(current, embeddedCurrent);
 					}
 				}
-				// 2. "value" types like String, Date, Enum, ...
-				// -> just copy value from source into target and base
-				// 3. reference domain objects like a reference to a Person or a District
-				// -> just copy reference value from source into target and base
-				else if (DataHelper.isValueType(property.getPropertyType())
-					|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
+					// 2. "value" types like String, Date, Enum, ...
+					// -> just copy value from source into target and base
+					// 3. reference domain objects like a reference to a Person or a District
+					// -> just copy reference value from source into target and base
+					else if (DataHelper.isValueType(property.getPropertyType())
+							|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
 
-					Object sourceFieldValue = property.getReadMethod().invoke(source);
+						Object sourceFieldValue = property.getReadMethod().invoke(source);
 
-					if (current.isModified() && snapshot != null) {
-						// did the server send changes?
-						Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
-						if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
-							continue;
+						if (current.isModified() && snapshot != null) {
+							// did the server send changes?
+							Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
+							if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
+								continue;
+							}
+
+							// did we change anything and is the server data different from ours?
+							// - two persons may have set the exact same data
+							Object currentFieldValue = property.getReadMethod().invoke(current);
+							if (!DataHelper.equal(snapshotFieldValue, currentFieldValue) && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
+								// we have a conflict
+								Log.i(
+										source.getClass().getName(),
+										"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
+												+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
+												+ "'");
+
+								conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
+
+								// don't show the details of conflicts in json raw data to the user
+								if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
+									conflictStringBuilder.append("<br/><i>");
+									conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+									conflictStringBuilder.append("</i>");
+									conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+									conflictStringBuilder.append("<br/><i>");
+									conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+									conflictStringBuilder.append("</i>");
+									conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+									conflictStringBuilder.append("<br/>");
+								}
+							}
+
+							// update snapshot
+							property.getWriteMethod().invoke(snapshot, sourceFieldValue);
 						}
 
-						// did we change anything and is the server data different from ours?
-						// - two persons may have set the exact same data
-						Object currentFieldValue = property.getReadMethod().invoke(current);
-						if (!DataHelper.equal(snapshotFieldValue, currentFieldValue) && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
-							// we have a conflict
-							Log.i(
-								source.getClass().getName(),
-								"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
-									+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
-									+ "'");
+						// update result
+						property.getWriteMethod().invoke(current, sourceFieldValue);
+					}
+					// 4. lists of embedded domain objects
+					else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
 
-							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-							conflictStringBuilder.append("<br/>");
+						// merging lists is done after entity is saved
+						if (collectionProperties == null) {
+							collectionProperties = new ArrayList<>();
 						}
+						collectionProperties.add(property);
 
-						// update snapshot
-						property.getWriteMethod().invoke(snapshot, sourceFieldValue);
+						// TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
+
+					} else {
+						// Other objects are not supported
+						throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
 					}
-
-					// update result
-					property.getWriteMethod().invoke(current, sourceFieldValue);
 				}
-				// 4. lists of embedded domain objects
-				else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
-
-					// merging lists is done after entity is saved
-					if (collectionProperties == null) {
-						collectionProperties = new ArrayList<>();
-					}
-					collectionProperties.add(property);
-
-					// TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
-
-				} else {
-					// Other objects are not supported
-					throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
-				}
-			}
 
 			DatabaseHelper.getSyncLogDao().popParentEntityName();
 
@@ -730,6 +749,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					// merge all collection elements - do this after saving because elements reference their parent
 					Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(current);
 					Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(source);
+					// todo - override not merge for manytomany collections
 					mergeCollection(currentCollection, sourceCollection, current);
 				}
 

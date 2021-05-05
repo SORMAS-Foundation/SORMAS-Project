@@ -52,6 +52,10 @@ public class SmsService {
 	@Asynchronous
 	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
 
+		if (!configFacade.isSmsServiceSetUp()) {
+			return;
+		}
+
 		// Remove the initial + that indicates the beginning of the country code to match the Nexmo specification of allowed number formats
 		if (phoneNumber.startsWith("+")) {
 			phoneNumber = phoneNumber.substring(1);

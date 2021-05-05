@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -52,22 +53,29 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -75,7 +83,9 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -84,14 +94,16 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -106,9 +118,9 @@ public class EventFacadeEjb implements EventFacade {
 	@EJB
 	private EventService eventService;
 	@EJB
-	private LocationFacadeEjbLocal locationFacade;
+	private EventGroupService eventGroupService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
@@ -119,6 +131,12 @@ public class EventFacadeEjb implements EventFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolFacade;
+	@EJB
+	private ExternalShareInfoService externalShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -211,13 +229,21 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public void deleteEvent(String eventUuid) {
+	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
-		eventService.delete(eventService.getByUuid(eventUuid));
+		Event event = eventService.getByUuid(eventUuid);
+
+		if (event.getEventStatus() == EventStatus.CLUSTER
+			&& externalSurveillanceToolFacade.isFeatureEnabled()
+			&& externalShareInfoService.isEventShared(event.getId())) {
+			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
+		}
+
+		eventService.delete(event);
 	}
 
 	@Override
@@ -231,7 +257,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				eventService.createUserFilter(cb, cq, event);
+				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
@@ -302,14 +328,16 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				eventService.createUserFilter(cb, cq, event);
+				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		cq.where(filter);
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -394,7 +422,11 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> deathCounts = new HashMap<>();
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
-		if (indexList != null) {
+		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = new HashMap<>();
+
+		if (CollectionUtils.isNotEmpty(indexList)) {
+			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
@@ -402,9 +434,8 @@ public class EventFacadeEjb implements EventFacade {
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInIndexlist = epRoot.get(EventParticipant.EVENT)
-				.get(AbstractDomainObject.UUID)
-				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+			Predicate isInIndexlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -430,9 +461,8 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInIndexlist = epRoot.get(EventParticipant.EVENT)
-				.get(AbstractDomainObject.UUID)
-				.in(indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+			isInIndexlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -455,6 +485,44 @@ public class EventFacadeEjb implements EventFacade {
 					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
 			}
+
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+				// Get latest EventGroup with EventGroup count
+				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+				Root<Event> eventRoot = latestEventCQ.from(Event.class);
+				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+				isInIndexlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, eventRoot.get(Event.UUID));
+				latestEventCQ.where(isInIndexlist);
+				latestEventCQ.multiselect(
+					eventRoot.get(Event.UUID),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.UUID),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.NAME),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+
+				objectQueryList = em.createQuery(latestEventCQ).getResultList();
+
+				if (objectQueryList != null) {
+					objectQueryList.forEach(r -> {
+						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+						EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
+						eventGroupsByEventId.put((String) r[0], eventGroups);
+					});
+				}
+			}
+
+			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			}
 		}
 
 		if (indexList != null) {
@@ -464,11 +532,24 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
 				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
+				Optional.ofNullable(eventGroupsByEventId.get(eventDto.getUuid())).ifPresent(eventDto::setEventGroups);
+				Optional.ofNullable(survToolShareCountAndDates.get(eventDto.getUuid())).ifPresent((c) -> {
+					eventDto.setSurveillanceToolStatus(c.getLatestStatus());
+					eventDto.setSurveillanceToolLastShareDate(c.getLatestDate());
+					eventDto.setSurveillanceToolShareCount(c.getCount());
+				});
 			}
 		}
 
 		return indexList;
 
+	}
+
+	@Override
+	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventCriteria);
+		return new Page<>(eventIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -538,7 +619,10 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
-		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
+
+		if (CollectionUtils.isNotEmpty(selectedRows)) {
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
+		}
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
@@ -556,17 +640,19 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> deathCounts = new HashMap<>();
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
-		if (exportList != null) {
+		Map<String, EventGroupReferenceDto> latestEventGroupByEventId = new HashMap<>();
+		Map<String, Long> eventGroupCountByEventId = new HashMap<>();
+		if (exportList != null && !exportList.isEmpty()) {
 			List<Object[]> objectQueryList = null;
+			List<String> eventUuids = exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList());
 
 			// Participant, Case and Death Count
 			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInExportlist = epRoot.get(EventParticipant.EVENT)
-				.get(AbstractDomainObject.UUID)
-				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
+			Predicate isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 			participantCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
@@ -592,9 +678,8 @@ public class EventFacadeEjb implements EventFacade {
 			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
 			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInExportlist = epRoot.get(EventParticipant.EVENT)
-				.get(AbstractDomainObject.UUID)
-				.in(exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList()));
+			isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
 			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
@@ -617,6 +702,38 @@ public class EventFacadeEjb implements EventFacade {
 					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
 			}
+
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+				// Get latest EventGroup with EventGroup count
+				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+				Root<Event> eventRoot = latestEventCQ.from(Event.class);
+				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+				isInExportlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, eventRoot.get(Event.UUID));
+				latestEventCQ.where(notDeleted, isInExportlist);
+				latestEventCQ.multiselect(
+					eventRoot.get(Event.UUID),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.UUID),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.NAME),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+
+				objectQueryList = em.createQuery(latestEventCQ).getResultList();
+
+				if (objectQueryList != null) {
+					objectQueryList.forEach(r -> {
+						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+						latestEventGroupByEventId.put((String) r[0], eventGroupReference);
+						eventGroupCountByEventId.put((String) r[0], ((Number) r[3]).longValue());
+					});
+				}
+			}
 		}
 
 		if (exportList != null) {
@@ -626,6 +743,8 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
 				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
+				Optional.ofNullable(latestEventGroupByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setLatestEventGroup);
+				Optional.ofNullable(eventGroupCountByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setEventGroupCount);
 			}
 		}
 
@@ -704,6 +823,16 @@ public class EventFacadeEjb implements EventFacade {
 		addSuperordinateEventToSet(event, uuids);
 
 		return uuids;
+	}
+
+	@Override
+	public Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid) {
+		EventGroup eventGroup = eventGroupService.getByUuid(eventGroupUuid);
+		if (eventGroup == null) {
+			return Collections.emptySet();
+		}
+
+		return eventGroup.getEvents().stream().map(Event::getUuid).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -942,7 +1071,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
-		
+
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
@@ -1005,6 +1134,24 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
 		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
+	}
+
+	@Override
+	public Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids) {
+		Set<RegionReferenceDto> regionReferenceDtos = new HashSet<>();
+		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Event> eventRoot = cq.from(Event.class);
+			Join<Event, Location> locationJoin = eventRoot.join(Event.EVENT_LOCATION, JoinType.INNER);
+			Join<Location, Region> regionJoin = locationJoin.join(Location.REGION, JoinType.INNER);
+
+			cq.select(regionJoin.get(Region.UUID)).distinct(true);
+			cq.where(eventRoot.get(Event.UUID).in(batchedUuids));
+
+			em.createQuery(cq).getResultList().stream().map(RegionReferenceDto::new).forEach(regionReferenceDtos::add);
+		});
+		return regionReferenceDtos;
 	}
 
 	@LocalBean

@@ -33,6 +33,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityIndexDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -889,7 +890,7 @@ public class InfrastructureController {
 						}
 						break;
 					case FACILITY:
-						for (FacilityDto selectedRow : (Collection<FacilityDto>) selectedRows) {
+						for (FacilityIndexDto selectedRow : (Collection<FacilityIndexDto>) selectedRows) {
 							if (archive) {
 								FacadeProvider.getFacilityFacade().archive(selectedRow.getUuid());
 							} else {

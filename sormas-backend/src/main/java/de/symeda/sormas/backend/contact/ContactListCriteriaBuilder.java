@@ -17,7 +17,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -39,6 +38,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Stateless
 @LocalBean
@@ -64,7 +64,7 @@ public class ContactListCriteriaBuilder {
 			sortProperties);
 	}
 
-	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins joins) {
+	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins<Contact> joins) {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),
@@ -72,6 +72,9 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),
@@ -105,11 +108,15 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION),
 			joins.getContactOfficer().get(User.UUID),
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
 			joins.getCaze().get(Case.CASE_CLASSIFICATION),
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseRegion().get(Region.NAME),
 			joins.getCaseDistrict().get(District.UUID),
@@ -122,7 +129,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_TOKEN));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb) {
 
 		List<Expression<?>> expressions = new ArrayList<>();
 		switch (sortProperty.propertyName) {
@@ -156,6 +163,9 @@ public class ContactListCriteriaBuilder {
 		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
+		case ContactIndexDto.VACCINATION:
+			expressions.add(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION));
+			break;
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}
@@ -168,29 +178,33 @@ public class ContactListCriteriaBuilder {
 		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
 		List<Selection<?>> selections = Arrays.asList(
-				joins.getPerson().get(Person.SEX),
-				joins.getPerson().get(Person.APPROXIMATE_AGE),
-				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.STREET),
-				joins.getAddress().get(Location.HOUSE_NUMBER),
-				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-				joins.getAddress().get(Location.POSTAL_CODE),
-				((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
-				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME));
+			joins.getPerson().get(Person.SEX),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getAddress().get(Location.CITY),
+			joins.getAddress().get(Location.STREET),
+			joins.getAddress().get(Location.HOUSE_NUMBER),
+			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
+			joins.getAddress().get(Location.POSTAL_CODE),
+			((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+			joins.getReportingUser().get(User.FIRST_NAME),
+			joins.getReportingUser().get(User.LAST_NAME));
 		indexSelection.addAll(selections);
 
 		return indexSelection;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
+	private List<Expression<?>> getIndexDetailOrders(
+		SortProperty sortProperty,
+		Root<Contact> contact,
+		ContactJoins<Contact> joins,
+		CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case ContactIndexDetailedDto.SEX:
 		case ContactIndexDetailedDto.APPROXIMATE_AGE:
 		case ContactIndexDetailedDto.PHONE:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.literal(44));
 		case ContactIndexDetailedDto.DISTRICT_NAME:
 			return Collections.singletonList(joins.getDistrict().get(District.NAME));
 		case ContactIndexDetailedDto.CITY:
@@ -202,7 +216,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		default:
-			return this.getIndexOrders(sortProperty, contact, joins);
+			return this.getIndexOrders(sortProperty, contact, joins, cb);
 		}
 	}
 
@@ -217,12 +231,12 @@ public class ContactListCriteriaBuilder {
 		final CriteriaQuery<T> cq = cb.createQuery(type);
 		final Root<Contact> contact = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins joins = new ContactJoins(contact);
+		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
 
-		Predicate filter = buildContactFilter(contactCriteria,contactQueryContext);
+		Predicate filter = buildContactFilter(contactCriteria, contactQueryContext);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -237,7 +251,7 @@ public class ContactListCriteriaBuilder {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, contact, joins)
+					orderExpressionProvider.forProperty(sortProperty, contact, joins, cb)
 						.stream()
 						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
 						.collect(Collectors.toList()));
@@ -248,9 +262,7 @@ public class ContactListCriteriaBuilder {
 		return cq;
 	}
 
-	public Predicate buildContactFilter(
-		ContactCriteria contactCriteria,
-		ContactQueryContext contactQueryContext) {
+	public Predicate buildContactFilter(ContactCriteria contactCriteria, ContactQueryContext contactQueryContext) {
 
 		Predicate filter = null;
 
@@ -268,6 +280,6 @@ public class ContactListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb);
 	}
 }

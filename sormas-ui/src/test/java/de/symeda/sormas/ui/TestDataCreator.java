@@ -333,31 +333,6 @@ public class TestDataCreator {
 		return sample;
 	}
 
-	public PathogenTestDto createPathogenTest(
-		SampleReferenceDto sample,
-		PathogenTestType testType,
-		Date testDateTime,
-		FacilityReferenceDto lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		String testResultText,
-		boolean verified,
-		Disease disease) {
-
-		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
-		sampleTest.setTestType(testType);
-		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(lab);
-		sampleTest.setTestResult(testResult);
-		sampleTest.setTestResultText(testResultText);
-		sampleTest.setTestResultVerified(verified);
-		sampleTest.setTestedDisease(disease);
-
-		sampleTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(sampleTest);
-
-		return sampleTest;
-	}
-
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 
 		RegionDto region = createRegion(regionName);

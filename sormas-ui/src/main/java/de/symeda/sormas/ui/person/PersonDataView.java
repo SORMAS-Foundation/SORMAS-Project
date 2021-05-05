@@ -82,6 +82,10 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, PERSON_LOC);
 
+		if (FacadeProvider.getPersonFacade().isSharedWithoutOwnership(getReference().getUuid())) {
+			editComponent.setEnabled(false);
+		}
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 			VerticalLayout caseLayout = new VerticalLayout();
 			caseLayout.setMargin(false);

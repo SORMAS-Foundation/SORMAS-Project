@@ -311,7 +311,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
+		initLabelAndValidationListeners();
+	}
 
+	protected void initLabelAndValidationListeners() {
 		labelRequired = this.findViewById(R.id.required_indicator);
 		labelSoftRequired = this.findViewById(R.id.soft_required_indicator);
 		labelError = this.findViewById(R.id.error_indicator);

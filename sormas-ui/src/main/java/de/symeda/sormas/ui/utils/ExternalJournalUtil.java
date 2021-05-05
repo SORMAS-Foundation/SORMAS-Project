@@ -74,12 +74,17 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		// TODO: implement cancel for PIA
-		Button.ClickListener cancelListener = clickEvent -> {
-		};
-		Button.ClickListener openListener = clickEvent -> openSymptomJournalWindow(person);
 		PopupButton ediaryButton =
 			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.symptomJournalOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button.ClickListener openListener = clickEvent -> {
+			openSymptomJournalWindow(person);
+			ediaryButton.setPopupVisible(false);
+		};
+		// TODO: implement cancel for PIA
+		Button.ClickListener cancelListener = clickEvent -> {
+			VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageDeletionUnsupportedByExternalJournalWarning));
+			ediaryButton.setPopupVisible(false);
+		};
 		Button cancelButton =
 			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
 		Button openButton =
@@ -92,7 +97,7 @@ public class ExternalJournalUtil {
 	private static Button createSymptomJournalRegisterButton(PersonDto person) {
 		Button btnCreateSymptomJournalAccount = new Button(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
 		CssStyles.style(btnCreateSymptomJournalAccount, ValoTheme.BUTTON_PRIMARY);
-		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> openSymptomJournalWindow(person));
+		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> enrollPatientInSymptomJournal(person));
 		return btnCreateSymptomJournalAccount;
 	}
 
@@ -101,10 +106,16 @@ public class ExternalJournalUtil {
 		popupLayout.setSpacing(true);
 		popupLayout.setMargin(true);
 		popupLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		Button.ClickListener cancelListener = clickEvent -> showCancelFollowupConfirmationPopup(person);
-		Button.ClickListener openListener = clickEvent -> openPatientDiaryPage(person.getUuid());
 		PopupButton ediaryButton =
 			ButtonHelper.createPopupButton(I18nProperties.getCaption(Captions.patientDiaryOptionsButton), popupLayout, ValoTheme.BUTTON_PRIMARY);
+		Button.ClickListener cancelListener = clickEvent -> {
+			showCancelFollowupConfirmationPopup(person);
+			ediaryButton.setPopupVisible(false);
+		};
+		Button.ClickListener openListener = clickEvent -> {
+			openPatientDiaryPage(person.getUuid());
+			ediaryButton.setPopupVisible(false);
+		};
 		Button cancelButton =
 			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
 		Button openButton =
@@ -119,6 +130,15 @@ public class ExternalJournalUtil {
 		CssStyles.style(btnPatientDiaryAccount, ValoTheme.BUTTON_PRIMARY);
 		btnPatientDiaryAccount.addClickListener(clickEvent -> enrollPatientInPatientDiary(person));
 		return btnPatientDiaryAccount;
+	}
+
+	private static void enrollPatientInSymptomJournal(PersonDto person) {
+		ExternalJournalValidation validationResult = externalJournalFacade.validateSymptomJournalPerson(person);
+		if (!validationResult.isValid()) {
+			showExternalJournalWarningPopup(validationResult.getMessage());
+		} else {
+			openSymptomJournalWindow(person);
+		}
 	}
 
 	/**
@@ -137,7 +157,7 @@ public class ExternalJournalUtil {
 			parameters.put("uuid", person.getUuid());
 			parameters.put("firstname", person.getFirstName());
 			parameters.put("lastname", person.getLastName());
-			parameters.put("email", person.getEmailAddress());
+			parameters.put("email", person.getEmailAddress(false));
 			byte[] document = createSymptomJournalForm(formUrl, parameters);
 
 			return new ByteArrayInputStream(document);
@@ -204,7 +224,7 @@ public class ExternalJournalUtil {
 	private static void enrollPatientInPatientDiary(PersonDto person) {
 		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
-			showPatientDiaryWarningPopup(validationResult.getMessage());
+			showExternalJournalWarningPopup(validationResult.getMessage());
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
@@ -214,7 +234,7 @@ public class ExternalJournalUtil {
 		}
 	}
 
-	private static void showPatientDiaryWarningPopup(String message) {
+	private static void showExternalJournalWarningPopup(String message) {
 		VerticalLayout warningLayout = new VerticalLayout();
 		warningLayout.setMargin(true);
 		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));

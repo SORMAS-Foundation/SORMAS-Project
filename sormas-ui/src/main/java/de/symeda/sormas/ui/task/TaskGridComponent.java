@@ -89,6 +89,7 @@ public class TaskGridComponent extends VerticalLayout {
 		gridLayout.addComponent(createAssigneeFilterBar());
 		gridLayout.addComponent(grid);
 		grid.getDataProvider().addDataProviderListener(e -> updateAssigneeFilterButtons());
+		grid.setDataProviderListener(e -> updateAssigneeFilterButtons());
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);

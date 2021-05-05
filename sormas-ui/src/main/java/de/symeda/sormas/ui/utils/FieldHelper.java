@@ -310,6 +310,17 @@ public final class FieldHelper {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
 	}
 
+	public static void setVisibleWhen(
+		final Field targetField,
+		Map<Field, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnHidden) {
+
+		onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden);
+		sourceFieldsAndValues.forEach(
+			(sourcePropertyId, sourceValues) -> targetField
+				.addValueChangeListener(event -> onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden)));
+	}
+
 	private static void onValueChangedSetVisible(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
@@ -334,6 +345,27 @@ public final class FieldHelper {
 			if (!visible && clearOnHidden && targetField.getValue() != null) {
 				targetField.clear();
 			}
+		}
+	}
+	
+	private static void onValueChangedSetVisible(
+		Field targetField,
+		Map<Field, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnHidden) {
+
+		//a workaround variable to be modified in the forEach lambda
+		boolean[] visibleArray = {
+			true };
+
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			if (!sourceValues.contains(sourceField.getValue()))
+				visibleArray[0] = false;
+		});
+		boolean visible = visibleArray[0];
+
+		targetField.setVisible(visible);
+		if (!visible && clearOnHidden && targetField.getValue() != null) {
+			targetField.clear();
 		}
 	}
 
@@ -431,23 +463,28 @@ public final class FieldHelper {
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static void setEnabledWhen(
 		FieldGroup fieldGroup,
-		Field sourceField,
+		Field<?> sourceField,
 		final List<?> sourceValues,
 		List<?> targetPropertyIds,
 		boolean clearOnDisabled) {
+		final List<Field<?>> targetFields = targetPropertyIds.stream().map(fieldGroup::getField).collect(Collectors.toList());
+
+		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+
+	public static void setEnabledWhen(Field<?> sourceField, final List<?> sourceValues, List<Field<?>> targetFields,
+		boolean clearOnDisabled) {
 
 		if (sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
+			((AbstractField<?>) sourceField).setImmediate(true);
 		}
 
 		// initialize
 		{
 			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(sourceField));
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
+			for (Field<?> targetField : targetFields) {
 				targetField.setEnabled(enabled);
 				if (!enabled && clearOnDisabled) {
 					targetField.clear();
@@ -457,8 +494,7 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
+			for (Field<?> targetField : targetFields) {
 				targetField.setEnabled(enabled);
 				if (!enabled && clearOnDisabled) {
 					targetField.clear();
