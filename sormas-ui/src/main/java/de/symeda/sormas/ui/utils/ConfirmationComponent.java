@@ -79,7 +79,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
-			confirmButton = ButtonHelper.createButton(Captions.actionConfirm, event -> {
+			confirmButton = ButtonHelper.createButton(Captions.actionConfirm, false, event -> {
 				onConfirm();
 				onDone();
 			}, ValoTheme.BUTTON_PRIMARY);
@@ -90,7 +90,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 
 	public Button getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = ButtonHelper.createButton(Captions.actionCancel, event -> {
+			cancelButton = ButtonHelper.createButton(Captions.actionCancel, false, event -> {
 				onCancel();
 				onDone();
 			}, cancelButtonStyle);

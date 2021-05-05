@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -154,7 +155,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			e -> {
-				if (e.booleanValue() == true) {
+				if (e) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariantReferenceDto);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
@@ -206,9 +207,9 @@ public class PathogenTestController {
 
 		Runnable caseDiseaseVariantCallback = () -> {
 			if (dto.getTestedDiseaseVariant() != null
-				&& dto.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+				&& !DataHelper.equal(dto.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())
 				&& dto.getTestResult() == PathogenTestResultType.POSITIVE
-				&& dto.getTestResultVerified().booleanValue() == true) {
+				&& dto.getTestResultVerified()) {
 				showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, dto.getTestedDiseaseVariant());
 			}
 		};

@@ -2,10 +2,10 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable {
 

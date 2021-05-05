@@ -66,8 +66,8 @@ public final class ContactLogic {
 		}
 
 		// Follow-up until needs to be extended to the date after the last visit if there is no cooperative visit after the follow-up until date
-		if (additionalVisitNeeded && lastVisitDate != null) {
-			untilDate = DateHelper.addDays(untilDate, DateHelper.getDaysBetween(untilDate, lastVisitDate));
+		if (additionalVisitNeeded && lastVisitDate != null && untilDate.before(DateHelper.addDays(lastVisitDate, 1))) {
+			untilDate = DateHelper.addDays(lastVisitDate, 1);
 		}
 
 		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date and/or last contact
