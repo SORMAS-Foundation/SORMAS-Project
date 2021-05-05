@@ -564,7 +564,7 @@ public class LabMessageController {
 	}
 
 	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
-		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null, null);
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		contactDto.setPerson(person.toReference());
 		return contactDto;
@@ -634,8 +634,10 @@ public class LabMessageController {
 		SampleDto sampleDto,
 		LabMessageDto labMessageDto,
 		Window window) {
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = ControllerProvider.getSampleController()
-			.getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> finishProcessingLabMessage(labMessageDto, pathogenTestDto));
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
+				finishProcessingLabMessage(labMessageDto, pathogenTestDto);
+			});
 
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
 		includeTestCheckbox.setValue(Boolean.TRUE);
@@ -700,7 +702,10 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
 				window.close();
-			}, (savedPathogenTestDto, runnable) -> finishProcessingLabMessage(labMessageDto, savedPathogenTestDto));
+			}, (savedPathogenTestDto, runnable) -> {
+				runnable.run();
+				finishProcessingLabMessage(labMessageDto, savedPathogenTestDto);
+			});
 		pathogenTestCreateComponent.addDiscardListener(window::close);
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
 		return pathogenTestCreateComponent;

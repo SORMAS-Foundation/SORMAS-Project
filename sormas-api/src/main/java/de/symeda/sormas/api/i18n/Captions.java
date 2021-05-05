@@ -527,6 +527,7 @@ public interface Captions {
 	String Contact_caze_symptomsOnset = "Contact.caze.symptomsOnset";
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
+	String Contact_cazeDiseaseVariant = "Contact.cazeDiseaseVariant";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";

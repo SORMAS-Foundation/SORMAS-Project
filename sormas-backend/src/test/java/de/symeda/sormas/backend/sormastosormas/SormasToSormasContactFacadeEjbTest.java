@@ -368,7 +368,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 	}
 
 	protected ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
-		ContactDto contact = ContactDto.build(null, Disease.CORONAVIRUS, null);
+		ContactDto contact = ContactDto.build(null, Disease.CORONAVIRUS, null, null);
 		contact.setPerson(person.toReference());
 		contact.setRegion(remoteRdcf.region);
 		contact.setDistrict(remoteRdcf.district);

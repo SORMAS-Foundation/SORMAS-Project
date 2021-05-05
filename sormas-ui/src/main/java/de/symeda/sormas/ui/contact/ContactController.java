@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.contact;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -689,9 +690,16 @@ public class ContactController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
+		HorizontalLayout diseaseLayout = new HorizontalLayout();
 		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(diseaseLabel);
+
+		Label diseaseVariantLabel = new Label(DiseaseHelper.variantToString(contact.getDiseaseVariant()));
+		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+
+		diseaseLayout.addComponent(diseaseLabel);
+		diseaseLayout.addComponent(diseaseVariantLabel);
+		titleLayout.addComponents(diseaseLayout);
 
 		Label classificationLabel = new Label(contact.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
