@@ -570,6 +570,29 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			}
 		});
 
+		contentBinding.caseDataVaccinationDoses.addValueChangedListener(new ValueChangeListener() {
+
+			private boolean fieldChangeByListener = false;
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				Object newValue = field.getValue();
+				if (fieldChangeByListener) {
+					fieldChangeByListener = false;
+					return;
+				} else if (newValue != null) {
+					String newValueString = newValue.toString();
+					String newValueStringTrimmed = newValueString.trim();
+					if (!newValueString.equals(newValueStringTrimmed)) {
+						fieldChangeByListener = true;
+						field.setValue(newValueStringTrimmed);
+
+					}
+
+				}
+			}
+		});
+
 		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
 		ValidationHelper
 			.initIntegerValidator(contentBinding.caseDataVaccinationDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
