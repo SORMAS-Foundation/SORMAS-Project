@@ -485,9 +485,10 @@ public class ContactController {
 		// Check if cases with multiple districts have been selected
 		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
+			String selectedDistrictUuid = selectedContact.getDistrictUuid();
 			if (districtUuid == null) {
-				districtUuid = selectedContact.getDistrictUuid();
-			} else if (!districtUuid.equals(selectedContact.getDistrictUuid())) {
+				districtUuid = selectedDistrictUuid;
+			} else if (!districtUuid.equals(selectedDistrictUuid)) {
 				districtUuid = null;
 				break;
 			}

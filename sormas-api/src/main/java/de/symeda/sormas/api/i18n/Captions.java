@@ -248,6 +248,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
+	String CaseData_differentJurisdiction = "CaseData.differentJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
@@ -343,6 +344,9 @@ public interface Captions {
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
 	String CaseData_reportLon = "CaseData.reportLon";
+	String CaseData_responsibleCommunity = "CaseData.responsibleCommunity";
+	String CaseData_responsibleDistrict = "CaseData.responsibleDistrict";
+	String CaseData_responsibleRegion = "CaseData.responsibleRegion";
 	String CaseData_screeningType = "CaseData.screeningType";
 	String CaseData_sequelae = "CaseData.sequelae";
 	String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";

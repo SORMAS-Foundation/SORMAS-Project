@@ -40,6 +40,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -121,6 +124,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
@@ -146,11 +150,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
+	private static final String PLACE_OF_STAY_HEADING_LOC = "placeOfStayHeadingLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
+	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
+	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -185,10 +192,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.REPORTING_DISTRICT, "") +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+					fluidRowLocs(PLACE_OF_STAY_HEADING_LOC) +
+					fluidRowLocs(FACILITY_OR_HOME_LOC) +
 					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
-					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
+					fluidRowLocs(TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
+					fluidRowLocs(DIFFERENT_JURISDICTION) +
+					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
@@ -252,6 +264,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private CheckBox differentJurisdiction;
 	private OptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
@@ -564,11 +577,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
+
+		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.casePlaceOfStay));
+		placeOfStayHeadingLabel.addStyleName(H3);
+		getContent().addComponent(placeOfStayHeadingLabel, PLACE_OF_STAY_HEADING_LOC);
+
 		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
+
 		facilityTypeGroup = new ComboBox();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -832,6 +851,31 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.END_OF_ISOLATION_REASON,
 			Arrays.asList(EndOfIsolationReason.OTHER),
 			true);
+
+		// jurisdiction fields
+		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
+		jurisdictionHeadingLabel.addStyleName(H3);
+		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
+
+		differentJurisdiction = addCustomField(DIFFERENT_JURISDICTION, Boolean.class, CheckBox.class);
+		differentJurisdiction.addStyleName(VSPACE_3);
+		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		ComboBox responsibleDistrict = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleCommunity = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+
+		FieldHelper.setEnabledWhen(
+			differentJurisdiction,
+			Collections.singletonList(Boolean.TRUE),
+			Arrays.asList(responsibleRegion, responsibleDistrict, responsibleCommunity),
+			true);
+		FieldHelper.setRequiredWhen(
+			differentJurisdiction,
+			Arrays.asList(responsibleRegion, responsibleDistrict),
+			Collections.singletonList(Boolean.TRUE),
+			false,
+			null);
+
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -1170,8 +1214,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
-			surveillanceOfficerField
-				.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(getValue().getDistrict(), false, UserRole.SURVEILLANCE_OFFICER));
+
+			List<DistrictReferenceDto> officerDistricts =
+				Stream.of(getValue().getResponsibleDistrict(), getValue().getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
+			if (officerDistricts.size() > 0) {
+				surveillanceOfficerField
+					.addItems(FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, UserRole.SURVEILLANCE_OFFICER));
+			}
 
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {
@@ -1511,6 +1560,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						true),
 					I18nProperties.getUserLanguage()));
 			tfExpectedFollowUpUntilDate.setReadOnly(true);
+		}
+
+		if (newFieldValue.getResponsibleRegion() != null
+			|| newFieldValue.getResponsibleDistrict() != null
+			|| newFieldValue.getResponsibleCommunity() != null) {
+			differentJurisdiction.setValue(Boolean.TRUE);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.

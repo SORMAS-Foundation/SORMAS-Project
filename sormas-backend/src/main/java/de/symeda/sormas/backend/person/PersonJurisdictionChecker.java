@@ -5,10 +5,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
+import de.symeda.sormas.api.utils.jurisdiction.caze.CaseJurisdictionHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;

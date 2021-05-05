@@ -594,4 +594,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 	public static void setLabelCaption(ControlPropertyField field, String labelCaption) {
 		field.setCaption(labelCaption);
 	}
+
+	@BindingAdapter(value = {
+		"enabled" })
+	public static void setEnabled(ControlPropertyField field, Boolean enabled) {
+		boolean isEnabled = Boolean.TRUE.equals(enabled);
+
+		field.setEnabled(isEnabled);
+
+		if(!isEnabled){
+			field.setValue(null);
+		}
+	}
 }
