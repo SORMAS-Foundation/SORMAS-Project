@@ -11,6 +11,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.ui.dashboard.surveillance.components.disease.burden.DiseaseBurdenComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile.DiseaseTileViewLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
