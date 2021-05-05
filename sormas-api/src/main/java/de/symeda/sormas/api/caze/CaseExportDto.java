@@ -301,6 +301,10 @@ public class CaseExportDto implements Serializable {
 
 	private String reportingDistrict;
 
+	private String responsibleRegion;
+	private String responsibleDistrict;
+	private String responsibleCommunity;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -338,7 +342,7 @@ public class CaseExportDto implements Serializable {
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
-						 String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid
+						 String responsibleRegionUuid, String responsibleRegion, String responsibleDistrictUuid, String responsibleDistrict, String responsibleCommunityUuid, String responsibleCommunity
 						 ) {
 		//@formatter:on
 
@@ -457,6 +461,10 @@ public class CaseExportDto implements Serializable {
 		this.reportingDistrict = reportingDistrict;
 		this.caseIdentificationSource = caseIdentificationSource;
 		this.screeningType = screeningType;
+
+		this.responsibleRegion = responsibleRegion;
+		this.responsibleDistrict = responsibleDistrict;
+		this.responsibleCommunity = responsibleCommunity;
 
 		jurisdiction = new CaseJurisdictionDto(
 			reportingUserUuid,
@@ -2036,6 +2044,36 @@ public class CaseExportDto implements Serializable {
 	@HideForCountriesExcept
 	public ScreeningType getScreeningType() {
 		return screeningType;
+	}
+
+	@Order(171)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_REGION)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	@Order(172)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_DISTRICT)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	@Order(173)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_COMMUNITY)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleCommunity() {
+		return responsibleCommunity;
 	}
 
 	public void setCountry(String country) {

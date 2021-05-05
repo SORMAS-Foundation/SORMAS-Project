@@ -582,7 +582,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		placeOfStayHeadingLabel.addStyleName(H3);
 		getContent().addComponent(placeOfStayHeadingLabel, PLACE_OF_STAY_HEADING_LOC);
 
-		facilityOrHome = new OptionGroup(null, TypeOfPlace.FOR_CASES);
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);

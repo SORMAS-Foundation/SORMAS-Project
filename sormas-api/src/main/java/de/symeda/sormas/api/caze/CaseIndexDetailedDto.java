@@ -36,6 +36,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String LATEST_SAMPLE_DATE_TIME = "latestSampleDateTime";
 	public static final String SAMPLE_COUNT = "sampleCount";
 	public static final String SYMPTOM_ONSET_DATE = "symptomOnsetDate";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 
 	private YesNoUnknown reInfection;
 	@PersonalData
@@ -64,6 +67,10 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private Long sampleCount;
 	private Date symptomOnsetDate;
 
+	private String responsibleRegion;
+	private String responsibleDistrict;
+	private String responsibleCommunity;
+
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
@@ -79,6 +86,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
+								String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
 		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
@@ -102,6 +110,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.latestSampleDateTime = latestSampleDateTime;
 		this.sampleCount = sampleCount;
 		this.symptomOnsetDate = symptomOnsetDate;
+		this.responsibleRegion = responsibleRegion;
+		this.responsibleDistrict = responsibleDistrict;
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public YesNoUnknown getReInfection() {
@@ -182,5 +193,17 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public Date getSymptomOnsetDate() {
 		return symptomOnsetDate;
+	}
+
+	public String getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public String getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public String getResponsibleCommunity() {
+		return responsibleCommunity;
 	}
 }

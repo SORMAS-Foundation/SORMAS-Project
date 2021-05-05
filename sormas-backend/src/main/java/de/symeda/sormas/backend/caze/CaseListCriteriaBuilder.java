@@ -291,7 +291,10 @@ public class CaseListCriteriaBuilder {
 				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
-				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
+				joins.getSymptoms().get(Symptoms.ONSET_DATE),
+				joins.getResponsibleRegion().get(Region.NAME),
+				joins.getResponsibleDistrict().get(District.NAME),
+				joins.getResponsibleCommunity().get(Community.NAME)));
 
 		return selections;
 	}

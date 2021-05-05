@@ -702,8 +702,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.SCREENING_TYPE),
 				// responsible jurisdiction
 				joins.getResponsibleRegion().get(Region.UUID),
+				joins.getResponsibleRegion().get(Region.NAME),
 				joins.getResponsibleDistrict().get(District.UUID),
-				joins.getResponsibleCommunity().get(Community.UUID)
+				joins.getResponsibleDistrict().get(District.NAME),
+				joins.getResponsibleCommunity().get(Community.UUID),
+				joins.getResponsibleCommunity().get(Community.NAME)
 				);
 		//@formatter:on
 
