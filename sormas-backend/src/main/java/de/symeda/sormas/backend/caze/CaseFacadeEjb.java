@@ -1360,9 +1360,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
+		Expression<Number> maxCreationDate = cb.max(caze.get(Case.CREATION_DATE));
 		cq.multiselect(caze.get(Case.DISEASE), districtJoin, maxReportDate);
 		cq.groupBy(caze.get(Case.DISEASE), districtJoin);
-		cq.orderBy(cb.desc(maxReportDate));
+
+		List<Order> order = new ArrayList<>();
+		order.add(cb.desc(maxReportDate));
+		order.add(cb.desc(maxCreationDate));
+		cq.orderBy(order);
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
@@ -1602,7 +1607,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		cq.select(district.get(District.NAME));
-		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+		List<Order> order = new ArrayList<>();
+		order.add(cb.desc(caze.get(Case.REPORT_DATE)));
+		order.add(cb.desc(caze.get(Case.CREATION_DATE)));
+		cq.orderBy(order);
 
 		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
 		try {
