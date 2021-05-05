@@ -155,43 +155,18 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.BACKGROUND_HIGHLIGHT);
 
-		HorizontalLayout statsItem = createStatsItem(
+		StatsItem statsItem = new StatsItem(
 			I18nProperties.getCaption(Captions.dashboardLastReport) + ": ",
 			district.length() == 0 ? I18nProperties.getString(Strings.none) : district,
 			false,
 			true);
 		CssStyles.style(statsItem, CssStyles.VSPACE_TOP_4);
 		layout.addComponent(statsItem);
-		layout.addComponent(createStatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
-		statsItem = createStatsItem(I18nProperties.getCaption(Captions.DiseaseBurden_eventCount), events.toString(), false, false);
+		layout.addComponent(new StatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
+		statsItem = new StatsItem(I18nProperties.getCaption(Captions.DiseaseBurden_eventCount), events.toString(), false, false);
 		CssStyles.style(statsItem, CssStyles.VSPACE_4);
 		layout.addComponent(statsItem);
 
 		addComponent(layout);
-	}
-
-	private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label nameLabel = new Label(label);
-		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3);
-		layout.addComponent(nameLabel);
-		if (!singleColumn) {
-			layout.setExpandRatio(nameLabel, 1);
-		}
-
-		Label valueLabel = new Label(value);
-		CssStyles.style(
-			valueLabel,
-			CssStyles.LABEL_PRIMARY,
-			isCritical ? CssStyles.LABEL_CRITICAL : "",
-			singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
-		layout.addComponent(valueLabel);
-		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
-
-		return layout;
 	}
 }
