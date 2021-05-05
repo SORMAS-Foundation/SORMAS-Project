@@ -78,6 +78,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.StartupShutdownService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -432,13 +434,18 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		getSormasToSormasShareInfoService().persist(
-			createShareInfo(officerUser, DEFAULT_SERVER_ACCESS_CN, true, i -> i.setEvent(getEventService().getByReferenceDto(event.toReference()))));
+			createShareInfo(
+				officerUser,
+				DEFAULT_SERVER_ACCESS_CN,
+				true,
+				i -> i.getEvents().add(new ShareInfoEvent(i, getEventService().getByReferenceDto(event.toReference())))));
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
 				DEFAULT_SERVER_ACCESS_CN,
 				true,
-				i -> i.setEventParticipant(getEventParticipantService().getByReferenceDto(eventParticipant.toReference()))));
+				i -> i.getEventParticipants()
+					.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByReferenceDto(eventParticipant.toReference())))));
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
@@ -496,7 +503,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				getUserService().getByUuid(officer.getUuid()),
 				SECOND_SERVER_ACCESS_CN,
 				false,
-				i -> i.setEvent(getEventService().getByUuid(event.getUuid()))));
+				i -> i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())))));
 
 		PersonDto person = creator.createPerson();
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
@@ -505,7 +512,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				getUserService().getByUuid(officer.getUuid()),
 				SECOND_SERVER_ACCESS_CN,
 				false,
-				i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
+				i -> i.getEventParticipants()
+					.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())))));
 
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 

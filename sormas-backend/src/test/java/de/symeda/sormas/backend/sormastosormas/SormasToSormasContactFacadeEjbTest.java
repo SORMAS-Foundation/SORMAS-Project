@@ -69,6 +69,8 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.StartupShutdownService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -187,8 +189,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), 0, 100);
 
-		SormasToSormasShareInfoDto sampleShareInfoList =
-			shareInfoList.stream().filter(i -> DataHelper.isSame(i.getSample(), sample)).findFirst().get();
+		SormasToSormasShareInfoDto sampleShareInfoList = shareInfoList.stream().filter(i -> DataHelper.isSame(null, sample)).findFirst().get();
 		assertThat(sampleShareInfoList.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(sampleShareInfoList.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(sampleShareInfoList.getComment(), is("Test comment"));
@@ -325,13 +326,13 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				officerUser,
 				DEFAULT_SERVER_ACCESS_CN,
 				true,
-				i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
+				i -> i.getContacts().add(new ShareInfoContact(i, getContactService().getByReferenceDto(contact.toReference())))));
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
 				DEFAULT_SERVER_ACCESS_CN,
 				true,
-				i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+				i -> i.getSamples().add(new ShareInfoSample(i, getSampleService().getByReferenceDto(sharedSample.toReference())))));
 
 		contact.setQuarantine(QuarantineType.HOTEL);
 

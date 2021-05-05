@@ -13,17 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
-import java.util.List;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.event.EventParticipant;
 
-public interface SormasToSormasEntityService<ADO extends AbstractDomainObject> {
+@Entity
+@AttributeOverride(name = "entity", column = @Column(name = ShareInfoEntity.EVENT_PARTICIPANT))
+@DiscriminatorValue("EVENT_PARTICIPANT")
+public class ShareInfoEventParticipant extends ShareInfoEntity<EventParticipant> {
 
-	ADO getByUuid(String uuid);
-
-	List<ADO> getByUuids(List<String> uuid);
-
-	List<ADO> getByShareRequest(String requestUuid);
+	public ShareInfoEventParticipant(SormasToSormasShareInfo shareInfo, EventParticipant entity) {
+		super(shareInfo, entity);
+	}
 }

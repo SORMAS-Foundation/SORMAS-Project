@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -72,7 +73,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	@Inject
 	private SormasToSormasConfig sormasToSormasConfig;
 
-	public ShareData<SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, options);
@@ -88,7 +90,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
 		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
-		ShareData<SormasToSormasCaseDto> shareData = new ShareData<>(caseData);
+		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);
 
 		List<Contact> associatedContacts = Collections.emptyList();
 		if (options.isWithAssociatedContacts()) {
@@ -120,7 +122,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	}
 
 	@Override
-	public ShareData<SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options)
+	public ShareData<Case, SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
 
 		SormasToSormasCasePreview cazePreview = getCasePreview(caze);
@@ -131,10 +133,15 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 			cazePreview.setContacts(getContactPreviews(associatedContacts));
 		}
 
-		ShareData<SormasToSormasCasePreview> shareData = new ShareData<>(cazePreview);
+		ShareData<Case, SormasToSormasCasePreview> shareData = new ShareData<>(caze, cazePreview);
 		shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
 
 		return shareData;
+	}
+
+	@Override
+	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
+		return null;
 	}
 
 	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {

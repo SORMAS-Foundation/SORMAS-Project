@@ -23,6 +23,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCont
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,8 +52,9 @@ import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasContactFacade")
 public class SormasToSormasContactFacadeEjb
@@ -118,7 +120,7 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<Contact> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Contact> entities) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
@@ -145,8 +147,8 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Contact entity) {
-		sormasToSormasShareInfo.setContact(entity);
+	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Contact> contacts) {
+		shareInfo.getContacts().addAll(contacts.stream().map(c -> new ShareInfoContact(shareInfo, c)).collect(Collectors.toList()));
 	}
 
 	@Override

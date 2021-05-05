@@ -16,9 +16,6 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -26,9 +23,6 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private CaseReferenceDto caze;
-	private ContactReferenceDto contact;
-	private SampleReferenceDto sample;
 	private ServerAccessDataReferenceDto target;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
@@ -39,30 +33,6 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean pseudonymizedSensitiveData;
 	private String comment;
 	private ShareRequestStatus requestStatus;
-
-	public CaseReferenceDto getCaze() {
-		return caze;
-	}
-
-	public void setCaze(CaseReferenceDto caze) {
-		this.caze = caze;
-	}
-
-	public ContactReferenceDto getContact() {
-		return contact;
-	}
-
-	public void setContact(ContactReferenceDto contact) {
-		this.contact = contact;
-	}
-
-	public SampleReferenceDto getSample() {
-		return sample;
-	}
-
-	public void setSample(SampleReferenceDto sample) {
-		this.sample = sample;
-	}
 
 	public ServerAccessDataReferenceDto getTarget() {
 		return target;

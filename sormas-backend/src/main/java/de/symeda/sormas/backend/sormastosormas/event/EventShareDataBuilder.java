@@ -40,6 +40,7 @@ import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -59,13 +60,14 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private SampleService sampleService;
 
 	@Override
-	public ShareData<SormasToSormasEventDto> buildShareData(Event data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public ShareData<Event, SormasToSormasEventDto> buildShareData(Event event, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
-		EventDto eventDto = getEventDto(data, pseudonymizer);
+		EventDto eventDto = getEventDto(event, pseudonymizer);
 
 		SormasToSormasEventDto eventData = new SormasToSormasEventDto(eventDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
-		ShareData<SormasToSormasEventDto> eventShareData = new ShareData<>(eventData);
+		ShareData<Event, SormasToSormasEventDto> eventShareData = new ShareData<>(event, eventData);
 
 		List<EventParticipant> eventParticipants = Collections.emptyList();
 		if (options.isWithEventParticipants()) {
@@ -87,8 +89,13 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	}
 
 	@Override
-	public ShareData<SormasToSormasEventPreview> buildShareDataPreview(Event data, User user, SormasToSormasOptionsDto options)
+	public ShareData<Event, SormasToSormasEventPreview> buildShareDataPreview(Event data, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
+		return null;
+	}
+
+	@Override
+	public List<ShareData<Event, SormasToSormasEventDto>> buildShareData(SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
 		return null;
 	}
 

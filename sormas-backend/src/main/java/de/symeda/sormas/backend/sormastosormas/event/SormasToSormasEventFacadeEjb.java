@@ -23,6 +23,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEven
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -48,8 +49,9 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasEventFacade")
 public class SormasToSormasEventFacadeEjb
@@ -93,7 +95,7 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<Event> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Event> entities) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
@@ -120,8 +122,8 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Event entity) {
-		sormasToSormasShareInfo.setEvent(entity);
+	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Event> events) {
+		shareInfo.getEvents().addAll(events.stream().map(e -> new ShareInfoEvent(shareInfo, e)).collect(Collectors.toList()));
 	}
 
 	@Override

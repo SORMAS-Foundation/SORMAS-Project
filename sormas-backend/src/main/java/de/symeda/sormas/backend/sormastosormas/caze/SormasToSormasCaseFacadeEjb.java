@@ -23,6 +23,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCase
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -49,8 +50,9 @@ import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasCaseFacade")
 public class SormasToSormasCaseFacadeEjb
@@ -114,7 +116,7 @@ public class SormasToSormasCaseFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<Case> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Case> entities) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
@@ -141,8 +143,8 @@ public class SormasToSormasCaseFacadeEjb
 	}
 
 	@Override
-	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Case entity) {
-		sormasToSormasShareInfo.setCaze(entity);
+	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Case> cases) {
+		shareInfo.getCases().addAll(cases.stream().map(c -> new ShareInfoCase(shareInfo, c)).collect(Collectors.toList()));
 	}
 
 	@Override

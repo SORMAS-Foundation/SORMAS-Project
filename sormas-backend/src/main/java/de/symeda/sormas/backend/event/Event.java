@@ -62,7 +62,8 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
@@ -180,7 +181,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoEvent> shareInfoEvents = new ArrayList<>(0);
 	private EventManagementStatus eventManagementStatus;
 
 	private boolean archived;
@@ -679,13 +680,13 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoEntity.EVENT, fetch = FetchType.LAZY)
+	public List<ShareInfoEvent> getShareInfoEvents() {
+		return shareInfoEvents;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoEvents(List<ShareInfoEvent> shareInfoEvents) {
+		this.shareInfoEvents = shareInfoEvents;
 	}
 
 	@Column(columnDefinition = "text")

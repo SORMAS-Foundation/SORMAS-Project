@@ -41,6 +41,8 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -118,18 +120,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
 
 		DtoHelper.fillDto(target, source);
-
-		if (source.getCaze() != null) {
-			target.setCaze(source.getCaze().toReference());
-		}
-
-		if (source.getContact() != null) {
-			target.setContact(source.getContact().toReference());
-		}
-
-		if (source.getSample() != null) {
-			target.setSample(source.getSample().toReference());
-		}
 
 		OrganizationServerAccessData serverAccessData = sormasToSormasFacadeHelper.getOrganizationServerAccessData(source.getOrganizationId())
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));

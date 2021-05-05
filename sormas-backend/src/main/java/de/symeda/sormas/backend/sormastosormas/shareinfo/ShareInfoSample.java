@@ -13,37 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-public class ShareData<T, DTO> {
+import de.symeda.sormas.backend.sample.Sample;
 
-	private final DTO dto;
+@Entity
+@AttributeOverride(name = "entity", column = @Column(name = ShareInfoEntity.SAMPLE))
+@DiscriminatorValue("SAMPLE")
+public class ShareInfoSample extends ShareInfoEntity<Sample> {
 
-	private final T entity;
-	private final List<AssociatedEntityWrapper<?>> associatedEntities;
-
-	public ShareData(T entity, DTO dto) {
-		this.dto = dto;
-		this.entity = entity;
-		this.associatedEntities = new ArrayList<>();
-	}
-
-	public DTO getDto() {
-		return dto;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
-
-	public void addAssociatedEntities(List<AssociatedEntityWrapper<?>> entities) {
-		this.associatedEntities.addAll(entities);
-	}
-
-	public List<AssociatedEntityWrapper<?>> getAssociatedEntities() {
-		return associatedEntities;
+	public ShareInfoSample(SormasToSormasShareInfo shareInfo, Sample entity) {
+		super(shareInfo, entity);
 	}
 }

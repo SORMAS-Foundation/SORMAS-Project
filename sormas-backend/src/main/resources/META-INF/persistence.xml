@@ -57,7 +57,12 @@
 		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
-		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant</class>
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>

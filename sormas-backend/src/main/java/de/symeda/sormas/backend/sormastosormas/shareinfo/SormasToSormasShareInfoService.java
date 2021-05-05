@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,9 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
-
-import java.util.List;
+package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -189,13 +187,13 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	public List<SormasToSormasShareInfo> getByRequestUuid(String requestUuid) {
+	public SormasToSormasShareInfo getByRequestUuid(String requestUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
 		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
 
 		cq.where(cb.equal(from.get(SormasToSormasShareInfo.REQUEST_UUID), requestUuid));
 
-		return em.createQuery(cq).getResultList();
+		return em.createQuery(cq).getSingleResult();
 	}
 }

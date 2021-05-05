@@ -23,61 +23,71 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 
 public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 
 	private final T entity;
 	private final BiConsumer<SormasToSormasShareInfo, T> shareInfoAssociatedObjectFn;
-	private final BiFunction<SormasToSormasShareInfoService, String, SormasToSormasShareInfo> shareInfoFindFn;
+	private final BiFunction<SormasToSormasShareInfo, T, Boolean> associatedObjectFindFn;
 
 	public static List<AssociatedEntityWrapper<?>> forContacts(List<Contact> contacts) {
 		return contacts.stream()
 			.map(
-				c -> new AssociatedEntityWrapper<>(
-					c,
-					SormasToSormasShareInfo::setContact,
-					(shareInfoService, organizationId) -> shareInfoService.getByContactAndOrganization(c.getUuid(), organizationId)))
+				contact -> new AssociatedEntityWrapper<>(
+					contact,
+					(s, c) -> s.getContacts().add(new ShareInfoContact(s, c)),
+					(shareInfo, contactToFind) -> shareInfo.getContacts()
+						.stream()
+						.anyMatch(c -> contactToFind.getUuid().equals(c.getEntity().getUuid()))))
 			.collect(Collectors.toList());
 	}
 
 	public static List<AssociatedEntityWrapper<?>> forEventParticipants(List<EventParticipant> eventParticipants) {
 		return eventParticipants.stream()
 			.map(
-				ep -> new AssociatedEntityWrapper<>(
-					ep,
-					SormasToSormasShareInfo::setEventParticipant,
-					(shareInfoService, organizationId) -> shareInfoService.getByEventParticipantAndOrganization(ep.getUuid(), organizationId)))
+				eventParticipant -> new AssociatedEntityWrapper<>(
+					eventParticipant,
+					(s, ep) -> s.getEventParticipants().add(new ShareInfoEventParticipant(s, ep)),
+					(shareInfo, epToFind) -> shareInfo.getEventParticipants()
+						.stream()
+						.anyMatch(ep -> epToFind.getUuid().equals(ep.getEntity().getUuid()))))
 			.collect(Collectors.toList());
 	}
 
 	public static List<AssociatedEntityWrapper<?>> forSamples(List<Sample> eventParticipants) {
 		return eventParticipants.stream()
 			.map(
-				s -> new AssociatedEntityWrapper<>(
-					s,
-					SormasToSormasShareInfo::setSample,
-					(shareInfoService, organizationId) -> shareInfoService.getBySampleAndOrganization(s.getUuid(), organizationId)))
+				sample -> new AssociatedEntityWrapper<>(
+					sample,
+					(shareInfo, s) -> shareInfo.getSamples().add(new ShareInfoSample(shareInfo, sample)),
+					(shareInfo, sampleToFind) -> shareInfo.getSamples()
+						.stream()
+						.anyMatch(c -> sampleToFind.getUuid().equals(c.getEntity().getUuid()))))
 			.collect(Collectors.toList());
 	}
 
 	private AssociatedEntityWrapper(
 		T entity,
 		BiConsumer<SormasToSormasShareInfo, T> shareInfoAssociatedObjectFn,
-		BiFunction<SormasToSormasShareInfoService, String, SormasToSormasShareInfo> shareInfoFindFn) {
+		BiFunction<SormasToSormasShareInfo, T, Boolean> associatedObjectFindFn) {
 		this.entity = entity;
 		this.shareInfoAssociatedObjectFn = shareInfoAssociatedObjectFn;
-		this.shareInfoFindFn = shareInfoFindFn;
+		this.associatedObjectFindFn = associatedObjectFindFn;
 	}
 
 	public T getEntity() {
 		return entity;
 	}
 
-	public void setShareInfoAssociatedObject(SormasToSormasShareInfo shareInfo) {
+	public void addEntityToShareInfo(SormasToSormasShareInfo shareInfo) {
 		shareInfoAssociatedObjectFn.accept(shareInfo, entity);
 	}
 
-	public SormasToSormasShareInfo getExistingShareInfo(SormasToSormasShareInfoService shareInfoService, String organizationId) {
-		return shareInfoFindFn.apply(shareInfoService, organizationId);
+	public boolean isAddedToShareInfo(SormasToSormasShareInfo shareInfo) {
+		return associatedObjectFindFn.apply(shareInfo, entity);
 	}
 }

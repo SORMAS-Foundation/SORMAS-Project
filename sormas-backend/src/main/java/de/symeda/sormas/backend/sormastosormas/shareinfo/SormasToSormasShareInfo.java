@@ -13,26 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "sormastosormasshareinfo")
@@ -40,24 +39,19 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
-	public static final String CAZE = "caze";
-	public static final String CONTACT = "contact";
-	public static final String SAMPLE = "sample";
-	public static final String EVENT = "event";
-	public static final String EVENT_PARTICIPANT = "eventParticipant";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String REQUEST_UUID = "requestUuid";
 
-	private Case caze;
+	private List<ShareInfoCase> cases = new ArrayList<>();
 
-	private Contact contact;
+	private List<ShareInfoContact> contacts = new ArrayList<>();
 
-	private Sample sample;
+	private List<ShareInfoSample> samples = new ArrayList<>();
 
-	private Event event;
+	private List<ShareInfoEvent> events = new ArrayList<>();
 
-	private EventParticipant eventParticipant;
+	private List<ShareInfoEventParticipant> eventParticipants = new ArrayList<>();
 
 	private String organizationId;
 
@@ -80,54 +74,49 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private String requestUuid;
 	private ShareRequestStatus requestStatus;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Case getCaze() {
-		return caze;
+	@ManyToMany(cascade = CascadeType.ALL)
+	public List<ShareInfoCase> getCases() {
+		return cases;
 	}
 
-	public void setCaze(Case caze) {
-		this.caze = caze;
+	public void setCases(List<ShareInfoCase> cases) {
+		this.cases = cases;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Contact getContact() {
-		return contact;
+	@ManyToMany(cascade = CascadeType.ALL)
+	public List<ShareInfoContact> getContacts() {
+		return contacts;
 	}
 
-	public void setContact(Contact contact) {
-		this.contact = contact;
+	public void setContacts(List<ShareInfoContact> contacts) {
+		this.contacts = contacts;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Sample getSample() {
-		return sample;
+	@ManyToMany(cascade = CascadeType.ALL)
+	public List<ShareInfoSample> getSamples() {
+		return samples;
 	}
 
-	public void setSample(Sample sample) {
-		this.sample = sample;
+	public void setSamples(List<ShareInfoSample> samples) {
+		this.samples = samples;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Event getEvent() {
-		return event;
+	@ManyToMany(cascade = CascadeType.ALL)
+	public List<ShareInfoEvent> getEvents() {
+		return events;
 	}
 
-	public void setEvent(Event event) {
-		this.event = event;
+	public void setEvents(List<ShareInfoEvent> events) {
+		this.events = events;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public EventParticipant getEventParticipant() {
-		return eventParticipant;
+	@ManyToMany(cascade = CascadeType.ALL)
+	public List<ShareInfoEventParticipant> getEventParticipants() {
+		return eventParticipants;
 	}
 
-	public void setEventParticipant(EventParticipant eventParticipant) {
-		this.eventParticipant = eventParticipant;
+	public void setEventParticipants(List<ShareInfoEventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
