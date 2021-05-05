@@ -155,15 +155,14 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.BACKGROUND_HIGHLIGHT);
 
-		StatsItem statsItem = new StatsItem(
-			I18nProperties.getCaption(Captions.dashboardLastReport) + ": ",
-			district.length() == 0 ? I18nProperties.getString(Strings.none) : district,
-			false,
-			true);
+		StatsItem statsItem =
+			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
+				.singleColumn(true)
+				.build();
 		CssStyles.style(statsItem, CssStyles.VSPACE_TOP_4);
 		layout.addComponent(statsItem);
-		layout.addComponent(new StatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
-		statsItem = new StatsItem(I18nProperties.getCaption(Captions.DiseaseBurden_eventCount), events.toString(), false, false);
+		layout.addComponent(new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build());
+		statsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		CssStyles.style(statsItem, CssStyles.VSPACE_4);
 		layout.addComponent(statsItem);
 
