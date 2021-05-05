@@ -325,7 +325,6 @@ public class DashboardMapComponent extends VerticalLayout {
 						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 		}
 		if (showContacts) {
-			// FIXME: The problem now is that the shwon contacts are completely unrelated to the shown cases; this may lead to confiusion, e.g with the "show only for confirmed cases" checkbox
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate));
 		}
 		if (showEvents) {

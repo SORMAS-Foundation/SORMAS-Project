@@ -454,7 +454,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(0.0);
+			p.getAddress().setLongitude(0.0);
+		});
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -463,6 +466,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
+
+		Long count = getCaseFacade().countCasesForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
 			caze.getRegion(),
@@ -473,6 +484,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null);
 
 		// List should have one entry
+		assertEquals((long) 1, mapCaseDtos.size());
 		assertEquals(1, mapCaseDtos.size());
 	}
 

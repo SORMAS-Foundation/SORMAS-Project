@@ -336,8 +336,26 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), caze.getDisease());
+		PersonDto contactPerson = creator.createPerson("Contact", "Person", p -> {
+			p.getAddress().setLatitude(0.0);
+			p.getAddress().setLongitude(0.0);
+		});
+		creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			caze.getDisease(),
+			rdcf);
+
+		Long count = getContactFacade().countContactsForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1));
 
 		List<MapContactDto> mapContactDtos = getContactFacade().getContactsForMap(
 			caze.getRegion(),
@@ -347,7 +365,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.addDays(new Date(), 1));
 
 		// List should have one entry
-		assertEquals(1, mapContactDtos.size());
+		assertEquals((long) count, mapContactDtos.size());
+		assertEquals((long) 1, mapContactDtos.size());
 	}
 
 	@Test
