@@ -177,6 +177,16 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles) {
+
+		List<Region> regions = regionService.getByUuids(regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()));
+		return userService.getAllByRegionsAndUserRolesInJurisdiction(regions, assignableRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	/*
 	 * Get all users with the next higher jurisdiction, whose location contains the current users location
 	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
@@ -226,6 +236,16 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getAllByDistrictInJurisdiction(district, includeSupervisors, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
+
+		List<District> districts = districtService.getByUuids(districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()));
+		return userService.getAllByDistrictsInJurisdiction(districts, includeSupervisors, userRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 

@@ -30,8 +30,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseCriteriaDateType;
-import de.symeda.sormas.api.caze.CaseCriteriaDateTypeHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -58,6 +56,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -86,6 +86,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseDataDto.QUARANTINE_TO,
 		CaseCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+		CaseCriteria.VACCINATION,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -102,9 +103,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
 		+ filterLocsCss(
 			VSPACE_3,
-			CaseCriteria.ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
-			CaseCriteria.ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL,
-			CaseCriteria.ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
+			CaseCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
+			CaseCriteria.ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL,
+			CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
@@ -215,6 +216,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
+
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
 
 		addField(
 			moreFiltersContainer,
@@ -343,7 +349,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				moreFiltersContainer,
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
-					CaseCriteria.ONLY_CASES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					CaseCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
 					I18nProperties.getCaption(Captions.caseFilterOnlyCasesNotSharedWithExternalSurvTool),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
@@ -352,7 +358,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				moreFiltersContainer,
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
-					CaseCriteria.ONLY_CASES_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					CaseCriteria.ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL,
 					I18nProperties.getCaption(Captions.caseFilterOnlyCasesSharedWithExternalSurvToo),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
@@ -361,7 +367,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				moreFiltersContainer,
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
-					CaseCriteria.ONLY_CASES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
+					CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
 					I18nProperties.getCaption(Captions.caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
@@ -711,11 +717,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private HorizontalLayout buildWeekAndDateFilter(boolean isExternalShareEnabled) {
 
-		EpiWeekAndDateFilterComponent<CaseCriteriaDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+		EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
 			false,
 			I18nProperties.getString(Strings.infoCaseDate),
-			CaseCriteriaDateTypeHelper.getTypes(isExternalShareEnabled),
+			CriteriaDateTypeHelper.getTypes(NewCaseDateType.class, isExternalShareEnabled),
 			I18nProperties.getString(Strings.promptNewCaseDateType),
 			null,
 			this);
@@ -735,7 +741,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return dateFilterRowLayout;
 	}
 
-	private void onApplyClick(EpiWeekAndDateFilterComponent<CaseCriteriaDateType> weekAndDateFilter) {
+	private void onApplyClick(EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter) {
 		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 		Date fromDate, toDate;
 		if (dateFilterOption == DateFilterOption.DATE) {
@@ -749,7 +755,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			CaseCriteria criteria = getValue();
-			CaseCriteriaDateType newCaseDateType = (CaseCriteriaDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			CriteriaDateType newCaseDateType = (CriteriaDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 
 			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 			criteria.dateFilterOption(dateFilterOption);

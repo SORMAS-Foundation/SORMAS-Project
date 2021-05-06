@@ -215,8 +215,12 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.FOLLOW_UP_STATUS),
 			root.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			root.get(Case.VACCINATION),
 			root.get(Case.CHANGE_DATE),
-			joins.getFacility().get(Facility.ID));
+			joins.getFacility().get(Facility.ID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
@@ -239,6 +243,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.COMPLETENESS:
 		case CaseIndexDto.FOLLOW_UP_STATUS:
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
+		case CaseIndexDto.VACCINATION:
 		case CaseIndexDto.DISEASE_VARIANT:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_FIRST_NAME:
@@ -286,7 +291,10 @@ public class CaseListCriteriaBuilder {
 				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
-				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
+				joins.getSymptoms().get(Symptoms.ONSET_DATE),
+				joins.getResponsibleRegion().get(Region.NAME),
+				joins.getResponsibleDistrict().get(District.NAME),
+				joins.getResponsibleCommunity().get(Community.NAME)));
 
 		return selections;
 	}
@@ -315,6 +323,9 @@ public class CaseListCriteriaBuilder {
 
 		return Stream.of(
 			joins.getReportingUser().get(User.UUID),
+			joins.getResponsibleRegion().get(Region.UUID),
+			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleCommunity().get(Community.UUID),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),

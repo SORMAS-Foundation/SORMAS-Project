@@ -96,7 +96,7 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 			DiseaseVariant caseDiseaseVariant = DatabaseHelper.getCustomizableEnumValueDao().queryForId(associatedCase.getDiseaseVariant().getId());
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-				&& pathogenTestToSave.getTestResultVerified() == true
+				&& pathogenTestToSave.getTestResultVerified()
 				&& newDiseaseVariant != null
 				&& !newDiseaseVariant.equals(caseDiseaseVariant)) {
 
@@ -121,6 +121,8 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 					save(pathogenTestToSave, associatedCase);
 				});
 				dlg.show();
+			} else {
+				save(pathogenTestToSave, associatedCase);
 			}
 		}
 	}

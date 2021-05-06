@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,8 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormBuilder;
+
+import static de.symeda.sormas.api.campaign.ExpressionProcessorUtils.refreshEvaluationContext;
 
 public class ExpressionProcessor {
 
@@ -83,7 +86,7 @@ public class ExpressionProcessor {
 	}
 
 	private void checkExpression() {
-		EvaluationContext context = refreshEvaluationContext();
+		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
 			try {
@@ -98,30 +101,4 @@ public class ExpressionProcessor {
 		});
 	}
 
-	private EvaluationContext refreshEvaluationContext() {
-		EvaluationContext context = new StandardEvaluationContext(transformFormValueListToMap());
-		context.getPropertyAccessors().add(new MapAccessor());
-		return context;
-	}
-
-	private Map<String, Object> transformFormValueListToMap() {
-		return campaignFormBuilder.getFormValues()
-			.stream()
-			.collect(HashMap::new, (map, formValue) -> map.put(formValue.getId(), parseValue(formValue.getValue())), HashMap::putAll);
-	}
-
-	private Object parseValue(Object value) {
-		if (value instanceof String) {
-			try {
-				return Integer.parseInt(value.toString());
-			} catch (NumberFormatException e) {
-				try {
-					return Double.parseDouble(value.toString());
-				} catch (NumberFormatException e1) {
-					return value;
-				}
-			}
-		}
-		return value;
-	}
 }

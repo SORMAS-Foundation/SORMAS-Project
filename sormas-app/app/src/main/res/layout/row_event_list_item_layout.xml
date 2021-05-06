@@ -136,7 +136,7 @@
 
                     <!-- Event Description -->
                     <TextView
-                        android:id="@+id/txtEventDesc"
+                        android:id="@+id/txtEventTitle"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -144,8 +144,8 @@
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
-                        app:value="@{data.eventDesc}"
-                        app:defaultValue='@{@string/value_description_unknown}'
+                        app:value="@{data.eventTitle}"
+                        app:defaultValue='@{@string/value_not_available}'
                         />
 
                 </LinearLayout>

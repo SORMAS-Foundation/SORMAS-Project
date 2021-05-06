@@ -21,10 +21,12 @@ public class CaseListComponent extends VerticalLayout {
 	private CaseList list;
 
 	public CaseListComponent(PersonReferenceDto personReferenceDto) {
+		CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
 		createCaseListComponent(
 			new CaseList(personReferenceDto),
 			I18nProperties.getString(Strings.entityCases),
-			clickEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().person(personReferenceDto)));
+			clickEvent -> ControllerProvider.getCaseController().navigateTo(caseCriteria));
 	}
 
 	private void createCaseListComponent(CaseList caseList, String heading, Button.ClickListener clickListener) {

@@ -2,12 +2,12 @@ package de.symeda.sormas.api.infrastructure;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class PointOfEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
 

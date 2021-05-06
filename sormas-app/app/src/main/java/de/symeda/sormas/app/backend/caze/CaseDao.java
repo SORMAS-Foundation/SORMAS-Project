@@ -19,6 +19,8 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -470,9 +473,20 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 
 			// If the district has changed, assign a new surveillance officer and re-assign tasks
-			if (!changedCase.getDistrict().getUuid().equals(existingCase.getUuid())) {
-				List<User> districtOfficers =
-					DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+			if (!DataHelper.isSame(changedCase.getResponsibleDistrict(), existingCase.getResponsibleDistrict())
+				|| (changedCase.getResponsibleDistrict() == null && !DataHelper.isSame(changedCase.getDistrict(), existingCase.getDistrict()))) {
+				List<User> districtOfficers = Collections.emptyList();
+
+				if (changedCase.getResponsibleDistrict() != null) {
+					districtOfficers = DatabaseHelper.getUserDao()
+						.getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+				}
+
+				if (districtOfficers.size() == 0) {
+					districtOfficers =
+						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+				}
+
 				if (districtOfficers.size() == 1) {
 					changedCase.setSurveillanceOfficer(districtOfficers.get(0));
 				} else {
@@ -488,16 +502,34 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						task.setAssigneeUser(changedCase.getSurveillanceOfficer());
 					} else {
 						// TODO roles? what happens when there are no supervisors? assignee user cannot be null
-						List<User> survSupervisors =
-							DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-						List<User> caseSupervisors =
-							DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+						List<User> survSupervisors = Collections.emptyList();
+						if (changedCase.getResponsibleRegion() != null) {
+							survSupervisors =
+								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+						}
+
+						if (survSupervisors.size() == 0) {
+							survSupervisors =
+								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+						}
+
 						if (survSupervisors.size() >= 1) {
 							task.setAssigneeUser(survSupervisors.get(0));
-						} else if (caseSupervisors.size() >= 1) {
-							task.setAssigneeUser(caseSupervisors.get(0));
 						} else {
-							task.setAssigneeUser(null);
+							List<User> caseSupervisors = Collections.emptyList();
+							if (changedCase.getResponsibleRegion() != null) {
+								caseSupervisors =
+									DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.CASE_SUPERVISOR);
+							}
+							if (caseSupervisors.size() == 0) {
+								caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+							}
+
+							if (caseSupervisors.size() >= 1) {
+								task.setAssigneeUser(caseSupervisors.get(0));
+							} else {
+								task.setAssigneeUser(null);
+							}
 						}
 					}
 

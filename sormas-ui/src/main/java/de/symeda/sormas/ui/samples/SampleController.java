@@ -242,9 +242,9 @@ public class SampleController {
 			if (associatedCase != null) {
 				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 				Runnable caseDiseaseVariantCallback = () -> {
-					if (pathogenTest.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
+					if (!DataHelper.equal(pathogenTest.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())
 						&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
-						&& pathogenTest.getTestResultVerified().booleanValue() == true) {
+						&& pathogenTest.getTestResultVerified()) {
 						showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
 					}
 				};
