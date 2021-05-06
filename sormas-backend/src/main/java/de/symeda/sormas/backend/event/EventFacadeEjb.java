@@ -915,104 +915,6 @@ public class EventFacadeEjb implements EventFacade {
 		}
 	}
 
-	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
-
-		target.setEventStatus(source.getEventStatus());
-		target.setRiskLevel(source.getRiskLevel());
-		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
-		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
-		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
-		target.setExternalId(source.getExternalId());
-		target.setExternalToken(source.getExternalToken());
-		target.setEventTitle(source.getEventTitle());
-		target.setEventDesc(source.getEventDesc());
-		target.setNosocomial(source.getNosocomial());
-		target.setStartDate(source.getStartDate());
-		target.setEndDate(source.getEndDate());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEvolutionDate(source.getEvolutionDate());
-		target.setEvolutionComment(source.getEvolutionComment());
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
-		target.setTypeOfPlace(source.getTypeOfPlace());
-		target.setMeansOfTransport(source.getMeansOfTransport());
-		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
-		target.setConnectionNumber(source.getConnectionNumber());
-		target.setTravelDate(source.getTravelDate());
-		target.setWorkEnvironment(source.getWorkEnvironment());
-		target.setSrcType(source.getSrcType());
-		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
-		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
-		target.setSrcFirstName(source.getSrcFirstName());
-		target.setSrcLastName(source.getSrcLastName());
-		target.setSrcTelNo(source.getSrcTelNo());
-		target.setSrcEmail(source.getSrcEmail());
-		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
-		target.setSrcMediaName(source.getSrcMediaName());
-		target.setSrcMediaDetails(source.getSrcMediaDetails());
-		target.setDisease(source.getDisease());
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
-		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
-		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
-		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
-		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
-		target.setEventManagementStatus(source.getEventManagementStatus());
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
-		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
-		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
-		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
-
-		target.setInternalId(source.getInternalId());
-
-		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
-		}
-
-		return target;
-	}
-
-	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
-		EventDto eventDto = toDto(source);
-
-		pseudonymizeDto(source, eventDto, pseudonymizer);
-
-		return eventDto;
-	}
-
-	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
-
-			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
-				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
-			});
-		}
-	}
-
-	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
-		if (existingDto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
-			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
-			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
-		}
-	}
-
-	public static EventReferenceDto toReferenceDto(Event entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return new EventReferenceDto(entity.getUuid(), entity.toString());
-	}
-
 	public static EventDto toDto(Event source) {
 
 		if (source == null) {
@@ -1072,10 +974,118 @@ public class EventFacadeEjb implements EventFacade {
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
 
+		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
+		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
+		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
+		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+
+		return target;
+	}
+
+	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
+	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
+			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
+	}
+
+	public static EventReferenceDto toReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
+	}
+
+	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
+		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
+
+		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
+		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
+		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
+		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
+		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
+		target.setEventTitle(source.getEventTitle());
+		target.setEventDesc(source.getEventDesc());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setReportDateTime(source.getReportDateTime());
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
+		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
+		target.setWorkEnvironment(source.getWorkEnvironment());
+		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
+		target.setSrcFirstName(source.getSrcFirstName());
+		target.setSrcLastName(source.getSrcLastName());
+		target.setSrcTelNo(source.getSrcTelNo());
+		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
+		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
+		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
+		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
+		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+
+		target.setInternalId(source.getInternalId());
+
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
 
 		return target;
 	}

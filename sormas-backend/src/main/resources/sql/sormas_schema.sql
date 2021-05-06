@@ -7227,10 +7227,19 @@ ALTER TABLE cases
 
 INSERT INTO schema_version (version_number, comment) VALUES (366, 'Decouple Place of stay from the responsible jurisdiction from cases #3254');
 
+-- 2021-04-29 Add evidence fields for event clusters #5061
+
+ALTER TABLE events ADD COLUMN epidemiologicalevidence varchar(255);
+ALTER TABLE events ADD COLUMN epidemiologicalevidencedetails json;
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidence varchar(255);
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidencedetails json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (367, ' 2021-04-29 Add evidence fields for event clusters #5061');
+
 -- 2020-03-03 Add archived to task #3430
 ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
 ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (367, 'Add archived to task #3430');
+INSERT INTO schema_version (version_number, comment) VALUES (368, 'Add archived to task #3430');
 
 -- *** Insert new sql commands BEFORE this line ***

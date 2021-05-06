@@ -929,6 +929,7 @@ public interface Captions {
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_diseaseTransmissionMode = "Event.diseaseTransmissionMode";
 	String Event_endDate = "Event.endDate";
+	String Event_epidemiologicalEvidence = "Event.epidemiologicalEvidence";
 	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventGroupCount = "Event.eventGroupCount";
@@ -951,6 +952,7 @@ public interface Captions {
 	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
 	String Event_internalId = "Event.internalId";
+	String Event_laboratoryDiagnosticEvidence = "Event.laboratoryDiagnosticEvidence";
 	String Event_latestEventGroup = "Event.latestEventGroup";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
