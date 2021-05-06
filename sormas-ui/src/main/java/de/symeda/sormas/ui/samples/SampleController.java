@@ -312,8 +312,8 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = null;
 		if (dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton = ButtonHelper
-					.createButtonWithCaption("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
+				referOrLinkToOtherLabButton =
+					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 
 						private static final long serialVersionUID = 1L;
 
@@ -338,16 +338,15 @@ public class SampleController {
 					+ DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
 
-			referOrLinkToOtherLabButton =
-				ButtonHelper.createButtonWithCaption("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
+			referOrLinkToOtherLabButton = ButtonHelper.createButton("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
 
-					private static final long serialVersionUID = 1L;
+				private static final long serialVersionUID = 1L;
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						navigateToData(dto.getReferredTo().getUuid());
-					}
-				});
+				@Override
+				public void buttonClick(ClickEvent event) {
+					navigateToData(dto.getReferredTo().getUuid());
+				}
+			});
 
 		}
 
