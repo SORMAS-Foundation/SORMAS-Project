@@ -18,12 +18,12 @@
 CREATE TEMP TABLE tmp_region
 (
     name        varchar(255),
-    epidcode    varchar(255),
-    growthrate  real,
+    epidCode    varchar(255),
+    growthRate  real,
     archived    boolean,
-    externalid  varchar(255),
-    areaname    varchar(255),
-    countryname varchar(255)
+    externalID  varchar(255),
+    area    varchar(255),
+    country varchar(255)
 );
 
 /** TODO
@@ -31,20 +31,20 @@ CREATE TEMP TABLE tmp_region
 	Note that the user running the postgres services needs to have access rights.
 **/
 COPY tmp_region
-    FROM 'C:\Users\Public\Documents\regions.csv'
+    FROM '/Users/barnabartha/Sormas/sprints/sprint 102/regions.csv'
     DELIMITER ';'
     CSV HEADER;
 
 /* 2. Clean up and map data */
 /* trim whitespaces - especially important for region, district and enum values */
 UPDATE tmp_region
-SET (name, epidcode, externalid, areaname, countryname) = (trim(name), trim(epidcode), trim(externalid), trim(areaname), trim(countryname));
+SET (name, epidcode, externalid, area, country) = (trim(name), trim(epidcode), trim(externalid), trim(area), trim(country));
 
 /* fill area_id and country_id */
 ALTER TABLE tmp_region ADD COLUMN area_id integer;
 ALTER TABLE tmp_region ADD COLUMN country_id integer;
-UPDATE tmp_region SET area_id = area.id FROM area WHERE area.name = areaname;
-UPDATE tmp_region SET country_id = country.id FROM country WHERE country.name = countryname;
+UPDATE tmp_region SET area_id = areas.id FROM areas WHERE areas.name = area;
+UPDATE tmp_region SET country_id = country.id FROM country WHERE country.defaultName = country;
 
 UPDATE tmp_region SET archived = 'FALSE' WHERE archived IS NULL;
 
