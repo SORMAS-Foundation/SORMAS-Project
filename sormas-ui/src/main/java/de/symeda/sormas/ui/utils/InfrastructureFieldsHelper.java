@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -33,15 +35,19 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 
 public class InfrastructureFieldsHelper {
 
+	public static void initInfrastructureFields(ComboBox regionCombo, ComboBox districtCombo, ComboBox communityCombo) {
+		initInfrastructureFields(regionCombo, districtCombo, communityCombo, null, null, null, null, null);
+	}
+
 	public static void initInfrastructureFields(
 		ComboBox regionCombo,
 		ComboBox districtCombo,
 		ComboBox communityCombo,
-		ComboBox facilityTypeGroupCombo,
-		ComboBox facilityTypeCombo,
-		ComboBox facilityCombo,
-		TextField facilityDetailsField,
-		Supplier<String> facilityDetailsSupplier) {
+		@Nullable ComboBox facilityTypeGroupCombo,
+		@Nullable ComboBox facilityTypeCombo,
+		@Nullable ComboBox facilityCombo,
+		@Nullable TextField facilityDetailsField,
+		@Nullable Supplier<String> facilityDetailsSupplier) {
 		regionCombo.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
@@ -57,90 +63,95 @@ public class InfrastructureFieldsHelper {
 					districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			}
 
-			if (districtDto == null) {
-				FieldHelper.removeItems(facilityCombo);
-			} else if (facilityTypeCombo.getValue() != null) {
-				FieldHelper.updateItems(
-					facilityCombo,
-					FacadeProvider.getFacilityFacade()
-						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityTypeCombo.getValue(), true, false));
+			if (facilityCombo != null) {
+				if (districtDto == null) {
+					FieldHelper.removeItems(facilityCombo);
+				} else if (facilityTypeCombo != null && facilityTypeCombo.getValue() != null) {
+					FieldHelper.updateItems(
+						facilityCombo,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityTypeCombo.getValue(), true, false));
+				}
 			}
 		});
 
-		if (communityCombo != null) {
+		if (communityCombo != null && facilityCombo != null) {
 			communityCombo.addValueChangeListener(e -> {
 				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-				if (facilityTypeCombo.getValue() != null) {
+				FacilityType facilityType = facilityTypeCombo != null ? (FacilityType) facilityTypeCombo.getValue() : null;
+
+				if (facilityType != null) {
 					FieldHelper.updateItems(
 						facilityCombo,
 						communityDto != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityTypeCombo.getValue(), true, true)
+							? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, facilityType, true, true)
 							: districtCombo.getValue() != null
 								? FacadeProvider.getFacilityFacade()
-									.getActiveFacilitiesByDistrictAndType(
-										(DistrictReferenceDto) districtCombo.getValue(),
-										(FacilityType) facilityTypeCombo.getValue(),
-										true,
-										false)
+									.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) districtCombo.getValue(), facilityType, true, false)
 								: null);
 				}
 			});
 		}
 
-		facilityTypeGroupCombo.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityCombo);
-			FieldHelper.updateEnumData(facilityTypeCombo, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupCombo.getValue()));
-			facilityTypeCombo.setRequired(facilityTypeGroupCombo.getValue() != null);
-		});
-		facilityTypeCombo.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityCombo);
-			if (facilityTypeCombo.getValue() != null && facilityTypeGroupCombo.getValue() == null) {
-				facilityTypeGroupCombo.setValue(((FacilityType) facilityTypeCombo.getValue()).getFacilityTypeGroup());
-			}
-			if (facilityTypeCombo.getValue() != null && districtCombo.getValue() != null) {
-				if (communityCombo != null && communityCombo.getValue() != null) {
-					FieldHelper.updateItems(
-						facilityCombo,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) communityCombo.getValue(),
-								(FacilityType) facilityTypeCombo.getValue(),
-								true,
-								false));
-				} else {
-					FieldHelper.updateItems(
-						facilityCombo,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType(
-								(DistrictReferenceDto) districtCombo.getValue(),
-								(FacilityType) facilityTypeCombo.getValue(),
-								true,
-								false));
+		if (facilityTypeGroupCombo != null && facilityTypeCombo != null && facilityCombo != null) {
+			facilityTypeGroupCombo.addValueChangeListener(e -> {
+				FieldHelper.removeItems(facilityCombo);
+				FieldHelper.updateEnumData(facilityTypeCombo, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupCombo.getValue()));
+				facilityTypeCombo.setRequired(facilityTypeGroupCombo.getValue() != null);
+			});
+
+			facilityTypeCombo.addValueChangeListener(e -> {
+				FieldHelper.removeItems(facilityCombo);
+				if (facilityTypeCombo.getValue() != null && facilityTypeGroupCombo.getValue() == null) {
+					facilityTypeGroupCombo.setValue(((FacilityType) facilityTypeCombo.getValue()).getFacilityTypeGroup());
 				}
-			}
-		});
-		facilityCombo.addValueChangeListener(e -> {
-			if (facilityCombo.getValue() != null) {
-				boolean visibleAndRequired = isFacilityDetailsRequired(facilityCombo);
+				if (facilityTypeCombo.getValue() != null && districtCombo.getValue() != null) {
+					if (communityCombo != null && communityCombo.getValue() != null) {
+						FieldHelper.updateItems(
+							facilityCombo,
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByCommunityAndType(
+									(CommunityReferenceDto) communityCombo.getValue(),
+									(FacilityType) facilityTypeCombo.getValue(),
+									true,
+									false));
+					} else {
+						FieldHelper.updateItems(
+							facilityCombo,
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) districtCombo.getValue(),
+									(FacilityType) facilityTypeCombo.getValue(),
+									true,
+									false));
+					}
+				}
+			});
+		}
 
-				facilityDetailsField.setVisible(visibleAndRequired);
-				facilityDetailsField.setRequired(visibleAndRequired);
+		if (facilityCombo != null && facilityDetailsField != null) {
+			facilityCombo.addValueChangeListener(e -> {
+				if (facilityCombo.getValue() != null) {
+					boolean visibleAndRequired = isFacilityDetailsRequired(facilityCombo);
 
-				if (!visibleAndRequired) {
+					facilityDetailsField.setVisible(visibleAndRequired);
+					facilityDetailsField.setRequired(visibleAndRequired);
+
+					if (!visibleAndRequired) {
+						facilityDetailsField.clear();
+					} else {
+						facilityDetailsField.setValue(facilityDetailsSupplier.get());
+					}
+				} else {
+					facilityDetailsField.setVisible(false);
+					facilityDetailsField.setRequired(false);
 					facilityDetailsField.clear();
-				} else {
-					facilityDetailsField.setValue(facilityDetailsSupplier.get());
 				}
-			} else {
-				facilityDetailsField.setVisible(false);
-				facilityDetailsField.setRequired(false);
-				facilityDetailsField.clear();
-			}
-		});
+			});
 
-		facilityDetailsField.setVisible(false);
-		facilityDetailsField.setRequired(false);
+			facilityDetailsField.setVisible(false);
+			facilityDetailsField.setRequired(false);
+		}
 
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 	}

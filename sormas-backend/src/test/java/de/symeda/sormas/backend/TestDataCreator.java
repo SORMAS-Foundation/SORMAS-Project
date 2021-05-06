@@ -292,6 +292,10 @@ public class TestDataCreator {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
+	}
+
 	public CaseDataDto createCase(
 		UserReferenceDto user,
 		PersonReferenceDto cazePerson,
@@ -471,7 +475,7 @@ public class TestDataCreator {
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
-			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null, null);
 			if (rdcf == null) {
 				rdcf = createRDCF();
 			}

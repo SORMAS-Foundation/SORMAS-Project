@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -235,7 +236,9 @@ public class ContactExportDto implements Serializable {
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid,
+							String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+							String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
 
@@ -333,6 +336,7 @@ public class ContactExportDto implements Serializable {
 			? null
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
+				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUuid,

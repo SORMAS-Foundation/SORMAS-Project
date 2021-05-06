@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
@@ -41,9 +44,6 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 
@@ -97,17 +97,16 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 			DiseaseVariant caseDiseaseVariant = DatabaseHelper.getDiseaseVariantDao().queryForId(associatedCase.getDiseaseVariant().getId());
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-					&& pathogenTestToSave.getTestResultVerified() == true
-					&& newDiseaseVariant != null
-					&& !newDiseaseVariant.equals(caseDiseaseVariant)) {
+				&& pathogenTestToSave.getTestResultVerified()
+				&& newDiseaseVariant != null
+				&& !newDiseaseVariant.equals(caseDiseaseVariant)) {
 
 				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
 				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
 				int positiveButtonTextResId = R.string.yes;
 				int negativeButtonTextResId = R.string.no;
 
-				ConfirmationDialog dlg =
-						new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
+				ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
 				dlg.setCancelable(false);
 				dlg.setNegativeCallback(() -> {
 					save(pathogenTestToSave, associatedCase);
@@ -123,6 +122,8 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 					save(pathogenTestToSave, associatedCase);
 				});
 				dlg.show();
+			} else {
+				save(pathogenTestToSave, associatedCase);
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.samples;
 
 import static de.symeda.sormas.api.i18n.I18nProperties.getPrefixCaption;
-import static de.symeda.sormas.ui.utils.LayoutUtil.element;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;

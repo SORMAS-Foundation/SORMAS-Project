@@ -25,6 +25,4 @@ public interface ExternalJournalFacade {
 	ExternalJournalValidation validatePatientDiaryPerson(PersonDto person);
 
 	PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto personDto);
-
-	void notifyExternalJournalFollowUpUntilUpdate(String personUuid, Date newFollowUpUntilDate, Date previousFollowUpUntilDate);
 }

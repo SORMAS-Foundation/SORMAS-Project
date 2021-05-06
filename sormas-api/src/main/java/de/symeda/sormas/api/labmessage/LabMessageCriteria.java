@@ -2,7 +2,7 @@ package de.symeda.sormas.api.labmessage;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
