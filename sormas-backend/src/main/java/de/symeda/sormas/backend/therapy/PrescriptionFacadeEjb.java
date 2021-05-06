@@ -46,7 +46,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "PrescriptionFacade")
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
@@ -254,6 +253,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		return Stream.of(
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),

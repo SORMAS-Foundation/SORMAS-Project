@@ -358,6 +358,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
+			null,
+			null,
+			null,
 			null);
 
 		List<MapContactDto> mapContactDtos =
