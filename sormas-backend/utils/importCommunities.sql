@@ -30,7 +30,7 @@ CREATE TEMP TABLE tmp_community
 	Note that the user running the postgres services needs to have access rights.
 **/
 COPY tmp_community
-    FROM 'C:\Users\Public\Documents\communities.csv'
+    FROM '/home/communities.csv'
     DELIMITER ';'
     CSV HEADER;
 
@@ -39,11 +39,9 @@ COPY tmp_community
 UPDATE tmp_community
 SET (name, externalid, regionname, districtname) = (trim(name), trim(externalid), trim(regionname), trim(districtname));
 
-/* fill region_id and district_id */
-ALTER TABLE tmp_community ADD COLUMN region_id integer;
+/* fill district_id */
 ALTER TABLE tmp_community ADD COLUMN district_id integer;
-UPDATE tmp_community SET region_id = region.id FROM region WHERE region.name = regionname;
-UPDATE tmp_community SET district_id = district.id FROM district WHERE district.name = districtname AND district.region_id = tmp_facility.region_id;
+UPDATE tmp_community SET district_id = d.id FROM district d left join region r on d.region_id = r.id WHERE d.name = districtname AND r.name = regionname;
 
 UPDATE tmp_community SET archived = 'FALSE' WHERE archived IS NULL;
 
@@ -54,13 +52,13 @@ $$
         errordetails text;
     BEGIN
 
-        /* make sure all regions and districts were found */
-        IF (SELECT count(*) FROM tmp_community WHERE region_id IS NULL OR district_id IS NULL) > 0 THEN
-            errordetails = (SELECT string_agg(externalid, ', ') FROM tmp_community WHERE region_id IS NULL OR district_id IS NULL);
-            RAISE WARNING 'Ignoring communities without region or district: %', errordetails;
+        /* make sure all districts were found */
+        IF (SELECT count(*) FROM tmp_community WHERE district_id IS NULL) > 0 THEN
+            errordetails = (SELECT string_agg(externalid, ', ') FROM tmp_community WHERE district_id IS NULL);
+            RAISE WARNING 'Ignoring communities without district: %', errordetails;
         END IF;
 
-        DELETE FROM tmp_community WHERE region_id IS NULL OR district_id IS NULL;
+        DELETE FROM tmp_community WHERE district_id IS NULL;
 
 /* make sure all entries have an external id */
         IF (SELECT count(*) FROM tmp_community WHERE externalid IS NULL) > 0 THEN
@@ -90,15 +88,15 @@ $$ LANGUAGE plpgsql;
 
 /* 4. Update existing facilities */
 UPDATE community
-SET (name, growthrate, region_id, district_id, archived)
-        = (c.name, c.growthrate, c.region_id, c.district_id, c.archived)
+SET (name, growthrate, district_id, archived)
+        = (c.name, c.growthrate, c.district_id, c.archived)
 FROM tmp_community AS c
 WHERE community.externalid IS NOT NULL AND community.externalid = c.externalid;
 
 /* 5. Insert new facilities */
 INSERT INTO community
-(id, changedate, creationdate, uuid, name, growthrate, region_id, district_id, externalid, archived)
-    (SELECT nextval('entity_seq'), now(), now(), generate_base32_uuid(), name, growthrate, region_id, district_id, externalid, archived
+(id, changedate, creationdate, uuid, name, growthrate, district_id, externalid, archived)
+    (SELECT nextval('entity_seq'), now(), now(), generate_base32_uuid(), name, growthrate, district_id, externalid, archived
      FROM tmp_community WHERE (SELECT COUNT(*) FROM community WHERE community.externalid = tmp_community.externalid) = 0);
 
 DROP TABLE tmp_community;
