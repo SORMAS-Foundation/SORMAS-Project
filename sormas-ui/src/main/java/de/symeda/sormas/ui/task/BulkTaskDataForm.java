@@ -151,14 +151,6 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 			}
 		}
 
-		// Allow regional users to assign the task to national ones
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-			&& userDto.getDistrict() == null
-			&& userDto.getRegion() != null) {
-			users.addAll(
-				FacadeProvider.getUserFacade()
-					.getUsersByRegionAndRoles(null, UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION).toArray(new UserRole[0])));
-		}
 		return users;
 	}
 

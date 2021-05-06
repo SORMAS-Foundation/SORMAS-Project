@@ -20,6 +20,7 @@ package de.symeda.sormas.api.task;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -68,4 +71,10 @@ public interface TaskFacade {
 	void sendNewAndDueTaskMessages();
 
 	void updateArchived(List<String> taskUuids, boolean archived);
+
+	/**
+	 * Get the common district between all the given task uuids.
+	 * If these tasks are related to several districts, it will return null.
+	 */
+	DistrictReferenceDto getSharedDistrictByTaskUuids(List<String> taskUuids);
 }

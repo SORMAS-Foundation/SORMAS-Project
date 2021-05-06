@@ -17,12 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -44,10 +49,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TaskController {
 
@@ -216,16 +217,8 @@ public class TaskController {
 		}
 
 		// Check if tasks with multiple districts have been selected
-		DistrictReferenceDto district = null;
-		for (TaskIndexDto taskIndexDto : selectedTasks) {
-			DistrictReferenceDto taskDistrict = this.getTaskIndexDistrict(taskIndexDto);
-			if (district == null) {
-				district = taskDistrict;
-			} else if (!district.equals(taskDistrict)) {
-				district = null;
-				break;
-			}
-		}
+		List<String> taskUuids = selectedTasks.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+		DistrictReferenceDto district = FacadeProvider.getTaskFacade().getSharedDistrictByTaskUuids(taskUuids);
 
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
 		TaskBulkEditData bulkEditData = new TaskBulkEditData();

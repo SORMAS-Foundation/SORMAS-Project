@@ -22,8 +22,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -57,6 +59,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -89,6 +92,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -765,6 +769,43 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
+	}
+
+	@Override
+	public DistrictReferenceDto getSharedDistrictByTaskUuids(List<String> taskUuids) {
+		Set<String> districtUuids = new HashSet<>();
+		IterableHelper.executeBatched(taskUuids, ModelConstants.PARAMETER_LIMIT, batchedTaskUuids -> {
+			if (districtUuids.size() > 1) {
+				return;
+			}
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Task> from = cq.from(Task.class);
+			Join<Task, Case> caseJoin = from.join(Task.CAZE, JoinType.LEFT);
+			Join<Case, District> caseDistrictJoin = caseJoin.join(Case.DISTRICT, JoinType.LEFT);
+			Join<Task, Contact> contactJoin = from.join(Task.CONTACT, JoinType.LEFT);
+			Join<Contact, District> contactDistrictJoin = contactJoin.join(Contact.DISTRICT, JoinType.LEFT);
+			Join<Task, Event> eventJoin = from.join(Task.EVENT, JoinType.LEFT);
+			Join<Event, Location> eventLocationJoin = eventJoin.join(Event.EVENT_LOCATION, JoinType.LEFT);
+			Join<Location, District> eventDistrictJoin = eventLocationJoin.join(Location.DISTRICT, JoinType.LEFT);
+
+			cq.where(from.get(Task.UUID).in(taskUuids));
+			cq.select(
+				cb.coalesce(
+					cb.coalesce(caseDistrictJoin.get(District.UUID), contactDistrictJoin.get(District.UUID)),
+					eventDistrictJoin.get(District.UUID)))
+				.distinct(true);
+
+			List<String> batchedDistrictUuids = em.createQuery(cq).setMaxResults(2).getResultList();
+			districtUuids.addAll(batchedDistrictUuids);
+		});
+
+		if (districtUuids.size() == 1) {
+			return districtUuids.stream().findFirst().map(DistrictReferenceDto::new).orElse(null);
+		}
+
+		return null;
 	}
 
 	@LocalBean
