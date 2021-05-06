@@ -255,7 +255,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
 					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
 				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-			Button referredButton = ButtonHelper.createButtonWithCaption(
+			Button referredButton = ButtonHelper.createButton(
 				"referredFrom",
 				referredButtonCaption,
 				event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()),

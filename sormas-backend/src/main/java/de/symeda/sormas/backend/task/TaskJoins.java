@@ -52,6 +52,9 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Task, User> creator;
 	private Join<Task, User> assignee;
 	private Join<Case, User> caseReportingUser;
+	private Join<Case, Region> caseResponsibleRegion;
+	private Join<Case, District> caseResponsibleDistrict;
+	private Join<Case, Community> caseResponsibleCommunity;
 	private Join<Case, Region> caseRegion;
 	private Join<Case, District> caseDistrict;
 	private Join<Case, Community> caseCommunity;
@@ -62,6 +65,9 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Contact, District> contactDistrict;
 	private Join<Contact, Community> contactCommunity;
 	private Join<Case, User> contactCaseReportingUser;
+	private Join<Case, Region> contactCaseResponsibleRegion;
+	private Join<Case, District> contactCaseResponsibleDistrict;
+	private Join<Case, Community> contactCaseResponsibleCommunity;
 	private Join<Case, Region> contactCaseRegion;
 	private Join<Case, District> contactCaseDistrict;
 	private Join<Case, Community> contactCaseCommunity;
@@ -200,6 +206,30 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 		this.caseReportingUser = caseReportingUser;
 	}
 
+	public Join<Case, Region> getCaseResponsibleRegion() {
+		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCaze(), this::setCaseResponsibleRegion);
+	}
+
+	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
+		this.caseResponsibleRegion = caseResponsibleRegion;
+	}
+
+	public Join<Case, District> getCaseResponsibleDistrict() {
+		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCaze(), this::setCaseResponsibleDistrict);
+	}
+
+	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
+		this.caseResponsibleDistrict = caseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getCaseResponsibleCommunity() {
+		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseResponsibleCommunity);
+	}
+
+	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
+		this.caseResponsibleCommunity = caseResponsibleCommunity;
+	}
+
 	public Join<Case, Region> getCaseRegion() {
 		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getCaze(), this::setCaseRegion);
 	}
@@ -278,6 +308,45 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 
 	private void setContactCaseReportingUser(Join<Case, User> contactCaseReportingUser) {
 		this.contactCaseReportingUser = contactCaseReportingUser;
+	}
+
+	public Join<Case, Region> getContactCaseResponsibleRegion() {
+		return getOrCreate(
+			contactCaseResponsibleRegion,
+			Case.RESPONSIBLE_REGION,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleRegion);
+	}
+
+	private void setContactCaseResponsibleRegion(Join<Case, Region> contactCaseResponsibleRegion) {
+		this.contactCaseResponsibleRegion = contactCaseResponsibleRegion;
+	}
+
+	public Join<Case, District> getContactCaseResponsibleDistrict() {
+		return getOrCreate(
+			contactCaseResponsibleDistrict,
+			Case.RESPONSIBLE_DISTRICT,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleDistrict);
+	}
+
+	private void setContactCaseResponsibleDistrict(Join<Case, District> contactCaseResponsibleDistrict) {
+		this.contactCaseResponsibleDistrict = contactCaseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getContactCaseResponsibleCommunity() {
+		return getOrCreate(
+			contactCaseResponsibleCommunity,
+			Case.RESPONSIBLE_COMMUNITY,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleCommunity);
+	}
+
+	private void setContactCaseResponsibleCommunity(Join<Case, Community> contactCaseResponsibleCommunity) {
+		this.contactCaseResponsibleCommunity = contactCaseResponsibleCommunity;
 	}
 
 	public Join<Case, Region> getContactCaseRegion() {

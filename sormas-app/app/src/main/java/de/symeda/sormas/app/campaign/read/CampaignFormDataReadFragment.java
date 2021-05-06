@@ -49,6 +49,7 @@ import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlTextReadField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getExpressionValue;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.setVisibilityDependency;
 
 public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampaignDataReadLayoutBinding, CampaignFormData, CampaignFormData> {
@@ -78,7 +79,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                 String value = formValuesMap.get(campaignFormElement.getId());
-                ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext());
+                ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                 dynamicField.setShowCaption(true);
                 if (value != null) {
                     if (type == CampaignFormElementType.YES_NO) {
@@ -114,6 +115,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
         }
         return view;
     }
+
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {

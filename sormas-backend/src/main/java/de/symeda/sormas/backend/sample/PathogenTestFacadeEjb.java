@@ -37,8 +37,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +58,8 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -69,6 +69,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -400,17 +401,23 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Disease disease = null;
 
 		if (caze != null) {
-			final Region region = caze.getRegion();
 			disease = caze.getDisease();
-			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
+			messageRecipients.addAll(
+				userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getCaseRegions(caze),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.CASE_SUPERVISOR));
 
 		}
 
 		if (contact != null) {
-			final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
 			disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
 			messageRecipients.addAll(
-				userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR)
+				userService
+					.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(contact),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR)
 					.stream()
 					.filter(user -> !messageRecipients.contains(user))
 					.collect(Collectors.toList()));

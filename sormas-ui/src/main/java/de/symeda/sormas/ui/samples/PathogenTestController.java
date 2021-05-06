@@ -114,6 +114,7 @@ public class PathogenTestController {
 			}, I18nProperties.getCaption(PathogenTestDto.I18N_PREFIX));
 		}
 		editView.addCommitListener(popupWindow::close);
+		editView.addDiscardListener(popupWindow::close);
 
 		popupWindow.setContent(editView);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingEditPathogenTestResult));

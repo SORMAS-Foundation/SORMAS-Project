@@ -386,6 +386,7 @@
     <string name="heading_campaign_form_data_read">Read Campaign Data</string>
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
+    <string name="heading_case_place_of_stay">Place of stay</string>
 
     <string name="hint_add_to_empty_list">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>

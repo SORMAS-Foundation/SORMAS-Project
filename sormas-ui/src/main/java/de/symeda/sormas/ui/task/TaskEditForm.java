@@ -57,6 +57,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -168,36 +169,38 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 
 			UserDto userDto = UserProvider.getCurrent().getUser();
-			DistrictReferenceDto district = null;
-			RegionReferenceDto region = null;
+			List<DistrictReferenceDto> districts;
+			List<RegionReferenceDto> regions;
 			if (taskDto.getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-				district = caseDto.getDistrict();
-				region = caseDto.getRegion();
+
+				districts = getCaseDistricts(caseDto);
+				regions = getCaseRegions(caseDto);
 			} else if (taskDto.getContact() != null) {
 				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
 				if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-					district = contactDto.getDistrict();
-					region = contactDto.getRegion();
+					districts = DataHelper.asListNullable(contactDto.getDistrict());
+					regions = DataHelper.asListNullable(contactDto.getRegion());
 				} else {
 					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-					district = caseDto.getDistrict();
-					region = caseDto.getRegion();
+					districts = getCaseDistricts(caseDto);
+					regions = getCaseRegions(caseDto);
 				}
 			} else if (taskDto.getEvent() != null) {
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-				district = eventDto.getEventLocation().getDistrict();
-				region = eventDto.getEventLocation().getRegion();
+
+				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
+				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());
 			} else {
-				district = userDto.getDistrict();
-				region = userDto.getRegion();
+				districts = DataHelper.asListNullable(userDto.getDistrict());
+				regions = DataHelper.asListNullable(userDto.getRegion());
 			}
 
 			final List<UserReferenceDto> users = new ArrayList<>();
-			if (district != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
-			} else if (region != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region));
+			if (districts != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistricts(districts, true));
+			} else if (regions != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionsAndRoles(regions));
 			} else {
 				// fallback - just show all users
 				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
@@ -239,6 +242,30 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				assigneeUser.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
 			}
 		});
+	}
+
+	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
+		List<DistrictReferenceDto> districts = new ArrayList<>(2);
+
+		if (caseDto.getResponsibleDistrict() != null) {
+			districts.add(caseDto.getResponsibleDistrict());
+		}
+
+		districts.add(caseDto.getDistrict());
+
+		return districts;
+	}
+
+	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
+		List<RegionReferenceDto> regions = new ArrayList<>(2);
+
+		if (caseDto.getResponsibleDistrict() != null) {
+			regions.add(caseDto.getResponsibleRegion());
+		}
+
+		regions.add(caseDto.getRegion());
+
+		return regions;
 	}
 
 	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {

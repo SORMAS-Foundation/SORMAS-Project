@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -30,7 +31,9 @@ public class ContactFollowUpDto extends FollowUpDto {
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Disease disease,
 							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							  String caseReportingUserUuid,
+							  String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+							  String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
 
@@ -43,6 +46,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 			? null
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
+				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUud,

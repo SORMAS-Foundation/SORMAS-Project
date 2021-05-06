@@ -56,6 +56,8 @@ import de.symeda.sormas.app.util.TextViewBindingAdapters;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlCheckBoxField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlTextEditField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserLanguageCaption;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleDependingOn;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleExpression;
 
@@ -95,10 +97,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
                 ControlPropertyField dynamicField;
                 if (type == CampaignFormElementType.YES_NO) {
-                    dynamicField = createControlCheckBoxField(campaignFormElement, requireContext());
+                    dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                 } else {
-                    dynamicField = createControlTextEditField(campaignFormElement, requireContext());
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                 }
 
@@ -126,7 +128,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {
                 TextView textView = new TextView(requireContext());
-                TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
+                TextViewBindingAdapters.setHtmlValue(textView, getUserLanguageCaption(getUserTranslations(campaignFormMeta), campaignFormElement));
                 dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             }
         }
