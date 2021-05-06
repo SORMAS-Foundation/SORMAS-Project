@@ -31,14 +31,14 @@ CREATE TEMP TABLE tmp_region
 	Note that the user running the postgres services needs to have access rights.
 **/
 COPY tmp_region
-    FROM '/Users/barnabartha/Sormas/sprints/sprint 102/regions.csv'
+    FROM '/home/regions.csv'
     DELIMITER ';'
     CSV HEADER;
 
 /* 2. Clean up and map data */
 /* trim whitespaces - especially important for region, district and enum values */
 UPDATE tmp_region
-SET (name, epidcode, externalid, area, country) = (trim(name), trim(epidcode), trim(externalid), trim(area), trim(country));
+SET (name, epidCode, externalID, area, country) = (trim(name), trim(epidCode), trim(externalID), trim(area), trim(country));
 
 /* fill area_id and country_id */
 ALTER TABLE tmp_region ADD COLUMN area_id integer;
@@ -57,29 +57,29 @@ BEGIN
 
     /* make sure all areas and countries were found (considering that not all systems will import both) */
     IF (SELECT count(*) FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL) > 0 THEN
-        errordetails = (SELECT string_agg(externalid, ', ') FROM tmp_region WHERE area_id IS NULL AND country_id IS NULL);
+        errordetails = (SELECT string_agg(externalID, ', ') FROM tmp_region WHERE area_id IS NULL AND country_id IS NULL);
         RAISE WARNING 'Ignoring regions without area and country: %', errordetails;
     END IF;
 
     DELETE FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL;
 
 /* make sure all entries have an external id */
-    IF (SELECT count(*) FROM tmp_region WHERE externalid IS NULL) > 0 THEN
-        errordetails = (SELECT string_agg(name, ', ') FROM tmp_region WHERE externalid IS NULL);
+    IF (SELECT count(*) FROM tmp_region WHERE externalID IS NULL) > 0 THEN
+        errordetails = (SELECT string_agg(name, ', ') FROM tmp_region WHERE externalID IS NULL);
         RAISE WARNING 'Ignoring regions without externalid: %', errordetails;
     END IF;
 
-    DELETE FROM tmp_region WHERE externalid IS NULL;
+    DELETE FROM tmp_region WHERE externalID IS NULL;
 
 /* make sure externalids are only used once in the imported data */
     ALTER TABLE tmp_region ADD COLUMN externalidcount integer;
     UPDATE tmp_region
     SET externalidcount = cnt
-    FROM (SELECT externalid, COUNT(externalid) as cnt FROM tmp_region GROUP BY externalid) calc
-    WHERE calc.externalid = tmp_region.externalid;
+    FROM (SELECT externalID, COUNT(externalID) as cnt FROM tmp_region GROUP BY externalID) calc
+    WHERE calc.externalID = tmp_region.externalID;
 
     IF (SELECT MAX(externalidcount) FROM tmp_region) > 1 THEN
-        errordetails = (SELECT string_agg(externalid, ', ') FROM tmp_region WHERE externalidcount > 1);
+        errordetails = (SELECT string_agg(externalID, ', ') FROM tmp_region WHERE externalidcount > 1);
         RAISE WARNING 'Ignoring regions that are using the same externalid: %', errordetails;
     END IF;
 
@@ -93,7 +93,7 @@ UPDATE region
 SET (name, epidcode, growthrate, area_id, country_id, archived)
         = (r.name, r.epidcode, r.growthrate, r.area_id, r.country_id, r.archived)
 FROM tmp_region AS r
-WHERE region.externalid IS NOT NULL AND region.externalid = r.externalid;
+WHERE region.externalID IS NOT NULL AND region.externalid = r.externalID;
 
 /* 5. Insert new regions */
 INSERT INTO region
