@@ -777,8 +777,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		addField(CaseDataDto.VACCINATION);
-		addField(CaseDataDto.VACCINATION_DOSES)
-			.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		Field vaccinationDoseField = addField(CaseDataDto.VACCINATION_DOSES);
+		vaccinationDoseField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		vaccinationDoseField.addValueChangeListener(e -> {
+			if (vaccinationDoseField.getValue() != null) {
+				String value = vaccinationDoseField.getValue().toString();
+				vaccinationDoseField.setValue(value.trim());
+			}
+		});
 		addFields(
 			CaseDataDto.VACCINATION_INFO_SOURCE,
 			CaseDataDto.VACCINE,
