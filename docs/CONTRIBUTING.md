@@ -53,6 +53,16 @@ These types of issue cover everything that involves adding new features to SORMA
 * **Possible Alternatives:** If possible, provide alternative solutions in case your proposed feature can not be implemented in the way you outlined it for any reason. This is generally *optional* but might be requested at a later point in time.
 * **Additional Information:** If there is anything else you want to add to your request, you can put it here. *Optional*.
 
+### Task
+
+Something to be done but not directly changes anything the product. Examples: Preparing coming up features/changes, change processes on Github etc.
+
+* **Problem Description:** Document what problem exists to be solved/changed.
+* **Proposed Change:** Describe in as much detail as possible how you would like to change something.
+* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
+* **Additional Information:** If there is anything else you want to add to the task, you can put it here. *Optional*.
+
+
 ### Support Request
 
 If you have problems setting up a SORMAS server or your development environment, don't know how a specific functionality in SORMAS is supposed to work, or have any other request that is not directly associated with a bug report, change or feature request, a support request is likely the correct type of issue for your concern. Alternatively, you can join our [Gitter channel](https://gitter.im/SORMAS-Project) and ask your question over there which might potentially give you a quicker and more comfortable way to talk about your request. If your request is about a specific problem, please make sure to provide as much information as possible.
