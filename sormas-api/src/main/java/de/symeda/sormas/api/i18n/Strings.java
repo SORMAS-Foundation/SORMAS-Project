@@ -300,12 +300,12 @@ public interface Strings {
 	String headingCampaignFormDataDuplicateNew = "headingCampaignFormDataDuplicateNew";
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
+	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesArchived = "headingCasesArchived";
 	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
-	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
