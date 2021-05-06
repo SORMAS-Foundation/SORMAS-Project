@@ -16,6 +16,7 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLoca
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.AreaFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.ContinentFacadeEjb;
@@ -37,6 +38,8 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
+	@EJB
+	private AreaFacadeEjb.AreaFacadeEjbLocal areaFacade;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -96,6 +99,7 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CAMPAIGNS)) {
 			sync.setCampaigns(campaignFacade.getAllAfter(changeDates.getCampaignChangeDate()));
 			sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
+			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
 		}
 
 		return sync;

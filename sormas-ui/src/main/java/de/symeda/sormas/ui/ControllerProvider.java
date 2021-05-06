@@ -27,7 +27,9 @@ import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
+import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
+import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
@@ -49,6 +51,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ContactController contactController;
 	private final EventController eventController;
 	private final EventParticipantsController eventParticipantController;
+	private final EventGroupController eventGroupController;
 	private final InfrastructureController infrastructureController;
 	private final VisitController visitController;
 	private final PersonController personController;
@@ -69,6 +72,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CustomExportController customExportController;
 	private final LabMessageController labMessageController;
 	private final SurveillanceReportController surveillanceReportController;
+	private final DocGenerationController docGenerationController;
 
 	public ControllerProvider() {
 		super();
@@ -77,6 +81,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		contactController = new ContactController();
 		eventController = new EventController();
 		eventParticipantController = new EventParticipantsController();
+		eventGroupController = new EventGroupController();
 		infrastructureController = new InfrastructureController();
 		visitController = new VisitController();
 		personController = new PersonController();
@@ -97,6 +102,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		customExportController = new CustomExportController();
 		labMessageController = new LabMessageController();
 		surveillanceReportController = new SurveillanceReportController();
+		docGenerationController = new DocGenerationController();
 	}
 
 	protected static ControllerProvider get() {
@@ -117,6 +123,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static EventParticipantsController getEventParticipantController() {
 		return get().eventParticipantController;
+	}
+
+	public static EventGroupController getEventGroupController() {
+		return get().eventGroupController;
 	}
 
 	public static InfrastructureController getInfrastructureController() {
@@ -197,5 +207,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SurveillanceReportController getSurveillanceReportController() {
 		return get().surveillanceReportController;
+	}
+
+	public static DocGenerationController getDocGenerationController() {
+		return get().docGenerationController;
 	}
 }

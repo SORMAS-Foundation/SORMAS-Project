@@ -22,6 +22,8 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -29,8 +31,6 @@ import android.view.View;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
-import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -43,6 +43,7 @@ import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
@@ -54,7 +55,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class LocationDialog extends FormDialog {
@@ -105,16 +106,18 @@ public class LocationDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		List<Item> initialCountries = InfrastructureHelper.loadCountries();
-		List<Item> initialRegions = InfrastructureHelper.loadRegionsByServerCountry();
-		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
+		List<Item> initialContinents = InfrastructureDaoHelper.loadContinents();
+		List<Item> initialSubcontinents = InfrastructureDaoHelper.loadSubcontinents();
+		List<Item> initialCountries = InfrastructureDaoHelper.loadCountries();
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
+		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
 		List<Item> facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
 		List<Item> facilityTypeList =
 			data.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(data.getFacilityType().getFacilityTypeGroup())) : null;
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
 
 		if (data.getCountry() == null) {
 			String serverCountryName = ConfigProvider.getServerCountryName();
@@ -127,8 +130,14 @@ public class LocationDialog extends FormDialog {
 			}
 		}
 
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
 			data,
+			this.contentBinding.locationContinent,
+			initialContinents,
+			data.getContinent(),
+			this.contentBinding.locationSubcontinent,
+			initialSubcontinents,
+			data.getSubcontinent(),
 			this.contentBinding.locationCountry,
 			initialCountries,
 			data.getCountry(),
@@ -217,7 +226,9 @@ public class LocationDialog extends FormDialog {
 					|| StringUtils.isNotEmpty(facility.getAdditionalInformation())
 					|| facility.getAreaType() != null
 					|| facility.getLatitude() != null
-					|| facility.getLongitude() != null)) {
+					|| facility.getLongitude() != null
+					|| (StringUtils.isNotEmpty(facility.getContactPersonFirstName())
+						&& StringUtils.isNotEmpty(facility.getContactPersonLastName())))) {
 				if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue())
 					&& !contentBinding.locationCity.getValue().equals(facility.getCity()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue())
@@ -229,6 +240,8 @@ public class LocationDialog extends FormDialog {
 					|| (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue())
 						&& !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
 					|| (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
+					|| (StringUtils.isNotEmpty(contentBinding.locationContactPersonFirstName.getValue())
+						&& StringUtils.isNotEmpty(contentBinding.locationContactPersonLastName.getValue()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue())
 						&& !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
 					|| (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue())
@@ -252,6 +265,10 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationHouseNumber.setValue(facility.getHouseNumber());
 		contentBinding.locationAdditionalInformation.setValue(facility.getAdditionalInformation());
 		contentBinding.locationAreaType.setValue(facility.getAreaType());
+		contentBinding.locationContactPersonFirstName.setValue(facility.getContactPersonFirstName());
+		contentBinding.locationContactPersonLastName.setValue(facility.getContactPersonLastName());
+		contentBinding.locationContactPersonPhone.setValue(facility.getContactPersonPhone());
+		contentBinding.locationContactPersonEmail.setValue(facility.getContactPersonEmail());
 		contentBinding.locationLatitude.setDoubleValue(facility.getLatitude());
 		contentBinding.locationLongitude.setDoubleValue(facility.getLongitude());
 	}
@@ -279,12 +296,35 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationFacility.setVisibility(visibility);
 		contentBinding.locationFacilityDetails.setVisibility(visibility);
 		contentBinding.locationFacilityType.setVisibility(visibility);
+		contentBinding.locationContactPersonFirstName.setVisibility(visibility);
+		contentBinding.locationContactPersonLastName.setVisibility(visibility);
+		contentBinding.locationContactPersonPhone.setVisibility(visibility);
+		contentBinding.locationContactPersonEmail.setVisibility(visibility);
 
 		if (!visible && clearOnHidden) {
 			contentBinding.facilityTypeGroup.setValue(null);
 			contentBinding.locationFacility.setValue(null);
 			contentBinding.locationFacilityDetails.setValue(null);
 			contentBinding.locationFacilityType.setValue(null);
+			contentBinding.locationContactPersonFirstName.setValue(null);
+			contentBinding.locationContactPersonLastName.setValue(null);
+			contentBinding.locationContactPersonPhone.setValue(null);
+			contentBinding.locationContactPersonEmail.setValue(null);
+		}
+	}
+
+	public void updateContinentFieldsVisibility() {
+		if (DatabaseHelper.getContinentDao().countOfActive() == 0) {
+			contentBinding.locationContinent.setVisibility(GONE);
+			contentBinding.locationContinent.setValue(null);
+		} else {
+			contentBinding.locationContinent.setVisibility(VISIBLE);
+		}
+		if (DatabaseHelper.getSubcontinentDao().countOfActive() == 0) {
+			contentBinding.locationSubcontinent.setVisibility(GONE);
+			contentBinding.locationSubcontinent.setValue(null);
+		} else {
+			contentBinding.locationSubcontinent.setVisibility(VISIBLE);
 		}
 	}
 

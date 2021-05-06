@@ -89,6 +89,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -198,6 +203,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String NOT_A_CASE_REASON_DIFFERENT_PATHOGEN = "notACaseReasonDifferentPathogen";
 	public static final String NOT_A_CASE_REASON_OTHER = "notACaseReasonOther";
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -268,6 +275,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown sequelae;
 	@SensitiveData
 	private String sequelaeDetails;
+
+	private RegionReferenceDto responsibleRegion;
+	private DistrictReferenceDto responsibleDistrict;
+	private CommunityReferenceDto responsibleCommunity;
+
 	@Outbreaks
 	@Required
 	private RegionReferenceDto region;
@@ -601,6 +613,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	@HideForCountriesExcept
 	private String notACaseReasonDetails;
+	private Date followUpStatusChangeDate;
+	private UserReferenceDto followUpStatusChangeUser;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -927,6 +941,30 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public RegionReferenceDto getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(RegionReferenceDto responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public DistrictReferenceDto getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(DistrictReferenceDto responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public CommunityReferenceDto getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public RegionReferenceDto getRegion() {
@@ -1677,4 +1715,23 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.notACaseReasonDetails = notACaseReasonDetails;
 	}
 
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public UserReferenceDto getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(UserReferenceDto followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public boolean hasResponsibleJurisdiction() {
+		return responsibleRegion != null || responsibleDistrict != null || responsibleCommunity != null;
+	}
 }

@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.person;
 
 import java.text.Normalizer;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -28,8 +29,11 @@ import org.simmetrics.metrics.StringMetrics;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public final class PersonHelper {
 
@@ -142,6 +146,30 @@ public final class PersonHelper {
 		return !StringUtils.isEmpty(ageStr)
 			? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : ""))
 			: !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
+	}
+
+	public static void validateBirthDate(Integer year, Integer month, Integer day) throws ValidationRuntimeException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setLenient(false);
+
+		if (year != null) {
+			calendar.set(Calendar.YEAR, year);
+		}
+		if (month != null) {
+			month -= 1;
+			calendar.set(Calendar.MONTH, month);
+		}
+		if (day != null) {
+			calendar.set(Calendar.DAY_OF_MONTH, day);
+		}
+
+		try {
+			if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.birthDateInFuture));
+			}
+		} catch (IllegalArgumentException e) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.birthDateInvalid));
+		}
 	}
 
 	public static String buildBurialInfoString(BurialInfoDto dto, Language language) {

@@ -38,7 +38,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -67,10 +69,12 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private Consumer<Boolean> selectionChangeCallback;
 	private final TextField searchField;
 	private final EventCriteria criteria;
+	private final boolean allowCreation;
 
 	public EventSelectionField(Disease disease, String infoPickOrCreateEvent) {
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = infoPickOrCreateEvent;
+		this.allowCreation = true;
 
 		this.criteria = new EventCriteria();
 		criteria.setDisease(disease);
@@ -83,6 +87,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public EventSelectionField(EventDto event, Set<String> excludedUuids, boolean selectSuperordinateEvent) {
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent);
+		this.allowCreation = true;
 
 		this.criteria = new EventCriteria();
 		criteria.setDisease(event.getDisease());
@@ -101,11 +106,27 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		initializeGrid();
 	}
 
+	public EventSelectionField(EventGroupReferenceDto eventGroupReference, Set<String> excludedUuids) {
+		this.searchField = new TextField();
+		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
+		this.allowCreation = false;
+
+		this.criteria = new EventCriteria();
+		criteria.setExcludedUuids(excludedUuids);
+		criteria.setUserFilterIncluded(true);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		initializeGrid();
+	}
+
 	private void addInfoComponent() {
 		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoPickOrCreateEvent));
 	}
 
 	private void addSelectEventRadioGroup() {
+		// No need to display the select radio if creation is not allowed
+		if (!allowCreation) {
+			return;
+		}
 		rbSelectEvent = new RadioButtonGroup<>();
 		rbSelectEvent.setItems(SELECT_EVENT);
 		rbSelectEvent.setItemCaptionGenerator((item) -> {
@@ -130,7 +151,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		eventGrid = new EventSelectionGrid(criteria);
 		eventGrid.addSelectionListener(e -> {
-			if (e.getAllSelectedItems().size() > 0) {
+			if (e.getAllSelectedItems().size() > 0 && rbCreateEvent != null) {
 				rbCreateEvent.setValue(null);
 			}
 
@@ -141,6 +162,10 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	}
 
 	private void addCreateEventRadioGroup() {
+		if (!allowCreation) {
+			return;
+		}
+
 		rbCreateEvent = new RadioButtonGroup<>();
 		rbCreateEvent.setItems(CREATE_EVENT);
 		rbCreateEvent.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventNewEvent));
@@ -182,14 +207,18 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		mainLayout.addComponent(eventGrid);
 		addCreateEventRadioGroup();
 
-		rbSelectEvent.setValue(SELECT_EVENT);
+		if (rbSelectEvent != null) {
+			rbSelectEvent.setValue(SELECT_EVENT);
+		}
 
 		return mainLayout;
 	}
 
 	@Override
 	protected void doSetValue(EventIndexDto newValue) {
-		rbSelectEvent.setValue(SELECT_EVENT);
+		if (rbSelectEvent != null) {
+			rbSelectEvent.setValue(SELECT_EVENT);
+		}
 
 		if (newValue != null) {
 			eventGrid.select(newValue);
@@ -262,7 +291,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.eventDateBetween(fromDate, toDate, dateFilterOption);
+				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
@@ -293,7 +322,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 			weekAndDateFilter.getDateFromFilter().setValue(null);
 			weekAndDateFilter.getDateToFilter().setValue(null);
-			criteria.eventDateBetween(null, null, DateFilterOption.DATE);
+			criteria.eventDateBetween(null, null, null, DateFilterOption.DATE);
 
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();

@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
@@ -31,7 +34,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -42,7 +44,6 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
@@ -107,6 +108,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -302,8 +304,11 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	@SensitiveData
 	private CountryReferenceDto citizenship;
+	@SensitiveData
+	private String additionalDetails;
 
-	public class SeveralNonPrimaryContactDetailsException extends Exception {
+	@SuppressWarnings("serial")
+	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
 
 		public SeveralNonPrimaryContactDetailsException(String message) {
 			super(message);
@@ -476,6 +481,7 @@ public class PersonDto extends PseudonymizableDto {
 	 *         A phone number entered in the personEditForm is not, and thus does not become primary phone number unless the user
 	 *         specifically sets it.
 	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone() {
 		return getPersonContactInformation(PersonContactDetailType.PHONE);
 	}
@@ -489,9 +495,10 @@ public class PersonDto extends PseudonymizableDto {
 	 * @return String representation of the only phone number to be used.
 	 * @throws SeveralNonPrimaryContactDetailsException
 	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryPhone = getPhone();
-		if (onlyPrimary || !(primaryPhone == "")) {
+		if (onlyPrimary || !(primaryPhone.equals(""))) {
 			return primaryPhone;
 		} else {
 			List<String> allPhones = getAllPhoneNumbers();
@@ -505,8 +512,9 @@ public class PersonDto extends PseudonymizableDto {
 		}
 	}
 
+	@JsonIgnore
 	public ArrayList<String> getAllPhoneNumbers() {
-		ArrayList result = new ArrayList();
+		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
 				result.add(pcd.getContactInformation());
@@ -530,6 +538,7 @@ public class PersonDto extends PseudonymizableDto {
 	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
 	 *         specifically sets it.
 	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getEmailAddress() {
 		return getPersonContactInformation(PersonContactDetailType.EMAIL);
 	}
@@ -544,9 +553,10 @@ public class PersonDto extends PseudonymizableDto {
 	 * @return the only email address to be used.
 	 * @throws SeveralNonPrimaryContactDetailsException
 	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryEmail = getEmailAddress();
-		if (onlyPrimary || !(primaryEmail == "")) {
+		if (onlyPrimary || !(primaryEmail.equals(""))) {
 			return primaryEmail;
 		} else {
 			List<String> allEmails = getAllEmailAddresses();
@@ -560,8 +570,9 @@ public class PersonDto extends PseudonymizableDto {
 		}
 	}
 
+	@JsonIgnore
 	public ArrayList<String> getAllEmailAddresses() {
-		ArrayList result = new ArrayList();
+		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
 				result.add(pcd.getContactInformation());
@@ -822,6 +833,7 @@ public class PersonDto extends PseudonymizableDto {
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	@JsonIgnore
 	public boolean isEnrolledInExternalJournal() {
 		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
 	}
@@ -872,6 +884,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setCitizenship(CountryReferenceDto citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 
 	@Override

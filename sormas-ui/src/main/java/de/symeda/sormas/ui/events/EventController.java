@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -68,7 +70,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
-import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceToolGatewayType;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -145,6 +146,32 @@ public class EventController {
 				}
 			} else {
 				create(caseRef);
+				SormasUI.refreshView();
+			}
+		});
+
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
+
+		Set<String> relatedEventUuids = FacadeProvider.getEventFacade().getAllEventUuidsByEventGroupUuid(eventGroupReference.getUuid());
+
+		EventSelectionField eventSelect = new EventSelectionField(eventGroupReference, relatedEventUuids);
+		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+				EventReferenceDto eventReference = selectedEvent.toReference();
+				FacadeProvider.getEventGroupFacade().linkEventToGroup(eventReference, eventGroupReference);
+				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(eventGroupReference, Collections.singletonList(eventReference));
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 				SormasUI.refreshView();
 			}
 		});
@@ -481,7 +508,9 @@ public class EventController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
-					if (!deleteEvent(event)) {
+					try {
+						FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -511,19 +540,6 @@ public class EventController {
 		}
 
 		return editView;
-	}
-
-	private boolean deleteEvent(EventDto event) {
-		boolean deletable = true;
-		if (event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
-			deletable = ExternalSurveillanceServiceGateway
-				.deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType.EVENTS, Collections.singletonList(event));
-		}
-		if (deletable) {
-			FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
-			return true;
-		}
-		return false;
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
@@ -653,7 +669,9 @@ public class EventController {
 							countNotDeletedEventsWithParticipants = countNotDeletedEventsWithParticipants + 1;
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
-							if (!deleteEvent(eventDto)) {
+							try {
+								FacadeProvider.getEventFacade().deleteEvent(eventDto.getUuid());
+							} catch (ExternalSurveillanceToolException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}
@@ -834,9 +852,8 @@ public class EventController {
 			return;
 		}
 
-		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids);
+		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback);
 
-		callback.run();
 		new Notification(
 			I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
 			I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),

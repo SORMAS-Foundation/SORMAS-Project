@@ -19,7 +19,6 @@ package de.symeda.sormas.api.caze;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -34,12 +33,15 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
 
-public class CaseCriteria extends BaseCriteria implements Cloneable {
+public class CaseCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -65,10 +67,16 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String VACCINATION = "vaccination";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String ONLY_CASES_WITH_REINFECTION = "onlyCasesWithReinfection";
+	public static final String ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesNotSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
+		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -87,7 +95,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date newCaseDateTo;
 	private Date creationDateFrom;
 	private Date creationDateTo;
-	private NewCaseDateType newCaseDateType;
+	private CriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private PersonReferenceDto person;
@@ -113,11 +121,20 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
 	private SymptomJournalStatus symptomJournalStatus;
+	private Vaccination vaccination;
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsFromOtherInstances;
+	private Boolean onlyCasesWithReinfection;
+	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+
+	public CaseCriteria() {
+		super(NewCaseDateType.class);
+	}
 
 	@Override
 	public CaseCriteria clone() {
@@ -217,7 +234,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	 * @param newCaseDateTo
 	 *            will automatically be set to the end of the day
 	 */
-	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
+	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, CriteriaDateType newCaseDateType) {
 
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
@@ -246,7 +263,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.newCaseDateTo = newCaseDateTo;
 	}
 
-	public NewCaseDateType getNewCaseDateType() {
+	public CriteriaDateType getNewCaseDateType() {
 		return newCaseDateType;
 	}
 
@@ -259,7 +276,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return dateFilterOption;
 	}
 
-	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+	public void setNewCaseDateType(CriteriaDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
 
@@ -557,6 +574,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
+	}
+
 	public Date getReportDateTo() {
 		return reportDateTo;
 	}
@@ -595,5 +620,37 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Boolean getOnlyCasesWithReinfection() {
+		return onlyCasesWithReinfection;
+	}
+
+	public void setOnlyCasesWithReinfection(Boolean onlyCasesWithReinfection) {
+		this.onlyCasesWithReinfection = onlyCasesWithReinfection;
+	}
+
+	public Boolean getOnlyEntitiesNotSharedWithExternalSurvTool() {
+		return onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesNotSharedWithExternalSurvTool(Boolean onlyEntitiesNotSharedWithExternalSurvTool) {
+		this.onlyEntitiesNotSharedWithExternalSurvTool = onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesSharedWithExternalSurvTool() {
+		return onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesSharedWithExternalSurvTool(Boolean onlyEntitiesSharedWithExternalSurvTool) {
+		this.onlyEntitiesSharedWithExternalSurvTool = onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool() {
+		return onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
+		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	}
 }

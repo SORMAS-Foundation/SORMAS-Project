@@ -1,0 +1,30 @@
+name: OpenAPI Canary
+
+on:
+  schedule:
+    # 2.30 UTC
+    - cron: '30 2 * * *'
+
+jobs:
+  canary:
+    name: Check for changed spec files
+    runs-on: ubuntu-latest
+    container: openapitools/openapi-diff
+
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v2
+        with:
+          path: head
+
+      - name: Checkout master branch
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          path: base
+
+      # --fail-on-incompatible is also possible
+      - name: Run OpenAPI Diff for external journal API
+        run: |
+          java -jar /app/openapi-diff.jar --fail-on-changed base/openapi/external_visits_API.yaml head/openapi/external_visits_API.yaml
+          

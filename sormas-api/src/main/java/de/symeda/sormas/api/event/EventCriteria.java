@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
@@ -32,12 +31,15 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
 
-public class EventCriteria extends BaseCriteria implements Serializable {
+public class EventCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 
@@ -45,12 +47,17 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
 	public static final String FREE_TEXT_EVENT_PARTICIPANTS = "freeTextEventParticipants";
+	public static final String FREE_TEXT_EVENT_GROUPS = "freeTextEventGroups";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesNotSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
+		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -66,6 +73,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EntityRelevanceStatus relevanceStatus;
 	private Date eventDateFrom;
 	private Date eventDateTo;
+	private CriteriaDateType eventDateType = EventCriteriaDateType.EVENT_DATE;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date eventEvolutionDateFrom;
 	private Date eventEvolutionDateTo;
@@ -73,6 +81,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private UserReferenceDto responsibleUser;
 	private String freeText;
 	private String freeTextEventParticipants;
+	private String freeTextEventGroups;
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
 	private Boolean userFilterIncluded = true;
@@ -81,6 +90,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private FacilityType facilityType;
 	private FacilityReferenceDto facility;
 	private EventReferenceDto superordinateEvent;
+	private EventGroupReferenceDto eventGroup;
 	private Set<String> excludedUuids;
 	private Boolean hasNoSuperordinateEvent;
 	private EventManagementStatus eventManagementStatus;
@@ -90,6 +100,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date actionChangeDateFrom;
 	private Date actionChangeDateTo;
 	private DateFilterOption actionChangeDateFilterOption = DateFilterOption.DATE;
+	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+
+	public EventCriteria() {
+		super(EventCriteriaDateType.class);
+	}
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -256,9 +273,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return reportedDateTo;
 	}
 
-	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, DateFilterOption dateFilterOption) {
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, CriteriaDateType eventDateType, DateFilterOption dateFilterOption) {
 		this.eventDateFrom = eventDateFrom;
 		this.eventDateTo = eventDateTo;
+		this.eventDateType = eventDateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
@@ -279,6 +297,14 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public Date getEventDateTo() {
 		return eventDateTo;
+	}
+
+	public CriteriaDateType getEventDateType() {
+		return eventDateType;
+	}
+
+	public void setEventDateType(CriteriaDateType eventDateType) {
+		this.eventDateType = eventDateType;
 	}
 
 	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {
@@ -368,6 +394,20 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return freeTextEventParticipants;
 	}
 
+	public EventCriteria freeTextEventGroups(String freeTextEventGroups) {
+		this.freeTextEventGroups = freeTextEventGroups;
+		return this;
+	}
+
+	public void setFreeTextEventGroups(String freeTextEventGroups) {
+		this.freeTextEventGroups = freeTextEventGroups;
+	}
+
+	@IgnoreForUrl
+	public String getFreeTextEventGroups() {
+		return freeTextEventGroups;
+	}
+
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
@@ -409,10 +449,15 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public EventCriteria dateBetween(DateType dateType, Date dateFrom, Date dateTo, DateFilterOption dateFilterOption) {
+	public EventCriteria dateBetween(
+		DateType dateType,
+		Date dateFrom,
+		Date dateTo,
+		CriteriaDateType criteriaDateType,
+		DateFilterOption dateFilterOption) {
 		switch (dateType) {
 		case EVENT:
-			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			eventDateBetween(dateFrom, dateTo, criteriaDateType, dateFilterOption);
 			break;
 		case EVENT_SIGNAL_EVOLUTION:
 			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
@@ -522,6 +567,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public EventGroupReferenceDto getEventGroup() {
+		return eventGroup;
+	}
+
+	public void setEventGroup(EventGroupReferenceDto eventGroup) {
+		this.eventGroup = eventGroup;
+	}
+
+	public EventCriteria eventGroup(EventGroupReferenceDto eventGroup) {
+		this.eventGroup = eventGroup;
+		return this;
+	}
+
 	@IgnoreForUrl
 	public Set<String> getExcludedUuids() {
 		return excludedUuids;
@@ -556,5 +614,29 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public Boolean getOnlyEntitiesNotSharedWithExternalSurvTool() {
+		return onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesNotSharedWithExternalSurvTool(Boolean onlyEntitiesNotSharedWithExternalSurvTool) {
+		this.onlyEntitiesNotSharedWithExternalSurvTool = onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesSharedWithExternalSurvTool() {
+		return onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesSharedWithExternalSurvTool(Boolean onlyEntitiesSharedWithExternalSurvTool) {
+		this.onlyEntitiesSharedWithExternalSurvTool = onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool() {
+		return onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
+		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	}
 }

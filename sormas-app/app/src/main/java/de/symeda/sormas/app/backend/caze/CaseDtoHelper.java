@@ -123,6 +123,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
 
+		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getResponsibleCommunity()));
+
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
@@ -234,6 +238,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getFollowUpStatusChangeUser()));
 	}
 
 	@Override
@@ -293,6 +299,27 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 			target.setSymptoms(symptomsDto);
 		} else {
 			target.setSymptoms(null);
+		}
+
+		if (source.getResponsibleRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getResponsibleRegion().getId());
+			target.setResponsibleRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setResponsibleRegion(null);
+		}
+
+		if (source.getResponsibleDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getResponsibleDistrict().getId());
+			target.setResponsibleDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setResponsibleDistrict(null);
+		}
+
+		if (source.getResponsibleCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getResponsibleCommunity().getId());
+			target.setResponsibleCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setResponsibleCommunity(null);
 		}
 
 		if (source.getRegion() != null) {
@@ -476,7 +503,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
-
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

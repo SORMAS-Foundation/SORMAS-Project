@@ -14,4 +14,10 @@ public interface SubcontinentFacade extends BaseFacade<SubcontinentDto, Subconti
 
 	boolean hasArchivedParentInfrastructure(Collection<String> subcontinentUuids);
 
+	void save(SubcontinentDto dto, boolean allowMerge);
+
+	SubcontinentReferenceDto getByCountry(CountryReferenceDto countryDto);
+
+    List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid);
 }
+

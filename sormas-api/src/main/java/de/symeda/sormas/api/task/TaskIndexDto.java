@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -93,7 +94,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 
-	private TaskJurisdictionDto jurisdiction;
+	private final TaskJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
@@ -102,9 +103,13 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
-			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, 
+			String caseReportingUserUuid,
+			String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+			String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, 
 			String casePointOfEntryUuid, String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
-			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, 
+			String contactCaseReportingUserUuid,
+			String contactCaseResponsibleRegionUuid, String contactCaseResponsibleDistrictUid, String contactCaseResponsibleCommunityUid,
+			String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, 
 			String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, 
 			String eventDistrictUuid, String eventCommunityUuid, String region, String district, String community) {
 	//@formatter:on
@@ -117,6 +122,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
 			caseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,
+				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUuid,
@@ -144,6 +150,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 				? null
 				: new CaseJurisdictionDto(
 					contactCaseReportingUserUuid,
+					ResponsibleJurisdictionDto
+						.of(contactCaseResponsibleRegionUuid, contactCaseResponsibleDistrictUid, contactCaseResponsibleCommunityUid),
 					contactCaseRegionUuid,
 					contactCaseDistrictUuid,
 					contactCaseCommunityUuid,

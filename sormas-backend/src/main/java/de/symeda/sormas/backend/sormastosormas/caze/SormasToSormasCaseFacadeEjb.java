@@ -125,17 +125,6 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected ValidationErrors validateExistingEntity(CaseDataDto entity) {
-		ValidationErrors errors = new ValidationErrors();
-		if (!caseFacade.exists(entity.getUuid())) {
-			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasReturnCaseNotExists));
-		}
-
-		return errors;
-	}
-
-	@Override
 	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Case entity) {
 		sormasToSormasShareInfo.setCaze(entity);
 	}
@@ -143,6 +132,11 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@Override
 	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
 		return shareInfoService.getByCaseAndOrganization(entityUuid, organizationId);
+	}
+
+	@Override
+	protected List<CaseDataDto> loadExistingEntities(List<String> uuids) {
+		return caseFacade.getByUuids(uuids);
 	}
 
 	@LocalBean

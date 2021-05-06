@@ -30,6 +30,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -89,7 +90,7 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 			addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
 			CustomLayout infoLayout = new CustomLayout();
-			infoLayout.setTemplateContents(buildLayout());
+			infoLayout.setTemplateContents(buildLayout(shareInfo.getStatus()));
 			infoLayout.setWidth(100, Unit.PERCENTAGE);
 
 			Label senderLabel = new Label(
@@ -109,9 +110,13 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 			setExpandRatio(infoLayout, 1);
 		}
 
-		private String buildLayout() {
-			return locCss(null, SENDER_LOC, "span") + " " + I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_sharedAt) + " "
-				+ locCss(null, TIMESTAMP_LOC, "span");
+		private String buildLayout(ExternalShareStatus status) {
+
+			String actionText = status == ExternalShareStatus.DELETED
+				? I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_deletedAt)
+				: I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_sharedAt);
+
+			return locCss(null, SENDER_LOC, "span") + " " + actionText + " " + locCss(null, TIMESTAMP_LOC, "span");
 		}
 
 	}

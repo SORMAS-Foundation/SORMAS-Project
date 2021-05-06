@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -103,15 +105,29 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
-	public void saveArea(AreaDto area) {
-		Area entity = service.getByUuid(area.getUuid());
+	public void saveArea(AreaDto dto) {
+		saveArea(dto, false);
+	}
 
-		if (entity == null && !service.getByName(area.getName(), true).isEmpty()) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
+	@Override
+	public void saveArea(AreaDto dto, boolean allowMerge) {
+		Area area = service.getByUuid(dto.getUuid());
+
+		if (area == null) {
+			List<Area> duplicates = service.getByName(dto.getName(), true);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					area = duplicates.get(0);
+					AreaDto dtoToMerge = getAreaByUuid(area.getUuid());
+					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
+				}
+			}
 		}
 
-		entity = fromDto(area, entity, true);
-		service.ensurePersisted(entity);
+		area = fromDto(dto, area, true);
+		service.ensurePersisted(area);
 	}
 
 	@Override
@@ -136,6 +152,24 @@ public class AreaFacadeEjb implements AreaFacade {
 	@Override
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AreaDto> getAllAfter(Date date) {
+		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date))
+				.stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AreaDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllUuids() {
+		return service.getAllUuids();
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {

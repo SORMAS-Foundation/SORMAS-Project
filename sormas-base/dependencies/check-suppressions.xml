@@ -48,7 +48,7 @@
     <notes><![CDATA[
     We are using a newer version than Vaadin 6.4.9
     ]]></notes>
-	<filePath regex="true">.*\bvaadin-sass-compiler\.jar</filePath>
+	<filePath regex="true">.*\bvaadin.*</filePath>
     <cve>CVE-2011-0509</cve>
   </suppress>
   <suppress>

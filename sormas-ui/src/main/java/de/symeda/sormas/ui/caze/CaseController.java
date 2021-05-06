@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -106,7 +106,6 @@ import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
-import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceToolGatewayType;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
@@ -211,11 +210,6 @@ public class CaseController {
 					if (updatedContact.getResultingCase() != null) {
 						String caseUuid = updatedContact.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						FacadeProvider.getExternalJournalFacade()
-							.notifyExternalJournalFollowUpUntilUpdate(
-								caze.getPerson().getUuid(),
-								caze.getFollowUpUntil(),
-								updatedContact.getFollowUpUntil());
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -229,11 +223,6 @@ public class CaseController {
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
 				FacadeProvider.getContactFacade().saveContact(updatedContact);
-				FacadeProvider.getExternalJournalFacade()
-					.notifyExternalJournalFollowUpUntilUpdate(
-						selectedCase.getPerson().getUuid(),
-						selectedCase.getFollowUpUntil(),
-						updatedContact.getFollowUpUntil());
 
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
@@ -597,6 +586,8 @@ public class CaseController {
 		CaseSimilarityCriteria criteria =
 			new CaseSimilarityCriteria().personUuid(person.getUuid()).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
 
+		// Check for similar cases for the **given person**.
+		// This is a case similarity check for a fixed person and will not return cases where persons are similar.
 		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {
@@ -709,15 +700,20 @@ public class CaseController {
 		String regionUuid = null, districtUuid = null;
 		boolean first = true;
 		for (CaseIndexDto selectedCase : selectedCases) {
+			String currentRegionUuid =
+				selectedCase.getResponsibleRegionUuid() == null ? selectedCase.getRegionUuid() : selectedCase.getResponsibleRegionUuid();
+			String currentDistrictUuid =
+				selectedCase.getResponsibleDistrictUuid() == null ? selectedCase.getDistrictUuid() : selectedCase.getResponsibleDistrictUuid();
+
 			if (first) {
-				regionUuid = selectedCase.getRegionUuid();
-				districtUuid = selectedCase.getDistrictUuid();
+				regionUuid = currentRegionUuid;
+				districtUuid = currentDistrictUuid;
 				first = false;
 			} else {
-				if (!DataHelper.equal(regionUuid, selectedCase.getRegionUuid())) {
+				if (!DataHelper.equal(regionUuid, currentDistrictUuid)) {
 					regionUuid = null;
 				}
-				if (!DataHelper.equal(districtUuid, selectedCase.getDistrictUuid())) {
+				if (!DataHelper.equal(districtUuid, currentDistrictUuid)) {
 					districtUuid = null;
 				}
 			}
@@ -879,9 +875,10 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				if (deleteCase(caze)) {
+				try {
+					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				} else {
+				} catch (ExternalSurveillanceToolException e) {
 					Notification.show(
 						String.format(
 							I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -914,20 +911,6 @@ public class CaseController {
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
 		}
-	}
-
-	private boolean deleteCase(CaseDataDto caze) {
-		boolean deletable = true;
-		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
-			deletable = ExternalSurveillanceServiceGateway
-				.deleteInExternalSurveillanceTool(ExternalSurveillanceToolGatewayType.CASES, Collections.singletonList(caze));
-		}
-		if (deletable) {
-			FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
-			return true;
-		}
-		return false;
-
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
@@ -1232,7 +1215,9 @@ public class CaseController {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();
 					for (CaseIndexDto selectedRow : selectedRows) {
-						if (!deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedRow.getUuid()))) {
+						try {
+							FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
+						} catch (ExternalSurveillanceToolException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
 						}
@@ -1493,7 +1478,7 @@ public class CaseController {
 			return;
 		}
 
-		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids);
+		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback);
 	}
 
 }

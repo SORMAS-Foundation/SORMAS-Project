@@ -36,9 +36,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Country.DEFAULT_NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Country.DEFAULT_NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Country.DEFAULT_NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -57,9 +55,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Country.ISO_CODE)), isoCode.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Country.ISO_CODE))), isoCode.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.ISO_CODE), isoCode.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -78,9 +74,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Country.UNO_CODE)), unoCode.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Country.UNO_CODE))), unoCode.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.UNO_CODE), unoCode.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -108,13 +102,15 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		}
 		if (criteria.getNameCodeLike() != null) {
 			String[] textFilters = criteria.getNameCodeLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Country.ISO_CODE)), textFilter), cb.like(cb.lower(from.get(Country.UNO_CODE)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(Country.ISO_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Country.UNO_CODE), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {

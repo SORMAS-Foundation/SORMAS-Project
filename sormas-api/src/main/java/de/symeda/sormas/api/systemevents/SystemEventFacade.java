@@ -1,14 +1,16 @@
 package de.symeda.sormas.api.systemevents;
 
-import javax.ejb.Remote;
-import java.time.LocalDateTime;
 import java.util.Date;
+
+import javax.ejb.Remote;
 
 /**
  * As subsequent manipulation of SystemEvents is undesired, this Facade shall not provide methods to fetch specific SystemEvents.
  */
 @Remote
 public interface SystemEventFacade {
+
+	boolean existsStartedEvent(SystemEventType type);
 
 	SystemEventDto getLatestSuccessByType(SystemEventType type);
 
@@ -22,4 +24,5 @@ public interface SystemEventFacade {
 
 	void reportError(SystemEventDto systemEvent, String errorMessage, Date end);
 
+	void markPreviouslyStartedAsUnclear(SystemEventType type);
 }

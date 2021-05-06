@@ -28,6 +28,7 @@ import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -38,8 +39,10 @@ public class EventImportLayout extends AbstractImportLayout {
 
 		super();
 
+		ImportFacade importFacade = FacadeProvider.getImportFacade();
+
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Event_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2, FacadeProvider.getImportFacade().getEventImportTemplateFilePath(), "sormas_import_event_template.csv");
+		addDownloadImportTemplateComponent(2, importFacade.getEventImportTemplateFilePath(), importFacade.getEventImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_event_import_", file -> {
 			resetDownloadErrorReportButton();
 

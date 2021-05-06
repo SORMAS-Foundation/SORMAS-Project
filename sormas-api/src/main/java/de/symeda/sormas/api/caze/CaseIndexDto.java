@@ -29,6 +29,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -69,6 +70,10 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String VACCINATION = "vaccination";
+	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
+	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
+	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
 	private long id;
 	private String uuid;
@@ -105,7 +110,12 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
+	private Vaccination vaccination;
 	private Integer visitCount;
+
+	private Date surveillanceToolLastShareDate;
+	private Long surveillanceToolShareCount;
+	private ExternalShareStatus surveillanceToolStatus;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -116,14 +126,18 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
+						// responsible jurisdiction
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {
 		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
 				diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
-				completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, null
+				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid,
+				null
 		);
 	}
 	//@formatter:on
@@ -135,9 +149,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus,
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus, Vaccination vaccination,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
-						Integer visitCount) {
+						// responsible jurisdiction
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+						// others
+						Integer visitCount
+	) {
 		//@formatter:on
 
 		this.id = id;
@@ -168,8 +186,16 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
+		this.vaccination = vaccination;
 
-		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		this.jurisdiction = new CaseJurisdictionDto(
+			reportingUserUuid,
+			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
+			regionUuid,
+			districtUuid,
+			communityUuid,
+			healthFacilityUuid,
+			pointOfEntryUuid);
 	}
 
 	public long getId() {
@@ -260,8 +286,16 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.creationDate = creationDate;
 	}
 
+	public String getResponsibleRegionUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getRegionUuid() : null;
+	}
+
 	public String getRegionUuid() {
 		return jurisdiction.getRegionUuid();
+	}
+
+	public String getResponsibleDistrictUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getDistrictUuid() : null;
 	}
 
 	public String getDistrictUuid() {
@@ -370,9 +404,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	public Date getQuarantineTo() {
 		return quarantineTo;
@@ -410,11 +448,43 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
+	}
+
 	public Integer getVisitCount() {
 		return visitCount;
 	}
 
 	public void setVisitCount(Integer visitCount) {
 		this.visitCount = visitCount;
+	}
+
+	public Date getSurveillanceToolLastShareDate() {
+		return surveillanceToolLastShareDate;
+	}
+
+	public void setSurveillanceToolLastShareDate(Date surveillanceToolLastShareDate) {
+		this.surveillanceToolLastShareDate = surveillanceToolLastShareDate;
+	}
+
+	public Long getSurveillanceToolShareCount() {
+		return surveillanceToolShareCount;
+	}
+
+	public void setSurveillanceToolShareCount(Long surveillanceToolShareCount) {
+		this.surveillanceToolShareCount = surveillanceToolShareCount;
+	}
+
+	public ExternalShareStatus getSurveillanceToolStatus() {
+		return surveillanceToolStatus;
+	}
+
+	public void setSurveillanceToolStatus(ExternalShareStatus surveillanceToolStatus) {
+		this.surveillanceToolStatus = surveillanceToolStatus;
 	}
 }

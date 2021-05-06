@@ -19,8 +19,8 @@ package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -32,6 +32,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SampleCriteria extends BaseCriteria implements Serializable {
 
@@ -67,6 +68,10 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Date sampleReportDateFrom;
 	private Date sampleReportDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+
+	private List<String> caseUuids;
+	private List<String> contactUuids;
+	private List<String> eventParticipantUuids;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -249,5 +254,35 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
+	}
+
+	public List<String> getCaseUuids() {
+		return caseUuids;
+	}
+
+	public SampleCriteria caseUuids(List<String> caseUuids) {
+		this.caseUuids = caseUuids;
+
+		return this;
+	}
+
+	public List<String> getContactUuids() {
+		return contactUuids;
+	}
+
+	public SampleCriteria contactUuids(List<String> contactUuids) {
+		this.contactUuids = contactUuids;
+
+		return this;
+	}
+
+	public List<String> getEventParticipantUuids() {
+		return eventParticipantUuids;
+	}
+
+	public SampleCriteria eventParticipantUuids(List<String> eventParticipantUuids) {
+		this.eventParticipantUuids = eventParticipantUuids;
+
+		return this;
 	}
 }

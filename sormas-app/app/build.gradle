@@ -34,16 +34,21 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     packagingOptions {
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/spring.*'
     }
     dataBinding {
         enabled = true

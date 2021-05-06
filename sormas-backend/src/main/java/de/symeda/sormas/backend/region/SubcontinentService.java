@@ -52,9 +52,7 @@ public class SubcontinentService extends AbstractInfrastructureAdoService<Subcon
 		CriteriaQuery<Subcontinent> cq = cb.createQuery(getElementClass());
 		Root<Subcontinent> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Subcontinent.DEFAULT_NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Subcontinent.DEFAULT_NAME))), name.trim().toLowerCase()));
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Subcontinent.DEFAULT_NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

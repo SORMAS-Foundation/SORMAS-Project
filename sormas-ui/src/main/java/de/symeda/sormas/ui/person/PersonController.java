@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
@@ -100,34 +102,34 @@ public class PersonController {
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
+		// This builds a selection field for all potential similar persons if any.
+		// The user can choose to merge or create a new person in case there is a similar person in the system.
 		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
+		// check if we have duplicate persons for the given PersonDto
 		if (personSelect.hasMatches()) {
+			// if yes give the user the chance to pick or create a new one.
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =
 				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
 			if (!saveNewPerson) {
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 			}
-			component.addCommitListener(new CommitListener() {
-
-				@Override
-				public void onCommit() {
-					SimilarPersonDto selectedPerson = personSelect.getValue();
-					if (selectedPerson != null) {
-						if (resultConsumer != null) {
-							resultConsumer.accept(selectedPerson.toReference());
-						}
-					} else {
-						PersonDto savedPerson;
-						if (saveNewPerson) {
-							savedPerson = personFacade.savePerson(person);
-						} else {
-							savedPerson = person;
-						}
-						resultConsumer.accept(savedPerson.toReference());
+			component.addCommitListener(() -> {
+				SimilarPersonDto selectedPerson = personSelect.getValue();
+				if (selectedPerson != null) {
+					if (resultConsumer != null) {
+						resultConsumer.accept(selectedPerson.toReference());
 					}
+				} else {
+					PersonDto savedPerson;
+					if (saveNewPerson) {
+						savedPerson = personFacade.savePerson(person);
+					} else {
+						savedPerson = person;
+					}
+					resultConsumer.accept(savedPerson.toReference());
 				}
 			});
 
@@ -138,6 +140,7 @@ public class PersonController {
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 			personSelect.selectBestMatch();
 		} else if (saveNewPerson) {
+			// no duplicate persons found so save a new person
 			PersonDto savedPerson = personFacade.savePerson(person);
 			resultConsumer.accept(savedPerson.toReference());
 		} else {
@@ -245,5 +248,13 @@ public class PersonController {
 	public void navigateToPerson(String uuid) {
 		final String navigationState = PersonDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void validateBirthDate(Integer year, Integer month, Integer day) throws Validator.InvalidValueException {
+		try {
+			PersonHelper.validateBirthDate(year, month, day);
+		} catch (ValidationRuntimeException ex) {
+			throw new Validator.InvalidValueException(ex.getMessage());
+		}
 	}
 }

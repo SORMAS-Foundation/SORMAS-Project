@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -38,6 +39,19 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	@Override
 	protected Stream<String> getGridColumns() {
 		return Stream.concat(super.getGridColumns(), Stream.of(CaseIndexDetailedDto.REPORTING_USER));
+	}
+
+	@Override
+	protected Stream<String> getJurisdictionColumns() {
+		return Stream.concat(
+			super.getJurisdictionColumns(),
+			Stream
+				.of(CaseIndexDetailedDto.RESPONSIBLE_REGION, CaseIndexDetailedDto.RESPONSIBLE_DISTRICT, CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY));
+	}
+
+	@Override
+	protected Stream<String> getReinfectionColumn() {
+		return Stream.of(CaseIndexDetailedDto.RE_INFECTION);
 	}
 
 	@Override
@@ -91,6 +105,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 		super.initColumns();
 
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			getColumn(CaseIndexDetailedDto.RE_INFECTION).setHidden(true);
+		}
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);

@@ -23,9 +23,11 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
@@ -69,6 +71,8 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
+		target.setContinent(DatabaseHelper.getContinentDao().getByReferenceDto(source.getContinent()));
+		target.setSubcontinent(DatabaseHelper.getSubcontinentDao().getByReferenceDto(source.getSubcontinent()));
 		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -85,6 +89,10 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 	}
 
 	@Override
@@ -117,6 +125,16 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		} else {
 			target.setCountry(null);
 		}
+		if (source.getContinent() != null) {
+			target.setContinent(ContinentDtoHelper.toReferenceDto(DatabaseHelper.getContinentDao().queryForId(source.getContinent().getId())));
+		} else {
+			target.setContinent(null);
+		}
+		if (source.getSubcontinent() != null) {
+			target.setSubcontinent(SubcontinentDtoHelper.toReferenceDto(DatabaseHelper.getSubcontinentDao().queryForId(source.getSubcontinent().getId())));
+		} else {
+			target.setSubcontinent(null);
+		}
 
 		target.setPostalCode(source.getPostalCode());
 
@@ -129,5 +147,9 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setFacility(FacilityDtoHelper.toReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setFacilityType(source.getFacilityType());
+		target.setContactPersonFirstName(source.getContactPersonFirstName());
+		target.setContactPersonLastName(source.getContactPersonLastName());
+		target.setContactPersonPhone(source.getContactPersonPhone());
+		target.setContactPersonEmail(source.getContactPersonEmail());
 	}
 }
