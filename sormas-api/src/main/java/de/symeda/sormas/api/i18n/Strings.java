@@ -301,6 +301,7 @@ public interface Strings {
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
 	String headingCaseImport = "headingCaseImport";
+	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesArchived = "headingCasesArchived";
 	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
@@ -779,6 +780,7 @@ public interface Strings {
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
+	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
 	String messageDistrictDearchived = "messageDistrictDearchived";

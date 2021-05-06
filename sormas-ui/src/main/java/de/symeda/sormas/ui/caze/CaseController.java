@@ -700,15 +700,20 @@ public class CaseController {
 		String regionUuid = null, districtUuid = null;
 		boolean first = true;
 		for (CaseIndexDto selectedCase : selectedCases) {
+			String currentRegionUuid =
+				selectedCase.getResponsibleRegionUuid() == null ? selectedCase.getRegionUuid() : selectedCase.getResponsibleRegionUuid();
+			String currentDistrictUuid =
+				selectedCase.getResponsibleDistrictUuid() == null ? selectedCase.getDistrictUuid() : selectedCase.getResponsibleDistrictUuid();
+
 			if (first) {
-				regionUuid = selectedCase.getRegionUuid();
-				districtUuid = selectedCase.getDistrictUuid();
+				regionUuid = currentRegionUuid;
+				districtUuid = currentDistrictUuid;
 				first = false;
 			} else {
-				if (!DataHelper.equal(regionUuid, selectedCase.getRegionUuid())) {
+				if (!DataHelper.equal(regionUuid, currentDistrictUuid)) {
 					regionUuid = null;
 				}
-				if (!DataHelper.equal(districtUuid, selectedCase.getDistrictUuid())) {
+				if (!DataHelper.equal(districtUuid, currentDistrictUuid)) {
 					districtUuid = null;
 				}
 			}

@@ -125,6 +125,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -1376,6 +1377,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		if (source.getCaze() != null) {
+			target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getCaze().getDiseaseVariant()));
+		}
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));

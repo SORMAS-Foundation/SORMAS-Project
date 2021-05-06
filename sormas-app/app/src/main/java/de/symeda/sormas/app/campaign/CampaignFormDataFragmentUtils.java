@@ -30,14 +30,19 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
@@ -113,16 +118,40 @@ public class CampaignFormDataFragmentUtils {
         return newCampaignFomDataEntry;
     }
 
-    public static ControlTextEditField createControlTextEditField(CampaignFormElement campaignFormElement, Context context) {
+
+    public static  Map<String, String> getUserTranslations(CampaignFormMeta campaignFormMeta) {
+        final Map<String, String>  userTranslations = new HashMap<>();
+
+        final Locale locale = I18nProperties.getUserLanguage().getLocale();
+        if (locale != null) {
+            final List<CampaignFormTranslations> campaignFormTranslations = campaignFormMeta.getCampaignFormTranslations();
+            campaignFormTranslations.forEach(cft -> {
+                if (cft.getLanguageCode().equalsIgnoreCase(locale.toString())) {
+                    cft.getTranslations().forEach(translationElement -> userTranslations.put(translationElement.getElementId(), translationElement.getCaption()));
+                }
+            });
+        }
+        return userTranslations;
+    }
+
+    public static String getUserLanguageCaption(Map<String, String> userTranslations, CampaignFormElement campaignFormElement) {
+        if (userTranslations != null && userTranslations.containsKey(campaignFormElement.getId())) {
+            return userTranslations.get(campaignFormElement.getId());
+        } else {
+            return campaignFormElement.getCaption();
+        }
+    }
+
+    public static ControlTextEditField createControlTextEditField(CampaignFormElement campaignFormElement, Context context,  Map<String, String> userTranslations) {
         return new ControlTextEditField(context) {
             @Override
             protected String getPrefixDescription() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
             protected String getPrefixCaption() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
@@ -155,16 +184,17 @@ public class CampaignFormDataFragmentUtils {
         };
     }
 
-    public static ControlCheckBoxField createControlCheckBoxField(CampaignFormElement campaignFormElement, Context context) {
+
+    public static ControlCheckBoxField createControlCheckBoxField(CampaignFormElement campaignFormElement, Context context,  Map<String, String> userTranslations) {
         return new ControlCheckBoxField(context) {
             @Override
             protected String getPrefixDescription() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
             protected String getPrefixCaption() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
@@ -188,16 +218,16 @@ public class CampaignFormDataFragmentUtils {
     }
 
 
-    public static ControlTextReadField createControlTextReadField(CampaignFormElement campaignFormElement, Context context) {
+    public static ControlTextReadField createControlTextReadField(CampaignFormElement campaignFormElement, Context context, Map<String, String> userTranslations) {
         return new ControlTextReadField(context) {
             @Override
             protected String getPrefixDescription() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
             protected String getPrefixCaption() {
-                return campaignFormElement.getCaption();
+                return getUserLanguageCaption(userTranslations, campaignFormElement);
             }
 
             @Override
