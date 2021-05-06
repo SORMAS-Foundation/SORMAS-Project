@@ -7235,7 +7235,7 @@ CREATE TABLE customizableenumvalue(
 );
 ALTER TABLE customizableenumvalue OWNER TO sormas_user;
 
-CREATE TABLE customizableenumvalue_history (LIKE customizableenums);
+CREATE TABLE customizableenumvalue_history (LIKE customizableenumvalue);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON customizableenumvalue
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizableenumvalue_history', true);
 ALTER TABLE customizableenumvalue_history OWNER TO sormas_user;
@@ -7259,7 +7259,8 @@ DO $$
     END;
 $$ LANGUAGE plpgsql;
 
-DROP TABLE
+DROP TABLE diseasevariant;
+DROP TABLE diseasevariant_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (366, '2021-04-29 Add customizable enums #5247');
 

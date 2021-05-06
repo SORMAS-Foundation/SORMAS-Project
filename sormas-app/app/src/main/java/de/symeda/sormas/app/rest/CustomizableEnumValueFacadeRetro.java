@@ -17,23 +17,22 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
-import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface DiseaseVariantFacadeRetro {
+public interface CustomizableEnumValueFacadeRetro {
 
-	@GET("diseasevariants/all/{since}")
-	Call<List<DiseaseVariantDto>> pullAllSince(@Path("since") long since);
+	@GET("customizableenumvalues/all/{since}")
+	Call<List<CustomizableEnumValueDto>> pullAllSince(@Path("since") long since);
 
-	@POST("diseasevariants/query")
-	Call<List<DiseaseVariantDto>> pullByUuids(@Body List<String> uuids);
+	@POST("customizableenumvalues/query")
+	Call<List<CustomizableEnumValueDto>> pullByUuids(@Body List<String> uuids);
 
-	@GET("diseasevariants/uuids")
+	@GET("customizableenumvalues/uuids")
 	Call<List<String>> pullUuids();
 
 }

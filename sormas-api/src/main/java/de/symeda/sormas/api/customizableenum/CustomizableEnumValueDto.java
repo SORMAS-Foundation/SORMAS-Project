@@ -16,8 +16,7 @@
 package de.symeda.sormas.api.customizableenum;
 
 import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -29,10 +28,11 @@ public class CustomizableEnumValueDto extends EntityDto {
 	private CustomizableEnumType dataType;
 	private String value;
 	private String caption;
-	private List<Pair<String, String>> translations;
+	private List<CustomizableEnumTranslation> translations;
 	private List<Disease> diseases;
 	private String description;
-	private List<Pair<String, String>> descriptionTranslations;
+	private List<CustomizableEnumTranslation> descriptionTranslations;
+	private Map<String, Object> properties;
 
 	public CustomizableEnumType getDataType() {
 		return dataType;
@@ -58,11 +58,11 @@ public class CustomizableEnumValueDto extends EntityDto {
 		this.caption = caption;
 	}
 
-	public List<Pair<String, String>> getTranslations() {
+	public List<CustomizableEnumTranslation> getTranslations() {
 		return translations;
 	}
 
-	public void setTranslations(List<Pair<String, String>> translations) {
+	public void setTranslations(List<CustomizableEnumTranslation> translations) {
 		this.translations = translations;
 	}
 
@@ -82,11 +82,19 @@ public class CustomizableEnumValueDto extends EntityDto {
 		this.description = description;
 	}
 
-	public List<Pair<String, String>> getDescriptionTranslations() {
+	public List<CustomizableEnumTranslation> getDescriptionTranslations() {
 		return descriptionTranslations;
 	}
 
-	public void setDescriptionTranslations(List<Pair<String, String>> descriptionTranslations) {
+	public void setDescriptionTranslations(List<CustomizableEnumTranslation> descriptionTranslations) {
 		this.descriptionTranslations = descriptionTranslations;
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
 	}
 }

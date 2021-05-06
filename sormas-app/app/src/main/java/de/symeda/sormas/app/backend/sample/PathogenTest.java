@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -26,18 +25,18 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = PathogenTest.TABLE_NAME)
 @DatabaseTable(tableName = PathogenTest.TABLE_NAME)

@@ -21,7 +21,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.disease.DiseaseVariantDtoHelper;
+import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -67,7 +67,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setPcrTestSpecification(source.getPcrTestSpecification());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(DatabaseHelper.getDiseaseVariantDao().getByReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(DatabaseHelper.getCustomizableEnumValueDao().getByReferenceDto(source.getTestedDiseaseVariant()));
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestResultVerified(source.getTestResultVerified());
@@ -98,7 +98,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setPcrTestSpecification(source.getPcrTestSpecification());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(DiseaseVariantDtoHelper.toReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(CustomizableEnumValueDtoHelper.toReferenceDto(source.getTestedDiseaseVariant()));
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 

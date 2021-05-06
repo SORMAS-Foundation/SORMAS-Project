@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.customizableenum;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
 
 public abstract class CustomizableEnum implements Serializable {
@@ -24,6 +25,8 @@ public abstract class CustomizableEnum implements Serializable {
 
 	private String value;
 	private String caption;
+
+	public abstract void setProperties(Map<String, Object> properties);
 
 	public String getValue() {
 		return value;

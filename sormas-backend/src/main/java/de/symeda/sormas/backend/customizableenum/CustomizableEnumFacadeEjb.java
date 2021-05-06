@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.customizableenum;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +38,10 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CustomizableEnumFacade")
 public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
@@ -57,10 +61,27 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	 */
 	private static final Map<Class<? extends CustomizableEnum>, Map<Disease, List<String>>> enumValuesByDisease = new HashMap<>();
 
+	private static final Map<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new HashMap<>();
+
 	@EJB
 	private CustomizableEnumValueService service;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	@Override
+	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
+		return service.getAllAfter(date, null).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CustomizableEnumValueDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllUuids() {
+		return service.getAllUuids();
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -78,6 +99,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			T enumValue = enumClass.newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).get(language).get(value));
+			enumValue.setProperties(enumProperties.get(type).get(value));
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -141,6 +163,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 				enumValue = enumClass.newInstance();
 				enumValue.setValue(value);
 				enumValue.setCaption(caption);
+				enumValue.setProperties(enumProperties.get(type).get(value));
 				enumValues.add(enumValue);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
@@ -160,13 +183,55 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		CustomizableEnumFacadeEjb.customizableEnumsByType.clear();
 		CustomizableEnumFacadeEjb.enumValuesByLanguage.clear();
 		CustomizableEnumFacadeEjb.enumValuesByDisease.clear();
+		CustomizableEnumFacadeEjb.enumProperties.clear();
 
 		// Build list of customizable enums mapped by their enum type; other caches are built on-demand
 		for (CustomizableEnumValue customizableEnumValue : service.getAll()) {
 			CustomizableEnumType enumType = customizableEnumValue.getDataType();
 			CustomizableEnumFacadeEjb.customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
 			CustomizableEnumFacadeEjb.customizableEnumsByType.get(enumType).add(customizableEnumValue);
+			CustomizableEnumFacadeEjb.enumProperties.putIfAbsent(enumType, new HashMap<>());
+			CustomizableEnumFacadeEjb.enumProperties.get(enumType)
+				.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
 		}
+	}
+
+	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		CustomizableEnumValueDto target = new CustomizableEnumValueDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDataType(source.getDataType());
+		target.setValue(source.getValue());
+		target.setCaption(source.getCaption());
+		target.setTranslations(source.getTranslations());
+		target.setDiseases(source.getDiseases());
+		target.setDescription(source.getDescription());
+		target.setDescriptionTranslations(source.getDescriptionTranslations());
+		target.setProperties(source.getProperties());
+
+		return target;
+	}
+
+	public CustomizableEnumValue fromDto(@NotNull CustomizableEnumValueDto source, boolean checkChangeDate) {
+
+		CustomizableEnumValue target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CustomizableEnumValue::new, checkChangeDate);
+
+		target.setDataType(source.getDataType());
+		target.setValue(source.getValue());
+		target.setCaption(source.getCaption());
+		target.setTranslations(source.getTranslations());
+		target.setDiseases(source.getDiseases());
+		target.setDescription(source.getDescription());
+		target.setDescriptionTranslations(source.getDescriptionTranslations());
+		target.setProperties(source.getProperties());
+
+		return target;
 	}
 
 	@LocalBean

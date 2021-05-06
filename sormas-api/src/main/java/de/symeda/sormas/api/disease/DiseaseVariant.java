@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 
@@ -23,4 +24,8 @@ public class DiseaseVariant extends CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = -5289300364081294764L;
 
+	@Override
+	public void setProperties(Map<String, Object> properties) {
+		// No properties
+	}
 }

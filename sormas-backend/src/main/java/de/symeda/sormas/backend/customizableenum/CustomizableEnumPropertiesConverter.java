@@ -16,48 +16,47 @@
 package de.symeda.sormas.backend.customizableenum;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import javax.persistence.AttributeConverter;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
-
-public class CustomizableEnumTranslationConverter implements AttributeConverter<List<CustomizableEnumTranslation>, String> {
+public class CustomizableEnumPropertiesConverter implements AttributeConverter<Map<String, Object>, String> {
 
 	@Override
-	public String convertToDatabaseColumn(List<CustomizableEnumTranslation> customizableEnumTranslations) {
+	public String convertToDatabaseColumn(Map<String, Object> enumProperties) {
 
-		if (CollectionUtils.isEmpty(customizableEnumTranslations)) {
+		if (MapUtils.isEmpty(enumProperties)) {
 			return null;
 		}
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(customizableEnumTranslations);
+			return mapper.writeValueAsString(enumProperties);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Content of enumTranslations could not be parsed to JSON String");
+			throw new RuntimeException("Content of enumProperties could not be parsed to JSON String");
 		}
 	}
 
 	@Override
-	public List<CustomizableEnumTranslation> convertToEntityAttribute(String enumTranslationsJson) {
+	public Map<String, Object> convertToEntityAttribute(String enumPropertiesJson) {
 
-		if (StringUtils.isBlank(enumTranslationsJson)) {
+		if (StringUtils.isBlank(enumPropertiesJson)) {
 			return null;
 		}
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return Arrays.asList(mapper.readValue(enumTranslationsJson, CustomizableEnumTranslation[].class));
+			return mapper.readValue(enumPropertiesJson, new TypeReference<Map<String, Object>>() {
+			});
 		} catch (IOException e) {
-			throw new RuntimeException("Content of enumTranslationsJson could not be parsed to List<EnumTranslation>: " + enumTranslationsJson);
+			throw new RuntimeException("Content of enumPropertiesJson could not be parsed to Map<String, Object>: " + enumPropertiesJson);
 		}
 	}
 }

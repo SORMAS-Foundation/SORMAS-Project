@@ -13,27 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.customizableenum;
+package de.symeda.sormas.app.backend.customizableenum;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
+import com.j256.ormlite.dao.Dao;
 
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
-@Stateless
-@LocalBean
-public class CustomizableEnumValueService extends AdoServiceWithUserFilter<CustomizableEnumValue> {
+public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumValue> {
 
-	public CustomizableEnumValueService() {
-		super(CustomizableEnumValue.class);
+	public CustomizableEnumValueDao(Dao<CustomizableEnumValue, Long> innerDao) {
+		super(innerDao);
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableEnumValue> from) {
-		return null;
+	protected Class<CustomizableEnumValue> getAdoClass() {
+		return CustomizableEnumValue.class;
 	}
+
+	@Override
+	public String getTableName() {
+		return CustomizableEnumValue.TABLE_NAME;
+	}
+
 }

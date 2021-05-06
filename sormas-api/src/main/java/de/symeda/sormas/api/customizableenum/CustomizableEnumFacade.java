@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.customizableenum;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -23,6 +24,12 @@ import de.symeda.sormas.api.Disease;
 
 @Remote
 public interface CustomizableEnumFacade {
+
+	List<CustomizableEnumValueDto> getAllAfter(Date date);
+
+	List<CustomizableEnumValueDto> getByUuids(List<String> uuids);
+
+	List<String> getAllUuids();
 
 	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
 

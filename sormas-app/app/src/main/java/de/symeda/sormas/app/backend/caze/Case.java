@@ -24,6 +24,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -50,6 +53,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -57,7 +61,6 @@ import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -106,7 +109,8 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@Column(name = "diseaseVariant")
+	private String diseaseVariantString;
 	private DiseaseVariant diseaseVariant;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -441,12 +445,30 @@ public class Case extends PseudonymizableAdo {
 		this.disease = disease;
 	}
 
+	public String getDiseaseVariantString() {
+		return diseaseVariantString;
+	}
+
+	public void setDiseaseVariantString(String diseaseVariantString) {
+		this.diseaseVariantString = diseaseVariantString;
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
-		return diseaseVariant;
+		if (StringUtils.isBlank(diseaseVariantString)) {
+			return null;
+		} else {
+			// blabla
+		}
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+		if (diseaseVariant == null) {
+			diseaseVariantString = null;
+		} else {
+			diseaseVariantString = diseaseVariant.getValue();
+		}
 	}
 
 	public String getDiseaseDetails() {

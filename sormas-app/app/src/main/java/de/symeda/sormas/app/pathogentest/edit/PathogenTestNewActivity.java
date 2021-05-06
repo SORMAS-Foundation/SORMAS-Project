@@ -36,7 +36,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;

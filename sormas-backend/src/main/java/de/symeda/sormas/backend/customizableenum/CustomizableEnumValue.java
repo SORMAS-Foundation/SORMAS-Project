@@ -16,14 +16,13 @@
 package de.symeda.sormas.backend.customizableenum;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
@@ -45,7 +44,7 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	private List<Disease> diseases;
 	private String description;
 	private List<CustomizableEnumTranslation> descriptionTranslations;
-	private String properties;
+	private Map<String, Object> properties;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -114,13 +113,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.descriptionTranslations = descriptionTranslations;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
-	public String getProperties() {
+	@Column
+	@Convert(converter = CustomizableEnumPropertiesConverter.class)
+	@SuppressWarnings("JpaAttributeTypeInspection")
+	public Map<String, Object> getProperties() {
 		return properties;
 	}
 
-	public void setProperties(String properties) {
+	public void setProperties(Map<String, Object> properties) {
 		this.properties = properties;
 	}
 }

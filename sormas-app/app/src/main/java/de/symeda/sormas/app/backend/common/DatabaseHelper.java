@@ -15,21 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -41,6 +26,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -78,10 +78,10 @@ import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDao;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDao;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
-import de.symeda.sormas.app.backend.disease.DiseaseVariantDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.event.Event;
@@ -243,7 +243,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, User.class);
 				TableUtils.clearTable(connectionSource, UserRoleConfig.class);
 				TableUtils.clearTable(connectionSource, DiseaseConfiguration.class);
-				TableUtils.clearTable(connectionSource, DiseaseVariant.class);
+				TableUtils.clearTable(connectionSource, CustomizableEnumValue.class);
 				TableUtils.clearTable(connectionSource, FeatureConfiguration.class);
 				TableUtils.clearTable(connectionSource, PointOfEntry.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
@@ -291,7 +291,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, PointOfEntry.class);
 			TableUtils.createTable(connectionSource, UserRoleConfig.class);
 			TableUtils.createTable(connectionSource, DiseaseConfiguration.class);
-			TableUtils.createTable(connectionSource, DiseaseVariant.class);
+			TableUtils.createTable(connectionSource, CustomizableEnumValue.class);
 			TableUtils.createTable(connectionSource, FeatureConfiguration.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
@@ -1924,7 +1924,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 266:
 				currentVersion = 266;
-				getDao(DiseaseVariant.class).executeRaw(
+				getDao(Case.class).executeRaw(
 					"CREATE TABLE diseaseVariant(" + "  id integer not null primary key autoincrement," + "  uuid varchar(36) not null unique,"
 						+ "  changeDate TIMESTAMP not null," + "  creationDate TIMESTAMP not null," + "  disease varchar(255) not null,"
 						+ "  name VARCHAR(512) not null," + "  lastOpenedDate BIGINT," + "  localChangeDate BIGINT NOT NULL," + "  modified SMALLINT,"
@@ -2147,19 +2147,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 297:
 				currentVersion = 297;
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pcrTestSpecification varchar(255);");
-				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
+				getDao(PathogenTest.class)
+					.executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant_id bigint REFERENCES diseaseVariant(id);");
 
 			case 298:
 				currentVersion = 298;
 				getDao(Area.class).executeRaw(
-						"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
-								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
-								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
-								+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
+					"CREATE TABLE area(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+						+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
+						+ "archived SMALLINT DEFAULT 0," + "name varchar(255) not null," + "externalId varchar(255) not null" + ");");
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN area_id BIGINT REFERENCES area(id);");
 				getDao(Region.class).executeRaw("UPDATE region set changeDate=0;");
 
-					// ATTENTION: break should only be done after last version
+				// ATTENTION: break should only be done after last version
 				break;
 
 			default:
@@ -2546,7 +2547,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
-			TableUtils.dropTable(connectionSource, DiseaseVariant.class, true);
+			TableUtils.dropTable(connectionSource, CustomizableEnumValue.class, true);
 			TableUtils.dropTable(connectionSource, FeatureConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, Campaign.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
@@ -2614,8 +2615,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new UserRoleConfigDao((Dao<UserRoleConfig, Long>) innerDao);
 				} else if (type.equals(DiseaseConfiguration.class)) {
 					dao = (AbstractAdoDao<ADO>) new DiseaseConfigurationDao((Dao<DiseaseConfiguration, Long>) innerDao);
-				} else if (type.equals(DiseaseVariant.class)) {
-					dao = (AbstractAdoDao<ADO>) new DiseaseVariantDao((Dao<DiseaseVariant, Long>) innerDao);
+				} else if (type.equals(CustomizableEnumValue.class)) {
+					dao = (AbstractAdoDao<ADO>) new CustomizableEnumValueDao((Dao<CustomizableEnumValue, Long>) innerDao);
 				} else if (type.equals(FeatureConfiguration.class)) {
 					dao = (AbstractAdoDao<ADO>) new FeatureConfigurationDao((Dao<FeatureConfiguration, Long>) innerDao);
 				} else if (type.equals(Symptoms.class)) {
@@ -2832,8 +2833,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (DiseaseConfigurationDao) getAdoDao(DiseaseConfiguration.class);
 	}
 
-	public static DiseaseVariantDao getDiseaseVariantDao() {
-		return (DiseaseVariantDao) getAdoDao(DiseaseVariant.class);
+	public static CustomizableEnumValueDao getCustomizableEnumValueDao() {
+		return (CustomizableEnumValueDao) getAdoDao(CustomizableEnumValue.class);
 	}
 
 	public static FeatureConfigurationDao getFeatureConfigurationDao() {

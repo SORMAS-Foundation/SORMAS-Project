@@ -40,7 +40,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
@@ -104,7 +103,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao().getAllByDisease(record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
@@ -310,7 +309,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseNewLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao().getAllByDisease(record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
