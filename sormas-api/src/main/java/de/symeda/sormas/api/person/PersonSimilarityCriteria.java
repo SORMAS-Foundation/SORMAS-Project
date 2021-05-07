@@ -1,7 +1,7 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {

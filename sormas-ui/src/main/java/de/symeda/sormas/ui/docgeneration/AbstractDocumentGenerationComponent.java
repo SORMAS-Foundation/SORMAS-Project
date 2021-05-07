@@ -10,6 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public abstract class AbstractDocumentGenerationComponent extends VerticalLayout {
@@ -34,7 +35,7 @@ public abstract class AbstractDocumentGenerationComponent extends VerticalLayout
 		Label labelDocument = new Label(I18nProperties.getCaption(documentLabel));
 		documentBar.addComponent(labelDocument);
 
-		Button createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
+		Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.addClickListener((Button.ClickListener) clickEvent -> {

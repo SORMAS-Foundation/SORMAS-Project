@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -48,18 +47,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseCriteriaDateType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ExternalShareDateType;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
@@ -77,6 +75,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -110,6 +110,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -168,6 +169,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	public CaseService() {
 		super(Case.class);
@@ -300,6 +305,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
 				joins.getReportingUser().get(User.UUID),
+				joins.getResponsibleRegion().get(Region.UUID),
+				joins.getResponsibleDistrict().get(District.UUID),
+				joins.getResponsibleCommunity().get(Community.UUID),
 				joins.getRegion().get(Region.UUID),
 				joins.getDistrict().get(District.UUID),
 				joins.getCommunity().get(Community.UUID),
@@ -564,6 +572,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
 		}
+		if (caseCriteria.getVaccination() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION), caseCriteria.getVaccination()));
+		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
@@ -773,30 +784,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
 		}
 
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesNotSharedWithExternalSurvTool())) {
-			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(cb.exists(survToolShareSubQuery)));
-		}
-
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesSharedWithExternalSurvTool())) {
-			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
-			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
-			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT), from.get(Case.ID)));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(survToolShareSubQuery));
-		}
-
-		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesChangedSinceLastSharedWithExternalSurvTool())) {
-			Predicate changedSinceLastShareFilter =
-				buildLatestSurvToolShareDateFilter(cq, cb, from, (latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
-		}
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			externalShareInfoService.buildShareCriteriaFilter(
+				caseCriteria,
+				cq,
+				cb,
+				from,
+				ExternalShareInfo.CAZE,
+				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false)));
 
 		return filter;
 	}
@@ -832,6 +829,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		contacts = contactService.getAllByResultingCase(caze);
 		for (Contact contact : contacts) {
 			contact.setResultingCase(null);
+			externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 			contactService.ensurePersisted(contact);
 		}
 
@@ -887,7 +885,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createChangeDateFilter(
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
-		Expression<? extends Timestamp> dateExpression,
+		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters) {
 
 		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
@@ -950,13 +948,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case HEALTH_FACILITY:
@@ -969,7 +975,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			case POINT_OF_ENTRY:
@@ -1043,7 +1053,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		From<?, Case> caze,
 		Date fromDate,
 		Date toDate,
-		CaseCriteriaDateType dateType) {
+		CriteriaDateType dateType) {
 
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
@@ -1061,34 +1071,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			newCaseFilter = reportDateFilter;
 		} else if (dateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
 			newCaseFilter =
-				buildLatestSurvToolShareDateFilter(cq, cb, caze, (latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
+				externalShareInfoService.buildLatestSurvToolShareDateFilter(
+					cq,
+					cb,
+					caze,
+					ExternalShareInfo.CAZE,
+					(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
 		}
 
 		return newCaseFilter;
-	}
-
-	private Predicate buildLatestSurvToolShareDateFilter(
-		CriteriaQuery<?> cq,
-		CriteriaBuilder cb,
-		From<?, Case> caze,
-		Function<Expression<Timestamp>, Predicate> shareDatePredicateBuilder) {
-
-		Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
-		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
-		Join<ExternalShareInfo, Case> survToolShareCase = survToolShareRoot.join(ExternalShareInfo.CAZE, JoinType.LEFT);
-		@SuppressWarnings({
-			"unchecked",
-			"rawtypes" })
-		Expression<Timestamp> latestShareDate =
-			// double conversion because hibernate doesn't know the `max` function for timestamps
-			(Expression<Timestamp>) ((Expression) cb.max(survToolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
-
-		survToolShareSubQuery.select(survToolShareCase.get(Case.ID));
-		survToolShareSubQuery.where(cb.equal(survToolShareCase, caze.get(Case.ID)));
-		survToolShareSubQuery.groupBy(survToolShareCase.get(Case.ID));
-		survToolShareSubQuery.having(shareDatePredicateBuilder.apply(latestShareDate));
-
-		return cb.exists(survToolShareSubQuery);
 	}
 
 	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<Case> joins) {
@@ -1098,33 +1089,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final Predicate reportedByCurrentUser =
 			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		final Predicate jurisdictionPredicate;
-		switch (jurisdictionLevel) {
-		case NATION:
-			jurisdictionPredicate = cb.conjunction();
-			break;
-		case REGION:
-			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
-			break;
-		case DISTRICT:
-			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
-			break;
-		case COMMUNITY:
-			jurisdictionPredicate = cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
-			break;
-		case HEALTH_FACILITY:
-			jurisdictionPredicate = cb.equal(joins.getFacility().get(Facility.ID), currentUser.getHealthFacility().getId());
-			break;
-		case POINT_OF_ENTRY:
-			jurisdictionPredicate = cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
-			break;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		case NONE:
-		default:
-			jurisdictionPredicate = cb.disjunction();
-		}
+		final Predicate jurisdictionPredicate =
+			CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
 		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}
 
@@ -1232,6 +1199,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.setFollowUpStatusChangeUser(null);
 		}
 
+		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
 		ensurePersisted(caze);
 	}
 

@@ -12,6 +12,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,10 +21,12 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -81,7 +84,7 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-			fetchLabmessages();
+			initiateLabMessageFetch();
 		}, ValoTheme.BUTTON_PRIMARY));
 
 		if (isBulkEditAllowed()) {
@@ -206,7 +209,26 @@ public class LabMessagesView extends AbstractView {
 		return button;
 	}
 
-	private void fetchLabmessages() {
+	private void initiateLabMessageFetch() {
+		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_LAB_MESSAGES);
+		if (fetchAlreadyStarted) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingFetchLabMessages),
+				new Label(I18nProperties.getString(Strings.confirmationFetchLabMessages)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				480,
+				confirmed -> {
+					if (confirmed) {
+						fetchLabMessages();
+					}
+				});
+		} else {
+			fetchLabMessages();
+		}
+	}
+	
+	private void fetchLabMessages() {
 		LabMessageFetchResult fetchResult = FacadeProvider.getLabMessageFacade().fetchAndSaveExternalLabMessages();
 		if (!fetchResult.isSuccess()) {
 			VaadinUiUtil.showWarningPopup(fetchResult.getError());

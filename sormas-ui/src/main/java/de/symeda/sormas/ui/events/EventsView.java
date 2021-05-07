@@ -23,13 +23,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
-import de.symeda.sormas.api.importexport.ExportType;
-import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.ui.utils.CaseDownloadUtil;
-import de.symeda.sormas.ui.utils.EventDownloadUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -58,14 +51,16 @@ import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
@@ -78,6 +73,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EventDownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -426,7 +422,7 @@ public class EventsView extends AbstractView {
 			activeStatusButton = statusAll;
 
 			for (EventStatus status : EventStatus.values()) {
-				Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
+				Button statusButton = ButtonHelper.createButton("status-" + status, status.toString(), e -> {
 					eventCriteria.setEventStatus(status);
 					navigateTo(eventCriteria);
 				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
@@ -450,7 +446,7 @@ public class EventsView extends AbstractView {
 			activeStatusButton = statusAll;
 
 			for (ActionStatus status : ActionStatus.values()) {
-				Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
+				Button statusButton = ButtonHelper.createButton("status-" + status, status.toString(), e -> {
 					eventCriteria.actionStatus(status);
 					navigateTo(eventCriteria);
 				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
@@ -469,7 +465,8 @@ public class EventsView extends AbstractView {
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
 				if (isGroupViewType()) {
-					groupRelevanceStatusFilter = buildRelevanceStatus(Captions.eventActiveGroups, Captions.eventArchivedGroups, Captions.eventAllGroups);
+					groupRelevanceStatusFilter =
+						buildRelevanceStatus(Captions.eventActiveGroups, Captions.eventArchivedGroups, Captions.eventAllGroups);
 					groupRelevanceStatusFilter.addValueChangeListener(e -> {
 						eventGroupCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 						navigateTo(eventGroupCriteria);
@@ -488,7 +485,8 @@ public class EventsView extends AbstractView {
 						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
 					}
 
-					eventRelevanceStatusFilter = buildRelevanceStatus(Captions.eventActiveEvents, Captions.eventArchivedEvents, Captions.eventAllEvents);
+					eventRelevanceStatusFilter =
+						buildRelevanceStatus(Captions.eventActiveEvents, Captions.eventArchivedEvents, Captions.eventAllEvents);
 					eventRelevanceStatusFilter.addValueChangeListener(e -> {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 						eventCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
@@ -527,7 +525,9 @@ public class EventsView extends AbstractView {
 						VaadinIcons.SHARE,
 						selectedItem -> {
 							ControllerProvider.getEventController()
-								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
+								.sendAllSelectedToExternalSurveillanceTool(
+									eventGrid.asMultiSelect().getSelectedItems(),
+									() -> navigateTo(eventCriteria));
 						}));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());

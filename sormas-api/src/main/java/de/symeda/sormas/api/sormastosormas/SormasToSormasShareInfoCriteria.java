@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
