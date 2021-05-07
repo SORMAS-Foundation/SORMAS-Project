@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Debug env
-        run: echo "IS_FORK"
+        run: echo "$IS_FORK"
       - name: Checkout repository (with token)
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
