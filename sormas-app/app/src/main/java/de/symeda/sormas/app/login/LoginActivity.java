@@ -40,7 +40,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -278,15 +277,14 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
 		if (caseSuveillance) {
-			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW) && (
-					user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
-							|| user.hasUserRole(UserRole.CASE_OFFICER)
-							|| user.hasUserRole(UserRole.POE_INFORMANT)
-							|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
-							|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
+			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+					|| user.hasUserRole(UserRole.CASE_OFFICER)
+					|| user.hasUserRole(UserRole.POE_INFORMANT)
+					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
 				NavigationHelper.goToCases(LoginActivity.this);
-			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
-					&& user.hasUserRole(UserRole.CONTACT_OFFICER)) {
+			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {
 				NavigationHelper.goToContacts(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)) {
 				NavigationHelper.goToCases(LoginActivity.this);
