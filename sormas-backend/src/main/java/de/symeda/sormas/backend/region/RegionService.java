@@ -55,7 +55,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Region.NAME), name.trim());
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Region.NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -70,7 +70,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(Region.EXTERNAL_ID), externalId.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Region.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

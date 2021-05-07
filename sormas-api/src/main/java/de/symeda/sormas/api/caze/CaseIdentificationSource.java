@@ -10,6 +10,8 @@ public enum CaseIdentificationSource {
 	SUSPICION_REPORT,
 	CONTACT_TRACING,
 	SCREENING,
+	SELF_ARRANGED_TEST,
+	SELF_CONDUCTED_TEST,
 	OTHER;
 
 	public String toString() {

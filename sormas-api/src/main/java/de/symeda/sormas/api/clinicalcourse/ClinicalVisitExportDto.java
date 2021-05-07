@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
@@ -41,6 +42,9 @@ public class ClinicalVisitExportDto implements Serializable {
 		String visitingPerson,
 		long symptomsId,
 		String caseReportingUserUuid,
+		String caseResponsibleRegionUuid,
+		String caseResponsibleDistrictUid,
+		String caseResponsibleCommunityUid,
 		String caseRegionUuid,
 		String caseDistrictUuid,
 		String caseCommunityUuid,
@@ -55,7 +59,14 @@ public class ClinicalVisitExportDto implements Serializable {
 		this.visitingPerson = visitingPerson;
 		this.symptomsId = symptomsId;
 
-		this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		this.caseJurisdiction = new CaseJurisdictionDto(
+			caseReportingUserUuid,
+			ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
+			caseRegionUuid,
+			caseDistrictUuid,
+			caseCommunityUuid,
+			caseHealthFacilityUuid,
+			casePointOfEntryUuid);
 	}
 
 	@Order(0)

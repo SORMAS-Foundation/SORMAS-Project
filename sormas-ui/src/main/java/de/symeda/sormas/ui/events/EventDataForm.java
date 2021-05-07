@@ -30,12 +30,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -46,12 +49,14 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
+import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.HumanTransmissionMode;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.LaboratoryDiagnosticEvidenceDetail;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -79,6 +84,7 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 
+@SuppressWarnings("deprecation")
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -98,50 +104,54 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
-			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
-			fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS) +
-			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
-			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
-			fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
-			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
-			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
-			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
-			fluidRowLocs(EventDto.INTERNALID, "") +
-			fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
-			fluidRowLocs(EventDto.EVENT_TITLE) +
-			fluidRowLocs(EventDto.EVENT_DESC) +
-			fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
-			fluidRowLocs(EventDto.HUMAN_TRANSMISSION_MODE, EventDto.INFECTION_PATH_CERTAINTY) +
-			fluidRowLocs(EventDto.PARENTERAL_TRANSMISSION_MODE, EventDto.MEDICALLY_ASSOCIATED_TRANSMISSION_MODE) +
+					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
+					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
+					fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS) +
+					fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
+					fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
+					fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
+					fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
+					fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
+					fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
+					fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
+					fluidRowLocs(EventDto.INTERNALID, "") +
+					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
+					fluidRowLocs(EventDto.EVENT_TITLE) +
+					fluidRowLocs(EventDto.EVENT_DESC) +
+					fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
+					fluidRowLocs(EventDto.HUMAN_TRANSMISSION_MODE, EventDto.INFECTION_PATH_CERTAINTY) +
+					fluidRowLocs(6, EventDto.PARENTERAL_TRANSMISSION_MODE, 6, EventDto.MEDICALLY_ASSOCIATED_TRANSMISSION_MODE) +
+					fluidRowLocs(EventDto.EPIDEMIOLOGICAL_EVIDENCE, EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE) +
+					fluidRowLocs(6, EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS, 6, EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS) +
 
-			loc(INFORMATION_SOURCE_HEADING_LOC) +
-			fluidRowLocs(EventDto.SRC_TYPE, "") +
-			fluidRowLocs(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS) +
-			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
-			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
+					loc(INFORMATION_SOURCE_HEADING_LOC) +
+					fluidRowLocs(EventDto.SRC_TYPE, "") +
+					fluidRowLocs(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS) +
+					fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
+					fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
-			fluidRowLocs(EventDto.SRC_MEDIA_WEBSITE, EventDto.SRC_MEDIA_NAME) +
-			fluidRowLocs(EventDto.SRC_MEDIA_DETAILS) +
+					fluidRowLocs(EventDto.SRC_MEDIA_WEBSITE, EventDto.SRC_MEDIA_NAME) +
+					fluidRowLocs(EventDto.SRC_MEDIA_DETAILS) +
 
-			loc(LOCATION_HEADING_LOC) +
-			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
-			fluidRow(
-				fluidColumn(6,0,locs(EventDto.TYPE_OF_PLACE)),
-				fluidColumn(6,0, locs(
-						EventDto.TYPE_OF_PLACE_TEXT,
-						EventDto.MEANS_OF_TRANSPORT,
-						EventDto.WORK_ENVIRONMENT))) +
-			loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
-			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
-			fluidRowLocs(EventDto.EVENT_LOCATION) +
-			fluidRowLocs("", EventDto.RESPONSIBLE_USER);
+					loc(LOCATION_HEADING_LOC) +
+					fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
+					fluidRow(
+							fluidColumn(6,0,locs(EventDto.TYPE_OF_PLACE)),
+							fluidColumn(6,0, locs(
+									EventDto.TYPE_OF_PLACE_TEXT,
+									EventDto.MEANS_OF_TRANSPORT,
+									EventDto.WORK_ENVIRONMENT))) +
+					loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
+					fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
+					fluidRowLocs(EventDto.EVENT_LOCATION) +
+					fluidRowLocs("", EventDto.RESPONSIBLE_USER);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
 	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
+	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
+	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(
@@ -236,6 +246,23 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addFields(EventDto.HUMAN_TRANSMISSION_MODE, EventDto.INFECTION_PATH_CERTAINTY);
 		addFields(EventDto.PARENTERAL_TRANSMISSION_MODE, EventDto.MEDICALLY_ASSOCIATED_TRANSMISSION_MODE);
+
+		final NullableOptionGroup epidemiologicalEvidence = addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE, NullableOptionGroup.class);
+		final NullableOptionGroup laboratoryDiagnosticEvidence = addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE, NullableOptionGroup.class);
+
+		epidemiologicalEvidenceCheckBoxTree = new EpidemiologicalEvidenceCheckBoxTree(
+			Arrays.stream(EpidemiologicalEvidenceDetail.values())
+				.map(epidemiologicalEvidenceDetail -> epidemiologicalEvidenceDetailToCheckBoxElement(epidemiologicalEvidenceDetail))
+				.collect(Collectors.toList()));
+		getContent().addComponent(epidemiologicalEvidenceCheckBoxTree, EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS);
+		epidemiologicalEvidenceCheckBoxTree.setVisible(false);
+
+		laboratoryDiagnosticEvidenceCheckBoxTree = new LaboratoryDiagnosticEvidenceCheckBoxTree(
+			Arrays.stream(LaboratoryDiagnosticEvidenceDetail.values())
+				.map(laboratoryDiagnosticEvidenceDetail -> laboratoryDiagnosticEvidenceDetailToCheckBoxElement(laboratoryDiagnosticEvidenceDetail))
+				.collect(Collectors.toList()));
+		getContent().addComponent(laboratoryDiagnosticEvidenceCheckBoxTree, EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS);
+		laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(false);
 
 		DateField evolutionDateField = addField(EventDto.EVOLUTION_DATE, DateField.class);
 		TextField evolutionCommentField = addField(EventDto.EVOLUTION_COMMENT, TextField.class);
@@ -420,6 +447,40 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				Collections.singletonList(ParenteralTransmissionMode.MEDICALLY_ASSOCIATED),
 				true);
 		}
+		if (isVisibleAllowed(EventDto.EPIDEMIOLOGICAL_EVIDENCE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EventDto.EPIDEMIOLOGICAL_EVIDENCE,
+				EventDto.DISEASE_TRANSMISSION_MODE,
+				Collections.singletonList(DiseaseTransmissionMode.HUMAN_TO_HUMAN),
+				true);
+
+			epidemiologicalEvidence.addValueChangeListener(valueChangeEvent -> {
+				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
+					epidemiologicalEvidenceCheckBoxTree.setVisible(true);
+				} else {
+					epidemiologicalEvidenceCheckBoxTree.clearCheckBoxTree();
+					epidemiologicalEvidenceCheckBoxTree.setVisible(false);
+				}
+			});
+		}
+		if (isVisibleAllowed(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE,
+				EventDto.DISEASE_TRANSMISSION_MODE,
+				Collections.singletonList(DiseaseTransmissionMode.HUMAN_TO_HUMAN),
+				true);
+
+			laboratoryDiagnosticEvidence.addValueChangeListener(valueChangeEvent -> {
+				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
+					laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(true);
+				} else {
+					laboratoryDiagnosticEvidenceCheckBoxTree.clearCheckBoxTree();
+					laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(false);
+				}
+			});
+		}
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL),
@@ -497,7 +558,27 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				externalTokenWarningLabel,
 				(externalToken) -> FacadeProvider.getEventFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
 
+			epidemiologicalEvidenceCheckBoxTree.initCheckboxes();
+			laboratoryDiagnosticEvidenceCheckBoxTree.initCheckboxes();
 		});
+	}
+
+	private CheckBoxTree.CheckBoxElement<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceDetailToCheckBoxElement(
+		EpidemiologicalEvidenceDetail epidemiologicalEvidenceDetail) {
+		return new CheckBoxTree.CheckBoxElement<>(
+			epidemiologicalEvidenceDetail.getParent() != null
+				? epidemiologicalEvidenceDetailToCheckBoxElement(epidemiologicalEvidenceDetail.getParent())
+				: null,
+			epidemiologicalEvidenceDetail);
+	}
+
+	private CheckBoxTree.CheckBoxElement<LaboratoryDiagnosticEvidenceDetail> laboratoryDiagnosticEvidenceDetailToCheckBoxElement(
+		LaboratoryDiagnosticEvidenceDetail laboratoryDiagnosticEvidenceDetail) {
+		return new CheckBoxTree.CheckBoxElement<>(
+			laboratoryDiagnosticEvidenceDetail.getParent() != null
+				? laboratoryDiagnosticEvidenceDetailToCheckBoxElement(laboratoryDiagnosticEvidenceDetail.getParent())
+				: null,
+			laboratoryDiagnosticEvidenceDetail);
 	}
 
 	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
@@ -543,5 +624,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
 		typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		typeOfPlaceField.addValueChangeListener(event -> typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER));
+	}
+
+	@Override
+	public EventDto getValue() {
+		final EventDto eventDto = super.getValue();
+		eventDto.setEpidemiologicalEvidenceDetails(epidemiologicalEvidenceCheckBoxTree.getValues());
+		eventDto.setLaboratoryDiagnosticEvidenceDetails(laboratoryDiagnosticEvidenceCheckBoxTree.getValues());
+		return eventDto;
+	}
+
+	@Override
+	public void setValue(EventDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		epidemiologicalEvidenceCheckBoxTree.setValues(newFieldValue.getEpidemiologicalEvidenceDetails());
+		laboratoryDiagnosticEvidenceCheckBoxTree.setValues(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
+		super.setValue(newFieldValue);
 	}
 }

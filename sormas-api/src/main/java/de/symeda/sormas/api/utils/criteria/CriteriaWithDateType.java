@@ -13,17 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.utils.criteria;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.List;
 
-public enum ExternalShareDateType
-	implements
-	CaseCriteriaDateType {
+public abstract class CriteriaWithDateType extends BaseCriteria {
 
-	LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE;
+	private static final long serialVersionUID = -1426212155238381380L;
 
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	private final Class<? extends CriteriaDateType> dateTypeCalss;
+
+	public CriteriaWithDateType(Class<? extends CriteriaDateType> dateTypeCalss) {
+		this.dateTypeCalss = dateTypeCalss;
+	}
+
+	@Override
+	protected Object parseUrlParam(Class<?> type, List<String> fieldParams) throws InstantiationException, IllegalAccessException {
+		if (CriteriaDateType.class.isAssignableFrom(type)) {
+			return CriteriaDateTypeHelper.valueOf(dateTypeCalss, fieldParams.get(0));
+		}
+
+		return super.parseUrlParam(type, fieldParams);
 	}
 }
