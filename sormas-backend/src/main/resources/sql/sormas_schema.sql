@@ -7273,8 +7273,8 @@ DO $$
         FOR rec IN SELECT id, disease, name FROM diseasevariant
             LOOP
                 INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), rec.name, rec.disease);
-                UPDATE cases SET diseasevariant = rec.name WHERE diseasevariant = rec.id::text;
-                UPDATE pathogentest SET testeddiseasevariant = rec.name WHERE testeddiseasevariant = rec.id::text;
+                UPDATE cases SET diseasevariant = rec.name, changedate = now() WHERE diseasevariant = rec.id::text;
+                UPDATE pathogentest SET testeddiseasevariant = rec.name, changedate = now() WHERE testeddiseasevariant = rec.id::text;
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
@@ -7282,5 +7282,5 @@ $$ LANGUAGE plpgsql;
 DROP TABLE diseasevariant;
 DROP TABLE diseasevariant_history;
 
-INSERT INTO schema_version (version_number, comment) VALUES (366, '2021-04-29 Add customizable enums #5247');
+INSERT INTO schema_version (version_number, comment) VALUES (368, '2021-04-29 Add customizable enums #5247');
 -- *** Insert new sql commands BEFORE this line ***

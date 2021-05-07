@@ -24,9 +24,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Menu;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -93,12 +95,11 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 		final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
 
 		if (associatedCase != null) {
-			DiseaseVariant caseDiseaseVariant = DatabaseHelper.getCustomizableEnumValueDao().queryForId(associatedCase.getDiseaseVariant().getId());
+			DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
 				&& pathogenTestToSave.getTestResultVerified()
-				&& newDiseaseVariant != null
-				&& !newDiseaseVariant.equals(caseDiseaseVariant)) {
+				&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
 
 				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
 				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);

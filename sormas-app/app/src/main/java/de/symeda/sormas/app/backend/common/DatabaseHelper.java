@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 301;
+	public static final int DATABASE_VERSION = 302;
 
 	private static DatabaseHelper instance = null;
 
@@ -2170,6 +2170,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN responsibleRegion_id BIGINT REFERENCES region(id);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN responsibleDistrict_id BIGINT REFERENCES district(id);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN responsibleCommunity_id BIGINT REFERENCES community(id);");
+
+			case 301:
+				currentVersion = 301;
+				getDao(CustomizableEnumValue.class).executeRaw(
+					"CREATE TABLE customizableEnumValue(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+						+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
+						+ "dataType varchar(255)," + "value text," + "caption text," + "translations text," + "diseases text," + "description text,"
+						+ "descriptionTranslations text," + "properties text);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariant text;");
+				getDao(Case.class).executeRaw("UPDATE cases SET diseaseVariant_id = NULL;");
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant text;");
+				getDao(PathogenTest.class).executeRaw("UDPATE pathogenTest SET testedDiseaseVariant_id = NULL;");
+				getDao(Case.class).executeRaw("DROP TABLE diseaseVariant;");
 
 				// ATTENTION: break should only be done after last version
 				break;

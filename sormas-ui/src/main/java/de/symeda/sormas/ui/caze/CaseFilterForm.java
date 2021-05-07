@@ -562,7 +562,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				List<DiseaseVariant> diseaseVariants =
 					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 				FieldHelper.updateItems(field, diseaseVariants);
-				FieldHelper.setEnabled(disease != null && CollectionUtils.isNotEmpty(diseaseVariants), field);
+				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), field);
 			}
 		}
 		}
@@ -711,7 +711,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			FieldHelper.setEnabled(disease != null && CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}
 	}
 

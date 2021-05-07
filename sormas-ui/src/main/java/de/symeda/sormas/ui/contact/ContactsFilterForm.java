@@ -3,11 +3,12 @@ package de.symeda.sormas.ui.contact;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -33,6 +34,8 @@ import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -121,9 +124,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CLASSIFICATION, 140));
 		addField(FieldConfiguration.pixelSized(ContactIndexDto.DISEASE, 140));
-		ComboBox diseaseVariantField = addField(FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.DISEASE_VARIANT,I18nProperties.getCaption(Captions.Contact_cazeDiseaseVariant), 140));
-		diseaseVariantField.setValue(null);
-		diseaseVariantField.setEnabled(false);
+		addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.DISEASE_VARIANT, I18nProperties.getCaption(Captions.Contact_cazeDiseaseVariant), 140),
+			ComboBox.class);
 
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
@@ -362,7 +366,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			Disease disease = (Disease) event.getProperty().getValue();
 			ComboBox diseaseVariantField = getField(ContactCriteria.DISEASE_VARIANT);
 			if (disease != null) {
-				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+				List<DiseaseVariant> diseaseVariants =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 				FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 				diseaseVariantField.setEnabled(!diseaseVariants.isEmpty());
 			} else {
@@ -458,6 +463,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			clearAndDisableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
 		} else {
 			enableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
+		}
+
+		ComboBox diseaseField = getField(ContactIndexDto.DISEASE);
+		ComboBox diseaseVariantField = getField(ContactCriteria.DISEASE_VARIANT);
+		Disease disease = (Disease) diseaseField.getValue();
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}
 	}
 

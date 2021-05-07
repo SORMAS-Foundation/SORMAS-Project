@@ -496,10 +496,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			survToolShareCountAndDates =
-				externalShareInfoService.getCaseShareCountAndLatestDate(caseUuids)
-					.stream()
-					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseUuids)
+				.stream()
+				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -3338,7 +3337,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
 		for (Contact contact : contacts) {
 			if (cloning) {
-				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails(), DiseaseVariantFacadeEjb.toReferenceDto(leadCase.getDiseaseVariant()));
+				ContactDto newContact =
+					ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails(), leadCase.getDiseaseVariant());
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);

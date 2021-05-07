@@ -18,7 +18,7 @@
 package de.symeda.sormas.api;
 
 import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -58,23 +58,8 @@ public final class DiseaseHelper {
 		return disease != Disease.OTHER ? disease.toShortString() : DataHelper.toStringNullable(diseaseDetails);
 	}
 
-	public static String toString(Disease disease, String diseaseDetails, DiseaseVariantReferenceDto diseaseVariant) {
-		return String.format("%s %s", toString(disease, diseaseDetails), variantToString(diseaseVariant));
+	public static String toString(Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
+		return String.format("%s %s", toString(disease, diseaseDetails), diseaseVariant != null ? diseaseVariant.getCaption() : "");
 	}
 
-	/**
-	 * @param diseaseVariant a disease variant
-	 * @return a string representation from the disease variant in the form of "(uuid - caption)"
-	 */
-	public static String variantToString(DiseaseVariantReferenceDto diseaseVariant) {
-		if (diseaseVariant == null) {
-			return "";
-		} else if (diseaseVariant.getUuid() != null && diseaseVariant.getCaption() != null) {
-			return String.format("(%s - %s)", diseaseVariant.getUuid(), diseaseVariant.getCaption());
-		} else if (diseaseVariant.getUuid() != null) {
-			return String.format("(%s)", diseaseVariant.getUuid());
-		} else {
-			return "";
-		}
-	}
 }

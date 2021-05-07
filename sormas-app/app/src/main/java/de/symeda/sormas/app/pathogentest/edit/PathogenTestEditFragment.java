@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -96,7 +98,8 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		if (record.getTestedDisease() != null && !diseases.contains(record.getTestedDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getTestedDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao().getAllByDisease(record.getTestedDisease());
+		List<DiseaseVariant> diseaseVariants =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
@@ -201,7 +204,8 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	}
 
 	private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao().getAllByDisease(record.getTestedDisease());
+		List<DiseaseVariant> diseaseVariants =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.pathogenTestTestedDiseaseVariant.setSpinnerData(diseaseVariantList);

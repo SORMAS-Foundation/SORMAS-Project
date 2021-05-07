@@ -32,6 +32,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -83,6 +84,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = ((EpiWeek) value).toUrlString();
 					} else if (CriteriaDateType.class.isAssignableFrom(type)) {
 						stringValue = CriteriaDateTypeHelper.toUrlString((CriteriaDateType) value);
+					} else if (CustomizableEnum.class.isAssignableFrom(type)) {
+						stringValue = ((CustomizableEnum) value).getValue();
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -193,6 +196,9 @@ public abstract class BaseCriteria implements Serializable {
 			value = Integer.valueOf(fieldParams.get(0));
 		} else if (EpiWeek.class.isAssignableFrom(type)) {
 			value = EpiWeek.fromUrlString(fieldParams.get(0));
+		} else if (CustomizableEnum.class.isAssignableFrom(type)) {
+			value = type.newInstance();
+			((CustomizableEnum) value).setValue(fieldParams.get(0));
 		} else {
 			throw new NotImplementedException(type.toString());
 		}

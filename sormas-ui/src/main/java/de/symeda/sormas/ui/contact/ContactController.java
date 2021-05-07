@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.contact;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -695,7 +695,7 @@ public class ContactController {
 		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 
-		Label diseaseVariantLabel = new Label(DiseaseHelper.variantToString(contact.getDiseaseVariant()));
+		Label diseaseVariantLabel = new Label(contact.getDiseaseVariant() != null ? contact.getDiseaseVariant().getCaption() : "");
 		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		diseaseLayout.addComponent(diseaseLabel);

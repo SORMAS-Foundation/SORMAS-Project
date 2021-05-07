@@ -31,7 +31,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 @DatabaseTable(tableName = CustomizableEnumValue.TABLE_NAME)
 public class CustomizableEnumValue extends AbstractDomainObject {
 
-	public static final String TABLE_NAME = "customizableenumvalue";
+	public static final String TABLE_NAME = "customizableEnumValue";
 	public static final String I18N_PREFIX = "CustomizableEnum";
 
 	@Enumerated(EnumType.STRING)

@@ -60,7 +60,10 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	 * to all enum values that are used for the disease.
 	 */
 	private static final Map<Class<? extends CustomizableEnum>, Map<Disease, List<String>>> enumValuesByDisease = new HashMap<>();
-
+	/**
+	 * Maps a customizable enum type to a map with all enum values of this type as its keys and the properties defined for these
+	 * enum values as its values.
+	 */
 	private static final Map<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new HashMap<>();
 
 	@EJB
@@ -145,15 +148,13 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			}
 		}
 
+		// Always add values for no disease because they are relevant in all cases
+		if (!CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).containsKey(null)) {
+			addValuesByDisease(type, enumClass, null);
+		}
+
 		if (!CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).containsKey(disease)) {
-			CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).put(disease, new ArrayList<>());
-			List<String> filteredEnumValues = CustomizableEnumFacadeEjb.customizableEnumsByType.get(type)
-				.stream()
-				.filter(
-					e -> disease == null && CollectionUtils.isEmpty(e.getDiseases()) || e.getDiseases() != null && e.getDiseases().contains(disease))
-				.map(CustomizableEnumValue::getValue)
-				.collect(Collectors.toList());
-			CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).get(disease).addAll(filteredEnumValues);
+			addValuesByDisease(type, enumClass, disease);
 		}
 
 		List<T> enumValues = new ArrayList<>();
@@ -185,10 +186,13 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		CustomizableEnumFacadeEjb.enumValuesByDisease.clear();
 		CustomizableEnumFacadeEjb.enumProperties.clear();
 
+		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
+			CustomizableEnumFacadeEjb.customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
+		}
+
 		// Build list of customizable enums mapped by their enum type; other caches are built on-demand
 		for (CustomizableEnumValue customizableEnumValue : service.getAll()) {
 			CustomizableEnumType enumType = customizableEnumValue.getDataType();
-			CustomizableEnumFacadeEjb.customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
 			CustomizableEnumFacadeEjb.customizableEnumsByType.get(enumType).add(customizableEnumValue);
 			CustomizableEnumFacadeEjb.enumProperties.putIfAbsent(enumType, new HashMap<>());
 			CustomizableEnumFacadeEjb.enumProperties.get(enumType)
@@ -232,6 +236,16 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		target.setProperties(source.getProperties());
 
 		return target;
+	}
+
+	private <T extends CustomizableEnum> void addValuesByDisease(CustomizableEnumType type, Class<T> enumClass, Disease disease) {
+		CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).put(disease, new ArrayList<>());
+		List<String> filteredEnumValues = CustomizableEnumFacadeEjb.customizableEnumsByType.get(type)
+			.stream()
+			.filter(e -> disease == null && CollectionUtils.isEmpty(e.getDiseases()) || e.getDiseases() != null && e.getDiseases().contains(disease))
+			.map(CustomizableEnumValue::getValue)
+			.collect(Collectors.toList());
+		CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).get(disease).addAll(filteredEnumValues);
 	}
 
 	@LocalBean
