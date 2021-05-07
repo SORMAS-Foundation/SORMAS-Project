@@ -54,6 +54,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentListComponent extends VerticalLayout {
+
 	private final DocumentRelatedEntityType relatedEntityType;
 	private final ReferenceDto entityRef;
 	private final UserRight editRight;
@@ -162,7 +163,7 @@ public class DocumentListComponent extends VerticalLayout {
 	}
 
 	private Button buildDownloadButton(DocumentDto document) {
-		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
+		Button viewButton = ButtonHelper.createIconButton(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();

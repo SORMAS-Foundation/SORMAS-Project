@@ -248,6 +248,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
+	String CaseData_differentJurisdiction = "CaseData.differentJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
@@ -343,6 +344,9 @@ public interface Captions {
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
 	String CaseData_reportLon = "CaseData.reportLon";
+	String CaseData_responsibleCommunity = "CaseData.responsibleCommunity";
+	String CaseData_responsibleDistrict = "CaseData.responsibleDistrict";
+	String CaseData_responsibleRegion = "CaseData.responsibleRegion";
 	String CaseData_screeningType = "CaseData.screeningType";
 	String CaseData_sequelae = "CaseData.sequelae";
 	String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
@@ -527,6 +531,7 @@ public interface Captions {
 	String Contact_caze_symptomsOnset = "Contact.caze.symptomsOnset";
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
+	String Contact_cazeDiseaseVariant = "Contact.cazeDiseaseVariant";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
@@ -921,6 +926,7 @@ public interface Captions {
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_diseaseTransmissionMode = "Event.diseaseTransmissionMode";
 	String Event_endDate = "Event.endDate";
+	String Event_epidemiologicalEvidence = "Event.epidemiologicalEvidence";
 	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventGroupCount = "Event.eventGroupCount";
@@ -943,6 +949,7 @@ public interface Captions {
 	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
 	String Event_internalId = "Event.internalId";
+	String Event_laboratoryDiagnosticEvidence = "Event.laboratoryDiagnosticEvidence";
 	String Event_latestEventGroup = "Event.latestEventGroup";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
@@ -2063,6 +2070,7 @@ public interface Captions {
 	String VaccinationInfo_vaccination = "VaccinationInfo.vaccination";
 	String VaccinationInfo_vaccinationDoses = "VaccinationInfo.vaccinationDoses";
 	String VaccinationInfo_vaccinationInfoSource = "VaccinationInfo.vaccinationInfoSource";
+	String VaccinationInfo_vaccinationStatus = "VaccinationInfo.vaccinationStatus";
 	String VaccinationInfo_vaccineAtcCode = "VaccinationInfo.vaccineAtcCode";
 	String VaccinationInfo_vaccineBatchNumber = "VaccinationInfo.vaccineBatchNumber";
 	String VaccinationInfo_vaccineInn = "VaccinationInfo.vaccineInn";

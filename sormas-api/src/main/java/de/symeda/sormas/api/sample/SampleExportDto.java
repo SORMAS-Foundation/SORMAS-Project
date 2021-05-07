@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -139,9 +140,13 @@ public class SampleExportDto implements Serializable {
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
 						   String reportingUserUuid, String labUuid,
-						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String caseReportingUserUuid,
+						   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+						   String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
-						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
+						   String contactCaseReportingUserUuid,
+						   String contactCaseResponsibleRegionUuid, String contactCaseResponsibleDistrictUid, String contactCaseResponsibleCommunityUid,
+						   String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
 						   String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid
 	) {
 	//@formatter:on
@@ -260,6 +265,7 @@ public class SampleExportDto implements Serializable {
 		if (caseUuid != null) {
 			associatedCaseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,
+				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUuid,
@@ -273,6 +279,8 @@ public class SampleExportDto implements Serializable {
 				? null
 				: new CaseJurisdictionDto(
 					contactCaseReportingUserUuid,
+					ResponsibleJurisdictionDto
+						.of(contactCaseResponsibleRegionUuid, contactCaseResponsibleDistrictUid, contactCaseResponsibleCommunityUid),
 					contactCaseRegionUuid,
 					contactCaseDistrictUuid,
 					contactCaseCommunityUuid,

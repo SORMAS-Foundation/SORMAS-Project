@@ -63,7 +63,7 @@ public class MapCaseDto implements Serializable {
 	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double addressLon;
 
-	private CaseJurisdictionDto jurisdiction;
+	private final CaseJurisdictionDto jurisdiction;
 
 	public MapCaseDto(
 		String uuid,
@@ -81,6 +81,9 @@ public class MapCaseDto implements Serializable {
 		Double addressLat,
 		Double addressLon,
 		String reportingUserUuid,
+		String responsibleRegionUuid,
+		String responsibleDistrictUid,
+		String responsibleCommunityUid,
 		String regionUuid,
 		String districtUuid,
 		String communityUuid,
@@ -98,7 +101,14 @@ public class MapCaseDto implements Serializable {
 		this.addressLat = addressLat;
 		this.addressLon = addressLon;
 
-		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		jurisdiction = new CaseJurisdictionDto(
+			reportingUserUuid,
+			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUid, responsibleCommunityUid),
+			regionUuid,
+			districtUuid,
+			communityUuid,
+			healthFacilityUuid,
+			pointOfEntryUuid);
 	}
 
 	public String getUuid() {

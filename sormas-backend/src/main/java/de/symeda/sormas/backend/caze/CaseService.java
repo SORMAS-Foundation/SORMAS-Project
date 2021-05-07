@@ -305,6 +305,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
 				joins.getReportingUser().get(User.UUID),
+				joins.getResponsibleRegion().get(Region.UUID),
+				joins.getResponsibleDistrict().get(District.UUID),
+				joins.getResponsibleCommunity().get(Community.UUID),
 				joins.getRegion().get(Region.UUID),
 				joins.getDistrict().get(District.UUID),
 				joins.getCommunity().get(Community.UUID),
@@ -568,6 +571,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getSymptomJournalStatus() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
+		}
+		if (caseCriteria.getVaccination() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION), caseCriteria.getVaccination()));
 		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
@@ -942,13 +948,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case HEALTH_FACILITY:
@@ -961,7 +975,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()),
+						cb.equal(casePath.get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			case POINT_OF_ENTRY:
@@ -1071,33 +1089,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final Predicate reportedByCurrentUser =
 			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		final Predicate jurisdictionPredicate;
-		switch (jurisdictionLevel) {
-		case NATION:
-			jurisdictionPredicate = cb.conjunction();
-			break;
-		case REGION:
-			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
-			break;
-		case DISTRICT:
-			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
-			break;
-		case COMMUNITY:
-			jurisdictionPredicate = cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
-			break;
-		case HEALTH_FACILITY:
-			jurisdictionPredicate = cb.equal(joins.getFacility().get(Facility.ID), currentUser.getHealthFacility().getId());
-			break;
-		case POINT_OF_ENTRY:
-			jurisdictionPredicate = cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
-			break;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		case NONE:
-		default:
-			jurisdictionPredicate = cb.disjunction();
-		}
+		final Predicate jurisdictionPredicate =
+			CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
 		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}
 

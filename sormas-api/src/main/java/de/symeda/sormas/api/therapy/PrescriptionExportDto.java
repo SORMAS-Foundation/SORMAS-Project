@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -70,6 +71,9 @@ public class PrescriptionExportDto implements Serializable {
 		String routeDetails,
 		String additionalNotes,
 		String caseReportingUserUuid,
+		String caseResponsibleRegionUuid,
+		String caseResponsibleDistrictUid,
+		String caseResponsibleCommunityUid,
 		String caseRegionUuid,
 		String caseDistrictUuid,
 		String caseCommunityUuid,
@@ -92,12 +96,13 @@ public class PrescriptionExportDto implements Serializable {
 		this.additionalNotes = additionalNotes;
 
 		this.caseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
+			caseReportingUserUuid,
+			ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
+			caseRegionUuid,
+			caseDistrictUuid,
+			caseCommunityUuid,
+			caseHealthFacilityUuid,
+			casePointOfEntryUuid);
 
 	}
 
