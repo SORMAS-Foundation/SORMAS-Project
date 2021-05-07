@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.annotation.Nullable;
 
 import com.google.common.base.CharMatcher;
 
@@ -409,5 +412,13 @@ public final class DataHelper {
 	public static String cleanStringForFileName(String name) {
 		String nameWithoutSpecialCharacters = CharMatcher.javaLetter().or(CharMatcher.is(' ')).retainFrom(name);
 		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
+	}
+
+	public static <T> List<T> asListNullable(@Nullable T object) {
+		if (object == null) {
+			return null;
+		}
+
+		return Collections.singletonList(object);
 	}
 }

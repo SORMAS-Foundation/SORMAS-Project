@@ -215,7 +215,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				getEventColumns(),
 				getSymptomsColumns(),
 				getSampleColumns(),
-				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME, CaseIndexDto.REPORT_DATE),
+				getJurisdictionColumns(),
+				Stream.of(CaseIndexDto.REPORT_DATE),
 				externalSurveillanceToolShareEnabled
 					? Stream.of(
 						CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE,
@@ -227,6 +228,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				Stream.of(CaseIndexDto.VACCINATION),
 				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(Function.identity());
+	}
+
+	protected Stream<String> getJurisdictionColumns() {
+		return Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
 	}
 
 	protected Stream<String> getReinfectionColumn() {

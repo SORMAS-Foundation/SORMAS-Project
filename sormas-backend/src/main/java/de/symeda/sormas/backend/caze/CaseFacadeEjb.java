@@ -700,7 +700,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
 				joins.getReportingDistrict().get(District.NAME),
 				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
-				caseRoot.get(Case.SCREENING_TYPE)
+				caseRoot.get(Case.SCREENING_TYPE),
+				// responsible jurisdiction
+				joins.getResponsibleRegion().get(Region.UUID),
+				joins.getResponsibleRegion().get(Region.NAME),
+				joins.getResponsibleDistrict().get(District.UUID),
+				joins.getResponsibleDistrict().get(District.NAME),
+				joins.getResponsibleCommunity().get(Community.UUID),
+				joins.getResponsibleCommunity().get(Community.NAME)
 				);
 		//@formatter:on
 
@@ -1891,24 +1898,26 @@ public class CaseFacadeEjb implements CaseFacade {
 		// that no tasks related to cases are assigned to officers lacking jurisdiction on the case.
 
 		if (existingCase != null) {
-			boolean regionChanged = !existingCase.getRegion().getUuid().equals(newCase.getRegion().getUuid());
-			boolean districtChanged = !existingCase.getDistrict().getUuid().equals(newCase.getDistrict().getUuid());
+			boolean responsibleRegionChanged = !DataHelper.isSame(existingCase.getResponsibleRegion(), newCase.getResponsibleRegion());
+			boolean regionChanged = !DataHelper.isSame(existingCase.getRegion(), newCase.getRegion());
+
+			boolean responsibleDistrictChanged = !DataHelper.isSame(existingCase.getResponsibleDistrict(), newCase.getResponsibleDistrict());
+			boolean districtChanged = !DataHelper.isSame(existingCase.getDistrict(), newCase.getDistrict());
 
 			// check if infrastructure was changed, added, or removed from the case
 
-			boolean communityChanged = (existingCase.getCommunity() != null
-				&& newCase.getCommunity() != null
-				&& !newCase.getCommunity().getUuid().equals(existingCase.getCommunity().getUuid()))
-				|| (existingCase.getCommunity() == null && newCase.getCommunity() != null)
-				|| (existingCase.getCommunity() != null && newCase.getCommunity() == null);
+			boolean responsibleCommunityChanged = !DataHelper.isSame(existingCase.getResponsibleCommunity(), newCase.getResponsibleCommunity());
+			boolean communityChanged = !DataHelper.isSame(existingCase.getCommunity(), newCase.getCommunity());
 
-			boolean facilityChanged = (existingCase.getHealthFacility() != null
-				&& newCase.getHealthFacility() != null
-				&& !existingCase.getHealthFacility().getUuid().equals(newCase.getHealthFacility().getUuid()))
-				|| (existingCase.getHealthFacility() == null && newCase.getHealthFacility() != null)
-				|| (existingCase.getHealthFacility() != null && newCase.getHealthFacility() == null);
+			boolean facilityChanged = !DataHelper.isSame(existingCase.getHealthFacility(), newCase.getHealthFacility());
 
-			if (regionChanged || districtChanged || communityChanged || facilityChanged) {
+			if (responsibleRegionChanged
+				|| responsibleDistrictChanged
+				|| responsibleCommunityChanged
+				|| regionChanged
+				|| districtChanged
+				|| communityChanged
+				|| facilityChanged) {
 				reassignTasksOfCase(newCase, false);
 			}
 
@@ -2083,8 +2092,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-				newCase.getRegion(),
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getCaseRegions(newCase),
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
@@ -2113,8 +2122,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the disease of an
 		// Unspecified VHF case has changed
 		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-				newCase.getRegion(),
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getCaseRegions(newCase),
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
@@ -2190,12 +2199,16 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
 			} else {
-				List<User> survOffs = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
-				if (!survOffs.isEmpty()) {
-					caze.setSurveillanceOfficer(survOffs.get(rand.nextInt(survOffs.size())));
-				} else {
-					caze.setSurveillanceOfficer(null);
+				User survOff = null;
+				if (caze.getResponsibleDistrict() != null) {
+					survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
 				}
+
+				if (survOff == null) {
+					survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+				}
+
+				caze.setSurveillanceOfficer(survOff);
 			}
 		}
 	}
@@ -2224,30 +2237,24 @@ public class CaseFacadeEjb implements CaseFacade {
 				// no one is assigned so we skip detailed checks and go directly to reassignment.
 				mismatch = true;
 			} else if (!forceReassignment) {
-				boolean regionMismatch = taskAssignee.getRegion() != null
-					&& caze.getRegion() != null
-					&& !taskAssignee.getRegion().getUuid().equals(caze.getRegion().getUuid());
+				boolean responsibleRegionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getResponsibleRegion());
+				boolean regionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getRegion());
 
-				boolean districtMismatch = taskAssignee.getDistrict() != null
-					&& caze.getDistrict() != null
-					&& !taskAssignee.getDistrict().getUuid().equals(caze.getDistrict().getUuid());
+				boolean responsibleDistrictMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getDistrict());
+				boolean districtMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getDistrict());
 
-				// for community and health facility, the situation where
-				// 1.) the user has a community/facility
-				// 2.) the case does not have a community/facility
-				// also has to count as a mismatch b/c it means the case is no longer associated with their jurisdiction
+				boolean responsibleCommunityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getResponsibleCommunity());
+				boolean communityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getCommunity());
 
-				boolean communityMismatch = (taskAssignee.getCommunity() != null
-					&& caze.getCommunity() != null
-					&& !taskAssignee.getCommunity().getUuid().equals(caze.getCommunity().getUuid()))
-					|| (taskAssignee.getCommunity() != null && caze.getCommunity() == null);
+				boolean facilityMismatch = !DataHelper.isSame(taskAssignee.getHealthFacility(), caze.getHealthFacility());
 
-				boolean facilityMismatch = (taskAssignee.getHealthFacility() != null
-					&& caze.getHealthFacility() != null
-					&& !taskAssignee.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid()))
-					|| (taskAssignee.getHealthFacility() != null && caze.getHealthFacility() == null);
-
-				mismatch = regionMismatch || districtMismatch || communityMismatch || facilityMismatch;
+				mismatch = responsibleRegionMismatch
+					|| responsibleDistrictMismatch
+					|| responsibleCommunityMismatch
+					|| regionMismatch
+					|| districtMismatch
+					|| communityMismatch
+					|| facilityMismatch;
 			}
 
 			if (forceReassignment || mismatch) {
@@ -2599,6 +2606,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
 		}
 
+		target.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(source.getResponsibleCommunity()));
+
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
@@ -2774,6 +2785,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			source.setPortHealthInfo(PortHealthInfoDto.build());
 		}
 		target.setPortHealthInfo(portHealthInfoFacade.fromDto(source.getPortHealthInfo(), checkChangeDate));
+
+		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -3023,29 +3038,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getSurveillanceOfficer() != null) {
 			// 1) The surveillance officer that is responsible for the case
 			assignee = caze.getSurveillanceOfficer();
-		} else if (caze.getDistrict() != null) {
-			// 2) A random surveillance officer from the case district
-			List<User> officers = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
-			if (!officers.isEmpty()) {
-				Random rand = new Random();
-				assignee = officers.get(rand.nextInt(officers.size()));
-			}
+		} else if (caze.getResponsibleDistrict() != null) {
+			// 2) A random surveillance officer from the case responsible district
+			assignee = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+		}
+
+		if (assignee == null && caze.getDistrict() != null) {
+			// 3) A random surveillance officer from the case district
+			assignee = getRandomSurveillanceOfficer(caze.getDistrict());
 		}
 
 		if (assignee == null) {
 			if (caze.getReportingUser() != null
 				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
 					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
-				// 3) If the case was created by a surveillance supervisor, assign them
+				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
-			} else if (caze.getRegion() != null) {
-				// 4) Assign a random surveillance supervisor from the case region
-				List<User> supervisors =
-					userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
-				if (!supervisors.isEmpty()) {
-					Random rand = new Random();
-					assignee = supervisors.get(rand.nextInt(supervisors.size()));
-				}
+			} else if (caze.getResponsibleRegion() != null) {
+				// 5) Assign a random surveillance supervisor from the case responsible region
+				assignee = getRandomRegionUser(caze.getResponsibleRegion());
+			}
+			if (caze.getRegion() != null) {
+				// 6) Assign a random surveillance supervisor from the case region
+				assignee = getRandomRegionUser(caze.getRegion());
 			}
 		}
 
@@ -3053,6 +3068,24 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (assignee == null) {
 			logger.warn("No valid assignee user found for task " + task.getUuid());
 		}
+	}
+
+	private User getRandomSurveillanceOfficer(District district) {
+		List<User> officers = userService.getAllByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
+		if (!officers.isEmpty()) {
+			return officers.get(new Random().nextInt(officers.size()));
+		}
+
+		return null;
+	}
+
+	private User getRandomRegionUser(Region region) {
+		List<User> supervisors = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
+		if (!supervisors.isEmpty()) {
+			return supervisors.get(new Random().nextInt(supervisors.size()));
+		}
+
+		return null;
 	}
 
 	@Override
@@ -3188,8 +3221,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-			caze.getRegion(),
+		List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+			JurisdictionHelper.getCaseRegions(caze),
 			UserRole.SURVEILLANCE_SUPERVISOR,
 			UserRole.ADMIN_SUPERVISOR,
 			UserRole.CASE_SUPERVISOR,
@@ -3324,7 +3357,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
 		for (Contact contact : contacts) {
 			if (cloning) {
-				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
+				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails(), DiseaseVariantFacadeEjb.toReferenceDto(leadCase.getDiseaseVariant()));
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);
