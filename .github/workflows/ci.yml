@@ -4,7 +4,8 @@
 name: Java CI with Maven
 
 env:
-  java: 11
+  JAVA: 11
+  IS_FORK: ${{github.event.pull_request.head.repo.full_name != github.repository}}
 
 on:
   push:
@@ -18,11 +19,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug env
+        run: echo "IS_FORK"
       - name: Checkout repository (with token)
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
-        if: github.event.pull_request.head.repo.full_name == github.repository
+        if: ${{ !env.IS_FORK }}
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
@@ -31,24 +34,24 @@ jobs:
         # Check if PR results from a fork: if yes, we cannot access the token.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
-        if: github.event.pull_request.head.repo.full_name != github.repository
+        if: ${{ env.IS_FORK }}
         uses: actions/checkout@v2
 
-      - name: Set up JDK ${{ env.java }}
+      - name: Set up JDK ${{ env.JAVA }}
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ env.java }}
+          java-version: ${{ env.JAVA }}
 
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
-        if: github.event.pull_request.head.repo.full_name == github.repository
+        if: ${{ !env.IS_FORK }}
         # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
         uses: actions/cache@v2
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-java-${{ env.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
-          restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
+          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
+          restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
       - name: Run mvn verify
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
