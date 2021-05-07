@@ -170,8 +170,6 @@ public interface CaseFacade {
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
-	FollowUpPeriodDto getStartDate(CaseDataDto caseDto);
-
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
 	boolean isCaseEditAllowed(String caseUuid);

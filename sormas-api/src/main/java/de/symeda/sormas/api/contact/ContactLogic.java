@@ -32,11 +32,19 @@ public final class ContactLogic {
 		// Hide Utility Class Constructor
 	}
 
-	public static FollowUpPeriodDto getStartDate(ContactDto contactDto, List<SampleDto> samples) {
-		return getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime(), samples);
+	public static Date getStartDate(ContactDto contactDto) {
+		return getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime());
 	}
 
-	public static FollowUpPeriodDto getStartDate(Date lastContactDate, Date reportDate, List<SampleDto> samples) {
+	public static Date getStartDate(Date lastContactDate, Date reportDate) {
+		return lastContactDate != null ? lastContactDate : reportDate;
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(ContactDto contactDto, List<SampleDto> samples) {
+		return getFollowUpStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime(), samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date lastContactDate, Date reportDate, List<SampleDto> samples) {
 
 		if (lastContactDate != null) {
 			return new FollowUpPeriodDto(lastContactDate, FollowUpStartDateType.LAST_CONTACT_DATE);
@@ -44,9 +52,6 @@ public final class ContactLogic {
 		return FollowUpLogic.getStartDate(reportDate, samples);
 	}
 
-	// TODO: this is inconsistent with the result of calculateFollowUpUntilDate
-	// - followUpDuration is missing
-	// - samples and visits are not considered
 	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
 		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}

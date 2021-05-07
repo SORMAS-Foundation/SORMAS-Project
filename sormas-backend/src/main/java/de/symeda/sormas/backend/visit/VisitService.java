@@ -230,7 +230,7 @@ public class VisitService extends BaseAdoService<Visit> {
 				buildRelevantVisitsFilter(
 					contact.getPerson(),
 					contact.getDisease(),
-					contactService.getStartDate(contact).getFollowUpStartDate(),
+					ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()),
 					ContactLogic.getEndDate(contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil()),
 					cb,
 					from));
@@ -243,7 +243,7 @@ public class VisitService extends BaseAdoService<Visit> {
 				buildRelevantVisitsFilter(
 					caze.getPerson(),
 					caze.getDisease(),
-					caseService.getStartDate(caze).getFollowUpStartDate(),
+					CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
 					CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()),
 					cb,
 					from));

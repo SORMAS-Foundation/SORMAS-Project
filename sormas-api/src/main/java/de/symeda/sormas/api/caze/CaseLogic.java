@@ -55,11 +55,19 @@ public final class CaseLogic {
 		}
 	}
 
-	public static FollowUpPeriodDto getStartDate(CaseDataDto caseDto, List<SampleDto> samples) {
-		return getStartDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate(), samples);
+	public static Date getStartDate(CaseDataDto caseDto) {
+		return getStartDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate());
 	}
 
-	public static FollowUpPeriodDto getStartDate(Date onsetDate, Date reportDate, List<SampleDto> samples) {
+	public static Date getStartDate(Date onsetDate, Date reportDate) {
+		return onsetDate != null ? onsetDate : reportDate;
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(CaseDataDto caseDto, List<SampleDto> samples) {
+		return getFollowUpStartDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate(), samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date onsetDate, Date reportDate, List<SampleDto> samples) {
 
 		if (onsetDate != null) {
 			return new FollowUpPeriodDto(onsetDate, FollowUpStartDateType.SYMPTOM_ONSET_DATE);
@@ -67,9 +75,6 @@ public final class CaseLogic {
 		return FollowUpLogic.getStartDate(reportDate, samples);
 	}
 
-	// TODO: this is inconsistent with the result of calculateFollowUpUntilDate
-	// - followUpDuration is missing
-	// - samples and visits are not considered
 	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
 		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate : reportDate;
 	}
@@ -94,7 +99,7 @@ public final class CaseLogic {
 
 	/**
 	 * Handles the hospitalization change of a case.
-	 * 
+	 *
 	 * @param caze
 	 *            The new CaseDataDto for which the facility change should be handled.
 	 * @param oldCase

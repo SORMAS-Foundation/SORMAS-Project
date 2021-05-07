@@ -126,6 +126,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -389,7 +390,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		Date contactStartDate = contactService.getStartDate(contact).getFollowUpStartDate();
+		Date contactStartDate = ContactLogic.getStartDate(toDto(contact));
 		for (Visit visit : visitService.getAllRelevantVisits(
 			contact.getPerson(),
 			contact.getDisease(),
@@ -958,15 +959,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public FollowUpPeriodDto getStartDate(ContactDto contactDto) {
-		return ContactLogic.getStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid())));
-	}
-
-	@Override
 	public FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
 		return ContactLogic.calculateFollowUpUntilDate(
 			contactDto,
-			getStartDate(contactDto),
+			ContactLogic.getFollowUpStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid()))),
 			visitFacade.getVisitsByContact(contactDto.toReference()),
 			diseaseConfigurationFacade.getFollowUpDuration(contactDto.getDisease()),
 			ignoreOverwrite);

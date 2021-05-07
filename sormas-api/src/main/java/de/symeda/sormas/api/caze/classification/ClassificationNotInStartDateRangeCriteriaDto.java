@@ -19,7 +19,6 @@ package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,9 +59,7 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
 			if (value instanceof Date) {
-				// TODO: is this startDate supposed to be changed in the course of #3243?
-				Date startDate =
-					CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), Collections.EMPTY_LIST).getFollowUpStartDate();
+				Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
 				Date lowerThresholdDate = DateHelper.subtractDays(startDate, daysBeforeStartDate);
 
 				return !(((Date) value).equals(lowerThresholdDate)

@@ -621,7 +621,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 
 				// Add follow-up until validator
-				FollowUpPeriodDto followUpPeriod = ContactLogic.getStartDate(
+				FollowUpPeriodDto followUpPeriod = ContactLogic.getFollowUpStartDate(
 					lastContactDate.getValue(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));

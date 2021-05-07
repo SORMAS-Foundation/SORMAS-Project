@@ -1321,7 +1321,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
-				FollowUpPeriodDto followUpPeriod = CaseLogic.getStartDate(
+				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(
 					symptoms.getOnsetDate(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));

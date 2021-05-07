@@ -61,7 +61,6 @@ import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
-import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -822,11 +821,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			ContactDto contactDto = contactFacade.toDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			List<SampleDto> samples =
+				contact.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
 			Date untilDate =
 				ContactLogic
 					.calculateFollowUpUntilDate(
 						contactDto,
-						getStartDate(contact),
+						ContactLogic.getFollowUpStartDate(contactFacade.toDto(contact), samples),
 						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false)
@@ -868,13 +870,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		contact.setFollowUpComment(comment);
 		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
 		ensurePersisted(contact);
-	}
-
-	public FollowUpPeriodDto getStartDate(Contact contact) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<SampleDto> samples =
-			contact.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
-		return ContactLogic.getStartDate(contactFacade.toDto(contact), samples);
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead

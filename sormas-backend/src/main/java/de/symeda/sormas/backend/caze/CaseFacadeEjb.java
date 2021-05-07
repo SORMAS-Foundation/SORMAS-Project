@@ -504,10 +504,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			survToolShareCountAndDates =
-				externalShareInfoService.getCaseShareCountAndLatestDate(caseUuids)
-					.stream()
-					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseUuids)
+				.stream()
+				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -1783,7 +1782,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Set<Visit> allRelevantVisits = visitService.getAllRelevantVisits(
 			caze.getPerson(),
 			caze.getDisease(),
-			caseService.getStartDate(caze).getFollowUpStartDate(),
+			CaseLogic.getStartDate(toDto(caze)),
 			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
 
 		for (Visit visit : allRelevantVisits) {
@@ -2377,8 +2376,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
 
 		if (newCase.getPerson().getApproximateAge() != null) {
-			Date newCaseStartDate = caseService.getStartDate(newCase).getFollowUpStartDate();
-			if (existingCase == null || !getStartDate(existingCase).getFollowUpStartDate().equals(newCaseStartDate)) {
+			Date newCaseStartDate = CaseLogic.getStartDate(toDto(newCase));
+			if (existingCase == null || !CaseLogic.getStartDate(existingCase).equals(newCaseStartDate)) {
 				if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					newCase.setCaseAge(0);
 				} else {
@@ -3346,7 +3345,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
 		for (Contact contact : contacts) {
 			if (cloning) {
-				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails(), DiseaseVariantFacadeEjb.toReferenceDto(leadCase.getDiseaseVariant()));
+				ContactDto newContact = ContactDto.build(
+					leadCase.toReference(),
+					leadCase.getDisease(),
+					leadCase.getDiseaseDetails(),
+					DiseaseVariantFacadeEjb.toReferenceDto(leadCase.getDiseaseVariant()));
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				DtoHelper.copyDtoValues(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false, false);
@@ -3644,15 +3647,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public FollowUpPeriodDto getStartDate(CaseDataDto caseDto) {
-		return CaseLogic.getStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid())));
-	}
-
-	@Override
 	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
 		return CaseLogic.calculateFollowUpUntilDate(
 			caseDto,
-			getStartDate(caseDto),
+			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getFollowUpDuration(caseDto.getDisease()),
 			ignoreOverwrite);

@@ -30,10 +30,10 @@ import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -140,7 +140,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (contact != null) {
-			Date startDate = FacadeProvider.getContactFacade().getStartDate(contact).getFollowUpStartDate();
+			Date startDate = ContactLogic.getStartDate(contact);
 
 			addDateValidation(
 				startDate,
@@ -151,7 +151,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		if (caze != null) {
 			addDateValidation(
-				FacadeProvider.getCaseFacade().getStartDate(caze).getFollowUpStartDate(),
+				CaseLogic.getStartDate(caze),
 				caze.getReportDate(),
 				caze.getSymptoms().getOnsetDate() != null ? Validations.visitBeforeSymptomsOnSet : Validations.visitBeforeCaseReport,
 				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));

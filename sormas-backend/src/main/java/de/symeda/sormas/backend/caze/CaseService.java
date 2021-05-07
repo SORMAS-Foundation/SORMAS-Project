@@ -65,7 +65,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
-import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -1076,13 +1075,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else if (dateType == NewCaseDateType.REPORT) {
 			newCaseFilter = reportDateFilter;
 		} else if (dateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
-			newCaseFilter =
-				externalShareInfoService.buildLatestSurvToolShareDateFilter(
-					cq,
-					cb,
-					caze,
-					ExternalShareInfo.CAZE,
-					(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
+			newCaseFilter = externalShareInfoService.buildLatestSurvToolShareDateFilter(
+				cq,
+				cb,
+				caze,
+				ExternalShareInfo.CAZE,
+				(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
 		}
 
 		return newCaseFilter;
@@ -1176,13 +1174,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			List<SampleDto> samples =
+				caze.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
+
 			Date untilDate =
 				CaseLogic
 					.calculateFollowUpUntilDate(
 						caseDto,
-						getStartDate(caze),
+						CaseLogic.getFollowUpStartDate(caseFacade.toDto(caze), samples),
 						caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
 						false)
@@ -1212,13 +1213,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
 		ensurePersisted(caze);
-	}
-
-	public FollowUpPeriodDto getStartDate(Case caze) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<SampleDto> samples =
-			caze.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
-		return CaseLogic.getStartDate(caseFacade.toDto(caze), samples);
 	}
 
 	/**

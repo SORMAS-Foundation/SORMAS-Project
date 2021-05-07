@@ -20,6 +20,7 @@ package de.symeda.sormas.api.followup;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -50,7 +51,8 @@ public final class FollowUpLogic {
 	public static FollowUpPeriodDto getStartDate(Date reportDate, List<SampleDto> samples) {
 		Date earliestSampleDate = null;
 		for (SampleDto sample : samples) {
-			if (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate)) {
+			if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
 				earliestSampleDate = sample.getSampleDateTime();
 			}
 		}
