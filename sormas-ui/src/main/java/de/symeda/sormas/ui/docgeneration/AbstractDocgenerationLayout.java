@@ -44,6 +44,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public abstract class AbstractDocgenerationLayout extends VerticalLayout {
@@ -68,12 +69,12 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
-		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
+		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.setEnabled(false);
 
-		cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
+		cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCancel));
 		cancelButton.addClickListener((e) -> closeWindow());
 
 		HorizontalLayout buttonBar = new HorizontalLayout();

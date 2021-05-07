@@ -20,7 +20,6 @@
 
 package de.symeda.sormas.ui.events.groups;
 
-import com.vaadin.event.ContextClickEvent;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;

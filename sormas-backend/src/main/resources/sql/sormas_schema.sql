@@ -7227,6 +7227,22 @@ ALTER TABLE cases
 
 INSERT INTO schema_version (version_number, comment) VALUES (366, 'Decouple Place of stay from the responsible jurisdiction from cases #3254');
 
+-- 2021-04-29 Add evidence fields for event clusters #5061
+
+ALTER TABLE events ADD COLUMN epidemiologicalevidence varchar(255);
+ALTER TABLE events ADD COLUMN epidemiologicalevidencedetails json;
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidence varchar(255);
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidencedetails json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (367, ' 2021-04-29 Add evidence fields for event clusters #5061');
+
+-- 2021-05-07 Fix equality issue by using jsonb #5061
+
+ALTER TABLE events ALTER COLUMN epidemiologicalevidencedetails set DATA TYPE jsonb using epidemiologicalevidencedetails::jsonb;
+ALTER TABLE events ALTER COLUMN laboratorydiagnosticEvidencedetails set DATA TYPE jsonb using laboratorydiagnosticEvidencedetails::jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (368, '2021-05-07 Fix equality issue by using jsonb #5061');
+
 -- 2021-05-07 Move new enum values to screeningType #5063
 UPDATE cases SET
     caseidentificationsource = 'SCREENING',
@@ -7238,6 +7254,6 @@ UPDATE cases SET
     screeningtype = 'SELF_ARRANGED_TEST'
 WHERE caseidentificationsource = 'SELF_ARRANGED_TEST';
 
-INSERT INTO schema_version (version_number, comment) VALUES (367, 'Move new enum values to screeningType #5063');
+INSERT INTO schema_version (version_number, comment) VALUES (369, 'Move new enum values to screeningType #5063');
 
 -- *** Insert new sql commands BEFORE this line ***
