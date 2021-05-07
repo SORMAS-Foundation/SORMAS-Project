@@ -27,6 +27,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * JPA Converter that converts a JSON String stored in the database to a map with additional enum property names as its keys and the
+ * associated values as its values, and vice versa. The content of this map can then be stored in an instance of
+ * {@link de.symeda.sormas.api.customizableenum.CustomizableEnum} and subsequently accessed in the user interface to control logic that is
+ * specific to the respective enum type.
+ */
 public class CustomizableEnumPropertiesConverter implements AttributeConverter<Map<String, Object>, String> {
 
 	@Override

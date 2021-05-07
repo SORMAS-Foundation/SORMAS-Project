@@ -20,6 +20,9 @@ import java.util.Map;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 
+/**
+ * A customizable enum containing variants of supported diseases.
+ */
 public class DiseaseVariant extends CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = -5289300364081294764L;

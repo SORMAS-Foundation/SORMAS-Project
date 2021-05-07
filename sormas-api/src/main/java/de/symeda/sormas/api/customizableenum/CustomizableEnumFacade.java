@@ -31,10 +31,42 @@ public interface CustomizableEnumFacade {
 
 	List<String> getAllUuids();
 
+	/**
+	 * Retrieves the cached content of a specific enum value instance. The result is already internationalized based
+	 * on the user's language, or the server language as a fallback. If this specific value has not been requested yet,
+	 * the cache is extended with it on demand.
+	 * 
+	 * @param type
+	 *            The type for which to retrieve the enum value
+	 * @param value
+	 *            The value used as the identifier in the database, identical to {@link CustomizableEnumValueDto#getValue()}
+	 * @param <T>
+	 *            The specific extension of {@link CustomizableEnum} for type safety
+	 * @return The enum instance containing its value, internationalized caption, and optional properties
+	 */
 	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
 
+	/**
+	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
+	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
+	 * specified type and disease have not been requested yet, the cache is extended with them on demand.
+	 * 
+	 * @param type
+	 *            The type for which to retrieve the enum values
+	 * @param disease
+	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 * @param <T>
+	 *            The specific extension of {@link CustomizableEnum} for type safety
+	 * @return A list of all enum instances containing their values, internationalized captions, and optional properties
+	 */
 	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
 
+	/**
+	 * Clears the caches and reloads the customizable enum values from the database. Does not load enum values by language
+	 * or disease as those are retrieved on demand by using {@link #getEnumValue(CustomizableEnumType, String)} and
+	 * {@link #getEnumValues(CustomizableEnumType, Disease)}. Exposed to this facade to allow reloading the caches without
+	 * having to restart the server.
+	 */
 	void loadData();
 
 }

@@ -33,6 +33,7 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilter<Custo
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableEnumValue> from) {
 		return null;
 	}

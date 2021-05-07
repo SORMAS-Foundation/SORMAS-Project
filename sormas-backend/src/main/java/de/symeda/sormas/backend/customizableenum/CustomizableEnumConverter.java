@@ -23,6 +23,17 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 
+/**
+ * JPA Converter that converts a JSON String stored in the database to an instance of {@link CustomizableEnum} and vice versa.
+ * Uses the cache built in {@link CustomizableEnumFacadeEjb} to retrieve the internationalized caption based on the user's language
+ * as well as optional properties.
+ * 
+ * This class is supposed to be extended for every supported customizable enum. This allows using the specific enum type, alongside
+ * its specific converter extension, in the entities.
+ * 
+ * @param <T>
+ *            The specific extension of {@link CustomizableEnum} for type safety
+ */
 public abstract class CustomizableEnumConverter<T extends CustomizableEnum> implements AttributeConverter<T, String> {
 
 	private final Class<T> enumClass;

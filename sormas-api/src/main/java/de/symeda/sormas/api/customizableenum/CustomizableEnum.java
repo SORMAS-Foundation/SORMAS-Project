@@ -19,13 +19,29 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Base class for customizable enums. Supposed to be extended for every enum that is made customizable to ensure type safety.
+ */
 public abstract class CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = 8698428745095686559L;
 
+	/**
+	 * The enum value, identical {@link CustomizableEnumValueDto#getValue()}.
+	 */
 	private String value;
+	/**
+	 * The enum caption, internationalized according to the user language if that language is present in
+	 * {@link CustomizableEnumValueDto#getTranslations()}, otherwise identical to {@link CustomizableEnumValueDto#getCaption()}.
+	 */
 	private String caption;
 
+	/**
+	 * Sets the properties of the extending class if it has any. Otherwise, the implementation may simply contain an empty body.
+	 * 
+	 * @param properties
+	 *            A map with the property names as key and values as value as stored in the database
+	 */
 	public abstract void setProperties(Map<String, Object> properties);
 
 	public String getValue() {

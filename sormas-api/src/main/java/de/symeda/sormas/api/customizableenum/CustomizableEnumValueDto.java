@@ -21,6 +21,11 @@ import java.util.Map;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 
+/**
+ * Data Transfer Object corresponding to the CustomizableEnumValue entity, primarily used to exchange data with the mobile app.
+ * This DTO is not intended to be used in the user interface as it is not explicitly internationalized and contains a lot of unprepared
+ * information that is not needed there. The user interface should use classes extending {@link CustomizableEnum} instead.
+ */
 public class CustomizableEnumValueDto extends EntityDto {
 
 	private static final long serialVersionUID = 4360662500289404985L;

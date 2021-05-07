@@ -17,6 +17,9 @@ package de.symeda.sormas.api.customizableenum;
 
 import de.symeda.sormas.api.disease.DiseaseVariant;
 
+/**
+ * An enum storing all enumerations that support customization.
+ */
 public enum CustomizableEnumType {
 
 	DISEASE_VARIANT(DiseaseVariant.class);

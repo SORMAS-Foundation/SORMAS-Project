@@ -29,6 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 
+/**
+ * JPA Converter that converts a JSON String stored in the database to a list of {@link CustomizableEnumTranslation} which stores the
+ * caption of an individual enum value for a specific language code, and vice versa.
+ */
 public class CustomizableEnumTranslationConverter implements AttributeConverter<List<CustomizableEnumTranslation>, String> {
 
 	@Override

@@ -30,6 +30,13 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseListConverter;
 
+/**
+ * Entity that stores one individual enum value for a supported customizable enum type. This primary use of this entity is to store the
+ * values in the database, and to build the caches and corresponding {@link de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto}
+ * for data exchange. It is not meant to be referenced in other entities that contain fields that are using one of the customizable enum
+ * types. Those fields should instead reference a specific extension of {@link de.symeda.sormas.api.customizableenum.CustomizableEnum} and
+ * the corresponding extension of {@link CustomizableEnumConverter}.
+ */
 @Entity
 public class CustomizableEnumValue extends AbstractDomainObject {
 
