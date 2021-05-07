@@ -48,7 +48,7 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
-	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
 
@@ -84,4 +84,8 @@ public interface UserFacade {
 	UserSyncResult syncUser(String userUuid);
 
 	List<UserDto> getUsersWithDefaultPassword();
+
+	void enableUsers(List<String> userUuids);
+
+	void disableUsers(List<String> userUuids);
 }
