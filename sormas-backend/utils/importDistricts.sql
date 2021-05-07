@@ -30,7 +30,7 @@ CREATE TEMP TABLE tmp_district
 	Note that the user running the postgres services needs to have access rights.
 **/
 COPY tmp_district
-    FROM 'C:\Users\Public\Documents\districts.csv'
+    FROM '/home/districts.csv'
     DELIMITER ';'
     CSV HEADER;
 
@@ -93,7 +93,7 @@ FROM tmp_district AS d
 WHERE district.externalid IS NOT NULL AND district.externalid = d.externalid;
 
 /* 5. Insert new regions */
-INSERT INTO region
+INSERT INTO district
 (id, changedate, creationdate, uuid, name, epidcode, growthrate, externalid, region_id, archived)
     (SELECT nextval('entity_seq'),
             now(),
