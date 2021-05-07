@@ -66,7 +66,6 @@ public class SettingsActivity extends BaseLandingActivity {
 			return;
 		}
 		super.onBackPressed();
-		//super.onBackPressed(); <= this would be the easiest way, but before I'd need to make sure it knows where to go
 	}
 
 	@Override
