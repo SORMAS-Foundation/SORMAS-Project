@@ -44,6 +44,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -262,6 +263,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
+		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
+		long totalElementCount = count(userCriteria);
+		return new Page<>(userIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public List<UserDto> getAllAfter(Date date) {
 		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -335,7 +343,11 @@ public class UserFacadeEjb implements UserFacade {
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
 		// but not those of others
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		}
 
 		if (filter != null) {
 			/*
@@ -393,7 +405,11 @@ public class UserFacadeEjb implements UserFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> root = cq.from(User.class);
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);

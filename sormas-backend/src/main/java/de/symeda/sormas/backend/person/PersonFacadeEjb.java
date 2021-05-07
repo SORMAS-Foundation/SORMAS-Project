@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -1073,6 +1074,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
 		return persons;
+	}
+
+	public Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<PersonIndexDto> personIndexList = getIndexList(personCriteria, offset, size, sortProperties);
+		long totalElementCount = count(personCriteria);
+		return new Page<>(personIndexList, offset, size, totalElementCount);
 	}
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
