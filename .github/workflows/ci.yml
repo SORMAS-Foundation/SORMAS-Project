@@ -25,7 +25,7 @@ jobs:
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
-        if: !${{ fromJSON(env.IS_FORK) }}
+        if: ${{ fromJSON(env.IS_FORK) }}
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
-        if: !${{ fromJSON(env.IS_FORK) }}
+        if: ${{ fromJSON(env.IS_FORK) }}
         # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
         uses: actions/cache@v2
         with:
