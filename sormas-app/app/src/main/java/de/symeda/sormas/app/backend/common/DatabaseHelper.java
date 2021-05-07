@@ -2181,12 +2181,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "descriptionTranslations text," + "properties text);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariant text;");
 				getDao(Case.class).executeRaw(
-					"UPDATE cases SET diseaseVariant = (SELECT name FROM diseaseVariant WHERE diseaseVariant.id = cases.diseaseVariant_id) WHERE cases.changeDate = 0;");
+					"UPDATE cases SET diseaseVariant = UPPER(REPLACE((SELECT name FROM diseaseVariant WHERE diseaseVariant.id = cases.diseaseVariant_id), ' ', '_')) WHERE cases.changeDate = 0;");
 				getDao(Case.class).executeRaw("UPDATE cases SET diseaseVariant_id = NULL;");
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariant text;");
 				getDao(Case.class).executeRaw(
-					"UPDATE pathogenTest SET testedDiseaseVariant = (SELECT name FROM diseaseVariant WHERE diseaseVariant.id = pathogenTest.testedDiseaseVariant_id) WHERE pathogenTest.changeDate = 0;");
-				getDao(PathogenTest.class).executeRaw("UDPATE pathogenTest SET testedDiseaseVariant_id = NULL;");
+					"UPDATE pathogenTest SET testedDiseaseVariant = UPPER(REPLACE((SELECT name FROM diseaseVariant WHERE diseaseVariant.id = pathogenTest.testedDiseaseVariant_id), ' ', '_')) WHERE pathogenTest.changeDate = 0;");
+				getDao(PathogenTest.class).executeRaw("UPDATE pathogenTest SET testedDiseaseVariant_id = NULL;");
 				getDao(Case.class).executeRaw("DROP TABLE diseaseVariant;");
 
 				// ATTENTION: break should only be done after last version
