@@ -19,9 +19,9 @@ package de.symeda.sormas.api.action;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ActionCriteria extends BaseCriteria implements Serializable {
 

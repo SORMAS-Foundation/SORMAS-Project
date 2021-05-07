@@ -1,25 +1,24 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package de.symeda.sormas.backend.util;
 
-import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
@@ -33,6 +32,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
@@ -78,6 +78,10 @@ public class JurisdictionHelper {
 		if (caze.getReportingUser() != null) {
 			dto.setReportingUserUuid(caze.getReportingUser().getUuid());
 		}
+
+		dto.setResponsibleJurisdiction(
+			ResponsibleJurisdictionDto.of(caze.getResponsibleRegion(), caze.getResponsibleDistrict(), caze.getResponsibleCommunity()));
+
 		if (caze.getRegion() != null) {
 			dto.setRegionUuid(caze.getRegion().getUuid());
 		}
@@ -277,5 +281,28 @@ public class JurisdictionHelper {
 		default:
 			return JurisdictionLevel.NONE;
 		}
+	}
+
+	public static List<Region> getCaseRegions(Case caze) {
+		List<Region> regions = new ArrayList<>();
+		if (caze.getResponsibleRegion() != null) {
+			regions.add(caze.getResponsibleRegion());
+		}
+		regions.add(caze.getRegion());
+
+		return regions;
+	}
+
+	public static List<Region> getContactRegions(Contact contact) {
+		Case contactCase = contact.getCaze();
+
+		List<Region> regions = new ArrayList<>();
+		if (contact.getRegion() != null) {
+			regions.add(contact.getRegion());
+		} else {
+			regions.addAll(getCaseRegions(contactCase));
+		}
+
+		return regions;
 	}
 }

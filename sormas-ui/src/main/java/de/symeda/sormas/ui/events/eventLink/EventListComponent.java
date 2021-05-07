@@ -41,6 +41,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventListComponent extends VerticalLayout {
@@ -134,7 +135,7 @@ public class EventListComponent extends VerticalLayout {
 		componentHeader.addComponent(eventLabel);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
+			createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(clickListener);

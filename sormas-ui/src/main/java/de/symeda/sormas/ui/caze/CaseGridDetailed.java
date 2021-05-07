@@ -42,6 +42,14 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	}
 
 	@Override
+	protected Stream<String> getJurisdictionColumns() {
+		return Stream.concat(
+			super.getJurisdictionColumns(),
+			Stream
+				.of(CaseIndexDetailedDto.RESPONSIBLE_REGION, CaseIndexDetailedDto.RESPONSIBLE_DISTRICT, CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY));
+	}
+
+	@Override
 	protected Stream<String> getReinfectionColumn() {
 		return Stream.of(CaseIndexDetailedDto.RE_INFECTION);
 	}

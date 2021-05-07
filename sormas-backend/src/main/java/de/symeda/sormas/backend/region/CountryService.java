@@ -36,7 +36,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Country.DEFAULT_NAME), name.trim());
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Country.DEFAULT_NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -55,7 +55,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(Country.ISO_CODE), isoCode.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.ISO_CODE), isoCode.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -74,7 +74,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
 		Root<Country> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(Country.UNO_CODE), unoCode.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.UNO_CODE), unoCode.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

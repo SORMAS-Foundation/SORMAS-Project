@@ -434,8 +434,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new FeatureConfigurationDtoHelper().pullEntities(false);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullEntities(false);
 			new CampaignFormMetaDtoHelper().pullEntities(false);
+			new CampaignDtoHelper().pullEntities(false);
 		}
 
 		ConfigProvider.setInitialSyncRequired(false);
@@ -700,8 +700,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
 			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
 
-			new CampaignDtoHelper().pullMissing(campaignUuids);
 			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
+			new CampaignDtoHelper().pullMissing(campaignUuids);
 		}
 	}
 
