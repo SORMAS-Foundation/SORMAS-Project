@@ -54,7 +54,7 @@ public class LineListingRegionsLayout extends CssLayout {
 				captionBuilder.append(" (").append(regions.get(regionUuid).size()).append(")");
 			}
 
-			Button configButton = ButtonHelper.createButtonWithCaption("region-" + regionUuid, captionBuilder.toString(), e -> {
+			Button configButton = ButtonHelper.createButton("region-" + regionUuid, captionBuilder.toString(), e -> {
 				SormasUI.get()
 					.getNavigator()
 					.navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid + "/?disease=" + disease.getName());
