@@ -7227,4 +7227,17 @@ ALTER TABLE cases
 
 INSERT INTO schema_version (version_number, comment) VALUES (366, 'Decouple Place of stay from the responsible jurisdiction from cases #3254');
 
+-- 2021-05-07 Move new enum values to screeningType #5063
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_CONDUCTED_TEST'
+WHERE caseidentificationsource = 'SELF_CONDUCTED_TEST';
+
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_ARRANGED_TEST'
+WHERE caseidentificationsource = 'SELF_ARRANGED_TEST';
+
+INSERT INTO schema_version (version_number, comment) VALUES (367, 'Move new enum values to screeningType #5063');
+
 -- *** Insert new sql commands BEFORE this line ***
