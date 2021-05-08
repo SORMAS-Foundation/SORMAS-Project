@@ -16,27 +16,33 @@
 package de.symeda.sormas.backend.share;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
@@ -104,11 +110,24 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		ensurePersisted(shareInfo);
 	}
 
-	public List<ExternalShareInfoCountAndLatestDate> getCaseShareCountAndLatestDate(List<Long> caseIds) {
+	public List<ExternalShareInfoCountAndLatestDate> getCaseShareCountAndLatestDate(List<String> caseUuids) {
+		return getShareCountAndLatestDate(caseUuids, ExternalShareInfo.CAZE);
+	}
+
+	public List<ExternalShareInfoCountAndLatestDate> getEventShareCountAndLatestDate(List<String> eventUuids) {
+		return getShareCountAndLatestDate(eventUuids, ExternalShareInfo.EVENT);
+	}
+
+	public List<ExternalShareInfoCountAndLatestDate> getShareCountAndLatestDate(List<String> uuids, String associatedObjectName) {
+		if (uuids.size() == 0) {
+			return Collections.emptyList();
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ExternalShareInfoCountAndLatestDate> cq = cb.createQuery(ExternalShareInfoCountAndLatestDate.class);
 		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
-		Path<String> cazeId = root.join(ExternalShareInfo.CAZE, JoinType.LEFT).get(Case.ID);
+		Path<String> associatedObjectId = root.join(associatedObjectName, JoinType.LEFT).get(AbstractDomainObject.ID);
+		Path<String> associatedObjectUuid = root.join(associatedObjectName, JoinType.LEFT).get(AbstractDomainObject.UUID);
 		Path<String> creationDate = root.get(ExternalShareInfo.CREATION_DATE);
 
 		Subquery<String> latestShareInfoSubQuery = cq.subquery(String.class);
@@ -118,21 +137,86 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 			cb.function(
 				ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION,
 				String.class,
-				latestShareInfoRoot.get(ExternalShareInfo.CAZE),
+				latestShareInfoRoot.get(associatedObjectName),
 				cb.max(latestShareInfoRoot.get(ExternalShareInfo.CREATION_DATE))));
-		latestShareInfoSubQuery.groupBy(latestShareInfoRoot.get(ExternalShareInfo.CAZE));
+		latestShareInfoSubQuery.groupBy(latestShareInfoRoot.get(associatedObjectName));
 
 		Subquery<Long> countSubQuery = cq.subquery(Long.class);
 		Root<ExternalShareInfo> countRoot = countSubQuery.from(ExternalShareInfo.class);
 		countSubQuery.select(cb.count(countRoot.get(ExternalShareInfo.ID)));
-		countSubQuery.where(cb.equal(countRoot.get(ExternalShareInfo.CAZE), cazeId));
-		countSubQuery.groupBy(countRoot.get(ExternalShareInfo.CAZE));
+		countSubQuery.where(cb.equal(countRoot.get(associatedObjectName), associatedObjectId));
+		countSubQuery.groupBy(countRoot.get(associatedObjectName));
 
-		cq.multiselect(cazeId, countSubQuery, creationDate, root.get(ExternalShareInfo.STATUS));
+		cq.multiselect(associatedObjectUuid, countSubQuery, creationDate, root.get(ExternalShareInfo.STATUS));
 		cq.where(
-			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, cazeId, creationDate).in(latestShareInfoSubQuery),
-			cazeId.in(caseIds));
+			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, associatedObjectId, creationDate).in(latestShareInfoSubQuery),
+			associatedObjectUuid.in(uuids));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate buildShareCriteriaFilter(
+		ExternalShareCriteria criteria,
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		From<?, ?> from,
+		String associatedObjectName,
+		Function<Expression<Date>, Predicate> changeDatePredicateBuilder) {
+
+		Predicate filter = null;
+
+		if (Boolean.TRUE.equals(criteria.getOnlyEntitiesNotSharedWithExternalSurvTool())) {
+			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
+			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
+			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(associatedObjectName), from.get(AbstractDomainObject.ID)));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(cb.exists(survToolShareSubQuery)));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getOnlyEntitiesSharedWithExternalSurvTool())) {
+			Subquery<Long> survToolShareSubQuery = cq.subquery(Long.class);
+			Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+			survToolShareSubQuery.select(survToolShareRoot.get(ExternalShareInfo.ID));
+			survToolShareSubQuery.where(cb.equal(survToolShareRoot.join(associatedObjectName), from.get(AbstractDomainObject.ID)));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(survToolShareSubQuery));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool())) {
+			Predicate changedSinceLastShareFilter =
+				buildLatestSurvToolShareDateFilter(cq, cb, from, associatedObjectName, changeDatePredicateBuilder);
+
+			filter = CriteriaBuilderHelper.and(cb, filter, changedSinceLastShareFilter);
+		}
+
+		return filter;
+	}
+
+	public Predicate buildLatestSurvToolShareDateFilter(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		From<?, ?> from,
+		String associatedObjectName,
+		Function<Expression<Date>, Predicate> shareDatePredicateBuilder) {
+
+		Subquery<Timestamp> survToolShareSubQuery = cq.subquery(Timestamp.class);
+		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+		Join<ExternalShareInfo, ?> associatedObject = survToolShareRoot.join(associatedObjectName, JoinType.LEFT);
+		@SuppressWarnings({
+			"unchecked",
+			"rawtypes" })
+		Expression<Date> latestShareDate =
+			// double conversion because hibernate doesn't know the `max` function for timestamps
+			(Expression<Date>) ((Expression) cb.max(survToolShareRoot.get(ExternalShareInfo.CREATION_DATE)));
+
+		Path<Timestamp> associatedObjectId = associatedObject.get(AbstractDomainObject.ID);
+
+		survToolShareSubQuery.select(associatedObjectId);
+		survToolShareSubQuery.where(cb.equal(associatedObject, from.get(AbstractDomainObject.ID)));
+		survToolShareSubQuery.groupBy(associatedObjectId);
+		survToolShareSubQuery.having(shareDatePredicateBuilder.apply(latestShareDate));
+
+		return cb.exists(survToolShareSubQuery);
 	}
 }

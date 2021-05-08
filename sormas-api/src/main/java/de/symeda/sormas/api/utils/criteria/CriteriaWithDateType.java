@@ -13,9 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.utils.criteria;
 
-public interface CaseCriteriaDateType {
+import java.util.List;
 
-	String name();
+public abstract class CriteriaWithDateType extends BaseCriteria {
+
+	private static final long serialVersionUID = -1426212155238381380L;
+
+	private final Class<? extends CriteriaDateType> dateTypeCalss;
+
+	public CriteriaWithDateType(Class<? extends CriteriaDateType> dateTypeCalss) {
+		this.dateTypeCalss = dateTypeCalss;
+	}
+
+	@Override
+	protected Object parseUrlParam(Class<?> type, List<String> fieldParams) throws InstantiationException, IllegalAccessException {
+		if (CriteriaDateType.class.isAssignableFrom(type)) {
+			return CriteriaDateTypeHelper.valueOf(dateTypeCalss, fieldParams.get(0));
+		}
+
+		return super.parseUrlParam(type, fieldParams);
+	}
 }

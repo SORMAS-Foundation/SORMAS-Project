@@ -1,11 +1,9 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class PersonCriteria extends BaseCriteria implements Cloneable {
 

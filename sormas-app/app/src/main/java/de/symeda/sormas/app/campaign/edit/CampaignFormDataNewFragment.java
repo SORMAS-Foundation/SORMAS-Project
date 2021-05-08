@@ -26,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,13 +51,17 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
-import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.createControlCheckBoxField;
-import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.createControlTextEditField;
-import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.getOrCreateCampaignFormDataEntry;
-import static de.symeda.sormas.app.campaign.edit.CampaignFormDataEditUtils.setVisibilityDependency;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlCheckBoxField;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlTextEditField;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserLanguageCaption;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleDependingOn;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleExpression;
 
 public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampaignDataNewLayoutBinding, CampaignFormData, CampaignFormData> {
 
+    private final ExpressionParser expressionParser = new SpelExpressionParser();
     private CampaignFormData record;
     private List<Item> initialCampaigns;
     private List<Item> initialAreas;
@@ -77,6 +84,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
         final List<CampaignFormDataEntry> formValues = record.getFormValues();
         final Map<String, ControlPropertyField> fieldMap = new HashMap<>();
+        final Map<CampaignFormElement, ControlPropertyField> expressionMap = new HashMap<>();
 
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
@@ -84,9 +92,9 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                 ControlPropertyField dynamicField;
                 if (type == CampaignFormElementType.YES_NO) {
-                    dynamicField = createControlCheckBoxField(campaignFormElement, requireContext());
+                    dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                 } else {
-                    dynamicField = createControlTextEditField(campaignFormElement, requireContext());
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                 }
                 fieldMap.put(campaignFormElement.getId(), dynamicField);
                 dynamicField.setShowCaption(true);
@@ -95,22 +103,25 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                 dynamicField.addValueChangedListener(field -> {
                     final CampaignFormDataEntry campaignFormDataEntry = getOrCreateCampaignFormDataEntry(formValues, campaignFormElement);
                     campaignFormDataEntry.setValue(field.getValue());
+                    if (campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) {
+                        expressionMap.forEach((formElement, controlPropertyField) ->
+                                handleExpression(expressionParser, formValues, CampaignFormElementType.fromString(formElement.getType()), controlPropertyField, formElement.getExpression()));
+                    }
                 });
                 formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), null));
 
-                final String dependingOn = campaignFormElement.getDependingOn();
-                final String[] dependingOnValues = campaignFormElement.getDependingOnValues();
-                if (dependingOn != null && dependingOnValues != null) {
-                    ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
-                    setVisibilityDependency(dynamicField, dependingOnValues, controlPropertyField.getValue());
-                    final ControlPropertyField finalDynamicField = dynamicField;
-                    controlPropertyField.addValueChangedListener(field -> setVisibilityDependency(finalDynamicField, dependingOnValues, field.getValue()));
+                handleDependingOn(fieldMap, campaignFormElement, dynamicField);
+
+                final String expressionString = campaignFormElement.getExpression();
+                if (expressionString != null) {
+                    handleExpression(expressionParser, formValues, type, dynamicField, expressionString);
+                    expressionMap.put(campaignFormElement, dynamicField);
                 }
             } else if (type == CampaignFormElementType.SECTION) {
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {
                 TextView textView = new TextView(requireContext());
-                TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
+                TextViewBindingAdapters.setHtmlValue(textView, getUserLanguageCaption(getUserTranslations(campaignFormMeta), campaignFormElement));
                 dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             }
         }

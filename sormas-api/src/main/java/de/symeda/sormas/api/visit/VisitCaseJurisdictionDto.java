@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.visit;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 
 public class VisitCaseJurisdictionDto extends CaseJurisdictionDto {
 
@@ -26,13 +27,23 @@ public class VisitCaseJurisdictionDto extends CaseJurisdictionDto {
 	public VisitCaseJurisdictionDto(
 		long visitId,
 		String reportingUserUuid,
+		String responsibleRegionUuid,
+		String responsibleDistrictUid,
+		String responsibleCommunityUid,
 		String regionUuid,
 		String districtUuid,
 		String communityUuid,
 		String healthFacilityUuid,
 		String pointOfEntryUuid) {
 
-		super(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		super(
+			reportingUserUuid,
+			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUid, responsibleCommunityUid),
+			regionUuid,
+			districtUuid,
+			communityUuid,
+			healthFacilityUuid,
+			pointOfEntryUuid);
 		this.visitId = visitId;
 	}
 

@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -29,12 +30,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
@@ -47,23 +52,13 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		super(UserDto.class);
 		setSizeFull();
 
-		setSelectionMode(SelectionMode.NONE);
-
-		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getUserFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> {
-				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
-			});
-		setDataProvider(dataProvider);
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(getCriteria());
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(getCriteria());
+		}
 
 		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
 
@@ -90,7 +85,44 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		}
 	}
 
+	public void setLazyDataProvider() {
+		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getUserFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
+			});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+
+	public void setEagerDataProvider() {
+		ListDataProvider<UserDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
+	}
+
 	public void reload() {
+
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
+		}
+
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 

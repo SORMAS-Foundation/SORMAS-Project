@@ -276,33 +276,28 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			Region recipientRegion = ado.getContact().getRegion() != null
-				? ado.getContact().getRegion()
-				: ado.getContact().getCaze() != null ? ado.getContact().getCaze().getRegion() : null;
-			if (recipientRegion != null) {
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-					recipientRegion,
-					UserRole.SURVEILLANCE_SUPERVISOR,
-					UserRole.CASE_SUPERVISOR,
-					UserRole.CONTACT_SUPERVISOR);
-				for (User recipient : messageRecipients) {
-					try {
-						messagingService.sendMessage(
-							recipient,
-							MessageSubject.VISIT_COMPLETED,
-							String.format(
-								I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
-								DataHelper.getShortUuid(ado.getContact().getUuid()),
-								DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
-							MessageType.EMAIL,
-							MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(
-							String.format(
-								"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								recipient.getUuid()));
-					}
+			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+				JurisdictionHelper.getContactRegions(ado.getContact()),
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(
+						recipient,
+						MessageSubject.VISIT_COMPLETED,
+						String.format(
+							I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
+							DataHelper.getShortUuid(ado.getContact().getUuid()),
+							DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
+						MessageType.EMAIL,
+						MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(
+						String.format(
+							"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							recipient.getUuid()));
 				}
 			}
 		}
@@ -409,12 +404,15 @@ public class TaskFacadeEjb implements TaskFacade {
 				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
 				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
 				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY),
-				joins.getCaseReportingUser().get(User.UUID), joins.getCaseRegion().get(Region.UUID), joins.getCaseDistrict().get(Region.UUID),
-				joins.getCaseCommunity().get(Community.UUID), joins.getCaseFacility().get(Community.UUID), joins.getCasePointOfEntry().get(Community.UUID),
-				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), 
-				joins.getContactCommunity().get(Community.UUID), joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), 
-				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
-				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
+				joins.getCaseReportingUser().get(User.UUID),
+				joins.getCaseResponsibleRegion().get(Region.UUID), joins.getCaseResponsibleDistrict().get(Region.UUID), joins.getCaseResponsibleCommunity().get(Community.UUID),
+				joins.getCaseRegion().get(Region.UUID), joins.getCaseDistrict().get(Region.UUID), joins.getCaseCommunity().get(Community.UUID),
+				joins.getCaseFacility().get(Community.UUID), joins.getCasePointOfEntry().get(Community.UUID),
+				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), joins.getContactCommunity().get(Community.UUID),
+				joins.getContactCaseReportingUser().get(User.UUID),
+				joins.getContactCaseResponsibleRegion().get(Region.UUID), joins.getContactCaseResponsibleDistrict().get(Region.UUID), joins.getContactCaseResponsibleCommunity().get(Community.UUID),
+				joins.getContactCaseRegion().get(User.UUID), joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID),
+				joins.getContactCaseHealthFacility().get(User.UUID), joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
 				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
 				region, district, community
 		);

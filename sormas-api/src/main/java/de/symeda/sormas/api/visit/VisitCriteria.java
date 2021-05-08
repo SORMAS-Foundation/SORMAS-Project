@@ -2,10 +2,10 @@ package de.symeda.sormas.api.visit;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class VisitCriteria extends BaseCriteria implements Serializable {
 

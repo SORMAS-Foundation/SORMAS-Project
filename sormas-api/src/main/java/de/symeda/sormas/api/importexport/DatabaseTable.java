@@ -39,6 +39,7 @@ public enum DatabaseTable {
 	VISITS(DatabaseTableType.SORMAS, CONTACTS, "visits"),
 	VISIT_SYMPTOMS(DatabaseTableType.SORMAS, VISITS, "visit_symptoms"),
 	EVENTS(DatabaseTableType.SORMAS, null, "events"),
+	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups"),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
 	SAMPLES(DatabaseTableType.SORMAS, null, "samples"),
 	SAMPLETESTS(DatabaseTableType.SORMAS, SAMPLES, "sample_tests"),
