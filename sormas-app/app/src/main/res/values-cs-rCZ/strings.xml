@@ -376,7 +376,7 @@
     <string name="heading_campaign_form_data_read">Číst data kampaně</string>
     <string name="heading_campaign_form_data_summary">Shrnutí dat kampaně</string>
     <string name="heading_campaign_form_meta_select">Vybrat formulář kampaně</string>
-    <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_case_place_of_stay">Místo pobytu</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
