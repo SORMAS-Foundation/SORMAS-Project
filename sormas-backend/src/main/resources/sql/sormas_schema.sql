@@ -7266,6 +7266,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (370, 'Add sample ma
 ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
 ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (368, 'Add archived to task #3430');
+INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
 
 -- *** Insert new sql commands BEFORE this line ***
