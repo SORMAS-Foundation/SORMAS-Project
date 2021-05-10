@@ -58,6 +58,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -408,4 +409,23 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public Predicate isInJurisdictionOrOwned(
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		Root<EventParticipant> eventParticipantRoot,
+		EventParticipantJoins joins) {
+
+		final User currentUser = this.getCurrentUser();
+
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getEventParticipantReportingUser()),
+			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate jurisdictionPredicate =
+			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+	}
+
 }
