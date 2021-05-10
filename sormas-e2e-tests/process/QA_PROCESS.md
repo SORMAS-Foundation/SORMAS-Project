@@ -52,6 +52,6 @@
 
 ## 5. Everything is right, and the pull request is approved
 
- The developer will use the Squash and merge ->
+ If the developer has 2 approves he  will use the Squash and merge ->
 
    ![config](./merge.png)
