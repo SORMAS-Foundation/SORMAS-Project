@@ -311,6 +311,7 @@ public interface Strings {
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
+	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
@@ -336,7 +337,6 @@ public interface Strings {
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
-	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";

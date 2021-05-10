@@ -44,7 +44,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		casesPlacedInQuarantineByDate = new DiseaseSummaryElementComponent(Strings.headingCasesPlacedInQuarantine);
 		addComponent(casesPlacedInQuarantineByDate);
 
-		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingContactsConvertedToCase);
+		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingCasesResultingFromContacts);
 		addComponent(contactsConvertedToCase);
 
 		addStyleName(CssStyles.VSPACE_TOP_4);
