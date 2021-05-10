@@ -217,12 +217,21 @@ public class TaskController {
 		}
 
 		// Check if tasks with multiple districts have been selected
+		// In that situation we won't allow editing them
 		List<String> taskUuids = selectedTasks.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
-		DistrictReferenceDto district = FacadeProvider.getTaskFacade().getSharedDistrictByTaskUuids(taskUuids);
+		List<DistrictReferenceDto> districts = FacadeProvider.getTaskFacade().getDistrictsByTaskUuids(taskUuids, 2L);
+		if (districts.size() == 2) {
+			new Notification(
+				I18nProperties.getString(Strings.headingUnavailableTaskEdition),
+				I18nProperties.getString(Strings.messageUnavailableTaskEditionDueToDifferentDistricts),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
 
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
 		TaskBulkEditData bulkEditData = new TaskBulkEditData();
-		BulkTaskDataForm form = new BulkTaskDataForm(district);
+		BulkTaskDataForm form = new BulkTaskDataForm(districts.stream().findFirst().orElse(null));
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 

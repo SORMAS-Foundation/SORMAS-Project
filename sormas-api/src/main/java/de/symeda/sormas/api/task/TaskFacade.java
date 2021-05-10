@@ -72,9 +72,5 @@ public interface TaskFacade {
 
 	void updateArchived(List<String> taskUuids, boolean archived);
 
-	/**
-	 * Get the common district between all the given task uuids.
-	 * If these tasks are related to several districts, it will return null.
-	 */
-	DistrictReferenceDto getSharedDistrictByTaskUuids(List<String> taskUuids);
+	List<DistrictReferenceDto> getDistrictsByTaskUuids(List<String> taskUuids, Long limit);
 }

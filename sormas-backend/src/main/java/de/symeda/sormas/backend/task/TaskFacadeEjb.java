@@ -772,10 +772,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public DistrictReferenceDto getSharedDistrictByTaskUuids(List<String> taskUuids) {
+	public List<DistrictReferenceDto> getDistrictsByTaskUuids(List<String> taskUuids, Long limit) {
 		Set<String> districtUuids = new HashSet<>();
 		IterableHelper.executeBatched(taskUuids, ModelConstants.PARAMETER_LIMIT, batchedTaskUuids -> {
-			if (districtUuids.size() > 1) {
+			if (districtUuids.size() >= limit) {
 				return;
 			}
 
@@ -790,22 +790,27 @@ public class TaskFacadeEjb implements TaskFacade {
 			Join<Event, Location> eventLocationJoin = eventJoin.join(Event.EVENT_LOCATION, JoinType.LEFT);
 			Join<Location, District> eventDistrictJoin = eventLocationJoin.join(Location.DISTRICT, JoinType.LEFT);
 
-			cq.where(from.get(Task.UUID).in(taskUuids));
+			cq.where(
+				cb.and(
+					from.get(Task.UUID).in(taskUuids),
+					cb.or(
+						caseDistrictJoin.get(District.UUID).isNotNull(),
+						contactDistrictJoin.get(District.UUID).isNotNull(),
+						eventDistrictJoin.get(District.UUID).isNotNull())));
 			cq.select(
 				cb.coalesce(
 					cb.coalesce(caseDistrictJoin.get(District.UUID), contactDistrictJoin.get(District.UUID)),
 					eventDistrictJoin.get(District.UUID)))
 				.distinct(true);
 
-			List<String> batchedDistrictUuids = em.createQuery(cq).setMaxResults(2).getResultList();
+			List<String> batchedDistrictUuids = em.createQuery(cq).setMaxResults(limit.intValue()).getResultList();
 			districtUuids.addAll(batchedDistrictUuids);
 		});
 
-		if (districtUuids.size() == 1) {
-			return districtUuids.stream().findFirst().map(DistrictReferenceDto::new).orElse(null);
-		}
-
-		return null;
+		return districtUuids.stream()
+			.map(DistrictReferenceDto::new)
+			.limit(limit)
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean

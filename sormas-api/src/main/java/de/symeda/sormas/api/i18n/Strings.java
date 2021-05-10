@@ -546,6 +546,7 @@ public interface Strings {
 	String headingTransferCase = "headingTransferCase";
 	String headingTreatments = "headingTreatments";
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
+	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
@@ -948,6 +949,7 @@ public interface Strings {
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
+	String messageUnavailableTaskEditionDueToDifferentDistricts = "messageUnavailableTaskEditionDueToDifferentDistricts";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	String messageUpdateCaseWithNewDiseaseVariant = "messageUpdateCaseWithNewDiseaseVariant";
 	String messageUploadSuccessful = "messageUploadSuccessful";
