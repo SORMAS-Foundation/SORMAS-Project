@@ -160,6 +160,8 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 					save(pathogenTestToSave);
 				});
 				dlg.show();
+			} else {
+				save(pathogenTestToSave);
 			}
 		}
 	}
