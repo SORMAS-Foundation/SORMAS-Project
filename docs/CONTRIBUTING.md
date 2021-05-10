@@ -55,11 +55,11 @@ These types of issue cover everything that involves adding new features to SORMA
 
 ### Task
 
-Something to be done but not directly changes anything the product. Examples: Preparing coming up features/changes, change processes on Github etc.
+A task that needs to be done but does not directly change anything about the product. This could for example be the preparation of an upcoming feature/change, optimization of processes on GitHub, or update of one of the guides or Wiki articles in this repository.
 
-* **Problem Description:** Document what problem exists to be solved/changed.
-* **Proposed Change:** Describe in as much detail as possible how you would like to change something.
-* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be implemented for any reason. This is generally *optional* but might be requested at a later point in time.
+* **Problem Description:** Please describe the requirement or problem that is supposed to be solved.
+* **Proposed Solution:** Describe in as much detail how the proposed solution should look like and what should be done in order to achieve it.
+* **Possible Alternatives:** If possible, provide alternative solutions in case your proposed change can not be realized for any reason. This is generally *optional* but might be requested at a later point in time.
 * **Additional Information:** If there is anything else you want to add to the task, you can put it here. *Optional*.
 
 
