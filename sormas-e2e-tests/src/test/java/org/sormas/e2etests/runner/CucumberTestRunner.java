@@ -31,8 +31,7 @@ import org.junit.runner.RunWith;
     cucumberOptions =
         @CucumberOptions(
             features = "src/test/resources/features",
-            glue = {"com.sormas.steps", "alluresteplogger"},
-            tags = {"@now"},
+            glue = {"org.sormas.e2etests.steps", "alluresteplogger"},
             plugin = {
               "io.qameta.allure.cucumber4jvm.AllureCucumber4Jvm",
               "pretty",

@@ -1,7 +1,6 @@
 @Sanity @Case
 Feature: Create cases
 
-  @now
   Scenario: Create and check a new case data
     Given I log in with the user
       And I click on the Cases button from navbar
