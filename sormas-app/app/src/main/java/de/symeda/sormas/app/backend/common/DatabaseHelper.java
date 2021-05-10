@@ -1449,7 +1449,46 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				String queryColumns = TextUtils.join(",", columnNames);
 
 				getDao(Event.class).executeRaw("ALTER TABLE events RENAME TO tmp_events;");
-				TableUtils.createTable(connectionSource, Event.class);
+
+				getDao(Event.class).executeRaw(
+					"CREATE TABLE events ("
+					+ "		disease VARCHAR,"
+					+ "		diseaseDetails VARCHAR,"
+					+ "		endDate BIGINT,"
+					+ "		eventDesc VARCHAR,"
+					+ "		eventLocation_id BIGINT,"
+					+ "		eventStatus VARCHAR,"
+					+ "		eventType VARCHAR,"
+					+ "		externalId VARCHAR,"
+					+ "		nosocomial VARCHAR,"
+					+ "		reportDateTime BIGINT,"
+					+ "		reportLat DOUBLE PRECISION,"
+					+ "		reportLatLonAccuracy FLOAT,"
+					+ "		reportLon DOUBLE PRECISION,"
+					+ "		reportingUser_id BIGINT,"
+					+ "		srcEmail VARCHAR,"
+					+ "		srcFirstName VARCHAR,"
+					+ "		srcLastName VARCHAR,"
+					+ "		srcMediaDetails VARCHAR,"
+					+ "		srcMediaName VARCHAR,"
+					+ "		srcMediaWebsite VARCHAR,"
+					+ "		srcTelNo VARCHAR,"
+					+ "		srcType VARCHAR,"
+					+ "		startDate BIGINT,"
+					+ "		surveillanceOfficer_id BIGINT,"
+					+ "		typeOfPlace VARCHAR,"
+					+ "		typeOfPlaceText VARCHAR,"
+					+ "		changeDate BIGINT NOT NULL,"
+					+ "		creationDate BIGINT NOT NULL,"
+					+ "		id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "		lastOpenedDate BIGINT,"
+					+ "		localChangeDate BIGINT NOT NULL,"
+					+ "		modified SMALLINT,"
+					+ "		snapshot SMALLINT,"
+					+ "		uuid VARCHAR NOT NULL,"
+					+ "		UNIQUE (snapshot ASC, uuid ASC)"
+					+ ");"
+				);
 
 				db.execSQL("INSERT INTO events (" + queryColumns.replace("eventDate", "startDate") + ") SELECT " + queryColumns + " FROM tmp_events");
 				db.execSQL("DROP TABLE tmp_events;");
