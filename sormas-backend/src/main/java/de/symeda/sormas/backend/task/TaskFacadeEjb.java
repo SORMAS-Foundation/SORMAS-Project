@@ -703,12 +703,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						: String.format(
 							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
 							task.getTaskType().toString(),
-							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
-
-					String associatedEntityLinkMessagePart = getAssociatedEntityLinkMessagePart(context, associatedEntity);
-					if (associatedEntityLinkMessagePart != null) {
-						content += "\n" + associatedEntityLinkMessagePart;
-					}
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
@@ -739,12 +734,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						: String.format(
 							I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC),
 							task.getTaskType().toString(),
-							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
-
-					String associatedEntityLinkMessagePart = getAssociatedEntityLinkMessagePart(context, associatedEntity);
-					if (associatedEntityLinkMessagePart != null) {
-						content += "\n" + associatedEntityLinkMessagePart;
-					}
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
@@ -776,20 +766,29 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 	}
 
-	private String getAssociatedEntityLinkMessagePart(TaskContext taskContext, AbstractDomainObject entity) {
+	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
+		StringBuilder contentBuilder = new StringBuilder().append(taskContext);
 		if (taskContext.getUrlPattern() == null || entity == null) {
-			return null;
+			return contentBuilder.toString();
 		}
+
+		contentBuilder.append(" ").append(DataHelper.getShortUuid(entity.getUuid()));
 
 		String url = getUiUrl(taskContext, entity.getUuid());
-		if (url == null) {
-			return null;
+		if (url != null) {
+			String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
+			contentBuilder.append("\n").append(String.format(I18nProperties.getString(associatedEntityLinkMessage), url));
 		}
 
-		String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
-		return String.format(I18nProperties.getString(associatedEntityLinkMessage), url);
+		return contentBuilder.toString();
 	}
 
+	/**
+	 * Return the url of the related entity.
+	 * The url is bound to the Sormas UI made with Vaadin.
+	 * This function will need to be modified if the UI will have URL modifications
+	 * or in case the UI app is replaced by another one.
+	 */
 	private String getUiUrl(TaskContext taskContext, String uuid) {
 		if (taskContext.getUrlPattern() == null || uuid == null) {
 			return null;
