@@ -30,8 +30,10 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -60,7 +62,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -93,6 +97,9 @@ public class UsersView extends AbstractView {
 
 	private RowCount rowsCount;
 
+	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
+
 	public UsersView() {
 		super(VIEW_NAME);
 
@@ -102,6 +109,7 @@ public class UsersView extends AbstractView {
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createActionsBar());
 
 		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getItemCount());
 		gridLayout.addComponent(rowsCount);
@@ -150,6 +158,34 @@ public class UsersView extends AbstractView {
 
 			addHeaderComponent(syncButton);
 		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
+		}
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -158,7 +194,6 @@ public class UsersView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		activeFilter = new ComboBox();
 		activeFilter.setId(UserDto.ACTIVE);
@@ -233,6 +268,39 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(searchField);
 
 		return filterLayout;
+	}
+
+	public HorizontalLayout createActionsBar() {
+
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setMargin(false);
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
+						ControllerProvider.getUserController().enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
+						ControllerProvider.getUserController().disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true));
+
+				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+		}
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
+		return statusFilterLayout;
 	}
 
 	@Override

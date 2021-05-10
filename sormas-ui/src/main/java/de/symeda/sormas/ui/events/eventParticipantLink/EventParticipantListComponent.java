@@ -14,6 +14,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantListComponent extends VerticalLayout {
@@ -46,7 +47,7 @@ public class EventParticipantListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 		if (!list.isEmpty()) {
-			final Button seeEvents = new Button(I18nProperties.getCaption(Captions.personLinkToEvents));
+			final Button seeEvents = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToEvents));
 			CssStyles.style(seeEvents, ValoTheme.BUTTON_PRIMARY);
 			seeEvents.addClickListener(clickListener);
 			addComponent(seeEvents);

@@ -17,6 +17,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -27,7 +28,8 @@ public class SmsListComponent extends VerticalLayout {
 	private boolean hasPhoneNumber;
 
 	public SmsListComponent(CaseReferenceDto caseRef, PersonReferenceDto personRef) {
-		long missingPhoneNumbers = FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
+		long missingPhoneNumbers =
+			FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
 		hasPhoneNumber = missingPhoneNumbers == 0;
 		createSmsListComponent(new SmsList(personRef, hasPhoneNumber), e -> {
 			final SmsComponent smsComponent = new SmsComponent(missingPhoneNumbers);
@@ -66,7 +68,7 @@ public class SmsListComponent extends VerticalLayout {
 		smsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(smsHeader);
 
-		sendSmsButton = new Button(I18nProperties.getCaption(Captions.messagesSendSMS));
+		sendSmsButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.messagesSendSMS));
 		CssStyles.style(sendSmsButton, ValoTheme.BUTTON_PRIMARY);
 		sendSmsButton.addClickListener(clickListener);
 		componentHeader.addComponent(sendSmsButton);
