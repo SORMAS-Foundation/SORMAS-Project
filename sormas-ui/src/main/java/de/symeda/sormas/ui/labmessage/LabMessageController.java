@@ -18,10 +18,9 @@
 
 package de.symeda.sormas.ui.labmessage;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -76,10 +75,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -927,7 +924,7 @@ public class LabMessageController {
 		return buttonsPanel;
 	}
 
-	public byte[] convertToPDF(String labMessageUuid) throws IOException {
+	public Optional<byte[]> convertToPDF(String labMessageUuid) {
 
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
@@ -935,23 +932,23 @@ public class LabMessageController {
 			ExternalMessageResult<byte[]> result = FacadeProvider.getExternalLabResultsFacade().convertToPDF(labMessageDto);
 
 			if (result.isSuccess()) {
-				return result.getValue();
+				return Optional.of(result.getValue());
 			} else {
 				new Notification(
-						I18nProperties.getString("error downloading the lab message"),
-						I18nProperties.getString("could not obtain the lab message HTML"),
+						I18nProperties.getString(Strings.headingLabMessageDownload),
+						I18nProperties.getString(Strings.messageLabMessageDownloadConvertFailed),
 						Notification.Type.ERROR_MESSAGE,
 						false).show(Page.getCurrent());
 			}
 
 		} catch (NamingException e) {
 			new Notification(
-					I18nProperties.getString("error downloading the lab message"),
-					I18nProperties.getString("something went wrong when converting to HTML"),
+					I18nProperties.getString(Strings.headingLabMessageDownload),
+					I18nProperties.getString(Strings.messageLabMessageDownloadConvertFailed),
 					Notification.Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 			logger.error(e.getMessage());
 		}
-		return null;
+		return Optional.empty();
 	}
 }

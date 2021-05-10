@@ -458,6 +458,7 @@ public interface Strings {
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingLabMessageDownload = "headingLabMessageDownload";
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
 	String headingLaboratorySample = "headingLaboratorySample";
@@ -850,6 +851,8 @@ public interface Strings {
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
+	String messageLabMessageDownloadConvertFailed = "messageLabMessageDownloadConvertFailed";
+	String messageLabMessageDownloadFailed = "messageLabMessageDownloadFailed";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";

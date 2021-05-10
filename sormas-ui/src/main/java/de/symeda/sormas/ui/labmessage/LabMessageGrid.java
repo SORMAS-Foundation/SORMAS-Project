@@ -19,7 +19,6 @@
 package de.symeda.sormas.ui.labmessage;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -28,12 +27,10 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -43,6 +40,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -60,6 +58,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private static final String COLUMN_DOWNLOAD = "download";
 	private static final String COLUMN_PROCESS = "process";
 	private static final String SHOW_MESSAGE = "show_message";
+
+	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
 
 	@SuppressWarnings("unchecked")
 	public LabMessageGrid(LabMessageCriteria criteria) {
@@ -167,18 +167,9 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private Button buildDownloadButton(LabMessageIndexDto labMessage) {
 		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
 
-		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
-			try {
-				return new ByteArrayInputStream(ControllerProvider.getLabMessageController().convertToPDF(labMessage.getUuid()));
-			} catch (IllegalArgumentException | IOException e) {
-				new Notification(
-						"error downloading PDF",
-						e.getMessage(),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-				return null;
-			}
-		}, "pdf.pdf");
+		final String fileName = String.format(PDF_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> ControllerProvider.getLabMessageController().convertToPDF(labMessage.getUuid()).map(ByteArrayInputStream::new).orElse(null), fileName);
 		streamResource.setMIMEType("text/pdf");
 
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
