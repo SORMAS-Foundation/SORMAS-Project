@@ -93,7 +93,7 @@ public class DocumentTemplatesGrid extends Grid<String> {
 	}
 
 	private Button buildViewDocumentButton(String templateFileName) {
-		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
+		Button viewButton = ButtonHelper.createIconButton(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			try {

@@ -51,9 +51,11 @@ public interface Captions {
 	String actionDearchive = "actionDearchive";
 	String actionDelete = "actionDelete";
 	String actionDeselectAll = "actionDeselectAll";
+	String actionDisable = "actionDisable";
 	String actionDiscard = "actionDiscard";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
+	String actionEnable = "actionEnable";
 	String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	String actionGenerate = "actionGenerate";
 	String actionGenerateNewPassword = "actionGenerateNewPassword";
@@ -748,6 +750,7 @@ public interface Captions {
 	String dashboardLow = "dashboardLow";
 	String dashboardMapKey = "dashboardMapKey";
 	String dashboardMapLayers = "dashboardMapLayers";
+	String dashboardMapShowEpiSituation = "dashboardMapShowEpiSituation";
 	String dashboardMissed = "dashboardMissed";
 	String dashboardNegative = "dashboardNegative";
 	String dashboardNeverVisited = "dashboardNeverVisited";

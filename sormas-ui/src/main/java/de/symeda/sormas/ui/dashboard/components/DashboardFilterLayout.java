@@ -388,7 +388,7 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private Button createAndAddDateFilterButton(String id, String caption, Set<Button> buttonSet) {
-		Button button = ButtonHelper.createButtonWithCaption(id, caption, e -> {
+		Button button = ButtonHelper.createButton(id, caption, e -> {
 			changeCustomDateFilterPanelStyle(e.getButton(), buttonSet);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 

@@ -615,6 +615,7 @@ public class LabMessageController {
 			sampleDto.setLabSampleID(labMessageDto.getLabSampleId());
 		}
 		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
+		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getTestLabName());
@@ -827,7 +828,7 @@ public class LabMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		Button deleteButton = ButtonHelper.createButtonWithCaption(Captions.actionDelete, I18nProperties.getCaption(Captions.actionDelete), (e) -> {
+		Button deleteButton = ButtonHelper.createButton(Captions.actionDelete, I18nProperties.getCaption(Captions.actionDelete), (e) -> {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.LabMessage)),
 				() -> {
@@ -842,8 +843,8 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(deleteButton);
 
-		Button unclearButton = ButtonHelper
-			.createButtonWithCaption(Captions.actionUnclearLabMessage, I18nProperties.getCaption(Captions.actionUnclearLabMessage), (e) -> {
+		Button unclearButton =
+			ButtonHelper.createButton(Captions.actionUnclearLabMessage, I18nProperties.getCaption(Captions.actionUnclearLabMessage), (e) -> {
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
 					new Label(I18nProperties.getString(Strings.confirmationUnclearLabMessage)),
@@ -865,10 +866,8 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(unclearButton);
 
-		Button forwardButton = ButtonHelper.createButtonWithCaption(
-			Captions.actionManualForwardLabMessage,
-			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
-			(e) -> {
+		Button forwardButton = ButtonHelper
+			.createButton(Captions.actionManualForwardLabMessage, I18nProperties.getCaption(Captions.actionManualForwardLabMessage), (e) -> {
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
 					new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedLabMessage)),

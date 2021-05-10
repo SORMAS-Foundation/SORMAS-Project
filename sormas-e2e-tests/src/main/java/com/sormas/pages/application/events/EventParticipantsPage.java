@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.map;
+ */
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+package com.sormas.pages.application.events;
 
-public enum MapPeriodType {
+import org.openqa.selenium.By;
 
-	DAILY,
-	WEEKLY,
-	MONTHLY,
-	YEARLY;
-
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+public class EventParticipantsPage {
+  public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
 }

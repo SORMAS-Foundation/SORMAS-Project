@@ -26,7 +26,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -130,7 +129,8 @@ public class EventDataView extends AbstractEventView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+			DocumentListComponent documentList =
+				new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
@@ -172,7 +172,7 @@ public class EventDataView extends AbstractEventView {
 		shortcutLinksLayout.setSpacing(true);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
+			Button seeEventCasesBtn = ButtonHelper.createButton(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
 				thisEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
@@ -181,7 +181,7 @@ public class EventDataView extends AbstractEventView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
-			Button seeEventContactsBtn = ButtonHelper.createButtonWithCaption(
+			Button seeEventContactsBtn = ButtonHelper.createButton(
 				"eventLinkToContacts",
 				I18nProperties.getCaption(Captions.eventLinkToContacts),
 				thisEvent -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
@@ -191,7 +191,7 @@ public class EventDataView extends AbstractEventView {
 
 		LocationDto eventLocationDto = ((EventDataForm) editComponent.getWrappedComponent()).getValue().getEventLocation();
 		if (eventLocationDto.getFacility() != null) {
-			Button seeEventsWithinTheSameFacility = ButtonHelper.createButtonWithCaption(
+			Button seeEventsWithinTheSameFacility = ButtonHelper.createButton(
 				"eventLinkToEventsWithinTheSameFacility",
 				I18nProperties.getCaption(Captions.eventLinkToEventsWithinTheSameFacility),
 				thisEvent -> ControllerProvider.getEventController()
