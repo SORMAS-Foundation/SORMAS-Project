@@ -19,6 +19,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.AttributeConverter;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -50,6 +52,10 @@ public abstract class CustomizableEnumConverter<T extends CustomizableEnum> impl
 
 	@Override
 	public T convertToEntityAttribute(String enumString) {
+		if (StringUtils.isBlank(enumString)) {
+			return null;
+		}
+
 		try {
 			if (customizableEnumFacade == null) {
 				customizableEnumFacade = (CustomizableEnumFacade) new InitialContext().lookup("java:module/CustomizableEnumFacade");

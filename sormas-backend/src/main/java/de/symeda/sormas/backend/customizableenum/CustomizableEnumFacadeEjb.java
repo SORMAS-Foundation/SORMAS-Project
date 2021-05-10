@@ -159,9 +159,8 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 
 		List<T> enumValues = new ArrayList<>();
 		CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).get(language).forEach((value, caption) -> {
-			T enumValue;
 			try {
-				enumValue = enumClass.newInstance();
+				T enumValue = enumClass.newInstance();
 				enumValue.setValue(value);
 				enumValue.setCaption(caption);
 				enumValue.setProperties(enumProperties.get(type).get(value));
