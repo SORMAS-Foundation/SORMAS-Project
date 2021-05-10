@@ -13,7 +13,7 @@ If you've never submitted an issue to the SORMAS repository before or this is yo
 ### Problem Description
 <!-- Mandatory -->
 
-### Proposed Change
+### Proposed Solution
 <!-- Mandatory -->
 
 ### Possible Alternatives
