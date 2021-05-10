@@ -376,6 +376,7 @@
     <string name="heading_campaign_form_data_read">Leer datos de campaña</string>
     <string name="heading_campaign_form_data_summary">Resumen de datos de campaña</string>
     <string name="heading_campaign_form_meta_select">Seleccionar formulario de campaña</string>
+    <string name="heading_case_place_of_stay">Lugar de estancia</string>
     <string name="hint_add_to_empty_list">Añada una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cada vez que abra la aplicación SORMAS.</string>
