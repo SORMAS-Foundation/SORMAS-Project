@@ -18,8 +18,9 @@
 
 package de.symeda.sormas.ui.labmessage;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -27,10 +28,6 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Playwright;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -79,8 +76,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -928,15 +927,15 @@ public class LabMessageController {
 		return buttonsPanel;
 	}
 
-	public byte[] downloadLabMessage(String labMessageUuid) {
+	public byte[] convertToPDF(String labMessageUuid) throws IOException {
 
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
 		try {
-			ExternalMessageResult<String> result = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessageDto);
+			ExternalMessageResult<byte[]> result = FacadeProvider.getExternalLabResultsFacade().convertToPDF(labMessageDto);
 
 			if (result.isSuccess()) {
-				return convertToPdf(result.getValue());
+				return result.getValue();
 			} else {
 				new Notification(
 						I18nProperties.getString("error downloading the lab message"),
@@ -954,18 +953,5 @@ public class LabMessageController {
 			logger.error(e.getMessage());
 		}
 		return null;
-	}
-
-	private byte[] convertToPdf(String labMessageHtml) {
-		logger.info(labMessageHtml);
-
-		try (Playwright playwright = Playwright.create()) {
-			try (Browser browser = playwright.chromium().launch()) {
-				BrowserContext context = browser.newContext();
-				com.microsoft.playwright.Page page = context.newPage();
-				page.setContent(labMessageHtml);
-				return page.pdf();
-			}
-		}
 	}
 }

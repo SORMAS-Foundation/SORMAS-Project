@@ -39,12 +39,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
-import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -52,7 +48,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -174,8 +169,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			try {
-				return new ByteArrayInputStream(ControllerProvider.getLabMessageController().downloadLabMessage(labMessage.getUuid()));
-			} catch (IllegalArgumentException e) {
+				return new ByteArrayInputStream(ControllerProvider.getLabMessageController().convertToPDF(labMessage.getUuid()));
+			} catch (IllegalArgumentException | IOException e) {
 				new Notification(
 						"error downloading PDF",
 						e.getMessage(),
