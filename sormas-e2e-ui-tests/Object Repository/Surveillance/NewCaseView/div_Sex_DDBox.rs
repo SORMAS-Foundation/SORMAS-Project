@@ -7,7 +7,15 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[9]/div[2]/div/div/div/div[2]/div</value>
+         <value>//div[@id='sex']/div</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;sex&quot;)/div[@class=&quot;v-filterselect-button&quot;][count(. | //*[@class = 'v-filterselect-button']) = count(//*[@class = 'v-filterselect-button'])]</value>
+      </entry>
+      <entry>
+         <key>CSS</key>
+         <value>#sex > div.v-filterselect-button</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -20,7 +28,7 @@
       <value>div</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
@@ -42,23 +50,23 @@
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
-      <matchCondition>equals</matchCondition>
+      <matchCondition>contains</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373-overlays&quot;)/div[@class=&quot;v-window v-widget&quot;]/div[@class=&quot;popupContent&quot;]/div[@class=&quot;v-window-wrap&quot;]/div[@class=&quot;v-window-contents&quot;]/div[@class=&quot;v-scrollable&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-panel v-widget&quot;]/div[@class=&quot;v-panel-content v-scrollable&quot;]/div[@class=&quot;v-customcomponent v-widget v-has-width&quot;]/div[@class=&quot;v-customlayout v-layout v-widget v-has-width&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-xs-6 col-md-6&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-xs-12 col-md-12&quot;]/div[@class=&quot;v-captionwrapper&quot;]/div[@class=&quot;v-filterselect v-widget soft-required v-filterselect-soft-required v-has-width v-filterselect-prompt&quot;]/div[@class=&quot;v-filterselect-button&quot;]</value>
+      <value>id(&quot;sex&quot;)/div[@class=&quot;v-filterselect-button&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[9]/div[2]/div/div/div/div[2]/div</value>
+      <value>//div[@id='sex']/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[9]/div[2]/div/div/div/div[2]/div</value>
+      <value>//div[10]/div[2]/div/div/div/div[2]/div</value>
    </webElementXpaths>
 </WebElementEntity>

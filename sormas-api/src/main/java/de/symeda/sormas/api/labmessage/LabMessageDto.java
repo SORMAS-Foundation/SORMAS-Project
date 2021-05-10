@@ -21,6 +21,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
@@ -53,6 +54,7 @@ public class LabMessageDto extends EntityDto {
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
+	private String sampleMaterialText;
 	private String testLabName;
 	private String testLabExternalId;
 	private String testLabPostalCode;
@@ -120,6 +122,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
+	}
+
+	public String getSampleMaterialText() {
+		return sampleMaterialText;
+	}
+
+	public void setSampleMaterialText(String sampleMaterialText) {
+		this.sampleMaterialText = sampleMaterialText;
 	}
 
 	public String getTestLabName() {

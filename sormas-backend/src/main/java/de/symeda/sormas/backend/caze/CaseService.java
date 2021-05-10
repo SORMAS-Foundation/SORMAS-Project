@@ -52,6 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -264,12 +265,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
+
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -281,7 +284,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return 0L;
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
@@ -289,7 +292,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
+		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -330,14 +333,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb,
 		CriteriaQuery<?> cq,
 		Root<Case> root,
+		CaseJoins<Case> joins,
 		Region region,
 		District district,
 		Disease disease,
 		Date from,
-		Date to) {
+		Date to,
+		NewCaseDateType dateType) {
 		Predicate filter = createActiveCasesFilter(cb, root);
+
+		// Userfilter
 		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+
+		// Filter by date. The relevancefilter uses a special algorithm that should reflect the current situation.
+		if (dateType == null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+		} else {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, createNewCaseFilter(cq, cb, root, DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to), dateType));
+		}
+
+		// only show cases which actually have GPS coordinates provided
+		Predicate personLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(joins.getPersonAddress().get(Location.LONGITUDE)), cb.isNotNull(joins.getPersonAddress().get(Location.LATITUDE)));
+		Predicate reportLatLonNotNull =
+			CriteriaBuilderHelper.and(cb, cb.isNotNull(root.get(Case.REPORT_LON)), cb.isNotNull(root.get(Case.REPORT_LAT)));
+		Predicate facilityLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(joins.getFacility().get(Facility.LONGITUDE)), cb.isNotNull(joins.getFacility().get(Facility.LATITUDE)));
+		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull, facilityLatLonNotNull);
+		filter = CriteriaBuilderHelper.and(cb, filter, latLonProvided);
 
 		if (region != null) {
 			Predicate regionFilter = cb.equal(root.get(Case.REGION), region);
@@ -495,9 +519,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are
-	 * within the time frame.
+	 * within the time frame. Also excludes cases with classification=not a case
 	 */
 	public Predicate createCaseRelevanceFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
+		Predicate classificationFilter = cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE);
 		Predicate dateFromFilter = null;
 		Predicate dateToFilter = null;
 		if (fromDate != null) {
@@ -511,11 +536,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (dateFromFilter != null && dateToFilter != null) {
-			return cb.and(dateFromFilter, dateToFilter);
+			return cb.and(classificationFilter, dateFromFilter, dateToFilter);
 		} else if (dateFromFilter != null) {
-			return dateFromFilter;
+			return cb.and(classificationFilter, dateFromFilter);
+		} else if (dateToFilter != null) {
+			return cb.and(classificationFilter, dateToFilter);
 		} else {
-			return dateToFilter;
+			return classificationFilter;
 		}
 	}
 

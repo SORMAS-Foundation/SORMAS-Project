@@ -38,7 +38,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -388,17 +387,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Long countContactsForMap(Region region, District district, Disease disease, List<String> caseUuids) {
+	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Person> personJoin = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Person, Location> contactPersonAddressJoin = personJoin.join(Person.ADDRESS, JoinType.LEFT);
 
-		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, contactPersonAddressJoin, region, district, disease, from, to);
 
 		if (filter != null) {
 			cq.where(filter);
-			cq.select(cb.count(caze.get(Case.ID)));
+			cq.select(cb.count(contact.get(Contact.UUID)));
 
 			return em.createQuery(cq).getSingleResult();
 		}
@@ -406,7 +407,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return 0L;
 	}
 
-	public List<MapContactDto> getContactsForMap(Region region, District district, Disease disease, List<String> caseUuids) {
+	public List<MapContactDto> getContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapContactDto> cq = cb.createQuery(MapContactDto.class);
@@ -417,7 +418,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, contactPersonAddress, region, district, disease, from, to);
 
 		List<MapContactDto> result;
 		if (filter != null) {
@@ -460,39 +461,33 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<?> cq,
 		Root<Contact> contactRoot,
 		Join<Contact, Case> cazeJoin,
+		Join<Person, Location> contactPersonAddressJoin,
 		Region region,
 		District district,
 		Disease disease,
-		List<String> caseUuids) {
+		Date from,
+		Date to) {
 		Predicate filter = createActiveContactsFilter(cb, contactRoot);
 		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, contactRoot));
 
-		if (!CollectionUtils.isEmpty(caseUuids)) {
-			Path<Object> contactCaseUuid = contactRoot.get(Contact.CAZE).get(Case.UUID);
-			Predicate caseFilter = cb.or(cb.isNull(contactRoot.get(Contact.CAZE)), contactCaseUuid.in(caseUuids));
-			if (filter != null) {
-				filter = cb.and(filter, caseFilter);
-			} else {
-				filter = caseFilter;
-			}
-		} else {
-			Predicate contactWithoutCaseFilter = cb.isNull(contactRoot.get(Contact.CAZE));
-			if (filter != null) {
-				filter = cb.and(filter, contactWithoutCaseFilter);
-			} else {
-				filter = contactWithoutCaseFilter;
-			}
-		}
+		// Filter contacts by date; only consider contacts with reportdates within the given timeframe
+		Predicate reportDateFilter =
+			cb.between(contactRoot.get(Contact.REPORT_DATE_TIME), DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to));
+		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
 
 		filter = CriteriaBuilderHelper.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contactRoot, cazeJoin));
 
 		// Only retrieve contacts that are currently under follow-up
 		Predicate followUpFilter = cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
-		if (filter != null) {
-			filter = cb.and(filter, followUpFilter);
-		} else {
-			filter = followUpFilter;
-		}
+		filter = CriteriaBuilderHelper.and(cb, filter, followUpFilter);
+
+		// only retrieve contacts with given coordinates
+		Predicate personLatLonNotNull = CriteriaBuilderHelper
+			.and(cb, cb.isNotNull(contactPersonAddressJoin.get(Location.LONGITUDE)), cb.isNotNull(contactPersonAddressJoin.get(Location.LATITUDE)));
+		Predicate reportLatLonNotNull =
+			CriteriaBuilderHelper.and(cb, cb.isNotNull(contactRoot.get(Contact.REPORT_LON)), cb.isNotNull(contactRoot.get(Contact.REPORT_LAT)));
+		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull);
+		filter = CriteriaBuilderHelper.and(cb, filter, latLonProvided);
 
 		return filter;
 	}

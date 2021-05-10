@@ -100,9 +100,21 @@ public interface CaseFacade {
 
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
 
-	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+	List<MapCaseDto> getCasesForMap(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to,
+		NewCaseDateType dateType);
 
-	Long countCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+	Long countCasesForMap(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to,
+		NewCaseDateType dateType);
 
 	Map<CaseClassification, Long> getCaseCountPerClassification(
 		CaseCriteria caseCriteria,
