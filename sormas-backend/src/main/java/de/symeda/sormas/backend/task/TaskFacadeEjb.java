@@ -79,6 +79,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -135,6 +136,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
@@ -703,7 +706,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						: String.format(
 							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
 							task.getTaskType().toString(),
-							context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
@@ -734,7 +737,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						: String.format(
 							I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC),
 							task.getTaskType().toString(),
-							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 
 					messagingService.sendMessage(
 						userService.getByUuid(task.getAssigneeUser().getUuid()),
@@ -811,6 +814,46 @@ public class TaskFacadeEjb implements TaskFacade {
 			.map(DistrictReferenceDto::new)
 			.limit(limit)
 			.collect(Collectors.toList());
+	}
+
+	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
+		StringBuilder contentBuilder = new StringBuilder().append(taskContext);
+		if (taskContext.getUrlPattern() == null || entity == null) {
+			return contentBuilder.toString();
+		}
+
+		contentBuilder.append(" ").append(DataHelper.getShortUuid(entity.getUuid()));
+
+		String url = getUiUrl(taskContext, entity.getUuid());
+		if (url != null) {
+			String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
+			contentBuilder.append("\n").append(String.format(I18nProperties.getString(associatedEntityLinkMessage), url));
+		}
+
+		return contentBuilder.toString();
+	}
+
+	/**
+	 * Return the url of the related entity.
+	 * The url is bound to the Sormas UI made with Vaadin.
+	 * This function will need to be modified if the UI will have URL modifications
+	 * or in case the UI app is replaced by another one.
+	 */
+	private String getUiUrl(TaskContext taskContext, String uuid) {
+		if (taskContext.getUrlPattern() == null || uuid == null) {
+			return null;
+		}
+
+		String uiUrl = configFacade.getUiUrl();
+		if (uiUrl == null) {
+			return null;
+		}
+
+		StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
+		if (!uiUrl.endsWith("/")) {
+			uiUrlBuilder.append("/");
+		}
+		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
 	}
 
 	@LocalBean

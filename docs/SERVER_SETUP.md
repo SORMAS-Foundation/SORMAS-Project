@@ -293,7 +293,7 @@ Activate output compression (very important!):
         AddOutputFilterByType DEFLATE application/xml application/xhtml+xml
         AddOutputFilterByType DEFLATE application/javascript application/x-javascript
         DeflateCompressionLevel 1
-</IfModule></code>
+</IfModule>
 ```
 
 Provide the android apk:

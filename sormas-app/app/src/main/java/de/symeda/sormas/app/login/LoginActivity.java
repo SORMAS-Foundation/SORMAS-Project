@@ -40,7 +40,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -74,8 +73,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
 		binding.setData(loginViewModel);
 
-		binding.userUserName.setLiveValidationDisabled(true);
-		binding.userPassword.setLiveValidationDisabled(true);
+		binding.loginUsername.setLiveValidationDisabled(true);
+		binding.loginPassword.setLiveValidationDisabled(true);
 
 		boolean hasDefaultUser =
 			!DataHelper.isNullOrEmpty(SormasProperties.getUserNameDefault()) && !DataHelper.isNullOrEmpty(SormasProperties.getUserPasswordDefault());
@@ -101,7 +100,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	public void onPause() {
 		super.onPause();
 
-		SoftKeyboardHelper.hideKeyboard(this, binding.userPassword.getWindowToken());
+		SoftKeyboardHelper.hideKeyboard(this, binding.loginPassword.getWindowToken());
 	}
 
 	@Override
@@ -148,8 +147,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	public void loginDefaultUser(View view) {
 
-		binding.userUserName.setValue(SormasProperties.getUserNameDefault());
-		binding.userPassword.setValue(SormasProperties.getUserPasswordDefault());
+		binding.loginUsername.setValue(SormasProperties.getUserNameDefault());
+		binding.loginPassword.setValue(SormasProperties.getUserPasswordDefault());
 
 		login(view);
 	}
@@ -160,16 +159,16 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	public void login(View view) {
 		//Hide notification
 		//NotificationHelper.hideNotification(binding);
-		binding.userUserName.disableErrorState();
-		binding.userPassword.disableErrorState();
+		binding.loginUsername.disableErrorState();
+		binding.loginPassword.disableErrorState();
 
-		String userName = binding.userUserName.getValue().trim();
-		String password = binding.userPassword.getValue();
+		String userName = binding.loginUsername.getValue().trim();
+		String password = binding.loginPassword.getValue();
 
 		if (userName.isEmpty()) {
-			binding.userUserName.enableErrorState(R.string.message_empty_username);
+			binding.loginUsername.enableErrorState(R.string.message_empty_username);
 		} else if (password.isEmpty()) {
-			binding.userPassword.enableErrorState(R.string.message_empty_password);
+			binding.loginPassword.enableErrorState(R.string.message_empty_password);
 		} else {
 			ConfigProvider.setUsernameAndPassword(userName, password);
 
@@ -278,15 +277,14 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
 		if (caseSuveillance) {
-			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW) && (
-					user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
-							|| user.hasUserRole(UserRole.CASE_OFFICER)
-							|| user.hasUserRole(UserRole.POE_INFORMANT)
-							|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
-							|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
+			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+					|| user.hasUserRole(UserRole.CASE_OFFICER)
+					|| user.hasUserRole(UserRole.POE_INFORMANT)
+					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
 				NavigationHelper.goToCases(LoginActivity.this);
-			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
-					&& user.hasUserRole(UserRole.CONTACT_OFFICER)) {
+			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {
 				NavigationHelper.goToContacts(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)) {
 				NavigationHelper.goToCases(LoginActivity.this);

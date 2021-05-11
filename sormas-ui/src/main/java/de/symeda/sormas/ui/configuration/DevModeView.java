@@ -1212,7 +1212,7 @@ public class DevModeView extends AbstractConfigurationView {
 				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
 				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
-				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+				Date contactStartDate = ContactLogic.getStartDate(contact);
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
 					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
