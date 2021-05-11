@@ -27,9 +27,6 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -57,13 +54,9 @@ public interface ContactFacade {
 
 	List<ContactDto> getByUuids(List<String> uuids);
 
-	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, List<MapCaseDto> mapCaseDtos);
+	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
-	List<MapContactDto> getContactsForMap(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		List<MapCaseDto> mapCaseDtos);
+	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
 	void deleteContact(String contactUuid);
 

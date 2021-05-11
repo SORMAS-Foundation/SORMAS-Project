@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Marcar todo como leído</string>
     <string name="action_new">Nuevo</string>
     <string name="action_new_case">Nuevo caso</string>
+    <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">Nuevo contacto</string>
     <string name="action_new_event">Nuevo evento</string>
     <string name="action_new_sample">Nueva muestra</string>
@@ -265,7 +266,7 @@
     <string name="heading_app_update_required">Actualización de la aplicación requerida</string>
     <string name="heading_burial">Sepelio</string>
     <string name="heading_burials_visited">Entierros visitados</string>
-    <string name="heading_campaigns_list">Campaign Data</string>
+    <string name="heading_campaigns_list">Campaign Data Listing</string>
     <string name="heading_case_disease_changed">Enfermedad del caso cambió</string>
     <string name="heading_case_edit">Editar caso</string>
     <string name="heading_case_new">Nuevo caso</string>
@@ -370,6 +371,12 @@
     <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="heading_exposure">Exposure</string>
     <string name="heading_activityAsCase">Activity as Case</string>
+    <string name="heading_campaign_form_data_edit">Edit Campaign Data</string>
+    <string name="heading_campaign_form_data_new">New Campaign Data</string>
+    <string name="heading_campaign_form_data_read">Read Campaign Data</string>
+    <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
+    <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
+    <string name="heading_case_place_of_stay">Place of stay</string>
     <string name="hint_add_to_empty_list">Añade una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cuando abra la aplicación SORMAS.</string>
@@ -428,6 +435,7 @@
     <string name="info_pick_or_create_event">The list below contains all existing events having the same disease as the current case from your Region. Please check whether the event this case belongs to is already on this list or create a new one if it is not.</string>
     <string name="info_case_creation_mark_check_box">Este caso es un <b>nuevo caso</b> y <b>no un duplicado</b> de uno de los casos anteriores</string>
     <string name="info_event_creation_mark_check_box">This event is a <b>new event</b> and <b>not a duplicate</b> of one of the events above</string>
+    <string name="info_pick_campaign_form_meta">Please select a campaign form for which you want to enter data!</string>
     <string name="main_menu_cases">Casos</string>
     <string name="main_menu_contacts">Contactos</string>
     <string name="main_menu_dashboard">Tablero de control</string>

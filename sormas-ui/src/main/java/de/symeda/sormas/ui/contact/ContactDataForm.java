@@ -415,7 +415,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
+		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
+			if (!(Boolean) e.getProperty().getValue()) {
+				dfFollowUpUntil.discard();
+			}
+		});
+		quarantineTo
+			.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil, cbOverwriteFollowUpUntil));
 		addValueChangeListener(e -> {
 			ValidationUtils.initComponentErrorValidator(
 				externalTokenField,
@@ -461,12 +468,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tfExpectedFollowUpUntilDate = new TextField();
 		tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
 		getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
-		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-			if (!(Boolean) e.getProperty().getValue()) {
-				dfFollowUpUntil.discard();
-			}
-		});
 
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
@@ -828,7 +829,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Property.ValueChangeEvent valueChangeEvent,
 		CheckBox quarantineExtendedCheckBox,
 		CheckBox quarantineReducedCheckBox,
-		DateField followUpUntilField) {
+		DateField followUpUntilField,
+		CheckBox overwriteFollowUpUntilCheckbox) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -845,7 +847,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 							quarantineEndField,
 							originalContact,
 							oldQuarantineEnd,
-							followUpUntilField);
+							followUpUntilField,
+							overwriteFollowUpUntilCheckbox);
 					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}
@@ -864,7 +867,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Property<Date> quarantineEndField,
 		ContactDto originalContact,
 		Date oldQuarantineEnd,
-		DateField followUpUntil) {
+		DateField followUpUntil,
+		CheckBox overwriteFollowUpUntil) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingExtendQuarantine),
 			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
@@ -878,7 +882,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
 					setVisible(false, ContactDto.QUARANTINE_REDUCED);
 					if (originalContact.getFollowUpUntil() != null) {
-						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil);
+						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil, overwriteFollowUpUntil);
 					}
 				} else {
 					quarantineEndField.setValue(oldQuarantineEnd);
@@ -886,7 +890,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			});
 	}
 
-	private void confirmExtendFollowUpPeriod(ContactDto originalContact, Date quarantineEnd, DateField followUpUntil) {
+	private void confirmExtendFollowUpPeriod(
+		ContactDto originalContact,
+		Date quarantineEnd,
+		DateField followUpUntil,
+		CheckBox overwriteFollowUpUntil) {
 		if (quarantineEnd.after(originalContact.getFollowUpUntil())) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendFollowUp),
@@ -896,13 +904,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						if (followUpUntil.isReadOnly()) {
-							followUpUntil.setReadOnly(false);
-							followUpUntil.setValue(quarantineEnd);
-							followUpUntil.setReadOnly(true);
-						} else {
-							followUpUntil.setValue(quarantineEnd);
-						}
+						overwriteFollowUpUntil.setValue(true);
+						followUpUntil.setValue(quarantineEnd);
 					}
 				});
 		}
@@ -965,14 +968,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			startDate,
 			endDate,
 			true,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
 
 		DateComparisonValidator endDateValidator = new DateComparisonValidator(
 			endDate,
 			startDate,
 			false,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
 
 		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));

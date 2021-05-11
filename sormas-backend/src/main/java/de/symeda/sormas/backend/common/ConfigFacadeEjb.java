@@ -139,6 +139,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
+	private static final String UI_URL = "ui.url";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -300,6 +302,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAppLegacyUrl() {
 		return getProperty(APP_LEGACY_URL, null);
+	}
+
+	@Override
+	public String getUiUrl() {
+		return getProperty(UI_URL, null);
 	}
 
 	@Override

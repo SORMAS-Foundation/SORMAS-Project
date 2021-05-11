@@ -3,6 +3,7 @@ package de.symeda.sormas.api.utils.jurisdiction;
 import de.symeda.sormas.api.task.TaskJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.jurisdiction.caze.CaseJurisdictionHelper;
 
 public class TaskJurisdictionHelper {
 

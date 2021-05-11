@@ -71,6 +71,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String VACCINATION = "vaccination";
 	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
@@ -110,6 +111,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
+	private Vaccination vaccination;
 	private Integer visitCount;
 
 	private Date surveillanceToolLastShareDate;
@@ -125,14 +127,18 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
+						// responsible jurisdiction
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {
 		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
 				diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
-				completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, null
+				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid,
+				null
 		);
 	}
 	//@formatter:on
@@ -144,9 +150,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus,
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus, Vaccination vaccination,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
-						Integer visitCount) {
+						// responsible jurisdiction
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+						// others
+						Integer visitCount
+	) {
 		//@formatter:on
 
 		this.id = id;
@@ -177,8 +187,16 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
+		this.vaccination = vaccination;
 
-		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		this.jurisdiction = new CaseJurisdictionDto(
+			reportingUserUuid,
+			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
+			regionUuid,
+			districtUuid,
+			communityUuid,
+			healthFacilityUuid,
+			pointOfEntryUuid);
 	}
 
 	public long getId() {
@@ -269,8 +287,16 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.creationDate = creationDate;
 	}
 
+	public String getResponsibleRegionUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getRegionUuid() : null;
+	}
+
 	public String getRegionUuid() {
 		return jurisdiction.getRegionUuid();
+	}
+
+	public String getResponsibleDistrictUuid() {
+		return jurisdiction.getResponsibleJurisdiction() != null ? jurisdiction.getResponsibleJurisdiction().getDistrictUuid() : null;
 	}
 
 	public String getDistrictUuid() {
@@ -379,9 +405,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	public Date getQuarantineTo() {
 		return quarantineTo;
@@ -417,6 +447,14 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
 		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
 	public Integer getVisitCount() {

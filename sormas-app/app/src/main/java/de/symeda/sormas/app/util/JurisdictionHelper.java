@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.util;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
@@ -14,6 +15,9 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -53,6 +57,9 @@ public class JurisdictionHelper {
 		if (caze.getReportingUser() != null) {
 			dto.setReportingUserUuid(caze.getReportingUser().getUuid());
 		}
+
+		dto.setResponsibleJurisdiction(createResponsibleJurisdiction(caze));
+
 		if (caze.getRegion() != null) {
 			dto.setRegionUuid(caze.getRegion().getUuid());
 		}
@@ -201,6 +208,29 @@ public class JurisdictionHelper {
 		Facility labFacility = sample.getLab();
 		if (labFacility != null) {
 			jurisdiction.setLabUuid(sample.getLab().getUuid());
+		}
+
+		return jurisdiction;
+	}
+
+	private static ResponsibleJurisdictionDto createResponsibleJurisdiction(Case caze) {
+		Region responsibleRegion = caze.getResponsibleRegion();
+		District responsibleDistrict = caze.getResponsibleDistrict();
+		Community responsibleCommunity = caze.getResponsibleCommunity();
+
+		if (responsibleRegion == null && responsibleDistrict == null && responsibleCommunity == null) {
+			return null;
+		}
+
+		ResponsibleJurisdictionDto jurisdiction = new ResponsibleJurisdictionDto();
+		if (responsibleRegion != null) {
+			jurisdiction.setRegionUuid(responsibleRegion.getUuid());
+		}
+		if (responsibleDistrict != null) {
+			jurisdiction.setDistrictUuid(responsibleDistrict.getUuid());
+		}
+		if (responsibleCommunity != null) {
+			jurisdiction.setCommunityUuid(responsibleCommunity.getUuid());
 		}
 
 		return jurisdiction;

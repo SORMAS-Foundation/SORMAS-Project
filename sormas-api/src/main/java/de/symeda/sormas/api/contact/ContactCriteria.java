@@ -20,11 +20,12 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -37,9 +38,11 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -48,6 +51,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String VACCINATION = "vaccination";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
 	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
@@ -72,6 +76,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private UserRole reportingUserRole;
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	private CaseReferenceDto caze;
 	private CaseReferenceDto resultingCase;
 	private RegionReferenceDto region;
@@ -93,6 +98,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 * even if a followUpUntilFrom is specified
 	 */
 	private SymptomJournalStatus symptomJournalStatus;
+	private Vaccination vaccination;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
@@ -144,6 +150,20 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria disease(Disease disease) {
 		setDisease(disease);
+
+		return this;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public ContactCriteria diseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		setDiseaseVariant(diseaseVariant);
 
 		return this;
 	}
@@ -325,6 +345,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
 		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
 	public Boolean getFollowUpUntilToPrecise() {

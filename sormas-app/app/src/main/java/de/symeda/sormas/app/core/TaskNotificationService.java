@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.app.core;
 
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,6 +28,12 @@ import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 
+import org.joda.time.DateTime;
+
+import java.util.Date;
+import java.util.List;
+
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
@@ -94,88 +95,96 @@ public class TaskNotificationService extends Service {
 	}
 
 	public static void doTaskNotification(Context context) {
-		Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
-		if (notificationRangeStart == null) {
-			notificationRangeStart = new DateTime().minusDays(1).toDate();
-		}
-		Date notificationRangeEnd = new Date();
 
-		TaskDao taskDao = DatabaseHelper.getTaskDao();
-		List<Task> taskList = taskDao.queryMyPendingForNotification(notificationRangeStart, notificationRangeEnd);
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_GENERAL) ||
+				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE) ||
+				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING) ||
+				!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
 
-		CaseDao caseDAO = DatabaseHelper.getCaseDao();
-		ContactDao contactDAO = DatabaseHelper.getContactDao();
-		EventDao eventDAO = DatabaseHelper.getEventDao();
+			Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
+			if (notificationRangeStart == null) {
+				notificationRangeStart = new DateTime().minusDays(1).toDate();
+			}
+			Date notificationRangeEnd = new Date();
 
-		for (Task task : taskList) {
-			Case caze = null;
-			Contact contact = null;
-			Event event = null;
-			StringBuilder content = new StringBuilder();
-			switch (task.getTaskContext()) {
-			case CASE:
-				if (task.getCaze() != null) {
-					caze = caseDAO.queryForId(task.getCaze().getId());
-					content.append("<b>").append(caze.toString()).append("</b><br/>");
+			TaskDao taskDao = DatabaseHelper.getTaskDao();
+			List<Task> taskList = taskDao.queryMyPendingForNotification(notificationRangeStart, notificationRangeEnd);
+
+			CaseDao caseDAO = DatabaseHelper.getCaseDao();
+			ContactDao contactDAO = DatabaseHelper.getContactDao();
+			EventDao eventDAO = DatabaseHelper.getEventDao();
+
+			for (Task task : taskList) {
+				Case caze = null;
+				Contact contact = null;
+				Event event = null;
+				StringBuilder content = new StringBuilder();
+				switch (task.getTaskContext()) {
+					case CASE:
+						if (task.getCaze() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE)) {
+							caze = caseDAO.queryForId(task.getCaze().getId());
+							content.append("<b>").append(caze.toString()).append("</b><br/>");
+						}
+						break;
+					case CONTACT:
+						if (task.getContact() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING)) {
+							contact = contactDAO.queryForId(task.getContact().getId());
+							content.append("<b>").append(contact.toString()).append("</b><br/>");
+						}
+						break;
+					case EVENT:
+						if (task.getEvent() != null && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
+							event = eventDAO.queryForId(task.getEvent().getId());
+							content.append("<b>").append(event.toString()).append("</b><br/>");
+						}
+						break;
+					case GENERAL:
+						break;
+					default:
+						continue;
 				}
-				break;
-			case CONTACT:
-				if (task.getContact() != null) {
-					contact = contactDAO.queryForId(task.getContact().getId());
-					content.append("<b>").append(contact.toString()).append("</b><br/>");
+
+				Intent notificationIntent = new Intent(context, TaskEditActivity.class);
+				notificationIntent.putExtras(TaskEditActivity.buildBundle(task.getUuid()).get());
+				// Just for your information: The issue here was that the second argument of the getActivity call
+				// was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
+				// makes sure that a new intent with the right task behind it is created
+				PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
+				Resources r = context.getResources();
+
+				if (!TextUtils.isEmpty(task.getCreatorComment())) {
+					content.append(task.getCreatorComment());
 				}
-				break;
-			case EVENT:
-				if (task.getEvent() != null) {
-					event = eventDAO.queryForId(task.getEvent().getId());
-					content.append("<b>").append(event.toString()).append("</b><br/>");
-				}
-				break;
-			case GENERAL:
-				break;
-			default:
-				continue;
+
+				NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
+						.setTicker(r.getString(R.string.heading_task_notification))
+						.setSmallIcon(R.mipmap.ic_launcher_foreground)
+						.setContentTitle(
+								task.getTaskType().toString()
+										+ (caze != null
+										? " (" + caze.getDisease().toShortString() + ")"
+										: contact != null ? " (" + contact.getDisease().toShortString() + ")" : ""))
+						.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
+						.setContentIntent(pi)
+						.setAutoCancel(true)
+						.setContentIntent(pi);
+
+				NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+				int notificationId = task.getId().intValue();
+				notificationManager.notify(notificationId, notificationBuilder.build());
+
+				break; // @TODO implement notification grouping
 			}
 
-			Intent notificationIntent = new Intent(context, TaskEditActivity.class);
-			notificationIntent.putExtras(TaskEditActivity.buildBundle(task.getUuid()).get());
-			// Just for your information: The issue here was that the second argument of the getActivity call
-			// was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
-			// makes sure that a new intent with the right task behind it is created
-			PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
-			Resources r = context.getResources();
+			doWeeklyReportNotification(context, notificationRangeStart, notificationRangeEnd);
 
-			if (!TextUtils.isEmpty(task.getCreatorComment())) {
-				content.append(task.getCreatorComment());
-			}
-
-			NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
-				.setTicker(r.getString(R.string.heading_task_notification))
-				.setSmallIcon(R.mipmap.ic_launcher_foreground)
-				.setContentTitle(
-					task.getTaskType().toString()
-						+ (caze != null
-							? " (" + caze.getDisease().toShortString() + ")"
-							: contact != null ? " (" + contact.getDisease().toShortString() + ")" : ""))
-				.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
-				.setContentIntent(pi)
-				.setAutoCancel(true)
-				.setContentIntent(pi);
-
-			NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-			int notificationId = task.getId().intValue();
-			notificationManager.notify(notificationId, notificationBuilder.build());
-
-			break; // @TODO implement notification grouping
+			ConfigProvider.setLastNotificationDate(notificationRangeEnd);
 		}
-
-		doWeeklyReportNotification(context, notificationRangeStart, notificationRangeEnd);
-
-		ConfigProvider.setLastNotificationDate(notificationRangeEnd);
 	}
 
 	private static void doWeeklyReportNotification(Context context, Date notificationRangeStart, Date notificationRangeEnd) {
-		if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+		if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
+				&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING)) {
 			// notify at 6:00
 			Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60 * 60 * 6);
 			if (DateHelper.isBetween(notificationPoint, notificationRangeStart, notificationRangeEnd)) {

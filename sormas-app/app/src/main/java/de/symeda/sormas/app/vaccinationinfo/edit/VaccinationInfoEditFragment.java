@@ -7,6 +7,8 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.contact.edit.ContactEditFragment;
 import de.symeda.sormas.app.databinding.FragmentVaccinationInfoEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -27,6 +29,29 @@ public class VaccinationInfoEditFragment extends BaseEditFragment<FragmentVaccin
 		vaccinationInfoEditLayout.vaccinationInfoVaccineManufacturer.initializeSpinner(DataUtils.getEnumItems(VaccineManufacturer.class, true));
 		vaccinationInfoEditLayout.vaccinationInfoFirstVaccinationDate.initializeDateField(contactEditFragment.getChildFragmentManager());
 		vaccinationInfoEditLayout.vaccinationInfoLastVaccinationDate.initializeDateField(contactEditFragment.getChildFragmentManager());
+
+		vaccinationInfoEditLayout.vaccinationInfoVaccinationDoses.addValueChangedListener(new ValueChangeListener() {
+
+			private boolean fieldChangeByListener = false;
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				Object newValue = field.getValue();
+				if (fieldChangeByListener) {
+					fieldChangeByListener = false;
+					return;
+				} else if (newValue != null) {
+					String newValueString = newValue.toString();
+					String newValueStringTrimmed = newValueString.trim();
+					if (!newValueString.equals(newValueStringTrimmed)) {
+						fieldChangeByListener = true;
+						field.setValue(newValueStringTrimmed);
+
+					}
+
+				}
+			}
+		});
 
 //		vaccinationInfoEditLayout.vaccinationInfoVaccineName.addValueChangedListener(new ValueChangeListener() {
 //

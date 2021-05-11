@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -60,8 +61,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
 								   String districtUuid, String districtName, String communityUuid, Date lastContactDate, Date creationDate, ContactCategory contactCategory,
 								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
-								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-								   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
+								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+								   CaseClassification caseClassification, String caseReportingUserUid,
+								   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
 								   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 								   String externalID, String externalToken,
@@ -74,8 +76,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		super(id, uuid, personFirstName, personLastName, approximateAge, approximateAgeType,
 			birthdateDD, birthdateMM, birthdateYYYY, sex, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, regionName, districtUuid, districtName, communityUuid,
 			lastContactDate, creationDate, contactCategory, contactProximity, contactClassification, contactStatus, completeness, followUpStatus, followUpUntil,
-			symptomJournalStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseReportingUserUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
+			symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+			caseReportingUserUid, caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
+
 		//@formatter:on
 
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);

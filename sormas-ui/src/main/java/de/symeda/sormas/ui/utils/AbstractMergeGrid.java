@@ -31,7 +31,6 @@ import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.contact.ContactDataView;
 
