@@ -226,7 +226,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private EpiData epiData;
 
 	private List<Task> tasks;
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
 	private YesNoUnknown returningTraveler;

@@ -610,6 +610,8 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
+	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
