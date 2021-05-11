@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -32,6 +33,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Disease disease;
 	private PathogenTestResultType pathogenTestResult;
 	private Vaccination vaccination;
+	private Date relevantDate;
 	private Boolean excludePseudonymized;
 	private Boolean noResultingCase;
 
@@ -134,6 +136,15 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	public EventParticipantCriteria setVaccination(Vaccination vaccination) {
 		this.vaccination = vaccination;
+		return this;
+	}
+
+	public Date getRelevantDate() {
+		return relevantDate;
+	}
+
+	public EventParticipantCriteria setRelevantDate(Date relevantDate) {
+		this.relevantDate = relevantDate;
 		return this;
 	}
 

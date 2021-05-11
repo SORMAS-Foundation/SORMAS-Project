@@ -38,6 +38,10 @@ public class ContactSelectionGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
+		setColumns();
+	}
+
+	protected void setColumns() {
 		setColumns(
 			SimilarContactDto.UUID,
 			SimilarContactDto.FIRST_NAME,

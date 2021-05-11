@@ -31,14 +31,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.contact.ContactSelectionGrid;
-import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
+import de.symeda.sormas.ui.contact.ContactCaseConversionSelectionGrid;
+import de.symeda.sormas.ui.events.EventParticipantCaseConversionSelectionGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ConvertToCaseSelectionField extends VerticalLayout {
 
-	private ContactSelectionGrid contactSelectionGrid;
-	private EventParticipantSelectionGrid eventParticipantSelectionGrid;
+	private ContactCaseConversionSelectionGrid contactSelectionGrid;
+	private EventParticipantCaseConversionSelectionGrid eventParticipantSelectionGrid;
 
 	private CaseDataDto caseDataDto;
 	private List<SimilarContactDto> matchingContacts;
@@ -60,14 +60,14 @@ public class ConvertToCaseSelectionField extends VerticalLayout {
 		addContactDetailsComponent();
 
 		if (matchingContacts.size() > 0) {
-			contactSelectionGrid = new ContactSelectionGrid(matchingContacts);
+			contactSelectionGrid = new ContactCaseConversionSelectionGrid(matchingContacts);
 			contactSelectionGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 			contactSelectionGrid.setCaption(I18nProperties.getString(Strings.entityContacts));
 			addComponent(contactSelectionGrid);
 		}
 
 		if (matchingEventParticipants.size() > 0) {
-			eventParticipantSelectionGrid = new EventParticipantSelectionGrid(matchingEventParticipants);
+			eventParticipantSelectionGrid = new EventParticipantCaseConversionSelectionGrid(matchingEventParticipants);
 			eventParticipantSelectionGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 			eventParticipantSelectionGrid.setCaption(I18nProperties.getString(Strings.entityEventParticipants));
 			addComponent(eventParticipantSelectionGrid);

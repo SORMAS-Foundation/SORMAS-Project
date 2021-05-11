@@ -878,10 +878,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(eventJoin.get(Event.DISEASE), disease) : null;
 
+		final Date relevantDate = criteria.getRelevantDate();
+		final Predicate relevantDateFilter = CriteriaBuilderHelper.or(
+			cb,
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.START_DATE), 30),
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.END_DATE), 30),
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.REPORT_DATE_TIME), 30));
+
 		final Predicate noResulingCaseFilter =
 			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE)) : null;
 
-		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, noResulingCaseFilter));
+		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, relevantDateFilter, noResulingCaseFilter));
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 

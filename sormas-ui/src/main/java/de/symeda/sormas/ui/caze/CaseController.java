@@ -262,6 +262,7 @@ public class CaseController {
 
 		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().setPerson(caze.getPerson())
 			.setDisease(caze.getDisease())
+			.setContactClassification(ContactClassification.CONFIRMED)
 			.setExcludePseudonymized(true)
 			.setNoResultingCase(true);
 		List<SimilarContactDto> matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);

@@ -1598,6 +1598,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CaseReferenceDto caze = criteria.getCaze();
 		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
 
+		final ContactClassification contactClassification = criteria.getContactClassification();
+		final Predicate contactClassificationFilter =
+			contactClassification != null ? cb.equal(contactRoot.get(Contact.CONTACT_CLASSIFICATION), contactClassification) : null;
+
 		final Predicate noResulingCaseFilter =
 			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(contactRoot.get(Contact.RESULTING_CASE)) : null;
 
@@ -1608,9 +1612,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.recentDateFilter(cb, reportDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			contactService.recentDateFilter(cb, lastContactDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
+		final Date relevantDate = criteria.getRelevantDate();
+		final Predicate relevantDateFilter = CriteriaBuilderHelper.or(
+			cb,
+			contactService.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
+			contactService.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
+
 		cq.where(
-			CriteriaBuilderHelper
-				.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, noResulingCaseFilter, recentContactsFilter));
+			CriteriaBuilderHelper.and(
+				cb,
+				defaultFilter,
+				userFilter,
+				samePersonFilter,
+				diseaseFilter,
+				cazeFilter,
+				contactClassificationFilter,
+				noResulingCaseFilter,
+				recentContactsFilter,
+				relevantDateFilter));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 

@@ -16,6 +16,8 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 	private Disease disease;
 	private Date lastContactDate;
 	private Date reportDate;
+	private Date relevantDate;
+	private ContactClassification contactClassification;
 	private Boolean excludePseudonymized;
 	private Boolean noResultingCase;
 
@@ -74,6 +76,24 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 
 	public ContactSimilarityCriteria setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+		return this;
+	}
+
+	public Date getRelevantDate() {
+		return relevantDate;
+	}
+
+	public ContactSimilarityCriteria setRelevantDate(Date relevantDate) {
+		this.relevantDate = relevantDate;
+		return this;
+	}
+
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+
+	public ContactSimilarityCriteria setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
 		return this;
 	}
 
