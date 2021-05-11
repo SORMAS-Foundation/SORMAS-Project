@@ -60,11 +60,14 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -612,9 +615,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
+				FollowUpPeriodDto followUpPeriod = ContactLogic.getFollowUpStartDate(
+					lastContactDate.getValue(),
+					reportDate.getValue(),
+					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
+				Date minimumFollowUpUntilDate =
+					FollowUpLogic
+						.calculateFollowUpUntilDate(
+							followUpPeriod,
+							null,
+							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
+							FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(getSelectedDisease()))
+						.getFollowUpEndDate();
+
 				dfFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
@@ -995,15 +1008,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		tfExpectedFollowUpUntilDate.setValue(
-			DateHelper.formatLocalDate(
-				ContactLogic.calculateFollowUpUntilDate(
-					newFieldValue,
-					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease()),
-					true),
-				I18nProperties.getUserLanguage()));
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
+		tfExpectedFollowUpUntilDate.setDescription(
+			String.format(
+				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
+				followUpPeriodDto.getFollowUpStartDateType(),
+				DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

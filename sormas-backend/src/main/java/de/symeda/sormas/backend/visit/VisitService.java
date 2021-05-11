@@ -82,8 +82,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Root<Contact> contactRoot = visitsQuery.from(Contact.class);
 		Join<Contact, Visit> visitJoin = contactRoot.join(Contact.VISITS, JoinType.LEFT);
 
-		visitsQuery.where(CriteriaBuilderHelper.
-			and(
+		visitsQuery.where(
+			CriteriaBuilderHelper.and(
 				cb,
 				contactService.createUserFilter(cb, visitsQuery, contactRoot),
 				contactService.createActiveContactsFilter(cb, contactRoot),
@@ -135,8 +135,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter =
-				CriteriaBuilderHelper.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
 
 		if (date != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date)));
@@ -160,7 +160,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
 
 		if (date != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date)));

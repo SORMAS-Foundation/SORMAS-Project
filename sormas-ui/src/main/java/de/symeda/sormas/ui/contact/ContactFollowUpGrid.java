@@ -56,7 +56,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			ContactFollowUpDto.LAST_CONTACT_DATE,
 			FollowUpDto.REPORT_DATE,
 			FollowUpDto.FOLLOW_UP_UNTIL,
-			ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS);
+			FollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
 		setVisitColumns(referenceDate, interval, criteria);
 

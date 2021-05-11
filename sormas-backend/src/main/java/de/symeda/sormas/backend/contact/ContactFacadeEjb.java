@@ -58,7 +58,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +82,14 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -129,6 +130,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -154,6 +156,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
@@ -202,6 +205,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private VisitService visitService;
 	@EJB
+	private VisitFacadeEjbLocal visitFacade;
+	@EJB
 	private TaskService taskService;
 	@EJB
 	private RegionService regionService;
@@ -234,7 +239,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private VisitFacadeEjbLocal visitFacade;
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private SampleFacadeEjbLocal sampleFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -892,7 +899,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;
-				case ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS:
+				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
 					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
 					break;
 				case FollowUpDto.FIRST_NAME:
@@ -962,6 +969,16 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return resultList;
+	}
+
+	@Override
+	public FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
+		return ContactLogic.calculateFollowUpUntilDate(
+			contactDto,
+			ContactLogic.getFollowUpStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid()))),
+			visitFacade.getVisitsByContact(contactDto.toReference()),
+			diseaseConfigurationFacade.getFollowUpDuration(contactDto.getDisease()),
+			ignoreOverwrite);
 	}
 
 	@Override
