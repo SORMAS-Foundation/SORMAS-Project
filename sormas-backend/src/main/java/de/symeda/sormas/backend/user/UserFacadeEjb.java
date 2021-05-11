@@ -177,6 +177,16 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles) {
+
+		List<Region> regions = regionService.getByUuids(regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()));
+		return userService.getAllByRegionsAndUserRolesInJurisdiction(regions, assignableRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	/*
 	 * Get all users with the next higher jurisdiction, whose location contains the current users location
 	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
@@ -226,6 +236,16 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getAllByDistrictInJurisdiction(district, includeSupervisors, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
+
+		List<District> districts = districtService.getByUuids(districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()));
+		return userService.getAllByDistrictsInJurisdiction(districts, includeSupervisors, userRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -303,7 +323,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -362,7 +382,12 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.select(user);
 
-		List<User> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<User> resultList;
+		if (first != null && max != null) {
+			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			resultList = em.createQuery(cq).getResultList();
+		}
 		return resultList.stream().map(u -> toDto(u)).collect(Collectors.toList());
 	}
 
@@ -514,7 +539,32 @@ public class UserFacadeEjb implements UserFacade {
 				return Collections.emptyList();
 			}
 		}
+	}
 
+	public void enableUsers(List<String> userUuids) {
+		updateActiveState(userUuids, true);
+	}
+
+	@Override
+	public void disableUsers(List<String> userUuids) {
+		updateActiveState(userUuids, false);
+	}
+
+	private void updateActiveState(List<String> userUuids, boolean active) {
+		List<User> users = userService.getByUuids(userUuids);
+		for (User user : users) {
+			User oldUser;
+			try {
+				oldUser = (User) BeanUtils.cloneBean(user);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid bean access", e);
+			}
+
+			user.setActive(active);
+			userService.ensurePersisted(user);
+
+			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+		}
 	}
 
 	@LocalBean

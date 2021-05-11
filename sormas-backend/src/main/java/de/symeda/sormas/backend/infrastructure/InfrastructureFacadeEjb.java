@@ -96,10 +96,12 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate()));
 		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate()));
 
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
+		}
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CAMPAIGNS)) {
 			sync.setCampaigns(campaignFacade.getAllAfter(changeDates.getCampaignChangeDate()));
 			sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
-			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
 		}
 
 		return sync;

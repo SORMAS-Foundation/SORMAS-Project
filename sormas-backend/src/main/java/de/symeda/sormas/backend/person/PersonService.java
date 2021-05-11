@@ -48,7 +48,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.person.*;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -57,6 +56,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -388,14 +389,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
 		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
-
-//		final Predicate reportedByCurrentUser = cb.and(
-//			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
-//			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
-//		eventParticipantJurisdictionSubQuery
-//			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
-		eventParticipantJurisdictionSubQuery.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId));
-
+		eventParticipantJurisdictionSubQuery.where(
+			cb.and(
+				cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId),
+				eventParticipantService.isInJurisdictionOrOwned(cb, cq, eventParticipantRoot, new EventParticipantJoins<>(eventParticipantRoot))));
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
 
 		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);

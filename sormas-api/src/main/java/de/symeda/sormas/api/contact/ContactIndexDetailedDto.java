@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -60,9 +61,11 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseFirstName, String caseLastName, String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
-								   String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid,
+								   String caseReportingUserUid,
+								   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+								   String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, String externalID, String externalToken,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
@@ -72,9 +75,11 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 		//@formatter:off
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, regionName, districtUuid, districtName, communityUuid,
-				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, symptomJournalStatus,
+				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, symptomJournalStatus, vaccination,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-				caseReportingUserUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
+				caseReportingUserUid,
+				caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid,
+				caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
 		//@formatter:on
 
 		this.sex = sex;

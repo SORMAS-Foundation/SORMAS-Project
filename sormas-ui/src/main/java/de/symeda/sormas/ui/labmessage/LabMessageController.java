@@ -564,7 +564,7 @@ public class LabMessageController {
 	}
 
 	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
-		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null);
+		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null, null);
 		contactDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		contactDto.setPerson(person.toReference());
 		return contactDto;
@@ -615,6 +615,7 @@ public class LabMessageController {
 			sampleDto.setLabSampleID(labMessageDto.getLabSampleId());
 		}
 		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
+		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getTestLabName());
@@ -635,10 +636,9 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		Window window) {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			ControllerProvider.getSampleController().getSampleCreateComponent(
-					sampleDto,
-					(savedSampleDto, pathogenTestDto) -> finishProcessingLabMessage(labMessageDto, pathogenTestDto)
-			);
+			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
+				finishProcessingLabMessage(labMessageDto, pathogenTestDto);
+			});
 
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
 		includeTestCheckbox.setValue(Boolean.TRUE);
@@ -703,7 +703,10 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
 				window.close();
-			}, (savedPathogenTestDto, runnable) -> finishProcessingLabMessage(labMessageDto, savedPathogenTestDto));
+			}, (savedPathogenTestDto, runnable) -> {
+				runnable.run();
+				finishProcessingLabMessage(labMessageDto, savedPathogenTestDto);
+			});
 		pathogenTestCreateComponent.addDiscardListener(window::close);
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
 		return pathogenTestCreateComponent;
@@ -742,8 +745,8 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-        labMessageDto.setPathogenTest(pathogenTestDto.toReference());
-        labMessageDto.setStatus(LabMessageStatus.PROCESSED);
+		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
+		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}
@@ -784,17 +787,14 @@ public class LabMessageController {
 		if (SampleCreateForm.class.equals(component.getClass())) {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
 			if (sample.getAssociatedCase() != null) {
-				return ButtonHelper.createButton(
-					Captions.labMessage_deleteNewlyCreatedCase,
-					e -> {
-						try {
-							FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
-						} catch (ExternalSurveillanceToolException survToolException) {
-							// should not happen because the new case was not shared
-							throw new RuntimeException(survToolException);
-						}
-					},
-					ValoTheme.BUTTON_PRIMARY);
+				return ButtonHelper.createButton(Captions.labMessage_deleteNewlyCreatedCase, e -> {
+					try {
+						FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
+					} catch (ExternalSurveillanceToolException survToolException) {
+						// should not happen because the new case was not shared
+						throw new RuntimeException(survToolException);
+					}
+				}, ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedContact,
@@ -810,7 +810,10 @@ public class LabMessageController {
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");
 	}
 
-	private void addProcessedInMeantimeCheck(CommitDiscardWrapperComponent<? extends Component> createComponent, LabMessageDto labMessageDto, boolean entityCreated) {
+	private void addProcessedInMeantimeCheck(
+		CommitDiscardWrapperComponent<? extends Component> createComponent,
+		LabMessageDto labMessageDto,
+		boolean entityCreated) {
 		createComponent.setPrimaryCommitListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
 				createComponent.getCommitButton().setEnabled(false);
@@ -825,7 +828,7 @@ public class LabMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		Button deleteButton = ButtonHelper.createButtonWithCaption(Captions.actionDelete, I18nProperties.getCaption(Captions.actionDelete), (e) -> {
+		Button deleteButton = ButtonHelper.createButton(Captions.actionDelete, I18nProperties.getCaption(Captions.actionDelete), (e) -> {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.LabMessage)),
 				() -> {
@@ -840,8 +843,8 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(deleteButton);
 
-		Button unclearButton = ButtonHelper
-			.createButtonWithCaption(Captions.actionUnclearLabMessage, I18nProperties.getCaption(Captions.actionUnclearLabMessage), (e) -> {
+		Button unclearButton =
+			ButtonHelper.createButton(Captions.actionUnclearLabMessage, I18nProperties.getCaption(Captions.actionUnclearLabMessage), (e) -> {
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
 					new Label(I18nProperties.getString(Strings.confirmationUnclearLabMessage)),
@@ -863,10 +866,8 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(unclearButton);
 
-		Button forwardButton = ButtonHelper.createButtonWithCaption(
-			Captions.actionManualForwardLabMessage,
-			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
-			(e) -> {
+		Button forwardButton = ButtonHelper
+			.createButton(Captions.actionManualForwardLabMessage, I18nProperties.getCaption(Captions.actionManualForwardLabMessage), (e) -> {
 				VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
 					new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedLabMessage)),

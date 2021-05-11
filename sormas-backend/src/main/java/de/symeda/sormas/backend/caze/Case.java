@@ -125,6 +125,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -252,6 +255,10 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
 
+	private Region responsibleRegion;
+	private District responsibleDistrict;
+	private Community responsibleCommunity;
+
 	private Region region;
 	private District district;
 	private Community community;
@@ -351,7 +358,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private Trimester trimester;
 
 	private List<Task> tasks;
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> convertedContact;
@@ -680,6 +687,33 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(District responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	@ManyToOne(cascade = {})
+	public Community getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	public void setResponsibleCommunity(Community responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	@ManyToOne(cascade = {})

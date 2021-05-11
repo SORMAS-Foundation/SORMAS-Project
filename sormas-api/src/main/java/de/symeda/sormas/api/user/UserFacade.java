@@ -44,9 +44,11 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 
+	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
+
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
-	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
 
@@ -60,6 +62,8 @@ public interface UserFacade {
 	 * @return
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
+
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, UserRole... userRoles);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
@@ -80,4 +84,8 @@ public interface UserFacade {
 	UserSyncResult syncUser(String userUuid);
 
 	List<UserDto> getUsersWithDefaultPassword();
+
+	void enableUsers(List<String> userUuids);
+
+	void disableUsers(List<String> userUuids);
 }

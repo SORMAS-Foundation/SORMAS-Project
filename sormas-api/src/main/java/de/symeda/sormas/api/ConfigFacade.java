@@ -35,6 +35,8 @@ public interface ConfigFacade {
 
 	String getAppUrl();
 
+	String getUiUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();

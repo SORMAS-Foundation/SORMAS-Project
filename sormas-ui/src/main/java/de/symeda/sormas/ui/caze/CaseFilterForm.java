@@ -83,6 +83,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseDataDto.QUARANTINE_TO,
 		CaseCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+		CaseCriteria.VACCINATION,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -215,6 +216,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(
 			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
+
+		addField(
+			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 
 		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
@@ -313,13 +319,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(
-					moreFiltersContainer,
-					CheckBox.class,
-					FieldConfiguration.withCaptionAndStyle(
-							CaseCriteria.ONLY_CASES_WITH_REINFECTION,
-							I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
-							I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
-							CssStyles.CHECKBOX_FILTER_INLINE));
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_WITH_REINFECTION,
+					I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
+					I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
+					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
 		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
