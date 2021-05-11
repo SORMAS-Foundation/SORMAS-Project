@@ -48,7 +48,7 @@ public final class FollowUpLogic {
 		}
 	}
 
-	public static FollowUpPeriodDto getStartDate(Date reportDate, List<SampleDto> samples) {
+	public static FollowUpPeriodDto getFollowUpStartDate(Date reportDate, List<SampleDto> samples) {
 		Date earliestSampleDate = null;
 		for (SampleDto sample : samples) {
 			if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
@@ -56,8 +56,12 @@ public final class FollowUpLogic {
 				earliestSampleDate = sample.getSampleDateTime();
 			}
 		}
+		return getFollowUpStartDate(reportDate, earliestSampleDate);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date reportDate, Date earliestSampleDate) {
 		if (earliestSampleDate != null && earliestSampleDate.before(reportDate)) {
-			return new FollowUpPeriodDto(earliestSampleDate, FollowUpStartDateType.EARLIES_SAMPLE_COLLECTION_DATE);
+			return new FollowUpPeriodDto(earliestSampleDate, FollowUpStartDateType.EARLIEST_SAMPLE_COLLECTION_DATE);
 		}
 
 		return new FollowUpPeriodDto(reportDate, FollowUpStartDateType.REPORT_DATE);
@@ -89,8 +93,8 @@ public final class FollowUpLogic {
 			untilDate = DateHelper.addDays(lastVisitDate, 1);
 		}
 
-		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date and/or last contact
-		// date were changed), set it to the standard follow-up until date
+		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date, last contact
+		// date or symptom onset date were changed), set it to the standard follow-up until date
 		if (DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
 			untilDate = standardUntilDate;
 		}

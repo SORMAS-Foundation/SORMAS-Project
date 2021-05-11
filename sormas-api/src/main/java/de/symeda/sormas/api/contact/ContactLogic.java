@@ -49,7 +49,15 @@ public final class ContactLogic {
 		if (lastContactDate != null) {
 			return new FollowUpPeriodDto(lastContactDate, FollowUpStartDateType.LAST_CONTACT_DATE);
 		}
-		return FollowUpLogic.getStartDate(reportDate, samples);
+		return FollowUpLogic.getFollowUpStartDate(reportDate, samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date lastContactDate, Date reportDate, Date earliestSampleDate) {
+
+		if (lastContactDate != null) {
+			return new FollowUpPeriodDto(lastContactDate, FollowUpStartDateType.LAST_CONTACT_DATE);
+		}
+		return FollowUpLogic.getFollowUpStartDate(reportDate, earliestSampleDate);
 	}
 
 	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {

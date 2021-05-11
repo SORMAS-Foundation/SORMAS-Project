@@ -62,7 +62,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
@@ -98,7 +99,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
@@ -816,14 +816,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			ContactDto contactDto = contactFacade.toDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-			List<SampleDto> samples =
-				contact.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
+
+			Date earliestSampleDate = null;
+			for (Sample sample : contact.getSamples()) {
+				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+					earliestSampleDate = sample.getSampleDateTime();
+				}
+			}
+
 			Date untilDate =
 				ContactLogic
 					.calculateFollowUpUntilDate(
 						contactDto,
-						ContactLogic.getFollowUpStartDate(contactFacade.toDto(contact), samples),
+						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
 						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false)

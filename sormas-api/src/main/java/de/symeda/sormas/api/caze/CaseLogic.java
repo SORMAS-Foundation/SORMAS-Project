@@ -72,7 +72,15 @@ public final class CaseLogic {
 		if (onsetDate != null) {
 			return new FollowUpPeriodDto(onsetDate, FollowUpStartDateType.SYMPTOM_ONSET_DATE);
 		}
-		return FollowUpLogic.getStartDate(reportDate, samples);
+		return FollowUpLogic.getFollowUpStartDate(reportDate, samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date onsetDate, Date reportDate, Date earliestSampleDate) {
+
+		if (onsetDate != null) {
+			return new FollowUpPeriodDto(onsetDate, FollowUpStartDateType.SYMPTOM_ONSET_DATE);
+		}
+		return FollowUpLogic.getFollowUpStartDate(reportDate, earliestSampleDate);
 	}
 
 	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {

@@ -389,7 +389,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		Date contactStartDate = ContactLogic.getStartDate(toDto(contact));
+		Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 		for (Visit visit : visitService.getAllRelevantVisits(
 			contact.getPerson(),
 			contact.getDisease(),

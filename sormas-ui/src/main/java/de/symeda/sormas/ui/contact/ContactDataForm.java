@@ -111,7 +111,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
-	private static final String INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "infoExpectedFollowUpUntilDateLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -161,7 +160,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
-					fluidRowLocs(INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
                     + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
@@ -181,7 +179,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
-	private Label labelInfoExpectedFollowUpUntilDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -474,9 +471,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tfExpectedFollowUpUntilDate = new TextField();
 		tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
 		getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-		labelInfoExpectedFollowUpUntilDate = new Label();
-		labelInfoExpectedFollowUpUntilDate.addStyleNames(CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_NONE);
-		getContent().addComponent(labelInfoExpectedFollowUpUntilDate, INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
 
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
@@ -1017,11 +1011,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
-
-		labelInfoExpectedFollowUpUntilDate.setValue(
+		tfExpectedFollowUpUntilDate.setDescription(
 			String.format(
-				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDate),
-				I18nProperties.getString(Strings.forThisContact),
+				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
 				followUpPeriodDto.getFollowUpStartDateType(),
 				DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 

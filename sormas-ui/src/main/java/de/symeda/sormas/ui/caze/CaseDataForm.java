@@ -158,7 +158,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
-	private static final String INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "infoExpectedFollowUpUntilDateLoc";
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
@@ -247,7 +246,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
                     fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
                     fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
                     fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
-					fluidRowLocs(INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC) +
                     fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 
 	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
@@ -275,7 +273,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityType;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
-	private Label labelInfoExpectedFollowUpUntilDate;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
@@ -727,9 +724,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			tfExpectedFollowUpUntilDate = new TextField();
 			tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.CaseData_expectedFollowUpUntil));
 			getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-			labelInfoExpectedFollowUpUntilDate = new Label();
-			labelInfoExpectedFollowUpUntilDate.addStyleNames(CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_NONE);
-			getContent().addComponent(labelInfoExpectedFollowUpUntilDate, INFO_EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
 			cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
@@ -1579,11 +1573,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			tfExpectedFollowUpUntilDate
 				.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 			tfExpectedFollowUpUntilDate.setReadOnly(true);
-
-			labelInfoExpectedFollowUpUntilDate.setValue(
+			tfExpectedFollowUpUntilDate.setDescription(
 				String.format(
-					I18nProperties.getString(Strings.infoExpectedFollowUpUntilDate),
-					I18nProperties.getString(Strings.forThisCase),
+					I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateCase),
 					followUpPeriodDto.getFollowUpStartDateType(),
 					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}

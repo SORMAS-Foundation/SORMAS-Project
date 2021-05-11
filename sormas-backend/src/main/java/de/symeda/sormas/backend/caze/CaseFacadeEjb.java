@@ -1795,7 +1795,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Set<Visit> allRelevantVisits = visitService.getAllRelevantVisits(
 			caze.getPerson(),
 			caze.getDisease(),
-			CaseLogic.getStartDate(toDto(caze)),
+			CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getSymptoms().getOnsetDate()),
 			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
 
 		for (Visit visit : allRelevantVisits) {
@@ -2389,7 +2389,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
 
 		if (newCase.getPerson().getApproximateAge() != null) {
-			Date newCaseStartDate = CaseLogic.getStartDate(toDto(newCase));
+			Date newCaseStartDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReportDate());
 			if (existingCase == null || !CaseLogic.getStartDate(existingCase).equals(newCaseStartDate)) {
 				if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					newCase.setCaseAge(0);

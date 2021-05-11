@@ -66,7 +66,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
-import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -127,7 +127,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
@@ -1202,15 +1201,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
 			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-			List<SampleDto> samples =
-				caze.getSamples().stream().map(sample -> sampleFacade.convertToDto(sample, pseudonymizer)).collect(Collectors.toList());
+
+			Date earliestSampleDate = null;
+			for (Sample sample : caze.getSamples()) {
+				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+					earliestSampleDate = sample.getSampleDateTime();
+				}
+			}
 
 			Date untilDate =
 				CaseLogic
 					.calculateFollowUpUntilDate(
 						caseDto,
-						CaseLogic.getFollowUpStartDate(caseFacade.toDto(caze), samples),
+						CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
 						caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
 						false)
