@@ -1,3 +1,5 @@
+# Script Usage
+
 ## Import scripts
 
 To prepare data for importing into SORMAS with the import scripts, one can use the import templates downloaded from the UI. Note that the second header must be removed from them.
