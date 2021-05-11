@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -58,6 +59,16 @@ public class ContactListCriteriaBuilder {
 		return buildIndexCriteria(
 			ContactIndexDetailedDto.class,
 			this::getContactIndexDetailedSelections,
+			contactCriteria,
+			this::getIndexDetailOrders,
+			sortProperties);
+	}
+
+	public CriteriaQuery<MergeContactIndexDto> buildMergeIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
+
+		return buildIndexCriteria(
+			MergeContactIndexDto.class,
+			this::getMergeContactIndexSelections,
 			contactCriteria,
 			this::getIndexDetailOrders,
 			sortProperties);
@@ -128,6 +139,35 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CHANGE_DATE),
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN));
+	}
+
+	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+
+		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+
+		return Arrays.asList(
+			contact.get(Contact.ID),
+			contact.get(Contact.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getPerson().get(Person.SEX),
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			contact.get(Contact.DISEASE),
+			contact.get(Contact.DISEASE_DETAILS),
+			joins.getRegion().get(Region.NAME),
+			joins.getDistrict().get(District.NAME),
+			contact.get(Contact.LAST_CONTACT_DATE),
+			contact.get(Contact.CREATION_DATE),
+			contact.get(Contact.CONTACT_CLASSIFICATION),
+			contact.get(Contact.COMPLETENESS),
+			contact.get(Contact.REPORT_DATE_TIME));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb) {

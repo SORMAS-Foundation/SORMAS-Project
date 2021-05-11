@@ -58,6 +58,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1728,7 +1729,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean ignoreRegion) {
+	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean ignoreRegion) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -1828,33 +1829,33 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
 
 		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
-		List<ContactIndexDto[]> resultList = new ArrayList<>();
+		List<MergeContactIndexDto[]> resultList = new ArrayList<>();
 
 		if (!foundIds.isEmpty()) {
-			CriteriaQuery<ContactIndexDto> indexContactsCq = cb.createQuery(ContactIndexDto.class);
+			CriteriaQuery<MergeContactIndexDto> indexContactsCq = cb.createQuery(MergeContactIndexDto.class);
 			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
-			selectIndexDtoFields(cb, indexContactsCq, indexRoot);
+			selectMergeIndexDtoFields(cb, indexContactsCq, indexRoot);
 			indexContactsCq.where(
 				indexRoot.get(Contact.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
-			Map<Long, ContactIndexDto> indexContacts =
+			Map<Long, MergeContactIndexDto> indexContacts =
 				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
-					ContactIndexDto parent = (ContactIndexDto) indexContacts.get(idPair[0]).clone();
-					ContactIndexDto child = (ContactIndexDto) indexContacts.get(idPair[1]).clone();
+					MergeContactIndexDto parent = (MergeContactIndexDto) indexContacts.get(idPair[0]).clone();
+					MergeContactIndexDto child = (MergeContactIndexDto) indexContacts.get(idPair[1]).clone();
 
 					if (parent.getCompleteness() == null && child.getCompleteness() == null
 						|| parent.getCompleteness() != null
 						&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
 						resultList.add(
-							new ContactIndexDto[] {
+							new MergeContactIndexDto[] {
 								parent,
 								child });
 					} else {
 						resultList.add(
-							new ContactIndexDto[] {
+							new MergeContactIndexDto[] {
 								child,
 								parent });
 					}
@@ -1867,9 +1868,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		return resultList;
 	}
 
-	private void selectIndexDtoFields(CriteriaBuilder cb, CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
+	private void selectMergeIndexDtoFields(CriteriaBuilder cb, CriteriaQuery<MergeContactIndexDto> cq, Root<Contact> root) {
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
-		cq.multiselect(listCriteriaBuilder.getContactIndexSelections(root, contactQueryContext));
+		cq.multiselect(listCriteriaBuilder.getMergeContactIndexSelections(root, contactQueryContext));
 	}
 
 	private void doSave(Contact contact, boolean handleChanges) {

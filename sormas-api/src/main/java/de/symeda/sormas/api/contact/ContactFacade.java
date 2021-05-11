@@ -153,7 +153,7 @@ public interface ContactFacade {
 
 	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
 
-	List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String uuid);
 
