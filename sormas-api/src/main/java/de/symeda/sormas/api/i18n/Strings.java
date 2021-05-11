@@ -301,6 +301,7 @@ public interface Strings {
 	String headingCampaignFormDataDuplicateExisting = "headingCampaignFormDataDuplicateExisting";
 	String headingCampaignFormDataDuplicateNew = "headingCampaignFormDataDuplicateNew";
 	String headingCaseComparison = "headingCaseComparison";
+	String headingCaseConversion = "headingCaseConversion";
 	String headingCaseData = "headingCaseData";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";

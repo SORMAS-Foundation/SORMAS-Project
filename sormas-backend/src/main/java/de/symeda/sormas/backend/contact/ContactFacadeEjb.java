@@ -1598,6 +1598,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CaseReferenceDto caze = criteria.getCaze();
 		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
 
+		final Predicate noResulingCaseFilter =
+			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(contactRoot.get(Contact.RESULTING_CASE)) : null;
+
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();
 		final Predicate recentContactsFilter = CriteriaBuilderHelper.and(
@@ -1605,7 +1608,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.recentDateFilter(cb, reportDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			contactService.recentDateFilter(cb, lastContactDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
-		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
+		cq.where(
+			CriteriaBuilderHelper
+				.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, noResulingCaseFilter, recentContactsFilter));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
@@ -1624,6 +1629,10 @@ public class ContactFacadeEjb implements ContactFacade {
 						null);
 				}
 			});
+
+		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
+			contacts = contacts.stream().filter(java.util.function.Predicate.not(SimilarContactDto::isPseudonymized)).collect(Collectors.toList());
+		}
 
 		return contacts;
 	}

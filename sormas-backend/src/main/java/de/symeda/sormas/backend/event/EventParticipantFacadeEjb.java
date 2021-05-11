@@ -859,6 +859,15 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE));
+		cq.groupBy(
+			eventParticipantRoot.get(EventParticipant.UUID),
+			personJoin.get(Person.FIRST_NAME),
+			personJoin.get(Person.LAST_NAME),
+			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			eventJoin.get(Event.UUID),
+			eventJoin.get(Event.EVENT_STATUS),
+			eventJoin.get(Event.EVENT_TITLE),
+			eventJoin.get(Event.START_DATE));
 
 		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
 		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
@@ -869,7 +878,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(eventJoin.get(Event.DISEASE), disease) : null;
 
-		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter));
+		final Predicate noResulingCaseFilter =
+			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE)) : null;
+
+		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, noResulingCaseFilter));
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
@@ -879,6 +891,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			participants,
 			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
 			null);
+
+		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
+			participants = participants.stream()
+				.filter(java.util.function.Predicate.not(SimilarEventParticipantDto::isPseudonymized))
+				.collect(Collectors.toList());
+		}
 
 		return participants;
 	}
