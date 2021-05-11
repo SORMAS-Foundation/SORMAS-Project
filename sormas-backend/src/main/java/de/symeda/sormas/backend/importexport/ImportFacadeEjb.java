@@ -221,12 +221,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, CaseDataDto.class, "", separator);
 		appendListOfFields(importColumns, SampleDto.class, "", separator);
 		appendListOfFields(importColumns, PathogenTestDto.class, "", separator);
-		addPrimaryPhoneAndEmail(separator, importColumns, PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
-	private void addPrimaryPhoneAndEmail(char separator, List<ImportColumn> importColumns, String phone, String emailAddress) {
+	private void addPrimary(char separator, List<ImportColumn> importColumns, String phone, String emailAddress) {
 		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + phone, String.class, separator));
 		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + emailAddress, String.class, separator));
 	}
@@ -271,11 +270,10 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		addPrimary(separator, importColumns, PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 
 		importColumns =
 			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
-
-		addPrimaryPhoneAndEmail(separator, importColumns, PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
@@ -338,7 +336,6 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, ContactDto.class, "", separator);
 		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
 		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
-		addPrimaryPhoneAndEmail(separator, importColumns, PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 
 		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, false);
 	}
@@ -356,7 +353,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(CaseDataDto.class, PLAGUE_TYPE, PlagueType.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, DENGUE_FEVER_TYPE, DengueFeverType.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, RABIES_TYPE, RabiesType.class, separator));
-		addPrimaryPhoneAndEmail(separator, importColumns, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.FIRST_NAME, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.LAST_NAME, String.class, separator));
 		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.SEX, Sex.class, separator));
 		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.BIRTH_DATE_DD, Integer.class, separator));
 		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.BIRTH_DATE_MM, Integer.class, separator));
@@ -742,6 +740,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
+				addPrimary(separator, importColumns, PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
 			}
