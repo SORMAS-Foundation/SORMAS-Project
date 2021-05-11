@@ -36,6 +36,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
@@ -273,19 +274,68 @@ public class CaseController {
 			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 
 		if (matchingContacts.size() > 0 || matchingEventParticipants.size() > 0) {
-			ConvertToCaseSelectionField convertToCaseSelectionField =
-				new ConvertToCaseSelectionField(caze, matchingContacts, matchingEventParticipants);
-			convertToCaseSelectionField.setWidth(1280, Sizeable.Unit.PIXELS);
-			CommitDiscardWrapperComponent<ConvertToCaseSelectionField> convertToCaseSelectComponent =
-				new CommitDiscardWrapperComponent<>(convertToCaseSelectionField);
-			convertToCaseSelectionField.setWrapperComponent(convertToCaseSelectComponent);
+			String infoText = matchingEventParticipants.isEmpty()
+				? String.format(I18nProperties.getString(Strings.infoConvertToCaseContacts), matchingContacts.size(), caze.getDisease())
+				: (matchingContacts.isEmpty()
+					? String.format(
+						I18nProperties.getString(Strings.infoConvertToCaseEventParticipants),
+						matchingEventParticipants.size(),
+						caze.getDisease())
+					: String.format(
+						I18nProperties.getString(Strings.infoConvertToCaseContactsAndEventParticipants),
+						matchingContacts.size(),
+						caze.getDisease(),
+						matchingEventParticipants.size(),
+						caze.getDisease()));
 
-			convertToCaseSelectComponent.addCommitListener(() -> {
-				setResultingCase(caze, convertToCaseSelectionField.getSelectedContacts(), convertToCaseSelectionField.getSelectedEventParticipants());
+			HorizontalLayout infoComponent = VaadinUiUtil.createInfoComponent(infoText);
+			infoComponent.setWidth(600, Sizeable.Unit.PIXELS);
+			CommitDiscardWrapperComponent<HorizontalLayout> convertToCaseConfirmComponent = new CommitDiscardWrapperComponent<>(infoComponent);
+			convertToCaseConfirmComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionYesForAll));
+			convertToCaseConfirmComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionNo));
+
+			convertToCaseConfirmComponent.addCommitListener(() -> {
+				setResultingCase(caze, matchingContacts, matchingEventParticipants);
 			});
 
-			VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion));
+			Button convertSomeButton =
+				ButtonHelper.createButton("convertSome", I18nProperties.getCaption(Captions.actionYesForSome), new Button.ClickListener() {
+
+					@Override
+					public void buttonClick(Button.ClickEvent event) {
+						convertToCaseConfirmComponent.discard();
+						showConvertToCaseSelection(caze, matchingContacts, matchingEventParticipants);
+					}
+				}, ValoTheme.BUTTON_PRIMARY);
+
+			HorizontalLayout buttonsPanel = convertToCaseConfirmComponent.getButtonsPanel();
+			buttonsPanel.addComponent(convertSomeButton, convertToCaseConfirmComponent.getComponentCount() - 1);
+			buttonsPanel.setComponentAlignment(convertSomeButton, Alignment.BOTTOM_RIGHT);
+			buttonsPanel.setExpandRatio(convertSomeButton, 0);
+
+			VaadinUiUtil.showModalPopupWindow(convertToCaseConfirmComponent, I18nProperties.getString(Strings.headingCaseConversion));
 		}
+	}
+
+	private void showConvertToCaseSelection(
+		CaseDataDto caze,
+		List<SimilarContactDto> matchingContacts,
+		List<SimilarEventParticipantDto> matchingEventParticipants) {
+
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+		ConvertToCaseSelectionField convertToCaseSelectionField = new ConvertToCaseSelectionField(caze, matchingContacts, matchingEventParticipants);
+		convertToCaseSelectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+
+		CommitDiscardWrapperComponent<ConvertToCaseSelectionField> convertToCaseSelectComponent =
+			new CommitDiscardWrapperComponent<>(convertToCaseSelectionField);
+		convertToCaseSelectComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		convertToCaseSelectComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+
+		convertToCaseSelectComponent.addCommitListener(() -> {
+			setResultingCase(caze, convertToCaseSelectionField.getSelectedContacts(), convertToCaseSelectionField.getSelectedEventParticipants());
+		});
+
+		VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion));
 	}
 
 	private void setResultingCase(

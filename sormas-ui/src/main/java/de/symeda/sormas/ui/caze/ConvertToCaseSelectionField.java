@@ -18,48 +18,51 @@ package de.symeda.sormas.ui.caze;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ConvertToCaseSelectionField extends VerticalLayout {
 
 	private ContactSelectionGrid contactSelectionGrid;
 	private EventParticipantSelectionGrid eventParticipantSelectionGrid;
 
+	private CaseDataDto caseDataDto;
 	private List<SimilarContactDto> matchingContacts;
 	private List<SimilarEventParticipantDto> matchingEventParticipants;
-
-	private CommitDiscardWrapperComponent<?> wrapperComponent;
-	private Button convertSomeButton;
 
 	public ConvertToCaseSelectionField(
 		CaseDataDto caseDataDto,
 		List<SimilarContactDto> matchingContacts,
 		List<SimilarEventParticipantDto> matchingEventParticipants) {
 
+		this.caseDataDto = caseDataDto;
 		this.matchingContacts = matchingContacts;
 		this.matchingEventParticipants = matchingEventParticipants;
+
+		setMargin(true);
+		setSpacing(true);
+
+		addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoConvertToCaseSelect)));
+		addContactDetailsComponent();
 
 		if (matchingContacts.size() > 0) {
 			contactSelectionGrid = new ContactSelectionGrid(matchingContacts);
 			contactSelectionGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 			contactSelectionGrid.setCaption(I18nProperties.getString(Strings.entityContacts));
-			contactSelectionGrid.setVisible(false);
 			addComponent(contactSelectionGrid);
 		}
 
@@ -67,9 +70,41 @@ public class ConvertToCaseSelectionField extends VerticalLayout {
 			eventParticipantSelectionGrid = new EventParticipantSelectionGrid(matchingEventParticipants);
 			eventParticipantSelectionGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 			eventParticipantSelectionGrid.setCaption(I18nProperties.getString(Strings.entityEventParticipants));
-			eventParticipantSelectionGrid.setVisible(false);
 			addComponent(eventParticipantSelectionGrid);
 		}
+	}
+
+	private void addContactDetailsComponent() {
+
+		HorizontalLayout contactDetailsLayout = new HorizontalLayout();
+		contactDetailsLayout.setSpacing(true);
+
+		final Label lblUuid = new Label(DataHelper.getShortUuid(caseDataDto));
+		lblUuid.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID));
+		lblUuid.setWidthUndefined();
+		contactDetailsLayout.addComponent(lblUuid);
+
+		final Label lblFirstName = new Label(caseDataDto.getPerson().getFirstName());
+		lblFirstName.setWidthUndefined();
+		lblFirstName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+		contactDetailsLayout.addComponent(lblFirstName);
+
+		final Label lblLastName = new Label(caseDataDto.getPerson().getLastName());
+		lblLastName.setWidthUndefined();
+		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+		contactDetailsLayout.addComponent(lblLastName);
+
+		final Label lblRegion = new Label(caseDataDto.getRegion().toString());
+		lblRegion.setWidthUndefined();
+		lblRegion.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+		contactDetailsLayout.addComponent(lblRegion);
+
+		final Label lblDistrict = new Label(caseDataDto.getDistrict().toString());
+		lblDistrict.setWidthUndefined();
+		lblDistrict.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		contactDetailsLayout.addComponent(lblDistrict);
+
+		addComponent(new Panel(contactDetailsLayout));
 	}
 
 	public List<SimilarContactDto> getSelectedContacts() {
@@ -82,45 +117,5 @@ public class ConvertToCaseSelectionField extends VerticalLayout {
 		return eventParticipantSelectionGrid != null
 			? eventParticipantSelectionGrid.getSelectedRows().stream().map(item -> (SimilarEventParticipantDto) item).collect(Collectors.toList())
 			: matchingEventParticipants;
-	}
-
-	public void setWrapperComponent(CommitDiscardWrapperComponent<?> wrapperComponent) {
-		this.wrapperComponent = wrapperComponent;
-		HorizontalLayout buttonsPanel = wrapperComponent.getButtonsPanel();
-		int index = buttonsPanel.getComponentCount() - 1;
-
-		getConvertSomeButton();
-		buttonsPanel.addComponent(convertSomeButton, index);
-		buttonsPanel.setComponentAlignment(convertSomeButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(convertSomeButton, 0);
-
-		wrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionYesForAll));
-		wrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionNo));
-	}
-
-	public Button getConvertSomeButton() {
-		if (convertSomeButton == null) {
-			convertSomeButton =
-				ButtonHelper.createButton("convertSome", I18nProperties.getCaption(Captions.actionYesForSome), new Button.ClickListener() {
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						toggleConvertSome();
-					}
-				}, ValoTheme.BUTTON_PRIMARY);
-		}
-
-		return convertSomeButton;
-	}
-
-	private void toggleConvertSome() {
-		contactSelectionGrid.setVisible(true);
-		eventParticipantSelectionGrid.setVisible(true);
-		convertSomeButton.setVisible(false);
-
-		wrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-		wrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 	}
 }

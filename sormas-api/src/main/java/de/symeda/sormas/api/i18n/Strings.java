@@ -587,6 +587,10 @@ public interface Strings {
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
+	String infoConvertToCaseContacts = "infoConvertToCaseContacts";
+	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
+	String infoConvertToCaseEventParticipants = "infoConvertToCaseEventParticipants";
+	String infoConvertToCaseSelect = "infoConvertToCaseSelect";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
