@@ -150,7 +150,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (FacadeProvider.getConfigFacade().isViewTabsCasesHospitalizationEnabled()
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				menu.addView(
@@ -166,13 +166,13 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
 					params);
 			}
-			if (FacadeProvider.getConfigFacade().isViewTabsCasesSymptomsEnabled()) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS)) {
 				menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			}
-			if (FacadeProvider.getConfigFacade().isViewTabsCasesEpidemiologicalDataEnabled() && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (FacadeProvider.getConfigFacade().isViewTabsCasesTherapyEnabled()
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_THERAPY)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
@@ -181,13 +181,13 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 
 		if (caseFollowupEnabled
-			&& FacadeProvider.getConfigFacade().isViewTabsCasesFollowUpEnabled()
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
 			&& caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
 		}
 
 		if (showExtraMenuEntries) {
-			if (FacadeProvider.getConfigFacade().isViewTabsCasesFollowUpEnabled()
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {

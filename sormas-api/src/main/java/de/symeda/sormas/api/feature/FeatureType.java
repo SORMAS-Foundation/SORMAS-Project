@@ -63,6 +63,16 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE }),
 
+	// SHOW/HIDE VIEW TAB FEATURES
+	VIEW_TAB_CASES_HOSPITALIZATION(false, true, null),
+	VIEW_TAB_CASES_SYMPTOMS(false, true, null),
+	VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA(false, true, null),
+	VIEW_TAB_CASES_THERAPY(false, true, null),
+	VIEW_TAB_CASES_FOLLOW_UP(false, true, null),
+	VIEW_TAB_CASES_CLINICAL_COURSE(false, true, null),
+	VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA(false, true, null),
+	VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS(false, true, null),
+
 	// ADDITIONAL FEATURES
 	GDPR_CONSENT_POPUP(true, false, null),
 	INFRASTRUCTURE_TYPE_AREA(true, false, null),
