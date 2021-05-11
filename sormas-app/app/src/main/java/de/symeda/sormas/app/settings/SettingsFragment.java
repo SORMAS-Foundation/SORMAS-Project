@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -45,6 +46,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
@@ -100,28 +102,30 @@ public class SettingsFragment extends BaseLandingFragment {
 		});
 
 		binding.setData(ConfigProvider.getUser());
-		binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
-		binding.userLanguage.addValueChangedListener(e -> {
-			if (!(e.getValue() == null
-				&& Language.fromLocaleString(ConfigProvider.getServerLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
-				if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
-					try {
-						Language newLanguage =
-							e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getServerLocale());
-						User user = binding.getData();
-						if (user != null) {
-							DatabaseHelper.getUserDao().saveAndSnapshot(user);
-						}
-						if (newLanguage != null) {
-							((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
-						}
-					} catch (DaoException ex) {
-						NotificationHelper
-							.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
+		Language initialLanguage = binding.getData() != null ? I18nProperties.getUserLanguage() : LocaleManager.getLanguagePref(getContext());
+		ValueChangeListener languageValueChangeListener = e -> {
+			Language currentLanguage = LocaleManager.getLanguagePref(getContext());
+			if (e.getValue() == null) {
+				// This happens e.g. when the user is not logged in
+				e.setValue(LocaleManager.getLanguagePref(getContext()));
+			}
+			Language newLanguage = (Language) e.getValue();
+			if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
+				try {
+					User user = binding.getData();
+					if (user != null) {
+						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
+					if (newLanguage != null) {
+						((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+					}
+				} catch (DaoException ex) {
+					NotificationHelper
+						.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
 				}
 			}
-		});
+		};
+		binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, false), initialLanguage, languageValueChangeListener);
 
 		return binding.getRoot();
 	}

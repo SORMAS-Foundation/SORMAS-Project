@@ -22,6 +22,7 @@ import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
 
 public final class DiseaseHelper {
 
@@ -59,22 +60,24 @@ public final class DiseaseHelper {
 	}
 
 	public static String toString(Disease disease, String diseaseDetails, DiseaseVariantReferenceDto diseaseVariant) {
-		return String.format("%s %s", toString(disease, diseaseDetails), variantToString(diseaseVariant));
+		return String.format("%s %s", toString(disease, diseaseDetails), variantInBrackets(diseaseVariant));
 	}
 
-	/**
-	 * @param diseaseVariant a disease variant
-	 * @return a string representation from the disease variant in the form of "(uuid - caption)"
-	 */
 	public static String variantToString(DiseaseVariantReferenceDto diseaseVariant) {
 		if (diseaseVariant == null) {
 			return "";
-		} else if (diseaseVariant.getUuid() != null && diseaseVariant.getCaption() != null) {
-			return String.format("(%s - %s)", diseaseVariant.getUuid(), diseaseVariant.getCaption());
-		} else if (diseaseVariant.getUuid() != null) {
-			return String.format("(%s)", diseaseVariant.getUuid());
 		} else {
-			return "";
+			return DataHelper.toStringNullable(diseaseVariant.getCaption());
 		}
+	}
+
+	/**
+	 *
+	 * @param diseaseVariantReferenceDto the disease variant
+	 * @return the disease variant string in the form of "(caption)" or an empty string if the disease variant name is blank
+	 */
+	public static String variantInBrackets(DiseaseVariantReferenceDto diseaseVariantReferenceDto) {
+		String diseaseVariant = variantToString(diseaseVariantReferenceDto);
+		return StringUtils.isBlank(diseaseVariant) ? StringUtils.EMPTY : String.format("(%s)", diseaseVariant);
 	}
 }

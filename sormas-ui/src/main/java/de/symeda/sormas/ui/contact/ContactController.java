@@ -695,7 +695,7 @@ public class ContactController {
 		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 
-		Label diseaseVariantLabel = new Label(DiseaseHelper.variantToString(contact.getDiseaseVariant()));
+		Label diseaseVariantLabel = new Label(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()));
 		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		diseaseLayout.addComponent(diseaseLabel);

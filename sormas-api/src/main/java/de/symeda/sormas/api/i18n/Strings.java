@@ -610,6 +610,8 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
+	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
@@ -996,6 +998,9 @@ public interface Strings {
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
 	String notificationPersonsUpdated = "notificationPersonsUpdated";
 	String notificationSmsSent = "notificationSmsSent";
+	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
+	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
+	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
