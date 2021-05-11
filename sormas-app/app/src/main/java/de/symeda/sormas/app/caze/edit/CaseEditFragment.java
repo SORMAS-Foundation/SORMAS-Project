@@ -175,6 +175,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (record.getPerson().getSex() != Sex.FEMALE) {
 			contentBinding.caseDataPregnant.setVisibility(GONE);
 			contentBinding.caseDataPostpartum.setVisibility(GONE);
+			contentBinding.caseDataTrimester.setVisiblity(GONE);
 		}
 
 		// Smallpox vaccination scar image

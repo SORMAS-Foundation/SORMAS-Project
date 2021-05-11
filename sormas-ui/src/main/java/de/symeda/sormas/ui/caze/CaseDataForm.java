@@ -774,7 +774,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
-		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		addField(CaseDataDto.VACCINATION);
 		Field vaccinationDoseField = addField(CaseDataDto.VACCINATION_DOSES);
@@ -945,7 +944,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
-			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
+			setVisibleClear(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM, CaseDataDto.TRIMESTER);
+			if (person.getSex() == Sex.FEMALE) {
+				FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+			}
 		}
 		if (isVisibleAllowed(CaseDataDto.VACCINATION_DOSES)) {
 			FieldHelper
