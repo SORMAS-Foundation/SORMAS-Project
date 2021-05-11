@@ -56,13 +56,9 @@ public interface ContactFacade {
 
 	List<ContactDto> getByUuids(List<String> uuids);
 
-	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, List<MapCaseDto> mapCaseDtos);
+	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
-	List<MapContactDto> getContactsForMap(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		List<MapCaseDto> mapCaseDtos);
+	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
 	void deleteContact(String contactUuid);
 

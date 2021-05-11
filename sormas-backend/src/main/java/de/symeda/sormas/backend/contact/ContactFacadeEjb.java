@@ -393,12 +393,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, List<MapCaseDto> mapCaseDtos) {
+	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.countContactsForMap(region, district, disease, caseUuids);
+		return contactService.countContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -406,13 +405,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,
-		List<MapCaseDto> mapCaseDtos) {
+		Date from,
+		Date to) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.getContactsForMap(region, district, disease, caseUuids);
+		return contactService.getContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override

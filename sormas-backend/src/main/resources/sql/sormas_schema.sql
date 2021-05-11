@@ -7243,4 +7243,22 @@ ALTER TABLE events ALTER COLUMN laboratorydiagnosticEvidencedetails set DATA TYP
 
 INSERT INTO schema_version (version_number, comment) VALUES (368, '2021-05-07 Fix equality issue by using jsonb #5061');
 
+-- 2021-05-07 Move new enum values to screeningType #5063
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_CONDUCTED_TEST'
+WHERE caseidentificationsource = 'SELF_CONDUCTED_TEST';
+
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_ARRANGED_TEST'
+WHERE caseidentificationsource = 'SELF_ARRANGED_TEST';
+
+INSERT INTO schema_version (version_number, comment) VALUES (369, 'Move new enum values to screeningType #5063');
+
+-- 2021-03-19 Add sample material text to lab message #4773
+ALTER TABLE labmessage ADD COLUMN samplematerialtext VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN samplematerialtext VARCHAR(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (370, 'Add sample material text to lab message #4773');
 -- *** Insert new sql commands BEFORE this line ***
