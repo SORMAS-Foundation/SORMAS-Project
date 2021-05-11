@@ -576,12 +576,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
 					eventCriteria.getCommunity().getUuid()));
 		}
-		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
-		}
+
+		//build event date builder based on event date and report date
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventDateFilter(cb, from, eventCriteria));
+
 		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -725,6 +723,40 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				from,
 				ExternalShareInfo.EVENT,
 				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate)));
+
+		return filter;
+	}
+
+	private Predicate buildEventDateFilter(CriteriaBuilder cb, From<?, Event> from, EventCriteria eventCriteria) {
+		Predicate filter = null;
+
+		Date eventDateFrom = eventCriteria.getEventDateFrom();
+		Date eventDateTo = eventCriteria.getEventDateTo();
+
+		if (eventDateFrom != null && eventDateTo != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.and(
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
+						cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)),
+					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
+		} else if (eventDateFrom != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom),
+					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
+		} else if (eventDateTo != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo),
+					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
+		}
 
 		return filter;
 	}
