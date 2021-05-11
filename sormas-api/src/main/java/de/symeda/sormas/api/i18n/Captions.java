@@ -176,6 +176,9 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	String bulkTaskAssignee = "bulkTaskAssignee";
+	String bulkTaskPriority = "bulkTaskPriority";
+	String bulkTaskStatus = "bulkTaskStatus";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
 	String Campaign_community = "Campaign.community";
@@ -2014,7 +2017,9 @@ public interface Captions {
 	String Task_priority = "Task.priority";
 	String Task_statusChangeDate = "Task.statusChangeDate";
 	String Task_suggestedStart = "Task.suggestedStart";
+	String Task_taskAssignee = "Task.taskAssignee";
 	String Task_taskContext = "Task.taskContext";
+	String Task_taskPriority = "Task.taskPriority";
 	String Task_taskStatus = "Task.taskStatus";
 	String Task_taskType = "Task.taskType";
 	String taskActiveTasks = "taskActiveTasks";
