@@ -105,6 +105,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
+	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";

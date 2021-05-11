@@ -936,7 +936,7 @@ public class LabMessageController {
 			} else {
 				new Notification(
 						I18nProperties.getString(Strings.headingLabMessageDownload),
-						I18nProperties.getString(Strings.messageLabMessageDownloadConvertFailed),
+						result.getError(),
 						Notification.Type.ERROR_MESSAGE,
 						false).show(Page.getCurrent());
 			}
@@ -944,7 +944,7 @@ public class LabMessageController {
 		} catch (NamingException e) {
 			new Notification(
 					I18nProperties.getString(Strings.headingLabMessageDownload),
-					I18nProperties.getString(Strings.messageLabMessageDownloadConvertFailed),
+					I18nProperties.getString(Strings.messageLabMessageDownloadFailed),
 					Notification.Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 			logger.error(e.getMessage());

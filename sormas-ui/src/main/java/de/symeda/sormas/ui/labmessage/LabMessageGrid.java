@@ -38,6 +38,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -166,7 +167,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 	private Button buildDownloadButton(LabMessageIndexDto labMessage) {
 		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
-
+		downloadButton.setDescription(I18nProperties.getString(Strings.headingLabMessageDownload));
 		final String fileName = String.format(PDF_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> ControllerProvider.getLabMessageController().convertToPDF(labMessage.getUuid()).map(ByteArrayInputStream::new).orElse(null), fileName);

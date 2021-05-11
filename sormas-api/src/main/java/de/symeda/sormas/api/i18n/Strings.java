@@ -851,7 +851,6 @@ public interface Strings {
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
-	String messageLabMessageDownloadConvertFailed = "messageLabMessageDownloadConvertFailed";
 	String messageLabMessageDownloadFailed = "messageLabMessageDownloadFailed";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
