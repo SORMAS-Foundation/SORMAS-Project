@@ -596,8 +596,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			true,
 			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
 
-		endDate.removeAllValidators(); // make sure the end date does not come with a future date validator
-
 		multiDayCheckbox.addValueChangeListener(e -> {
 			if ((Boolean) e.getProperty().getValue()) {
 				startDate.addValidator(startDateValidator);
