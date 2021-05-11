@@ -206,7 +206,7 @@ public class TaskController {
 		return district;
 	}
 
-	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks) {
+	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks, Runnable callback) {
 		if (selectedTasks.size() == 0) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoTasksSelected),
@@ -255,6 +255,7 @@ public class TaskController {
 			}
 			popupWindow.close();
 			Notification.show(I18nProperties.getString(Strings.messageTasksEdited), Type.HUMANIZED_MESSAGE);
+			callback.run();
 		});
 
 		editView.addDiscardListener(popupWindow::close);
