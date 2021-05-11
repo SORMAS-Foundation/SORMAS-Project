@@ -7262,6 +7262,12 @@ ALTER TABLE labmessage_history ADD COLUMN samplematerialtext VARCHAR(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (370, 'Add sample material text to lab message #4773');
 
+-- 2020-03-03 Add archived to task #3430
+ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
+
 -- 2021-03-01 Make contacts mergeable #2409
 ALTER TABLE contact ADD COLUMN completeness real;
 ALTER TABLE contact_history ADD COLUMN completeness real;
@@ -7271,6 +7277,6 @@ ALTER TABLE contact_history ADD COLUMN duplicateof_id bigint;
 
 ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (371, 'Make contacts mergeable #2409');
+INSERT INTO schema_version (version_number, comment) VALUES (372, 'Make contacts mergeable #2409');
 
 -- *** Insert new sql commands BEFORE this line ***
