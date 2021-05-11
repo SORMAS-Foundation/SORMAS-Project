@@ -22,6 +22,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
 
 public final class DiseaseHelper {
 
@@ -59,7 +60,17 @@ public final class DiseaseHelper {
 	}
 
 	public static String toString(Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
-		return String.format("%s %s", toString(disease, diseaseDetails), diseaseVariant != null ? diseaseVariant.getCaption() : "");
+		return String.format("%s %s", toString(disease, diseaseDetails), variantInBrackets(diseaseVariant));
 	}
 
+
+	/**
+	 *
+	 * @param diseaseVariantReferenceDto the disease variant
+	 * @return the disease variant string in the form of "(caption)" or an empty string if the disease variant name is blank
+	 */
+	public static String variantInBrackets(DiseaseVariant diseaseVariant) {
+		String diseaseVariant = variantToString(diseaseVariantReferenceDto);
+		return diseaseVariant == null ? StringUtils.EMPTY : String.format("(%s)", diseaseVariant.getCaption());
+	}
 }

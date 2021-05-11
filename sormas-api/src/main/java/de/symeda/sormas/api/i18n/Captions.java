@@ -748,6 +748,7 @@ public interface Captions {
 	String dashboardLow = "dashboardLow";
 	String dashboardMapKey = "dashboardMapKey";
 	String dashboardMapLayers = "dashboardMapLayers";
+	String dashboardMapShowEpiSituation = "dashboardMapShowEpiSituation";
 	String dashboardMissed = "dashboardMissed";
 	String dashboardNegative = "dashboardNegative";
 	String dashboardNeverVisited = "dashboardNeverVisited";
