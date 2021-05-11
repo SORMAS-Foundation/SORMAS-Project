@@ -55,13 +55,16 @@ DECLARE
 	errordetails text;
 BEGIN
 
-    /* make sure all areas and countries were found (considering that not all systems will import both) */
-    IF (SELECT count(*) FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL) > 0 THEN
-        errordetails = (SELECT string_agg(externalID, ', ') FROM tmp_region WHERE area_id IS NULL AND country_id IS NULL);
-        RAISE WARNING 'Ignoring regions without area and country: %', errordetails;
-    END IF;
+    IF ((SELECT COUNT(*) FROM country) > 0 OR (SELECT COUNT(*) FROM areas) > 0) THEN
+        /* make sure all areas and countries were found (considering that not all systems will import both) */
+        IF (SELECT count(*) FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL) > 0 THEN
+            errordetails =
+                    (SELECT string_agg(externalID, ', ') FROM tmp_region WHERE area_id IS NULL AND country_id IS NULL);
+            RAISE WARNING 'Ignoring regions without area and country: %', errordetails;
+        END IF;
 
-    DELETE FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL;
+        DELETE FROM tmp_region WHERE tmp_region.area_id IS NULL AND tmp_region.country_id IS NULL;
+    END IF;
 
 /* make sure all entries have an external id */
     IF (SELECT count(*) FROM tmp_region WHERE externalID IS NULL) > 0 THEN
@@ -70,6 +73,14 @@ BEGIN
     END IF;
 
     DELETE FROM tmp_region WHERE externalID IS NULL;
+
+/* make sure all entries have an epidCode */
+    IF (SELECT count(*) FROM tmp_region WHERE epidCode IS NULL) > 0 THEN
+        errordetails = (SELECT string_agg(name, ', ') FROM tmp_region WHERE epidCode IS NULL);
+        RAISE WARNING 'Ignoring regions without epidCode: %', errordetails;
+    END IF;
+
+    DELETE FROM tmp_region WHERE epidCode IS NULL;
 
 /* make sure externalids are only used once in the imported data */
     ALTER TABLE tmp_region ADD COLUMN externalidcount integer;

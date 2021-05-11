@@ -86,14 +86,14 @@ $$
 $$ LANGUAGE plpgsql;
 
 
-/* 4. Update existing facilities */
+/* 4. Update existing communities */
 UPDATE community
 SET (name, growthrate, district_id, archived)
         = (c.name, c.growthrate, c.district_id, c.archived)
 FROM tmp_community AS c
 WHERE community.externalid IS NOT NULL AND community.externalid = c.externalid;
 
-/* 5. Insert new facilities */
+/* 5. Insert new communities */
 INSERT INTO community
 (id, changedate, creationdate, uuid, name, growthrate, district_id, externalid, archived)
     (SELECT nextval('entity_seq'), now(), now(), generate_base32_uuid(), name, growthrate, district_id, externalid, archived

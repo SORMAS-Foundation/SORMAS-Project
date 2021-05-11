@@ -68,6 +68,14 @@ BEGIN
 
     DELETE FROM tmp_district WHERE externalid IS NULL;
 
+/* make sure all entries have an epidCode */
+    IF (SELECT count(*) FROM tmp_district WHERE epidCode IS NULL) > 0 THEN
+        errordetails = (SELECT string_agg(name, ', ') FROM tmp_district WHERE epidCode IS NULL);
+        RAISE WARNING 'Ignoring districts without epidCode: %', errordetails;
+    END IF;
+
+    DELETE FROM tmp_district WHERE epidCode IS NULL;
+
 /* make sure externalids are only used once in the imported data */
     ALTER TABLE tmp_district ADD COLUMN externalidcount integer;
     UPDATE tmp_district
@@ -85,14 +93,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-/* 4. Update existing regions */
+/* 4. Update existing districts */
 UPDATE district
 SET (name, epidcode, growthrate, region_id, archived)
         = (d.name, d.epidcode, d.growthrate, d.region_id, d.archived)
 FROM tmp_district AS d
 WHERE district.externalid IS NOT NULL AND district.externalid = d.externalid;
 
-/* 5. Insert new regions */
+/* 5. Insert new districts */
 INSERT INTO district
 (id, changedate, creationdate, uuid, name, epidcode, growthrate, externalid, region_id, archived)
     (SELECT nextval('entity_seq'),
