@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.hibernate.annotations.Type;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -81,8 +83,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.caption = caption;
 	}
 
-	@Column
-	@Convert(converter = CustomizableEnumTranslationConverter.class)
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
 	public List<CustomizableEnumTranslation> getTranslations() {
 		return translations;
 	}
@@ -110,8 +112,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.description = description;
 	}
 
-	@Column
-	@Convert(converter = CustomizableEnumTranslationConverter.class)
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
 	public List<CustomizableEnumTranslation> getDescriptionTranslations() {
 		return descriptionTranslations;
 	}
@@ -120,9 +122,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.descriptionTranslations = descriptionTranslations;
 	}
 
-	@Column
-	@Convert(converter = CustomizableEnumPropertiesConverter.class)
-	@SuppressWarnings("JpaAttributeTypeInspection")
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
 	public Map<String, Object> getProperties() {
 		return properties;
 	}

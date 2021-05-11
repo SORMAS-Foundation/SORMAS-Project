@@ -205,8 +205,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	}
 
 	private void updateDiseaseVariantsField(FragmentPathogenTestEditLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants = record.getTestedDisease() != null
-			? DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getTestedDisease())
+		List<DiseaseVariant> diseaseVariants = contentBinding.pathogenTestTestedDisease.getValue() != null
+			? DatabaseHelper.getCustomizableEnumValueDao()
+				.getEnumValues(CustomizableEnumType.DISEASE_VARIANT, (Disease) contentBinding.pathogenTestTestedDisease.getValue())
 			: new ArrayList<>();
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
