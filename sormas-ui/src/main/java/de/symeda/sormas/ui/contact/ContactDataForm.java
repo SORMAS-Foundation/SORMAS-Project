@@ -968,14 +968,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			startDate,
 			endDate,
 			true,
-			false,
+			true,
 			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
 
 		DateComparisonValidator endDateValidator = new DateComparisonValidator(
 			endDate,
 			startDate,
 			false,
-			false,
+			true,
 			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
 
 		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
