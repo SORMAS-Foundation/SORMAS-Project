@@ -1304,7 +1304,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<PresentCondition, Long> resultMap = results.stream().collect(Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
+		Map<PresentCondition, Long> resultMap =
+			results.stream().collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> (Long) e[1]));
 		return resultMap;
 	}
 
