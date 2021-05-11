@@ -150,6 +150,15 @@ public class Case extends PseudonymizableAdo {
 	private InvestigationStatus investigationStatus;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Region responsibleRegion;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District responsibleDistrict;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community responsibleCommunity;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -495,6 +504,30 @@ public class Case extends PseudonymizableAdo {
 
 	public void setScreeningType(ScreeningType screeningType) {
 		this.screeningType = screeningType;
+	}
+
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public District getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(District responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public Community getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	public void setResponsibleCommunity(Community responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public Region getRegion() {

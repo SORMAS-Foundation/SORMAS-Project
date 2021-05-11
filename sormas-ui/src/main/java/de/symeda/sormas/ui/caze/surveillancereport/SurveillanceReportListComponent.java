@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SurveillanceReportListComponent extends VerticalLayout {
@@ -56,7 +57,7 @@ public class SurveillanceReportListComponent extends VerticalLayout {
 		reportsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(reportsHeader);
 
-		createButton = new Button(I18nProperties.getCaption(Captions.surveillanceReportNewReport));
+		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.surveillanceReportNewReport));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 		createButton.addClickListener(e -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));

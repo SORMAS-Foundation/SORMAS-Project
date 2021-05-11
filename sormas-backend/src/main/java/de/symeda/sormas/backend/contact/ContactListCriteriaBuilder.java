@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Stateless
 @LocalBean
@@ -71,6 +72,9 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),
@@ -104,11 +108,15 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION),
 			joins.getContactOfficer().get(User.UUID),
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
 			joins.getCaze().get(Case.CASE_CLASSIFICATION),
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseRegion().get(Region.NAME),
 			joins.getCaseDistrict().get(District.UUID),
@@ -154,6 +162,9 @@ public class ContactListCriteriaBuilder {
 			break;
 		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
+			break;
+		case ContactIndexDto.VACCINATION:
+			expressions.add(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION));
 			break;
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);

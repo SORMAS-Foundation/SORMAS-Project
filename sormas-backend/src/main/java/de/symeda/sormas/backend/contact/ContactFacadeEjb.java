@@ -65,7 +65,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -125,6 +124,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -391,12 +391,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, List<MapCaseDto> mapCaseDtos) {
+	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.countContactsForMap(region, district, disease, caseUuids);
+		return contactService.countContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -404,13 +403,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,
-		List<MapCaseDto> mapCaseDtos) {
+		Date from,
+		Date to) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		return contactService.getContactsForMap(region, district, disease, caseUuids);
+		return contactService.getContactsForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -1376,6 +1375,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		if (source.getCaze() != null) {
+			target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getCaze().getDiseaseVariant()));
+		}
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));

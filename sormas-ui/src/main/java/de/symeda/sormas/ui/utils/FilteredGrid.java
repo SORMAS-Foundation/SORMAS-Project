@@ -12,7 +12,7 @@ import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
@@ -72,7 +72,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	/**
 	 * Add's a column to the left hand side of the grid complete with an edit-logo
-	 * 
+	 *
 	 * @param handler
 	 *            ItemClickListener
 	 */

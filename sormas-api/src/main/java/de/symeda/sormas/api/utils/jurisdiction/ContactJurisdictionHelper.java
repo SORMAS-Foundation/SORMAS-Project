@@ -20,6 +20,7 @@ package de.symeda.sormas.api.utils.jurisdiction;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.jurisdiction.caze.CaseJurisdictionHelper;
 
 public class ContactJurisdictionHelper {
 

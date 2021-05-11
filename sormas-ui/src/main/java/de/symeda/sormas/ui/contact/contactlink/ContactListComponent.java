@@ -13,6 +13,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ContactListComponent extends VerticalLayout {
@@ -46,7 +47,7 @@ public class ContactListComponent extends VerticalLayout {
 		list.reload();
 
 		if (!list.isEmpty()) {
-			final Button seeContacts = new Button(I18nProperties.getCaption(Captions.personLinkToContacts));
+			final Button seeContacts = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToContacts));
 			CssStyles.style(seeContacts, ValoTheme.BUTTON_PRIMARY);
 			seeContacts.addClickListener(clickListener);
 			addComponent(seeContacts);

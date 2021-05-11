@@ -115,7 +115,7 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(epiWeekFilter);
 
-		Button lastWeekButton = ButtonHelper.createButtonWithCaption(
+		Button lastWeekButton = ButtonHelper.createButton(
 			Captions.dashboardLastWeek,
 			String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
 			e -> {
