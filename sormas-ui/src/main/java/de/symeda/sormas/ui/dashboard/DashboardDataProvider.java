@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -157,12 +158,9 @@ public class DashboardDataProvider {
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
-					List<Long> list = new ArrayList<>();
-					for (DashboardCaseDto c : getCases()) {
-						Long id = c.getId();
-						list.add(id);
-					}
-					setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(list));
+					setTestResultCountByResultType(
+						FacadeProvider.getSampleFacade()
+							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
 				} else {
 					setTestResultCountByResultType(new HashMap<>());
 				}
