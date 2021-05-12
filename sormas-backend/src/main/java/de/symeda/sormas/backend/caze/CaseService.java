@@ -66,6 +66,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -107,6 +108,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -164,6 +166,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -1094,13 +1098,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else if (dateType == NewCaseDateType.REPORT) {
 			newCaseFilter = reportDateFilter;
 		} else if (dateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
-			newCaseFilter =
-				externalShareInfoService.buildLatestSurvToolShareDateFilter(
-					cq,
-					cb,
-					caze,
-					ExternalShareInfo.CAZE,
-					(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
+			newCaseFilter = externalShareInfoService.buildLatestSurvToolShareDateFilter(
+				cq,
+				cb,
+				caze,
+				ExternalShareInfo.CAZE,
+				(latestShareDate) -> cb.between(latestShareDate, fromDate, toDateEndOfDay));
 		}
 
 		return newCaseFilter;
@@ -1195,11 +1198,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else {
 			CaseDataDto caseDto = caseFacade.toDto(caze);
 			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
-			Date untilDate = CaseLogic.calculateFollowUpUntilDate(
-				caseDto,
-				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
-				false);
+
+			Date earliestSampleDate = null;
+			for (Sample sample : caze.getSamples()) {
+				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+					earliestSampleDate = sample.getSampleDateTime();
+				}
+			}
+
+			Date untilDate =
+				CaseLogic
+					.calculateFollowUpUntilDate(
+						caseDto,
+						CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
+						caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+						false)
+					.getFollowUpEndDate();
 			caze.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				caze.setOverwriteFollowUpUntil(false);

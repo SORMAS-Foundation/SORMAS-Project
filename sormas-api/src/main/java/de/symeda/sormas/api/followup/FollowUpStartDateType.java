@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,28 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.login;
+package de.symeda.sormas.api.followup;
 
-import androidx.databinding.BaseObservable;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-public class LoginViewModel extends BaseObservable {
+public enum FollowUpStartDateType {
 
-	private String username;
-	private String password;
+	SYMPTOM_ONSET_DATE,
+	LAST_CONTACT_DATE,
+	EARLIEST_SAMPLE_COLLECTION_DATE,
+	REPORT_DATE;
 
-	public String getUsername() {
-		return username;
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public String toShortString() {
+		return I18nProperties.getEnumCaptionShort(this);
 	}
 
-	public String getPassword() {
-		return password;
+	public String getDescription() {
+		return I18nProperties.getEnumDescription(this);
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }

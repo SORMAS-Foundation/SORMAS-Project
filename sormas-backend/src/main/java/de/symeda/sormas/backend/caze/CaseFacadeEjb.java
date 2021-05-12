@@ -115,7 +115,6 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -129,6 +128,7 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -205,6 +205,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -397,6 +398,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@EJB
@@ -1786,7 +1789,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Set<Visit> allRelevantVisits = visitService.getAllRelevantVisits(
 			caze.getPerson(),
 			caze.getDisease(),
-			CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+			CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getSymptoms().getOnsetDate()),
 			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
 
 		for (Visit visit : allRelevantVisits) {
@@ -2380,14 +2383,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
 
 		if (newCase.getPerson().getApproximateAge() != null) {
-			if (existingCase == null
-				|| CaseLogic.getStartDate(existingCase.getSymptoms().getOnsetDate(), existingCase.getReportDate())
-					!= CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReportDate())) {
+			Date newCaseStartDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReportDate());
+			if (existingCase == null || !CaseLogic.getStartDate(existingCase).equals(newCaseStartDate)) {
 				if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					newCase.setCaseAge(0);
 				} else {
 					Date personChangeDate = newCase.getPerson().getChangeDate();
-					Date referenceDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReportDate());
+					Date referenceDate = newCaseStartDate;
 					newCase.setCaseAge(newCase.getPerson().getApproximateAge() - DateHelper.getYearsBetween(referenceDate, personChangeDate));
 					if (newCase.getCaseAge() < 0) {
 						newCase.setCaseAge(0);
@@ -3581,7 +3583,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
-				case ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS:
+				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
 					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
 					break;
 				case FollowUpDto.LAST_NAME:
@@ -3646,6 +3648,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return resultList;
+	}
+
+	@Override
+	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
+		return CaseLogic.calculateFollowUpUntilDate(
+			caseDto,
+			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
+			visitFacade.getVisitsByCase(caseDto.toReference()),
+			diseaseConfigurationFacade.getFollowUpDuration(caseDto.getDisease()),
+			ignoreOverwrite);
 	}
 
 	public boolean isCaseEditAllowed(String caseUuid) {

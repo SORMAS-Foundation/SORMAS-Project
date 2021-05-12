@@ -62,6 +62,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -86,6 +87,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
@@ -93,6 +96,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -119,6 +123,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
+	private UserService userService;
+	@EJB
 	private HealthConditionsService healthConditionsService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
@@ -132,6 +138,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
 
@@ -808,11 +816,24 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			ContactDto contactDto = contactFacade.toDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
-			Date untilDate = ContactLogic.calculateFollowUpUntilDate(
-				contactDto,
-				contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-				diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
-				false);
+
+			Date earliestSampleDate = null;
+			for (Sample sample : contact.getSamples()) {
+				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+					earliestSampleDate = sample.getSampleDateTime();
+				}
+			}
+
+			Date untilDate =
+				ContactLogic
+					.calculateFollowUpUntilDate(
+						contactDto,
+						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
+						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
+						false)
+					.getFollowUpEndDate();
 			contact.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				contact.setOverwriteFollowUpUntil(false);
