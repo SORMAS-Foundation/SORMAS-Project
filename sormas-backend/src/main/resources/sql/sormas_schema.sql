@@ -7262,6 +7262,13 @@ ALTER TABLE labmessage_history ADD COLUMN samplematerialtext VARCHAR(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (370, 'Add sample material text to lab message #4773');
 
+-- 2020-03-03 Add archived to task #3430
+ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
+
+
 -- 2021-04-29 Add customizable enums #5247
 CREATE TABLE customizableenumvalue(
     id bigint not null,
@@ -7308,5 +7315,5 @@ $$ LANGUAGE plpgsql;
 DROP TABLE diseasevariant;
 DROP TABLE diseasevariant_history;
 
-INSERT INTO schema_version (version_number, comment) VALUES (371, '2021-04-29 Add customizable enums #5247');
+INSERT INTO schema_version (version_number, comment) VALUES (372, '2021-04-29 Add customizable enums #5247');
 -- *** Insert new sql commands BEFORE this line ***
