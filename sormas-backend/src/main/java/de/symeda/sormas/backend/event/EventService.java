@@ -577,9 +577,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					eventCriteria.getCommunity().getUuid()));
 		}
 
-		//build event date builder based on event date and report date
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventDateFilter(cb, from, eventCriteria));
-
 		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -727,40 +724,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
-	private Predicate buildEventDateFilter(CriteriaBuilder cb, From<?, Event> from, EventCriteria eventCriteria) {
-		Predicate filter = null;
-
-		Date eventDateFrom = eventCriteria.getEventDateFrom();
-		Date eventDateTo = eventCriteria.getEventDateTo();
-
-		if (eventDateFrom != null && eventDateTo != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.and(
-						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
-						cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)),
-					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
-		} else if (eventDateFrom != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom),
-					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
-		} else if (eventDateTo != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo),
-					cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
-		}
-
-		return filter;
-	}
-
 	private Predicate createEventDateFilter(CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Event> from, EventCriteria eventCriteria) {
 		Predicate filter = null;
 
@@ -769,33 +732,25 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Date eventDateTo = eventCriteria.getEventDateTo();
 
 		if (eventDateType == null || eventDateType == EventCriteriaDateType.EVENT_DATE) {
+			Predicate eventDateFilter = null;
+
 			if (eventDateFrom != null && eventDateTo != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.between(from.get(Event.START_DATE), eventDateFrom, eventDateTo),
-						cb.and(
-							cb.isNotNull(from.get(Event.END_DATE)),
-							cb.lessThan(from.get(Event.START_DATE), eventDateFrom),
-							cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom))));
+				eventDateFilter = cb.and(
+					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
+					cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo));
 			} else if (eventDateFrom != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom),
-						cb.and(
-							cb.isNotNull(from.get(Event.END_DATE)),
-							cb.lessThan(from.get(Event.START_DATE), eventDateFrom),
-							cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom))));
+				eventDateFilter = cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom);
 			} else if (eventDateTo != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)),
-						cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventDateTo)));
+				eventDateFilter = cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo);
+			}
+
+			if (eventDateFrom != null || eventDateTo != null) {
+				if (eventDateType == null) {
+					filter = CriteriaBuilderHelper
+						.and(cb, filter, cb.or(eventDateFilter, cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
+				} else {
+					filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
+				}
 			}
 		} else if (eventDateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
 			filter = externalShareInfoService.buildLatestSurvToolShareDateFilter(cq, cb, from, ExternalShareInfo.EVENT, (latestShareDate) -> {
