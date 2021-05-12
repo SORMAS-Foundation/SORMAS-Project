@@ -84,7 +84,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 		//events
 		Map<Disease, Long> events = eventFacade
-			.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).eventDateType(null).reportedBetween(from, to));
+			.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).eventDateType(null).eventDateBetween(from, to));
 
 		//outbreaks
 		Map<Disease, Long> outbreakDistrictsCount;

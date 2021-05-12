@@ -84,7 +84,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"Name",
 			"12345",
 			TypeOfPlace.PUBLIC_PLACE,
-			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
 			new Date(),
 			user.toReference(),
 			user.toReference(),
@@ -95,7 +95,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			new EventCriteria().region(event.getEventLocation().getRegion())
 				.district(event.getEventLocation().getDistrict())
 				.disease(event.getDisease())
-				.reportedBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
+				.eventDateType(null)
+				.eventDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
