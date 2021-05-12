@@ -98,4 +98,10 @@ public class TaskResource extends EntityDtoResource {
 	public TaskDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getTaskFacade().getByUuid(uuid);
 	}
+
+	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
+	}
 }
