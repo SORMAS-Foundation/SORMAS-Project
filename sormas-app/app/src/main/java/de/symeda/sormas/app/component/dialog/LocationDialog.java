@@ -27,11 +27,9 @@ import org.apache.commons.lang3.StringUtils;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
-
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -308,7 +306,7 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationFacilityDetails.setVisibility(visibility);
 		contentBinding.locationFacilityType.setVisibility(visibility);
 
-		setFacilityContactPersonFieldsVisible(visible, clearOnHidden);
+		setFacilityContactPersonFieldsVisible(visible && (contentBinding.locationFacilityType.getValue() != null), clearOnHidden);
 
 		if (!visible && clearOnHidden) {
 			contentBinding.facilityTypeGroup.setValue(null);

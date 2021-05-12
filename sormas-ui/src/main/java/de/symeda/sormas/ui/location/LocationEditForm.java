@@ -676,7 +676,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
 
-		setFacilityContactPersonFieldsVisible(visible, clearOnHidden);
+		setFacilityContactPersonFieldsVisible(visible && (facilityType.getValue() != null), clearOnHidden);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
