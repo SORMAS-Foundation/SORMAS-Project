@@ -432,6 +432,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					}
 				});
 			}
+
+			// Only show contactperson-details if at least a faciltytype has been set
+			if (facilityType.getValue() != null) {
+				setFacilityContactPersonFieldsVisible(true, true);
+			} else {
+				setFacilityContactPersonFieldsVisible(false, true);
+			}
 		});
 		facility.addValueChangeListener(e -> {
 			if (facility.getValue() != null) {
@@ -531,6 +538,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+
+		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
+		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
@@ -672,16 +682,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
-		contactPersonFirstName.setVisible(visible);
-		contactPersonLastName.setVisible(visible);
-		contactPersonPhone.setVisible(visible);
-		contactPersonEmail.setVisible(visible);
+
+		setFacilityContactPersonFieldsVisible(visible && (facilityType.getValue() != null), clearOnHidden);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+		}
+	}
+
+	private void setFacilityContactPersonFieldsVisible(boolean visible, boolean clearOnHidden) {
+		contactPersonFirstName.setVisible(visible);
+		contactPersonLastName.setVisible(visible);
+		contactPersonPhone.setVisible(visible);
+		contactPersonEmail.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
 			contactPersonFirstName.clear();
 			contactPersonLastName.clear();
 			contactPersonPhone.clear();
