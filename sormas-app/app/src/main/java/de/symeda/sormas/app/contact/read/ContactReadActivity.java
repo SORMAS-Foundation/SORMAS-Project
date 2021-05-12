@@ -59,6 +59,12 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
 			menuItems.set(ContactSection.TASKS.ordinal(), null);
 		}
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
+			menuItems.set(ContactSection.EPIDEMIOLOGICAL_DATA.ordinal(), null);
+		}
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
+			menuItems.set(ContactSection.VISITS.ordinal(), null);
+		}
 		return menuItems;
 	}
 
