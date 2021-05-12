@@ -1116,7 +1116,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.setRegion(regionRef);
@@ -1126,6 +1125,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 
 		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, from, to);
 		if (filter != null) {
@@ -1378,6 +1379,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 
 		if (filter != null) {
 			cq.where(filter);
