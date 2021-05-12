@@ -1275,6 +1275,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CONTACT)),
 					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
+		if (contactCriteria.getDiseaseVariant() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
+		}
 
 		return filter;
 	}

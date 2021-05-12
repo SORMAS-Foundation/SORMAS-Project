@@ -309,6 +309,7 @@ public interface Strings {
 	String headingCampaignFormDataDuplicateExisting = "headingCampaignFormDataDuplicateExisting";
 	String headingCampaignFormDataDuplicateNew = "headingCampaignFormDataDuplicateNew";
 	String headingCaseComparison = "headingCaseComparison";
+	String headingCaseConversion = "headingCaseConversion";
 	String headingCaseData = "headingCaseData";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
@@ -608,6 +609,10 @@ public interface Strings {
 	String infoContactMergingMergeDescription = "infoContactMergingMergeDescription";
 	String infoContactMergingPickDescription = "infoContactMergingPickDescription";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
+	String infoConvertToCaseContacts = "infoConvertToCaseContacts";
+	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
+	String infoConvertToCaseEventParticipants = "infoConvertToCaseEventParticipants";
+	String infoConvertToCaseSelect = "infoConvertToCaseSelect";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";

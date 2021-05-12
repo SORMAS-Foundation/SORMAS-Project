@@ -16,6 +16,10 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 	private Disease disease;
 	private Date lastContactDate;
 	private Date reportDate;
+	private Date relevantDate;
+	private ContactClassification contactClassification;
+	private Boolean excludePseudonymized;
+	private Boolean noResultingCase;
 
 	public ContactSimilarityCriteria() {
 
@@ -34,39 +38,80 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return person;
 	}
 
-	public void setPerson(PersonReferenceDto person) {
+	public ContactSimilarityCriteria setPerson(PersonReferenceDto person) {
 		this.person = person;
+		return this;
 	}
 
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
 
-	public void setCaze(CaseReferenceDto caze) {
+	public ContactSimilarityCriteria setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
+		return this;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
 
-	public void setDisease(Disease disease) {
+	public ContactSimilarityCriteria setDisease(Disease disease) {
 		this.disease = disease;
+		return this;
 	}
 
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
 
-	public void setLastContactDate(Date lastContactDate) {
+	public ContactSimilarityCriteria setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+		return this;
 	}
 
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	public void setReportDate(Date reportDate) {
+	public ContactSimilarityCriteria setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+		return this;
+	}
+
+	public Date getRelevantDate() {
+		return relevantDate;
+	}
+
+	public ContactSimilarityCriteria setRelevantDate(Date relevantDate) {
+		this.relevantDate = relevantDate;
+		return this;
+	}
+
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+
+	public ContactSimilarityCriteria setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
+		return this;
+	}
+
+	public Boolean getExcludePseudonymized() {
+		return excludePseudonymized;
+	}
+
+	public ContactSimilarityCriteria setExcludePseudonymized(Boolean excludePseudonymized) {
+		this.excludePseudonymized = excludePseudonymized;
+		return this;
+	}
+
+	public Boolean getNoResultingCase() {
+		return noResultingCase;
+	}
+
+	public ContactSimilarityCriteria setNoResultingCase(Boolean noResultingCase) {
+		this.noResultingCase = noResultingCase;
+		return this;
 	}
 }

@@ -22,8 +22,7 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.disease.DiseaseVariantDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -56,7 +55,7 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String FACILITY_TYPE = "facilityType";
 
 	private Disease disease;
-	private DiseaseVariantReferenceDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
@@ -80,11 +79,11 @@ public class CaseBulkEditData extends EntityDto {
 		this.disease = disease;
 	}
 
-	public DiseaseVariantReferenceDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 

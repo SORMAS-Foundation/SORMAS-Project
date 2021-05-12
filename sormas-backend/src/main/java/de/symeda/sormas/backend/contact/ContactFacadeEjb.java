@@ -131,7 +131,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -1413,7 +1412,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		if (source.getCaze() != null) {
-			target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getCaze().getDiseaseVariant()));
+			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
 		}
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 
@@ -1635,6 +1634,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CaseReferenceDto caze = criteria.getCaze();
 		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
 
+		final ContactClassification contactClassification = criteria.getContactClassification();
+		final Predicate contactClassificationFilter =
+			contactClassification != null ? cb.equal(contactRoot.get(Contact.CONTACT_CLASSIFICATION), contactClassification) : null;
+
+		final Predicate noResulingCaseFilter =
+			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(contactRoot.get(Contact.RESULTING_CASE)) : null;
+
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();
 		final Predicate recentContactsFilter = CriteriaBuilderHelper.and(
@@ -1642,7 +1648,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.recentDateFilter(cb, reportDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			contactService.recentDateFilter(cb, lastContactDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
-		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
+		final Date relevantDate = criteria.getRelevantDate();
+		final Predicate relevantDateFilter = CriteriaBuilderHelper.or(
+			cb,
+			contactService.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
+			contactService.recentDateFilter(cb, relevantDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
+
+		cq.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				defaultFilter,
+				userFilter,
+				samePersonFilter,
+				diseaseFilter,
+				cazeFilter,
+				contactClassificationFilter,
+				noResulingCaseFilter,
+				recentContactsFilter,
+				relevantDateFilter));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
@@ -1662,6 +1685,10 @@ public class ContactFacadeEjb implements ContactFacade {
 				}
 			});
 
+		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
+			contacts = contacts.stream().filter(java.util.function.Predicate.not(SimilarContactDto::isPseudonymized)).collect(Collectors.toList());
+		}
+
 		return contacts;
 	}
 
@@ -1673,8 +1700,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
 		return contactService.exists(
-			(cb, contactRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken), cb.notEqual(contactRoot.get(Contact.UUID), contactUuid)));
+			(cb, contactRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(contactRoot.get(Contact.UUID), contactUuid),
+				cb.notEqual(contactRoot.get(Contact.DELETED), Boolean.TRUE)));
 	}
 
 	private boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {

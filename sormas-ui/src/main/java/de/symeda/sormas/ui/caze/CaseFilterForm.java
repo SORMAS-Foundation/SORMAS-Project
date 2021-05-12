@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
@@ -32,7 +34,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -556,9 +559,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				FieldHelper.updateItems(field, Collections.emptyList());
 				FieldHelper.setEnabled(false, field);
 			} else {
-				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+				List<DiseaseVariant> diseaseVariants =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 				FieldHelper.updateItems(field, diseaseVariants);
-				FieldHelper.setEnabled(!diseaseVariants.isEmpty(), field);
+				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), field);
 			}
 		}
 		}
@@ -704,9 +708,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
 			FieldHelper.setEnabled(false, diseaseVariantField);
 		} else {
-			List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			FieldHelper.setEnabled(!diseaseVariants.isEmpty(), diseaseVariantField);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}
 	}
 

@@ -24,8 +24,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -76,7 +76,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private UserRole reportingUserRole;
 	private Disease disease;
-	private DiseaseVariantReferenceDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 	private CaseReferenceDto caze;
 	private CaseReferenceDto resultingCase;
 	private RegionReferenceDto region;
@@ -154,15 +154,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public DiseaseVariantReferenceDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	public ContactCriteria diseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public ContactCriteria diseaseVariant(DiseaseVariant diseaseVariant) {
 		setDiseaseVariant(diseaseVariant);
 
 		return this;
