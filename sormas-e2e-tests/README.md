@@ -26,6 +26,8 @@ issues that might block successful web development.
 
 ## Setup
 
+* Clone the project and open only the *sormas-e2e-tests* subproject
+
 * Install Java JDK 11 on your local machine
 
     ```text
@@ -94,7 +96,7 @@ This file a build configuration script defines a project and its tasks.
 
 ````gradle
 
-gradle clean -Dcucumber.tags="@Login" -Denvironment=performance
+gradle clean test -Dcucumber.tags="@Login" -Denvironment=performance
 
 ````
 

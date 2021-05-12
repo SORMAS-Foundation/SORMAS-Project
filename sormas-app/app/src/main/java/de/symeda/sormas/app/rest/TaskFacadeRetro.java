@@ -41,4 +41,7 @@ public interface TaskFacadeRetro {
 
 	@GET("tasks/uuids")
 	Call<List<String>> pullUuids();
+
+	@GET("tasks/archived/{since}")
+	Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
 }

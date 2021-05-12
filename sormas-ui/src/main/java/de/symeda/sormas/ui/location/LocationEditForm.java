@@ -43,6 +43,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -79,6 +81,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -217,7 +220,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
 		contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
 		contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		contactPersonPhone
+			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, contactPersonPhone.getCaption())));
 		contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
+		contactPersonEmail
+			.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, contactPersonEmail.getCaption())));
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -425,6 +432,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					}
 				});
 			}
+
+			// Only show contactperson-details if at least a faciltytype has been set
+			if (facilityType.getValue() != null) {
+				setFacilityContactPersonFieldsVisible(true, true);
+			} else {
+				setFacilityContactPersonFieldsVisible(false, true);
+			}
 		});
 		facility.addValueChangeListener(e -> {
 			if (facility.getValue() != null) {
@@ -524,6 +538,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+
+		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
+		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
@@ -665,16 +682,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
-		contactPersonFirstName.setVisible(visible);
-		contactPersonLastName.setVisible(visible);
-		contactPersonPhone.setVisible(visible);
-		contactPersonEmail.setVisible(visible);
+
+		setFacilityContactPersonFieldsVisible(visible && (facilityType.getValue() != null), clearOnHidden);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+		}
+	}
+
+	private void setFacilityContactPersonFieldsVisible(boolean visible, boolean clearOnHidden) {
+		contactPersonFirstName.setVisible(visible);
+		contactPersonLastName.setVisible(visible);
+		contactPersonPhone.setVisible(visible);
+		contactPersonEmail.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
 			contactPersonFirstName.clear();
 			contactPersonLastName.clear();
 			contactPersonPhone.clear();

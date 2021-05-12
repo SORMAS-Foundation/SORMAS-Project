@@ -32,6 +32,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 
 public class SettingsActivity extends BaseLandingActivity {
@@ -50,6 +51,21 @@ public class SettingsActivity extends BaseLandingActivity {
 	@Override
 	public SettingsFragment getActiveFragment() {
 		return (SettingsFragment) super.getActiveFragment();
+	}
+
+	@Override
+	public void onBackPressed() {
+		// this should always either open the side menu, or return to the login page
+		if (ConfigProvider.getUser() == null) {
+			// open login page
+			Intent intent = new Intent(getContext(), LoginActivity.class);
+			startActivity(intent);
+		} else {
+			// normally open sidebar here; However, it is not possible to create an ActionMenuItem here and then call super.onOptionsItemSelected(item)
+			// so just return so that the app won't be closed
+			return;
+		}
+		super.onBackPressed();
 	}
 
 	@Override
@@ -124,9 +140,7 @@ public class SettingsActivity extends BaseLandingActivity {
 
 	public void setNewLocale(AppCompatActivity mContext, Language language) {
 		LocaleManager.setNewLocale(this, language);
-		if (ConfigProvider.getUser() != null) {
-			I18nProperties.setUserLanguage(language);
-		}
+		I18nProperties.setUserLanguage(language);
 		Intent intent = mContext.getIntent();
 		startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 	}

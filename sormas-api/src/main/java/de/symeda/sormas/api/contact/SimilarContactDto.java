@@ -7,10 +7,13 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SimilarContactDto implements Serializable {
+public class SimilarContactDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -7290520732250426907L;
+
+	public static final String I18N_PREFIX = "Contact";
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
