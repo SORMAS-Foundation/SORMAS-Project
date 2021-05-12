@@ -80,6 +80,7 @@ public interface Captions {
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionRemindMeLater = "actionRemindMeLater";
+	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -1098,6 +1099,7 @@ public interface Captions {
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
 	String ExportConfiguration_sharedExports = "ExportConfiguration.sharedExports";
 	String ExportConfiguration_sharedToPublic = "ExportConfiguration.sharedToPublic";
+	String exportConfigurationData = "exportConfigurationData";
 	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";

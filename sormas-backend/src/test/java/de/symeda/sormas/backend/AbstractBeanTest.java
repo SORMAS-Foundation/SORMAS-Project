@@ -108,7 +108,6 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
@@ -465,10 +464,6 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
-	}
-
-	public DiseaseVariantService getDiseaseVariantService() {
-		return getBean(DiseaseVariantService.class);
 	}
 
 	public PopulationDataFacade getPopulationDataFacade() {

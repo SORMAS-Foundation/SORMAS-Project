@@ -90,7 +90,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -559,7 +558,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Community> community = joins.getCommunity();
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		Join<Case, DiseaseVariant> diseaseVariant = joins.getDiseaseVariant();
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -572,8 +570,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getDiseaseVariant() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(diseaseVariant.get(DiseaseVariant.UUID), caseCriteria.getDiseaseVariant().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT), caseCriteria.getDiseaseVariant()));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
