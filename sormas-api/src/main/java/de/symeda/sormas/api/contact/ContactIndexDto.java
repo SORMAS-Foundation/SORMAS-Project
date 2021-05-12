@@ -43,7 +43,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
-	public static final String CREATION_DATE = "creationDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
@@ -67,7 +66,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private Disease disease;
 	private String diseaseDetails;
 	private Date lastContactDate;
-	private Date creationDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -94,7 +92,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
-						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, Date creationDate, ContactCategory contactCategory,
+						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory,
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseReportingUserUid,
@@ -125,7 +123,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.lastContactDate = lastContactDate;
-		this.creationDate = creationDate;
 		this.contactCategory = contactCategory;
 		this.contactProximity = contactProximity;
 		this.contactClassification = contactClassification;
@@ -203,14 +200,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
 	}
 
 	public ContactProximity getContactProximity() {

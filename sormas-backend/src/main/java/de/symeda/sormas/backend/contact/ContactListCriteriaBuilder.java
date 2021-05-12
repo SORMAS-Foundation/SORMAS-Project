@@ -101,7 +101,6 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.NAME),
 			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
-			contact.get(Contact.CREATION_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
