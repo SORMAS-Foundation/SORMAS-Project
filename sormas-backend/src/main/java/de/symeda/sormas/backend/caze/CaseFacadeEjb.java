@@ -1322,6 +1322,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 
 		if (filter != null) {
 			cq.where(filter);
