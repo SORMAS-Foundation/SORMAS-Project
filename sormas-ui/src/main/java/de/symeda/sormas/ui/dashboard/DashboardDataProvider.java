@@ -173,7 +173,7 @@ public class DashboardDataProvider {
 
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.region(region).district(district).disease(disease).eventDateBetween(fromDate, toDate);
+		eventCriteria.region(region).district(district).disease(disease).eventDateType(null).eventDateBetween(fromDate, toDate);
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
 
 		eventCriteria.eventDateBetween(fromDate, toDate);

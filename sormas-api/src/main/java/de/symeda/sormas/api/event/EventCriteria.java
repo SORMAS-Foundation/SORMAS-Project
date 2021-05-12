@@ -313,6 +313,11 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		this.eventDateType = eventDateType;
 	}
 
+	public EventCriteria eventDateType(CriteriaDateType eventDateType) {
+		this.eventDateType = eventDateType;
+		return this;
+	}
+
 	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {
 		this.dateFilterOption = dateFilterOption;
 		return this;
