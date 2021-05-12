@@ -83,9 +83,11 @@ Get the latest SORMAS build by downloading the ZIP archive from the latest relea
 
 ### Install on Linux
 
-Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
+Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable (as root user).
 
 ```bash
+sudo su
+mkdir /root/deploy/sormas
 cd /root/deploy/sormas
 SORMAS_VERSION=1.y.z
 wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
