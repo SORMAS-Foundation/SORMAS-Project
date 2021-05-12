@@ -192,6 +192,68 @@ public class DataDictionaryGenerator {
 		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
 		boolean usesFacilityReference = false;
 
+		if (EntityDto.class.isAssignableFrom(entityClass)) {
+			for (Field field : EntityDto.class.getDeclaredFields()) {
+				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+					continue;
+				XSSFRow row = sheet.createRow(rowNumber++);
+
+				// field name
+				XSSFCell fieldNameCell = row.createCell(EntityColumn.FIELD.ordinal());
+				fieldNameCell.setCellValue(field.getName());
+
+				// value range
+				XSSFCell fieldValueCell = row.createCell(EntityColumn.TYPE.ordinal());
+				fieldValueCell.setCellStyle(defaultCellStyle);
+				Class<?> fieldType = field.getType();
+				if (fieldType.isEnum()) {
+					// use enum type name - values are added below
+					fieldValueCell.setCellValue(fieldType.getSimpleName());
+					if (!usedEnums.contains(fieldType)) {
+						usedEnums.add((Class<Enum<?>>) fieldType);
+					}
+				} else if (EntityDto.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+				} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+					if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
+						usesFacilityReference = true;
+					}
+				} else if (String.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
+				} else if (Date.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(I18nProperties.getCaption("date"));
+				} else if (Number.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(I18nProperties.getCaption("number"));
+				} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
+					fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
+				}
+
+				//sensitive data
+				XSSFCell dataProtectionCell = row.createCell(EntityColumn.DATA_PROTECTION.ordinal());
+				if (field.getAnnotation(PersonalData.class) != null) {
+					dataProtectionCell.setCellValue("personal");
+				} else {
+					if (field.getAnnotation(SensitiveData.class) != null)
+						dataProtectionCell.setCellValue("sensitive");
+				}
+
+				// caption
+				XSSFCell captionCell = row.createCell(EntityColumn.CAPTION.ordinal());
+				captionCell.setCellValue(I18nProperties.getPrefixCaption(i18nPrefix, field.getName(), ""));
+
+				// description
+				XSSFCell descriptionCell = row.createCell(EntityColumn.DESCRIPTION.ordinal());
+				descriptionCell.setCellStyle(defaultCellStyle);
+				descriptionCell.setCellValue(I18nProperties.getPrefixDescription(i18nPrefix, field.getName(), ""));
+
+				// required
+				XSSFCell requiredCell = row.createCell(EntityColumn.REQUIRED.ordinal());
+				if (field.getAnnotation(Required.class) != null)
+					requiredCell.setCellValue(true);
+			}
+		}
+
 		for (Field field : entityClass.getDeclaredFields()) {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
 				continue;
