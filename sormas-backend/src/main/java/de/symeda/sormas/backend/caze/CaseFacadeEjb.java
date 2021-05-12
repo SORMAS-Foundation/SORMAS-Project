@@ -3157,8 +3157,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
 		return caseService.exists(
-			(cb, caseRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken), cb.notEqual(caseRoot.get(Case.UUID), caseUuid)));
+			(cb, caseRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(caseRoot.get(Case.UUID), caseUuid),
+				cb.notEqual(caseRoot.get(Case.DELETED), Boolean.TRUE)));
 	}
 
 	@Override
