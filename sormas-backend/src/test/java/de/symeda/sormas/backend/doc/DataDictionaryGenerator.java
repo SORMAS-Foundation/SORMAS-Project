@@ -95,6 +95,7 @@ public class DataDictionaryGenerator {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX);
+		createEntitySheet(workbook, PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX);
 		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX);
 		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 		createEntitySheet(workbook, ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX);
@@ -109,7 +110,6 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX);
 		createEntitySheet(workbook, ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX);
 		createEntitySheet(workbook, ContactDto.class, ContactDto.I18N_PREFIX);
-		createEntitySheet(workbook, PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX);
 		createEntitySheet(workbook, VisitDto.class, VisitDto.I18N_PREFIX);
 		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX);
 		createEntitySheet(workbook, PathogenTestDto.class, PathogenTestDto.I18N_PREFIX);
