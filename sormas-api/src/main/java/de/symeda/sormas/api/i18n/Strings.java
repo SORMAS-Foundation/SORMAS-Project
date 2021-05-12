@@ -129,7 +129,9 @@ public interface Strings {
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
+	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
+	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
 	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
 	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
@@ -224,6 +226,8 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
+	String errorContactMerging = "errorContactMerging";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
@@ -339,6 +343,8 @@ public interface Strings {
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
+	String headingContactMergeGuide = "headingContactMergeGuide";
+	String headingContactsArchived = "headingContactsArchived";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
 	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
@@ -440,6 +446,7 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingHowToMergeContacts = "headingHowToMergeContacts";
 	String headingImportAllContinents = "headingImportAllContinents";
 	String headingImportAllCountries = "headingImportAllCountries";
 	String headingImportAllSubcontinents = "headingImportAllSubcontinents";
@@ -591,8 +598,16 @@ public interface Strings {
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
 	String infoCompletenessMerge = "infoCompletenessMerge";
+	String infoContactCalculateCompleteness = "infoContactCalculateCompleteness";
+	String infoContactCompleteness = "infoContactCompleteness";
+	String infoContactCompletenessMerge = "infoContactCompletenessMerge";
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
+	String infoContactMergeIgnoreRegion = "infoContactMergeIgnoreRegion";
+	String infoContactMergingExplanation = "infoContactMergingExplanation";
+	String infoContactMergingHideDescription = "infoContactMergingHideDescription";
+	String infoContactMergingMergeDescription = "infoContactMergingMergeDescription";
+	String infoContactMergingPickDescription = "infoContactMergingPickDescription";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	String infoConvertToCaseContacts = "infoConvertToCaseContacts";
 	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
@@ -632,6 +647,7 @@ public interface Strings {
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHowToMergeCases = "infoHowToMergeCases";
+	String infoHowToMergeContacts = "infoHowToMergeContacts";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportAllSubcontinents = "infoImportAllSubcontinents";
@@ -774,10 +790,12 @@ public interface Strings {
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
+	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
+	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
 	String messageContinentArchivingNotPossible = "messageContinentArchivingNotPossible";

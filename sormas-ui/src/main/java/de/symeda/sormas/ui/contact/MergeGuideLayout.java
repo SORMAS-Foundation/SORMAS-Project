@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.contact;
 
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.AbstractMergeGuideLayout;
@@ -7,51 +7,51 @@ public class MergeGuideLayout extends AbstractMergeGuideLayout {
 
 	@Override
 	protected String getInfoMergingExplanationMessage() {
-		return Strings.infoMergingExplanation;
+		return Strings.infoContactMergingExplanation;
 	}
 
 	@Override
 	protected String getHeadingHowToMergeMessage() {
-		return Strings.headingHowToMergeCases;
+		return Strings.headingHowToMergeContacts;
 	}
 
 	@Override
 	protected String getInfoHowToMergeMessage() {
-		return Strings.infoHowToMergeCases;
+		return Strings.infoHowToMergeContacts;
 	}
 
 	@Override
 	protected String getInfoMergingMergeDescriptionMessage() {
-		return Strings.infoMergingMergeDescription;
+		return Strings.infoContactMergingMergeDescription;
 	}
 
 	@Override
 	protected String getInfoMergingPickDescriptionMessage() {
-		return Strings.infoMergingPickDescription;
+		return Strings.infoContactMergingPickDescription;
 	}
 
 	@Override
 	protected String getInfoMergingHideDescriptionMessage() {
-		return Strings.infoMergingHideDescription;
+		return Strings.infoContactMergingHideDescription;
 	}
 
 	@Override
 	protected String getInfoCompletenessMessage() {
-		return Strings.infoCaseCompleteness;
+		return Strings.infoContactCompleteness;
 	}
 
 	@Override
 	protected String getInfoCompletenessMergeMessage() {
-		return Strings.infoCompletenessMerge;
+		return Strings.infoContactCompletenessMerge;
 	}
 
 	@Override
 	protected String getInfoCalculateCompletenessMessage() {
-		return Strings.infoCalculateCompleteness;
+		return Strings.infoContactCalculateCompleteness;
 	}
 
 	@Override
 	protected String getInfoMergeIgnoreRegionMessage() {
-		return Strings.infoMergeIgnoreRegion;
+		return Strings.infoContactMergeIgnoreRegion;
 	}
 }

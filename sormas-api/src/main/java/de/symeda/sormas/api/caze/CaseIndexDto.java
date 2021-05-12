@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -34,7 +35,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
