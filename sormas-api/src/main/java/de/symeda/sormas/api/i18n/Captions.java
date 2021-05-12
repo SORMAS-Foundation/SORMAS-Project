@@ -74,6 +74,7 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
@@ -90,6 +91,8 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionYesForAll = "actionYesForAll";
+	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
