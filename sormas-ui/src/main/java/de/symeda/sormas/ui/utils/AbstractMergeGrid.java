@@ -32,15 +32,12 @@ import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.MergeableIndexDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.contact.ContactDataView;
 
 public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends BaseCriteria> extends TreeGrid<T1> {
 
@@ -48,17 +45,24 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
 	public static final String COLUMN_UUID = "uuidLink";
 
+	private static final String UUID = "uuid";
+	private static final String COMPLETENESS = "completeness";
+
 	protected T2 criteria;
 	protected boolean ignoreRegion;
 
 	protected List<String[]> hiddenUuidPairs;
 
+	private String viewName;
+	private String i18nPrefix;
 	private String confirmMessage;
 	private String pickMessage;
 
-	public AbstractMergeGrid(Class<T1> beanType, String confirmMessage, String pickMessage) {
+	public AbstractMergeGrid(Class<T1> beanType, String viewName, String i18nPrefix, String confirmMessage, String pickMessage) {
 		super(beanType);
 
+		this.viewName = viewName;
+		this.i18nPrefix = i18nPrefix;
 		this.confirmMessage = confirmMessage;
 		this.pickMessage = pickMessage;
 
@@ -87,8 +91,7 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 		addComponentColumn(indexDto -> {
 			Link link = new Link(
 				DataHelper.getShortUuid(indexDto.getUuid()),
-				new ExternalResource(
-					SormasUI.get().getPage().getLocation().getRawPath() + "#!" + ContactDataView.VIEW_NAME + "/" + indexDto.getUuid()));
+				new ExternalResource(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + viewName + "/" + indexDto.getUuid()));
 			link.setTargetName("_blank");
 			return link;
 		}).setId(COLUMN_UUID);
@@ -96,11 +99,11 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 		buildColumns();
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(MergeContactIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, column.getId(), column.getCaption()));
 		}
 		getColumn(COLUMN_ACTIONS).setCaption("");
-		getColumn(COLUMN_UUID).setCaption(I18nProperties.getPrefixCaption(MergeContactIndexDto.I18N_PREFIX, ContactIndexDto.UUID));
-		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(MergeContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
+		getColumn(COLUMN_UUID).setCaption(I18nProperties.getPrefixCaption(i18nPrefix, UUID));
+		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(i18nPrefix, COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
 		this.setStyleGenerator((StyleGenerator<T1>) item -> {

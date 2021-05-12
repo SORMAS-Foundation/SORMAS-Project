@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
@@ -30,7 +31,12 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 
 	public MergeContactsGrid() {
-		super(MergeContactIndexDto.class, Strings.confirmationMergeContactAndDeleteOther, Strings.confirmationPickContactAndDeleteOther);
+		super(
+			MergeContactIndexDto.class,
+			ContactDataView.VIEW_NAME,
+			MergeContactIndexDto.I18N_PREFIX,
+			Strings.confirmationMergeContactAndDeleteOther,
+			Strings.confirmationPickContactAndDeleteOther);
 	}
 
 	@Override

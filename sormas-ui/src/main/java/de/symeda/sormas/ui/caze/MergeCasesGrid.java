@@ -30,7 +30,12 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 
 	public MergeCasesGrid() {
-		super(CaseIndexDto.class, Strings.confirmationMergeCaseAndDeleteOther, Strings.confirmationPickCaseAndDeleteOther);
+		super(
+			CaseIndexDto.class,
+			CaseDataView.VIEW_NAME,
+			CaseIndexDto.I18N_PREFIX,
+			Strings.confirmationMergeCaseAndDeleteOther,
+			Strings.confirmationPickCaseAndDeleteOther);
 	}
 
 	@Override
