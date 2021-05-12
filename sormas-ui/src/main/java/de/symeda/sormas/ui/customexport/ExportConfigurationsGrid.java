@@ -50,19 +50,14 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	private final ExportType exportType;
 
-	public ExportConfigurationsGrid(
-		ExportType exportType,
-		List<ExportPropertyMetaInfo> availableProperties,
-		Boolean isPublicExport) {
+	public ExportConfigurationsGrid(ExportType exportType, List<ExportPropertyMetaInfo> availableProperties, Boolean isPublicExport) {
 		this.exportType = exportType;
 
 		buildGrid(availableProperties, isPublicExport);
 		reload(isPublicExport);
 	}
 
-	private void buildGrid(
-		List<ExportPropertyMetaInfo> availableProperties,
-		Boolean isPublicExport) {
+	private void buildGrid(List<ExportPropertyMetaInfo> availableProperties, Boolean isPublicExport) {
 
 		setSelectionMode(SelectionMode.NONE);
 		setHeightMode(HeightMode.ROW);
@@ -81,7 +76,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
 		setItems(configs);
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
-		if(isPublic){
+		if (isPublic) {
 			setNbOfSharedExportsToPublic(configs.size());
 		}
 	}
@@ -104,8 +99,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		layout.addComponent(btnExport);
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
-			ControllerProvider.getCustomExportController()
-				.openEditExportConfigurationWindow(this, config, availableProperties);
+			ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
 		});
 		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);

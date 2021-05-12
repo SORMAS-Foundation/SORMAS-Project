@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.samples.PathogenTestController.showCaseUpdateWithNewDiseaseVariantDialog;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,9 +26,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
-import de.symeda.sormas.api.sample.PCRTestSpecification;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -51,8 +50,10 @@ import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -61,6 +62,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -84,8 +86,6 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static de.symeda.sormas.ui.samples.PathogenTestController.showCaseUpdateWithNewDiseaseVariantDialog;
 
 public class SampleController {
 
@@ -122,15 +122,22 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer) {
-		return getSampleCreateComponent(sampleDto, consumer, ()-> {});
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+		SampleDto sampleDto,
+		BiConsumer<SampleDto, PathogenTestDto> consumer) {
+		return getSampleCreateComponent(sampleDto, consumer, () -> {
+		});
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
-		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {}, callback);
+		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {
+		}, callback);
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, BiConsumer<SampleDto, PathogenTestDto> consumer, Runnable callback) {
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+		SampleDto sampleDto,
+		BiConsumer<SampleDto, PathogenTestDto> consumer,
+		Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -183,7 +190,8 @@ public class SampleController {
 	}
 
 	private void saveSample(SampleCreateForm createForm) {
-		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {}));
+		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {
+		}));
 	}
 
 	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer) {
@@ -211,7 +219,7 @@ public class SampleController {
 			}
 
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
-			pathogenTest.setTestedDiseaseVariant((DiseaseVariantReferenceDto) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
+			pathogenTest.setTestedDiseaseVariant((DiseaseVariant) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
@@ -234,9 +242,9 @@ public class SampleController {
 			if (associatedCase != null) {
 				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 				Runnable caseDiseaseVariantCallback = () -> {
-					if (pathogenTest.getTestedDiseaseVariant() != postSaveCaseDto.getDiseaseVariant()
-							&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
-							&& pathogenTest.getTestResultVerified().booleanValue() == true) {
+					if (!DataHelper.equal(pathogenTest.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())
+						&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+						&& pathogenTest.getTestResultVerified()) {
 						showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
 					}
 				};
@@ -303,8 +311,8 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = null;
 		if (dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton = ButtonHelper
-					.createButtonWithCaption("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
+				referOrLinkToOtherLabButton =
+					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 
 						private static final long serialVersionUID = 1L;
 
@@ -329,16 +337,15 @@ public class SampleController {
 					+ DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
 
-			referOrLinkToOtherLabButton =
-				ButtonHelper.createButtonWithCaption("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
+			referOrLinkToOtherLabButton = ButtonHelper.createButton("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
 
-					private static final long serialVersionUID = 1L;
+				private static final long serialVersionUID = 1L;
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						navigateToData(dto.getReferredTo().getUuid());
-					}
-				});
+				@Override
+				public void buttonClick(ClickEvent event) {
+					navigateToData(dto.getReferredTo().getUuid());
+				}
+			});
 
 		}
 

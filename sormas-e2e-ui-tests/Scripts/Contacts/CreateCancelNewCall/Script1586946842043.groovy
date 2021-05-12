@@ -19,7 +19,7 @@ WebUI.delay(1)
 'userName\n'
 WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'),
 	findTestData(GlobalVariable.gContactTestDataName).getValue(2, 7))
-WebUI.delay(1)
+WebUI.waitForPageLoad(20)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 

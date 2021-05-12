@@ -57,7 +57,7 @@ public class RestConfig extends ResourceConfig {
 
 		SwaggerConfig.init();
 
-		Info info = new Info().title("SORMAS external visits journal API")
+		Info info = new Info().title("SORMAS external symptom journal API")
 			.version(InfoProvider.get().getVersion())
 			.description(
 				"The purpose of this API is to enable communication between SORMAS and other symptom journals. "

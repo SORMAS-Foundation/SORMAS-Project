@@ -45,8 +45,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -56,7 +54,9 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -481,6 +481,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.LAB_SAMPLE_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, sample.get(Sample.FIELD_SAMPLE_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getLab().get(Facility.NAME), textFilter));
@@ -557,25 +558,25 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (pathogenTestUUIDsList.size() > 0) {
 			startTime = DateHelper.startTime();
 			IterableHelper.executeBatched(
-					pathogenTestUUIDsList,
-					pathogenTestUUIDsList.size(),
-					batchedSampleUuids -> pathogenTestService.delete(pathogenTestUUIDsList));
+				pathogenTestUUIDsList,
+				pathogenTestUUIDsList.size(),
+				batchedSampleUuids -> pathogenTestService.delete(pathogenTestUUIDsList));
 			logger.debug(
-					"pathogenTestService.delete(pathogenTestUUIDsList) = {}, {}ms",
-					pathogenTestUUIDsList.size(),
-					DateHelper.durationMillies(startTime));
+				"pathogenTestService.delete(pathogenTestUUIDsList) = {}, {}ms",
+				pathogenTestUUIDsList.size(),
+				DateHelper.durationMillies(startTime));
 		}
 
 		if (additionalTestUUIDsList.size() > 0) {
 			startTime = DateHelper.startTime();
 			IterableHelper.executeBatched(
-					additionalTestUUIDsList,
-					additionalTestUUIDsList.size(),
-					batchedSampleUuids -> additionalTestService.delete(additionalTestUUIDsList));
+				additionalTestUUIDsList,
+				additionalTestUUIDsList.size(),
+				batchedSampleUuids -> additionalTestService.delete(additionalTestUUIDsList));
 			logger.debug(
-					"additionalTestService.delete(additionalTestUUIDsList) = {}, {}ms",
-					additionalTestUUIDsList.size(),
-					DateHelper.durationMillies(startTime));
+				"additionalTestService.delete(additionalTestUUIDsList) = {}, {}ms",
+				additionalTestUUIDsList.size(),
+				DateHelper.durationMillies(startTime));
 		}
 
 		for (Sample sample : samplesList) {

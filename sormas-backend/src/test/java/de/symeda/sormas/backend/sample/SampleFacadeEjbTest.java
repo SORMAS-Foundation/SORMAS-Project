@@ -54,6 +54,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -341,6 +342,118 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+	}
+
+	@Test
+	public void testAllSamplesDeletionWithOneAdditionalTest() {
+
+		Date since = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		//1st Case person
+		PersonDto firstCazePerson = creator.createPerson("FirstCase", "FirstPerson");
+		CaseDataDto firstCaze = creator.createCase(
+			user.toReference(),
+			firstCazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto firstSample =
+			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto secondSample =
+			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto firstSamplePathogenTest = creator.createPathogenTest(
+			firstSample.toReference(),
+			PathogenTestType.MICROSCOPY,
+			firstCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			"Positive",
+			true);
+		AdditionalTestDto firstSampleAdditionalTest = creator.createAdditionalTest(firstSample.toReference());
+
+		// Database should contain the created sample and sample test
+		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
+
+		getSampleFacade().deleteAllSamples(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()));
+
+		// Sample and pathogen test should be marked as deleted, additional test should be deleted
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(firstSample.getUuid()));
+		assertTrue(sampleUuids.contains(secondSample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
+	}
+
+	@Test
+	public void testAllSamplesDeletionWithMultipleAdditionalTest() {
+
+		Date since = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto secondCazePerson = creator.createPerson("SecondCase", "SecondPerson");
+		CaseDataDto secondCaze = creator.createCase(
+				user.toReference(),
+				secondCazePerson.toReference(),
+				Disease.ACUTE_VIRAL_HEPATITIS,
+				CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		SampleDto thirdSample =
+				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto forthSample =
+				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto secondSamplePathogenTest = creator.createPathogenTest(
+				thirdSample.toReference(),
+				PathogenTestType.RAPID_TEST,
+				secondCaze.getDisease(),
+				new Date(),
+				rdcf.facility,
+				user.toReference(),
+				PathogenTestResultType.INDETERMINATE,
+				"Indeterminate",
+				true);
+		PathogenTestDto thirdSamplePathogenTest = creator.createPathogenTest(
+				forthSample.toReference(),
+				PathogenTestType.CQ_VALUE_DETECTION,
+				secondCaze.getDisease(),
+				new Date(),
+				rdcf.facility,
+				user.toReference(),
+				PathogenTestResultType.NOT_DONE,
+				"Not done",
+				true);
+		AdditionalTestDto secondSampleAdditionalTest = creator.createAdditionalTest(thirdSample.toReference());
+		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
+
+		// Database should contain the created sample, sample test and additional tests
+		assertNotNull(getSampleTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
+		assertNotNull(getSampleTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
+
+		getSampleFacade().deleteAllSamples(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()));
+
+		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(thirdSample.getUuid()));
+		assertTrue(sampleUuids.contains(forthSample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 	}
 
 	@Test

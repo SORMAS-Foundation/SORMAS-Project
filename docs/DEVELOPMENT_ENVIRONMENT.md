@@ -15,12 +15,12 @@ Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 3: Install Java
-Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/zulu/). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
+Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
 
 ## Step 4: Install and Configure Your IDE
 
 ### IntelliJ
-- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/)
+- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see https://youtrack.jetbrains.com/issue/IDEA-216528)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Open repository if you haven't done so already
 - Open the project in Intellij; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
@@ -97,3 +97,25 @@ Optional, but strongly recommended:
 - On the same screen, set `Number of imports needed for .*` and `Number of static imports needed for .*` to 99
 - On the same screen, make sure that `Do not create import for types starting with a lowercase letter` is checked and apply the changes
 - Navigate to `Java -> Editor -> Save Actions` and make sure that the following options are selected: `Perform the selected actions on save`, `Format source code`, `Format all lines` and `Organize imports`
+
+## Issues which can appear during installation process of the project
+
+1. If debug mode does not work: To replace opt\payara5\glassfish\modules\launcher.jar with sormas-base/setup/launcher.jar
+
+2. For Windows: Please check your java_version. In case if you have the multiple java_versions installed on the system, it will always show to you the first version installed.
+   I had the java 8 instead of 11.
+   In order to fix it, go to environment variables, and move the 11 version up. And rerun the script. Seems that the console is reading those variables at the starting point, and the values of it can be updated only after console/script restart.
+
+3. For Windows: Pay attention to the postgres SQL files rights permissions after unziping the downloaded ZIP archive. Files physically were present but next script error has been generated:
+   psql:setup.sql:7: ERROR:  could not open extension control file "C:/Program Files/PostgreSQL/10/share/extension/temporal_tables.control": No such file or directory
+   -I checked the file rights, and under windows they has AV attribute, however, all others has only A attribute. When I was trying to open them with Notepad++ it was saying that such file does not exist. Do you want to create it? If `yes` will be pressed - another message saying that the file exists, appeared. Very strange scenario...
+
+4. All the postgres commands (of added users, etc.) which were added at first startup of the application - will raise errors in case if such entity exists. Just ignore those errors at repeated installation of .\server-setup.sh
+
+5. Check always the port number 6048 which can be occupied by an old instance of payara.
+   -> For every installation, kill all Java/javaw processes and check the availability of 6048 port number.
+   -> Delete files with generated domain folders and payara. In order to have a clean installation of each next ./server-setup.sh run.
+
+6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
+
+7. For eclipse formatted plugin, there is an issue for Idea: https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.

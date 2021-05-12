@@ -83,6 +83,7 @@ public interface Validations {
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
+	String importErrorCustomizableEnumValue = "importErrorCustomizableEnumValue";
 	String importErrorInColumn = "importErrorInColumn";
 	String importEventParticipantsPropertyTypeNotAllowed = "importEventParticipantsPropertyTypeNotAllowed";
 	String importEventsPropertyTypeNotAllowed = "importEventsPropertyTypeNotAllowed";

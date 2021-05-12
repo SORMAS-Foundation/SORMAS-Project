@@ -32,6 +32,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -101,6 +104,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -117,6 +121,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
@@ -127,6 +132,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -448,7 +454,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(0.0);
+			p.getAddress().setLongitude(0.0);
+		});
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -458,14 +467,24 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
+		Long count = getCaseFacade().countCasesForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1),
+			null);
+
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
-			DateHelper.addDays(new Date(), 1));
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		// List should have one entry
+		assertEquals((long) count, mapCaseDtos.size());
 		assertEquals(1, mapCaseDtos.size());
 	}
 
@@ -1756,5 +1775,113 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21 + 10), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+	}
+
+	@Test
+	public void testCaseCriteriaSharedWithReportingTool() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfo.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfo.setStatus(ExternalShareStatus.SHARED);
+		getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		CaseDataDto notSharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setOnlyEntitiesSharedWithExternalSurvTool(true);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+
+		CaseCriteria caseCriteriaForNotShared = new CaseCriteria();
+		caseCriteriaForNotShared.setOnlyEntitiesNotSharedWithExternalSurvTool(true);
+
+		indexList = getCaseFacade().getIndexList(caseCriteriaForNotShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(notSharedCase.getUuid()));
+	}
+
+	@Test
+	public void testCaseCriteriaChangedSinceLastShareWithReportingTool() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.APRIL, 20, 12, 31)));
+		shareInfo.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfo.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfo.setStatus(ExternalShareStatus.DELETED);
+		getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		sharedCase.setReInfection(YesNoUnknown.YES);
+		getCaseFacade().saveCase(sharedCase);
+
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(true);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+	}
+
+	@Test
+	public void testCaseCriteriaLastShareWithReportingToolBetweenDates() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfoMarch = new ExternalShareInfo();
+		shareInfoMarch.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.MARCH, 20, 12, 31)));
+		shareInfoMarch.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfoMarch.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfoMarch.setStatus(ExternalShareStatus.SHARED);
+		getExternalShareInfoService().ensurePersisted(shareInfoMarch);
+
+		ExternalShareInfo shareInfoApril = new ExternalShareInfo();
+		shareInfoApril.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.APRIL, 20, 12, 31)));
+		shareInfoApril.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfoApril.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfoApril.setStatus(ExternalShareStatus.DELETED);
+		getExternalShareInfoService().ensurePersisted(shareInfoApril);
+
+		sharedCase.setReInfection(YesNoUnknown.YES);
+		getCaseFacade().saveCase(sharedCase);
+
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setNewCaseDateType(ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE);
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.APRIL, 18, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 21, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+
+		// range before last share
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.MARCH, 10, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 19, 10, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(0));
+
+		// range after last share
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.APRIL, 21, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 22, 10, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(0));
+
 	}
 }

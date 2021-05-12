@@ -107,6 +107,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -613,8 +614,8 @@ public class VisitFacadeEjb implements VisitFacade {
 				}
 
 				Case contactCase = contact.getCaze();
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
-					contact.getRegion() != null ? contact.getRegion() : contactCase.getRegion(),
+				List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getContactRegions(contact),
 					UserRole.SURVEILLANCE_SUPERVISOR,
 					UserRole.CONTACT_SUPERVISOR);
 				for (User recipient : messageRecipients) {
@@ -702,6 +703,9 @@ public class VisitFacadeEjb implements VisitFacade {
 			joins.getContactDistrict().get(District.UUID),
 			joins.getContactCommunity().get(Community.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
+			joins.getContactCaseResponsibleRegion().get(Region.UUID),
+			joins.getContactCaseResponsibleDistrict().get(District.UUID),
+			joins.getContactCaseResponsibleCommunity().get(Community.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),
 			joins.getContactCaseCommunity().get(Community.UUID),
@@ -725,6 +729,9 @@ public class VisitFacadeEjb implements VisitFacade {
 		cq.multiselect(
 			visitRoot.get(Visit.ID),
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),

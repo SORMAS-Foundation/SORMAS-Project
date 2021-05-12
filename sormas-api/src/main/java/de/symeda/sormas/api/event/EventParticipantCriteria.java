@@ -1,12 +1,14 @@
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class EventParticipantCriteria extends BaseCriteria implements Serializable {
 
@@ -19,6 +21,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
 	public static final String DISEASE = "disease";
 	public static final String PATHOGENTESTRESULT = "pathogenTestResult";
+	public static final String VACCINATION = "vaccination";
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
@@ -29,6 +32,10 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Boolean onlyCountContactsWithSourceCaseInEvent;
 	private Disease disease;
 	private PathogenTestResultType pathogenTestResult;
+	private Vaccination vaccination;
+	private Date relevantDate;
+	private Boolean excludePseudonymized;
+	private Boolean noResultingCase;
 
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
@@ -45,9 +52,9 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return person;
 	}
 
-
-	public void setPerson(PersonReferenceDto person) {
+	public EventParticipantCriteria setPerson(PersonReferenceDto person) {
 		this.person = person;
+		return this;
 	}
 
 	public EventParticipantCriteria person(PersonReferenceDto person) {
@@ -73,47 +80,89 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return birthdateYYYY;
 	}
 
-	public void setBirthdateYYYY(Integer birthdateYYYY) {
+	public EventParticipantCriteria setBirthdateYYYY(Integer birthdateYYYY) {
 		this.birthdateYYYY = birthdateYYYY;
+		return this;
 	}
 
 	public Integer getBirthdateMM() {
 		return birthdateMM;
 	}
 
-	public void setBirthdateMM(Integer birthdateMM) {
+	public EventParticipantCriteria setBirthdateMM(Integer birthdateMM) {
 		this.birthdateMM = birthdateMM;
+		return this;
 	}
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
 
-	public void setBirthdateDD(Integer birthdateDD) {
+	public EventParticipantCriteria setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+		return this;
 	}
 
 	public Boolean getOnlyCountContactsWithSourceCaseInEvent() {
 		return onlyCountContactsWithSourceCaseInEvent;
 	}
 
-	public void setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
+	public EventParticipantCriteria setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
 		this.onlyCountContactsWithSourceCaseInEvent = onlyCountContactsWithSourceCaseInEvent;
+		return this;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
 
-	public void setDisease(Disease disease) {
+	public EventParticipantCriteria setDisease(Disease disease) {
 		this.disease = disease;
+		return this;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
 
-	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+	public EventParticipantCriteria setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
+		return this;
+	}
+
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public EventParticipantCriteria setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
+		return this;
+	}
+
+	public Date getRelevantDate() {
+		return relevantDate;
+	}
+
+	public EventParticipantCriteria setRelevantDate(Date relevantDate) {
+		this.relevantDate = relevantDate;
+		return this;
+	}
+
+	public Boolean getExcludePseudonymized() {
+		return excludePseudonymized;
+	}
+
+	public EventParticipantCriteria setExcludePseudonymized(Boolean excludePseudonymized) {
+		this.excludePseudonymized = excludePseudonymized;
+		return this;
+	}
+
+	public Boolean getNoResultingCase() {
+		return noResultingCase;
+	}
+
+	public EventParticipantCriteria setNoResultingCase(Boolean noResultingCase) {
+		this.noResultingCase = noResultingCase;
+		return this;
 	}
 }

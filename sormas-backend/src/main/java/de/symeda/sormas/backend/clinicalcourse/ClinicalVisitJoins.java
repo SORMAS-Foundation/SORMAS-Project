@@ -39,6 +39,9 @@ public class ClinicalVisitJoins extends AbstractDomainObjectJoins<ClinicalVisit,
 	private Join<ClinicalCourse, Case> caze;
 	private Join<Case, Person> casePerson;
 	private Join<Case, User> caseReportingUser;
+	private Join<Case, Region> caseResponsibleRegion;
+	private Join<Case, District> caseResponsibleDistrict;
+	private Join<Case, Community> caseResponsibleCommunity;
 	private Join<Case, Region> caseRegion;
 	private Join<Case, District> caseDistrict;
 	private Join<Case, Community> caseCommunity;
@@ -88,6 +91,30 @@ public class ClinicalVisitJoins extends AbstractDomainObjectJoins<ClinicalVisit,
 
 	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
 		this.caseReportingUser = caseReportingUser;
+	}
+
+	public Join<Case, Region> getCaseResponsibleRegion() {
+		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCaze(), this::setCaseResponsibleRegion);
+	}
+
+	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
+		this.caseResponsibleRegion = caseResponsibleRegion;
+	}
+
+	public Join<Case, District> getCaseResponsibleDistrict() {
+		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCaze(), this::setCaseResponsibleDistrict);
+	}
+
+	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
+		this.caseResponsibleDistrict = caseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getCaseResponsibleCommunity() {
+		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseResponsibleCommunity);
+	}
+
+	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
+		this.caseResponsibleCommunity = caseResponsibleCommunity;
 	}
 
 	public Join<Case, Region> getCaseRegion() {

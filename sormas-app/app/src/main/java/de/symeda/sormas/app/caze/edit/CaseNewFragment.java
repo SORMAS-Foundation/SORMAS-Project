@@ -28,6 +28,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -40,7 +42,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
@@ -104,7 +105,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		List<DiseaseVariant> diseaseVariants =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
@@ -277,7 +279,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.caseDataDisease.setVisibility(GONE);
-			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityOrHome.setVisibility(GONE);
+			contentBinding.caseDataCommunity.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.facilityTypeGroup.setRequired(false);
@@ -310,7 +313,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseNewLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		List<DiseaseVariant> diseaseVariants =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);

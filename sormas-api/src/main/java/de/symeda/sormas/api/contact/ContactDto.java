@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -94,6 +95,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
 	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
@@ -135,6 +137,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private String caseOrEventInformation;
 	private Disease disease;
 	private String diseaseDetails;
+	private DiseaseVariant diseaseVariant;
 
 	@Required
 	private Date reportDateTime;
@@ -302,24 +305,25 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	}
 
 	public static ContactDto build(CaseDataDto caze) {
-		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		final ContactDto contact = build();
-		contact.assignCase(caze, disease, diseaseDetails);
+		contact.assignCase(caze, disease, diseaseDetails, diseaseVariant);
 
 		return contact;
 	}
 
 	public void assignCase(CaseDataDto caze) {
-		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		setCaze(caze);
 		setDisease(disease);
 		setDiseaseDetails(diseaseDetails);
+		setDiseaseVariant(diseaseVariant);
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -924,5 +928,13 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	public void setFollowUpStatusChangeUser(UserReferenceDto followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 }

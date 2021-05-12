@@ -7216,4 +7216,104 @@ ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_diseasevariant_id FOREIG
 
 INSERT INTO schema_version (version_number, comment) VALUES (365, '2021-04-15 Add variant specific Nucleic acid detecion methods #5029');
 
+-- 2021-04-23 Decouple Place of stay from the responsible jurisdiction from cases #3254
+ALTER TABLE cases
+    ADD COLUMN responsibleregion_id BIGINT,
+    ADD CONSTRAINT fk_cases_responsibleregion_id FOREIGN KEY (responsibleregion_id) REFERENCES region(id),
+    ADD COLUMN responsibledistrict_id BIGINT,
+    ADD CONSTRAINT fk_cases_responsibledistrict_id FOREIGN KEY (responsibledistrict_id) REFERENCES district(id),
+    ADD COLUMN responsiblecommunity_id BIGINT,
+    ADD CONSTRAINT fk_cases_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (366, 'Decouple Place of stay from the responsible jurisdiction from cases #3254');
+
+-- 2021-04-29 Add evidence fields for event clusters #5061
+
+ALTER TABLE events ADD COLUMN epidemiologicalevidence varchar(255);
+ALTER TABLE events ADD COLUMN epidemiologicalevidencedetails json;
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidence varchar(255);
+ALTER TABLE events ADD COLUMN laboratorydiagnosticEvidencedetails json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (367, ' 2021-04-29 Add evidence fields for event clusters #5061');
+
+-- 2021-05-07 Fix equality issue by using jsonb #5061
+
+ALTER TABLE events ALTER COLUMN epidemiologicalevidencedetails set DATA TYPE jsonb using epidemiologicalevidencedetails::jsonb;
+ALTER TABLE events ALTER COLUMN laboratorydiagnosticEvidencedetails set DATA TYPE jsonb using laboratorydiagnosticEvidencedetails::jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (368, '2021-05-07 Fix equality issue by using jsonb #5061');
+
+-- 2021-05-07 Move new enum values to screeningType #5063
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_CONDUCTED_TEST'
+WHERE caseidentificationsource = 'SELF_CONDUCTED_TEST';
+
+UPDATE cases SET
+    caseidentificationsource = 'SCREENING',
+    screeningtype = 'SELF_ARRANGED_TEST'
+WHERE caseidentificationsource = 'SELF_ARRANGED_TEST';
+
+INSERT INTO schema_version (version_number, comment) VALUES (369, 'Move new enum values to screeningType #5063');
+
+-- 2021-03-19 Add sample material text to lab message #4773
+ALTER TABLE labmessage ADD COLUMN samplematerialtext VARCHAR(255);
+ALTER TABLE labmessage_history ADD COLUMN samplematerialtext VARCHAR(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (370, 'Add sample material text to lab message #4773');
+
+-- 2020-03-03 Add archived to task #3430
+ALTER TABLE task ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
+
+
+-- 2021-04-29 Add customizable enums #5247
+CREATE TABLE customizableenumvalue(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    datatype varchar(255) not null,
+    value text not null,
+    caption text not null,
+    translations text,
+    diseases text,
+    description text,
+    descriptiontranslations text,
+    properties text,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+ALTER TABLE customizableenumvalue OWNER TO sormas_user;
+
+CREATE TABLE customizableenumvalue_history (LIKE customizableenumvalue);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON customizableenumvalue
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizableenumvalue_history', true);
+ALTER TABLE customizableenumvalue_history OWNER TO sormas_user;
+
+ALTER TABLE cases DROP CONSTRAINT fk_cases_diseasevariant_id;
+ALTER TABLE cases RENAME COLUMN diseasevariant_id TO diseasevariant;
+ALTER TABLE cases ALTER COLUMN diseasevariant TYPE text USING diseasevariant::text;
+ALTER TABLE pathogentest DROP CONSTRAINT fk_pathogentest_diseasevariant_id;
+ALTER TABLE pathogentest RENAME COLUMN testeddiseasevariant_id TO testeddiseasevariant;
+ALTER TABLE pathogentest ALTER COLUMN testeddiseasevariant TYPE text USING testeddiseasevariant::text;
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id, disease, name FROM diseasevariant
+            LOOP
+                INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), rec.name, rec.disease);
+                UPDATE cases SET diseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE diseasevariant = rec.id::text;
+                UPDATE pathogentest SET testeddiseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE testeddiseasevariant = rec.id::text;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+DROP TABLE diseasevariant;
+DROP TABLE diseasevariant_history;
+
+INSERT INTO schema_version (version_number, comment) VALUES (372, '2021-04-29 Add customizable enums #5247');
 -- *** Insert new sql commands BEFORE this line ***
