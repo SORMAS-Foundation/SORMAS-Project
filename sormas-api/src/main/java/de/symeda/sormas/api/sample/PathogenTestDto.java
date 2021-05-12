@@ -22,7 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -64,7 +64,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private SampleReferenceDto sample;
 	@Required
 	private Disease testedDisease;
-	private DiseaseVariantReferenceDto testedDiseaseVariant;
+	private DiseaseVariant testedDiseaseVariant;
 	private String testedDiseaseDetails;
 	private String typingId;
 	@Required
@@ -140,11 +140,11 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.testedDisease = testedDisease;
 	}
 
-	public DiseaseVariantReferenceDto getTestedDiseaseVariant() {
+	public DiseaseVariant getTestedDiseaseVariant() {
 		return testedDiseaseVariant;
 	}
 
-	public void setTestedDiseaseVariant(DiseaseVariantReferenceDto testedDiseaseVariant) {
+	public void setTestedDiseaseVariant(DiseaseVariant testedDiseaseVariant) {
 		this.testedDiseaseVariant = testedDiseaseVariant;
 	}
 

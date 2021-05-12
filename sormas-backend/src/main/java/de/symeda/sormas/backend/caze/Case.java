@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -72,7 +74,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
+import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -358,7 +360,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private Trimester trimester;
 
 	private List<Task> tasks;
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> convertedContact;
@@ -428,8 +430,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.disease = disease;
 	}
 
-	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = true)
+	@Column
+	@Convert(converter = DiseaseVariantConverter.class)
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}

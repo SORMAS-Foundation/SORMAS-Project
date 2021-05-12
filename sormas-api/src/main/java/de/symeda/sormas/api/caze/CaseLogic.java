@@ -29,13 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
+import de.symeda.sormas.api.followup.FollowUpStartDateType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.api.visit.VisitStatus;
 
 public final class CaseLogic {
 
@@ -53,13 +55,32 @@ public final class CaseLogic {
 		}
 	}
 
+	public static Date getStartDate(CaseDataDto caseDto) {
+		return getStartDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate());
+	}
+
 	public static Date getStartDate(Date onsetDate, Date reportDate) {
+		return onsetDate != null ? onsetDate : reportDate;
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(CaseDataDto caseDto, List<SampleDto> samples) {
+		return getFollowUpStartDate(caseDto.getSymptoms().getOnsetDate(), caseDto.getReportDate(), samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date onsetDate, Date reportDate, List<SampleDto> samples) {
 
 		if (onsetDate != null) {
-			return onsetDate;
-		} else {
-			return reportDate;
+			return new FollowUpPeriodDto(onsetDate, FollowUpStartDateType.SYMPTOM_ONSET_DATE);
 		}
+		return FollowUpLogic.getFollowUpStartDate(reportDate, samples);
+	}
+
+	public static FollowUpPeriodDto getFollowUpStartDate(Date onsetDate, Date reportDate, Date earliestSampleDate) {
+
+		if (onsetDate != null) {
+			return new FollowUpPeriodDto(onsetDate, FollowUpStartDateType.SYMPTOM_ONSET_DATE);
+		}
+		return FollowUpLogic.getFollowUpStartDate(reportDate, earliestSampleDate);
 	}
 
 	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
@@ -86,7 +107,7 @@ public final class CaseLogic {
 
 	/**
 	 * Handles the hospitalization change of a case.
-	 * 
+	 *
 	 * @param caze
 	 *            The new CaseDataDto for which the facility change should be handled.
 	 * @param oldCase
@@ -139,36 +160,14 @@ public final class CaseLogic {
 	 *            Returns the expected follow-up until date based on case start date, follow-up duration of the disease and date of the
 	 *            last cooperative visit. Ignores current follow-up until date and whether or not follow-up until has been overwritten.
 	 */
-	public static Date calculateFollowUpUntilDate(CaseDataDto caze, List<VisitDto> visits, int followUpDuration, boolean ignoreOverwrite) {
+	public static FollowUpPeriodDto calculateFollowUpUntilDate(
+		CaseDataDto caze,
+		FollowUpPeriodDto followUpPeriod,
+		List<VisitDto> visits,
+		int followUpDuration,
+		boolean ignoreOverwrite) {
 
-		Date beginDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
-		Date standardUntilDate = DateHelper.addDays(beginDate, followUpDuration);
-		Date untilDate = !ignoreOverwrite && caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : standardUntilDate;
-
-		Date lastVisitDate = null;
-		boolean additionalVisitNeeded = true;
-		for (VisitDto visit : visits) {
-			if (lastVisitDate == null || DateHelper.getStartOfDay(visit.getVisitDateTime()).after(DateHelper.getStartOfDay(lastVisitDate))) {
-				lastVisitDate = visit.getVisitDateTime();
-			}
-			if (additionalVisitNeeded
-				&& !DateHelper.getStartOfDay(visit.getVisitDateTime()).before(DateHelper.getStartOfDay(untilDate))
-				&& visit.getVisitStatus() == VisitStatus.COOPERATIVE) {
-				additionalVisitNeeded = false;
-			}
-		}
-
-		// Follow-up until needs to be extended to the date after the last visit if there is no cooperative visit after the follow-up until date
-		if (additionalVisitNeeded && lastVisitDate != null && untilDate.before(DateHelper.addDays(lastVisitDate, 1))) {
-			untilDate = DateHelper.addDays(lastVisitDate, 1);
-		}
-
-		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date and/or last contact
-		// date were changed), set it to the standard follow-up until date
-		if (DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
-			untilDate = standardUntilDate;
-		}
-
-		return untilDate;
+		Date overwriteUntilDate = !ignoreOverwrite && caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : null;
+		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration);
 	}
 }
