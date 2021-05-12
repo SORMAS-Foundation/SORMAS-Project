@@ -83,6 +83,7 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -915,6 +916,19 @@ public class PersonFacadeEjb implements PersonFacade {
 					}
 				}
 				caseFacade.onCaseChanged(existingCase, personCase);
+			}
+		}
+
+		// Update case pregnancy information if sex has changed
+		if (existingPerson != null && existingPerson.getSex() != newPerson.getSex()) {
+			if (newPerson.getSex() != Sex.FEMALE) {
+				for (Case personCase : personCases) {
+					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+					personCase.setPregnant(null);
+					personCase.setTrimester(null);
+					personCase.setPostpartum(null);
+					caseFacade.onCaseChanged(existingCase, personCase);
+				}
 			}
 		}
 
