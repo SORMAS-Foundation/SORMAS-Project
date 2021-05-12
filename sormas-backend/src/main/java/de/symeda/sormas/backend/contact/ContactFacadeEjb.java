@@ -65,6 +65,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -419,6 +421,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		District district = districtService.getByReferenceDto(districtRef);
 
 		return contactService.getContactsForMap(region, district, disease, from, to);
+	}
+
+	@Override
+	public Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<ContactIndexDto> contactIndexList = getIndexList(contactCriteria, offset, size, sortProperties);
+		long totalElementCount = count(contactCriteria);
+		return new Page<>(contactIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
