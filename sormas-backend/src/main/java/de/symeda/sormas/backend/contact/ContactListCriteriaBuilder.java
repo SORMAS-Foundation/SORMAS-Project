@@ -25,7 +25,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -65,16 +64,6 @@ public class ContactListCriteriaBuilder {
 			sortProperties);
 	}
 
-	public CriteriaQuery<MergeContactIndexDto> buildMergeIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
-
-		return buildIndexCriteria(
-			MergeContactIndexDto.class,
-			this::getMergeContactIndexSelections,
-			contactCriteria,
-			this::getIndexDetailOrders,
-			sortProperties);
-	}
-
 	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins<Contact> joins) {
 
 		return Stream.of(
@@ -98,16 +87,9 @@ public class ContactListCriteriaBuilder {
 		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 
 		return Arrays.asList(
-			contact.get(Contact.ID),
 			contact.get(Contact.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
-			joins.getPerson().get(Person.APPROXIMATE_AGE),
-			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-			joins.getPerson().get(Person.BIRTHDATE_DD),
-			joins.getPerson().get(Person.BIRTHDATE_MM),
-			joins.getPerson().get(Person.BIRTHDATE_YYYY),
-			joins.getPerson().get(Person.SEX),
 			joins.getCaze().get(Case.UUID),
 			contact.get(Contact.DISEASE),
 			contact.get(Contact.DISEASE_DETAILS),
@@ -227,6 +209,9 @@ public class ContactListCriteriaBuilder {
 		final ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, contactQueryContext));
 		List<Selection<?>> selections = Arrays.asList(
+			joins.getPerson().get(Person.SEX),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
 			joins.getAddress().get(Location.CITY),
 			joins.getAddress().get(Location.STREET),
 			joins.getAddress().get(Location.HOUSE_NUMBER),

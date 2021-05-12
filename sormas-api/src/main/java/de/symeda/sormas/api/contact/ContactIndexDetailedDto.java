@@ -31,6 +31,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 
+	private Sex sex;
 	private String approximateAge;
 	@PersonalData
 	@SensitiveData
@@ -56,8 +57,8 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private Long eventCount;
 
 	//@formatter:off
-	public ContactIndexDetailedDto(long id, String uuid, String personFirstName, String personLastName, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, String cazeUuid,
+	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName,
+								   String cazeUuid,
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
 								   String districtUuid, String districtName, String communityUuid, Date lastContactDate, Date creationDate, ContactCategory contactCategory,
 								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
@@ -67,20 +68,22 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 								   String externalID, String externalToken,
+								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, int visitCount
 	) {
 	//@formatter:on
 
 		//@formatter:off
-		super(id, uuid, personFirstName, personLastName, approximateAge, approximateAgeType,
-			birthdateDD, birthdateMM, birthdateYYYY, sex, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, regionName, districtUuid, districtName, communityUuid,
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
+			regionUuid, regionName, districtUuid, districtName, communityUuid,
 			lastContactDate, creationDate, contactCategory, contactProximity, contactClassification, contactStatus, completeness, followUpStatus, followUpUntil,
 			symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 			caseReportingUserUid, caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
 
 		//@formatter:on
 
+		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.city = city;
 		this.street = street;
@@ -89,6 +92,14 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+	}
+
+	public Sex getSex() {
+		return sex;
+	}
+
+	public void setSex(Sex sex) {
+		this.sex = sex;
 	}
 
 	public String getApproximateAge() {
