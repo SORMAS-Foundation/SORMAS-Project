@@ -84,6 +84,7 @@ public class ContactExportDto implements Serializable {
 	private Boolean multiDayContact;
 	private Date firstContactDate;
 	private Date lastContactDate;
+	private Date creationDate;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -104,6 +105,7 @@ public class ContactExportDto implements Serializable {
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
+	private Float completeness;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private PresentCondition presentCondition;
@@ -211,13 +213,13 @@ public class ContactExportDto implements Serializable {
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
-							ContactClassification contactClassification, Boolean multiDayContact, Date firstContactDate, Date lastContactDate,
+							ContactClassification contactClassification, Boolean multiDayContact, Date firstContactDate, Date lastContactDate, Date creationDate,
 							String firstName, String lastName,
 							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
 							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
-							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
+							ContactStatus contactStatus, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
 							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
 							boolean quarantineExtended, boolean quarantineReduced, boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
@@ -253,6 +255,7 @@ public class ContactExportDto implements Serializable {
 		this.multiDayContact = multiDayContact;
 		this.firstContactDate = firstContactDate;
 		this.lastContactDate = lastContactDate;
+		this.creationDate = creationDate;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salutation = salutation;
@@ -267,6 +270,7 @@ public class ContactExportDto implements Serializable {
 		this.tracingAppDetails = tracingAppDetails;
 		this.contactProximity = contactProximity;
 		this.contactStatus = contactStatus;
+		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.quarantine = quarantine;
@@ -432,6 +436,13 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(10)
+	@ExportProperty(ContactDto.CREATION_DATE)
+	@ExportGroup(ExportGroupType.CORE)
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	@Order(11)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.FIRST_NAME })
@@ -440,7 +451,7 @@ public class ContactExportDto implements Serializable {
 		return firstName;
 	}
 
-	@Order(11)
+	@Order(12)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.LAST_NAME })
@@ -449,7 +460,7 @@ public class ContactExportDto implements Serializable {
 		return lastName;
 	}
 
-	@Order(12)
+	@Order(13)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.SALUTATION })
@@ -459,7 +470,7 @@ public class ContactExportDto implements Serializable {
 		return salutation;
 	}
 
-	@Order(13)
+	@Order(14)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OTHER_SALUTATION })
@@ -469,7 +480,7 @@ public class ContactExportDto implements Serializable {
 		return otherSalutation;
 	}
 
-	@Order(14)
+	@Order(15)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.SEX })
@@ -478,14 +489,14 @@ public class ContactExportDto implements Serializable {
 		return sex;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportProperty(BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.APPROXIMATE_AGE })
@@ -494,126 +505,133 @@ public class ContactExportDto implements Serializable {
 		return approximateAge;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportProperty(ContactDto.REPORT_DATE_TIME)
 	@ExportGroup(ExportGroupType.CORE)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportProperty(ContactDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(19)
+	@Order(20)
 	@ExportProperty(ContactDto.DISTRICT)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportProperty(ContactDto.COMMUNITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getCommunity() {
 		return community;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportProperty(ContactDto.CONTACT_IDENTIFICATION_SOURCE)
 	@ExportGroup(ExportGroupType.CORE)
 	public ContactIdentificationSource getContactIdentificationSource() {
 		return contactIdentificationSource;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportProperty(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getContactIdentificationSourceDetails() {
 		return contactIdentificationSourceDetails;
 	}
 
-	@Order(23)
+	@Order(24)
 	@ExportProperty(ContactDto.TRACING_APP)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public TracingApp getTracingApp() {
 		return tracingApp;
 	}
 
-	@Order(24)
+	@Order(25)
 	@ExportProperty(ContactDto.TRACING_APP_DETAILS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getTracingAppDetails() {
 		return tracingAppDetails;
 	}
 
-	@Order(25)
+	@Order(26)
 	@ExportProperty(ContactDto.CONTACT_PROXIMITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
 
-	@Order(26)
+	@Order(27)
 	@ExportProperty(ContactDto.CONTACT_STATUS)
 	@ExportGroup(ExportGroupType.CORE)
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
 
-	@Order(27)
+	@Order(28)
+	@ExportProperty(ContactDto.CONTACT_STATUS)
+	@ExportGroup(ExportGroupType.CORE)
+	public Float getCompleteness() {
+		return completeness;
+	}
+
+	@Order(29)
 	@ExportProperty(ContactDto.FOLLOW_UP_STATUS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
 
-	@Order(28)
+	@Order(30)
 	@ExportProperty(ContactDto.FOLLOW_UP_UNTIL)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
 
-	@Order(29)
+	@Order(31)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
 
-	@Order(30)
+	@Order(32)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
 
-	@Order(31)
+	@Order(33)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
 
-	@Order(32)
+	@Order(34)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Order(33)
+	@Order(35)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(34)
+	@Order(36)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -623,7 +641,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(35)
+	@Order(37)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -633,7 +651,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(36)
+	@Order(38)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -643,7 +661,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(37)
+	@Order(39)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -653,7 +671,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedOfficialDocumentDate;
 	}
 
-	@Order(38)
+	@Order(40)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -663,7 +681,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOfficialOrderSent;
 	}
 
-	@Order(39)
+	@Order(41)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -673,21 +691,21 @@ public class ContactExportDto implements Serializable {
 		return quarantineOfficialOrderSentDate;
 	}
 
-	@Order(40)
+	@Order(42)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineExtended() {
 		return quarantineExtended;
 	}
 
-	@Order(41)
+	@Order(43)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineReduced() {
 		return quarantineReduced;
 	}
 
-	@Order(42)
+	@Order(44)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PRESENT_CONDITION })
@@ -696,7 +714,7 @@ public class ContactExportDto implements Serializable {
 		return presentCondition;
 	}
 
-	@Order(43)
+	@Order(45)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.DEATH_DATE })
@@ -705,7 +723,7 @@ public class ContactExportDto implements Serializable {
 		return deathDate;
 	}
 
-	@Order(50)
+	@Order(52)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -715,7 +733,7 @@ public class ContactExportDto implements Serializable {
 		return addressRegion;
 	}
 
-	@Order(51)
+	@Order(53)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -725,7 +743,7 @@ public class ContactExportDto implements Serializable {
 		return addressDistrict;
 	}
 
-	@Order(52)
+	@Order(54)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -735,7 +753,7 @@ public class ContactExportDto implements Serializable {
 		return addressCommunity;
 	}
 
-	@Order(53)
+	@Order(55)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -745,7 +763,7 @@ public class ContactExportDto implements Serializable {
 		return city;
 	}
 
-	@Order(54)
+	@Order(56)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -755,7 +773,7 @@ public class ContactExportDto implements Serializable {
 		return street;
 	}
 
-	@Order(55)
+	@Order(57)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -765,7 +783,7 @@ public class ContactExportDto implements Serializable {
 		return houseNumber;
 	}
 
-	@Order(56)
+	@Order(58)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -775,7 +793,7 @@ public class ContactExportDto implements Serializable {
 		return additionalInformation;
 	}
 
-	@Order(57)
+	@Order(59)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -785,7 +803,7 @@ public class ContactExportDto implements Serializable {
 		return postalCode;
 	}
 
-	@Order(58)
+	@Order(60)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -795,7 +813,7 @@ public class ContactExportDto implements Serializable {
 		return facility;
 	}
 
-	@Order(59)
+	@Order(61)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ADDRESS,
@@ -805,7 +823,7 @@ public class ContactExportDto implements Serializable {
 		return facilityDetails;
 	}
 
-	@Order(65)
+	@Order(67)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PHONE })
@@ -814,7 +832,7 @@ public class ContactExportDto implements Serializable {
 		return phone;
 	}
 
-	@Order(66)
+	@Order(68)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PHONE_OWNER })
@@ -823,7 +841,7 @@ public class ContactExportDto implements Serializable {
 		return phoneOwner;
 	}
 
-	@Order(67)
+	@Order(69)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.EMAIL_ADDRESS })
@@ -832,7 +850,7 @@ public class ContactExportDto implements Serializable {
 		return emailAddress;
 	}
 
-	@Order(68)
+	@Order(70)
 	@ExportProperty({
 		ContactDto.PERSON,
 		PersonDto.OTHER_CONTACT_DETAILS })
@@ -841,7 +859,7 @@ public class ContactExportDto implements Serializable {
 		return otherContactDetails;
 	}
 
-	@Order(69)
+	@Order(71)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_TYPE })
@@ -850,7 +868,7 @@ public class ContactExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(70)
+	@Order(72)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.OCCUPATION_DETAILS })
@@ -859,7 +877,7 @@ public class ContactExportDto implements Serializable {
 		return occupationDetails;
 	}
 
-	@Order(71)
+	@Order(73)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.ARMED_FORCES_RELATION_TYPE })
@@ -868,35 +886,35 @@ public class ContactExportDto implements Serializable {
 		return armedForcesRelationType;
 	}
 
-	@Order(75)
+	@Order(77)
 	@ExportProperty(NUMBER_OF_VISITS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(76)
+	@Order(78)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(77)
+	@Order(79)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_DATE)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(78)
+	@Order(80)
 	@ExportProperty(LAST_COOPERATIVE_VISIT_SYMPTOMS)
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(79)
+	@Order(81)
 	@ExportProperty(TRAVELED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public boolean isTraveled() {
@@ -907,7 +925,7 @@ public class ContactExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(80)
+	@Order(82)
 	@ExportProperty(TRAVEL_HISTORY)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public String getTravelHistory() {
@@ -918,7 +936,7 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(81)
+	@Order(83)
 	@ExportProperty(BURIAL_ATTENDED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public boolean isBurialAttended() {
@@ -929,7 +947,7 @@ public class ContactExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(82)
+	@Order(84)
 	@ExportProperty({
 		CaseDataDto.EPI_DATA,
 		EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN })
@@ -938,7 +956,7 @@ public class ContactExportDto implements Serializable {
 		return contactWithSourceCaseKnown;
 	}
 
-	@Order(83)
+	@Order(85)
 	@ExportProperty(ContactDto.RETURNING_TRAVELER)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public YesNoUnknown getReturningTraveler() {
@@ -949,7 +967,7 @@ public class ContactExportDto implements Serializable {
 		this.returningTraveler = returningTraveler;
 	}
 
-	@Order(90)
+	@Order(92)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINATION })
@@ -958,7 +976,7 @@ public class ContactExportDto implements Serializable {
 		return vaccination;
 	}
 
-	@Order(91)
+	@Order(93)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINATION_DOSES })
@@ -967,7 +985,7 @@ public class ContactExportDto implements Serializable {
 		return vaccinationDoses;
 	}
 
-	@Order(92)
+	@Order(94)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINATION_INFO_SOURCE })
@@ -976,7 +994,7 @@ public class ContactExportDto implements Serializable {
 		return vaccinationInfoSource;
 	}
 
-	@Order(93)
+	@Order(95)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.FIRST_VACCINATION_DATE })
@@ -985,7 +1003,7 @@ public class ContactExportDto implements Serializable {
 		return firstVaccinationDate;
 	}
 
-	@Order(94)
+	@Order(96)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.LAST_VACCINATION_DATE })
@@ -994,7 +1012,7 @@ public class ContactExportDto implements Serializable {
 		return lastVaccinationDate;
 	}
 
-	@Order(95)
+	@Order(97)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_NAME })
@@ -1003,7 +1021,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineName;
 	}
 
-	@Order(96)
+	@Order(98)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.OTHER_VACCINE_NAME })
@@ -1012,7 +1030,7 @@ public class ContactExportDto implements Serializable {
 		return otherVaccineName;
 	}
 
-	@Order(97)
+	@Order(99)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_MANUFACTURER })
@@ -1021,7 +1039,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineManufacturer;
 	}
 
-	@Order(98)
+	@Order(100)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER })
@@ -1030,7 +1048,7 @@ public class ContactExportDto implements Serializable {
 		return otherVaccineManufacturer;
 	}
 
-	@Order(99)
+	@Order(101)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_INN })
@@ -1039,7 +1057,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineInn;
 	}
 
-	@Order(100)
+	@Order(102)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_BATCH_NUMBER })
@@ -1048,7 +1066,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineBatchNumber;
 	}
 
-	@Order(101)
+	@Order(103)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_UNII_CODE })
@@ -1057,7 +1075,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineUniiCode;
 	}
 
-	@Order(102)
+	@Order(104)
 	@ExportProperty({
 		ContactDto.VACCINATION_INFO,
 		VaccinationInfoDto.VACCINE_ATC_CODE })
@@ -1066,7 +1084,7 @@ public class ContactExportDto implements Serializable {
 		return vaccineAtcCode;
 	}
 
-	@Order(110)
+	@Order(112)
 	@ExportProperty(LATEST_EVENT_ID)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventId() {
@@ -1077,7 +1095,7 @@ public class ContactExportDto implements Serializable {
 		this.latestEventId = latestEventId;
 	}
 
-	@Order(111)
+	@Order(113)
 	@ExportProperty(LATEST_EVENT_TITLE)
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventTitle() {
@@ -1088,14 +1106,14 @@ public class ContactExportDto implements Serializable {
 		this.latestEventTitle = latestEventTitle;
 	}
 
-	@Order(112)
+	@Order(114)
 	@ExportProperty(EVENT_COUNT)
 	@ExportGroup(ExportGroupType.EVENT)
 	public Long getEventCount() {
 		return eventCount;
 	}
 
-	@Order(113)
+	@Order(115)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.BIRTH_NAME })
@@ -1105,7 +1123,7 @@ public class ContactExportDto implements Serializable {
 		return birthName;
 	}
 
-	@Order(114)
+	@Order(116)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.BIRTH_COUNTRY })
@@ -1115,7 +1133,7 @@ public class ContactExportDto implements Serializable {
 		return birthCountry;
 	}
 
-	@Order(115)
+	@Order(117)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.CITIZENSHIP })
@@ -1125,7 +1143,7 @@ public class ContactExportDto implements Serializable {
 		return citizenship;
 	}
 
-	@Order(116)
+	@Order(118)
 	@ExportProperty(ContactDto.REPORTING_DISTRICT)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept
@@ -1133,7 +1151,7 @@ public class ContactExportDto implements Serializable {
 		return reportingDistrict;
 	}
 
-	@Order(117)
+	@Order(119)
 	@ExportProperty(ContactDto.EXTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {
@@ -1170,6 +1188,10 @@ public class ContactExportDto implements Serializable {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public void setFirstName(String firstName) {
@@ -1214,6 +1236,10 @@ public class ContactExportDto implements Serializable {
 
 	public void setContactStatus(ContactStatus contactStatus) {
 		this.contactStatus = contactStatus;
+	}
+
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
 	}
 
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
