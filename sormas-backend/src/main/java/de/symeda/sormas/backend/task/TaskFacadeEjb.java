@@ -810,10 +810,17 @@ public class TaskFacadeEjb implements TaskFacade {
 			districtUuids.addAll(batchedDistrictUuids);
 		});
 
-		return districtUuids.stream()
-			.map(DistrictReferenceDto::new)
-			.limit(limit)
-			.collect(Collectors.toList());
+		return districtUuids.stream().map(DistrictReferenceDto::new).limit(limit).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return taskService.getArchivedUuidsSince(since);
 	}
 
 	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
