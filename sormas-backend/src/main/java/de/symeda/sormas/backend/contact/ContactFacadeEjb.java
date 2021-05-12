@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,6 +83,7 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -95,9 +97,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -112,6 +116,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -150,7 +155,9 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
@@ -170,11 +177,13 @@ import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
+	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -228,6 +237,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 	@EJB
+	private SampleService sampleService;
+	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
@@ -280,6 +291,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		return convertToDto(contactService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
+	private ContactDto getContactWithoutPseudonyimizationByUuid(String uuid) {
+		return toDto(contactService.getByUuid(uuid));
+	}
+
 	@Override
 	public Boolean isValidContactUuid(String uuid) {
 		return contactService.exists(uuid);
@@ -317,7 +332,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		//		}
 
 		Contact entity = fromDto(dto, checkChangeDate);
-		contactService.ensurePersisted(entity);
+		doSave(entity, true);
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
@@ -477,6 +492,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.MULTI_DAY_CONTACT),
 					contact.get(Contact.FIRST_CONTACT_DATE),
 					contact.get(Contact.LAST_CONTACT_DATE),
+					contact.get(Contact.CREATION_DATE),
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
 					joins.getPerson().get(Person.SALUTATION),
@@ -494,6 +510,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.TRACING_APP_DETAILS),
 					contact.get(Contact.CONTACT_PROXIMITY),
 					contact.get(Contact.CONTACT_STATUS),
+					contact.get(Contact.COMPLETENESS),
 					contact.get(Contact.FOLLOW_UP_STATUS),
 					contact.get(Contact.FOLLOW_UP_UNTIL),
 					contact.get(Contact.QUARANTINE),
@@ -1713,5 +1730,264 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact contact = contactService.getByUuid(contactUuid);
 
 		return contactService.isContactEditAllowed(contact);
+	}
+
+	@Override
+	public void mergeContact(String leadUuid, String otherUuid) {
+		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
+		ContactDto otherContactDto = getContactWithoutPseudonyimizationByUuid(otherUuid);
+
+		// 1 Merge Dtos
+		// 1.1 Contact
+		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		saveContact(leadContactDto);
+
+		// 1.2 Person
+		PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
+		PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		personFacade.savePerson(leadPerson);
+
+		// 2 Change ContactReference
+		Contact leadContact = contactService.getByUuid(leadContactDto.getUuid());
+		Contact otherContact = contactService.getByUuid(otherContactDto.getUuid());
+
+		// 2.1 Tasks
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(otherContactDto.toReference()), true);
+		for (Task task : tasks) {
+			// simply move existing entities to the merge target
+			task.setContact(leadContact);
+			taskService.ensurePersisted(task);
+		}
+
+		// 2.2 Samples
+		List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(otherContactDto.toReference()), null);
+		for (Sample sample : samples) {
+			// simply move existing entities to the merge target
+			sample.setAssociatedContact(leadContact);
+			sampleService.ensurePersisted(sample);
+		}
+
+		// 3 Attach otherContact visits to leadContact
+		// (set the person and the disease of the visit, saveVisit does the rest)
+		for (VisitDto otherVisit : otherContact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+			otherVisit.setPerson(leadContactDto.getPerson());
+			otherVisit.setDisease(leadContactDto.getDisease());
+			visitFacade.saveVisit(otherVisit);
+		}
+	}
+
+	@Override
+	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
+		Contact contact = contactService.getByUuid(uuid);
+		Contact duplicateOfContact = contactService.getByUuid(duplicateOfUuid);
+		contact.setDuplicateOf(duplicateOfContact);
+		contactService.ensurePersisted(contact);
+
+		deleteContact(uuid);
+	}
+
+	@Override
+	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean ignoreRegion) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> root = cq.from(Contact.class);
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
+		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		Root<Contact> root2 = cq.from(Contact.class);
+		Join<Contact, Person> person = joins.getPerson();
+		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Region> region = joins.getRegion();
+		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
+		Join<Contact, Case> sourceCase = joins.getCaze();
+		Join<Contact, Case> sourceCase2 = root2.join(Contact.CAZE, JoinType.LEFT);
+
+		cq.distinct(true);
+
+		// similarity:
+		// * first & last name concatenated with whitespace. Similarity function with default threshold of 0.65D
+		// uses postgres pg_trgm: https://www.postgresql.org/docs/9.6/pgtrgm.html
+		// * same source case
+		// * same disease
+		// * same region (optional)
+		// * report date within 30 days of each other
+		// * same sex or same birth date (when defined)
+		// * same birth date (when fully defined)
+
+		Predicate sourceCaseFilter = cb.equal(sourceCase, sourceCase2);
+		Predicate userFilter = contactService.createUserFilter(cb, cq, root);
+		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, contactQueryContext) : null;
+		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
+		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
+		Predicate nameSimilarityFilter =
+			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
+		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
+		Predicate regionFilter = cb.or(
+			cb.or(cb.isNull(region.get(Region.ID)), cb.isNull(region2.get(Region.ID))),
+			cb.equal(region.get(Region.ID), region2.get(Region.ID)));
+		Predicate reportDateFilter = cb.lessThanOrEqualTo(
+			cb.abs(
+				cb.diff(
+					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+			SECONDS_30_DAYS);
+		// Sex filter: only when sex is filled in for both cases
+		Predicate sexFilter = cb.or(
+			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+			cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
+		// Birth date filter: only when birth date is filled in for both cases
+		Predicate birthDateFilter = cb.or(
+			cb.or(
+				cb.isNull(person.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
+				cb.isNull(person2.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person2.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
+			cb.and(
+				cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
+				cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
+				cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
+
+		Predicate creationDateFilter = cb.or(
+			cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE)),
+			cb.or(
+				cb.lessThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
+				cb.greaterThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
+
+		Predicate filter = cb.and(contactService.createDefaultFilter(cb, root), contactService.createDefaultFilter(cb, root2), sourceCaseFilter);
+		if (userFilter != null) {
+			filter = cb.and(filter, userFilter);
+		}
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		if (filter != null) {
+			filter = cb.and(filter, nameSimilarityFilter);
+		} else {
+			filter = nameSimilarityFilter;
+		}
+		filter = cb.and(filter, diseaseFilter);
+
+		if (!ignoreRegion) {
+			filter = cb.and(filter, regionFilter);
+		}
+
+		filter = cb.and(filter, reportDateFilter);
+		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
+		filter = cb.and(filter, creationDateFilter);
+		filter = cb.and(filter, cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
+
+		cq.where(filter);
+		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
+		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
+
+		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
+		List<MergeContactIndexDto[]> resultList = new ArrayList<>();
+
+		if (!foundIds.isEmpty()) {
+			CriteriaQuery<MergeContactIndexDto> indexContactsCq = cb.createQuery(MergeContactIndexDto.class);
+			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
+			selectMergeIndexDtoFields(cb, indexContactsCq, indexRoot);
+			indexContactsCq.where(
+				indexRoot.get(Contact.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
+			Map<Long, MergeContactIndexDto> indexContacts =
+				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
+
+			for (Object[] idPair : foundIds) {
+				try {
+					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
+					MergeContactIndexDto parent = (MergeContactIndexDto) indexContacts.get(idPair[0]).clone();
+					MergeContactIndexDto child = (MergeContactIndexDto) indexContacts.get(idPair[1]).clone();
+
+					if (parent.getCompleteness() == null && child.getCompleteness() == null
+						|| parent.getCompleteness() != null
+						&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
+						resultList.add(
+							new MergeContactIndexDto[] {
+								parent,
+								child });
+					} else {
+						resultList.add(
+							new MergeContactIndexDto[] {
+								child,
+								parent });
+					}
+				} catch (CloneNotSupportedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	private void selectMergeIndexDtoFields(CriteriaBuilder cb, CriteriaQuery<MergeContactIndexDto> cq, Root<Contact> root) {
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
+		cq.multiselect(listCriteriaBuilder.getMergeContactIndexSelections(root, contactQueryContext));
+	}
+
+	private void doSave(Contact contact, boolean handleChanges) {
+		contactService.ensurePersisted(contact);
+		if (handleChanges) {
+			onCaseChanged(contact);
+		}
+	}
+
+	/**
+	 * Handles potential changes, processes and backend logic that needs to be done
+	 * after a contact has been created/saved
+	 */
+	public void onCaseChanged(Contact newContact) {
+		// Update completeness value
+		newContact.setCompleteness(calculateCompleteness(newContact));
+	}
+
+	@Override
+	public void updateCompleteness(String uuid) {
+		Contact contact = contactService.getByUuid(uuid);
+		contact.setCompleteness(calculateCompleteness(contact));
+		contactService.ensurePersisted(contact);
+	}
+
+	private float calculateCompleteness(Contact contact) {
+
+		float completeness = 0f;
+
+		if (contact.getContactClassification() != null && !ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())) {
+			completeness += 0.1f;
+		}
+		if (contact.getLastContactDate() != null) {
+			completeness += 0.2f;
+		}
+		if (contact.getRelationToCase() != null) {
+			completeness += 0.15f;
+		}
+		if (contact.getContactCategory() != null) {
+			completeness += 0.1f;
+		}
+		if (contact.getContactProximity() != null) {
+			completeness += 0.1f;
+		}
+		if (contact.getContactStatus() != null && !ContactStatus.ACTIVE.equals(contact.getContactStatus())) {
+			completeness += 0.1f;
+		}
+		if (sampleService
+			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CONTACT), contact)))) {
+			completeness += 0.15f;
+		}
+		if (contact.getPerson().getBirthdateYYYY() != null || contact.getPerson().getApproximateAge() != null) {
+			completeness += 0.05f;
+		}
+		if (contact.getPerson().getSex() != null) {
+			completeness += 0.05f;
+		}
+
+		return completeness;
 	}
 }

@@ -202,6 +202,35 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Task> taskRoot = cq.from(Task.class);
+
+		Predicate filter = createUserFilter(cb, cq, taskRoot);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(taskRoot.get(Task.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate archivedFilter = cb.equal(taskRoot.get(Task.ARCHIVED), true);
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(taskRoot.get(Task.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		return buildCriteriaFilter(taskCriteria, cb, from, new TaskJoins(from));
 	}

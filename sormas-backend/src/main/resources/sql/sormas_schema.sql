@@ -7268,7 +7268,6 @@ ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
 
-
 -- 2021-04-29 Add customizable enums #5247
 CREATE TABLE customizableenumvalue(
     id bigint not null,
@@ -7316,4 +7315,16 @@ DROP TABLE diseasevariant;
 DROP TABLE diseasevariant_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (372, '2021-04-29 Add customizable enums #5247');
+
+-- 2021-03-01 Make contacts mergeable #2409
+ALTER TABLE contact ADD COLUMN completeness real;
+ALTER TABLE contact_history ADD COLUMN completeness real;
+
+ALTER TABLE contact ADD COLUMN duplicateof_id bigint;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (373, 'Make contacts mergeable #2409');
+
 -- *** Insert new sql commands BEFORE this line ***

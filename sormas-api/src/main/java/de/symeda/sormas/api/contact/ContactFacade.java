@@ -148,4 +148,13 @@ public interface ContactFacade {
 		Date to);
 
 	List<ContactDto> getByPersonUuids(List<String> personUuids);
+
+	void mergeContact(String leadUuid, String otherUuid);
+
+	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
+
+	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String uuid);
+
 }
