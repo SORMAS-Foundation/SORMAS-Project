@@ -65,7 +65,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -1678,7 +1677,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			});
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
-			contacts = contacts.stream().filter(java.util.function.Predicate.not(SimilarContactDto::isPseudonymized)).collect(Collectors.toList());
+			contacts = contacts.stream().filter(c -> !c.isPseudonymized()).collect(Collectors.toList());
 		}
 
 		return contacts;
