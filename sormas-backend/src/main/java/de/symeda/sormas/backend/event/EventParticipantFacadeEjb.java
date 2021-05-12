@@ -900,9 +900,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
-			participants = participants.stream()
-				.filter(java.util.function.Predicate.not(SimilarEventParticipantDto::isPseudonymized))
-				.collect(Collectors.toList());
+			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());
 		}
 
 		return participants;
