@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.contact;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -85,7 +85,12 @@ public class ContactController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
+
 		navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
+		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+			navigator.addView(MergeContactsView.VIEW_NAME, MergeContactsView.class);
+		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
@@ -150,6 +155,16 @@ public class ContactController {
 	public void navigateTo(ContactCriteria contactCriteria) {
 		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
 		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToIndex() {
+		String navigationState = ContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToMergeContactsView() {
+		String navigationState = MergeContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 

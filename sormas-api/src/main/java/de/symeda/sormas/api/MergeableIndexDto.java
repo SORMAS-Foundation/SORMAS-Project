@@ -16,36 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.disease;
+package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
-
-public class DiseaseVariantDto extends EntityDto {
-
-    private static final long serialVersionUID = 7980726625509183207L;
-
-    private Disease disease;
-    private String name;
-
-    public Disease getDisease() {
-        return disease;
-    }
-
-    public void setDisease(Disease disease) {
-        this.disease = disease;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
+public interface MergeableIndexDto extends HasUuid {
+    /**
+     *
+     * @return
+     */
+    Float getCompleteness();
 }

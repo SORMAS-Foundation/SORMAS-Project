@@ -196,6 +196,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void populateWithEnumData(AbstractSelect select, Class<? extends Enum> enumClass) {
+
 		select.removeAllItems();
 		for (Object p : select.getContainerPropertyIds()) {
 			select.removeContainerProperty(p);
@@ -214,4 +215,5 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		}
 	}
+
 }

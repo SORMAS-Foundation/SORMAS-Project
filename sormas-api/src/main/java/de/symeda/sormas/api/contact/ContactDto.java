@@ -26,7 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -137,7 +137,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private String caseOrEventInformation;
 	private Disease disease;
 	private String diseaseDetails;
-	private DiseaseVariantReferenceDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 
 	@Required
 	private Date reportDateTime;
@@ -308,7 +308,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariantReferenceDto diseaseVariant) {
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		final ContactDto contact = build();
 		contact.assignCase(caze, disease, diseaseDetails, diseaseVariant);
 
@@ -319,7 +319,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariantReferenceDto diseaseVariant) {
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		setCaze(caze);
 		setDisease(disease);
 		setDiseaseDetails(diseaseDetails);
@@ -930,11 +930,11 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 
-	public DiseaseVariantReferenceDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 }

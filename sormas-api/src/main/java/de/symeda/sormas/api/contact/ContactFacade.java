@@ -27,6 +27,8 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -64,6 +66,8 @@ public interface ContactFacade {
 	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(
 		ContactCriteria contactCriteria,
@@ -144,4 +148,13 @@ public interface ContactFacade {
 		Date to);
 
 	List<ContactDto> getByPersonUuids(List<String> personUuids);
+
+	void mergeContact(String leadUuid, String otherUuid);
+
+	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
+
+	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String uuid);
+
 }
