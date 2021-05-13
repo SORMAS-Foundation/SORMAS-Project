@@ -284,6 +284,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public JournalPersonDto getPersonForJournal(String uuid) {
 		PersonDto detailedPerson = getPersonByUuid(uuid);
+		return getPersonForJournal(detailedPerson);
+	}
+
+	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
@@ -295,8 +299,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
 			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
 			exportPerson.setSex(detailedPerson.getSex());
-			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
-			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(uuid));
+			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(detailedPerson.getUuid()));
+			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(detailedPerson.getUuid()));
 
 			Pair<String, String> contactDetails = getContactDetails(detailedPerson);
 			exportPerson.setEmailAddress(contactDetails.getElement0());
@@ -356,11 +360,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
-		return savePerson(source, true);
+	public PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
+		return savePersonAndNotifyExternalJournal(source, true);
 	}
 
-	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+	public PersonDto savePersonAndNotifyExternalJournal(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -371,10 +375,32 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
 			externalJournalService.validateExternalJournalPerson(source);
-			externalJournalService.handleExternalJournalPersonUpdate(source.toReference());
+			externalJournalService.handleExternalJournalPersonUpdateAsync(source.toReference());
 		}
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
+
+		personService.ensurePersisted(person);
+
+		onPersonChanged(existingPerson, person);
+
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+	}
+
+	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+		Person person = personService.getByUuid(source.getUuid());
+
+		PersonDto existingPerson = toDto(person);
+
+		restorePseudonymizedDto(source, person, existingPerson);
+
+		validate(source);
+
+		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+			externalJournalService.validateExternalJournalPerson(source);
+		}
+
+		person = fillOrBuildEntity(source, person, true);
 
 		personService.ensurePersisted(person);
 
@@ -641,7 +667,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
-		savePerson(person);
+		savePersonAndNotifyExternalJournal(person);
 		return true;
 	}
 

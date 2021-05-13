@@ -179,7 +179,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}
@@ -225,7 +225,7 @@ public class TestDataCreator {
 			person.setAddress(address);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}
@@ -251,7 +251,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}

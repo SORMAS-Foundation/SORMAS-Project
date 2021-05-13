@@ -1751,7 +1751,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
-		externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
 		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 
@@ -2414,7 +2414,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Case caze = caseService.getByUuid(caseUuid);
 
-		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && externalShareInfoService.isCaseShared(caze.getId())) {
 			externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
 		}
@@ -3344,7 +3344,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-			personFacade.savePerson(leadPerson);
+			personFacade.savePersonAndNotifyExternalJournal(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}

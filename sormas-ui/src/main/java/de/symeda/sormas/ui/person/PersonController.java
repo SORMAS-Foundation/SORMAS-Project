@@ -36,9 +36,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -125,7 +127,7 @@ public class PersonController {
 				} else {
 					PersonDto savedPerson;
 					if (saveNewPerson) {
-						savedPerson = personFacade.savePerson(person);
+						savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
 					} else {
 						savedPerson = person;
 					}
@@ -141,7 +143,7 @@ public class PersonController {
 			personSelect.selectBestMatch();
 		} else if (saveNewPerson) {
 			// no duplicate persons found so save a new person
-			PersonDto savedPerson = personFacade.savePerson(person);
+			PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
 			resultConsumer.accept(savedPerson.toReference());
 		} else {
 			resultConsumer.accept(person.toReference());
@@ -229,7 +231,32 @@ public class PersonController {
 			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
 		}
 
+		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(existingPerson);
+		String synchronizationMessage = getSynchronizationMessage(responseDto);
+		if(!StringUtils.isBlank(synchronizationMessage)) {
+			VaadinUiUtil.showWarningPopup(synchronizationMessage);
+		}
+
 		SormasUI.refreshView();
+	}
+
+	private String getSynchronizationMessage(ExternalJournalSyncResponseDto responseDto) {
+		if(responseDto == null) {
+			return "";
+		}
+
+		if (!responseDto.isSuccess()) {
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationFailure, responseDto.getMessage());
+		} else if (!responseDto.getErrors().isEmpty()) {
+			StringBuffer sb = new StringBuffer();
+			responseDto.getErrors().forEach((errorKey, errorValue) -> {
+				sb.append(errorValue);
+				sb.append(";");
+			});
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationPartial, sb.toString());
+		} else {
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationSuccess);
+		}
 	}
 
 	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {

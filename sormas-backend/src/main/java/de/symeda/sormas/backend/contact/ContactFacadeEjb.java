@@ -297,7 +297,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		validate(dto);
 
-		externalJournalService.handleExternalJournalPersonUpdate(dto.getPerson());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
@@ -421,7 +421,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Contact contact = contactService.getByUuid(contactUuid);
 
-		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 
 		contactService.delete(contact);
 
