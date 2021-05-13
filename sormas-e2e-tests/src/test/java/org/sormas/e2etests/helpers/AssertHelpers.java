@@ -23,7 +23,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
-import org.sormas.e2etests.steps.BaseSteps;
 import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
@@ -36,6 +35,7 @@ import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class AssertHelpers {

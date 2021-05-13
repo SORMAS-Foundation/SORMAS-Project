@@ -19,10 +19,10 @@
 package org.sormas.e2etests.ui;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.sormas.e2etests.enums.OperatingSystems;
 import java.net.URI;
 import lombok.Builder;
 import lombok.Value;
+import org.sormas.e2etests.enums.OperatingSystems;
 
 @Builder(toBuilder = true, builderClassName = "Builder")
 @JsonDeserialize(builder = DriverMetaData.Builder.class)

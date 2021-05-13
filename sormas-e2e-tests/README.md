@@ -96,7 +96,7 @@ This file a build configuration script defines a project and its tasks.
 
 ````gradle
 
-gradle clean test -Dcucumber.tags="@Login" -Denvironment=performance
+gradle clean startTests -Dcucumber.tags="@Login" -Denvironment=performance
 
 ````
 

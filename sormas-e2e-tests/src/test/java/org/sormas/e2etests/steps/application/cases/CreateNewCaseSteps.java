@@ -21,17 +21,16 @@ package org.sormas.e2etests.steps.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_MESSAGE;
 
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.Case;
-import org.sormas.e2etests.services.CaseService;
 import cucumber.api.java8.En;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pojo.Case;
+import org.sormas.e2etests.services.CaseService;
 
 public class CreateNewCaseSteps implements En {
 

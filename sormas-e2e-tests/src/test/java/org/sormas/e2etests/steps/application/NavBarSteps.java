@@ -18,10 +18,10 @@
 
 package org.sormas.e2etests.steps.application;
 
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
 
 public class NavBarSteps implements En {
 

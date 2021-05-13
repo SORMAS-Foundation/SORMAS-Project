@@ -22,9 +22,9 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 
 import com.github.javafaker.Faker;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class CreateNewEventSteps implements En {
 

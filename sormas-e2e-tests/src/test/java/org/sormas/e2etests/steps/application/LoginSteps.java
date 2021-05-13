@@ -19,11 +19,11 @@
 package org.sormas.e2etests.steps.application;
 
 import com.google.inject.Inject;
+import cucumber.api.java8.En;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.MainPage;
-import cucumber.api.java8.En;
-import javax.inject.Named;
 
 public class LoginSteps implements En {
 

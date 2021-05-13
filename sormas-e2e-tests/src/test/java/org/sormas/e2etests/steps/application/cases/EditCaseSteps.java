@@ -21,13 +21,12 @@ package org.sormas.e2etests.steps.application.cases;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 
 import com.google.common.truth.Truth;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Case;
 import cucumber.api.java8.En;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.Case;
 
 public class EditCaseSteps implements En {
 

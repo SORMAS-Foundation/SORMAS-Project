@@ -22,9 +22,9 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID;
 
 import com.github.javafaker.Faker;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class CreateNewContactSteps implements En {
 
