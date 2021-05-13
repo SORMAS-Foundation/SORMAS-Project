@@ -21,9 +21,9 @@ package org.sormas.e2etests.steps.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 
-import org.sormas.e2etests.helpers.WebDriverHelpers;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class ContactDirectorySteps implements En {
 

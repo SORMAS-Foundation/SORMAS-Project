@@ -22,10 +22,9 @@ import com.github.javafaker.Faker;
 import com.google.inject.Exposed;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
-import org.sormas.e2etests.ui.DriverManager;
-
 import java.util.Locale;
 import javax.inject.Singleton;
+import org.sormas.e2etests.ui.DriverManager;
 
 public class CommonModule extends PrivateModule {
 

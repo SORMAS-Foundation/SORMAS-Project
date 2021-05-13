@@ -20,10 +20,10 @@ package org.sormas.e2etests.steps.application.events;
 
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
 
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
 public class EventDirectorySteps implements En {
 

@@ -19,7 +19,6 @@
 package org.sormas.e2etests.steps;
 
 import com.google.inject.Inject;
-import org.sormas.e2etests.ui.DriverManager;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -28,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sormas.e2etests.ui.DriverManager;
 import recorders.StepsLogger;
 
 @Slf4j
