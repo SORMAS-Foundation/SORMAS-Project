@@ -22,6 +22,8 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.google.common.truth.Truth;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import java.time.Duration;
@@ -96,6 +98,14 @@ public class WebDriverHelpers {
     waitUntilElementIsVisibleAndClickable(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
     webElement.sendKeys(text);
+  }
+
+  public void clearWebElement(By selector){
+    waitUntilElementIsVisibleAndClickable(selector);
+    WebElement webElement = baseSteps.getDriver().findElement(selector);
+    webElement.clear();
+    FluentWait fluentWait = new FluentWait(baseSteps.getDriver()).withTimeout(Duration.ofSeconds(5)).pollingEvery(Duration.ofSeconds(1)).ignoring(Exception.class);
+    fluentWait.until(ExpectedConditions.attributeToBe(selector, "value", ""));
   }
 
   @SneakyThrows
