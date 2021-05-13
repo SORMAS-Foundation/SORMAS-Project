@@ -20,10 +20,9 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import org.sormas.e2etests.pojo.Case;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.pojo.Case;
 
 public class CaseService {
   private final Faker faker;

@@ -20,9 +20,9 @@ package org.sormas.e2etests.common;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.sormas.e2etests.ui.DriverModule;
 import cucumber.api.guice.CucumberModules;
 import cucumber.runtime.java.guice.InjectorSource;
+import org.sormas.e2etests.ui.DriverModule;
 
 public class CommonInjectorSource implements InjectorSource {
   @Override

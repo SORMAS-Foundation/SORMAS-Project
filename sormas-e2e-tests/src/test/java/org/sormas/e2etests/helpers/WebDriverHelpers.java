@@ -22,8 +22,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.google.common.truth.Truth;
-import org.sormas.e2etests.common.TimerLite;
-import org.sormas.e2etests.steps.BaseSteps;
 import java.time.Duration;
 import java.util.function.Predicate;
 import javax.inject.Inject;
@@ -33,6 +31,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.common.TimerLite;
+import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class WebDriverHelpers {

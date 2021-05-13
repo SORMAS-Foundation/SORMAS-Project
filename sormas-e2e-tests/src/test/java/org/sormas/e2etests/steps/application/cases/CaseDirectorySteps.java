@@ -21,9 +21,9 @@ package org.sormas.e2etests.steps.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
-import org.sormas.e2etests.helpers.WebDriverHelpers;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class CaseDirectorySteps implements En {
 
