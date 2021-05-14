@@ -93,22 +93,17 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -139,14 +134,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private PersonFacadeEjbLocal personFacade;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private HospitalizationService hospitalizationService;
-	@EJB
 	private EpiDataService epiDataService;
 	@EJB
 	private UserService userService;
@@ -166,8 +153,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
