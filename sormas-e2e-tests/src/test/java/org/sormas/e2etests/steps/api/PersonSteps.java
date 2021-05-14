@@ -30,13 +30,13 @@ public class PersonSteps implements En {
   public PersonSteps(PersonsHelper personsHelper, ApiState apiState) {
 
     When(
-        "I receive the person",
+        "API: I receive the person",
         () -> {
           List<String> personUuids = apiState.getResponse().jsonPath().get();
           personsHelper.getPersonByUuid(personUuids.get(4717));
           Person person = apiState.getResponse().as(Person.class);
         });
 
-    When("I receive all person ids", personsHelper::getAllPersonUuid);
+    When("API: I receive all person ids", personsHelper::getAllPersonUuid);
   }
 }
