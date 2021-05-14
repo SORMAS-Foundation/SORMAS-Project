@@ -30,6 +30,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
+	public static final String RELATION_TO_CASE = "relationToCase";
 
 	private Sex sex;
 	private String approximateAge;
@@ -55,6 +56,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String latestEventId;
 	private String latestEventTitle;
 	private Long eventCount;
+	private ContactRelation relationToCase;
 
 	//@formatter:off
 	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName,
@@ -70,7 +72,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String externalID, String externalToken,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, int visitCount
+								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
 	) {
 	//@formatter:on
 
@@ -92,6 +94,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.relationToCase = relationToCase;
 	}
 
 	public Sex getSex() {
@@ -164,5 +167,13 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	public void setLatestEventTitle(String latestEventTitle) {
 		this.latestEventTitle = latestEventTitle;
+	}
+
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
 	}
 }
