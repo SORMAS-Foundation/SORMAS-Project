@@ -466,7 +466,7 @@ public class PersonDto extends PseudonymizableDto {
 	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
 		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
 			if (contactDetailDto.getPersonContactDetailType() == personContactDetailType && contactDetailDto.isPrimaryContact()) {
-				if (contactInfo.equals(contactDetailDto.getContactInformation())){
+				if (contactInfo.equals(contactDetailDto.getContactInformation())) {
 					return;
 				}
 				contactDetailDto.setPrimaryContact(false);
