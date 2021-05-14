@@ -35,9 +35,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Random;
 
 public class CreateNewContactSteps implements En {
     private final WebDriverHelpers webDriverHelpers;
@@ -153,42 +151,7 @@ public class CreateNewContactSteps implements En {
     }
 
     public void selectTypeOfContact(String type){
-        Random random = new Random();
-        HashMap<String, String> GENERAL_CONTACT_TYPES = new HashMap<String, String>();
-        HashMap<String, String> COVID19_CONTACT_TYPES = new HashMap<String, String>();
-
-        GENERAL_CONTACT_TYPES.put("TFOSC", "Touched fluid of source case");
-        GENERAL_CONTACT_TYPES.put("DPCWSC", "Direct physical contact with source case");
-        GENERAL_CONTACT_TYPES.put("MOCOOOOSC", "Manipulation of clothes or other objects of source case");
-        GENERAL_CONTACT_TYPES.put("WICPWSC", "Was in close proximity (1 meter) with source case");
-        GENERAL_CONTACT_TYPES.put("WISROHWSC", "Was in same room or house with source case");
-
-        COVID19_CONTACT_TYPES.put("FTFCOAL15M", "Face-to-face contact of at least 15 minutes");
-        COVID19_CONTACT_TYPES.put("TFOSC", "Touched fluid of source case");
-        COVID19_CONTACT_TYPES.put("PETAPA", "Persons exposed to aerosol producing activities");
-        COVID19_CONTACT_TYPES.put("MPWAHROE", "Medical personnel with a high risk of exposure, e.g. unprotected relevant exposure to secretions, exposure to aerosols from COVID-19 cases");
-        COVID19_CONTACT_TYPES.put("WISROHWSC", "Was in same room or house with source case");
-        COVID19_CONTACT_TYPES.put("FTFCOLT15M", "Face-to-face contact of less than 15 minutes");
-        COVID19_CONTACT_TYPES.put("MPTWISROHWSC", "Medical personnel that was in same room or house with source case");
-        COVID19_CONTACT_TYPES.put("MPASP>2MOWPE", "Medical personnel at save proximity (> 2 meter) or with protective equipment");
-        COVID19_CONTACT_TYPES.put("MPASP>2MWDC", "Medical personnel at save proximity (> 2 meter), without direct contact with secretions or excretions of the patient and without aerosol exposure");
-
-        String selectedDisease = contact.getDiseaseOfSourceCase();
-        StringBuilder typeOfContact = new StringBuilder();
-        if(selectedDisease.equalsIgnoreCase("COVID-19")){
-            if(type.equalsIgnoreCase("any") || type.equalsIgnoreCase("random") || type == null)
-                typeOfContact.append("//label[contains(text(), '" + COVID19_CONTACT_TYPES.values().toArray()[random.nextInt(COVID19_CONTACT_TYPES.size())] +"')]");
-            else
-                typeOfContact.append("//label[contains(text(), '" + COVID19_CONTACT_TYPES.get(type) +"')]");
-        }
-        else{
-            if(type.equalsIgnoreCase("any") || type.equalsIgnoreCase("random") || type == null)
-                typeOfContact.append("//label[contains(text(), '" + GENERAL_CONTACT_TYPES.values().toArray()[random.nextInt(GENERAL_CONTACT_TYPES.size())] +"')]");
-            else
-                typeOfContact.append("//label[contains(text(), '" + GENERAL_CONTACT_TYPES.get(type) +"')]");
-        }
-
-
+        String typeOfContact = "//label[contains(text(), '" + contact.getTypeOfContact() + "')]";
         By typeOfContactXpath = By.xpath(typeOfContact.toString());
         webDriverHelpers.clickOnWebElementBySelector(typeOfContactXpath);
     }
@@ -200,7 +163,7 @@ public class CreateNewContactSteps implements En {
     }
 
     public void fillAdditionalInformationOnTheTypeOfContact(String description) {
-        webDriverHelpers.fillInWebElement(ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT, description);
+        webDriverHelpers.fillInWebElement(ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, description);
     }
 
     public void fillRelationshipWithCase(String relationshipWithCase) {

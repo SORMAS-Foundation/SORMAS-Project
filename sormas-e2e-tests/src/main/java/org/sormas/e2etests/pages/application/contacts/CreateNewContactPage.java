@@ -55,7 +55,7 @@ public class CreateNewContactPage {
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector(".v-window #community div");
-  public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT =
+  public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT =
       By.cssSelector("#contactProximityDetails");
   public static final By SAVE_BUTTON = By.id("commit");
 }
