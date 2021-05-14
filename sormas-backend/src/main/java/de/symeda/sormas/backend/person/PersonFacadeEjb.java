@@ -304,7 +304,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 			Pair<String, String> contactDetails = getContactDetails(detailedPerson);
 			exportPerson.setEmailAddress(contactDetails.getElement0());
-			exportPerson.setPhone(contactDetails.getElement1());
+			exportPerson.setPhone(formatPhoneNumber(contactDetails.getElement1()));
 
 			return exportPerson;
 		} else {
