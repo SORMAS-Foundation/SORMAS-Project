@@ -735,19 +735,29 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			Predicate eventDateFilter = null;
 
 			if (eventDateFrom != null && eventDateTo != null) {
-				eventDateFilter = cb.and(
-					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
-					cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo));
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.between(from.get(Event.START_DATE), eventDateFrom, eventDateTo)),
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.between(from.get(Event.END_DATE), eventDateFrom, eventDateTo)),
+					cb.and(
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
+						cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)));
 			} else if (eventDateFrom != null) {
-				eventDateFilter = cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom);
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom)),
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom)));
 			} else if (eventDateTo != null) {
-				eventDateFilter = cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo);
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventDateTo)),
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)));
 			}
 
 			if (eventDateFrom != null || eventDateTo != null) {
 				if (eventDateType == null) {
-					filter = CriteriaBuilderHelper
-						.and(cb, filter, cb.or(eventDateFilter, cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo)));
+					Predicate reportFilter = cb.and(
+						cb.isNull(from.get(Event.START_DATE)),
+						cb.isNull(from.get(Event.END_DATE)),
+						cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo));
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.or(eventDateFilter, reportFilter));
 				} else {
 					filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
 				}

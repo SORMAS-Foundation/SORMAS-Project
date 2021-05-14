@@ -1156,7 +1156,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), fromDate)),
 				cb.and(cb.isNull(caze.get(Case.QUARANTINE_FROM)), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), fromDate)));
 		} else if (toDate != null) {
-			cb.or(
+			filter = cb.or(
 				cb.and(cb.isNull(caze.get(Case.QUARANTINE_FROM)), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), toDate)),
 				cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), toDate)));
 		}
