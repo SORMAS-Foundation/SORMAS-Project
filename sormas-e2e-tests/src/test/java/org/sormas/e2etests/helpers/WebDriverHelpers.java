@@ -100,12 +100,15 @@ public class WebDriverHelpers {
     webElement.sendKeys(text);
   }
 
-  public void clearWebElement(By selector){
+  public void clearWebElement(By selector) {
     waitUntilElementIsVisibleAndClickable(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
-    webElement.clear();
-    FluentWait fluentWait = new FluentWait(baseSteps.getDriver()).withTimeout(Duration.ofSeconds(5)).pollingEvery(Duration.ofSeconds(1)).ignoring(Exception.class);
-    fluentWait.until(ExpectedConditions.attributeToBe(selector, "value", ""));
+    while (!getValueFromWebElement(selector).contentEquals("")) {
+      webElement.clear();
+      webElement.sendKeys((Keys.chord(Keys.SHIFT, Keys.END)));
+      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.click();
+    }
   }
 
   @SneakyThrows

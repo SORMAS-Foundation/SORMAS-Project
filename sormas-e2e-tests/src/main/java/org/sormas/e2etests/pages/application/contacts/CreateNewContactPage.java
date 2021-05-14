@@ -27,11 +27,11 @@ public class CreateNewContactPage {
   public static final By LAST_NAME_OF_CONTACT_PERSON_INPUT =
       By.cssSelector(".v-window [location='lastName'] input");
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX =
-          By.cssSelector(".popupContent #birthdateYYYY input+div");
+      By.cssSelector(".popupContent #birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX =
-          By.cssSelector(".popupContent #birthdateMM input+div");
+      By.cssSelector(".popupContent #birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX =
-          By.cssSelector(".popupContent #birthdateDD input+div");
+      By.cssSelector(".popupContent #birthdateDD input+div");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
   public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
@@ -42,23 +42,20 @@ public class CreateNewContactPage {
   public static final By DISEASE_OF_SOURCE_CASE_COMBOBOX =
       By.cssSelector(".v-window [location='disease'] [role='combobox'] div");
   public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT =
-          By.cssSelector(".v-window [id='caseIdExternalSystem']");
+      By.cssSelector(".v-window [id='caseIdExternalSystem']");
   public static final By DATE_OF_LAST_CONTACT_INPUT =
-          By.cssSelector(".v-window [id='lastContactDate'] input");
+      By.cssSelector(".v-window [id='lastContactDate'] input");
   public static final By CASE_OR_EVENT_INFORMATION_INPUT =
-          By.cssSelector(".v-window [id='caseOrEventInformation']");
+      By.cssSelector(".v-window [id='caseOrEventInformation']");
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX =
-          By.cssSelector(".v-window [id='relationToCase'] div");
+      By.cssSelector(".v-window [id='relationToCase'] div");
   public static final By DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT =
-          By.cssSelector(".v-window [id='description']");
-  public static final By RESPONSIBLE_REGION_COMBOBOX =
-          By.cssSelector(".v-window #region div");
-  public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
-          By.cssSelector(".v-window #district div");
+      By.cssSelector(".v-window [id='description']");
+  public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
+  public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
-          By.cssSelector(".v-window #community div");
+      By.cssSelector(".v-window #community div");
   public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT =
-          By.cssSelector("#contactProximityDetails");
+      By.cssSelector("#contactProximityDetails");
   public static final By SAVE_BUTTON = By.id("commit");
-
 }

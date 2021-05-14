@@ -20,9 +20,9 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import org.sormas.e2etests.pojo.Contact;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.pojo.Contact;
 
 public class ContactService {
   private final Faker faker;
@@ -34,27 +34,28 @@ public class ContactService {
 
   public Contact buildGeneratedContact() {
     return Contact.builder()
-            .firstName(faker.name().firstName())
-            .lastName(faker.name().lastName())
-            .dateOfBirth(LocalDate.of(1904, 3, 7))
-            .sex("Male")
-            .nationalHealthId(UUID.randomUUID().toString())
-            .passportNumber(String.valueOf(System.currentTimeMillis()))
-            .primaryEmailAddress(faker.internet().emailAddress())
-            .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-            .returningTraveler("No")
-            .reportDate(LocalDate.now())
-            .diseaseOfSourceCase("Cholera")
-            .caseIdInExternalSystem(UUID.randomUUID().toString())
-            .dateOfLastContact(LocalDate.now())
-            .caseOrEventInformation("Automated test dummy description")
-            .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
-            .responsibleDistrict("Voreingestellter Landkreis")
-            .responsibleCommunity("Voreingestellte Gemeinde")
-            .additionalInformationOnContactType("Automated test dummy description")
-            .contactCategory("Low risk contact")
-            .relationshipWithCase("Work in the same environment")
-            .descriptionOfHowContactTookPlace("Automated test dummy description")
-            .build();
+        .firstName(faker.name().firstName())
+        .lastName(faker.name().lastName())
+        .dateOfBirth(LocalDate.of(1904, 3, 7))
+        .sex("Male")
+        .nationalHealthId(UUID.randomUUID().toString())
+        .passportNumber(String.valueOf(System.currentTimeMillis()))
+        .primaryEmailAddress(faker.internet().emailAddress())
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("No")
+        .reportDate(LocalDate.now())
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfLastContact(LocalDate.now())
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
+        .responsibleDistrict("Voreingestellter Landkreis")
+        .responsibleCommunity("Voreingestellte Gemeinde")
+        .additionalInformationOnContactType("Automated test dummy description")
+        .typeOfContact("Touched fluid of source case")
+        .contactCategory("Low risk contact")
+        .relationshipWithCase("Work in the same environment")
+        .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .build();
   }
 }

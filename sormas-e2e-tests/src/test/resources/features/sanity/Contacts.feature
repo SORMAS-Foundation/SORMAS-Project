@@ -1,6 +1,7 @@
 @Sanity @Contacts
 Feature: Create contacts
 
+  @sapte
   Scenario: Create simple contact
     Given I log in with the user
       And I click on the Contacts button from navbar

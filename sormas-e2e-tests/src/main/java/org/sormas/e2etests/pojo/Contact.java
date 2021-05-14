@@ -19,10 +19,10 @@
 package org.sormas.e2etests.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import java.time.LocalDate;
 
 @Builder(toBuilder = true, builderClassName = "Builder")
 @Value
@@ -47,6 +47,7 @@ public class Contact {
   String responsibleRegion;
   String responsibleCommunity;
   String additionalInformationOnContactType;
+  String typeOfContact;
   String contactCategory;
   String relationshipWithCase;
   String descriptionOfHowContactTookPlace;
