@@ -111,7 +111,7 @@ public class DashboardDataProvider {
 			.disease(disease)
 			.newCaseDateType(newCaseDateType)
 			.newCaseDateBetween(fromDate, toDate);
-		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getCaseFacade().getQuarantineDataForDashBoard(caseCriteria);
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getDashboardFacade().getQuarantineData(caseCriteria);
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
@@ -157,11 +157,11 @@ public class DashboardDataProvider {
 				.disease(disease)
 				.newCaseDateType(newCaseDateType)
 				.newCaseDateBetween(fromDate, toDate);
-			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
+			setCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
-			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
+			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
