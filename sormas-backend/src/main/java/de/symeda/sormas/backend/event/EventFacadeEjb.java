@@ -222,6 +222,10 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
+		if (dto.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
+
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
