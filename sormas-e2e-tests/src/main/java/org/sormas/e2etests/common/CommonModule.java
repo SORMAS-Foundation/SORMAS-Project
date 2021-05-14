@@ -18,11 +18,17 @@
 
 package org.sormas.e2etests.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.javafaker.Faker;
 import com.google.inject.Exposed;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
 import java.util.Locale;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import org.sormas.e2etests.ui.DriverManager;
 
@@ -39,5 +45,22 @@ public class CommonModule extends PrivateModule {
   @Exposed
   Faker provideFaker() {
     return new Faker(Locale.GERMANY);
+  }
+
+  @Provides
+  @Exposed
+  ObjectMapper provideObjectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writer().withDefaultPrettyPrinter();
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    objectMapper.registerModule(new Jdk8Module());
+    return objectMapper;
+  }
+
+  @Provides
+  @Exposed
+  RequestSpecification provideRestAssured(
+      @Named("REST_USER") String userName, @Named("REST_PASSWORD") String userPassword) {
+    return RestAssured.given().auth().preemptive().basic(userName, userPassword);
   }
 }

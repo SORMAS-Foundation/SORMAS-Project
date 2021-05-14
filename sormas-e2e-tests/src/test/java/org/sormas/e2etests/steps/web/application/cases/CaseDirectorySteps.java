@@ -16,24 +16,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.events;
+package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
-public class EventDirectorySteps implements En {
+public class CaseDirectorySteps implements En {
 
   @Inject
-  public EventDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public CaseDirectorySteps(WebDriverHelpers webDriverHelpers) {
 
     When(
-        "I click on the NEW EVENT button",
+        "^I click on the NEW CASE button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+                NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
   }
 }

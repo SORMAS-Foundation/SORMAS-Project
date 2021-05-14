@@ -15,25 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.helpers.api;
 
-package org.sormas.e2etests.steps.application.cases;
+import static org.sormas.e2etests.constants.api.Endpoints.PERSONS;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-
-import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import javax.inject.Inject;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.pojo.Request;
 
-public class CaseDirectorySteps implements En {
+public class PersonsHelper {
+
+  private final RestAssuredClient restAssuredClient;
 
   @Inject
-  public CaseDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public PersonsHelper(RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
+  }
 
-    When(
-        "^I click on the NEW CASE button$",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+  public void getPersonByUuid(String Uuid) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(PERSONS + Uuid).build());
+  }
+
+  public void getAllPersonUuid() {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(PERSONS + "uuids").build());
   }
 }

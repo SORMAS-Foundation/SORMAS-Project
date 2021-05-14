@@ -16,28 +16,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application;
+package org.sormas.e2etests.steps.web.application.events;
+
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
-public class NavBarSteps implements En {
+public class EventDirectorySteps implements En {
 
   @Inject
-  public NavBarSteps(WebDriverHelpers webDriverHelpers) {
+  public EventDirectorySteps(WebDriverHelpers webDriverHelpers) {
 
     When(
-        "^I click on the Cases button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON));
-
-    When(
-        "^I click on the Contacts button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON));
-
-    When(
-        "^I click on the Events button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON));
+        "I click on the NEW EVENT button",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
   }
 }
