@@ -1297,4 +1297,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public List<Case> getByExternalId(String externalId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId));
+
+		return em.createQuery(cq).getResultList();
+	}
 }

@@ -2410,8 +2410,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(caseUuid);
 
 		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && externalShareInfoService.isCaseShared(caze.getId())) {
-			externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
+			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
+			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+				externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
+			}
 		}
 
 		caseService.delete(caze);
@@ -3882,6 +3885,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
 		return caseService.getByPersonUuids(personUuids).stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CaseDataDto> getByExternalId(String externalId) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return caseService.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@LocalBean
