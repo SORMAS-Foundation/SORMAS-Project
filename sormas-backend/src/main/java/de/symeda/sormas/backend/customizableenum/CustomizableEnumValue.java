@@ -31,6 +31,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseListConverter;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
  * Entity that stores one individual enum value for a supported customizable enum type. This primary use of this entity is to store the
@@ -83,8 +84,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.caption = caption;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CustomizableEnumTranslation> getTranslations() {
 		return translations;
 	}
@@ -112,8 +113,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.description = description;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CustomizableEnumTranslation> getDescriptionTranslations() {
 		return descriptionTranslations;
 	}
@@ -122,8 +123,8 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.descriptionTranslations = descriptionTranslations;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public Map<String, Object> getProperties() {
 		return properties;
 	}
