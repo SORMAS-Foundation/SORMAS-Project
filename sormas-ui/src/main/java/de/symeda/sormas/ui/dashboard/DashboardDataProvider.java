@@ -106,8 +106,12 @@ public class DashboardDataProvider {
 
 	private void refreshDataForQuarantinedCases() {
 
-		List<DashboardQuarantineDataDto> casesInQuarantineDtos =
-			FacadeProvider.getCaseFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
+		CaseCriteria caseCriteria = new CaseCriteria().region(region)
+			.district(district)
+			.disease(disease)
+			.newCaseDateType(newCaseDateType)
+			.newCaseDateBetween(fromDate, toDate);
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getCaseFacade().getQuarantineDataForDashBoard(caseCriteria);
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
@@ -148,8 +152,11 @@ public class DashboardDataProvider {
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
-			CaseCriteria caseCriteria = new CaseCriteria();
-			caseCriteria.region(region).district(district).disease(disease).newCaseDateType(newCaseDateType).newCaseDateBetween(fromDate, toDate);
+			CaseCriteria caseCriteria = new CaseCriteria().region(region)
+				.district(district)
+				.disease(disease)
+				.newCaseDateType(newCaseDateType)
+				.newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
 

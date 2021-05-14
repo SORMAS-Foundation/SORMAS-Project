@@ -198,12 +198,7 @@ public interface CaseFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to);
+	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria);
 
 	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
 

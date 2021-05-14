@@ -1101,12 +1101,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return result;
 	}
 
-	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to) {
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
@@ -1114,18 +1109,13 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.setRegion(regionRef);
-		caseCriteria.setDistrict(districtRef);
-		caseCriteria.setDisease(disease);
-
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter =
 			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 
-		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, from, to);
+		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo());
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
