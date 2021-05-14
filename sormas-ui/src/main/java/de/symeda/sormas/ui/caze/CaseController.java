@@ -612,6 +612,9 @@ public class CaseController {
 
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
+					transferDataToPerson(createForm, person);
+					FacadeProvider.getPersonFacade().savePerson(person);
+
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
