@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -180,6 +181,27 @@ public class DashboardService {
 		} catch (NoResultException e) {
 			return "";
 		}
+	}
+
+	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+
+		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.countDistinct(caze));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {

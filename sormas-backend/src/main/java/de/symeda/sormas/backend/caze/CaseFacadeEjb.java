@@ -1057,27 +1057,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caseService.getAllActiveUuids();
 	}
 
-	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-
-		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.countDistinct(caze));
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	public Long countCasesForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,

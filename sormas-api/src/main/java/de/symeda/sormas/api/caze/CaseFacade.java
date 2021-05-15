@@ -193,8 +193,6 @@ public interface CaseFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
-
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
 	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);

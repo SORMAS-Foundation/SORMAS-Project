@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -135,7 +134,7 @@ public class DashboardDataProvider {
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, null);
 
-		setContactsConvertedToCaseCount(FacadeProvider.getCaseFacade().countCasesConvertedFromContacts(caseCriteria));
+		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(caseCriteria));
 
 	}
 
@@ -167,13 +166,7 @@ public class DashboardDataProvider {
 			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
-				if (getCases().size() > 0) {
-					setTestResultCountByResultType(
-						FacadeProvider.getSampleFacade()
-							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
-				} else {
-					setTestResultCountByResultType(new HashMap<>());
-				}
+				setTestResultCountByResultType(FacadeProvider.getDashboardFacade().getTestResultCountByResultType(getCases()));
 			}
 		}
 
@@ -188,12 +181,6 @@ public class DashboardDataProvider {
 
 		eventCriteria.eventDateBetween(fromDate, toDate);
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria));
-
-		// Test results
-		//		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
-		//				fromDate, toDate, userUuid));
-		//		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
-		//				disease, previousFromDate, previousToDate, userUuid));
 
 		setOutbreakDistrictCount(
 			FacadeProvider.getOutbreakFacade()
