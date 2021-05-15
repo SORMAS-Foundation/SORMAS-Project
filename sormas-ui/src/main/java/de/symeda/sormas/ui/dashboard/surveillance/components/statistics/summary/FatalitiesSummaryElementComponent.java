@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
@@ -10,7 +9,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -42,16 +40,10 @@ public class FatalitiesSummaryElementComponent extends HorizontalLayout {
 	}
 
 	public void update(List<DashboardCaseDto> newCases, List<DashboardCaseDto> previousCases) {
-		List<DashboardCaseDto> actualNewCases = newCases.stream()
-			.filter(dashboardCaseDto -> dashboardCaseDto.getCaseClassification() != CaseClassification.NO_CASE)
-			.collect(Collectors.toList());
-		int casesCount = actualNewCases.size();
-		long fatalCasesCount = actualNewCases.stream().filter(DashboardCaseDto::wasFatal).count();
+		int casesCount = newCases.size();
+		long fatalCasesCount = newCases.stream().filter(DashboardCaseDto::wasFatal).count();
 
-		List<DashboardCaseDto> actualPreviousCases = newCases.stream()
-			.filter(dashboardCaseDto -> dashboardCaseDto.getCaseClassification() != CaseClassification.NO_CASE)
-			.collect(Collectors.toList());
-		long previousFatalCasesCount = actualPreviousCases.stream().filter(DashboardCaseDto::wasFatal).count();
+		long previousFatalCasesCount = previousCases.stream().filter(DashboardCaseDto::wasFatal).count();
 		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
 		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
 		fatalityRate = Math.round(fatalityRate * 100) / 100f;
