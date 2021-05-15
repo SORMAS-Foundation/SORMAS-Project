@@ -68,7 +68,7 @@ public class DashboardDataProvider {
 	// disease specific
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
-	private List<CaseClassification> casesByClassification = new ArrayList<>();
+	private Map<CaseClassification, Integer> casesCountByClassification = new HashMap<>();
 	private Long outbreakDistrictCount = 0L;
 	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
@@ -160,7 +160,7 @@ public class DashboardDataProvider {
 				.newCaseDateType(newCaseDateType)
 				.newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
-			setCasesByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(caseCriteria));
+			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
@@ -220,12 +220,12 @@ public class DashboardDataProvider {
 		this.previousCases = previousCases;
 	}
 
-	public List<CaseClassification> getCasesByClassification() {
-		return casesByClassification;
+	public Map<CaseClassification, Integer> getCasesCountByClassification() {
+		return casesCountByClassification;
 	}
 
-	public void setCasesByClassification(List<CaseClassification> casesByClassification) {
-		this.casesByClassification = casesByClassification;
+	public void setCasesCountByClassification(Map<CaseClassification, Integer> casesCountByClassification) {
+		this.casesCountByClassification = casesCountByClassification;
 	}
 
 	public List<DashboardEventDto> getEvents() {

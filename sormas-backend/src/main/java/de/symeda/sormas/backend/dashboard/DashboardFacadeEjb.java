@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.dashboard;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -25,7 +26,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
 		return caseFacade.getCasesCountByClassification(caseCriteria);
 	}
 

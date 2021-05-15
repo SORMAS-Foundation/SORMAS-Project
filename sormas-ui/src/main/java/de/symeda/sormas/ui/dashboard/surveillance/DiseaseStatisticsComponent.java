@@ -64,7 +64,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	public void refresh() {
-		caseStatisticsComponent.update(dashboardDataProvider.getCasesByClassification());
+		caseStatisticsComponent.update(dashboardDataProvider.getCasesCountByClassification());
 		diseaseSummaryComponent.update(dashboardDataProvider);
 		eventStatisticsComponent.update(dashboardDataProvider.getEventCountByStatus());
 		testResultsStatisticsComponent.update(dashboardDataProvider.getTestResultCountByResultType());

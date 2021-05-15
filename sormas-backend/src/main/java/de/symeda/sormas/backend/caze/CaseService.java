@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -1326,10 +1327,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return result;
 	}
 
-	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseClassification> cq = cb.createQuery(CaseClassification.class);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
@@ -1342,14 +1343,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cq.where(filter);
 		}
 
-		List<CaseClassification> result;
+		Map<CaseClassification, Integer> result;
 		if (filter != null) {
+			cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze.get(Case.CASE_CLASSIFICATION)));
 			cq.where(filter);
-			cq.select(caze.get(Case.CASE_CLASSIFICATION));
+			cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
 
-			result = em.createQuery(cq).getResultList();
+			result = em.createQuery(cq)
+				.getResultStream()
+				.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
 		} else {
-			result = Collections.emptyList();
+			result = Collections.emptyMap();
 		}
 
 		return result;

@@ -100,7 +100,7 @@ public interface CaseFacade {
 
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
 
-	List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria);
+	Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,

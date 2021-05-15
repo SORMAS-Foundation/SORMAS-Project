@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.dashboard;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -14,7 +15,7 @@ public interface DashboardFacade {
 
 	List<DashboardCaseDto> getCases(CaseCriteria caseCriteria);
 
-	List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria);
+	Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria);
 
 	List<DashboardQuarantineDataDto> getQuarantineData(CaseCriteria caseCriteria);
 }

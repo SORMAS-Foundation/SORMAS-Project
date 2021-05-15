@@ -1066,7 +1066,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
 
 		return caseService.getCasesCountByClassification(caseCriteria);
 	}

@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
-import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -59,24 +59,17 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 		}
 	}
 
-	public void update(List<CaseClassification> cases) {
-		updateTotalLabel(Integer.toString(cases.size()));
+	public void update(Map<CaseClassification, Integer> cases) {
+		updateTotalLabel(Integer.toString(cases.values().stream().reduce(0, Integer::sum)));
 
-		int confirmedCasesCount = (int) cases.stream().filter(c -> c == CaseClassification.CONFIRMED).count();
-		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
+		caseClassificationConfirmed.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED, 0));
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			int confirmedCasesNoSymptomsCount = (int) cases.stream().filter(c -> c == CaseClassification.CONFIRMED_NO_SYMPTOMS).count();
-			caseClassificationConfirmedNoSymptoms.updateCountLabel(confirmedCasesNoSymptomsCount);
-			int confirmedCasesUnknownSymptomsCount = (int) cases.stream().filter(c -> c == CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS).count();
-			caseClassificationConfirmedUnknownSymptoms.updateCountLabel(confirmedCasesUnknownSymptomsCount);
+			caseClassificationConfirmedNoSymptoms.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED_NO_SYMPTOMS, 0));
+			caseClassificationConfirmedUnknownSymptoms.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, 0));
 		}
-		int probableCasesCount = (int) cases.stream().filter(c -> c == CaseClassification.PROBABLE).count();
-		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) cases.stream().filter(c -> c == CaseClassification.SUSPECT).count();
-		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-		int notACaseCasesCount = (int) cases.stream().filter(c -> c == CaseClassification.NO_CASE).count();
-		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) cases.stream().filter(c -> c == CaseClassification.NOT_CLASSIFIED).count();
-		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
+		caseClassificationProbable.updateCountLabel(cases.getOrDefault(CaseClassification.PROBABLE, 0));
+		caseClassificationSuspect.updateCountLabel(cases.getOrDefault(CaseClassification.SUSPECT, 0));
+		caseClassificationNotACase.updateCountLabel(cases.getOrDefault(CaseClassification.NO_CASE, 0));
+		caseClassificationNotYetClassified.updateCountLabel(cases.getOrDefault(CaseClassification.NOT_CLASSIFIED, 0));
 	}
 }
