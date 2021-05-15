@@ -11,7 +11,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
 
 @Stateless(name = "DashboardFacade")
 public class DashboardFacadeEjb implements DashboardFacade {
@@ -31,7 +30,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@LocalBean
 	@Stateless
-	public static class DashboardFacadeEjbLocal extends DiseaseFacadeEjb {
+	public static class DashboardFacadeEjbLocal extends DashboardFacadeEjb {
 
 	}
 }
