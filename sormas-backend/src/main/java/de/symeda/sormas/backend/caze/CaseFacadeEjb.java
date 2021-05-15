@@ -99,7 +99,6 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -116,7 +115,6 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -1057,24 +1055,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return caseService.getAllActiveUuids();
-	}
-
-	@Override
-	public List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria) {
-
-		return caseService.getCasesForDashboard(caseCriteria);
-	}
-
-	@Override
-	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
-
-		return caseService.getCasesCountByClassification(caseCriteria);
-	}
-
-	@Override
-	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria) {
-
-		return caseService.getQuarantineDataForDashBoard(caseCriteria);
 	}
 
 	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {

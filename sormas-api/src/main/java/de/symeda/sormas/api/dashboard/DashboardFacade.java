@@ -7,7 +7,6 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 
 @Remote

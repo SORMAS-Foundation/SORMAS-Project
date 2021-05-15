@@ -32,7 +32,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -97,10 +96,6 @@ public interface CaseFacade {
 	CaseDataDto getByUuid(String uuid);
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
-
-	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
-
-	Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,
@@ -199,8 +194,6 @@ public interface CaseFacade {
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties);
-
-	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria);
 
 	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
 

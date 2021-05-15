@@ -9,30 +9,29 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 
 @Stateless(name = "DashboardFacade")
 public class DashboardFacadeEjb implements DashboardFacade {
 
 	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	private DashboardService dashboardService;
 
 	@Override
 	public List<DashboardCaseDto> getCases(CaseCriteria caseCriteria) {
-		return caseFacade.getCasesForDashboard(caseCriteria);
+		return dashboardService.getCases(caseCriteria);
 	}
 
 	@Override
 	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
-		return caseFacade.getCasesCountByClassification(caseCriteria);
+		return dashboardService.getCasesCountByClassification(caseCriteria);
 	}
 
 	@Override
 	public List<DashboardQuarantineDataDto> getQuarantineData(CaseCriteria caseCriteria) {
-		return caseFacade.getQuarantineDataForDashBoard(caseCriteria);
+		return dashboardService.getQuarantineData(caseCriteria);
 	}
 
 	@LocalBean
