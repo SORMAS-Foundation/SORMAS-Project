@@ -1493,39 +1493,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeCasesFromContacts) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> district = joins.getDistrict();
-
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
-
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(district.get(District.NAME));
-		List<Order> order = new ArrayList<>();
-		order.add(cb.desc(caze.get(Case.REPORT_DATE)));
-		order.add(cb.desc(caze.get(Case.CREATION_DATE)));
-		cq.orderBy(order);
-
-		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
-		try {
-			return query.getSingleResult();
-		} catch (NoResultException e) {
-			return "";
-		}
-	}
-
-	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return convertToDto(caseService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}

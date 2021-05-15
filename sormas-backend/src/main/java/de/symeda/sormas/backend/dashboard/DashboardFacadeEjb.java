@@ -34,6 +34,11 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return dashboardService.getQuarantineData(caseCriteria);
 	}
 
+	@Override
+	public String getLastReportedDistrictName(CaseCriteria caseCriteria) {
+		return dashboardService.getLastReportedDistrictName(caseCriteria);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class DashboardFacadeEjbLocal extends DashboardFacadeEjb {

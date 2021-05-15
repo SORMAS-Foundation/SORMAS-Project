@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.dashboard;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -28,6 +32,7 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -144,6 +149,37 @@ public class DashboardService {
 		}
 
 		return Collections.emptyList();
+	}
+
+	public String getLastReportedDistrictName(CaseCriteria caseCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		Join<Case, District> district = joins.getDistrict();
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+
+		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(district.get(District.NAME));
+		List<Order> order = new ArrayList<>();
+		order.add(cb.desc(caze.get(Case.REPORT_DATE)));
+		order.add(cb.desc(caze.get(Case.CREATION_DATE)));
+		cq.orderBy(order);
+
+		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
+		try {
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return "";
+		}
 	}
 
 	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {

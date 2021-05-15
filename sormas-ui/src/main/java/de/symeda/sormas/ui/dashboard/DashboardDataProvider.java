@@ -161,7 +161,7 @@ public class DashboardDataProvider {
 				.newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
 			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(caseCriteria));
-			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
+			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(caseCriteria));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
 			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
