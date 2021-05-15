@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -23,9 +24,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -34,6 +36,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -48,7 +51,7 @@ public class DashboardService {
 	@EJB
 	private CaseService caseService;
 
-	public List<DashboardCaseDto> getCases(CaseCriteria caseCriteria) {
+	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
@@ -60,7 +63,7 @@ public class DashboardService {
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -89,7 +92,7 @@ public class DashboardService {
 		return result;
 	}
 
-	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
+	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -98,7 +101,7 @@ public class DashboardService {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -121,7 +124,7 @@ public class DashboardService {
 		return result;
 	}
 
-	public List<DashboardQuarantineDataDto> getQuarantineData(CaseCriteria caseCriteria) {
+	public List<DashboardQuarantineDataDto> getQuarantineData(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
@@ -130,12 +133,12 @@ public class DashboardService {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter =
 			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 
-		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo());
+		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, dashboardCriteria.getNewCaseDateFrom(), dashboardCriteria.getNewCaseDateTo());
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -152,7 +155,7 @@ public class DashboardService {
 		return Collections.emptyList();
 	}
 
-	public String getLastReportedDistrictName(CaseCriteria caseCriteria) {
+	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -163,7 +166,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -183,7 +186,7 @@ public class DashboardService {
 		}
 	}
 
-	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
+	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -191,7 +194,7 @@ public class DashboardService {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
@@ -202,6 +205,42 @@ public class DashboardService {
 
 		cq.select(cb.countDistinct(caze));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	private <T extends AbstractDomainObject> Predicate createCriteriaFilter(DashboardCriteria dashboardCriteria, CaseQueryContext caseQueryContext) {
+
+		final From<?, Case> from = caseQueryContext.getRoot();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		Join<Case, Region> region = joins.getRegion();
+		Join<Case, District> district = joins.getDistrict();
+
+		Predicate filter = null;
+		if (dashboardCriteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
+		}
+		if (dashboardCriteria.getRegion() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
+		}
+		if (dashboardCriteria.getDistrict() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
+		}
+		if (dashboardCriteria.getNewCaseDateFrom() != null && dashboardCriteria.getNewCaseDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				caseService.createNewCaseFilter(
+					cq,
+					cb,
+					from,
+					DateHelper.getStartOfDay(dashboardCriteria.getNewCaseDateFrom()),
+					DateHelper.getEndOfDay(dashboardCriteria.getNewCaseDateTo()),
+					dashboardCriteria.getNewCaseDateType()));
+		}
+
+		return filter;
 	}
 
 	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {

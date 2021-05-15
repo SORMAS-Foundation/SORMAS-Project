@@ -1060,7 +1060,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	private Predicate createNewCaseFilter(
+	public Predicate createNewCaseFilter(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> caze,

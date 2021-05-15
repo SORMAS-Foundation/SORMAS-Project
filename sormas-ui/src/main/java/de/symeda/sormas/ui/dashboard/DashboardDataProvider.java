@@ -28,11 +28,11 @@ import org.apache.commons.lang3.time.DateUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -107,12 +107,12 @@ public class DashboardDataProvider {
 
 	private void refreshDataForQuarantinedCases() {
 
-		CaseCriteria caseCriteria = new CaseCriteria().region(region)
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(region)
 			.district(district)
 			.disease(disease)
 			.newCaseDateType(newCaseDateType)
 			.newCaseDateBetween(fromDate, toDate);
-		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getDashboardFacade().getQuarantineData(caseCriteria);
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getDashboardFacade().getQuarantineData(dashboardCriteria);
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
@@ -131,11 +131,9 @@ public class DashboardDataProvider {
 	}
 
 	private void refreshDataForConvertedContactsToCase() {
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, null);
-
-		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(caseCriteria));
-
+		DashboardCriteria dashboardCriteria =
+			new DashboardCriteria().region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate);
+		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(dashboardCriteria));
 	}
 
 	private void refreshDataForSelectedDisease() {
@@ -153,17 +151,17 @@ public class DashboardDataProvider {
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
-			CaseCriteria caseCriteria = new CaseCriteria().region(region)
+			DashboardCriteria dashboardCriteria = new DashboardCriteria().region(region)
 				.district(district)
 				.disease(disease)
 				.newCaseDateType(newCaseDateType)
 				.newCaseDateBetween(fromDate, toDate);
-			setCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
-			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(caseCriteria));
-			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(caseCriteria));
+			setCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
+			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
+			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(dashboardCriteria));
 
-			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
-			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
+			dashboardCriteria.newCaseDateBetween(previousFromDate, previousToDate);
+			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				setTestResultCountByResultType(FacadeProvider.getDashboardFacade().getTestResultCountByResultType(getCases()));

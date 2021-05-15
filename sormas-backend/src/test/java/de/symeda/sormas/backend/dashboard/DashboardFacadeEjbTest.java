@@ -9,11 +9,11 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -50,12 +50,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		caze2.setSharedToCountry(true);
 		getCaseFacade().saveCase(caze2);
 
-		CaseCriteria caseCriteria = new CaseCriteria().region(caze.getRegion())
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getRegion())
 			.district(caze.getDistrict())
 			.disease(caze.getDisease())
-			.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
+			.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+			.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
 
-		List<DashboardCaseDto> dashboardCaseDtos = getDashboardFacade().getCases(caseCriteria);
+		List<DashboardCaseDto> dashboardCaseDtos = getDashboardFacade().getCases(dashboardCriteria);
 
 		// List should have only one entry; shared case should not appear
 		assertEquals(1, dashboardCaseDtos.size());

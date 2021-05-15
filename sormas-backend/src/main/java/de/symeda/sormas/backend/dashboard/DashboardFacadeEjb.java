@@ -10,9 +10,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
@@ -27,23 +27,23 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	private DashboardService dashboardService;
 
 	@Override
-	public List<DashboardCaseDto> getCases(CaseCriteria caseCriteria) {
-		return dashboardService.getCases(caseCriteria);
+	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getCases(dashboardCriteria);
 	}
 
 	@Override
-	public Map<CaseClassification, Integer> getCasesCountByClassification(CaseCriteria caseCriteria) {
-		return dashboardService.getCasesCountByClassification(caseCriteria);
+	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getCasesCountByClassification(dashboardCriteria);
 	}
 
 	@Override
-	public List<DashboardQuarantineDataDto> getQuarantineData(CaseCriteria caseCriteria) {
-		return dashboardService.getQuarantineData(caseCriteria);
+	public List<DashboardQuarantineDataDto> getQuarantineData(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getQuarantineData(dashboardCriteria);
 	}
 
 	@Override
-	public String getLastReportedDistrictName(CaseCriteria caseCriteria) {
-		return dashboardService.getLastReportedDistrictName(caseCriteria);
+	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getLastReportedDistrictName(dashboardCriteria);
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
-		return dashboardService.countCasesConvertedFromContacts(caseCriteria);
+	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
+		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
 	}
 
 	@LocalBean
