@@ -6,6 +6,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
@@ -21,6 +22,11 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public List<DashboardCaseDto> getCases(CaseCriteria caseCriteria) {
 		return caseFacade.getCasesForDashboard(caseCriteria);
+	}
+
+	@Override
+	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+		return caseFacade.getCasesCountByClassification(caseCriteria);
 	}
 
 	@Override

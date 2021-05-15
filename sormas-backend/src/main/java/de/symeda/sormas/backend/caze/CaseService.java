@@ -1326,6 +1326,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return result;
 	}
 
+	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseClassification> cq = cb.createQuery(CaseClassification.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+
+		Predicate filter = createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<CaseClassification> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.select(caze.get(Case.CASE_CLASSIFICATION));
+
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
+	}
+
 	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

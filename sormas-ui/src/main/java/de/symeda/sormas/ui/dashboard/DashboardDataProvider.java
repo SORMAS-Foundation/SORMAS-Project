@@ -28,6 +28,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -67,6 +68,7 @@ public class DashboardDataProvider {
 	// disease specific
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
+	private List<CaseClassification> casesByClassification = new ArrayList<>();
 	private Long outbreakDistrictCount = 0L;
 	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
@@ -158,6 +160,7 @@ public class DashboardDataProvider {
 				.newCaseDateType(newCaseDateType)
 				.newCaseDateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getDashboardFacade().getCases(caseCriteria));
+			setCasesByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate);
@@ -215,6 +218,14 @@ public class DashboardDataProvider {
 
 	public void setPreviousCases(List<DashboardCaseDto> previousCases) {
 		this.previousCases = previousCases;
+	}
+
+	public List<CaseClassification> getCasesByClassification() {
+		return casesByClassification;
+	}
+
+	public void setCasesByClassification(List<CaseClassification> casesByClassification) {
+		this.casesByClassification = casesByClassification;
 	}
 
 	public List<DashboardEventDto> getEvents() {

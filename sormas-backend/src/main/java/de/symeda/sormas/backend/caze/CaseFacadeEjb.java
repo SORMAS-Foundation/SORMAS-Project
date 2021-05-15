@@ -1066,6 +1066,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public List<CaseClassification> getCasesCountByClassification(CaseCriteria caseCriteria) {
+
+		return caseService.getCasesCountByClassification(caseCriteria);
+	}
+
+	@Override
 	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(CaseCriteria caseCriteria) {
 
 		return caseService.getQuarantineDataForDashBoard(caseCriteria);
