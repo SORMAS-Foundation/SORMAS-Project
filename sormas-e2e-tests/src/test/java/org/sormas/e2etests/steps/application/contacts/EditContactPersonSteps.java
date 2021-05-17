@@ -43,33 +43,29 @@ public class EditContactPersonSteps implements En {
         () -> {
             aContact = collectContactData();
             SoftAssertions softly = new SoftAssertions();
-            softly.assertThat(aCase.getDateOfReport())
-              .isEqualTo(CreateNewCaseSteps.caze.getDateOfReport());
-            softly.assertThat(aCase.getExternalId())
-              .isEqualTo(CreateNewCaseSteps.caze.getExternalId());
-            softly.assertThat(aCase.getDisease()).isEqualTo(CreateNewCaseSteps.caze.getDisease());
-            softly.assertThat(aCase.getResponsibleRegion())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleRegion());
-            softly.assertThat(aCase.getResponsibleDistrict())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleDistrict());
-            softly.assertThat(aCase.getResponsibleCommunity())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleCommunity());
-            softly.assertThat(aCase.getPlaceOfStay())
-              .isEqualTo(CreateNewCaseSteps.caze.getPlaceOfStay());
-            softly.assertThat(aCase.getPlaceDescription())
-              .isEqualTo(CreateNewCaseSteps.caze.getPlaceDescription());
-            softly.assertThat(aCase.getFirstName()).isEqualTo(CreateNewCaseSteps.caze.getFirstName());
-            softly.assertThat(
-                  aCase.getLastName().equalsIgnoreCase(CreateNewCaseSteps.caze.getLastName()))
-              .isTrue();
-            softly.assertThat(aCase.getDateOfBirth())
-              .isEqualTo(CreateNewCaseSteps.caze.getDateOfBirth());
+            softly.assertThat(aContact.getFirstName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
+            softly.assertThat(aContact.getLastName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
+            softly.assertThat(aContact.getDateOfBirth()).isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
+            softly.assertThat(aContact.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
+            softly.assertThat(aContact.getNationalHealthId())
+              .isEqualTo(CreateNewContactSteps.contact.getNationalHealthId());
+            softly.assertThat(aContact.getPassportNumber())
+              .isEqualTo(CreateNewContactSteps.contact.getPassportNumber());
+            softly.assertThat(aContact.getPrimaryEmailAddress())
+              .isEqualTo(CreateNewContactSteps.contact.getPrimaryEmailAddress());
+            softly.assertThat(aContact.getPrimaryPhoneNumber())
+              .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
             softly.assertAll();
         });
   }
 
   public Contact collectContactData() {
-    Contact contactInfo = getContactInformation();
+      webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
+      webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
+      webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID);
+      Contact contactInfo = getContactInformation();
 
     return Contact.builder()
             .firstName(contactInfo.getFirstName())
@@ -78,8 +74,8 @@ public class EditContactPersonSteps implements En {
             .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
             .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
             .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
-            .primaryEmailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
-            .primaryPhoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
+            .primaryEmailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
+            .primaryPhoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
             .build();
   }
 

@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.application.contacts;
 
 import cucumber.api.java8.En;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Contact;
 
@@ -42,27 +43,31 @@ public class EditContactSteps implements En {
         () -> {
             aContact = collectContactData();
             SoftAssertions softly = new SoftAssertions();
-            softly.assertThat(aCase.getDateOfReport())
-              .isEqualTo(CreateNewCaseSteps.caze.getDateOfReport());
-            softly.assertThat(aCase.getExternalId())
-              .isEqualTo(CreateNewCaseSteps.caze.getExternalId());
-            softly.assertThat(aCase.getDisease()).isEqualTo(CreateNewCaseSteps.caze.getDisease());
-            softly.assertThat(aCase.getResponsibleRegion())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleRegion());
-            softly.assertThat(aCase.getResponsibleDistrict())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleDistrict());
-            softly.assertThat(aCase.getResponsibleCommunity())
-              .isEqualTo(CreateNewCaseSteps.caze.getResponsibleCommunity());
-            softly.assertThat(aCase.getPlaceOfStay())
-              .isEqualTo(CreateNewCaseSteps.caze.getPlaceOfStay());
-            softly.assertThat(aCase.getPlaceDescription())
-              .isEqualTo(CreateNewCaseSteps.caze.getPlaceDescription());
-            softly.assertThat(aCase.getFirstName()).isEqualTo(CreateNewCaseSteps.caze.getFirstName());
+            softly.assertThat(aContact.getFirstName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
+            softly.assertThat(aContact.getLastName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
+            softly.assertThat(aContact.getReturningTraveler()).isEqualTo(CreateNewContactSteps.contact.getReturningTraveler());
+            softly.assertThat(aContact.getReportDate())
+              .isEqualTo(CreateNewContactSteps.contact.getReportDate());
+            softly.assertThat(aContact.getDiseaseOfSourceCase())
+              .isEqualTo(CreateNewContactSteps.contact.getDiseaseOfSourceCase());
+            softly.assertThat(aContact.getCaseIdInExternalSystem())
+              .isEqualTo(CreateNewContactSteps.contact.getCaseIdInExternalSystem());
+            softly.assertThat(aContact.getDateOfLastContact())
+              .isEqualTo(CreateNewContactSteps.contact.getDateOfLastContact());
+            softly.assertThat(aContact.getCaseOrEventInformation())
+              .isEqualTo(CreateNewContactSteps.contact.getCaseOrEventInformation());
+            softly.assertThat(aContact.getResponsibleRegion()).isEqualTo(CreateNewContactSteps.contact.getResponsibleRegion());
+            softly.assertThat(aContact.getResponsibleDistrict()).isEqualTo(CreateNewContactSteps.contact.getResponsibleDistrict());
+            softly.assertThat(aContact.getResponsibleCommunity()).isEqualTo(CreateNewContactSteps.contact.getResponsibleCommunity());
             softly.assertThat(
-                  aCase.getLastName().equalsIgnoreCase(CreateNewCaseSteps.caze.getLastName()))
+                    aContact.getAdditionalInformationOnContactType().equalsIgnoreCase(CreateNewContactSteps.contact.getAdditionalInformationOnContactType()))
               .isTrue();
-            softly.assertThat(aCase.getDateOfBirth())
-              .isEqualTo(CreateNewCaseSteps.caze.getDateOfBirth());
+            softly.assertThat(aContact.getTypeOfContact()).isEqualTo(CreateNewContactSteps.contact.getTypeOfContact());
+            softly.assertThat(aContact.getContactCategory()).isEqualTo(CreateNewContactSteps.contact.getContactCategory());
+            softly.assertThat(aContact.getRelationshipWithCase()).isEqualTo(CreateNewContactSteps.contact.getRelationshipWithCase());
+            softly.assertThat(aContact.getDescriptionOfHowContactTookPlace()).isEqualTo(CreateNewContactSteps.contact.getDescriptionOfHowContactTookPlace());
             softly.assertAll();
         });
   }
@@ -78,7 +83,7 @@ public class EditContactSteps implements En {
     return Contact.builder()
             .firstName(contactInfo.getFirstName())
             .lastName(contactInfo.getLastName())
-            .returningTraveler("No") // to be created
+            .returningTraveler(collectReturningTraveler())
             .reportDate(parsedDateOfReport)
             .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX))
             .caseIdInExternalSystem(webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
@@ -88,8 +93,8 @@ public class EditContactSteps implements En {
             .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX))
             .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX))
             .additionalInformationOnContactType(webDriverHelpers.getValueFromWebElement(ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-            .typeOfContact("Touched fluid of source case") //to be created method
-            .contactCategory("Low risk contact") //to be created method
+            .typeOfContact(collectTypeOfContact())
+            .contactCategory(collectContactCategory())
             .relationshipWithCase(webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
             .descriptionOfHowContactTookPlace(webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
             .build();
@@ -106,4 +111,33 @@ public class EditContactSteps implements En {
         .dateOfBirth(localDate)
         .build();
   }
+
+  public String collectReturningTraveler(){
+      return webDriverHelpers.getTextOfSelectedWebElementFromList(By.cssSelector("#returningTraveler input"));
+      /*String optionLocator = "//div[@id=\'returningTraveler\']//label[contains(text(), \'placeholder\')]//preceding::input[1]";
+      String [] options = {"Yes", "No", "Unknown"};
+      for(String s : options){
+          By selector = By.xpath(optionLocator.replace("placeholder", s));
+          if(webDriverHelpers.isElementSelected(selector))
+              return s;
+      }
+    return null;*/
+  }
+
+  public String collectTypeOfContact(){
+      By typeOfContactLocator = By.xpath("//*[contains(text(), '"+ CreateNewContactSteps.contact.getTypeOfContact() +"')]");
+        return webDriverHelpers.getTextFromWebElement(typeOfContactLocator);
+  }
+
+    public String collectContactCategory(){
+        String optionLocator = "//div[@id='contactCategory']//label[contains(text(), 'placeholder')]//preceding::input[1]";
+        String [] options = {"High risk contact", "High risk medical contact", "Medium risk medical contact", "Low risk contact", "No risk contact"};
+        for(String s : options){
+            By selector = By.xpath(optionLocator.replace("placeholder", s));
+            if(webDriverHelpers.isElementSelected(selector))
+                return s;
+        }
+        return null;
+    }
+
 }

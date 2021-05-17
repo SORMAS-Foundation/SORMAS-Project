@@ -25,7 +25,7 @@ public class EditContactPage {
   public static final By USER_INFORMATION = By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease input");
-  public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT = By.cssSelector("#externalID");
+  public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT = By.cssSelector("#caseIdExternalSystem");
   public static final By DATE_OF_LAST_CONTACT_INPUT = By.cssSelector("#lastContactDate input");
   public static final By CASE_OR_EVENT_INFORMATION_INPUT = By.cssSelector("#caseOrEventInformation");
   public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#region input");

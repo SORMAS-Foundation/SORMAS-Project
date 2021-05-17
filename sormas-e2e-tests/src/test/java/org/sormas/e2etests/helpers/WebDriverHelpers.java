@@ -22,19 +22,15 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.google.common.truth.Truth;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.*;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.WebElement;
 
 @Slf4j
 public class WebDriverHelpers {
@@ -166,6 +162,17 @@ public class WebDriverHelpers {
     return true;
   }
 
+  public boolean isElementSelected(By selector) {
+    try {
+      assertHelpers.assertWithPoll(
+              () ->
+                      Truth.assertThat(baseSteps.getDriver().findElement(selector).isSelected()).isTrue(), 10);
+    } catch (Exception ignored) {
+      return false;
+    }
+    return true;
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       baseSteps.getDriver().findElements(byObject).get(index).click();
@@ -214,7 +221,7 @@ public class WebDriverHelpers {
   }
 
   public String getValueFromWebElement(By byObject) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
     return baseSteps.getDriver().findElement(byObject).getAttribute("value");
   }
@@ -242,6 +249,17 @@ public class WebDriverHelpers {
   public void waitUntilIdentifiedElementIsPresent(final By selector) {
     assertHelpers.assertWithPoll15Second(
         () -> assertThat(getNumberOfElements(selector) > 0).isTrue());
+  }
+
+  public String getTextOfSelectedWebElementFromList(By selector){                     // exemplu de selector: #contactCategory input
+    //waitUntilANumberOfElementsAreVisibleAndClickable(selector, 1);        //sunt 5, e ok
+    List<WebElement> elementsList = baseSteps.getDriver().findElements(selector);        //cauta inputurile pe care se poate face validarea de check
+    for(WebElement element: elementsList){
+      if(element.isSelected())
+        return  baseSteps.getDriver().findElement(By.cssSelector(element.toString() + "+label")).getText();
+    }
+    return null;
+
   }
 
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {
