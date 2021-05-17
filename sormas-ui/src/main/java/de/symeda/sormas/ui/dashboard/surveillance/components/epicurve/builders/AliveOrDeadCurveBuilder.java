@@ -27,7 +27,7 @@ public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 		for (int i = 0; i < filteredDates.size(); i++) {
 			caseCriteria = setNewCaseDatesInCaseCriteria(filteredDates.get(i), caseCriteria);
-			Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
+			Map<PresentCondition, Long> caseCounts = FacadeProvider.getDashboardFacade().getCaseCountPerPersonCondition(caseCriteria, true, true);
 
 			aliveNumbers[i] = caseCounts.getOrDefault(PresentCondition.ALIVE, 0L).intValue();
 			deadNumbers[i] =

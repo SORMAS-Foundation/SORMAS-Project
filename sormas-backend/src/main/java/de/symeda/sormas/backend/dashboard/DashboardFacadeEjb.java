@@ -10,10 +10,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 
@@ -44,6 +46,14 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getLastReportedDistrictName(dashboardCriteria);
+	}
+
+	@Override
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(
+		CaseCriteria caseCriteria,
+		boolean excludeSharedCases,
+		boolean excludeCasesFromContacts) {
+		return dashboardService.getCaseCountPerPersonCondition(caseCriteria, excludeSharedCases, excludeCasesFromContacts);
 	}
 
 	@Override

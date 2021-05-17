@@ -1136,38 +1136,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-
-		Join<Case, Person> person = joins.getPerson();
-
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(person.get(Person.PRESENT_CONDITION));
-		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<PresentCondition, Long> resultMap =
-			results.stream().collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> (Long) e[1]));
-		return resultMap;
-	}
-
-	@Override
 	public Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

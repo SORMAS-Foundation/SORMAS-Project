@@ -38,7 +38,6 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -114,11 +113,6 @@ public interface CaseFacade {
 		NewCaseDateType dateType);
 
 	Map<CaseClassification, Long> getCaseCountPerClassification(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
-
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(
 		CaseCriteria caseCriteria,
 		boolean excludeSharedCases,
 		boolean excludeCasesFromContacts);
