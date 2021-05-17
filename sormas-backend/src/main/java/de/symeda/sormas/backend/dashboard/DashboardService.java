@@ -65,7 +65,7 @@ public class DashboardService {
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = createCriteriaFilterForCases(dashboardCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -135,7 +135,7 @@ public class DashboardService {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
-		Predicate criteriaFilter = createCriteriaFilterForCases(dashboardCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, dashboardCriteria.getNewCaseDateFrom(), dashboardCriteria.getNewCaseDateTo());
@@ -266,17 +266,12 @@ public class DashboardService {
 					DateHelper.getEndOfDay(dashboardCriteria.getNewCaseDateTo()),
 					dashboardCriteria.getNewCaseDateType()));
 		}
+		if (!dashboardCriteria.shouldIncludeNoCases()) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+		}
 
 		return filter;
-	}
-
-	private <T extends AbstractDomainObject> Predicate createCriteriaFilterForCases(
-		DashboardCriteria dashboardCriteria,
-		CaseQueryContext caseQueryContext) {
-		CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
-		Predicate filter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
-		return CriteriaBuilderHelper
-			.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 	}
 
 	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {

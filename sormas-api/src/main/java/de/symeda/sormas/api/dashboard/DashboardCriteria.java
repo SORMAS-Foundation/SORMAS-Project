@@ -18,6 +18,8 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
 
+	private boolean includeNoCases;
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -65,6 +67,15 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	public DashboardCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo) {
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
+		return this;
+	}
+
+	public boolean shouldIncludeNoCases() {
+		return includeNoCases;
+	}
+
+	public DashboardCriteria includeNoCases() {
+		this.includeNoCases = true;
 		return this;
 	}
 }
