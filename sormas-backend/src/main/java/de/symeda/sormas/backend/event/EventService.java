@@ -44,11 +44,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -191,49 +189,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
-		Root<Event> event = cq.from(getElementClass());
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
-
-		Predicate filter = createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event)));
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, event));
-
-		List<DashboardEventDto> result;
-
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-				event.get(Event.UUID),
-				event.get(Event.EVENT_STATUS),
-				event.get(Event.EVENT_INVESTIGATION_STATUS),
-				event.get(Event.DISEASE),
-				event.get(Event.DISEASE_DETAILS),
-				event.get(Event.START_DATE),
-				event.get(Event.REPORT_LAT),
-				event.get(Event.REPORT_LON),
-				eventLocation.get(Location.LATITUDE),
-				eventLocation.get(Location.LONGITUDE),
-				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-				event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID),
-				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
-				eventDistrict.get(District.NAME),
-				eventDistrict.get(District.UUID),
-				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
-
-			result = em.createQuery(cq).getResultList();
-
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -267,28 +222,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
-	}
-
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Event> event = cq.from(Event.class);
-		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-
-		cq.multiselect(event.get(Event.EVENT_STATUS), cb.count(event));
-		cq.groupBy(event.get(Event.EVENT_STATUS));
-
-		Predicate filter = createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(eventCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, event));
-
-		if (filter != null)
-			cq.where(filter);
-
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {

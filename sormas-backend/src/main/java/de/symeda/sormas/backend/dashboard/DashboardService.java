@@ -38,11 +38,16 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -237,11 +242,67 @@ public class DashboardService {
 	}
 
 	public List<DashboardEventDto> getNewEvents(EventCriteria eventCriteria) {
-		return eventService.getNewEventsForDashboard(eventCriteria);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
+
+		Predicate filter = eventService.createDefaultFilter(cb, event);
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event)));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+
+		List<DashboardEventDto> result;
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+				event.get(Event.UUID),
+				event.get(Event.EVENT_STATUS),
+				event.get(Event.EVENT_INVESTIGATION_STATUS),
+				event.get(Event.DISEASE),
+				event.get(Event.DISEASE_DETAILS),
+				event.get(Event.START_DATE),
+				event.get(Event.REPORT_LAT),
+				event.get(Event.REPORT_LON),
+				eventLocation.get(Location.LATITUDE),
+				eventLocation.get(Location.LONGITUDE),
+				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+				event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID),
+				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
+				eventDistrict.get(District.NAME),
+				eventDistrict.get(District.UUID),
+				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
+
+			result = em.createQuery(cq).getResultList();
+
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
 	}
 
 	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-		return eventService.getEventCountByStatus(eventCriteria);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> event = cq.from(Event.class);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+
+		cq.multiselect(event.get(Event.EVENT_STATUS), cb.count(event));
+		cq.groupBy(event.get(Event.EVENT_STATUS));
+
+		Predicate filter = eventService.createDefaultFilter(cb, event);
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.buildCriteriaFilter(eventCriteria, eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+
+		if (filter != null)
+			cq.where(filter);
+
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
 	private <T extends AbstractDomainObject> Predicate createCaseCriteriaFilter(
