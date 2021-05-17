@@ -1105,6 +1105,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION), contactCriteria.getVaccination()));
 		}
+		if (contactCriteria.getRelationToCase() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RELATION_TO_CASE), contactCriteria.getRelationToCase()));
+		}
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -1170,14 +1173,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, (Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, (Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);

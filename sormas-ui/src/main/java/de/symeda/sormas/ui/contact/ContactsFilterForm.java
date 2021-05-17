@@ -76,6 +76,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		ContactCriteria.VACCINATION,
+		ContactCriteria.RELATION_TO_CASE,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
 		ContactCriteria.BIRTHDATE_DD)
@@ -215,6 +216,14 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration
 				.withCaptionAndPixelSized(ContactCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
+
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				ContactCriteria.RELATION_TO_CASE,
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.RELATION_TO_CASE),
+				200));
+
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
