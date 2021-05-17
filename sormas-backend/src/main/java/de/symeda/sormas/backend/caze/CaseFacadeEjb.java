@@ -2395,13 +2395,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& CaseOutcome.DECEASED == newCase.getOutcome()
 			&& (newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
 				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
-			&& (newCase.getPerson().getDeathDate() == null
-				? newCase.getOutcomeDate() != null
-				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {
-			// not sure whats happening here?
-			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
-			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+			&& (newCase.getPerson().getDeathDate() != newCase.getOutcomeDate())) {
+			// Handle cases where the person and case are deceased, but outcomedate and deathdate are not equal
+			// this does not make sense yet, as it does not take into account which of both dates is correct and which is wrong
+			// FIXME: check back about the details of this part!
+			if (existingCase.getOutcomeDate() != newCase.getOutcomeDate()) {
+				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+			} else {
+				newCase.setOutcomeDate(newCase.getPerson().getDeathDate());
+			}
 		}
 	}
 
