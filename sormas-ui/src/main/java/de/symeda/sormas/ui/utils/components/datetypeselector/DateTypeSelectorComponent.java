@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils.components.datetypeselector;
 
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -54,6 +55,7 @@ public class DateTypeSelectorComponent extends ComboBox {
 	private DateTypeSelectorComponent(Builder builder) {
 		setId(builder.id);
 		setWidth(builder.width, Unit.PIXELS);
+		setFilteringMode(FilteringMode.CONTAINS);
 		addItems(builder.dateType.getEnumConstants());
 		if (builder.dateTypePrompt != null) {
 			setInputPrompt(builder.dateTypePrompt);
