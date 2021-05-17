@@ -78,6 +78,7 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -180,7 +181,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
 			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
 
-		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();;
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
