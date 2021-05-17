@@ -152,7 +152,7 @@ public class DashboardDataProvider {
 				.disease(disease)
 				.newCaseDateType(newCaseDateType)
 				.dateBetween(fromDate, toDate)
-				.includeNoCases();
+				.includeNotACaseClassification();
 			setCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
 			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
 			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(dashboardCriteria));

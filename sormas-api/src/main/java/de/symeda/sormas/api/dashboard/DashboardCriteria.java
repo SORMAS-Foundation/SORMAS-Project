@@ -18,7 +18,7 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private Date dateFrom;
 	private Date dateTo;
 
-	private boolean includeNoCases;
+	private boolean includeNotACaseClassification;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -70,12 +70,12 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public boolean shouldIncludeNoCases() {
-		return includeNoCases;
+	public boolean shouldIncludeNotACaseClassification() {
+		return includeNotACaseClassification;
 	}
 
-	public DashboardCriteria includeNoCases() {
-		this.includeNoCases = true;
+	public DashboardCriteria includeNotACaseClassification() {
+		this.includeNotACaseClassification = true;
 		return this;
 	}
 }
