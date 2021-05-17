@@ -35,6 +35,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -181,6 +182,8 @@ public interface CaseFacade {
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
+	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
+
 	boolean isCaseEditAllowed(String caseUuid);
 
 	boolean exists(String uuid);
@@ -236,4 +239,6 @@ public interface CaseFacade {
 	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
+
+	List<CaseDataDto> getByExternalId(String externalId);
 }

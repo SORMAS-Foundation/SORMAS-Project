@@ -107,6 +107,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			menuItems.set(CaseSection.TASKS.ordinal(), null);
 		}
 		if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && caze.getClinicalCourse() == null)
 			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
@@ -114,6 +115,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			menuItems.set(CaseSection.HEALTH_CONDITIONS.ordinal(), null);
 		}
 		if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_THERAPY)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && caze.getTherapy() == null)
 			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
@@ -128,17 +130,21 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			|| (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
 			menuItems.set(CaseSection.CONTACTS.ordinal(), null);
 		}
-		if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
+		if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA
+			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA)) {
 			menuItems.set(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal(), null);
 		}
 		if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
 			menuItems.set(CaseSection.PORT_HEALTH_INFO.ordinal(), null);
 		}
-		if (caze != null && (caze.isUnreferredPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()))) {
+		if (caze != null && (caze.isUnreferredPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()) || DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION))) {
 			menuItems.set(CaseSection.HOSPITALIZATION.ordinal(), null);
 		}
 		if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 			menuItems.set(CaseSection.MATERNAL_HISTORY.ordinal(), null);
+		}
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS)) {
+			menuItems.set(CaseSection.SYMPTOMS.ordinal(), null);
 		}
 
 		return menuItems;

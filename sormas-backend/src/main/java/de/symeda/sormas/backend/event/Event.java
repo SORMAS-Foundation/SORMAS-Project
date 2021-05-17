@@ -70,6 +70,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
 @Audited
@@ -560,8 +561,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 		this.epidemiologicalEvidence = epidemiologicalEvidence;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public Map<EpidemiologicalEvidenceDetail, Boolean> getEpidemiologicalEvidenceDetails() {
 		return epidemiologicalEvidenceDetails;
 	}
@@ -579,8 +580,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 		this.laboratoryDiagnosticEvidence = laboratoryDiagnosticEvidence;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public Map<LaboratoryDiagnosticEvidenceDetail, Boolean> getLaboratoryDiagnosticEvidenceDetails() {
 		return laboratoryDiagnosticEvidenceDetails;
 	}

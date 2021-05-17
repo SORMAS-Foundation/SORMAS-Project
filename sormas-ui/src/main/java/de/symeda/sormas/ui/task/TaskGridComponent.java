@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.vaadin.icons.VaadinIcons;
@@ -168,13 +170,39 @@ public class TaskGridComponent extends VerticalLayout {
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
+				boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getTaskController()
-							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria));
-					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)));
+				final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
+
+				menuBarItems.add(
+						new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkEdit),
+								VaadinIcons.ELLIPSIS_H,
+								mi -> ControllerProvider.getTaskController().showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+								hasBulkOperationsRight));
+				menuBarItems.add(
+						new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkDelete),
+								VaadinIcons.TRASH,
+								selectedItem -> ControllerProvider.getTaskController()
+										.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+								hasBulkOperationsRight));
+				menuBarItems.add(
+						new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionArchive),
+								VaadinIcons.ARCHIVE,
+								mi -> ControllerProvider.getTaskController()
+										.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+								hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
+				menuBarItems.add(
+						new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionDearchive),
+								VaadinIcons.ARCHIVE,
+								mi -> ControllerProvider.getTaskController()
+										.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+								hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 
 				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

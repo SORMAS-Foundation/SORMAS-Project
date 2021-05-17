@@ -140,7 +140,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (contact != null) {
-			Date startDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+			Date startDate = ContactLogic.getStartDate(contact);
 
 			addDateValidation(
 				startDate,
@@ -151,7 +151,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		if (caze != null) {
 			addDateValidation(
-				CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+				CaseLogic.getStartDate(caze),
 				caze.getReportDate(),
 				caze.getSymptoms().getOnsetDate() != null ? Validations.visitBeforeSymptomsOnSet : Validations.visitBeforeCaseReport,
 				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));

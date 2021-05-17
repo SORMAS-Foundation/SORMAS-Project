@@ -85,6 +85,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		if (record.getPerson().getSex() != Sex.FEMALE) {
 			contentBinding.caseDataPregnant.setVisibility(GONE);
 			contentBinding.caseDataPostpartum.setVisibility(GONE);
+			contentBinding.caseDataTrimester.setVisibility(GONE);
 		}
 
 		// Port Health fields

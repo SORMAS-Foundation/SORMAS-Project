@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -82,6 +83,7 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -965,6 +967,19 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 
+		// Update case pregnancy information if sex has changed
+		if (existingPerson != null && existingPerson.getSex() != newPerson.getSex()) {
+			if (newPerson.getSex() != Sex.FEMALE) {
+				for (Case personCase : personCases) {
+					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+					personCase.setPregnant(null);
+					personCase.setTrimester(null);
+					personCase.setPostpartum(null);
+					caseFacade.onCaseChanged(existingCase, personCase);
+				}
+			}
+		}
+
 		cleanUp(newPerson);
 	}
 
@@ -1121,6 +1136,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
 		return persons;
+	}
+
+	public Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<PersonIndexDto> personIndexList = getIndexList(personCriteria, offset, size, sortProperties);
+		long totalElementCount = count(personCriteria);
+		return new Page<>(personIndexList, offset, size, totalElementCount);
 	}
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {

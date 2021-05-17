@@ -5,8 +5,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SimilarEventParticipantDto implements Serializable {
+public class SimilarEventParticipantDto extends PseudonymizableIndexDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipant";
 

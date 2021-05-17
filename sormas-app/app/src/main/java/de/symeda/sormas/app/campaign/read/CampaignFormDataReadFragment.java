@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.campaign.read;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.HashMap;
@@ -98,11 +100,15 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 }
                 final String expressionString = campaignFormElement.getExpression();
                 if (expressionString != null) {
-                    final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-                    if (type == CampaignFormElementType.YES_NO) {
-                        ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
-                    } else {
-                        ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
+                    try {
+                        final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+                        if (type == CampaignFormElementType.YES_NO) {
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
+                        } else {
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
+                        }
+                    } catch (SpelEvaluationException e) {
+                        Log.e("Error evaluating expression: " + expressionString, e.getMessage());
                     }
                 }
             } else if (type == CampaignFormElementType.SECTION) {

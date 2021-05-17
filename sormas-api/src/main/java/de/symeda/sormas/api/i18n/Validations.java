@@ -86,6 +86,7 @@ public interface Validations {
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
+	String importErrorCustomizableEnumValue = "importErrorCustomizableEnumValue";
 	String importErrorInColumn = "importErrorInColumn";
 	String importEventParticipantsPropertyTypeNotAllowed = "importEventParticipantsPropertyTypeNotAllowed";
 	String importEventsPropertyTypeNotAllowed = "importEventsPropertyTypeNotAllowed";
@@ -108,6 +109,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
+	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";
