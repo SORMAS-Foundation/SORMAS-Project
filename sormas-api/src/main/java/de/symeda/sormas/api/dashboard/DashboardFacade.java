@@ -25,7 +25,5 @@ public interface DashboardFacade {
 
 	long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria);
 
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria);
-
-	Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria);
+	Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria);
 }

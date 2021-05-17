@@ -61,13 +61,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
-		return dashboardService.getCaseCountPerPersonCondition(dashboardCriteria);
-	}
-
-	@Override
-	public Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria) {
-		return dashboardService.getCaseCountPerClassification(dashboardCriteria);
+	public Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getCasesCountPerPersonCondition(dashboardCriteria);
 	}
 
 	@LocalBean

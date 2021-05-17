@@ -105,10 +105,6 @@ public class DashboardService {
 		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
-		if (filter != null) {
-			cq.where(filter);
-		}
-
 		Map<CaseClassification, Integer> result;
 		if (filter != null) {
 			cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze.get(Case.CASE_CLASSIFICATION)));
@@ -206,7 +202,7 @@ public class DashboardService {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
+	public Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -228,31 +224,8 @@ public class DashboardService {
 		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<PresentCondition, Long> resultMap =
-			results.stream().collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> (Long) e[1]));
-		return resultMap;
-	}
-
-	public Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
-		cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<CaseClassification, Long> resultMap = results.stream().collect(Collectors.toMap(e -> (CaseClassification) e[0], e -> (Long) e[1]));
+		Map<PresentCondition, Integer> resultMap = results.stream()
+			.collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> ((Number) e[1]).intValue()));
 		return resultMap;
 	}
 
