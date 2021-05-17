@@ -55,9 +55,9 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -521,7 +521,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				contact.get(Contact.CONTACT_CLASSIFICATION),
 				contact.get(Contact.FOLLOW_UP_STATUS),
 				contact.get(Contact.FOLLOW_UP_UNTIL),
-				contact.get(Contact.DISEASE));
+				contact.get(Contact.DISEASE),
+				contact.get(Contact.QUARANTINE_FROM),
+				contact.get(Contact.QUARANTINE_TO));
 
 			List<DashboardContactDto> dashboardContacts = em.createQuery(cq).getResultList();
 
@@ -601,13 +603,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return filter;
 	}
 
-	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		Region region,
-		District district,
-		Disease disease,
-		Date from,
-		Date to,
-		User user) {
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(Region region, District district, Disease disease, Date from, Date to) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);

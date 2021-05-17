@@ -28,7 +28,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -139,13 +139,6 @@ public interface ContactFacade {
 	boolean exists(String uuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
-
-	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to);
 
 	List<ContactDto> getByPersonUuids(List<String> personUuids);
 

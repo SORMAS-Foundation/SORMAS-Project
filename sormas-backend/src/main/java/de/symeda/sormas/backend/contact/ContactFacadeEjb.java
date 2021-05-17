@@ -79,12 +79,11 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -1281,24 +1280,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 
 		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
-	}
-
-	@Override
-	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to) {
-
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
-
-		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
-			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
-
-		return dashboardContactsInQuarantine;
 	}
 
 	@Override

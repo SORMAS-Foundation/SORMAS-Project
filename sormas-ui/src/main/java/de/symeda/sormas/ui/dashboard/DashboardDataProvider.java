@@ -31,8 +31,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
@@ -96,8 +96,10 @@ public class DashboardDataProvider {
 
 	private void refreshDataForQuarantinedContacts() {
 
-		List<DashboardQuarantineDataDto> contactsInQuarantineDtos =
-			FacadeProvider.getContactFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
+		List<DashboardQuarantineDataDto> contactsInQuarantineDtos = getContacts().stream()
+			.map(DashboardContactDto::getDashboardQuarantineDataDto)
+			.filter(quarantineData(fromDate, toDate))
+			.collect(Collectors.toList());
 
 		setContactsInQuarantineCount((long) contactsInQuarantineDtos.size());
 

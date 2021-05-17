@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.contact;
+package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class DashboardContactDto implements Serializable {
@@ -43,6 +46,8 @@ public class DashboardContactDto implements Serializable {
 	private Disease disease;
 	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
 
+	private DashboardQuarantineDataDto dashboardQuarantineDataDto;
+
 	public DashboardContactDto(
 		long id,
 		Date reportDate,
@@ -50,7 +55,9 @@ public class DashboardContactDto implements Serializable {
 		ContactClassification contactClassification,
 		FollowUpStatus followUpStatus,
 		Date followUpUntil,
-		Disease disease) {
+		Disease disease,
+		Date quarantineFrom,
+		Date quarantineTo) {
 
 		this.id = id;
 		this.reportDate = reportDate;
@@ -59,6 +66,7 @@ public class DashboardContactDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
+		this.dashboardQuarantineDataDto = new DashboardQuarantineDataDto(id, quarantineFrom, quarantineTo);
 	}
 
 	public long getId() {
@@ -171,5 +179,9 @@ public class DashboardContactDto implements Serializable {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+
+	public DashboardQuarantineDataDto getDashboardQuarantineDataDto() {
+		return dashboardQuarantineDataDto;
 	}
 }
