@@ -27,7 +27,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
-import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -128,35 +127,6 @@ public class DashboardService {
 		}
 
 		return result;
-	}
-
-	public List<DashboardQuarantineDataDto> getQuarantineData(DashboardCriteria dashboardCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
-		Root<Case> caze = cq.from(Case.class);
-
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
-		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-
-		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo());
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(caze.get(AbstractDomainObject.ID), caze.get(Case.QUARANTINE_FROM), caze.get(Case.QUARANTINE_TO));
-
-			return em.createQuery(cq).getResultList();
-		}
-
-		return Collections.emptyList();
 	}
 
 	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
@@ -339,28 +309,6 @@ public class DashboardService {
 		if (!dashboardCriteria.shouldIncludeNotACaseClassification()) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
-		}
-
-		return filter;
-	}
-
-	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {
-		Predicate filter = null;
-		if (fromDate != null && toDate != null) {
-			filter = cb.or(
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.between(caze.get(Case.QUARANTINE_FROM), fromDate, toDate)),
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_FROM)), cb.between(caze.get(Case.QUARANTINE_TO), fromDate, toDate)),
-				cb.and(
-					cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), fromDate),
-					cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), toDate)));
-		} else if (fromDate != null) {
-			filter = cb.or(
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), fromDate)),
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_FROM)), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), fromDate)));
-		} else if (toDate != null) {
-			filter = cb.or(
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_FROM)), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), toDate)),
-				cb.and(cb.isNull(caze.get(Case.QUARANTINE_TO)), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), toDate)));
 		}
 
 		return filter;

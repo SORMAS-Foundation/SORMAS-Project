@@ -17,8 +17,6 @@ public interface DashboardFacade {
 
 	Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria);
 
-	List<DashboardQuarantineDataDto> getQuarantineData(DashboardCriteria dashboardCriteria);
-
 	String getLastReportedDistrictName(DashboardCriteria dashboardCriteria);
 
 	Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases);

@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -106,15 +108,47 @@ public class DashboardDataProvider {
 
 	private void refreshDataForQuarantinedCases() {
 
-		DashboardCriteria dashboardCriteria =
-			new DashboardCriteria().region(region).district(district).disease(disease).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
-		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getDashboardFacade().getQuarantineData(dashboardCriteria);
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos = getCases().stream()
+			.map(DashboardCaseDto::getDashboardQuarantineDataDto)
+			.filter(quarantineData(fromDate, toDate))
+			.collect(Collectors.toList());
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
 		Long dashboardCasesPlacedInQuarantineCount = getPlacedInQuarantine(casesInQuarantineDtos);
 
 		setCasesPlacedInQuarantineCount(dashboardCasesPlacedInQuarantineCount);
+	}
+
+	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {
+		return p -> {
+			Date quarantineFrom = p.getQuarantineFrom();
+			Date quarantineTo = p.getQuarantineTo();
+
+			if (fromDate != null && toDate != null) {
+				if (quarantineFrom != null && quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineTo.before(toDate);
+				}
+			} else if (fromDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate);
+				}
+			} else if (toDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.before(toDate);
+				}
+			}
+
+			return false;
+		};
 	}
 
 	private Long getPlacedInQuarantine(List<DashboardQuarantineDataDto> contactsInQuarantineDtos) {

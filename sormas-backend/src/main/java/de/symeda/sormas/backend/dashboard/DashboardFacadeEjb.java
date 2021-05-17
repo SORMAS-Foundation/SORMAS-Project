@@ -14,7 +14,6 @@ import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
-import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -37,11 +36,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCasesCountByClassification(dashboardCriteria);
-	}
-
-	@Override
-	public List<DashboardQuarantineDataDto> getQuarantineData(DashboardCriteria dashboardCriteria) {
-		return dashboardService.getQuarantineData(dashboardCriteria);
 	}
 
 	@Override
