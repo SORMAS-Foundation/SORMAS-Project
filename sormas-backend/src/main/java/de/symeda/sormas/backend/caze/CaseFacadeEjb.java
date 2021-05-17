@@ -2359,12 +2359,36 @@ public class CaseFacadeEjb implements CaseFacade {
 					// attention: this may lead to infinite recursion when not properly implemented
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
-			} else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-				if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
-					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-					newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
-					// attention: this may lead to infinite recursion when not properly implemented
-					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+
+			} else if ((newCase.getOutcome() == CaseOutcome.NO_OUTCOME || newCase.getOutcome() == CaseOutcome.RECOVERED)
+				&& existingCase.getOutcome() == CaseOutcome.DECEASED) {
+				// Case was put "back alive"
+				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+				boolean dateThreshold = newCase.getReportDate().before(DateHelper.addDays(existingPerson.getDeathDate(), 30))
+					&& newCase.getReportDate().before(DateHelper.subtractDays(existingPerson.getDeathDate(), 30));
+
+				if (existingPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()
+					&& dateThreshold) {
+					// Make sure no other case associated with the person has Outcome=DECEASED
+					boolean doNotUpdatePersonCondition = false;
+					for (CaseDataDto caze : getAllCasesOfPerson(existingPerson.UUID)) {
+						if (caze.getOutcome() == CaseOutcome.DECEASED) {
+							doNotUpdatePersonCondition = true;
+							break;
+						}
+					}
+					if (!doNotUpdatePersonCondition) {
+						newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+						newCase.getPerson().setBurialDate(null);
+						newCase.getPerson().setDeathDate(null);
+						newCase.getPerson().setDeathPlaceDescription(null);
+						newCase.getPerson().setDeathPlaceType(null);
+						newCase.getPerson().setCauseOfDeath(null);
+						newCase.getPerson().setCauseOfDeathDetails(null);
+						newCase.getPerson().setCauseOfDeathDisease(null);
+						personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+					}
 				}
 			}
 		} else if (existingCase != null
@@ -2374,6 +2398,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& (newCase.getPerson().getDeathDate() == null
 				? newCase.getOutcomeDate() != null
 				: !newCase.getPerson().getDeathDate().equals(newCase.getOutcomeDate()))) {
+			// not sure whats happening here?
 			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 			personFacade.onPersonChanged(existingPerson, newCase.getPerson());

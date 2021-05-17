@@ -70,6 +70,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -868,8 +869,25 @@ public class PersonFacadeEjb implements PersonFacade {
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
 				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+				if (newPerson.getPresentCondition().isDeceased()
+					&& newPerson.getDeathDate() != null
+					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+					&& newPerson.getCauseOfDeathDisease() != null) {
+					for (Case personCase : personCases) {
+						if (personCase.getOutcome() != CaseOutcome.DECEASED
+							&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
+								&& personCase.getReportDate().before(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
+							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+							personCase.setOutcome(CaseOutcome.DECEASED);
+							personCase.setOutcomeDate(newPerson.getDeathDate());
+							caseFacade.onCaseChanged(existingCase, personCase);
+						}
+					}
+				}
+				// not sure what do do with the leftover code below
 				for (Case personCase : personCases) {
 					if (newPerson.getPresentCondition().isDeceased()) {
+
 						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
 							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 							personCase.setOutcome(CaseOutcome.DECEASED);
