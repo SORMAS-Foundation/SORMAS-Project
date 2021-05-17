@@ -221,27 +221,36 @@ public class PersonController {
 			}
 		}
 
-		if (newClassification != null) {
-			Notification notification = new Notification(
-				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()),
-				Type.WARNING_MESSAGE);
-			notification.setDelayMsec(-1);
-			notification.show(Page.getCurrent());
-		} else {
-			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
-		}
-
 		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(existingPerson);
 		String synchronizationMessage = getSynchronizationMessage(responseDto);
-		if(!StringUtils.isBlank(synchronizationMessage)) {
-			VaadinUiUtil.showWarningPopup(synchronizationMessage);
+
+		if (newClassification != null) {
+			String personSavedMessage =
+				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString());
+			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
+			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
+
+				Notification notification = new Notification(notificationMessage, Type.WARNING_MESSAGE);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				VaadinUiUtil.showWarningPopup(notificationMessage);
+			}
+		} else {
+			String personSavedMessage = I18nProperties.getString(Strings.messagePersonSaved);
+			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
+			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
+				Notification.show(notificationMessage, Type.WARNING_MESSAGE);
+			} else {
+				VaadinUiUtil.showWarningPopup(notificationMessage);
+			}
 		}
 
 		SormasUI.refreshView();
 	}
 
 	private String getSynchronizationMessage(ExternalJournalSyncResponseDto responseDto) {
-		if(responseDto == null) {
+		if (responseDto == null) {
 			return "";
 		}
 
